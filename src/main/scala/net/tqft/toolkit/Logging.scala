@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory; 
 
 trait Logging {
-  val log = LogFactory.getLog(getClass)
+  private[this] val log = LogFactory.getLog(getClass)
   
   private def now = new java.util.Date().toString
   private def thread = Thread.currentThread.getName
