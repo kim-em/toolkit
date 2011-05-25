@@ -5,7 +5,7 @@ class Toolkit(info: ProjectInfo) extends DefaultProject(info)
 {
 	// publish to:
 	override def managedStyle = ManagedStyle.Maven
-	lazy val publishTo = Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa.pub"))
+	lazy val publishTo = Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))
 
 	// extra repositories:
         val scalaToolsSnapshots = "Scala-Tools Maven2 Snapshots Repository" at "http://scala-tools.org/repo-snapshots"
