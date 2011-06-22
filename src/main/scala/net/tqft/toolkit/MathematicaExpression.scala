@@ -1,4 +1,5 @@
 package net.tqft.toolkit
+import java.math.BigInteger
 
 trait MathematicaExpression {
   def toMathematicaInputString: String
@@ -6,6 +7,13 @@ trait MathematicaExpression {
 
 object MathematicaExpression {
   implicit def intToMathematicaExpression(x: Int) = new MathematicaExpression {
+    def toMathematicaInputString = x.toString
+  }
+
+  implicit def bigIntToMathematicaExpression(x: BigInt) = new MathematicaExpression {
+    def toMathematicaInputString = x.toString
+  }
+  implicit def bigIntegerToMathematicaExpression(x: BigInteger) = new MathematicaExpression {
     def toMathematicaInputString = x.toString
   }
 

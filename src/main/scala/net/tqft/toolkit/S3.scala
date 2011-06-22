@@ -24,6 +24,18 @@ class S3Bucket(s3Service: StorageService, val bucket: String) extends scala.coll
     case other: S3Bucket => bucket == other.bucket
   }
   
+  override def contains(key: String) = { 
+    s3Service.isObjectInBucket(bucket, key)
+  }
+  
+  def contentLength(key: String): Option[Long] = {
+    if(contains(key)) {
+    	Some(s3Service.getObject(bucket, key).getContentLength)
+    } else {
+      None
+    }
+  }
+  
   override def get(key: String): Option[String] = {
     if (s3Service.isObjectInBucket(bucket, key)) {
       Some(Source.fromInputStream(s3Service.getObject(bucket, key).getDataInputStream).getLines.mkString)
@@ -31,6 +43,11 @@ class S3Bucket(s3Service: StorageService, val bucket: String) extends scala.coll
       None
     }
   }
+  
+  override def keys: Iterable[String] = {
+    (s3Service.listObjects(bucket) map { _.getKey() })
+  }
+  
   override def iterator: Iterator[(String, String)] = {
     val keys = (s3Service.listObjects(bucket) map { _.getKey() }).iterator
     keys map { k: String => (k, get(k).get) }
