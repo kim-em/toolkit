@@ -8,6 +8,7 @@ object MapTransformer {
   class ValuesTransformable[A, B](map: scala.collection.mutable.Map[A, B]) {
     def transformValues[C](f1: B => C, f2: C => B): scala.collection.mutable.Map[A, C] =  new ValueTransformer(map, f1, f2)
     def transformKeys[Z](f1: A => Z, f2: Z => A): scala.collection.mutable.Map[Z, B] =  new KeyTransformer(map, f1, f2)    
+    def transformKeys[Z](f2: Z => A): scala.collection.mutable.Map[Z, B] =  new KeyTransformer(map, { a: A => throw new UnsupportedOperationException }, f2)    
   }
 
   class ValuesTransformableNumeric[B](map: scala.collection.mutable.Map[String, B]) {
