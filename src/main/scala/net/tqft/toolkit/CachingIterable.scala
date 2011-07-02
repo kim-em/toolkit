@@ -15,14 +15,10 @@ object CachingIterable {
       var k = 0
 
       def hasNext = {
-        if (k >= cache.size) {
-          while (oneIterator.hasNext && k >= cache.size) {
-            cacheOneMore
-          }
-          k < cache.size
-        } else {
-          true
+        while (k >= cache.size && oneIterator.hasNext) {
+          cacheOneMore
         }
+        k < cache.size
       }
 
       def next = {
