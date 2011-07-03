@@ -1,24 +1,28 @@
 package net.tqft.toolkit
 
 import scala.collection.mutable.ListBuffer
+import scala.collection.GenIterable
+import scala.collection.parallel.ParIterable
+import scala.collection.GenSeq
+import scala.collection.parallel.ParSeq
 object GroupBy {
 
-  implicit def groupable[A](x: Iterable[A]) = new Groupable(x)
-  class Groupable[A](x: Iterable[A]) {
+  implicit def groupable[A](x: GenIterable[A]) = new Groupable(x)
+  class Groupable[A](x: GenIterable[A]) {
 
     def groupByEquivalence(equivalence: (A, A) => Boolean): List[List[A]] = groupByEquivalence[Unit](equivalence, { x => () })
 
     def groupByEquivalence[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[List[A]] = {
       def equivalenceClasses(y: List[A]) = {
-        def acc(classes: List[List[A]])(z: List[A]): List[List[A]] = z match {
+        def acc(classes: ParSeq[List[A]])(z: List[A]): List[List[A]] = z match {
           case Nil => classes.toList
           case a :: r => classes.indexWhere(c => equivalence(c.head, a)) match {
-            case -1 => acc(List(a) :: classes)(r)
+            case -1 => acc(List(a) +: classes)(r)
             case k => acc(classes.updated(k, a :: classes(k)))(r)
           }
         }
 
-        acc(List())(y)
+        acc(Nil.par)(y)
       }
 
       import SplitBy._
