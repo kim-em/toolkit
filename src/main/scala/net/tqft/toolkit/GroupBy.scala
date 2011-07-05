@@ -10,10 +10,10 @@ object GroupBy {
   implicit def groupable[A](x: GenIterable[A]) = new Groupable(x)
   class Groupable[A](x: GenIterable[A]) {
 
-    def groupByEquivalence(equivalence: (A, A) => Boolean): List[List[A]] = groupByEquivalence[Unit](equivalence, { x => () })
+    def equivalenceClasses(equivalence: (A, A) => Boolean): List[List[A]] = equivalenceClasses[Unit](equivalence, { x => () })
 
-    def groupByEquivalence[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[List[A]] = {
-      def equivalenceClasses(y: List[A]) = {
+    def equivalenceClasses[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[List[A]] = {
+      def _equivalenceClasses(y: List[A]) = {
         def acc(classes: ParSeq[List[A]])(z: List[A]): List[List[A]] = z match {
           case Nil => classes.toList
           case a :: r => classes.indexWhere(c => equivalence(c.head, a)) match {
@@ -26,7 +26,25 @@ object GroupBy {
       }
 
       import SplitBy._
-      ((x.toList sortBy { invariant } splitBy { invariant }).par.map { equivalenceClasses }).toList.flatten
+      ((x.toList sortBy { invariant } splitBy { invariant }).par.map { _equivalenceClasses }).toList.flatten
+    }
+    
+    def chooseEquivalenceClassRepresentatives(equivalence: (A, A) => Boolean): List[A] = chooseEquivalenceClassRepresentatives[Unit](equivalence, { x => () })
+    def chooseEquivalenceClassRepresentatives[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[A] = {
+      def _chooseEquivalenceClassRepresentatives(y: List[A]) = {
+        def acc(representatives: ParSeq[A])(z: List[A]): List[A] = z match {
+          case Nil => representatives.toList
+          case a :: r => representatives.indexWhere(c => equivalence(c, a)) match {
+            case -1 => acc(a +: representatives)(r)
+            case k => acc(representatives)(r)
+          }
+        }
+
+        acc(Nil.par)(y)
+      }
+
+      import SplitBy._
+      ((x.toList sortBy { invariant } splitBy { invariant }).par.map { _chooseEquivalenceClassRepresentatives }).toList.flatten
     }
   }
 
