@@ -2,6 +2,12 @@ package net.tqft.toolkit
 
 import scala.collection.GenTraversableOnce
 import scala.collection.generic.CanBuildFrom
+import scala.collection.parallel.ParIterable
+import scala.collection.parallel.IterableSplitter
+
+object NonStrict extends NonStrictIterable[Unit] {
+  def iterator = Some(()).iterator
+}
 
 object NonStrictIterable {
   def apply[A](s: A*): Iterable[A] = {
@@ -65,12 +71,27 @@ trait NonStrictIterable[A] extends Iterable[A] { self =>
     }
   }
 
+  override def take(k: Int) = {
+    new NonStrictIterable[A] {
+      def iterator = self.iterator take k
+    }
+  }
+
   override def takeWhile(f: A => Boolean) = {
     new NonStrictIterable[A] {
       def iterator = self.iterator takeWhile f
     }
   }
 
+  override def headOption: Option[A] = {
+    val i = self.iterator
+    if(i.hasNext) {
+      Some(i.next)
+    } else {
+      None
+    }
+  }
+  
   override def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Iterable[A], B, That]): That = {
     new NonStrictIterable[B] {
       def iterator = self.iterator collect pf

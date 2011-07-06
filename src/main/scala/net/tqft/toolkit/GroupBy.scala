@@ -1,6 +1,10 @@
 package net.tqft.toolkit
 
 import scala.collection.mutable.ListBuffer
+import scala.collection.GenIterable
+import scala.collection.parallel.ParIterable
+import scala.collection.GenSeq
+import scala.collection.parallel.ParSeq
 object GroupBy {
 
   implicit def groupableIterable[A](x: Iterable[A]) = new GroupableIterable(x)
@@ -66,23 +70,41 @@ object GroupBy {
   implicit def groupable[A](x: Iterable[A]) = new Groupable(x)
   class Groupable[A](x: Iterable[A]) {
 
-    def groupByEquivalence(equivalence: (A, A) => Boolean): List[List[A]] = groupByEquivalenceAndInvariant[Unit](equivalence, { a => () })
+    def equivalenceClasses(equivalence: (A, A) => Boolean): List[List[A]] = equivalenceClasses[Unit](equivalence, { x => () })
 
-    def groupByEquivalenceAndInvariant[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[List[A]] = {
-      def equivalenceClasses(y: List[A]) = {
-        def acc(classes: List[List[A]])(z: List[A]): List[List[A]] = z match {
+    def equivalenceClasses[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[List[A]] = {
+      def _equivalenceClasses(y: List[A]) = {
+        def acc(classes: ParSeq[List[A]])(z: List[A]): List[List[A]] = z match {
           case Nil => classes.toList
           case a :: r => classes.indexWhere(c => equivalence(c.head, a)) match {
-            case -1 => acc(List(a) :: classes)(r)
+            case -1 => acc(List(a) +: classes)(r)
             case k => acc(classes.updated(k, a :: classes(k)))(r)
           }
         }
 
-        acc(List())(y)
+        acc(Nil.par)(y)
       }
 
       import SplitBy._
-      ((x.toList sortBy { invariant } splitBy { invariant }).par.map { equivalenceClasses }).toList.flatten
+      ((x.toList sortBy { invariant } splitBy { invariant }).par.map { _equivalenceClasses }).toList.flatten
+    }
+    
+    def chooseEquivalenceClassRepresentatives(equivalence: (A, A) => Boolean): List[A] = chooseEquivalenceClassRepresentatives[Unit](equivalence, { x => () })
+    def chooseEquivalenceClassRepresentatives[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[A] = {
+      def _chooseEquivalenceClassRepresentatives(y: List[A]) = {
+        def acc(representatives: ParSeq[A])(z: List[A]): List[A] = z match {
+          case Nil => representatives.toList
+          case a :: r => representatives.indexWhere(c => equivalence(c, a)) match {
+            case -1 => acc(a +: representatives)(r)
+            case k => acc(representatives)(r)
+          }
+        }
+
+        acc(Nil.par)(y)
+      }
+
+      import SplitBy._
+      ((x.toList sortBy { invariant } splitBy { invariant }).par.map { _chooseEquivalenceClassRepresentatives }).toList.flatten
     }
 
     def lazilyChooseRepresentatives[B](equivalence: (A, A) => Boolean, invariant: A => B) = new Iterable[A] {

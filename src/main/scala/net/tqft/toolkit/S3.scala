@@ -127,7 +127,19 @@ private class S3BucketStreaming(s3Service: StorageService, val bucket: String) e
   override def equals(other: Any) = other match {
     case other: S3Bucket => bucket == other.bucket
   }
-
+  
+  override def contains(key: String) = { 
+    s3Service.isObjectInBucket(bucket, key)
+  }
+  
+  def contentLength(key: String): Option[Long] = {
+    if(contains(key)) {
+    	Some(s3Service.getObject(bucket, key).getContentLength)
+    } else {
+      None
+    }
+  }
+  
   override def get(key: String): Option[Left[InputStream, Array[Byte]]] = {
     if (s3Service.isObjectInBucket(bucket, key)) {
       Some(Left(s3Service.getObject(bucket, key).getDataInputStream))
@@ -135,6 +147,11 @@ private class S3BucketStreaming(s3Service: StorageService, val bucket: String) e
       None
     }
   }
+
+  override def keys: Iterable[String] = {
+    (s3Service.listObjects(bucket) map { _.getKey() })
+  }
+  
   override def iterator: Iterator[(String, Left[InputStream, Array[Byte]])] = {
     val keys = (s3Service.listObjects(bucket) map { _.getKey() }).iterator
     keys map { k: String => (k, get(k).get) }
