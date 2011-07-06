@@ -3,7 +3,7 @@ package net.tqft.toolkit
 object SplitBy {
 
   implicit def splittable[A](x: List[A]) = new Splittable(x)
-  class Splittable[A](x: List[A])  {
+  class Splittable[A](x: List[A]) {
     def splitBy[B](f: A => B) = {
       def chunk(l: List[(A, B)]): List[List[A]] = l match {
         case h :: r => {
@@ -15,8 +15,10 @@ object SplitBy {
         }
         case Nil => List()
       }
-      
+
       chunk(x map (a => (a, f(a))))
     }
   }
+
 }
+

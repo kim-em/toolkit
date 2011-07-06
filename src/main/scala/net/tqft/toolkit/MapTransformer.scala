@@ -9,7 +9,7 @@ object MapTransformer {
     def transformKeys[Z](f1: A => Z, f2: Z => A): scala.collection.mutable.Map[Z, B] =  new KeyTransformer(map, f1, f2)
   }
   
-  private class ValueTransformer[A, B, C](val map: scala.collection.mutable.Map[A, B], f1: B => C, f2: C => B) extends scala.collection.mutable.Map[A, C] {
+  class ValueTransformer[A, B, C](val map: scala.collection.mutable.Map[A, B], f1: B => C, f2: C => B) extends scala.collection.mutable.Map[A, C] {
     override def get(key: A): Option[C] = {
       map.get(key) map { f1(_) }
     }
