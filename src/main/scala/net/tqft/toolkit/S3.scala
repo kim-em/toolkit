@@ -20,11 +20,16 @@ trait S3 {
 
   lazy val credentials = new AWSCredentials(AWSAccount, AWSSecretKey)
   lazy val s3Service: StorageService = new RestS3Service(credentials)
-
+  
   def apply(bucket: String): scala.collection.mutable.Map[String, String] = new S3Bucket(s3Service, bucket)
-  def GZIP(bucket: String): scala.collection.mutable.Map[String, String] = new S3BucketGZIP(s3Service, bucket)
+  def GZIP(bucket: String): scala.collection.mutable.Map[String, String] = GZIPkeys(new S3BucketGZIP(s3Service, bucket))
   def source(bucket: String): scala.collection.mutable.Map[String, Source] = new S3BucketSource(s3Service, bucket)
-  def sourceGZIP(bucket: String): scala.collection.mutable.Map[String, Source] = new S3BucketSourceGZIP(s3Service, bucket)
+  def sourceGZIP(bucket: String): scala.collection.mutable.Map[String, Source] = GZIPkeys(new S3BucketSourceGZIP(s3Service, bucket))
+  
+  private def GZIPkeys[V](map: scala.collection.mutable.Map[String, V]) = {
+    import MapTransformer._
+    map transformKeys({ key: String => { require(key.endsWith(".gz")); key.dropRight(3) }}, { key: String => key + ".gz" })
+  }
 }
 
 //class S3Bucket(s3Service: StorageService, val bucket: String) extends scala.collection.mutable.Map[String, String] {
@@ -69,7 +74,11 @@ private class S3BucketWrapper(map: scala.collection.mutable.Map[String, Either[I
   { e: Either[InputStream, Array[Byte]] =>
     {
       e match {
-        case Left(stream) => Source.fromInputStream(stream).getLines.mkString
+        case Left(stream) => {
+          val result = Source.fromInputStream(stream).getLines.mkString
+          stream.close
+          result
+        }
         case Right(_) => throw new UnsupportedOperationException
       }
     }

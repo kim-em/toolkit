@@ -20,6 +20,11 @@ object MapTransformer {
       map.get(key) map { f1(_) }
     }
 
+    override def contains(key: A) = map.contains(key)
+    override def keys = map.keys
+    override def keySet = map.keySet
+    override def size = map.size
+    
     override def iterator: Iterator[(A, C)] = {
       map.iterator map { case (a, b) => (a, f1(b)) }
     }
@@ -43,6 +48,11 @@ object MapTransformer {
       map.get(f2(key))
     }
 
+    override def contains(key: Z) = map.contains(f2(key))
+    override def keys = map.keys map { f1(_) }
+    override def keySet = map.keySet map { f1(_) }
+    override def size = map.size
+    
     override def iterator: Iterator[(Z, B)] = {
       map.iterator map { case (a, b) => (f1(a), b) }
     }
