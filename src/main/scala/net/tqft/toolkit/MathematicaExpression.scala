@@ -16,6 +16,9 @@ object MathematicaExpression {
   implicit def bigIntegerToMathematicaExpression(x: BigInteger) = new MathematicaExpression {
     def toMathematicaInputString = x.toString
   }
+  implicit def doubleToMathematicaExpression(x: Double) = new MathematicaExpression {
+    def toMathematicaInputString = x.toString
+  }
 
   implicit def listToMathematicaExpression[A <% MathematicaExpression](x: Iterable[A]): MathematicaExpression = new MathematicaExpression {
     def toMathematicaInputString = {
