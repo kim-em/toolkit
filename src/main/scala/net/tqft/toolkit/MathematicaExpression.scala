@@ -19,6 +19,9 @@ object MathematicaExpression {
   implicit def doubleToMathematicaExpression(x: Double) = new MathematicaExpression {
     def toMathematicaInputString = x.toString
   }
+  implicit def booleanToMathematicaExpression(x: Boolean) = new MathematicaExpression {
+    def toMathematicaInputString = if(x) "True" else "False"
+  }
 
   implicit def listToMathematicaExpression[A <% MathematicaExpression](x: Iterable[A]): MathematicaExpression = new MathematicaExpression {
     def toMathematicaInputString = {
