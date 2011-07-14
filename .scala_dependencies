@@ -276,10 +276,13 @@
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/Tally.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/Tally$Tallyable$$anonfun$tally$2.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$7.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$.class
+/Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/ShortMathematicaExpression$class.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$2.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$4.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$6$$anonfun$writeMathematicaInputString$1.class
-/Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$LongMathematicaExpression.class
+/Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/LongMathematicaExpression$class.class
+/Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/LongMathematicaExpression.class
+/Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/ShortMathematicaExpression.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$1.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$8$$anonfun$writeMathematicaInputString$4.class
@@ -288,7 +291,6 @@
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$5.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$8.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$6$$anonfun$writeMathematicaInputString$2.class
-/Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$ShortMathematicaExpression.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/MathematicaExpression.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/MathematicaExpression$$anon$8$$anonfun$writeMathematicaInputString$3.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/SubList.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/SubList$SubListable$$anonfun$isCyclicSubListOf$3.class
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/SubList.scala -> /Users/scott/projects/toolkit/target/scala_2.9.0/classes/net/tqft/toolkit/SubList$SubListable.class
