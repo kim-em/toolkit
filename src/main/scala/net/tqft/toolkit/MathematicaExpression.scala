@@ -8,18 +8,19 @@ trait MathematicaExpression {
   def writeMathematicaInputString(writer: Writer)
 }
 
+trait ShortMathematicaExpression extends MathematicaExpression {
+  final def writeMathematicaInputString(writer: Writer) = writer.write(toMathematicaInputString)
+}
+trait LongMathematicaExpression extends MathematicaExpression {
+  final def toMathematicaInputString = {
+    val w = new StringWriter
+    writeMathematicaInputString(w)
+    w.toString
+  }
+}
+
 object MathematicaExpression {
-  private abstract class ShortMathematicaExpression extends MathematicaExpression {
-    final def writeMathematicaInputString(writer: Writer) = writer.write(toMathematicaInputString)
-  }
-  private abstract class LongMathematicaExpression extends MathematicaExpression {
-    final def toMathematicaInputString = {
-      val w = new StringWriter
-      writeMathematicaInputString(w)
-      w.toString
-    }
-  }
-  
+
   implicit def intToMathematicaExpression(x: Int): MathematicaExpression = new ShortMathematicaExpression {
     def toMathematicaInputString = x.toString
   }
@@ -34,30 +35,30 @@ object MathematicaExpression {
     def toMathematicaInputString = x.toString
   }
   implicit def booleanToMathematicaExpression(x: Boolean): MathematicaExpression = new ShortMathematicaExpression {
-    def toMathematicaInputString = if(x) "True" else "False"
+    def toMathematicaInputString = if (x) "True" else "False"
   }
 
   implicit def listToMathematicaExpression[A <% MathematicaExpression](x: Iterable[A]): MathematicaExpression = new LongMathematicaExpression {
     def writeMathematicaInputString(writer: Writer) = {
       writer.write("{")
-      for(a <- x.headOption) {
-    	  a.writeMathematicaInputString(writer)
+      for (a <- x.headOption) {
+        a.writeMathematicaInputString(writer)
       }
-      for(a <- x.tail) {
+      for (a <- x.tail) {
         writer.write(", ")
         a.writeMathematicaInputString(writer)
       }
       writer.write("}")
-    }    
+    }
   }
 
   implicit def pairToMathematicaExpression[A <% MathematicaExpression, B <% MathematicaExpression](x: (A, B)): MathematicaExpression = new LongMathematicaExpression {
     def writeMathematicaInputString(writer: Writer) = {
-    	writer.write("{")
-    	x._1.writeMathematicaInputString(writer)
-    	writer.write(", ")
-    	x._2.writeMathematicaInputString(writer)
-    	writer.write("}")
+      writer.write("{")
+      x._1.writeMathematicaInputString(writer)
+      writer.write(", ")
+      x._2.writeMathematicaInputString(writer)
+      writer.write("}")
     }
   }
   implicit def mapToMathematicaExpression[A <% MathematicaExpression, B <% MathematicaExpression](x: Map[A, B]): MathematicaExpression = new LongMathematicaExpression {
@@ -67,17 +68,17 @@ object MathematicaExpression {
         writer.write(" -> ")
         m._2.writeMathematicaInputString(writer)
       }
-      
+
       writer.write("{")
-      for(a <- x.headOption) {
-    	  writeMapEntry(a)
+      for (a <- x.headOption) {
+        writeMapEntry(a)
       }
-      for(a <- x.tail) {
+      for (a <- x.tail) {
         writer.write(", ")
-    	  writeMapEntry(a)
+        writeMapEntry(a)
       }
       writer.write("}")
-    }    
+    }
   }
 }
 
