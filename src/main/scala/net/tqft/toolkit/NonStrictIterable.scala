@@ -4,10 +4,7 @@ import scala.collection.GenTraversableOnce
 import scala.collection.generic.CanBuildFrom
 import scala.collection.parallel.ParIterable
 import scala.collection.parallel.IterableSplitter
-
-object NonStrict extends NonStrictIterable[Unit] {
-  def iterator = Some(()).iterator
-}
+import scala.collection.GenIterable
 
 object NonStrictIterable {
   def apply[A](s: A*): Iterable[A] = {
@@ -59,7 +56,7 @@ trait NonStrictIterable[A] extends Iterable[A] { self =>
     flatMap { x: A => asTraversable(x) }
   }
 
-  override def ++[B >: A, That](that: TraversableOnce[B])(implicit bf: CanBuildFrom[Iterable[A], B, That]): That = {
+  override def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Iterable[A], B, That]): That = {
     new NonStrictIterable[B] {
       def iterator = self.iterator ++ that.toIterable.iterator
     }.asInstanceOf[That]
@@ -155,5 +152,14 @@ trait NonStrictIterable[A] extends Iterable[A] { self =>
         }
       })
   }
+
+  
+  override def zip [A1 >: A, B, That] (that: GenIterable[B])(implicit bf: CanBuildFrom[Iterable[A], (A1, B), That]): That = {
+    new NonStrictIterable[(A, B)] {
+      def iterator = self.iterator zip that.iterator
+    }.asInstanceOf[That]
+  }
+  
+    override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Iterable[A], (A1, Int), That]): That = zip(NonStrictNaturalNumbers)
 
 }
