@@ -41,12 +41,13 @@ object MathematicaExpression {
   implicit def listToMathematicaExpression[A <% MathematicaExpression](x: Iterable[A]): MathematicaExpression = new LongMathematicaExpression {
     def writeMathematicaInputString(writer: Writer) = {
       writer.write("{")
-      for (a <- x.headOption) {
-        a.writeMathematicaInputString(writer)
+      val iter = x.iterator
+      if (iter.hasNext) {
+        iter.next.writeMathematicaInputString(writer)
       }
-      for (a <- x.tail) {
+      while (iter.hasNext) {
         writer.write(", ")
-        a.writeMathematicaInputString(writer)
+        iter.next.writeMathematicaInputString(writer)
       }
       writer.write("}")
     }
@@ -72,10 +73,10 @@ object MathematicaExpression {
       writer.write("{")
       for (a <- x.headOption) {
         writeMapEntry(a)
-      }
-      for (a <- x.tail) {
-        writer.write(", ")
-        writeMapEntry(a)
+        for (a <- x.tail) {
+          writer.write(", ")
+          writeMapEntry(a)
+        }
       }
       writer.write("}")
     }
