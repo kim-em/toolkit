@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.amazon
 
 import java.util.zip.GZIPOutputStream
 import java.io.PrintWriter
@@ -12,6 +12,7 @@ import org.jets3t.service.StorageService
 import org.jets3t.service.impl.rest.httpclient.RestS3Service
 import scala.io.Source
 import org.jets3t.service.model.S3Object
+import net.tqft.toolkit.collections.MapTransformer
 
 trait S3 {
 

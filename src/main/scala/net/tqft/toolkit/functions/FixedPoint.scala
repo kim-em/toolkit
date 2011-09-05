@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.functions
 
 object FixedPoint {
 

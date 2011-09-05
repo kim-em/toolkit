@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.mathematica
 import java.math.BigInteger
 import java.io.Writer
 import java.io.StringWriter

@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.collections
 
 object Rotate {
   implicit def rotatable[A](i: List[A]) = new Rotatable(i)

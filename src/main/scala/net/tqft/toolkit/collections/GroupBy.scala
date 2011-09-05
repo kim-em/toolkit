@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.collections
 
 import scala.collection.mutable.ListBuffer
 import scala.collection.GenIterable
@@ -25,7 +25,7 @@ object GroupBy {
         acc(Nil.par)(y)
       }
 
-      import SplitBy._
+      import Split._
       ((x.toList sortBy { invariant } splitBy { invariant }).par.map { _equivalenceClasses }).toList.flatten
     }
 
@@ -43,7 +43,7 @@ object GroupBy {
         acc(Nil.par)(y)
       }
 
-      import SplitBy._
+      import Split._
       ((x.toList sortBy { invariant } splitBy { invariant }).par.map { _chooseEquivalenceClassRepresentatives }).toList.flatten
     }
 
