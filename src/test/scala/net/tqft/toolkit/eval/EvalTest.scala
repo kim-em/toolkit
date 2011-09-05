@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.eval
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers

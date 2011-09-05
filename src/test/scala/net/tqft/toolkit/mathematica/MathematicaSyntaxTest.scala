@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.mathematica
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
@@ -8,7 +8,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class MathematicaSyntaxTest extends FlatSpec with ShouldMatchers {
 
-  import net.tqft.toolkit.MathematicaSyntax._
+  import MathematicaSyntax._
 	
   "A function" should "implicitly implement /@" in {
 	  val square = ((n: Int) => n*n)
