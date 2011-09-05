@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.collections
 
 object TakeUntilFirst {
   implicit def takeUntilFirst[A](x: Iterable[A]) = new TakeUntilFirstable(x)

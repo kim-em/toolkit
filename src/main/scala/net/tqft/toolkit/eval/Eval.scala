@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.eval
 
 import scala.collection.mutable.ListBuffer
 import scala.tools.nsc._
@@ -18,6 +18,7 @@ trait Eval {
     val s = new Settings
     // when running that compiler, give it a scala-library to the classpath
     s.classpath.value = System.getProperty("java.class.path")
+    // FIXME
     s.classpath.value = "/Users/scott/projects/fusionatlas/development/nct/project/boot/scala-2.9.0/lib/scala-compiler.jar:/Users/scott/projects/fusionatlas/development/nct/project/boot/scala-2.9.0/lib/scala-library.jar:/Users/scott/projects/fusionatlas/development/nct/target/scala_2.9.0/nct_2.9.0-1.0.jar"
     s.bootclasspath.value = "/Users/scott/projects/fusionatlas/development/nct/project/boot/scala-2.9.0/lib/"
     s.usejavacp.value = true

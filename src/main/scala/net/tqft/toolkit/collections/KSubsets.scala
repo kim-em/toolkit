@@ -1,4 +1,5 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.collections
+import net.tqft.toolkit.Logging
 
 object KSubsets extends Logging {
   def apply(n: Int, k: Int): Iterable[List[Int]] = {

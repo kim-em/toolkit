@@ -1,6 +1,4 @@
-package net.tqft.toolkit
-
-//import scala.collection.generic.CanBuildFrom
+package net.tqft.toolkit.mathematica
 
 object MathematicaSyntax {
 

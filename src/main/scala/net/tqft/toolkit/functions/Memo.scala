@@ -1,4 +1,5 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.functions
+import net.tqft.toolkit.Logging
 
 object Memo extends Logging {
 

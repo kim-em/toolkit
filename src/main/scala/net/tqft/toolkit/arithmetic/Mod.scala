@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.arithmetic
 
 object Mod {
 	implicit def moddable(x: Int) = new Moddable(x)
