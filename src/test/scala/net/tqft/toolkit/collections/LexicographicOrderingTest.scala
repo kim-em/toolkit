@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.collections
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
@@ -8,7 +8,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class LexicographicOrderingTest extends FlatSpec with ShouldMatchers {
 
-  import net.tqft.toolkit.LexicographicOrdering._
+  import LexicographicOrdering._
 	
   "A List[Int]" should "implicitly also be an Ordered[List[Int]]" in {
 	  List(1, 2, 3) < List(1, 3, 2) should be (true)
