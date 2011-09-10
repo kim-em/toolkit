@@ -3,19 +3,19 @@ import scala.collection.mutable.ListBuffer
 
 object CachingIterable {
 
-  def apply[A](i: Iterable[A]): Iterable[A] = new NonStrictIterable[A] {
+  def apply[A](i: Iterable[A]): Iterable[A] = apply(i.iterator)
+  def apply[A](i: Iterator[A]): Iterable[A] = new NonStrictIterable[A] {
     private[this] val cache = ListBuffer[A]()
-    private[this] val oneIterator = i.iterator
-
+    
     private[this] def cacheOneMore {
-      cache += oneIterator.next
+      cache += i.next
     }
 
     def iterator = new Iterator[A] {
       var k = 0
 
       def hasNext = {
-        while (k >= cache.size && oneIterator.hasNext) {
+        while (k >= cache.size && i.hasNext) {
           cacheOneMore
         }
         k < cache.size

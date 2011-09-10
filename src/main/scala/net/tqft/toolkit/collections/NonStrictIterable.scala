@@ -7,12 +7,14 @@ import scala.collection.parallel.IterableSplitter
 import scala.collection.GenIterable
 
 object NonStrictIterable {
-  def apply[A](s: A*): Iterable[A] = {
+  def apply[A](s: A*): Iterable[A] = from(s)
+
+  def from[A](i: Iterable[A]): Iterable[A] = {
     new NonStrictIterable[A] {
-      def iterator = s.iterator
+      def iterator = i.iterator
     }
   }
-
+  
   def iterate[A](a: A)(f: A => A): Iterable[A] = {
     new NonStrictIterable[A] {
       def iterator = Iterator.iterate(a)(f)
@@ -87,6 +89,10 @@ trait NonStrictIterable[A] extends Iterable[A] { self =>
     } else {
       None
     }
+  }
+
+  override def find(p: A => Boolean): Option[A] = {
+    self.iterator.find(p)
   }
   
   override def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Iterable[A], B, That]): That = {
