@@ -27,6 +27,10 @@ object NonStrictIterable {
       case None => None
     }).takeWhile({ case Some(_) => true; case None => false }).collect({ case Some(b) => b })
   }
+  
+  def continually[A](f: => A): Iterable[A] = new NonStrictIterable[A] {
+    def iterator = Iterator.continually(f)
+  }
 }
 
 trait NonStrictIterable[A] extends Iterable[A] { self =>

@@ -21,6 +21,7 @@ libraryDependencies ++= Seq(
 	"org.scalatest" %% "scalatest" % "1.6.1" % "test",
 	"commons-logging" % "commons-logging" % "1.1.1",
 	"net.java.dev.jets3t" % "jets3t" % "0.8.1",
+	"com.google.code.typica" % "typica" % "1.7.2",
 	"com.google.guava" % "guava" % "r09"
 )
 
