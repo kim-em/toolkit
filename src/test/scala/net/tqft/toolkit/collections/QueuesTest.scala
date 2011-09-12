@@ -44,7 +44,7 @@ class QueuesTest extends FlatSpec with ShouldMatchers {
 
     import Queues._
     import Iterables._
-    p.toIterable.flatten.takeWhile(_.isLeft).collect{case Left(s) => s}.consume({ s => { threads += Thread.currentThread.getName;  q.enqueue(s) } }, 2)
+    p.toIterable.flatten.mapWhileDefined({case Left(s) => s}).consume({ s => { threads += Thread.currentThread.getName;  q.enqueue(s) } }, 2)
     q.retrying(Throttle.rateLimited(50)).toIterable.flatten.take(5).toSet should equal(words.toSet)
   }
 

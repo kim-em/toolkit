@@ -2,6 +2,7 @@ package net.tqft.toolkit.collections
 import scala.collection.SortedMap
 import scala.actors.Actor
 import net.tqft.toolkit.Throttle
+import net.tqft.toolkit.Logging
 
 trait Queue[A] {
   def enqueue(a: A)
@@ -23,6 +24,11 @@ object Queues {
 
   class RichQueue[A](q: Queue[A]) {
     def toIterable = NonStrictIterable.continually(q.dequeue)
+
+    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
+      import Iterables._
+      toIterable.flatten.consume(f, numberOfWorkers)
+    }
 
     def withDefaultOption(f: => Option[A]): Queue[A] = new Queue[A] {
       def enqueue(a: A) = q.enqueue(a)
@@ -136,18 +142,24 @@ object Queues {
 
 }
 
-class SQSQueues(queueService: com.xerox.amazonws.sqs2.QueueService) {
+class SQSQueues(queueService: com.xerox.amazonws.sqs2.QueueService) extends Logging {
   def getQueue(name: String, timeout: Int): Queue[String] = new Queue[String] {
     private[this] val queue = queueService.getOrCreateMessageQueue(name, timeout)
 
-    def enqueue(s: String) = queue.sendMessage(s)
+    def enqueue(s: String) = {
+      info("Sending message on queue " + name + ": " + s)
+      queue.sendMessage(s)
+    }
     def dequeue = {
+      info("Looking for message on queue " + name)
       val message = queue.receiveMessage()
       if (message == null) {
         None
       } else {
+        val s = message.getMessageBody()
+        info(". received message: " + s)
         queue.deleteMessage(message)
-        Some(message.getMessageBody())
+        Some(s)
       }
     }
   }

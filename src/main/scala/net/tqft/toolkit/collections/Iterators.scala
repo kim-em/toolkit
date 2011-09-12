@@ -5,6 +5,8 @@ object Iterators {
   implicit def iterator2RichIterator[A](iterator: Iterator[A]) = new RichIterator(iterator)
 
   class RichIterator[A](iterator: Iterator[A]) {
+    def  mapWhileDefined[B](pf: PartialFunction[A, B]) = iterator.takeWhile(pf.isDefinedAt(_)).map(pf)
+    
     def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
       case object Work
 
@@ -14,6 +16,7 @@ object Iterators {
         def act() {
           loop {
             react {
+              case 'stop => exit
               case Work => if (si.hasNext) {
                 f(si.next)
                 worker ! Work
@@ -40,6 +43,26 @@ object Iterators {
 
     def asFunction: (() => Option[A]) = new (() => Option[A]) {
       def apply = if (iterator.hasNext) Some(iterator.next) else None
+    }
+    
+    def findMinimum[B <% Ordered[B]](f: A => B, lowerBound: Option[B] = None): A = {
+      if(iterator.hasNext) {
+        var next = iterator.next
+        var v = f(next)
+        var minimum = (next, v)
+        while(iterator.hasNext) {
+          next = iterator.next
+          v = f(next)
+          if(lowerBound == Some(v)) return next
+          if(v < minimum._2) {
+            minimum = (next, v)
+          }
+        }
+        minimum._1
+      } else {
+        throw new NoSuchElementException
+      }
+      
     }
   }
 }
