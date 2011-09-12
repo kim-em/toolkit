@@ -7,7 +7,8 @@ object MapTransformer {
   
   class ValuesTransformable[A, B](map: scala.collection.mutable.Map[A, B]) {
     def transformValues[C](f1: B => C, f2: C => B): scala.collection.mutable.Map[A, C] =  new ValueTransformer(map, f1, f2)
-    def transformKeys[Z](f1: A => Z, f2: Z => A): scala.collection.mutable.Map[Z, B] =  new KeyTransformer(map, f1, f2)    
+    def transformSomeKeys[Z](f1: A => Option[Z], f2: Z => A): scala.collection.mutable.Map[Z, B] =  new KeyTransformer(map, f1, f2)    
+    def transformKeys[Z](f1: A => Z, f2: Z => A): scala.collection.mutable.Map[Z, B] =  new KeyTransformer(map, { a: A => Some(f1(a)) }, f2)    
     def transformKeys[Z](f2: Z => A): scala.collection.mutable.Map[Z, B] =  new KeyTransformer(map, { a: A => throw new UnsupportedOperationException }, f2)    
   }
 
@@ -43,18 +44,18 @@ object MapTransformer {
     }
 
   }
-  private class KeyTransformer[Z, A, B](val map: scala.collection.mutable.Map[A, B], f1: A => Z, f2: Z => A) extends scala.collection.mutable.Map[Z, B] {
+  private class KeyTransformer[Z, A, B](val map: scala.collection.mutable.Map[A, B], f1: A => Option[Z], f2: Z => A) extends scala.collection.mutable.Map[Z, B] {
     override def get(key: Z): Option[B] = {
       map.get(f2(key))
     }
 
     override def contains(key: Z) = map.contains(f2(key))
-    override def keys = map.keys map { f1(_) }
-    override def keySet = map.keySet map { f1(_) }
+    override def keys = map.keys map { f1(_) } flatten
+    override def keySet = map.keySet map { f1(_) } flatten
     override def size = map.size
     
     override def iterator: Iterator[(Z, B)] = {
-      map.iterator map { case (a, b) => (f1(a), b) }
+      map.iterator map { case (a, b) => (f1(a), b) } collect { case (Some(k), v) => (k, v) }
     }
 
     override def +=(kv: (Z, B)) = {
