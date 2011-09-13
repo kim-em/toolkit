@@ -1,6 +1,7 @@
 package net.tqft.toolkit.collections
 import scala.actors.Actor
 import scala.collection.generic.CanBuildFrom
+import scala.actors.IScheduler
 
 object Iterables {
   implicit def iterable2RichIterable[A](iterable: Iterable[A]) = new RichIterable(iterable)
@@ -13,9 +14,9 @@ object Iterables {
       }.asInstanceOf[That]
     }
 
-    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
+    def consume(f: A => Unit, numberOfWorkers: Int = 1, scheduler: Option[IScheduler] = None): List[Actor] = {
       import Iterators._
-      iterable.iterator.consume(f, numberOfWorkers)
+      iterable.iterator.consume(f, numberOfWorkers, scheduler)
     }
 
     def asFunction: (() => Option[A]) = {

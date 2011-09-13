@@ -6,9 +6,13 @@ object CachingIterable {
   def apply[A](i: Iterable[A]): Iterable[A] = apply(i.iterator)
   def apply[A](i: Iterator[A]): Iterable[A] = new NonStrictIterable[A] {
     private[this] val cache = ListBuffer[A]()
-    
+
     private[this] def cacheOneMore {
-      cache += i.next
+      synchronized {
+        if (i.hasNext) {
+          cache += i.next
+        }
+      }
     }
 
     def iterator = new Iterator[A] {

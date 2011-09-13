@@ -15,13 +15,13 @@ object NonStrictIterable {
     }
   }
   
-  def iterate[A](a: A)(f: A => A): Iterable[A] = {
+  def iterate[A](a: => A)(f: A => A): Iterable[A] = {
     new NonStrictIterable[A] {
       def iterator = Iterator.iterate(a)(f)
     }
   }
 
-  def iterateUntilNone[A](a: A)(f: A => Option[A]): Iterable[A] = {
+  def iterateUntilNone[A](a: => A)(f: A => Option[A]): Iterable[A] = {
     iterate[Option[A]](Some(a))({
       case Some(a) => f(a)
       case None => None
