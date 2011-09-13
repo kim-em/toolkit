@@ -44,7 +44,7 @@ object MapTransformer {
     }
 
   }
-  private class KeyTransformer[Z, A, B](val map: scala.collection.mutable.Map[A, B], f1: A => Option[Z], f2: Z => A) extends scala.collection.mutable.Map[Z, B] {
+  class KeyTransformer[Z, A, B](val map: scala.collection.mutable.Map[A, B], f1: A => Option[Z], f2: Z => A) extends scala.collection.mutable.Map[Z, B] {
     override def get(key: Z): Option[B] = {
       map.get(f2(key))
     }

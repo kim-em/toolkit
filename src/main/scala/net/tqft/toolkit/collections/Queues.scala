@@ -59,6 +59,24 @@ object Queues {
 
     def transform[B](f: A => B, g: B => A): Queue[B] = new TransformedQueue[A, B](q, f, g)
 
+    def notifyAfterFailures(numberOfFailures: Int, callback: => Unit): Queue[A] = new Queue[A] {
+      var failures = 0
+      def dequeue = {
+        val r = q.dequeue
+        if(r.isEmpty) {
+          failures = failures + 1
+          if(failures >= numberOfFailures) {
+            callback
+            failures = 0
+          }
+        } else {
+          failures = 0
+        }
+        r
+      }
+      def enqueue(a: A) { q.enqueue(a) }
+    }
+    
     def passiveBuffering(targetBufferSize: Int): Queue[A] = new Queue[A] {
       val buffer = new ProperlySynchronizedQueue[A]()
       def enqueue(a: A) = q.enqueue(a)
@@ -126,44 +144,19 @@ object Queues {
     fromOptions(f())
   }
 
-  def priorityQueue[O <% Ordered[O], A](queues: Traversable[(O, Queue[A])]): PriorityQueue[O, A] = new PriorityQueue[O, A] {
-    val sortedQueues = scala.collection.SortedMap[O, Queue[A]]() ++ queues
-    override def enqueue(p: (O, A)) = sortedQueues(p._1).enqueue(p._2)
+  def priorityQueue[O <% Ordered[O], A](queues: Map[O, Queue[A]]): PriorityQueue[O, A] = new PriorityQueue[O, A] {
+    override def enqueue(p: (O, A)) = queues(p._1).enqueue(p._2)
     override def dequeue: Option[(O, A)] = {
       var r: Option[A] = None
-      sortedQueues.find(p => { r = p._2.dequeue; r.nonEmpty }).map { p => (p._1, r.get) }
+      // I'd like to be able to give a priority queue a mutable map, so we have to resort to re-sorting it each time
+      queues.toSeq.sortBy(_._1).find(p => { r = p._2.dequeue; r.nonEmpty }).map { p => (p._1, r.get) }
     }
   }
 
   def priorityQueue[O <% Ordered[O], A](queueBuilder: => Queue[A], priorities: Traversable[O]): PriorityQueue[O, A] = priorityQueue({ o: O => queueBuilder }, priorities)
 
   def priorityQueue[O <% Ordered[O], A](queueBuilder: O => Queue[A], priorities: Traversable[O]): PriorityQueue[O, A] = {
-    priorityQueue(priorities.map(o => (o, queueBuilder(o))))
+    priorityQueue(priorities.map(o => (o, queueBuilder(o))).toMap)
   }
 
-}
-
-class SQSQueues(queueService: com.xerox.amazonws.sqs2.QueueService) extends Logging {
-  def getQueue(name: String, timeout: Int): Queue[String] = new Queue[String] {
-    private[this] val queue = queueService.getOrCreateMessageQueue(name, timeout)
-
-    def enqueue(s: String) = {
-      info("Sending message on queue " + name + ": " + s)
-      queue.sendMessage(s)
-    }
-    def dequeue = {
-      info("Looking for message on queue " + name)
-      val message = queue.receiveMessage()
-      if (message == null) {
-        None
-      } else {
-        val s = message.getMessageBody()
-        info(". received message: " + s)
-        queue.deleteMessage(message)
-        Some(s)
-      }
-    }
-  }
-
-  def getPriorityQueue(name: String, timeout: Int, priorityRange: Traversable[Int]) = Queues.priorityQueue({ i: Int => getQueue(name + "-" + i, timeout) }, priorityRange)
 }
