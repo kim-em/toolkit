@@ -23,53 +23,40 @@ trait S3 {
   lazy val credentials = new AWSCredentials(AWSAccount, AWSSecretKey)
   lazy val s3Service: StorageService = new RestS3Service(credentials)
   
-  def apply(bucket: String): scala.collection.mutable.Map[String, String] = new S3Bucket(s3Service, bucket)
-  def GZIP(bucket: String): scala.collection.mutable.Map[String, String] = GZIPkeys(new S3BucketGZIP(s3Service, bucket))
-  def source(bucket: String): scala.collection.mutable.Map[String, Source] = new S3BucketSource(s3Service, bucket)
-  def sourceGZIP(bucket: String): scala.collection.mutable.Map[String, Source] = GZIPkeys(new S3BucketSourceGZIP(s3Service, bucket))
+  def apply(bucket: String): S3Bucket[String] = new S3BucketPlain(s3Service, bucket)
+  def GZIP(bucket: String): S3Bucket[String] = GZIPkeys(new S3BucketGZIP(s3Service, bucket))
+  def source(bucket: String): S3Bucket[Source] = new S3BucketSource(s3Service, bucket)
+  def sourceGZIP(bucket: String): S3Bucket[Source] = GZIPkeys(new S3BucketSourceGZIP(s3Service, bucket))
   
-  private def GZIPkeys[V](map: scala.collection.mutable.Map[String, V]) = {
+  private def GZIPkeys[V](s3Bucket: S3Bucket[V]): S3Bucket[V] = {
     import MapTransformer._
-    map transformSomeKeys({ key: String => { if(key.endsWith(".gz")) Some(key.dropRight(3)) else None }}, { key: String => key + ".gz" })
+    new KeyTransformer( s3Bucket, { key: String => { if(key.endsWith(".gz")) Some(key.dropRight(3)) else None }}, { key: String => key + ".gz" }) with S3Bucket[V] {
+      def s3Service = s3Bucket.s3Service
+      def bucket = s3Bucket.bucket
+    }
   }
 }
 
-//class S3Bucket(s3Service: StorageService, val bucket: String) extends scala.collection.mutable.Map[String, String] {
-//  val s3bucket = s3Service.getOrCreateBucket(bucket)
-//
-//  override def hashCode = s3bucket.toString.hashCode
-//  override def equals(other: Any) = other match {
-//    case other: S3Bucket => bucket == other.bucket
-//  }
-//
-//  override def get(key: String): Option[String] = {
-//    if (s3Service.isObjectInBucket(bucket, key)) {
-//      Some(Source.fromInputStream(s3Service.getObject(bucket, key).getDataInputStream).getLines.mkString)
-//    } else {
-//      None
-//    }
-//  }
-//  override def iterator: Iterator[(String, String)] = {
-//    val keys = (s3Service.listObjects(bucket) map { _.getKey() }).iterator
-//    keys map { k: String => (k, get(k).get) }
-//  }
-//
-//  override def +=(kv: (String, String)) = {
-//    kv match {
-//      case (key, value) => s3Service.putObject(bucket, new S3Object(key, value))
-//    }
-//    this
-//  }
-//  override def -=(key: String) = {
-//    s3Service.deleteObject(bucket, key)
-//    this
-//  }
-//}
+trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
+  def s3Service: StorageService
+  def bucket: String
+  def keysWithPrefix(prefix: String, queryChunkSize: Int = 1000) = {
+    def initial = s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, null)
+    val chunks = NonStrictIterable.iterateUntilNone(initial)({ chunk => { 
+      if(chunk.getObjects().size < queryChunkSize) {
+        None
+      } else {
+        Some(s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, chunk.getObjects().last.getKey()))
+      }
+    }})
+    chunks.map(_.getObjects().map(_.getKey)).flatten
+  }
+}
 
-private class S3Bucket(s3Service: StorageService, val bucket: String) extends S3BucketWrapper(new S3BucketStreaming(s3Service, bucket))
-private class S3BucketGZIP(s3Service: StorageService, val bucket: String) extends S3BucketWrapper(new S3BucketStreamingGZIP(s3Service, bucket))
-private class S3BucketSource(s3Service: StorageService, val bucket: String) extends S3BucketSourceWrapper(new S3BucketStreaming(s3Service, bucket))
-private class S3BucketSourceGZIP(s3Service: StorageService, val bucket: String) extends S3BucketSourceWrapper(new S3BucketStreamingGZIP(s3Service, bucket))
+private class S3BucketPlain(val s3Service: StorageService, val bucket: String) extends S3BucketWrapper(new S3BucketStreaming(s3Service, bucket)) with S3Bucket[String]
+private class S3BucketGZIP(val s3Service: StorageService, val bucket: String) extends S3BucketWrapper(new S3BucketStreamingGZIP(s3Service, bucket)) with S3Bucket[String]
+private class S3BucketSource(val s3Service: StorageService, val bucket: String) extends S3BucketSourceWrapper(new S3BucketStreaming(s3Service, bucket)) with S3Bucket[Source]
+private class S3BucketSourceGZIP(val s3Service: StorageService, val bucket: String) extends S3BucketSourceWrapper(new S3BucketStreamingGZIP(s3Service, bucket)) with S3Bucket[Source]
 
 private class S3BucketWrapper(map: scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]]) extends MapTransformer.ValueTransformer[String, Either[InputStream, Array[Byte]], String](
   map,
@@ -130,28 +117,13 @@ private class S3BucketStreamingGZIP(s3Service: StorageService, val bucket: Strin
       }
     }
   })
-
-private object BucketLister {
-  def apply(s3Service: StorageService, bucket: String): Iterable[String] = {
-    val size = 1000
-    def initial = s3Service.listObjectsChunked(bucket, null, null, size, null)
-    val chunks = NonStrictIterable.iterateUntilNone(initial)({ chunk => { 
-      if(chunk.getObjects().size < size) {
-        None
-      } else {
-        Some(s3Service.listObjectsChunked(bucket, null, null, size, chunk.getObjects().last.getKey()))
-      }
-    }})
-    chunks.map(_.getObjects().map(_.getKey)).flatten
-  }
-}
   
-private class S3BucketStreaming(s3Service: StorageService, val bucket: String) extends scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]] {
+private class S3BucketStreaming(val s3Service: StorageService, val bucket: String) extends S3Bucket[Either[InputStream, Array[Byte]]] {
   val s3bucket = s3Service.getOrCreateBucket(bucket)
 
   override def hashCode = s3bucket.toString.hashCode
   override def equals(other: Any) = other match {
-    case other: S3Bucket => bucket == other.bucket
+    case other: S3Bucket[_] => bucket == other.bucket
   }
   
   override def contains(key: String) = { 
@@ -176,7 +148,7 @@ private class S3BucketStreaming(s3Service: StorageService, val bucket: String) e
 
   override def keys: Iterable[String] = {
 //    NonStrictIterable.from(s3Service.listObjects(bucket) map { _.getKey() })
-    BucketLister(s3Service, bucket)
+    keysWithPrefix("")
   }
   
   override def iterator: Iterator[(String, Left[InputStream, Array[Byte]])] = {

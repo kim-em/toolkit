@@ -1,4 +1,4 @@
-package net.tqft.toolkit
+package net.tqft.toolkit.amazon
 
 object QueueService {
 	def apply(amazonAccount: String, secretKey: String) = {

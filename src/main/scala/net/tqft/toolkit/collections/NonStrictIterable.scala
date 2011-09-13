@@ -10,11 +10,15 @@ object NonStrictIterable {
   def apply[A](s: A*): Iterable[A] = from(s)
 
   def from[A](i: Iterable[A]): Iterable[A] = {
-    new NonStrictIterable[A] {
-      def iterator = i.iterator
+    if (i.isInstanceOf[NonStrictIterable[_]]) {
+      i
+    } else {
+      new NonStrictIterable[A] {
+        def iterator = i.iterator
+      }
     }
   }
-  
+
   def iterate[A](a: => A)(f: A => A): Iterable[A] = {
     new NonStrictIterable[A] {
       def iterator = Iterator.iterate(a)(f)
@@ -27,7 +31,7 @@ object NonStrictIterable {
       case None => None
     }).takeWhile({ case Some(_) => true; case None => false }).collect({ case Some(b) => b })
   }
-  
+
   def continually[A](f: => A): Iterable[A] = new NonStrictIterable[A] {
     def iterator = Iterator.continually(f)
   }
@@ -88,7 +92,7 @@ trait NonStrictIterable[A] extends Iterable[A] { self =>
 
   override def headOption: Option[A] = {
     val i = self.iterator
-    if(i.hasNext) {
+    if (i.hasNext) {
       Some(i.next)
     } else {
       None
@@ -98,7 +102,7 @@ trait NonStrictIterable[A] extends Iterable[A] { self =>
   override def find(p: A => Boolean): Option[A] = {
     self.iterator.find(p)
   }
-  
+
   override def collect[B, That](pf: PartialFunction[A, B])(implicit bf: CanBuildFrom[Iterable[A], B, That]): That = {
     new NonStrictIterable[B] {
       def iterator = self.iterator collect pf
@@ -163,13 +167,12 @@ trait NonStrictIterable[A] extends Iterable[A] { self =>
       })
   }
 
-  
-  override def zip [A1 >: A, B, That] (that: GenIterable[B])(implicit bf: CanBuildFrom[Iterable[A], (A1, B), That]): That = {
+  override def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Iterable[A], (A1, B), That]): That = {
     new NonStrictIterable[(A, B)] {
       def iterator = self.iterator zip that.iterator
     }.asInstanceOf[That]
   }
-  
-    override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Iterable[A], (A1, Int), That]): That = zip(NonStrictNaturalNumbers)
+
+  override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Iterable[A], (A1, Int), That]): That = zip(NonStrictNaturalNumbers)
 
 }
