@@ -3,6 +3,7 @@ import scala.collection.SortedMap
 import scala.actors.Actor
 import net.tqft.toolkit.Throttle
 import net.tqft.toolkit.Logging
+import scala.actors.IScheduler
 
 trait Queue[A] {
   def enqueue(a: A)
@@ -25,9 +26,9 @@ object Queues {
   class RichQueue[A](q: Queue[A]) {
     def toIterable = NonStrictIterable.continually(q.dequeue)
 
-    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
+    def consume(f: A => Unit, numberOfWorkers: Int = 1, scheduler: Option[IScheduler] = None): List[Actor] = {
       import Iterables._
-      toIterable.flatten.consume(f, numberOfWorkers)
+      toIterable.flatten.consume(f, numberOfWorkers, scheduler)
     }
 
     def withDefaultOption(f: => Option[A]): Queue[A] = new Queue[A] {

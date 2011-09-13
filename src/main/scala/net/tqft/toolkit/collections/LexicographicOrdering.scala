@@ -2,13 +2,18 @@ package net.tqft.toolkit.collections
 
 object LexicographicOrdering {
 
-  implicit def Pair2LexicographicOrderedPair[A <% Ordered[A]](pair1: (A, A)): Ordered[(A, A)] = {
-    new Ordered[(A, A)] {
-      def compare(pair2: (A, A)): Int = {
+  implicit def Pair2LexicographicOrderedPair[A <% Ordered[A], B <% Ordered[B]](pair1: (A, B)): Ordered[(A, B)] = {
+    new Ordered[(A, B)] {
+      def compare(pair2: (A, B)): Int = {
         val c = pair1._1 compare pair2._1
         if (c != 0) return c
         pair1._2 compare pair2._2
       }
+    }
+  }
+  implicit def LexicographicPairOrdering[A <% Ordered[A], B <% Ordered[B]]: Ordering[(A, B)] = {
+    new Ordering[(A, B)] {
+      def compare(pair1: (A, B), pair2: (A, B)) = pair1.compare(pair2)
     }
   }
 
@@ -23,6 +28,16 @@ object LexicographicOrdering {
       }
     }
   }
+  implicit def LexicographicSeqOrdering[A <% Ordered[A]]: Ordering[Seq[A]] = {
+    new Ordering[Seq[A]] {
+      def compare(seq1: Seq[A], seq2: Seq[A]) = seq1.compare(seq2)
+    }
+  }
+  implicit def LexicographicListOrdering[A <% Ordered[A]]: Ordering[List[A]] = {
+    new Ordering[List[A]] {
+      def compare(list1: List[A], list2: List[A]) = list1.compare(list2)
+    }
+  }
   implicit def Set2LexicographicOrderedSet[A <% Ordered[A]](set1: Set[A]): Ordered[Set[A]] = {
     new Ordered[Set[A]] {
       def compare(set2: Set[A]): Int = {
@@ -31,11 +46,10 @@ object LexicographicOrdering {
     }
   }
   implicit def LexicographicSetOrdering[A <% Ordered[A]]: Ordering[Set[A]] = {
-	  new Ordering[Set[A]] {
-	 	 def compare(set1: Set[A], set2: Set[A]) = set1.compare(set2)
-	  }
+    new Ordering[Set[A]] {
+      def compare(set1: Set[A], set2: Set[A]) = set1.compare(set2)
+    }
   }
-  
 
   implicit def SeqSeq2LexicographicOrderedSeqSeq[A <% Ordered[A]](list1: Seq[Seq[A]]): Ordered[Seq[Seq[A]]] = Seq2LexicographicOrderedSeq(list1)
 }

@@ -13,6 +13,7 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service
 import scala.io.Source
 import org.jets3t.service.model.S3Object
 import net.tqft.toolkit.collections.MapTransformer
+import net.tqft.toolkit.collections.NonStrictIterable
 
 trait S3 {
 
@@ -29,7 +30,7 @@ trait S3 {
   
   private def GZIPkeys[V](map: scala.collection.mutable.Map[String, V]) = {
     import MapTransformer._
-    map transformKeys({ key: String => { require(key.endsWith(".gz")); key.dropRight(3) }}, { key: String => key + ".gz" })
+    map transformSomeKeys({ key: String => { if(key.endsWith(".gz")) Some(key.dropRight(3)) else None }}, { key: String => key + ".gz" })
   }
 }
 
@@ -130,6 +131,21 @@ private class S3BucketStreamingGZIP(s3Service: StorageService, val bucket: Strin
     }
   })
 
+private object BucketLister {
+  def apply(s3Service: StorageService, bucket: String): Iterable[String] = {
+    val size = 1000
+    def initial = s3Service.listObjectsChunked(bucket, null, null, size, null)
+    val chunks = NonStrictIterable.iterateUntilNone(initial)({ chunk => { 
+      if(chunk.getObjects().size < size) {
+        None
+      } else {
+        Some(s3Service.listObjectsChunked(bucket, null, null, size, chunk.getObjects().last.getKey()))
+      }
+    }})
+    chunks.map(_.getObjects().map(_.getKey)).flatten
+  }
+}
+  
 private class S3BucketStreaming(s3Service: StorageService, val bucket: String) extends scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]] {
   val s3bucket = s3Service.getOrCreateBucket(bucket)
 
@@ -159,7 +175,8 @@ private class S3BucketStreaming(s3Service: StorageService, val bucket: String) e
   }
 
   override def keys: Iterable[String] = {
-    (s3Service.listObjects(bucket) map { _.getKey() })
+//    NonStrictIterable.from(s3Service.listObjects(bucket) map { _.getKey() })
+    BucketLister(s3Service, bucket)
   }
   
   override def iterator: Iterator[(String, Left[InputStream, Array[Byte]])] = {

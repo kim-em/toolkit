@@ -32,7 +32,7 @@ class QueuesTest extends FlatSpec with ShouldMatchers {
   }
 
   "consume" should "consume a queue via a pool of actors" in {
-    case class Stop
+    case class Stop()
     val p = Queues.create[Either[String, Stop]]
     val words = List("foo", "bar", "baz", "turkle", "qux")
 
