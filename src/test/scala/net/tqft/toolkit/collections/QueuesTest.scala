@@ -13,7 +13,7 @@ class QueuesTest extends FlatSpec with ShouldMatchers {
     import Queues._
 
     val q = Queues.create[String]
-    q.enqueue("a", "b")
+    q.enqueue(List("a", "b"))
     q.toIterable.take(3).toList should equal(List(Some("a"), Some("b"), None))
 
     val random = new scala.util.Random()
@@ -27,7 +27,7 @@ class QueuesTest extends FlatSpec with ShouldMatchers {
 
     val p = Queues.priorityQueue(Queues.create[Int], List(0, 1)).orderBy(_ % 2)
 
-    p.enqueue(3, 2, 1, 0)
+    p.enqueue(List(3, 2, 1, 0))
     p.toIterable.take(5).toList should equal(List(Some(2), Some(0), Some(3), Some(1), None))
   }
 
