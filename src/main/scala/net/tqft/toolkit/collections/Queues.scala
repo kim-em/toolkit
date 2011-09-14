@@ -7,7 +7,6 @@ import scala.actors.IScheduler
 
 trait Queue[A] {
   def enqueue(a: A)
-  def enqueue(as: A*) { for (a <- as) enqueue(a) }
   def enqueue(as: Traversable[A]) { for (a <- as) enqueue(a) }
   def dequeue: Option[A]
 }
@@ -59,14 +58,14 @@ object Queues {
 
     def transform[B](f: A => B, g: B => A): Queue[B] = new TransformedQueue[A, B](q, f, g)
 
-    def notifyAfterFailures(numberOfFailures: Int, callback: => Unit): Queue[A] = new Queue[A] {
+    def notifyAfterFailures(numberOfFailures: Int, callback: () => Unit): Queue[A] = new Queue[A] {
       var failures = 0
       def dequeue = {
         val r = q.dequeue
-        if(r.isEmpty) {
+        if (r.isEmpty) {
           failures = failures + 1
-          if(failures >= numberOfFailures) {
-            callback
+          if (failures >= numberOfFailures) {
+            callback()
             failures = 0
           }
         } else {
@@ -76,7 +75,7 @@ object Queues {
       }
       def enqueue(a: A) { q.enqueue(a) }
     }
-    
+
     def passiveBuffering(targetBufferSize: Int): Queue[A] = new Queue[A] {
       val buffer = new ProperlySynchronizedQueue[A]()
       def enqueue(a: A) = q.enqueue(a)
@@ -111,9 +110,34 @@ object Queues {
       def dequeue = {
         val result = buffer.dequeueFirst(_ => true)
         if (buffer.size <= targetBufferSize / 2) worker ! Fill
-        result
+        result.orElse(q.dequeue)
       }
     }
+
+    def triggerOnFirstDequeue(trigger: () => Unit): Queue[A] = new Queue[A] {
+      var noDequeuesSoFar = true
+      def dequeue = {
+        if (noDequeuesSoFar) {
+          noDequeuesSoFar = false
+          trigger()
+        }
+        q.dequeue
+      }
+      def enqueue(a: A) = q.enqueue(a)
+
+    }
+    def triggerOnFirstEnqueue(trigger: () => Unit): Queue[A] = new Queue[A] {
+      var noEnqueuesSoFar = true
+      def dequeue = q.dequeue
+      def enqueue(a: A) = {
+        if (noEnqueuesSoFar) {
+          noEnqueuesSoFar = false
+          trigger()
+        }
+        q.enqueue(a)
+      }
+    }
+
   }
 
   class RichPriorityQueue[O, A](q: PriorityQueue[O, A]) {
@@ -144,7 +168,7 @@ object Queues {
     fromOptions(f())
   }
 
-  def priorityQueue[O <% Ordered[O], A](queues: Map[O, Queue[A]]): PriorityQueue[O, A] = new PriorityQueue[O, A] {
+  def priorityQueue[O <% Ordered[O], A](queues: scala.collection.Map[O, Queue[A]]): PriorityQueue[O, A] = new PriorityQueue[O, A] {
     override def enqueue(p: (O, A)) = queues(p._1).enqueue(p._2)
     override def dequeue: Option[(O, A)] = {
       var r: Option[A] = None
