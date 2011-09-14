@@ -35,7 +35,11 @@ class SQSQueues(queueService: com.xerox.amazonws.sqs2.QueueService) extends Logg
       } else {
         val s = message.getMessageBody()
         info(". received message: " + s)
-        queue.deleteMessage(message)
+        try {
+          queue.deleteMessage(message)
+        } catch {
+          case e: SQSException => info(". something went wrong while trying to delete a message:", e.getMessage())
+        }
         Some(s)
       }
     }
