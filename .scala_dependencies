@@ -20,7 +20,6 @@
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/collections/Iterables.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/collections/Iterables.scala
 /Users/scott/projects/toolkit/src/test/scala/net/tqft/toolkit/eval/EvalTest.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/eval/Eval.scala
 /Users/scott/projects/toolkit/src/test/scala/net/tqft/toolkit/eval/EvalTest.scala -> /Users/scott/projects/toolkit/src/test/scala/net/tqft/toolkit/eval/EvalTest.scala
-/Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/collections/Stack.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/collections/Stack.scala
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/arithmetic/MinMax.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/arithmetic/MinMax.scala
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/Throttle.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/Throttle.scala
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/Throttle.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/Logging.scala
@@ -57,7 +56,6 @@
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/collections/Rotate.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/collections/Rotate.scala
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/collections/MapTransformer.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/collections/MapTransformer.scala
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/arithmetic/Mod.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/arithmetic/Mod.scala
-/Users/scott/projects/toolkit/src/test/scala/net/tqft/toolkit/amazon/S3StackTest.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/collections/Stack.scala
 /Users/scott/projects/toolkit/src/test/scala/net/tqft/toolkit/amazon/S3StackTest.scala -> /Users/scott/projects/toolkit/src/test/scala/net/tqft/toolkit/amazon/S3StackTest.scala
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/functions/Memo.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/functions/Memo.scala
 /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/functions/Memo.scala -> /Users/scott/projects/toolkit/src/main/scala/net/tqft/toolkit/Logging.scala
