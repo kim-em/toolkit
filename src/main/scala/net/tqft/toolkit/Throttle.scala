@@ -1,6 +1,6 @@
 package net.tqft.toolkit
 
-object Throttle {
+object Throttle extends Logging {
   object none extends Throttle { def apply(success: Boolean) {} }
   def linearBackoff(stepInMilliseconds: Int) = new Throttle {
     var delay = 0
@@ -9,6 +9,7 @@ object Throttle {
         delay = 0
       } else {
         delay = delay + stepInMilliseconds
+        info("throttling, " + delay + "ms")
         Thread.sleep(delay)
       }
     }
@@ -19,7 +20,10 @@ object Throttle {
       if (!success) {
         val diff = System.currentTimeMillis() - lastFailure
         lastFailure = lastFailure + diff
-        if (diff < rateInMilliseconds) Thread.sleep(rateInMilliseconds - diff)
+        if (diff < rateInMilliseconds) { 
+          info("throttling, " + (rateInMilliseconds - diff) + "ms")        
+          Thread.sleep(rateInMilliseconds - diff)
+        }
       }
     }
   }
