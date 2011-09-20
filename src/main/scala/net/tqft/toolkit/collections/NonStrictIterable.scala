@@ -176,5 +176,23 @@ trait NonStrictIterable[A] extends Iterable[A] { self =>
   }
 
   override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Iterable[A], (A1, Int), That]): That = zip(NonStrictNaturalNumbers)
-
+  
+  override def zipAll [B, A1 >: A, That] (that: Iterable[B], thisElem: A1, thatElem: B)(implicit bf: CanBuildFrom[Iterable[A], (A1, B), That]): That = {
+    new NonStrictIterable[(A1, B)] {
+      def iterator = self.iterator.zipAll(that.iterator, thisElem, thatElem)
+    }.asInstanceOf[That]
+  }
+  
+  override def equals(other: Any) = {
+    other match {
+      case other: Iterable[_] => this.map(Some(_)).zipAll(NonStrictIterable.from(other).map(Some(_)), None, None).find {
+        case (Some(x), Some(y)) if x != y => true
+        case (Some(_), None) => true
+        case (None, Some(_)) => true
+        case _ => false
+      }.nonEmpty
+      case _ => false
+    }
+  }
+  
 }
