@@ -14,6 +14,7 @@ import scala.io.Source
 import org.jets3t.service.model.S3Object
 import net.tqft.toolkit.collections.MapTransformer
 import net.tqft.toolkit.collections.NonStrictIterable
+import net.tqft.toolkit.Logging
 
 trait S3 {
 
@@ -22,15 +23,15 @@ trait S3 {
 
   lazy val credentials = new AWSCredentials(AWSAccount, AWSSecretKey)
   lazy val s3Service: StorageService = new RestS3Service(credentials)
-  
+
   def apply(bucket: String): S3Bucket[String] = new S3BucketPlain(s3Service, bucket)
   def GZIP(bucket: String): S3Bucket[String] = GZIPkeys(new S3BucketGZIP(s3Service, bucket))
   def source(bucket: String): S3Bucket[Source] = new S3BucketSource(s3Service, bucket)
   def sourceGZIP(bucket: String): S3Bucket[Source] = GZIPkeys(new S3BucketSourceGZIP(s3Service, bucket))
-  
+
   private def GZIPkeys[V](s3Bucket: S3Bucket[V]): S3Bucket[V] = {
     import MapTransformer._
-    new KeyTransformer( s3Bucket, { key: String => { if(key.endsWith(".gz")) Some(key.dropRight(3)) else None }}, { key: String => key + ".gz" }) with S3Bucket[V] {
+    new KeyTransformer(s3Bucket, { key: String => { if (key.endsWith(".gz")) Some(key.dropRight(3)) else None } }, { key: String => key + ".gz" }) with S3Bucket[V] {
       def s3Service = s3Bucket.s3Service
       def bucket = s3Bucket.bucket
     }
@@ -41,14 +42,28 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
   def s3Service: StorageService
   def bucket: String
   def keysWithPrefix(prefix: String, queryChunkSize: Int = 1000) = {
-    def initial = s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, null)
-    val chunks = NonStrictIterable.iterateUntilNone(initial)({ chunk => { 
-      if(chunk.getObjects().size < queryChunkSize) {
-        None
-      } else {
-        Some(s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, chunk.getObjects().last.getKey()))
-      }
-    }})
+    val chunks = try {
+      def initial = s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, null)
+      NonStrictIterable.iterateUntilNone(initial)({ chunk =>
+        {
+          if (chunk.getObjects().size < queryChunkSize) {
+            None
+          } else {
+            try {
+              Some(s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, chunk.getObjects().last.getKey()))
+            } catch {
+              case e: Exception =>
+                Logging.error("Exception while listing objects in S3 bucket.", e)
+                None
+            }
+          }
+        }
+      })
+    } catch {
+      case e: Exception =>
+        Logging.error("Exception while listing objects in S3 bucket.", e)
+        NonStrictIterable()
+    }
     chunks.map(_.getObjects().map(_.getKey)).flatten
   }
 }
@@ -64,9 +79,15 @@ private class S3BucketWrapper(map: scala.collection.mutable.Map[String, Either[I
     {
       e match {
         case Left(stream) => {
-          val result = Source.fromInputStream(stream).getLines.mkString
-          stream.close
-          result
+          try {
+            val result = Source.fromInputStream(stream).getLines.mkString
+            stream.close
+            result
+          } catch {
+            case e: Exception =>
+              Logging.error("Exception while listing objects in S3 bucket.", e)
+              ""
+          }
         }
         case Right(_) => throw new UnsupportedOperationException
       }
@@ -77,7 +98,7 @@ private class S3BucketWrapper(map: scala.collection.mutable.Map[String, Either[I
       Right(s.getBytes)
     }
   })
-  
+
 private class S3BucketSourceWrapper(map: scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]]) extends MapTransformer.ValueTransformer[String, Either[InputStream, Array[Byte]], Source](
   map,
   { e: Either[InputStream, Array[Byte]] =>
@@ -93,7 +114,6 @@ private class S3BucketSourceWrapper(map: scala.collection.mutable.Map[String, Ei
       Right(s.toArray map { _.toByte })
     }
   })
-  
 
 private class S3BucketStreamingGZIP(s3Service: StorageService, val bucket: String) extends MapTransformer.ValueTransformer[String, Either[InputStream, Array[Byte]], Either[InputStream, Array[Byte]]](
   new S3BucketStreaming(s3Service, bucket),
@@ -109,15 +129,21 @@ private class S3BucketStreamingGZIP(s3Service: StorageService, val bucket: Strin
     e match {
       case Left(stream) => throw new UnsupportedOperationException
       case Right(bytes) => {
-        val baos = new ByteArrayOutputStream()
-        val gzos = new GZIPOutputStream(baos)
-        gzos.write(bytes)
-        gzos.close
-        Right(baos.toByteArray)
+        try {
+          val baos = new ByteArrayOutputStream()
+          val gzos = new GZIPOutputStream(baos)
+          gzos.write(bytes)
+          gzos.close
+          Right(baos.toByteArray)
+        } catch {
+          case e: Exception =>
+            Logging.error("exception while reading GZIPOutputStream from S3.", e)
+            Right(new Array[Byte](0))
+        }
       }
     }
   })
-  
+
 private class S3BucketStreaming(val s3Service: StorageService, val bucket: String) extends S3Bucket[Either[InputStream, Array[Byte]]] {
   val s3bucket = s3Service.getOrCreateBucket(bucket)
 
@@ -125,46 +151,80 @@ private class S3BucketStreaming(val s3Service: StorageService, val bucket: Strin
   override def equals(other: Any) = other match {
     case other: S3Bucket[_] => bucket == other.bucket
   }
-  
-  override def contains(key: String) = { 
-    s3Service.isObjectInBucket(bucket, key)
+
+  override def contains(key: String) = {
+    try {
+      s3Service.isObjectInBucket(bucket, key)
+    } catch {
+      case e: Exception =>
+        Logging.error("exception while looking for an object in S3.", e)
+        false
+    }
+
   }
-  
+
   def contentLength(key: String): Option[Long] = {
-    if(contains(key)) {
-    	Some(s3Service.getObject(bucket, key).getContentLength)
+    if (contains(key)) {
+      try {
+        Some(s3Service.getObject(bucket, key).getContentLength)
+      } catch {
+        case e: Exception =>
+          Logging.error("exception while checking ContentLength on an object in S3.", e)
+          None
+      }
     } else {
       None
     }
   }
-  
+
   override def get(key: String): Option[Left[InputStream, Array[Byte]]] = {
     if (s3Service.isObjectInBucket(bucket, key)) {
-      Some(Left(s3Service.getObject(bucket, key).getDataInputStream))
+      try {
+        Some(Left(s3Service.getObject(bucket, key).getDataInputStream))
+      } catch {
+        case e: Exception =>
+          Logging.error("exception while reading an object from S3.", e)
+          None
+      }
     } else {
       None
     }
   }
 
   override def keys: Iterable[String] = {
-//    NonStrictIterable.from(s3Service.listObjects(bucket) map { _.getKey() })
     keysWithPrefix("")
   }
-  
+
   override def iterator: Iterator[(String, Left[InputStream, Array[Byte]])] = {
-    val keys = (s3Service.listObjects(bucket) map { _.getKey() }).iterator
+    val keys = try {
+      (s3Service.listObjects(bucket) map { _.getKey() }).iterator
+    } catch {
+      case e: Exception =>
+        Logging.error("exception while listing objects in S3.", e)
+        Iterator.empty
+    }
     keys map { k: String => (k, get(k).get) }
   }
 
   override def +=(kv: (String, Either[InputStream, Array[Byte]])) = {
     kv match {
-      case (key, Right(bytes)) => s3Service.putObject(bucket, new S3Object(key, bytes))
+      case (key, Right(bytes)) => try {
+        s3Service.putObject(bucket, new S3Object(key, bytes))
+      } catch {
+        case e: Exception =>
+          Logging.error("exception while writing an object to S3.", e)
+      }
       case (key, Left(_)) => throw new UnsupportedOperationException
     }
     this
   }
   override def -=(key: String) = {
-    s3Service.deleteObject(bucket, key)
+    try {
+      s3Service.deleteObject(bucket, key)
+    } catch {
+      case e: Exception =>
+        Logging.error("exception while deleting an object from S3.", e)
+    }
     this
   }
 }

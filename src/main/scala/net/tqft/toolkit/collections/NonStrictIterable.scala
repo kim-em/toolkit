@@ -9,6 +9,8 @@ import scala.collection.GenIterable
 object NonStrictIterable {
   def apply[A](s: A*): Iterable[A] = from(s)
 
+  def empty[A] = apply()
+  
   def from[A](i: Iterable[A]): Iterable[A] = {
     if (i.isInstanceOf[NonStrictIterable[_]]) {
       i
