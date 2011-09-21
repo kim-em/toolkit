@@ -178,16 +178,16 @@ private class S3BucketStreaming(val s3Service: StorageService, val bucket: Strin
   }
 
   override def get(key: String): Option[Left[InputStream, Array[Byte]]] = {
-    if (s3Service.isObjectInBucket(bucket, key)) {
-      try {
+    try {
+      if (s3Service.isObjectInBucket(bucket, key)) {
         Some(Left(s3Service.getObject(bucket, key).getDataInputStream))
-      } catch {
-        case e: Exception =>
-          Logging.error("exception while reading an object from S3.", e)
-          None
+      } else {
+        None
       }
-    } else {
-      None
+    } catch {
+      case e: Exception =>
+        Logging.error("exception while reading an object from S3.", e)
+        None
     }
   }
 
