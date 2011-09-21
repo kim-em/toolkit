@@ -54,6 +54,8 @@ object GroupBy {
       new Iterable[(B, Iterator[A])] {
         def iterator = new Iterator[(B, Iterator[A])] {
           val underlying = x.iterator
+          val allQueues = Map[B, Queue[A]]()
+          val nextQueues = Queue[(B, Queue[A])]()
 
           def processOne {
             val a = underlying.next
@@ -83,9 +85,6 @@ object GroupBy {
             }
             def next = q.dequeue
           }
-
-          val allQueues = Map[B, Queue[A]]()
-          val nextQueues = Queue[(B, Queue[A])]()
 
           def hasNext = {
             if (nextQueues.nonEmpty) {

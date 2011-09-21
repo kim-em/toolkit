@@ -2,16 +2,16 @@ package net.tqft.toolkit.arithmetic
 
 object MinMax {
 
-  implicit def toMinMaxList[A](list: List[A]) = new MinMaxList(list)
+  implicit def toMinMaxIterable[A](iterable: Iterable[A]) = new MinMaxIterable(iterable)
   
-  class MinMaxList[A](list: List[A]) {
-    def minOption(implicit cmp: Ordering[A]): Option[A] = list match {
+  class MinMaxIterable[A](iterable: Iterable[A]) {
+    def minOption(implicit cmp: Ordering[A]): Option[A] = iterable match {
       case Nil => None
-      case _ => Some(list.min)
+      case _ => Some(iterable.min)
     }
-    def maxOption(implicit cmp: Ordering[A]): Option[A] = list match {
+    def maxOption(implicit cmp: Ordering[A]): Option[A] = iterable match {
       case Nil => None
-      case _ => Some(list.max)
+      case _ => Some(iterable.max)
     }
   }
   
