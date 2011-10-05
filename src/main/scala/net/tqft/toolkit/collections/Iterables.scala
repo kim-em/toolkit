@@ -14,9 +14,9 @@ object Iterables {
       }.asInstanceOf[That]
     }
 
-    def consume(f: A => Unit, numberOfWorkers: Int = 1, scheduler: Option[IScheduler] = None): List[Actor] = {
+    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
       import Iterators._
-      iterable.iterator.consume(f, numberOfWorkers, scheduler)
+      iterable.iterator.consume(f, numberOfWorkers)
     }
 
     def asFunction: (() => Option[A]) = {
