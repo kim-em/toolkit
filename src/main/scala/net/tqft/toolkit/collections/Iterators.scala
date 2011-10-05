@@ -8,12 +8,10 @@ object Iterators {
   class RichIterator[A](iterator: Iterator[A]) {
     def mapWhileDefined[B](pf: PartialFunction[A, B]) = iterator.takeWhile(pf.isDefinedAt(_)).map(pf)
 
-    def consume(f: A => Unit, numberOfWorkers: Int = 1, scheduler: Option[IScheduler] = None): List[Actor] = {
-      val withScheduler = scheduler.getOrElse(scala.actors.Scheduler)
+    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
       val si = this.synchronized
 
       class Worker extends Actor { worker =>
-        override def scheduler = withScheduler
         def act() {
           loop {
             react {
