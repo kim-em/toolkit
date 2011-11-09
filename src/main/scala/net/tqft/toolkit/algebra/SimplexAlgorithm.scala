@@ -9,7 +9,7 @@ trait LinearProgrammingHelper extends Logging {
   //  }
 
   def initialSimplex[B](m: Matrix[B])(implicit field: Field[B]): List[Int] = {
-    m.findBasisForColumnSpace
+    m.findBasisForColumnSpace()
   }
 
   def adjacentSimplices(simplex: List[Int], exitingColumn: Int, numberOfColumns: Int): Iterable[List[Int]] = {
@@ -40,7 +40,7 @@ object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
 
   def apply[B](m: Matrix[B], c: List[B])(implicit field: OrderedField[B]) = {
 
-    val simplex0 = m.findBasisForColumnSpace
+    val simplex0 = m.findBasisForColumnSpace()
 
     info("Generated initial simplex: " + simplex0)
 
