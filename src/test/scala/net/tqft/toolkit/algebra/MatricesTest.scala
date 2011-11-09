@@ -19,7 +19,7 @@ import Implicits.integersAsRationals
 
     val m: Matrix[Fraction[Int]] = Matrix(3, List(List(1, 2, 3), List(4, 5, 6), List(5, 7, 9)))
 
-    m.rank should equal(2)
+    m.rank() should equal(2)
   }
 
   "echelonForm" should "work" in {
@@ -32,7 +32,7 @@ import Implicits.integersAsRationals
   "preimageOf" should "work" in {
     val m: Matrix[Fraction[Int]] = Matrix(2, List(List(20, 12), List(12, 60)))
 
-    m.rank should equal(2)
+    m.rank() should equal(2)
     m.preimageOf(List(9, 12)) should equal(Some(List(Fraction(3, 8), Fraction(1, 8))))
   }
 }
