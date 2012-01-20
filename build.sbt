@@ -6,7 +6,7 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.9.0"
 
-crossScalaVersions := Seq("2.9.0", "2.9.1")
+crossScalaVersions := Seq("2.9.0", "2.9.1", "2.10.0-M1")
 
 resolvers ++= Seq(
 	"Java.net Maven2 Repository" at "http://download.java.net/maven/2/",
