@@ -3,6 +3,14 @@ import net.tqft.toolkit.Logging
 
 object Memo extends Logging {
 
+  implicit def function2Memoable[A, B](f: A => B): Memoable[A, B] = new Memoable(f)
+  
+  class Memoable[A, B](f: A => B) {
+    def memo = Memo(f)
+    def memoSoftly = Memo.softly(f)
+    def memoUsing(cache: scala.collection.mutable.Map[A, B]) = Memo(f, cache)
+  }
+  
   def apply[A, B](f: A => B): A => B = apply(f, scala.collection.mutable.Map[A, B]())
 
   def softly[A, B](f: A => B): A => B = {

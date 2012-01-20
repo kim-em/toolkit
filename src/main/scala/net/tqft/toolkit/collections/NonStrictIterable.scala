@@ -64,9 +64,10 @@ trait NonStrictIterable[A] extends Iterable[A] { self =>
     }.asInstanceOf[That]
   }
 
-  override def flatten[B](implicit asTraversable: A => TraversableOnce[B]): Iterable[B] = {
-    flatMap { x: A => asTraversable(x) }
-  }
+// Breaks in 2.10.0-SNAPSHOT  
+//  override def flatten[B](implicit asTraversable: A => TraversableOnce[B]): Iterable[B] = {
+//    flatMap { x: A => asTraversable(x) }
+//  }
 
   override def ++[B >: A, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[Iterable[A], B, That]): That = {
     new NonStrictIterable[B] {
