@@ -6,7 +6,7 @@ version := "0.1.1"
 
 scalaVersion := "2.9.0"
 
-crossScalaVersions := Seq("2.9.0", "2.9.1", "2.10.0-M1")
+crossScalaVersions := Seq("2.9.0", "2.9.1")
 
 resolvers ++= Seq(
 	"Java.net Maven2 Repository" at "http://download.java.net/maven/2/",
@@ -19,7 +19,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
 	"junit" % "junit" % "4.8" % "test",
 	"org.slf4j" % "slf4j-log4j12" % "1.6.1",
-//	"org.scalatest" %% "scalatest" % "1.6.1" % "test",
+	"org.scalatest" %% "scalatest" % "1.6.1",
 	"commons-logging" % "commons-logging" % "1.1.1",
 	"net.java.dev.jets3t" % "jets3t" % "0.8.1",
 	"com.google.code.typica" % "typica" % "1.7.2",
