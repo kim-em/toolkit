@@ -17,6 +17,19 @@ object Split {
       chunk(x map (a => (a, f(a))))
     }
     
+    def splitByOrdering(o: Ordering[A]): List[List[A]] = {
+      val sorted = x.sorted(o)
+      def chunk(l: List[A]): List[List[A]] = {
+        if(l.nonEmpty) {
+          val (c, rest) = l.span(o.compare(_, l.head) == 0)
+          c :: chunk(rest)
+        } else {
+          Nil
+        }
+      }
+      chunk(sorted)
+    }
+    
     def split = splitBy(x => x)
     def rle = split.map(l => (l.head, l.size))
   }
