@@ -2,9 +2,9 @@ name := "toolkit"
 
 organization := "net.tqft.toolkit"
 
-version := "0.1.2"
+version := "0.1.3"
 
-scalaVersion := "2.9.0"
+scalaVersion := "2.9.1"
 
 crossScalaVersions := Seq("2.9.0", "2.9.1")
 
@@ -19,7 +19,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
 	"junit" % "junit" % "4.8" % "test",
 	"org.slf4j" % "slf4j-log4j12" % "1.6.1",
-	"org.scalatest" %% "scalatest" % "1.6.1",
+	"org.scalatest" % "scalatest_2.9.0" % "1.6.1" % "test",
 	"commons-logging" % "commons-logging" % "1.1.1",
 	"net.java.dev.jets3t" % "jets3t" % "0.8.1",
 	"com.google.code.typica" % "typica" % "1.7.2",
