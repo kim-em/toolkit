@@ -20,7 +20,7 @@ object Split {
     }
     
     def splitByOrdering(o: Ordering[A]): List[List[A]] = {
-      val sorted = x.sorted(o)
+      val sorted = x.toList.sorted(o)
       def chunk(l: List[A]): List[List[A]] = {
         if(l.nonEmpty) {
           val (c, rest) = l.span(o.compare(_, l.head) == 0)
