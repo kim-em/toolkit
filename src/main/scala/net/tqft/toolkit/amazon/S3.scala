@@ -17,7 +17,6 @@ import net.tqft.toolkit.collections.NonStrictIterable
 import net.tqft.toolkit.Logging
 
 trait S3 {
-
   def AWSAccount: String
   def AWSSecretKey: String
 
