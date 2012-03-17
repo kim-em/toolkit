@@ -12,14 +12,22 @@ object Iterators {
       val si = this.synchronized
 
       class Worker extends Actor { worker =>
+        var done = false
         def act() {
           loop {
             react {
               case 'stop => exit
-              case 'work => if (si.hasNext) {
-                f(si.next)
-                worker ! 'work
+              case 'work if !done =>{
+                synced.nextOption match {
+                  case Some(n) => { f(n); worker ! 'work }
+                  case None => { done = true }
+                }
               }
+              case 'finished_? if done => reply('done)
+//                if (si.hasNext) {            
+//                f(si.next)
+//                worker ! 'work
+//              }
             }
           }
         }
@@ -33,6 +41,12 @@ object Iterators {
       }
     }
 
+    object synced {
+      def nextOption = synchronized {
+          if(iterator.hasNext) Some(iterator.next) else None
+       }
+    }
+    
     def synchronized: Iterator[A] = {
       new Iterator[A] {
         def hasNext = synchronized { iterator.hasNext }
