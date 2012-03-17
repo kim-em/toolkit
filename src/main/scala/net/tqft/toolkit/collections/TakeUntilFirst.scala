@@ -1,23 +1,17 @@
 package net.tqft.toolkit.collections
 
-object TakeUntilFirst {
-  implicit def takeUntilFirst[A](x: Iterable[A]) = new TakeUntilFirstable(x)
-  class TakeUntilFirstable[A](x: Iterable[A]) {
-    def takeUntilFirst(condition: A => Boolean): Iterable[A] = {
-      new Iterable[A] {
-        def iterator = new Iterator[A] {
-          val inner = x.iterator
-          var found = false
-          def hasNext = !found && inner.hasNext
-          def next = {
-            val result = inner.next
-            if (condition(result)) {
-              found = true
-            }
-            result
-          }
-        }
+object TakeToFirst {
+  implicit def takeToFirst[A](x: Iterator[A]) = new TakeToFirstable(x)
+  class TakeToFirstable[A](x: Iterator[A]) {
+    def takeToFirst(condition: A => Boolean): List[A] = {
+      var found = false
+      val lb = new scala.collection.mutable.ListBuffer[A]
+      while (!found && x.hasNext) {
+        val n = x.next
+        if (condition(n)) found = true
+        lb += n
       }
+      lb.toList
     }
   }
 }

@@ -2,8 +2,10 @@ package net.tqft.toolkit.collections
 
 object Split {
 
-  implicit def splittable[A](x: List[A]) = new Splittable(x)
-  class Splittable[A](x: List[A]) {
+  // TODO replace Iterable with a generic CC
+  implicit def splittable[A](x: Iterable[A]) = new Splittable(x)
+  class Splittable[A](x: Iterable[A]) {
+    // TODO should return an Iterable
     def splitBy[B](f: A => B): List[List[A]] = {
       def chunk(l: List[(A, B)]): List[List[A]] = {
         if (l.nonEmpty) {
@@ -14,11 +16,26 @@ object Split {
         }
       }
 
-      chunk(x map (a => (a, f(a))))
+      chunk(x.toList map (a => (a, f(a))))
     }
-    
+
     def split = splitBy(x => x)
     def rle = split.map(l => (l.head, l.size))
+
+    def splitAfter(p: A => Boolean): Iterable[List[A]] = {
+      new NonStrictIterable[List[A]] {
+        val i = x.iterator
+        def iterator: Iterator[List[A]] = new Iterator[List[A]] {
+          def hasNext = i.hasNext
+          def next = {
+            import TakeToFirst._
+            i.takeToFirst(p)
+          }
+        }
+      }
+    }
+    
+    def splitOn(p: A => Boolean) = splitAfter(p).map(s => if(p(s.last)) s.init else s)
   }
 
 }
