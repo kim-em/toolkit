@@ -4,9 +4,9 @@ organization := "net.tqft.toolkit"
 
 version := "0.1.3"
 
-scalaVersion := "2.9.1"
+scalaVersion := "2.9.2"
 
-crossScalaVersions := Seq("2.9.0", "2.9.1")
+crossScalaVersions := Seq("2.9.0", "2.9.1", "2.9.2", "2.10.0-M2")
 
 resolvers ++= Seq(
 	"Java.net Maven2 Repository" at "http://download.java.net/maven/2/",
