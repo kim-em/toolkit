@@ -26,6 +26,7 @@ object Gadgets {
   val Integers: OrderedEuclideanDomain[Int] = new IntegralEuclideanDomain(scala.math.Numeric.IntIsIntegral)
   val BigIntegers: OrderedEuclideanDomain[BigInt] = new IntegralEuclideanDomain(scala.math.Numeric.BigIntIsIntegral)
   val Doubles: OrderedField[Double] = new FractionalField(scala.math.Numeric.DoubleIsFractional)
+  val BigDecimals: OrderedField[BigDecimal] = new FractionalField(scala.math.Numeric.BigDecimalIsFractional)
   
 //  val Integers = new OrderedEuclideanDomain[Int] {
 //    def multiply(x: Int, y: Int) = x * y

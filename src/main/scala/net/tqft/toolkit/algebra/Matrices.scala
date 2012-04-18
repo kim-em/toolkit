@@ -19,7 +19,7 @@ object Matrices {
   val rationalMatrix = matricesOver(3)(Gadgets.integersAsRationals)(intMatrix)
   val ns = rationalMatrix.nullSpace(Gadgets.Rationals)
 
-  def matricesOver[A](field: Field[A], size: Int): Ring[Matrix[A]] = new MatrixCategoryOverField(field).endomorphismRing(size)
+  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 }
 
 abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sources: List[A], val targets: List[A]) {
@@ -127,6 +127,8 @@ class Matrix[B](
   override val numberOfColumns: Int,
   override val entries: List[List[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
 
+  override def toString = (entries.map { r =>  r.mkString("(" , ", ", ")") }).mkString("\n")
+  
   import Matrix.pivotPosition2
 
   def transpose = new Matrix(numberOfRows, entries.transpose)
@@ -173,9 +175,11 @@ class Matrix[B](
                 row
               } else {
                 val x = field.negate(field.quotient(row(k), h(k)))
-                for ((hx, rx) <- h zip row) yield {
+                val initialZeroes = List.fill(k+1)(field.zero)
+                val difference = (for ((hx, rx) <- (h zip row).drop(k+1)) yield {
                   field.add(rx, field.multiply(x, hx))
-                }
+                })
+                initialZeroes ::: difference
               }
             }
           }
@@ -192,6 +196,7 @@ class Matrix[B](
   }
 
   def reducedRowEchelonForm(implicit field: Field[B]): Matrix[B] = {
+    // this isn't a great idea when working numerically ...
     Matrix(numberOfColumns, _rowReduce(rowEchelonForm.entries.reverse, false).reverse)
   }
 
@@ -201,6 +206,9 @@ class Matrix[B](
     val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
     val rre = augmentedMatrix.reducedRowEchelonForm
 
+    println(rre)
+    println(rre.entries map ( r => pivotPosition2(r) ))
+    
     if (rre.entries.collect { case row if pivotPosition2(row) == Some(numberOfColumns) => false } nonEmpty) {
       None
     } else {
@@ -213,12 +221,26 @@ class Matrix[B](
         }
       }
 
-      assert(apply(result) == vector)
+//      assert(apply(result) == vector)
 
       Some(result)
     }
   }
 
+  def preimageOf2(vector: List[B])(implicit field: Field[B]): Option[List[B]] = {
+    require(numberOfRows == vector.size)
+
+    val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
+    val re = augmentedMatrix.rowEchelonForm
+
+    println(re)
+    println(re.entries map ( r => pivotPosition2(r) ))
+
+    // FIXME
+    None
+  }
+
+  
   def inverse(implicit field: Field[B]): Option[Matrix[B]] = {
     if (numberOfRows != numberOfColumns) {
       None
@@ -266,31 +288,32 @@ class Matrix[B](
     Matrix(generators.size, entries)
   }
 
-  def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)
-
+  def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)  
 }
 
-class MatrixCategoryOverRing[R](ring: Ring[R]) extends LinearCategory[Int, Matrix[R]] {
+class MatrixCategoryOverRing[R](ring: Ring[R]) extends LinearCategory[Int, Matrix[R], R] {
   val inner = new AbstractMatrixCategory(ring)({ (sources: List[Unit], targets: List[Unit], entries: List[List[R]]) => Matrix(sources.size, entries) })
 
-  def identityMorphism(o: Int) = inner.identityMorphism(List.fill(o)(()))
-  def zeroMorphism(o1: Int, o2: Int) = inner.zeroMorphism(List.fill(o1)(()), List.fill(o2)(()))
-  def negate(m: Matrix[R]) = inner.negate(m)
-  def add(x: Matrix[R], y: Matrix[R]) = inner.add(x, y)
-  def compose(x: Matrix[R], y: Matrix[R]) = inner.compose(x, y)
-  def source(x: Matrix[R]) = x.numberOfColumns
-  def target(x: Matrix[R]) = x.numberOfRows
+  override def identityMorphism(o: Int) = inner.identityMorphism(List.fill(o)(()))
+  override def zeroMorphism(o1: Int, o2: Int) = inner.zeroMorphism(List.fill(o1)(()), List.fill(o2)(()))
+  override def negate(m: Matrix[R]) = inner.negate(m)
+  override def add(x: Matrix[R], y: Matrix[R]) = inner.add(x, y)
+  override def compose(x: Matrix[R], y: Matrix[R]) = inner.compose(x, y)
+  override def source(x: Matrix[R]) = x.numberOfColumns
+  override def target(x: Matrix[R]) = x.numberOfRows
+  override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => r map { x => ring.multiply(a, x) } })
+  
 }
 
-class MatrixCategoryOverField[F](field: Field[F]) extends MatrixCategoryOverRing(field) with LinearCategory[Int, Matrix[F]] {
-  def inverseOption(x: Matrix[F]) = None // TODO
+class MatrixCategoryOverField[F](field: Field[F]) extends MatrixCategoryOverRing(field) with LinearCategory[Int, Matrix[F], F] {
+  /* FIXME override */ def inverseOption(x: Matrix[F]) = None // TODO
 }
 
-class MatrixCategory[O, M](entryCategory: LinearCategory[O, M]) extends AbstractMatrixCategory[O, M, DenseCategoricalMatrix[O, M]](entryCategory)(new DenseCategoricalMatrix(_, _, _))
+class MatrixCategory[O, M](entryCategory: AdditiveCategory[O, M]) extends AbstractMatrixCategory[O, M, DenseCategoricalMatrix[O, M]](entryCategory)(new DenseCategoricalMatrix(_, _, _))
 
 class AbstractMatrixCategory[O, M, MT <: CategoricalMatrix[O, M, MT]](
-  entryCategory: LinearCategory[O, M])(
-    implicit buildMatrix: (List[O], List[O], List[List[M]]) => MT) extends LinearCategory[List[O], MT] {
+  entryCategory: AdditiveCategory[O, M])(
+     implicit val buildMatrix: (List[O], List[O], List[List[M]]) => MT) extends AdditiveCategory[List[O], MT] {
 
   def identityMorphism(o: List[O]) = {
 

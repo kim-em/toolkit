@@ -6,7 +6,8 @@ object Implicits {
 
   implicit val BigIntegers = Gadgets.BigIntegers
   implicit val BigRationals = Gadgets.BigRationals
-
+  implicit val BigDecimals = Gadgets.BigDecimals
+  
   implicit val integersAsRationals = Gadgets.integersAsRationals
   implicit val bigIntegersAsBigRationals = Gadgets.bigIntegersAsBigRationals
   implicit val integersAsBigInts = Gadgets.integersAsBigInts
