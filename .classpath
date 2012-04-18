@@ -19,7 +19,7 @@
   <classpathentry path="/Users/scott/.ivy2/cache/org.apache.commons/commons-math/jars/commons-math-2.2.jar" kind="lib"></classpathentry>
   <classpathentry path="org.scala-ide.sdt.launching.SCALA_COMPILER_CONTAINER" kind="con"></classpathentry>
   <classpathentry path="/Users/scott/.ivy2/cache/junit/junit/jars/junit-4.8.jar" kind="lib"></classpathentry>
-  <classpathentry path="/Users/scott/.ivy2/cache/org.scalatest/scalatest_2.9.0/jars/scalatest_2.9.0-1.6.1.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/scott/.ivy2/cache/org.scalatest/scalatest_2.9.0/jars/scalatest_2.9.0-1.7.1.jar" kind="lib"></classpathentry>
   <classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"></classpathentry>
   <classpathentry path="bin" kind="output"></classpathentry>
 </classpath>
