@@ -175,11 +175,10 @@ class Matrix[B](
                 row
               } else {
                 val x = field.negate(field.quotient(row(k), h(k)))
-                val initialZeroes = List.fill(k+1)(field.zero)
                 val difference = (for ((hx, rx) <- (h zip row).drop(k+1)) yield {
                   field.add(rx, field.multiply(x, hx))
                 })
-                initialZeroes ::: difference
+                row.take(k) ::: List(field.zero) ::: difference
               }
             }
           }
@@ -206,9 +205,6 @@ class Matrix[B](
     val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
     val rre = augmentedMatrix.reducedRowEchelonForm
 
-    println(rre)
-    println(rre.entries map ( r => pivotPosition2(r) ))
-    
     if (rre.entries.collect { case row if pivotPosition2(row) == Some(numberOfColumns) => false } nonEmpty) {
       None
     } else {
