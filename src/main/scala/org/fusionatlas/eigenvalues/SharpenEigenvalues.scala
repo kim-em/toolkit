@@ -78,6 +78,9 @@ object SharpenEigenvalues extends App {
 
   def findEigenvalue(matrix: Matrix[Byte], bounds: (Double, Double), precision: Int) = findEigenvalueAndEigenvector(matrix, bounds, precision).approximateEigenvalue
 
+  println("default parallelism was: " + collection.parallel.ForkJoinTasks.defaultForkJoinPool.getParallelism)
+  collection.parallel.ForkJoinTasks.defaultForkJoinPool.setParallelism(16)
+  
   val (target, bounds) = args(0) match {
     case "2" => (Hadamard12.transfer2, (19.9, 20.2))
     case "3" => (Hadamard12.transfer3, (59.9, 60.1))
