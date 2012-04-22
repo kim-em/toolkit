@@ -27,14 +27,30 @@ object Gadgets {
   val Integers: OrderedEuclideanDomain[Int] = new IntegralEuclideanDomain(scala.math.Numeric.IntIsIntegral)
   val BigIntegers: OrderedEuclideanDomain[BigInt] = new IntegralEuclideanDomain(scala.math.Numeric.BigIntIsIntegral)
   val Doubles: OrderedField[Double] = new FractionalField(scala.math.Numeric.DoubleIsFractional)
+  
+
+  
   def BigDecimals(precision: Int = 128): ApproximateField[BigDecimal] = BigDecimals(new java.math.MathContext(precision, java.math.RoundingMode.HALF_EVEN))
   def BigDecimals(mc: java.math.MathContext): ApproximateField[BigDecimal] = new FractionalField(scala.math.Numeric.BigDecimalIsFractional) with ApproximateField[BigDecimal] {
     override val one = BigDecimal(1, mc)
     override val zero = BigDecimal(0, mc)
     override def abs(x: BigDecimal) = x.abs
-    override def epsilon = BigDecimal(0.1, mc).pow(mc.getPrecision - 1)
+    override val epsilon = BigDecimal(0.1, mc).pow(mc.getPrecision - 1)
   }
-    
+
+  import java.math.{ BigDecimal => jBigDecimal } 
+  def JavaBigDecimals(mc: java.math.MathContext): ApproximateField[jBigDecimal] = new ApproximateField[jBigDecimal] {
+    override val one = new jBigDecimal(1, mc)
+    override val zero = new jBigDecimal(0, mc)
+    override def abs(x: jBigDecimal) = x.abs(mc)
+    override val epsilon = new jBigDecimal(0.1, mc).pow(mc.getPrecision / 2)
+    override def compare(x: jBigDecimal, y: jBigDecimal) = x.compareTo(y)
+    override def inverse(x: jBigDecimal) = x.pow(-1, mc)
+    override def negate(x: jBigDecimal) = x.negate(mc)
+    override def add(x: jBigDecimal, y: jBigDecimal) = x.add(y, mc)
+    override def multiply(x: jBigDecimal, y: jBigDecimal) = x.multiply(y, mc)
+  }
+  
   val Rationals = Fields.fieldOfFractions(Integers)
   val BigRationals = Fields.fieldOfFractions(BigIntegers)
   

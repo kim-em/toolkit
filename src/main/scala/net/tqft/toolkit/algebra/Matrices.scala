@@ -167,10 +167,19 @@ class Matrix[B](
     }
   }
 
+  private def chop(x: B)(implicit field: Field[B]) = {
+    field match {
+      case field: ApproximateField[_] => field.chop(x)
+      case _ => x
+    }
+  }
+  
   private def _rowReduce(rows: List[Seq[B]], forward: Boolean)(implicit field: Field[B]): List[Seq[B]] = {
 
     @scala.annotation.tailrec
-    def recurse(finishedRows: List[Seq[B]], remainingRows: List[Seq[B]]): List[Seq[B]] = {
+    def recurse(finishedRows: List[Seq[B]], remainingRows: Seq[Seq[B]]): List[Seq[B]] = {
+      println("finished " + finishedRows.size + " rows")
+      
       val sortedRows = if (forward) {
         field match {
           case field: OrderedField[_] => {
@@ -183,39 +192,40 @@ class Matrix[B](
       } else {
         remainingRows
       }
-      sortedRows match {
-        case Nil => finishedRows.reverse
-        case h :: rest => {
-          val pp = pivotPosition2(h)
 
-          val hn = if (forward) {
-            h
-          } else {
-            pp match {
-              case Some(p) => h map { x => field.quotient(x, h(p)) }
-              case None => h
-            }
+      if (sortedRows.isEmpty) {
+        finishedRows.reverse
+      } else {
+        val h = sortedRows.head
+        val rest = sortedRows.tail
+        val pp = pivotPosition2(h)
+        val hn = if (forward) {
+          h
+        } else {
+          pp match {
+            case Some(p) => h map { x => field.quotient(x, h(p)) }
+            case None => h
           }
-
-          val others = pp match {
-            case Some(k) => {
-              rest map { row =>
-                if (row(k) == field.zero) {
-                  row
-                } else {
-                  val x = field.negate(field.quotient(row(k), h(k)))
-                  val difference = (for ((hx, rx) <- (h zip row).drop(k + 1)) yield {
-                    field.add(rx, field.multiply(x, hx))
-                  })
-                  row.take(k) ++ (field.zero +: difference)
-                }
-              }
-            }
-            case None => rest
-          }
-
-          recurse(hn :: finishedRows, others)
         }
+
+        val others = pp match {
+          case Some(k) => {
+            rest.par.map({ row =>
+              if (row(k) == field.zero) {
+                row
+              } else {
+                val x = field.negate(field.quotient(row(k), h(k)))
+                val difference = (for ((hx, rx) <- (h zip row).drop(k + 1)) yield {
+                  field.add(rx, field.multiply(x, hx))
+                })
+                row.take(k) ++ (field.zero +: difference)
+              }
+            }).seq
+          }
+          case None => rest
+        }
+
+        recurse(hn :: finishedRows, others)
       }
     }
 
@@ -235,10 +245,7 @@ class Matrix[B](
     require(numberOfRows == vector.size)
 
     val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
-    //    println(augmentedMatrix.rowEchelonForm)
     val rre = augmentedMatrix.reducedRowEchelonForm
-
-    //    println(rre)
 
     if (rre.entries.collect { case row if pivotPosition2(row) == Some(numberOfColumns) => false } nonEmpty) {
       None
@@ -252,9 +259,6 @@ class Matrix[B](
         }
       }
 
-      println("verifying preimageOf:")
-      println(apply(result))
-      println(vector)
       //      assert(apply(result) == vector)
 
       Some(result)
