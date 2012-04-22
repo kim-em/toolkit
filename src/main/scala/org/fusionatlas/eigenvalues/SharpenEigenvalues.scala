@@ -49,7 +49,8 @@ object SharpenEigenvalues extends App {
       (improvedEigenvector zip row).map(p => p._1 * p._2).sum
     }
     val newEstimate = norm(action)
-    println(newEstimate)
+    println("new eigenvalue estimate: " + newEstimate)
+    println("new approximate eigenvector: " + improvedEigenvector)
     EigenvalueEstimate(newEstimate, improvedEigenvector)
   }
 
@@ -77,12 +78,11 @@ object SharpenEigenvalues extends App {
 
   def findEigenvalue(matrix: Matrix[Byte], bounds: (Double, Double), precision: Int) = findEigenvalueAndEigenvector(matrix, bounds, precision).approximateEigenvalue
 
-  val matrix = Matrix(List(List(7, 1), List(2, 5)).map(_.map(_.toByte)))
-  val bounds = (4.1, 4.3)
-
-  while (true) {
-//    println(findEigenvalue(Hadamard12.transfer2, (19.9, 20.2), 100))
-    println(findEigenvalue(Hadamard12.transfer3, (59.9, 60.1), 100))
+  val (target, bounds) = args(0) match {
+    case "2" => (Hadamard12.transfer2, (19.9, 20.2))
+    case "3" => (Hadamard12.transfer3, (59.9, 60.1))
+    case "4" => (Hadamard12.transfer4, (353.95, 352.97))
   }
-  //  println(findEigenvalue(matrix, bounds, 100))
+  
+  println(findEigenvalue(target, bounds, 100))
 }
