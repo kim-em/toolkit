@@ -167,11 +167,6 @@ class Matrix[B](
     }
   }
 
-  private def chop(x: B)(implicit field: Field[B]): B = field match {
-    case afield: ApproximateField[_] => afield.chop(x)
-    case _ => x
-  }
-
   private def _rowReduce(rows: List[Seq[B]], forward: Boolean)(implicit field: Field[B]): List[Seq[B]] = {
 
     @scala.annotation.tailrec
@@ -210,7 +205,7 @@ class Matrix[B](
                 } else {
                   val x = field.negate(field.quotient(row(k), h(k)))
                   val difference = (for ((hx, rx) <- (h zip row).drop(k + 1)) yield {
-                    chop(field.add(rx, field.multiply(x, hx)))
+                    field.add(rx, field.multiply(x, hx))
                   })
                   row.take(k) ++ (field.zero +: difference)
                 }

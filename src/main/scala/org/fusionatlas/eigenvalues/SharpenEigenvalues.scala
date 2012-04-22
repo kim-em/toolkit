@@ -69,6 +69,6 @@ object SharpenEigenvalues extends App {
   val matrix = Matrix(List(List(7, 1), List(2, 5)).map(_.map(_.toByte)))
   val bounds = (4.1, 4.3)
   
-  println(findEigenvalue(Hadamard12.transfer2, (19.9, 20.2), 36))
+  println(findEigenvalue(Hadamard12.transfer2, (19.9, 20.2), 100))
 //  println(findEigenvalue(matrix, bounds, 100))
 }
