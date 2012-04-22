@@ -20,7 +20,6 @@ object SharpenEigenvalues extends App {
     def sqrt(x: BigDecimal): BigDecimal = {
       val initialGuess = new BigDecimal(x.underlying.scaleByPowerOfTen(-x.scale / 2), x.mc)
       val result = FixedPoint({ g: BigDecimal => ((x / g) + g) / 2 })(initialGuess).abs
-      println("error in sqrt(" + x + "): " + (x - (result * result)))
       result
     }
     def norm(vector: List[BigDecimal]) = sqrt(vector.map(d => d.pow(2)).reduceLeft(_ + _))
@@ -44,7 +43,7 @@ object SharpenEigenvalues extends App {
   def sharpenEigenvalue(matrix: Matrix[BigDecimal], bounds: (BigDecimal, BigDecimal), precision: Int)(estimate: EigenvalueEstimate): EigenvalueEstimate = {
     import FixedPoint._
     val field = Gadgets.BigDecimals(precision)
-    val fixedPoint = FixedPoint.sameTest({ (p:EigenvalueEstimate,q:EigenvalueEstimate) => field.chop(p.approximateEigenvalue - q.approximateEigenvalue) == field.zero}) _
+    val fixedPoint = FixedPoint.sameTest({ (p:EigenvalueEstimate,q:EigenvalueEstimate) => field.chop(p.approximateEigenvalue - q.approximateEigenvalue, field.epsilon * 1000) == field.zero}) _
     fixedPoint(sharpenEigenvalueOneStep(matrix, bounds) _)(estimate)
 //    (sharpenEigenvalueOneStep(matrix, bounds) _).firstRepeatedIteration(estimate)
   }

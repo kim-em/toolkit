@@ -32,8 +32,7 @@ object Gadgets {
     override val one = BigDecimal(1, mc)
     override val zero = BigDecimal(0, mc)
     override def abs(x: BigDecimal) = x.abs
-    override def epsilon = BigDecimal(0.1, mc).pow(mc.getPrecision / 2)
-    override def chop(x: BigDecimal) = if(compare(abs(x), epsilon) < 0) zero else x
+    override def epsilon = BigDecimal(0.1, mc).pow(mc.getPrecision - 1)
   }
     
   val Rationals = Fields.fieldOfFractions(Integers)
