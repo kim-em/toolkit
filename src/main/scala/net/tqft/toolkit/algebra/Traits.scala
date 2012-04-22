@@ -178,6 +178,13 @@ trait Field[A] extends EuclideanDomain[A] with WithInverses[A] {
 
 trait OrderedField[A] extends Field[A] with Ordering[A]
 
+trait ApproximateField[A] extends OrderedField[A] {
+  def abs(x: A): A
+  /* a small quantity, but 1 and 1+epsilon are still distinguishable */
+  def epsilon: A
+  def chop(x: A): A
+}
+
 trait FieldHomomorphism[A, B] extends Homomorphism[Field, A, B]
 
 object Functors {
