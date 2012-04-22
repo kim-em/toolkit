@@ -177,7 +177,14 @@ class Matrix[B](
     @scala.annotation.tailrec
     def recurse(finishedRows: List[Seq[B]], remainingRows: List[Seq[B]]): List[Seq[B]] = {
       val sortedRows = if (forward) {
-        remainingRows.sortBy { pivotPosition2(_).getOrElse(Integer.MAX_VALUE) }
+        field match {
+          case field: OrderedField[_] => {
+            implicit val orderedField = field
+            remainingRows.sortBy { row => pivotPosition2(row).map(i => (i, field.negate(field.abs(row(i))))).getOrElse((Integer.MAX_VALUE, null.asInstanceOf[B])) }
+          }
+          case _ =>
+            remainingRows.sortBy { row => pivotPosition2(row).getOrElse(Integer.MAX_VALUE) }
+        }
       } else {
         remainingRows
       }

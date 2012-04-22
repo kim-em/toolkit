@@ -176,13 +176,25 @@ trait Field[A] extends EuclideanDomain[A] with WithInverses[A] {
   def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
 }
 
-trait OrderedField[A] extends Field[A] with Ordering[A]
+trait OrderedField[A] extends Field[A] with Ordering[A] {
+    def abs(x: A): A = {
+      val n = negate(x)
+      if(compare(n, x) < 0) {
+        x
+      } else {
+        n
+      }
+    }
+  def chop(x: A, epsilon: A): A = {
+    if(compare(abs(x), epsilon) < 0) zero else x
+  }
+
+}
 
 trait ApproximateField[A] extends OrderedField[A] {
-  def abs(x: A): A
   /* a small quantity, but 1 and 1+epsilon are still distinguishable */
   def epsilon: A
-  def chop(x: A): A
+  def chop(x:A):A = chop(x, epsilon)
 }
 
 trait FieldHomomorphism[A, B] extends Homomorphism[Field, A, B]
