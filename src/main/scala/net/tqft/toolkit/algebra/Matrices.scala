@@ -26,7 +26,7 @@ abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sour
   require(targets.size == entries.size)
   require(entries.find(_.size != numberOfColumns).isEmpty)
 
-  def entries: List[List[B]]
+  def entries: List[Seq[B]]
   def lookupEntry(row: Int)(column: Int): B
   def pivotPosition(row: Int, ignoring: B): Option[Int]
 
@@ -36,7 +36,7 @@ abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sour
   def findBasisForRowSpace(rankBound: Option[Int] = None)(implicit field: Field[B]): List[Int] = {
     case class Progress(rowsConsidered: Int, basis: List[Int], reducedRows: Option[Matrix[B]])
 
-    def considerAnotherRow(soFar: Progress, row: List[B]): Progress = {
+    def considerAnotherRow(soFar: Progress, row: Seq[B]): Progress = {
       if (rankBound == Some(soFar.basis.size)) {
         // we've found enough, short circuit
         soFar
@@ -46,7 +46,7 @@ abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sour
           case Some(m) => m.appendRow(row)
         }).rowEchelonForm
 
-        if (next.numberOfRows > 0 && next.pivotPosition(next.numberOfRows, field.zero).nonEmpty) {
+        if (next.numberOfRows > 0 && next.pivotPosition(next.numberOfRows - 1, field.zero).nonEmpty) {
           Progress(soFar.rowsConsidered + 1, soFar.rowsConsidered :: soFar.basis, Some(next))
         } else {
           Progress(soFar.rowsConsidered + 1, soFar.basis, soFar.reducedRows)
@@ -62,7 +62,22 @@ abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sour
 
 }
 
-class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val entries: List[List[B]]) extends CategoricalMatrix[A, B, M](sources, targets) {
+class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val entries: List[Seq[B]]) extends CategoricalMatrix[A, B, M](sources, targets) {
+  override def equals(other: Any) = {
+    // TODO this could be optimized
+    other match {
+      case other: AbstractDenseCategoricalMatrix[_, _, _] => {
+        sources == other.sources &&
+          targets == other.targets &&
+          entries.size == other.entries.size &&
+          (for ((row1, row2) <- entries zip other.entries) yield {
+            row1.size == row2.size && (for ((x1, x2) <- row1 zip row2) yield { x1 == x2 }).foldLeft(true)(_ && _)
+          }).foldLeft(true)(_ && _)
+      }
+      case _ => false
+    }
+  }
+
   def lookupEntry(row: Int)(column: Int) = entries(row)(column)
   def pivotPosition(row: Int, ignoring: B) =
     entries(row).indexWhere { b: B => b != ignoring } match {
@@ -71,7 +86,7 @@ class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A
     }
 }
 
-class DenseCategoricalMatrix[A, B](sources: List[A], targets: List[A], entries: List[List[B]]) extends AbstractDenseCategoricalMatrix[A, B, DenseCategoricalMatrix[A, B]](sources, targets, entries)
+class DenseCategoricalMatrix[A, B](sources: List[A], targets: List[A], entries: List[Seq[B]]) extends AbstractDenseCategoricalMatrix[A, B, DenseCategoricalMatrix[A, B]](sources, targets, entries)
 
 class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val sparseEntries: List[SortedMap[Int, B]], default: B) extends CategoricalMatrix[A, B, M](sources, targets) {
   def entries = for (row <- sparseEntries) yield for (i <- (0 until numberOfColumns).toList) yield row.get(i).getOrElse(default)
@@ -80,14 +95,14 @@ class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix
 }
 
 object Matrix extends Logging {
-  def apply[B](numberOfColumns: Int, entries: List[List[B]]): Matrix[B] = new Matrix(numberOfColumns, entries)
-  def apply[B](entries: List[List[B]]): Matrix[B] = {
+  def apply[B](numberOfColumns: Int, entries: List[Seq[B]]): Matrix[B] = new Matrix(numberOfColumns, entries)
+  def apply[B](entries: List[Seq[B]]): Matrix[B] = {
     require(entries.nonEmpty)
     apply(entries.head.size, entries)
   }
 
   // FIXME deprecate this in favour of the pivotPosition defined on CategoricalMatrix
-  private def pivotPosition2[B](row: List[B])(implicit field: Field[B]): Option[Int] = row.indexWhere { b: B => b != field.zero } match {
+  private def pivotPosition2[B](row: Seq[B])(implicit field: Field[B]): Option[Int] = row.indexWhere { b: B => b != field.zero } match {
     case -1 => None
     case k => Some(k)
   }
@@ -125,10 +140,10 @@ object Matrix extends Logging {
 
 class Matrix[B](
   override val numberOfColumns: Int,
-  override val entries: List[List[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
+  override val entries: List[Seq[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
 
-  override def toString = (entries.map { r =>  r.mkString("(" , ", ", ")") }).mkString("\n")
-  
+  override def toString = (entries.map { r => r.mkString("(", ", ", ")") }).mkString("\n")
+
   import Matrix.pivotPosition2
 
   def transpose = new Matrix(numberOfRows, entries.transpose)
@@ -138,12 +153,12 @@ class Matrix[B](
   def takeColumns(columns: List[Int]) = new Matrix(columns.size, entries map { row => columns map { i => row(i) } })
   def dropColumns(columns: List[Int]) = takeColumns((0 until numberOfColumns).toList filterNot (columns contains _))
 
-  def appendRow(row: List[B]) = {
+  def appendRow(row: Seq[B]) = {
     require(row.size == numberOfColumns)
-    Matrix(numberOfColumns, entries ::: List(row))
+    Matrix(numberOfColumns, entries :+ row)
   }
 
-  def joinRows(other: Matrix[B]) = new Matrix(numberOfColumns + other.numberOfColumns, (entries zip other.entries) map { case (r1, r2) => r1 ::: r2 })
+  def joinRows(other: Matrix[B]) = new Matrix(numberOfColumns + other.numberOfColumns, (entries zip other.entries) map { case (r1, r2) => r1 ++ r2 })
 
   def apply(vector: List[B])(implicit field: Field[B]) = {
     for (row <- entries) yield {
@@ -152,42 +167,57 @@ class Matrix[B](
     }
   }
 
-  private def _rowReduce(rows: List[List[B]], sort: Boolean)(implicit field: Field[B]): List[List[B]] = {
-    val sortedRows = if (sort) {
-      rows.sortBy { pivotPosition2(_).getOrElse(Integer.MAX_VALUE) }
-    } else {
-      rows
-    }
-    sortedRows match {
-      case Nil => Nil
-      case h :: rest => {
-        val pp = pivotPosition2(h)
+  private def chop(x: B)(implicit field: Field[B]): B = field match {
+    case afield: ApproximateField[_] => afield.chop(x)
+    case _ => x
+  }
 
-        val hn = pp match {
-          case Some(p) => h map { x => field.quotient(x, h(p)) }
-          case None => h
-        }
+  private def _rowReduce(rows: List[Seq[B]], forward: Boolean)(implicit field: Field[B]): List[Seq[B]] = {
 
-        val others = pp match {
-          case Some(k) => {
-            rest map { row =>
-              if (row(k) == field.zero) {
-                row
-              } else {
-                val x = field.negate(field.quotient(row(k), h(k)))
-                val difference = (for ((hx, rx) <- (h zip row).drop(k+1)) yield {
-                  field.add(rx, field.multiply(x, hx))
-                })
-                row.take(k) ::: List(field.zero) ::: difference
-              }
+    @scala.annotation.tailrec
+    def recurse(finishedRows: List[Seq[B]], remainingRows: List[Seq[B]]): List[Seq[B]] = {
+      val sortedRows = if (forward) {
+        remainingRows.sortBy { pivotPosition2(_).getOrElse(Integer.MAX_VALUE) }
+      } else {
+        remainingRows
+      }
+      sortedRows match {
+        case Nil => finishedRows.reverse
+        case h :: rest => {
+          val pp = pivotPosition2(h)
+
+          val hn = if (forward) {
+            h
+          } else {
+            pp match {
+              case Some(p) => h map { x => field.quotient(x, h(p)) }
+              case None => h
             }
           }
-          case None => rest
-        }
 
-        hn :: _rowReduce(others, sort)
+          val others = pp match {
+            case Some(k) => {
+              rest map { row =>
+                if (row(k) == field.zero) {
+                  row
+                } else {
+                  val x = field.negate(field.quotient(row(k), h(k)))
+                  val difference = (for ((hx, rx) <- (h zip row).drop(k + 1)) yield {
+                    chop(field.add(rx, field.multiply(x, hx)))
+                  })
+                  row.take(k) ++ (field.zero +: difference)
+                }
+              }
+            }
+            case None => rest
+          }
+
+          recurse(hn :: finishedRows, others)
+        }
       }
     }
+
+    recurse(Nil, rows)
   }
 
   def rowEchelonForm(implicit field: Field[B]): Matrix[B] = {
@@ -203,7 +233,10 @@ class Matrix[B](
     require(numberOfRows == vector.size)
 
     val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
+    //    println(augmentedMatrix.rowEchelonForm)
     val rre = augmentedMatrix.reducedRowEchelonForm
+
+    //    println(rre)
 
     if (rre.entries.collect { case row if pivotPosition2(row) == Some(numberOfColumns) => false } nonEmpty) {
       None
@@ -217,7 +250,10 @@ class Matrix[B](
         }
       }
 
-//      assert(apply(result) == vector)
+      println("verifying preimageOf:")
+      println(apply(result))
+      println(vector)
+      //      assert(apply(result) == vector)
 
       Some(result)
     }
@@ -230,13 +266,12 @@ class Matrix[B](
     val re = augmentedMatrix.rowEchelonForm
 
     println(re)
-    println(re.entries map ( r => pivotPosition2(r) ))
+    println(re.entries map (r => pivotPosition2(r)))
 
     // FIXME
     None
   }
 
-  
   def inverse(implicit field: Field[B]): Option[Matrix[B]] = {
     if (numberOfRows != numberOfColumns) {
       None
@@ -284,11 +319,11 @@ class Matrix[B](
     Matrix(generators.size, entries)
   }
 
-  def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)  
+  def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)
 }
 
 class MatrixCategoryOverRing[R](ring: Ring[R]) extends LinearCategory[Int, Matrix[R], R] {
-  val inner = new AbstractMatrixCategory(ring)({ (sources: List[Unit], targets: List[Unit], entries: List[List[R]]) => Matrix(sources.size, entries) })
+  val inner = new AbstractMatrixCategory(ring)({ (sources: List[Unit], targets: List[Unit], entries: List[Seq[R]]) => Matrix(sources.size, entries) })
 
   override def identityMorphism(o: Int) = inner.identityMorphism(List.fill(o)(()))
   override def zeroMorphism(o1: Int, o2: Int) = inner.zeroMorphism(List.fill(o1)(()), List.fill(o2)(()))
@@ -298,7 +333,7 @@ class MatrixCategoryOverRing[R](ring: Ring[R]) extends LinearCategory[Int, Matri
   override def source(x: Matrix[R]) = x.numberOfColumns
   override def target(x: Matrix[R]) = x.numberOfRows
   override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => r map { x => ring.multiply(a, x) } })
-  
+
 }
 
 class MatrixCategoryOverField[F](field: Field[F]) extends MatrixCategoryOverRing(field) with LinearCategory[Int, Matrix[F], F] {
@@ -309,7 +344,7 @@ class MatrixCategory[O, M](entryCategory: AdditiveCategory[O, M]) extends Abstra
 
 class AbstractMatrixCategory[O, M, MT <: CategoricalMatrix[O, M, MT]](
   entryCategory: AdditiveCategory[O, M])(
-     implicit val buildMatrix: (List[O], List[O], List[List[M]]) => MT) extends AdditiveCategory[List[O], MT] {
+    implicit val buildMatrix: (List[O], List[O], List[Seq[M]]) => MT) extends AdditiveCategory[List[O], MT] {
 
   def identityMorphism(o: List[O]) = {
 
