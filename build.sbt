@@ -4,7 +4,7 @@ organization := "net.tqft.toolkit"
 
 version := "0.1.4"
 
-scalaVersion := "2.9.2"
+scalaVersion := "2.9.1"
 
 // in order to compile against 2.10.0-M2, you need to run the hack described at http://www.scala-lang.org/node/12251
 crossScalaVersions := Seq("2.9.0", "2.9.1", "2.9.2", "2.10.0-M2")
@@ -28,6 +28,9 @@ libraryDependencies ++= Seq(
    	"org.apache.commons" % "commons-math" % "2.2",
 	"org.apfloat" % "apfloat" % "1.6.3"
 )
+
+libraryDependencies += "com.nicta" %% "scoobi" % "0.4.0-SNAPSHOT" % "provided"
+
 
 libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>
     	deps :+ ("org.scala-lang" % "scala-compiler" % sv)

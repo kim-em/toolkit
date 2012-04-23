@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-sealed trait Fraction[A] {
+sealed trait Fraction[A] extends Serializable {
   def denominator: A
   def numerator: A
   

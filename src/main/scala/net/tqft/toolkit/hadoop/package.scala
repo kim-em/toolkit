@@ -1,5 +1,5 @@
 package net.tqft.toolkit
 
-package object algebra {
+package object hadoop {
 	def ??? = throw new NoSuchMethodException
 }

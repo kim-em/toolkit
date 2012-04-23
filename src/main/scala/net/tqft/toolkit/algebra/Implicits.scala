@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra
 object Implicits {
   implicit val Integers = Gadgets.Integers
   implicit val Rationals = Gadgets.Rationals
+  implicit val Doubles = Gadgets.Doubles
 
   implicit val BigIntegers = Gadgets.BigIntegers
   implicit val BigRationals = Gadgets.BigRationals

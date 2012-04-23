@@ -1,6 +1,8 @@
 package net.tqft.toolkit.algebra
 import net.tqft.toolkit.Logging
 import scala.collection.immutable.SortedMap
+import scala.collection.GenSeq
+import net.tqft.toolkit.collections.Pad
 
 object Matrices {
   def matricesOver(size: Int) = new Endofunctor[Ring, Matrix] { self =>
@@ -173,31 +175,85 @@ class Matrix[B](
       case _ => x
     }
   }
-  
-  private def _rowReduce(rows: List[Seq[B]], forward: Boolean)(implicit field: Field[B]): List[Seq[B]] = {
+
+  trait CollectionProxy[A] {
+    def filter(f: A => Boolean): CollectionProxy[A]
+    def toList: List[A]
+    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B]
+  }
+
+  class DListCollectionProxy[A <: Serializable](dList: com.nicta.scoobi.DList[A]) extends CollectionProxy[A] {
+    def this(seq: Seq[A])(implicit manifest: Manifest[A]) = this(com.nicta.scoobi.DList(seq: _*))
+    import net.tqft.toolkit.hadoop.ScoobiHelper._
+
+    def filter(f: A => Boolean): CollectionProxy[A] = new DListCollectionProxy(dList.filter(f))
+    def toList: List[A] = dList.hither.toList
+    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B] = {
+      import com.nicta.scoobi.WireFormat._
+      new DListCollectionProxy(dList.map(f))
+    }
+  }
+
+  class GenSeqCollectionProxy[A](seq: GenSeq[A]) extends CollectionProxy[A] {
+    def filter(f: A => Boolean): CollectionProxy[A] = new GenSeqCollectionProxy(seq.filter(f))
+    def toList: List[A] = seq.toList
+    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B] = {
+      new GenSeqCollectionProxy(seq.map(f))
+    }
+  }
+
+  private def selectTargetRow3(rows: CollectionProxy[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
+    if (forward) {
+      field match {
+        case o: OrderedField[_] => {
+          implicit val orderedField = o
+          implicit val bManifest = fieldElementManifest
+          rows.map({ case (row, index) => pivotPosition2(row)(field).map(i => (i, field.negate(orderedField.abs(row(i))), index)).getOrElse((Integer.MAX_VALUE, field.zero, index)) }).toList.sortBy(t => (t._1, t._2)).head._3
+        }
+        case _ =>
+          rows.map({ case (row, index) => (pivotPosition2(row).getOrElse(Integer.MAX_VALUE), index) }).toList.sorted.head._2
+      }
+    } else {
+      rowIndexes.head
+    }
+  }
+  private def selectTargetRow(rows: GenSeq[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
+    selectTargetRow3(new GenSeqCollectionProxy(rows), rowIndexes, forward)
+  }
+
+  private def selectTargetRow2(rows: GenSeq[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
+    if (forward) {
+      field match {
+        case field: OrderedField[_] => {
+          implicit val orderedField = field
+          rows.map({ case (row, index) => pivotPosition2(row).map(i => (i, field.negate(field.abs(row(i))), index)).getOrElse((Integer.MAX_VALUE, field.zero, index)) }).toList.sorted.head._3
+        }
+        case _ =>
+          rows.map({ case (row, index) => (pivotPosition2(row).getOrElse(Integer.MAX_VALUE), index) }).toList.sorted.head._2
+      }
+    } else {
+      rowIndexes.head
+    }
+  }
+
+  private def fieldElementManifest(implicit field: Field[B]): Manifest[B] = ClassManifest.singleType(field.zero.asInstanceOf[B with AnyRef]).asInstanceOf[Manifest[B]]
+
+  private def _rowReduce(rows: GenSeq[Seq[B]], forward: Boolean)(implicit field: Field[B]): List[Seq[B]] = {
+    // we carry around the row indexes separately, because remainingRows might be living off in Hadoop or something...
+
+    implicit val bManifest = fieldElementManifest
 
     @scala.annotation.tailrec
-    def recurse(finishedRows: List[Seq[B]], remainingRows: Seq[Seq[B]]): List[Seq[B]] = {
-//      println("finished " + finishedRows.size + " rows")
-      
-      val sortedRows = if (forward) {
-        field match {
-          case field: OrderedField[_] => {
-            implicit val orderedField = field
-            remainingRows.sortBy { row => pivotPosition2(row).map(i => (i, field.negate(field.abs(row(i))))).getOrElse((Integer.MAX_VALUE, null.asInstanceOf[B])) }
-          }
-          case _ =>
-            remainingRows.sortBy { row => pivotPosition2(row).getOrElse(Integer.MAX_VALUE) }
-        }
-      } else {
-        remainingRows
-      }
+    def recurse(finishedRows: List[Seq[B]], remainingRows: CollectionProxy[(Seq[B], Int)], remainingIndexes: Seq[Int]): List[Seq[B]] = {
+            println("finished " + finishedRows.size + " rows")
 
-      if (sortedRows.isEmpty) {
+      if (remainingIndexes.isEmpty) {
         finishedRows.reverse
       } else {
-        val h = sortedRows.head
-        val rest = sortedRows.tail
+        val targetRow = selectTargetRow3(remainingRows, remainingIndexes, forward)
+
+        val h = remainingRows.filter(_._2 == targetRow).toList.head._1
+        val rest = remainingRows.filter(_._2 != targetRow)
         val pp = pivotPosition2(h)
         val hn = if (forward) {
           h
@@ -210,35 +266,49 @@ class Matrix[B](
 
         val others = pp match {
           case Some(k) => {
-            rest.par.map({ row =>
-              if (row(k) == field.zero) {
-                row
-              } else {
-                val x = field.negate(field.quotient(row(k), h(k)))
-                val difference = (for ((hx, rx) <- (h zip row).drop(k + 1)) yield {
-                  field.add(rx, field.multiply(x, hx))
-                })
-                row.take(k) ++ (field.zero +: difference)
-              }
-            }).seq
+            rest.map({
+              case (row, index) =>
+                (if (row(k) == field.zero) {
+                  if (forward) {
+                    row.drop(k + 1)
+                  } else {
+                    row
+                  }
+                } else {
+                  val x = field.negate(field.quotient(row(k), h(k)))
+                  val difference = (for ((hx, rx) <- (h zip row).drop(k + 1)) yield {
+                    field.add(rx, field.multiply(x, hx))
+                  })
+                  if (forward) {
+                    difference
+                  } else {
+                    row.take(k) ++ (field.zero +: difference)
+                  }
+                }, index)
+            })
           }
           case None => rest
         }
 
-        recurse(hn :: finishedRows, others)
+        recurse(hn :: finishedRows, others, remainingIndexes.filter(_ != targetRow))
       }
+
     }
 
-    recurse(Nil, rows)
+    import Pad._
+    val rowsWithIndexes = rows.zipWithIndex
+    //    val proxy = new GenSeqCollectionProxy(rowsWithIndexes)
+    val proxy = new DListCollectionProxy(rowsWithIndexes.seq).map(x => x)
+    recurse(Nil, proxy, rowsWithIndexes.map(_._2).seq).map(_.padLeft(numberOfColumns, field.zero))
   }
 
   def rowEchelonForm(implicit field: Field[B]): Matrix[B] = {
-    Matrix(numberOfColumns, _rowReduce(entries, true))
+    Matrix(numberOfColumns, _rowReduce(entries.par, true))
   }
 
   def reducedRowEchelonForm(implicit field: Field[B]): Matrix[B] = {
     // this isn't a great idea when working numerically ...
-    Matrix(numberOfColumns, _rowReduce(rowEchelonForm.entries.reverse, false).reverse)
+    Matrix(numberOfColumns, _rowReduce(rowEchelonForm.entries.reverse.par, false).reverse)
   }
 
   def preimageOf(vector: List[B])(implicit field: Field[B]): Option[List[B]] = {
@@ -263,19 +333,6 @@ class Matrix[B](
 
       Some(result)
     }
-  }
-
-  def preimageOf2(vector: List[B])(implicit field: Field[B]): Option[List[B]] = {
-    require(numberOfRows == vector.size)
-
-    val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
-    val re = augmentedMatrix.rowEchelonForm
-
-    println(re)
-    println(re.entries map (r => pivotPosition2(r)))
-
-    // FIXME
-    None
   }
 
   def inverse(implicit field: Field[B]): Option[Matrix[B]] = {

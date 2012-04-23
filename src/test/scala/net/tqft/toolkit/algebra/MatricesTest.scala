@@ -14,6 +14,7 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
   import Implicits.Integers
   import Implicits.Rationals
   import Implicits.integersAsRationals
+  import Implicits.Doubles
 
   "Matrix operations" should "be correct" in {
 
@@ -30,6 +31,9 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
 
     m.rowEchelonForm should equal(r)
     m.reducedRowEchelonForm should equal(e)
+    
+    val md: Matrix[Double] = Matrix(3, List(List(20, 12, 1), List(12, 60, 1)))
+    md.rowEchelonForm should equal (Matrix(3, List(List(20, 12, 1), List(0, 52.8, 0.4))))
   }
 
   "preimageOf" should "work" in {
