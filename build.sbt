@@ -25,7 +25,8 @@ libraryDependencies ++= Seq(
 	"net.java.dev.jets3t" % "jets3t" % "0.8.1",
 	"com.google.code.typica" % "typica" % "1.7.2",
 	"com.google.guava" % "guava" % "r09",
-   	"org.apache.commons" % "commons-math" % "2.2"
+   	"org.apache.commons" % "commons-math" % "2.2",
+	"org.apfloat" % "apfloat" % "1.6.3"
 )
 
 libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>

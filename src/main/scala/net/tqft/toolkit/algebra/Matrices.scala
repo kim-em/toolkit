@@ -178,7 +178,7 @@ class Matrix[B](
 
     @scala.annotation.tailrec
     def recurse(finishedRows: List[Seq[B]], remainingRows: Seq[Seq[B]]): List[Seq[B]] = {
-      println("finished " + finishedRows.size + " rows")
+//      println("finished " + finishedRows.size + " rows")
       
       val sortedRows = if (forward) {
         field match {

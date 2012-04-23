@@ -93,7 +93,7 @@ trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMon
   override def compose(x: A, y: A) = multiply(x, y)
   override def zeroMorphism(o1: Unit, o2: Unit): A = zero
 
-  def apply(x: Int) = {
+  def fromInt(x: Int) = {
     import AlgebraicNotation._
     implicit val hoc = this
 
@@ -107,13 +107,14 @@ trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMon
 }
 
 trait Ring[A] extends Rig[A] with AdditiveCategory[Unit, A] with CommutativeGroup[A] {
-  override def apply(x: Int) = {
+  def multiply(x: A, y: Int): A = multiply(x, fromInt(y))
+  override def fromInt(x: Int) = {
     import AlgebraicNotation._
     implicit val hoc = this
 
     x match {
       case x if x < 0 => -(List.fill(-x)(one) reduceLeft (_ + _))
-      case _ => super.apply(x)
+      case _ => super.fromInt(x)
     }
   }
 
@@ -173,28 +174,69 @@ trait WithInverses[A] {
 }
 
 trait Field[A] extends EuclideanDomain[A] with WithInverses[A] {
-  def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
+  override def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
+  override def remainder(x: A, y: A) = zero
 }
 
-trait OrderedField[A] extends Field[A] with Ordering[A] {
-    def abs(x: A): A = {
-      val n = negate(x)
-      if(compare(n, x) < 0) {
-        x
-      } else {
-        n
-      }
+trait OrderedField[A] extends Field[A] with Ordering[A] { self =>
+  def abs(x: A): A = {
+    signum(x) match {
+      case s if s >= 0 => x
+      case s if s < 0 => negate(x)
     }
-  def chop(x: A, epsilon: A): A = {
-    if(compare(abs(x), epsilon) < 0) zero else x
   }
-
+  def signum(x: A) = compare(x, zero)
+  def chop(x: A, epsilon: A): A = {
+    if (compare(abs(x), epsilon) < 0) zero else x
+  }
 }
 
 trait ApproximateField[A] extends OrderedField[A] {
   /* a small quantity, but 1 and 1+epsilon are still distinguishable */
   def epsilon: A
-  def chop(x:A):A = chop(x, epsilon)
+  def chop(x: A): A = chop(x, epsilon)
+  def close(x: A, y: A) = {
+    if (chop(x) == zero) {
+      chop(y) == zero
+    } else if (chop(y) == zero) {
+      chop(x) == zero
+    } else {
+      chop(subtract(quotient(x, y), one)) == zero
+    }
+  }
+
+  // TODO this should probably use epsilon to decide to fixed point
+  def sqrt(x: A): A = {
+    import net.tqft.toolkit.functions.FixedPoint
+    val initialGuess = one //new BigDecimal(x.underlying.scaleByPowerOfTen(-x.scale / 2), x.mc)
+    val result = abs(FixedPoint.sameTest(close _)({ g: A => quotient(add(quotient(x, g), g), fromInt(2)) })(initialGuess))
+    result
+  }
+
+  import collection.generic.CanBuildFrom
+  import collection.TraversableLike
+
+  def norm[CC[X] <: TraversableLike[X, CC[X]]](v: CC[A]): A = {
+    if (v.isEmpty) {
+      zero
+    } else {
+      sqrt(v.map(power(_, 2)).reduceLeft(add(_, _)))
+    }
+  }
+
+  def normalize[CC[X] <: TraversableLike[X, CC[X]]](v: CC[A])(implicit cbf1: CanBuildFrom[CC[A], Int, CC[Int]], cbf2: CanBuildFrom[CC[A], A, CC[A]]): CC[A] = {
+    val s = v.map(signum(_)).filter(_ != 0).head
+    val n = multiply(norm(v), s)
+    v map { x => quotient(x, n) }
+  }
+
+}
+
+trait ApproximateReals[A] extends ApproximateField[A] {
+  def fromDouble(x: Double): A
+  def fromBigDecimal(x: BigDecimal): A
+  def setPrecision(x: A): A
+  def bigDecimalValue(x: A): BigDecimal
 }
 
 trait FieldHomomorphism[A, B] extends Homomorphism[Field, A, B]
