@@ -202,31 +202,13 @@ class Matrix[B](
     }
   }
 
-  private def selectTargetRow3(rows: CollectionProxy[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
+  private def selectTargetRow(rows: CollectionProxy[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
     if (forward) {
       field match {
         case o: OrderedField[_] => {
           implicit val orderedField = o
           implicit val bManifest = fieldElementManifest
           rows.map({ case (row, index) => pivotPosition2(row)(field).map(i => (i, field.negate(orderedField.abs(row(i))), index)).getOrElse((Integer.MAX_VALUE, field.zero, index)) }).toList.sortBy(t => (t._1, t._2)).head._3
-        }
-        case _ =>
-          rows.map({ case (row, index) => (pivotPosition2(row).getOrElse(Integer.MAX_VALUE), index) }).toList.sorted.head._2
-      }
-    } else {
-      rowIndexes.head
-    }
-  }
-  private def selectTargetRow(rows: GenSeq[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
-    selectTargetRow3(new GenSeqCollectionProxy(rows), rowIndexes, forward)
-  }
-
-  private def selectTargetRow2(rows: GenSeq[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
-    if (forward) {
-      field match {
-        case field: OrderedField[_] => {
-          implicit val orderedField = field
-          rows.map({ case (row, index) => pivotPosition2(row).map(i => (i, field.negate(field.abs(row(i))), index)).getOrElse((Integer.MAX_VALUE, field.zero, index)) }).toList.sorted.head._3
         }
         case _ =>
           rows.map({ case (row, index) => (pivotPosition2(row).getOrElse(Integer.MAX_VALUE), index) }).toList.sorted.head._2
@@ -250,7 +232,7 @@ class Matrix[B](
       if (remainingIndexes.isEmpty) {
         finishedRows.reverse
       } else {
-        val targetRow = selectTargetRow3(remainingRows, remainingIndexes, forward)
+        val targetRow = selectTargetRow(remainingRows, remainingIndexes, forward)
 
         val h = remainingRows.filter(_._2 == targetRow).toList.head._1
         val rest = remainingRows.filter(_._2 != targetRow)
