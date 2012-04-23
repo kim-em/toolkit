@@ -54,7 +54,7 @@ object SharpenEigenvalues extends App {
     val field = Gadgets.Apfloats(precision)
     val initialEstimate =
       if (precision < 34) {
-        EigenvalueEstimate(field.fromDouble(bounds._1 + (bounds._2 - bounds._1) * scala.util.Random.nextDouble), List.fill(matrix.numberOfColumns)(field.fromDouble(scala.util.Random.nextDouble())))
+        EigenvalueEstimate(field.fromDouble(bounds._1 + (bounds._2 - bounds._1) * 0.61239873 /* scala.util.Random.nextDouble */), List.fill(matrix.numberOfColumns)(field.fromDouble(scala.util.Random.nextDouble())))
       } else {
         println("halving precision...")
         val EigenvalueEstimate(previousEstimate, previousEigenvector) = findEigenvalueAndEigenvector(matrix, bounds, 1 * precision / 2)
