@@ -61,7 +61,7 @@ object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
     ) yield {
       (for (
         enteringColumn <- (0 until m.numberOfColumns).toList filterNot (simplex contains _);
-        preimage <- m.takeColumns(simplex).preimageOf(m.takeColumn(enteringColumn));
+        preimage <- m.takeColumns(simplex).preimageOf(m.takeColumn(enteringColumn).toList);
         if field.compare(preimage(k), field.zero) < 0
       ) yield (enteringColumn :: (simplex filterNot (_ == exitingColumn))).sorted).headOption
     }
@@ -168,9 +168,9 @@ object CommonsSimplexSolver {
   import scala.collection.JavaConversions._
 
   def apply(m: Matrix[Double], c: List[Double]) = {
-    val constraints = for ((row, x) <- m.entries zip c) yield {
+    val constraints = (for ((row, x) <- m.entries zip c) yield {
       new LinearConstraint(row.toArray, Relationship.EQ, x)
-    }
+    }).toList
     val function = new LinearObjectiveFunction(List.fill(m.numberOfColumns)(0.0).toArray, 0.0)
 
     val result =

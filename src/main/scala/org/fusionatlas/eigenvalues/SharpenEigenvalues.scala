@@ -33,9 +33,9 @@ object SharpenEigenvalues extends App {
     })
     val aa = mm.preimageOf(estimate.approximateEigenvector).getOrElse(estimate.approximateEigenvector)
     val improvedEigenvector = normalize(aa)
-    val action = for (row <- matrix.entries) yield {
+    val action = (for (row <- matrix.entries) yield {
       (improvedEigenvector zip row).map(p => multiply(p._1, p._2)).reduceLeft(add(_, _))
-    }
+    }).toList
     val newEstimate = norm(action)
     println("new eigenvalue estimate: " + newEstimate)
     println("new approximate eigenvector: " + improvedEigenvector)
