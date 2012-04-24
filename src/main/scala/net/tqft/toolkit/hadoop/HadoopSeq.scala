@@ -59,6 +59,7 @@ object HadoopSeq extends Logging { hadoopSeq =>
     }
   }
 
+  // tags are horribly broken. if any of this works, it's not my fault.
   private class HadoopSeq[A](dList: DList[(A, Int)], tagIsIndex: Boolean, sizeHint: Option[Int]) extends Seq[A] with SeqLike[A, Seq[A]] {
     import ScoobiHelper._
 
@@ -69,17 +70,33 @@ object HadoopSeq extends Logging { hadoopSeq =>
       dList.map(_._1).hither.iterator
     }
     override def head = apply(0)
+    
     override def apply(idx: Int) = {
-      dList.filter(_._2 == idx).hither.head._1
+      val tag = if(tagIsIndex) {
+        idx
+      } else {
+        tags(idx)
+      }
+      dList.filter(_._2 == tag).hither.head._1
     }
-
+    override def isEmpty = {
+      nextSizeHint match {
+        case Some(0) => true
+        case Some(_) => false
+        case None => {
+          tags.isEmpty
+        }
+      }
+    }
+    
+    
     private var tagsCache: Option[List[Int]] = None
     private def computeTags {
       if (tagsCache.isEmpty) {
-        (tagIsIndex, nextSizeHint) match {
-          case (true, Some(size)) => tagsCache = Some(0 until size toList)
-          case _ => tagsCache = Some(dList.map(_._2).hither.toList)
-        }
+        tagsCache = ((tagIsIndex, nextSizeHint) match {
+          case (true, Some(size)) => Some(0 until size toList)
+          case _ => Some(dList.map(_._2).hither.toList)
+        })
       }
     }
     private def tags = {
@@ -96,11 +113,19 @@ object HadoopSeq extends Logging { hadoopSeq =>
       }
     }
 
-//    override def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Seq[A] = {
-//      val tagIndexer = dList.map(p => (f(p._1), p._2)).hither.toList.sortBy({ p: (B, Int) => p._1 }).map(_._2).zipWithIndex.toMap
-//      new HadoopSeq(dList.map(p => (p._1, tagIndexer(p._2))), true, Some(tagIndexer.size))
-//    }
+    private def replaceTags(f: Map[Int, Int], tagsPacked: Boolean): HadoopSeq[A] = {
+      new HadoopSeq(dList.map(p => (p._1, f(p._2))), tagsPacked, Some(f.size))      
+    }
+    
+    override def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Seq[A] = {
+      val tagIndexer = dList.map(p => (f(p._1), p._2)).hither.toList.sortBy({ p: (B, Int) => p._1 }).map(_._2).zipWithIndex.toMap
+      replaceTags(tagIndexer, true)
+    }
 
+    override def reverse = {
+      replaceTags((tags zip tags.reverse).toMap, tagIsIndex)
+    }
+    
     private var lengthComputed: Option[Int] = None
     private def computeLength {
       if (sizeHint.nonEmpty) {
