@@ -21,6 +21,11 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
     val m: Matrix[Fraction[Int]] = Matrix(3, List(List(1, 2, 3), List(4, 5, 6), List(5, 7, 9)))
 
     m.rank() should equal(2)
+
+    val intMatrix = Matrix(3, List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)))
+    val rationalMatrix = Matrices.matricesOver(3)(Gadgets.integersAsRationals)(intMatrix)
+    rationalMatrix.nullSpace(Gadgets.Rationals).numberOfColumns should equal(1)
+
   }
 
   "echelonForm" should "work" in {
@@ -31,9 +36,9 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
 
     m.rowEchelonForm should equal(r)
     m.reducedRowEchelonForm should equal(e)
-    
+
     val md: Matrix[Double] = Matrix(3, List(List(20, 12, 1), List(12, 60, 1)))
-    md.rowEchelonForm should equal (Matrix(3, List(List(20, 12, 1), List(0, 52.8, 0.4))))
+    md.rowEchelonForm should equal(Matrix(3, List(List(20, 12, 1), List(0, 52.8, 0.4))))
   }
 
   "preimageOf" should "work" in {
@@ -51,4 +56,5 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
     val b2: List[Fraction[BigInt]] = List(Fraction(152938, 10207), Fraction(684843, 40828), Fraction(-1020225, 40828), Fraction(685601, 40828), Fraction(-423201, 40828))
     m2.preimageOf(a2) should equal(Some(b2))
   }
+
 }

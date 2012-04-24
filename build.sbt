@@ -17,6 +17,10 @@ resolvers ++= Seq(
 	"Scala Snapshots" at "http://scala-tools.org/repo-snapshots/"
 )
 
+resolvers += "Cloudera Maven Repository" at "https://repository.cloudera.com/content/repositories/releases/"
+
+resolvers += "Packaged Avro" at "http://nicta.github.com/scoobi/releases/"
+
 libraryDependencies ++= Seq(
 	"junit" % "junit" % "4.8" % "test",
 	"org.slf4j" % "slf4j-log4j12" % "1.6.1",
@@ -26,10 +30,10 @@ libraryDependencies ++= Seq(
 	"com.google.code.typica" % "typica" % "1.7.2",
 	"com.google.guava" % "guava" % "r09",
    	"org.apache.commons" % "commons-math" % "2.2",
-	"org.apfloat" % "apfloat" % "1.6.3"
+	"org.apfloat" % "apfloat" % "1.6.3",
+	"com.nicta" %% "scoobi" % "0.4.0-SNAPSHOT" // % "provided"
 )
 
-libraryDependencies += "com.nicta" %% "scoobi" % "0.4.0-SNAPSHOT" % "provided"
 
 
 libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>

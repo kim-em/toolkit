@@ -16,19 +16,15 @@ object Matrices {
     }
   }
 
-  // testing!
-  val intMatrix = Matrix(3, List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)))
-  val rationalMatrix = matricesOver(3)(Gadgets.integersAsRationals)(intMatrix)
-  val ns = rationalMatrix.nullSpace(Gadgets.Rationals)
 
   def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 }
 
 abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sources: List[A], val targets: List[A]) {
   require(targets.size == entries.size)
-  require(entries.find(_.size != numberOfColumns).isEmpty)
+  //  require(entries.find(_.size != numberOfColumns).isEmpty) // not a good idea if the entries are in Hadoop
 
-  def entries: List[Seq[B]]
+  def entries: GenSeq[Seq[B]]
   def lookupEntry(row: Int)(column: Int): B
   def pivotPosition(row: Int, ignoring: B): Option[Int]
 
@@ -64,7 +60,7 @@ abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sour
 
 }
 
-class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val entries: List[Seq[B]]) extends CategoricalMatrix[A, B, M](sources, targets) {
+class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val entries: GenSeq[Seq[B]]) extends CategoricalMatrix[A, B, M](sources, targets) {
   override def equals(other: Any) = {
     // TODO this could be optimized
     other match {
@@ -72,7 +68,7 @@ class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A
         sources == other.sources &&
           targets == other.targets &&
           entries.size == other.entries.size &&
-          (for ((row1, row2) <- entries zip other.entries) yield {
+          (for ((row1, row2) <- entries.toList zip other.entries.toList) yield {
             row1.size == row2.size && (for ((x1, x2) <- row1 zip row2) yield { x1 == x2 }).foldLeft(true)(_ && _)
           }).foldLeft(true)(_ && _)
       }
@@ -86,9 +82,10 @@ class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A
       case -1 => None
       case k => Some(k)
     }
+
 }
 
-class DenseCategoricalMatrix[A, B](sources: List[A], targets: List[A], entries: List[Seq[B]]) extends AbstractDenseCategoricalMatrix[A, B, DenseCategoricalMatrix[A, B]](sources, targets, entries)
+class DenseCategoricalMatrix[A, B](sources: List[A], targets: List[A], entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[A, B, DenseCategoricalMatrix[A, B]](sources, targets, entries)
 
 class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val sparseEntries: List[SortedMap[Int, B]], default: B) extends CategoricalMatrix[A, B, M](sources, targets) {
   def entries = for (row <- sparseEntries) yield for (i <- (0 until numberOfColumns).toList) yield row.get(i).getOrElse(default)
@@ -97,8 +94,8 @@ class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix
 }
 
 object Matrix extends Logging {
-  def apply[B](numberOfColumns: Int, entries: List[Seq[B]]): Matrix[B] = new Matrix(numberOfColumns, entries)
-  def apply[B](entries: List[Seq[B]]): Matrix[B] = {
+  def apply[B](numberOfColumns: Int, entries: GenSeq[Seq[B]]): Matrix[B] = new Matrix(numberOfColumns, entries)
+  def apply[B](entries: GenSeq[Seq[B]]): Matrix[B] = {
     require(entries.nonEmpty)
     apply(entries.head.size, entries)
   }
@@ -109,30 +106,6 @@ object Matrix extends Logging {
     case k => Some(k)
   }
 
-  //  def findBasisForRowSpace[B](entries: Iterable[List[B]], rankBound: Option[Int] = None)(implicit field: Field[B]): List[Int] = {
-  //    case class Progress(rowsConsidered: Int, basis: List[Int], reducedRows: Option[Matrix[B]])
-  //
-  //    def considerAnotherRow(soFar: Progress, row: List[B]): Progress = {
-  //      if (rankBound == Some(soFar.basis.size)) {
-  //        // we've found enough, short circuit
-  //        soFar
-  //      } else {
-  //        val next = (soFar.reducedRows match {
-  //          case None => Matrix(row.size, List(row))
-  //          case Some(m) => m.appendRow(row)
-  //        }).rowEchelonForm
-  //
-  //        if (next.numberOfRows > 0 && next.pivotPosition(next.numberOfRows, field.zero).nonEmpty) {
-  //          Progress(soFar.rowsConsidered + 1, soFar.rowsConsidered :: soFar.basis, Some(next))
-  //        } else {
-  //          Progress(soFar.rowsConsidered + 1, soFar.basis, soFar.reducedRows)
-  //        }
-  //      }
-  //    }
-  //
-  //    entries.foldLeft(Progress(0, List(), None))(considerAnotherRow _).basis.reverse
-  //  }
-
   def singleColumn[B](vector: List[B]) = new Matrix(1, vector map { x => List(x) })
 
   def diagonalMatrix[B](vector: List[B])(implicit field: Field[B]) = new Matrix(vector.size, vector.zipWithIndex map { case (v, k) => List.fill(k)(field.zero) ::: List(v) ::: List.fill(vector.size - k - 1)(field.zero) })
@@ -142,13 +115,16 @@ object Matrix extends Logging {
 
 class Matrix[B](
   override val numberOfColumns: Int,
-  override val entries: List[Seq[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
+  override val entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
 
-  override def toString = (entries.map { r => r.mkString("(", ", ", ")") }).mkString("\n")
+  def mapRows[A](rowMapper: Seq[B] => Seq[A], newColumnSize: Int  = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
+  def mapEntries[A](entryMapper: B => A) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
+
+  override def toString = (entries.toList.map { r => r.mkString("(", ", ", ")") }).mkString("\n")
 
   import Matrix.pivotPosition2
 
-  def transpose = new Matrix(numberOfRows, entries.transpose)
+  def transpose = new Matrix(numberOfRows, entries.toList.transpose)
 
   def takeColumn(column: Int) = entries map { row => row(column) }
 
@@ -176,33 +152,33 @@ class Matrix[B](
     }
   }
 
-  trait CollectionProxy[A] {
-    def filter(f: A => Boolean): CollectionProxy[A]
-    def toList: List[A]
-    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B]
-  }
+  //  trait CollectionProxy[A] {
+  //    def filter(f: A => Boolean): CollectionProxy[A]
+  //    def toList: List[A]
+  //    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B]
+  //  }
+  //
+  //  class DListCollectionProxy[A <: Serializable](dList: com.nicta.scoobi.DList[A]) extends CollectionProxy[A] {
+  //    def this(seq: Seq[A])(implicit manifest: Manifest[A]) = this(com.nicta.scoobi.DList(seq: _*))
+  //    import net.tqft.toolkit.hadoop.ScoobiHelper._
+  //
+  //    def filter(f: A => Boolean): CollectionProxy[A] = new DListCollectionProxy(dList.filter(f))
+  //    def toList: List[A] = dList.hither.toList
+  //    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B] = {
+  //      import com.nicta.scoobi.WireFormat._
+  //      new DListCollectionProxy(dList.map(f))
+  //    }
+  //  }
+  //
+  //  class GenSeqCollectionProxy[A](seq: GenSeq[A]) extends CollectionProxy[A] {
+  //    def filter(f: A => Boolean): CollectionProxy[A] = new GenSeqCollectionProxy(seq.filter(f))
+  //    def toList: List[A] = seq.toList
+  //    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B] = {
+  //      new GenSeqCollectionProxy(seq.map(f))
+  //    }
+  //  }
 
-  class DListCollectionProxy[A <: Serializable](dList: com.nicta.scoobi.DList[A]) extends CollectionProxy[A] {
-    def this(seq: Seq[A])(implicit manifest: Manifest[A]) = this(com.nicta.scoobi.DList(seq: _*))
-    import net.tqft.toolkit.hadoop.ScoobiHelper._
-
-    def filter(f: A => Boolean): CollectionProxy[A] = new DListCollectionProxy(dList.filter(f))
-    def toList: List[A] = dList.hither.toList
-    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B] = {
-      import com.nicta.scoobi.WireFormat._
-      new DListCollectionProxy(dList.map(f))
-    }
-  }
-
-  class GenSeqCollectionProxy[A](seq: GenSeq[A]) extends CollectionProxy[A] {
-    def filter(f: A => Boolean): CollectionProxy[A] = new GenSeqCollectionProxy(seq.filter(f))
-    def toList: List[A] = seq.toList
-    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B] = {
-      new GenSeqCollectionProxy(seq.map(f))
-    }
-  }
-
-  private def selectTargetRow(rows: CollectionProxy[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
+  private def selectTargetRow(rows: GenSeq[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
     if (forward) {
       field match {
         case o: OrderedField[_] => {
@@ -220,14 +196,14 @@ class Matrix[B](
 
   private def fieldElementManifest(implicit field: Field[B]): Manifest[B] = ClassManifest.singleType(field.zero.asInstanceOf[B with AnyRef]).asInstanceOf[Manifest[B]]
 
-  private def _rowReduce(rows: GenSeq[Seq[B]], forward: Boolean)(implicit field: Field[B]): List[Seq[B]] = {
+  private def _rowReduce(rows: GenSeq[Seq[B]], forward: Boolean)(implicit field: Field[B]): GenSeq[Seq[B]] = {
     // we carry around the row indexes separately, because remainingRows might be living off in Hadoop or something...
 
     implicit val bManifest = fieldElementManifest
 
     @scala.annotation.tailrec
-    def recurse(finishedRows: List[Seq[B]], remainingRows: CollectionProxy[(Seq[B], Int)], remainingIndexes: Seq[Int]): List[Seq[B]] = {
-            println("finished " + finishedRows.size + " rows")
+    def recurse(finishedRows: List[Seq[B]], remainingRows: GenSeq[(Seq[B], Int)], remainingIndexes: Seq[Int]): List[Seq[B]] = {
+      println("finished " + finishedRows.size + " rows")
 
       if (remainingIndexes.isEmpty) {
         finishedRows.reverse
@@ -279,18 +255,21 @@ class Matrix[B](
 
     import Pad._
     val rowsWithIndexes = rows.zipWithIndex
-    //    val proxy = new GenSeqCollectionProxy(rowsWithIndexes)
-    val proxy = new DListCollectionProxy(rowsWithIndexes.seq).map(x => x)
-    recurse(Nil, proxy, rowsWithIndexes.map(_._2).seq).map(_.padLeft(numberOfColumns, field.zero))
+    val resultList = recurse(Nil, rowsWithIndexes, rowsWithIndexes.map(_._2).seq).map(_.padLeft(numberOfColumns, field.zero))
+    
+    // TODO this is not so cool:
+    val bf = rows.genericBuilder[Seq[B]]
+    bf ++= resultList
+    bf.result
   }
 
   def rowEchelonForm(implicit field: Field[B]): Matrix[B] = {
-    Matrix(numberOfColumns, _rowReduce(entries.par, true))
+    Matrix(numberOfColumns, _rowReduce(entries, true))
   }
 
   def reducedRowEchelonForm(implicit field: Field[B]): Matrix[B] = {
     // this isn't a great idea when working numerically ...
-    Matrix(numberOfColumns, _rowReduce(rowEchelonForm.entries.reverse.par, false).reverse)
+    Matrix(numberOfColumns, _rowReduce(rowEchelonForm.entries.reverse, false).reverse)
   }
 
   def preimageOf(vector: List[B])(implicit field: Field[B]): Option[List[B]] = {
@@ -340,7 +319,7 @@ class Matrix[B](
     val reduced = reducedRowEchelonForm.entries
 
     val pivots = reduced.zipWithIndex map { case (row, i) => (i, pivotPosition2(row)) } collect { case (i, Some(j)) => (i, j) }
-    val pivotColumns = pivots.map(_._2)
+    val pivotColumns = pivots.map(_._2).toList
     val generators = (0 until numberOfColumns).toList filterNot (pivotColumns contains)
 
     val entries = for (j <- (0 until numberOfColumns).toList) yield {
@@ -368,7 +347,7 @@ class Matrix[B](
 }
 
 class MatrixCategoryOverRing[R](ring: Ring[R]) extends LinearCategory[Int, Matrix[R], R] {
-  val inner = new AbstractMatrixCategory(ring)({ (sources: List[Unit], targets: List[Unit], entries: List[Seq[R]]) => Matrix(sources.size, entries) })
+  val inner = new AbstractMatrixCategory(ring)({ (sources: List[Unit], targets: List[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) })
 
   override def identityMorphism(o: Int) = inner.identityMorphism(List.fill(o)(()))
   override def zeroMorphism(o1: Int, o2: Int) = inner.zeroMorphism(List.fill(o1)(()), List.fill(o2)(()))
@@ -389,7 +368,7 @@ class MatrixCategory[O, M](entryCategory: AdditiveCategory[O, M]) extends Abstra
 
 class AbstractMatrixCategory[O, M, MT <: CategoricalMatrix[O, M, MT]](
   entryCategory: AdditiveCategory[O, M])(
-    implicit val buildMatrix: (List[O], List[O], List[Seq[M]]) => MT) extends AdditiveCategory[List[O], MT] {
+    implicit val buildMatrix: (List[O], List[O], GenSeq[Seq[M]]) => MT) extends AdditiveCategory[List[O], MT] {
 
   def identityMorphism(o: List[O]) = {
 
