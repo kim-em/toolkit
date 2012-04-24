@@ -255,7 +255,7 @@ class Matrix[B](
 
     import Pad._
     val rowsWithIndexes = rows.zipWithIndex
-    val resultList = recurse(Nil, rowsWithIndexes, rowsWithIndexes.map(_._2).seq).map(_.padLeft(numberOfColumns, field.zero))
+    val resultList = recurse(Nil, rowsWithIndexes, rowsWithIndexes.map(_._2).toList).map(_.padLeft(numberOfColumns, field.zero))
     
     // TODO this is not so cool:
     val bf = rows.genericBuilder[Seq[B]]
