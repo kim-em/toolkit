@@ -10,10 +10,10 @@ import scala.collection.mutable.Builder
 import net.tqft.toolkit.Logging
 
 object HadoopSeq extends Logging { hadoopSeq =>
-    private implicit def serializingWireFormat[X]: WireFormat[X] = {
-      import com.nicta.scoobi.WireFormat._
-      implicitly[WireFormat[Serializable]].asInstanceOf[WireFormat[X]]
-    }
+  private implicit def serializingWireFormat[X]: WireFormat[X] = {
+    import com.nicta.scoobi.WireFormat._
+    implicitly[WireFormat[Serializable]].asInstanceOf[WireFormat[X]]
+  }
 
   private def anyRefManifest[X]: Manifest[X] = {
     manifest[AnyRef].asInstanceOf[Manifest[X]]
@@ -27,22 +27,33 @@ object HadoopSeq extends Logging { hadoopSeq =>
   def apply[A: Manifest](elements: A*): Seq[A] = from(elements)
 
   private object HadoopSeqCompanion extends GenericCompanion[Seq] {
-    // TODO is this ridiculous? do we need to chunk?
-    // TODO can we use futures to write the data in the background?
+    //    // TODO is this ridiculous? do we need to chunk?
+    //    // TODO can we use futures to write the data in the background?
+    //    override def newBuilder[A] = new Builder[A, Seq[A]] {
+    //      implicit val manifest = anyRefManifest[A]
+    //
+    //      var dList = DList[(A, Int)]()
+    //      var index = 0
+    //      override def result = new HadoopSeq(dList, TagState(true, true, hint = Some(0 until index toList), sizeHint = Some(index)))
+    //      override def clear = {
+    //        dList = DList[(A, Int)]()
+    //        index = 0
+    //      }
+    //      override def +=(a: A) = {
+    //        dList = dList ++ DList((a, index))
+    //        index = index + 1
+    //        this
+    //      }
+    //    }
     override def newBuilder[A] = new Builder[A, Seq[A]] {
-
       implicit val manifest = anyRefManifest[A]
-
-      var dList = DList[(A, Int)]()
-      var index = 0
-      override def result = new HadoopSeq(dList, TagState(true, true, hint = Some(0 until index toList), sizeHint = Some(index)))
+      var listBuffer = new scala.collection.mutable.ListBuffer[A]
+      override def result = HadoopSeq.from(listBuffer)
       override def clear = {
-        dList = DList[(A, Int)]()
-        index = 0
+        listBuffer.clear
       }
       override def +=(a: A) = {
-        dList = dList ++ DList((a, index))
-        index = index + 1
+        listBuffer += a
         this
       }
     }
@@ -50,7 +61,7 @@ object HadoopSeq extends Logging { hadoopSeq =>
 
   case class TagState(packed: Boolean, ordered: Boolean, hint: Option[List[Int]], sizeHint: Option[Int])
 
-  private class HadoopSeq[A: Manifest](dList: DList[(A, Int)], tagState: TagState) extends Seq[A] with SeqLike[A, Seq[A]] {
+  private class HadoopSeq[A: Manifest](val dList: DList[(A, Int)], val tagState: TagState) extends Seq[A] with SeqLike[A, Seq[A]] {
     import ScoobiHelper._
 
     override def companion = HadoopSeqCompanion
@@ -67,15 +78,24 @@ object HadoopSeq extends Logging { hadoopSeq =>
     override lazy val toList = iterator.toList
 
     override def head = apply(0)
+    override def tail = {
+      val tag = tagForIndex(0)
+      new HadoopSeq(dList.filter(p => p._2 != tag), TagState(false, tagState.ordered, tagsCache.map(_.tail), sizeCache.map(_ - 1)))
+    }
 
-    override def apply(idx: Int) = {
-      val tag = if (tagState.packed) {
+    private def tagForIndex(idx: Int) = {
+      if (tagState.packed) {
         idx
       } else {
         tags(idx)
       }
+    }
+
+    override def apply(idx: Int) = {
+      val tag = tagForIndex(idx)
       dList.filter(_._2 == tag).hither.head._1
     }
+
     override def isEmpty = {
       sizeCache match {
         case Some(0) => true
@@ -107,7 +127,7 @@ object HadoopSeq extends Logging { hadoopSeq =>
     }
 
     override def mkString(start: String, sep: String, end: String) = start + (map(_.toString).reduce(_ + sep + _)) + end
-    
+
     override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Seq[A], (A1, Int), That]): That = {
       if (tagState.packed) {
         new HadoopSeq(dList.map(p => ((p._1, p._2), p._2)), TagState(true, tagState.ordered, tagsCache, sizeCache)).asInstanceOf[That]
@@ -122,6 +142,10 @@ object HadoopSeq extends Logging { hadoopSeq =>
       val packed = (newTags == (0 until f.size).toList)
       val ordered = newTags == newTags.sorted
       new HadoopSeq(dList.map(p => (p._1, f(p._2))), TagState(packed, ordered, Some(newTags), Some(f.size)))
+    }
+
+    private def packTags: HadoopSeq[A] = {
+      replaceTags(tags.zipWithIndex.toMap)
     }
 
     override def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Seq[A] = {
@@ -154,8 +178,19 @@ object HadoopSeq extends Logging { hadoopSeq =>
       dList.map[A1](_._1).reduce(f).hither.head
     }
 
-    // and some methods left intentionally undefined
-    override def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Seq[A], (A1, B), That]): That = ???
+    override def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Seq[A], (A1, B), That]): That = {
+      if (that.isInstanceOf[HadoopSeq[_]]) {
+        // better do it the Hadoopy way, whatever that is
+        ???
+      } else {
+        val s: Int => B = that.toSeq.seq
+        val packed = packTags
+        implicit val manifest1 = anyRefManifest[A1]
+        implicit val manifest2 = anyRefManifest[B]
+
+        new HadoopSeq[(A1, B)](packed.dList.map(p => ((p._1, s(p._2)), p._2)), packed.tagState).asInstanceOf[That]
+      }
+    }
 
   }
 

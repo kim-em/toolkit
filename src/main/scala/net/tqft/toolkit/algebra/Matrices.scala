@@ -16,7 +16,6 @@ object Matrices {
     }
   }
 
-
   def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 }
 
@@ -67,7 +66,7 @@ class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A
       case other: AbstractDenseCategoricalMatrix[_, _, _] => {
         sources == other.sources &&
           targets == other.targets &&
-          entries.size == other.entries.size &&
+          entries.toList.size == other.entries.toList.size &&
           (for ((row1, row2) <- entries.toList zip other.entries.toList) yield {
             row1.size == row2.size && (for ((x1, x2) <- row1 zip row2) yield { x1 == x2 }).foldLeft(true)(_ && _)
           }).foldLeft(true)(_ && _)
@@ -117,7 +116,7 @@ class Matrix[B](
   override val numberOfColumns: Int,
   override val entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
 
-  def mapRows[A](rowMapper: Seq[B] => Seq[A], newColumnSize: Int  = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
+  def mapRows[A](rowMapper: Seq[B] => Seq[A], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
   def mapEntries[A](entryMapper: B => A) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
 
   override def toString = (entries.toList.map { r => r.mkString("(", ", ", ")") }).mkString("\n")
@@ -178,17 +177,29 @@ class Matrix[B](
   //    }
   //  }
 
-  private def selectTargetRow(rows: GenSeq[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
-    if (forward) {
-      field match {
-        case o: OrderedField[_] => {
-          implicit val orderedField = o
-          implicit val bManifest = fieldElementManifest
-          rows.map({ case (row, index) => pivotPosition2(row)(field).map(i => (i, field.negate(orderedField.abs(row(i))), index)).getOrElse((Integer.MAX_VALUE, field.zero, index)) }).toList.sortBy(t => (t._1, t._2)).head._3
-        }
-        case _ =>
-          rows.map({ case (row, index) => (pivotPosition2(row).getOrElse(Integer.MAX_VALUE), index) }).toList.sorted.head._2
+  private def rowPriority(row: Seq[B])(implicit field: Field[B]) = {
+    field match {
+      case o: OrderedField[_] => {
+        implicit val orderedField = o
+        pivotPosition2(row)(field).map(i => (i, field.negate(orderedField.abs(row(i))))).getOrElse((Integer.MAX_VALUE, field.zero))
       }
+      case _ => (pivotPosition2(row).getOrElse(Integer.MAX_VALUE), field.zero)
+    }
+  }
+
+  private def elementOrdering(implicit field: Field[B]) = {
+    field match {
+      case field: OrderedField[_] => field
+      case _ => new Ordering[B] { def compare(x: B, y: B) = 0 }
+    }
+  }
+  
+  // TODO just use sortBy, and get rid of this?
+  // but GenSeq doesn't have sortBy, lame.
+  private def selectTargetRow(rows: GenSeq[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
+    implicit val ordering = elementOrdering
+    if (forward) {
+      rows.map({ case (row, index) => (rowPriority(row), index) }).toList.sortBy(_._1).head._2
     } else {
       rowIndexes.head
     }
@@ -209,7 +220,7 @@ class Matrix[B](
         finishedRows.reverse
       } else {
         val targetRow = selectTargetRow(remainingRows, remainingIndexes, forward)
-
+        
         val h = remainingRows.filter(_._2 == targetRow).toList.head._1
         val rest = remainingRows.filter(_._2 != targetRow)
         val pp = pivotPosition2(h)
@@ -255,8 +266,8 @@ class Matrix[B](
 
     import Pad._
     val rowsWithIndexes = rows.zipWithIndex
-    val resultList = recurse(Nil, rowsWithIndexes, rowsWithIndexes.map(_._2).toList).map(_.padLeft(numberOfColumns, field.zero))
-    
+    val resultList = recurse(Nil, rowsWithIndexes, 0 until numberOfRows toList).map(_.padLeft(numberOfColumns, field.zero))
+
     // TODO this is not so cool:
     val bf = rows.genericBuilder[Seq[B]]
     bf ++= resultList
@@ -268,25 +279,21 @@ class Matrix[B](
   }
 
   def reducedRowEchelonForm(implicit field: Field[B]): Matrix[B] = {
-    // this isn't a great idea when working numerically ...
     Matrix(numberOfColumns, _rowReduce(rowEchelonForm.entries.reverse, false).reverse)
   }
 
   def preimageOf(vector: List[B])(implicit field: Field[B]): Option[List[B]] = {
-    require(numberOfRows == vector.size)
-
     val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
     val rre = augmentedMatrix.reducedRowEchelonForm
 
-    // TODO optimize for Hadoop!
-    
-    if (rre.entries.collect { case row if pivotPosition2(row) == Some(numberOfColumns) => false } nonEmpty) {
+    val pivots = (rre.entries.zipWithIndex map { case (row, i) => (i, pivotPosition2(row), row.last) }).toList
+
+    if (pivots.find(_._2 == Some(numberOfColumns)).nonEmpty) {
       None
     } else {
-      val pivots = (rre.entries.zipWithIndex map { case (row, i) => (i, pivotPosition2(row)) } collect { case (i, Some(j)) => (i, j) }).toList
       val result = for (j <- (0 until numberOfColumns).toList) yield {
-        pivots.find(_._2 == j) match {
-          case Some((i, j)) => rre.entries(i).last
+        pivots.find(_._2 == Some(j)) match {
+          case Some((_, _, l)) => l
           case None => field.zero
         }
       }
