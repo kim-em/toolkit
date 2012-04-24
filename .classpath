@@ -18,7 +18,7 @@
   <classpathentry path="/Users/scott/.ivy2/cache/com.google.guava/guava/jars/guava-r09.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/scott/.ivy2/cache/org.apache.commons/commons-math/jars/commons-math-2.2.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/scott/.ivy2/cache/org.apfloat/apfloat/jars/apfloat-1.6.3.jar" kind="lib"></classpathentry>
-  <classpathentry path="/Users/scott/.ivy2/cache/com.nicta/scoobi_2.9.1/jars/scoobi_2.9.1-0.4.0-SNAPSHOT.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/scott/.ivy2/local/com.nicta/scoobi_2.9.1/0.4.0-SNAPSHOT/jars/scoobi_2.9.1.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/scott/.ivy2/cache/com.odiago.avro/odiago-avro/jars/odiago-avro-1.0.5.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/scott/.ivy2/cache/org.apache.avro/avro/jars/avro-1.6.0.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/scott/.ivy2/cache/org.codehaus.jackson/jackson-mapper-asl/jars/jackson-mapper-asl-1.8.6.jar" kind="lib"></classpathentry>

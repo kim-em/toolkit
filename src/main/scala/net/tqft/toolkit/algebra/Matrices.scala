@@ -278,20 +278,18 @@ class Matrix[B](
     val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
     val rre = augmentedMatrix.reducedRowEchelonForm
 
+    // TODO optimize for Hadoop!
+    
     if (rre.entries.collect { case row if pivotPosition2(row) == Some(numberOfColumns) => false } nonEmpty) {
       None
     } else {
-      val pivots = rre.entries.zipWithIndex map { case (row, i) => (i, pivotPosition2(row)) } collect { case (i, Some(j)) => (i, j) }
-      val pivotColumns = pivots.map(_._2)
+      val pivots = (rre.entries.zipWithIndex map { case (row, i) => (i, pivotPosition2(row)) } collect { case (i, Some(j)) => (i, j) }).toList
       val result = for (j <- (0 until numberOfColumns).toList) yield {
         pivots.find(_._2 == j) match {
           case Some((i, j)) => rre.entries(i).last
           case None => field.zero
         }
       }
-
-      //      assert(apply(result) == vector)
-
       Some(result)
     }
   }
