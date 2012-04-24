@@ -23,14 +23,8 @@ class HadoopMatricesTest extends FlatSpec with ShouldMatchers {
       val r: Matrix[Fraction[Int]] = Matrix(3, List(List(20, 12, 1), List(0, Fraction(264, 5), Fraction(2, 5))))
   
       
-      m.rowEchelonForm should equal(r)
+      val result = m.rowEchelonForm
+      r should equal(result)
     }
 
-  "hadoopiness" should "work with large matrices" in {
-    import org.fusionatlas.eigenvalues._
-    val target = Hadamard12.transfer2
-    val hadoopTarget = new Matrix(target.numberOfColumns, HadoopSeq.from(target.entries))
-    val bounds = (19.9, 20.2)
-    SharpenEigenvalues.findEigenvalue(hadoopTarget, bounds, 100)
-  }
 }
