@@ -135,7 +135,9 @@ class Matrix[B](
     Matrix(numberOfColumns, entries :+ row)
   }
 
-  def joinRows(other: Matrix[B]) = new Matrix(numberOfColumns + other.numberOfColumns, (entries zip other.entries) map { case (r1, r2) => r1 ++ r2 })
+  def joinRows(other: Matrix[B]) = {
+    new Matrix(numberOfColumns + other.numberOfColumns, (entries zip other.entries) map { case (r1, r2) => r1 ++ r2 })
+  }
 
   def apply(vector: List[B])(implicit field: Field[B]) = {
     for (row <- entries) yield {
@@ -143,39 +145,6 @@ class Matrix[B](
       sum(for ((x, y) <- row zip vector) yield field.multiply(x, y))(field)
     }
   }
-
-  private def chop(x: B)(implicit field: Field[B]) = {
-    field match {
-      case field: ApproximateField[_] => field.chop(x)
-      case _ => x
-    }
-  }
-
-  //  trait CollectionProxy[A] {
-  //    def filter(f: A => Boolean): CollectionProxy[A]
-  //    def toList: List[A]
-  //    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B]
-  //  }
-  //
-  //  class DListCollectionProxy[A <: Serializable](dList: com.nicta.scoobi.DList[A]) extends CollectionProxy[A] {
-  //    def this(seq: Seq[A])(implicit manifest: Manifest[A]) = this(com.nicta.scoobi.DList(seq: _*))
-  //    import net.tqft.toolkit.hadoop.ScoobiHelper._
-  //
-  //    def filter(f: A => Boolean): CollectionProxy[A] = new DListCollectionProxy(dList.filter(f))
-  //    def toList: List[A] = dList.hither.toList
-  //    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B] = {
-  //      import com.nicta.scoobi.WireFormat._
-  //      new DListCollectionProxy(dList.map(f))
-  //    }
-  //  }
-  //
-  //  class GenSeqCollectionProxy[A](seq: GenSeq[A]) extends CollectionProxy[A] {
-  //    def filter(f: A => Boolean): CollectionProxy[A] = new GenSeqCollectionProxy(seq.filter(f))
-  //    def toList: List[A] = seq.toList
-  //    def map[B <: Serializable](f: A => B)(implicit manifest: Manifest[B]): CollectionProxy[B] = {
-  //      new GenSeqCollectionProxy(seq.map(f))
-  //    }
-  //  }
 
   private def rowPriority(row: Seq[B])(implicit field: Field[B]) = {
     field match {
@@ -187,21 +156,10 @@ class Matrix[B](
     }
   }
 
-  private def elementOrdering(implicit field: Field[B]) = {
+  private def elementOrdering(implicit field: Field[B]): Ordering[B] = {
     field match {
       case field: OrderedField[_] => field
       case _ => new Ordering[B] { def compare(x: B, y: B) = 0 }
-    }
-  }
-  
-  // TODO just use sortBy, and get rid of this?
-  // but GenSeq doesn't have sortBy, lame.
-  private def selectTargetRow(rows: GenSeq[(Seq[B], Int)], rowIndexes: Seq[Int], forward: Boolean)(implicit field: Field[B]) = {
-    implicit val ordering = elementOrdering
-    if (forward) {
-      rows.map({ case (row, index) => (rowPriority(row), index) }).toList.sortBy(_._1).head._2
-    } else {
-      rowIndexes.head
     }
   }
 
@@ -211,6 +169,7 @@ class Matrix[B](
     // we carry around the row indexes separately, because remainingRows might be living off in Hadoop or something...
 
     implicit val bManifest = fieldElementManifest
+    import net.tqft.toolkit.hadoop.WiredCollections._
 
     @scala.annotation.tailrec
     def recurse(finishedRows: List[Seq[B]], remainingRows: GenSeq[(Seq[B], Int)], remainingIndexes: Seq[Int]): List[Seq[B]] = {
@@ -219,9 +178,14 @@ class Matrix[B](
       if (remainingIndexes.isEmpty) {
         finishedRows.reverse
       } else {
-        val targetRow = selectTargetRow(remainingRows, remainingIndexes, forward)
         
-        val h = remainingRows.filter(_._2 == targetRow).toList.head._1
+        val (h, targetRow) = if(forward) {
+          implicit val BOrdering = elementOrdering
+          remainingRows.minBy({ ri: (Seq[B], Int) => rowPriority(ri._1) })
+        } else {
+          remainingRows.minBy(_._2)
+        }
+        
         val rest = remainingRows.filter(_._2 != targetRow)
         val pp = pivotPosition2(h)
         val hn = if (forward) {
@@ -235,7 +199,7 @@ class Matrix[B](
 
         val others = pp match {
           case Some(k) => {
-            rest.map({
+            rest.invariantMap({
               case (row, index) =>
                 (if (row(k) == field.zero) {
                   if (forward) {
@@ -269,7 +233,7 @@ class Matrix[B](
     val resultList = recurse(Nil, rowsWithIndexes, 0 until numberOfRows toList).map(_.padLeft(numberOfColumns, field.zero))
 
     // TODO this is not so cool:
-    val bf = rows.genericBuilder[Seq[B]]
+    val bf = rows.newBuilder
     bf ++= resultList
     bf.result
   }
@@ -350,6 +314,7 @@ class Matrix[B](
 
   def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)
 }
+
 
 class MatrixCategoryOverRing[R](ring: Ring[R]) extends LinearCategory[Int, Matrix[R], R] {
   val inner = new AbstractMatrixCategory(ring)({ (sources: List[Unit], targets: List[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) })

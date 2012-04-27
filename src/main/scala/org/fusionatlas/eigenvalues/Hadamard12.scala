@@ -47,4 +47,6 @@ object Hadamard12 {
       (profile(i)(j)(q)(p) * profile(j)(k)(r)(q) * profile(k)(l)(s)(r) * profile(l)(i)(p)(s)).toByte
     }))
   })
+  
+//  lazy val half4 = 
 }
