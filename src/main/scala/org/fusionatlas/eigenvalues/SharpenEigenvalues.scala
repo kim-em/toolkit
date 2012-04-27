@@ -4,29 +4,33 @@ import net.tqft.toolkit.algebra.Matrix
 import net.tqft.toolkit.algebra.Matrices
 import net.tqft.toolkit.algebra.OrderedField
 import net.tqft.toolkit.algebra.ApproximateField
+import net.tqft.toolkit.algebra.ApproximateReals
 import net.tqft.toolkit.algebra.Gadgets.FractionalField
 import net.tqft.toolkit.algebra.Implicits
 import net.tqft.toolkit.functions.FixedPoint
 import net.tqft.toolkit.algebra.Gadgets
 import org.apfloat.Apfloat
 
+import net.tqft.toolkit.hadoop.WiredCollections._
+import com.nicta.scoobi.Scoobi.WireFormat
 
 import java.math.{ BigDecimal => jBigDecimal }
 
 object SharpenEigenvalues extends App {
   case class EigenvalueEstimate[D](approximateEigenvalue: D, approximateEigenvector: List[D])
 
-  def sharpenEigenvalueOneStep[D](matrix: Matrix[Byte], bounds: (D, D))(implicit field: ApproximateField[D]): EigenvalueEstimate[D] => EigenvalueEstimate[D] = { estimate =>
+  def sharpenEigenvalueOneStep[D: Manifest: WireFormat: ApproximateField](matrix: Matrix[Byte], bounds: (D, D)): EigenvalueEstimate[D] => EigenvalueEstimate[D] = { estimate =>
     println("sharpening one step")
-    
+
+    val field = implicitly[ApproximateField[D]]
     import field._
-    
+
     val matrices = Matrices.matricesOver(field, matrix.numberOfRows)
     val checkedEstimate = min(bounds._2, max(bounds._1, estimate.approximateEigenvalue))
 
-    val mm = Matrix(matrix.entries.zipWithIndex.map {
+    val mm = Matrix(matrix.entries.zipWithIndex.wireMap {
       case (row: scala.collection.mutable.WrappedArray[_], index) => {
-        val decimalRow = row.map(x => field.fromInt(x.toInt))
+        val decimalRow = row.map({ x: Byte => field.fromInt(x.toInt) })
         decimalRow(index) = subtract(decimalRow(index), checkedEstimate)
         decimalRow
       }
@@ -42,7 +46,8 @@ object SharpenEigenvalues extends App {
     EigenvalueEstimate(newEstimate, improvedEigenvector)
   }
 
-  def sharpenEigenvalue[D](matrix: Matrix[Byte], bounds: (D, D))(implicit field: ApproximateField[D]): EigenvalueEstimate[D] => EigenvalueEstimate[D] = { estimate =>
+  def sharpenEigenvalue[D: Manifest: WireFormat: ApproximateField](matrix: Matrix[Byte], bounds: (D, D)): EigenvalueEstimate[D] => EigenvalueEstimate[D] = { estimate =>
+    val field = implicitly[ApproximateField[D]]
     import FixedPoint._
     val fixedPoint = FixedPoint.sameTest({ (p: EigenvalueEstimate[D], q: EigenvalueEstimate[D]) => field.chop(field.subtract(field.quotient(p.approximateEigenvalue, q.approximateEigenvalue), field.one), field.multiply(field.epsilon, 1000)) == field.zero }) _
     fixedPoint(sharpenEigenvalueOneStep(matrix, bounds) _)(estimate)
@@ -51,10 +56,10 @@ object SharpenEigenvalues extends App {
   def findEigenvalueAndEigenvector(matrix: Matrix[Byte], bounds: (Double, Double), precision: Int): EigenvalueEstimate[Apfloat] = {
     require(matrix.numberOfColumns == matrix.numberOfRows)
 
-    val field = Gadgets.Apfloats(precision)
+    implicit val field: ApproximateReals[Apfloat] = Gadgets.Apfloats(precision)
     val initialEstimate =
       if (precision < 34) {
-        EigenvalueEstimate(field.fromDouble(bounds._1 + (bounds._2 - bounds._1) * 0.61239873 /* scala.util.Random.nextDouble */), List.fill(matrix.numberOfColumns)(field.fromDouble(scala.util.Random.nextDouble())))
+        EigenvalueEstimate(field.fromDouble(bounds._1 + (bounds._2 - bounds._1) * 0.61239873 /* scala.util.Random.nextDouble */ ), List.fill(matrix.numberOfColumns)(field.fromDouble(scala.util.Random.nextDouble())))
       } else {
         println("halving precision...")
         val EigenvalueEstimate(previousEstimate, previousEigenvector) = findEigenvalueAndEigenvector(matrix, bounds, 1 * precision / 2)
@@ -62,7 +67,22 @@ object SharpenEigenvalues extends App {
         EigenvalueEstimate(field.setPrecision(previousEstimate), previousEigenvector map { x => field.setPrecision(x) })
       }
     val sharpBounds = (field.fromDouble(bounds._1), field.fromDouble(bounds._2))
-    sharpenEigenvalue(matrix, sharpBounds)(field)(initialEstimate)
+    import com.nicta.scoobi.WireFormat._
+    implicit val ApfloatManifest = implicitly[Manifest[Apfloat]]
+    implicit val ApfloatWireFormat = new WireFormat[Apfloat] {
+      override def fromWire(in: java.io.DataInput): Apfloat = {
+        val l = in.readInt()
+        val b = new Array[Byte](l)
+        in.readFully(b, 0, l)
+        new Apfloat(new String(b, "utf-8"))
+      }
+      override def toWire(x: Apfloat, out: java.io.DataOutput) {
+        val b = x.toString(false).getBytes("utf-8")
+        out.writeInt(b.length)
+        out.write(b)
+      }
+    }
+    sharpenEigenvalue(matrix, sharpBounds)(ApfloatManifest, ApfloatWireFormat, field)(initialEstimate)
   }
 
   def findEigenvalue(matrix: Matrix[Byte], bounds: (Double, Double), precision: Int) = findEigenvalueAndEigenvector(matrix, bounds, precision).approximateEigenvalue
