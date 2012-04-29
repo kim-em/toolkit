@@ -31,7 +31,7 @@ libraryDependencies ++= Seq(
 	"com.google.guava" % "guava" % "r09",
    	"org.apache.commons" % "commons-math" % "2.2",
 	"org.apfloat" % "apfloat" % "1.6.3",
-	"com.nicta" %% "scoobi" % "0.4.0-SNAPSHOT" // % "provided"
+	"com.nicta" % "scoobi_2.9.1" % "0.4.0-SNAPSHOT" // % "provided"
 )
 
 
