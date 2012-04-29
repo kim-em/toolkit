@@ -11,10 +11,9 @@ import net.tqft.toolkit.functions.FixedPoint
 import net.tqft.toolkit.algebra.Gadgets
 import org.apfloat.Apfloat
 
-import net.tqft.toolkit.hadoop.WiredCollections._
+import net.tqft.toolkit.hadoop.HadoopMatrix
+import net.tqft.toolkit.hadoop.HadoopSeq
 import com.nicta.scoobi.Scoobi.WireFormat
-
-import java.math.{ BigDecimal => jBigDecimal }
 
 object SharpenEigenvalues extends App {
   case class EigenvalueEstimate[D](approximateEigenvalue: D, approximateEigenvector: List[D])
@@ -28,13 +27,19 @@ object SharpenEigenvalues extends App {
     val matrices = Matrices.matricesOver(field, matrix.numberOfRows)
     val checkedEstimate = min(bounds._2, max(bounds._1, estimate.approximateEigenvalue))
 
-    val mm = Matrix(matrix.entries.zipWithIndex.wireMap {
-      case (row: scala.collection.mutable.WrappedArray[_], index) => {
-        val decimalRow = row.map({ x: Byte => field.fromInt(x.toInt) })
-        decimalRow(index) = subtract(decimalRow(index), checkedEstimate)
-        decimalRow
+    def rowMapper(p: (Seq[Byte], Int)): scala.collection.mutable.WrappedArray[D] = {
+      val row = p._1.asInstanceOf[scala.collection.mutable.WrappedArray[Byte]]
+      val decimalRow = row.map({ x: Byte => field.fromInt(x.toInt) })
+      decimalRow(p._2) = subtract(decimalRow(p._2), checkedEstimate)
+      decimalRow
+    }
+    val mm: Matrix[D] = matrix match {
+      case hadoopMatrix: HadoopMatrix[_] => {
+        val zipped: HadoopSeq[(Seq[Byte], Int)] = hadoopMatrix.asInstanceOf[HadoopMatrix[D]].entries.zipWithIndex.asInstanceOf[HadoopSeq[(Seq[Byte], Int)]]
+        new HadoopMatrix(hadoopMatrix.numberOfColumns, zipped.wireMap[Seq[D]](rowMapper _))
       }
-    })
+      case _ => new Matrix(matrix.numberOfColumns, matrix.entries.zipWithIndex.map(rowMapper _))
+    }
     val aa = mm.preimageOf(estimate.approximateEigenvector).getOrElse(estimate.approximateEigenvector)
     val improvedEigenvector = normalize(aa)
     val action = (for (row <- matrix.entries) yield {
@@ -67,9 +72,8 @@ object SharpenEigenvalues extends App {
         EigenvalueEstimate(field.setPrecision(previousEstimate), previousEigenvector map { x => field.setPrecision(x) })
       }
     val sharpBounds = (field.fromDouble(bounds._1), field.fromDouble(bounds._2))
-    import com.nicta.scoobi.WireFormat._
     implicit val ApfloatManifest = implicitly[Manifest[Apfloat]]
-    implicit val ApfloatWireFormat = new WireFormat[Apfloat] {
+    implicit val ApfloatWireFormat = new com.nicta.scoobi.WireFormat[Apfloat] {
       override def fromWire(in: java.io.DataInput): Apfloat = {
         val l = in.readInt()
         val b = new Array[Byte](l)

@@ -116,8 +116,8 @@ class Matrix[B](
   override val numberOfColumns: Int,
   override val entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
 
-  def mapRows[A](rowMapper: Seq[B] => Seq[A], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
-  def mapEntries[A](entryMapper: B => A) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
+  def mapRows(rowMapper: Seq[B] => Seq[B], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
+  def mapEntries(entryMapper: B => B) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
 
   override def toString = (entries.toList.map { r => r.mkString("(", ", ", ")") }).mkString("\n")
 
@@ -146,7 +146,7 @@ class Matrix[B](
     }
   }
 
-  private def rowPriority(row: Seq[B])(implicit field: Field[B]) = {
+  private def rowPriority(row: Seq[B])(implicit field: Field[B]): (Int, B) = {
     field match {
       case o: OrderedField[_] => {
         implicit val orderedField = o

@@ -1,6 +1,7 @@
 package org.fusionatlas.eigenvalues
 
 import net.tqft.toolkit.hadoop.HadoopSeq
+import net.tqft.toolkit.hadoop.HadoopMatrix
 import net.tqft.toolkit.algebra.Matrix
 
 object SharpenEigenvaluesHadoop extends App {
@@ -9,6 +10,6 @@ object SharpenEigenvaluesHadoop extends App {
     case "3" => (Hadamard12.transfer3, (59.9, 60.1))
     case "4" => (Hadamard12.transfer4, (353.95, 352.97))
   }
-    val hadoopTarget = new Matrix(target.numberOfColumns, HadoopSeq.from(target.entries))
+    val hadoopTarget = new HadoopMatrix(target.numberOfColumns, HadoopSeq.from(target.entries))
     println(SharpenEigenvalues.findEigenvalue(hadoopTarget, bounds, 100))
 }

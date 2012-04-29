@@ -1,6 +1,6 @@
 package net.tqft.toolkit.hadoop
 
-import com.nicta.scoobi.Scoobi._
+import com.nicta.scoobi.Scoobi.{ DList, ScoobiApp }
 
 object Test extends ScoobiApp {
   val lines = DList("the quick brown fox jumps over the lazy dog", "scoobi and hadoop are fun")

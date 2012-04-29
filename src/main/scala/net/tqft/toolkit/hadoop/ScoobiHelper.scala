@@ -1,6 +1,6 @@
 package net.tqft.toolkit.hadoop
 
-import com.nicta.scoobi.Scoobi._
+import com.nicta.scoobi.Scoobi.{ DList, Job }
 import net.tqft.toolkit.Logging
 
 object ScoobiHelper {

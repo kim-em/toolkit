@@ -1,6 +1,7 @@
 package net.tqft.toolkit.hadoop
 
-import com.nicta.scoobi.Scoobi._
+import com.nicta.scoobi.Scoobi.DList
+import com.nicta.scoobi.Scoobi.WireFormat
 import scala.collection.SeqLike
 import scala.collection.generic.CanBuildFrom
 import scala.collection.generic.GenericCompanion
@@ -8,8 +9,9 @@ import scala.collection.GenIterable
 import scala.collection.GenSeq
 import scala.collection.mutable.Builder
 import net.tqft.toolkit.Logging
+import scala.collection.generic.GenericTraversableTemplate
 
-trait HadoopSeq[A] extends Seq[A] {
+trait HadoopSeq[A] extends Seq[A] with GenericTraversableTemplate[A, HadoopSeq] with SeqLike[A, HadoopSeq[A]] {
   def wireMap[B: Manifest: WireFormat](f: A => B): HadoopSeq[B]
   def invariantMap(f: A => A): HadoopSeq[A]
   def wireSortBy[B: Manifest: WireFormat: Ordering](f: A => B): HadoopSeq[A]
@@ -18,26 +20,33 @@ trait HadoopSeq[A] extends Seq[A] {
 
   def manifest: Manifest[A]
   def wireFormat: WireFormat[A]
+
+  override def companion = HadoopSeq
 }
 
-object HadoopSeq extends Logging { hadoopSeq =>
+object HadoopSeq extends GenericCompanion[HadoopSeq] with Logging { hadoopSeq =>
   private def serializingWireFormat[X]: WireFormat[X] = {
-//    ???
     warn("You are using java serialization as a Hadoop wire format. This is usually not a good idea.")
-    import com.nicta.scoobi.WireFormat._
-    implicitly[WireFormat[Serializable]].asInstanceOf[WireFormat[X]]
+//    import com.nicta.scoobi.WireFormat.AnythingFmt
+//    implicitly[WireFormat[Serializable]].asInstanceOf[WireFormat[X]]
+    ???
   }
 
   private def anyRefManifest[X]: Manifest[X] = {
     manifest[AnyRef].asInstanceOf[Manifest[X]]
   }
 
-  def from[A](elements: GenSeq[A])(implicit manifest: Manifest[A], wireFormat: WireFormat[A] = serializingWireFormat[A]): Seq[A] = {
-    info("Creating new DList with " + elements.size + " elements.")
-    val dList = DList(elements.seq.zipWithIndex: _*)
-    new HadoopSeqImpl(dList, TagState(true, true, hint = Some(0 until elements.size toList), sizeHint = Some(elements.size)))
+  def from[A](elements: GenSeq[A])(implicit manifest: Manifest[A], wireFormat: WireFormat[A]/* = serializingWireFormat[A]*/): HadoopSeq[A] = {
+    elements match {
+      case elements: HadoopSeq[_] => elements.asInstanceOf[HadoopSeq[A]]
+      case _ => {
+        info("Creating new DList with " + elements.size + " elements.")
+        val dList = DList(elements.seq.zipWithIndex: _*)
+        new HadoopSeqImpl(dList, TagState(true, true, hint = Some(0 until elements.size toList), sizeHint = Some(elements.size)))
+      }
+    }
   }
-  def apply[A](elements: A*)(implicit manifest: Manifest[A], wireFormat: WireFormat[A] = serializingWireFormat[A]): Seq[A] = from(elements)
+  def apply[A](elements: A*)(implicit manifest: Manifest[A], wireFormat: WireFormat[A]/* = serializingWireFormat[A]*/): HadoopSeq[A] = from(elements)
   //    // TODO is this ridiculous? do we need to chunk?
   //    // TODO can we use futures to write the data in the background?
   //    override def newBuilder[A] = new Builder[A, Seq[A]] {
@@ -56,7 +65,7 @@ object HadoopSeq extends Logging { hadoopSeq =>
   //        this
   //      }
   //    }
-  def newBuilder[A: Manifest: WireFormat] = new Builder[A, Seq[A]] {
+  def newWiredBuilder[A: Manifest: WireFormat] = new Builder[A, HadoopSeq[A]] {
     val listBuffer = new scala.collection.mutable.ListBuffer[A]
     override def result = HadoopSeq.from(listBuffer)
     override def clear = {
@@ -68,12 +77,10 @@ object HadoopSeq extends Logging { hadoopSeq =>
     }
   }
 
-  private object HadoopSeqCompanion extends GenericCompanion[Seq] {
-    override def newBuilder[A] = {
-      implicit val aManifest = anyRefManifest[A]
-      implicit val aWireFormat = serializingWireFormat[A]
-      HadoopSeq.newBuilder[A]
-    }
+  override def newBuilder[A] = {
+    implicit val aManifest = anyRefManifest[A]
+    implicit val aWireFormat = serializingWireFormat[A]
+    HadoopSeq.newWiredBuilder[A]
   }
 
   case class TagState(packed: Boolean, ordered: Boolean, hint: Option[List[Int]], sizeHint: Option[Int])
@@ -81,11 +88,9 @@ object HadoopSeq extends Logging { hadoopSeq =>
   object TagState {
     def apply(size: Int): TagState = TagState(true, true, Some(0 until size toList), Some(size))
   }
-  
+
   private class HadoopSeqImpl[A](val dList: DList[(A, Int)], val tagState: TagState)(implicit val manifest: Manifest[A], val wireFormat: WireFormat[A]) extends HadoopSeq[A] {
     import ScoobiHelper._
-
-    override def companion = HadoopSeqCompanion
 
     override def filter(f: A => Boolean) = new HadoopSeqImpl(dList.filter(p => f(p._1)), TagState(false, tagState.ordered, None, None))
     override def iterator = {
@@ -134,6 +139,7 @@ object HadoopSeq extends Logging { hadoopSeq =>
         tagsCache = ((tagState.packed && tagState.ordered, sizeCache) match {
           case (true, Some(size)) => Some(0 until size toList)
           case _ => {
+            ???
             info("Querying tags on HadoopSeq.")
             Some(dList.map(_._2).hither.toList)
           }
@@ -152,9 +158,9 @@ object HadoopSeq extends Logging { hadoopSeq =>
       }
     }
 
-    override def mkString(start: String, sep: String, end: String) = start + (map(_.toString).reduce(_ + sep + _)) + end
+    override def mkString(start: String, sep: String, end: String) = start + (map({ a: A => a.toString }).reduce(_ + sep + _)) + end
 
-    override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[Seq[A], (A1, Int), That]): That = {
+    override def zipWithIndex[A1 >: A, That](implicit bf: CanBuildFrom[HadoopSeq[A], (A1, Int), That]): That = {
       if (tagState.packed) {
         new HadoopSeqImpl(dList.map(p => ((p._1, p._2), p._2)), TagState(true, tagState.ordered, tagsCache, sizeCache)).asInstanceOf[That]
       } else {
@@ -165,7 +171,7 @@ object HadoopSeq extends Logging { hadoopSeq =>
 
     private def replaceTags(f: Map[Int, Int]): HadoopSeqImpl[A] = {
       val newTags = tags.map(f)
-      val packed = (newTags == (0 until f.size).toList)
+      val packed = (newTags.toSet == (0 until f.size).toSet)
       val ordered = newTags == newTags.sorted
       new HadoopSeqImpl(dList.map(p => (p._1, f(p._2))), TagState(packed, ordered, Some(newTags), Some(f.size)))
     }
@@ -174,13 +180,28 @@ object HadoopSeq extends Logging { hadoopSeq =>
       replaceTags(tags.zipWithIndex.toMap)
     }
 
+    override def min[B >: A](implicit cmp: Ordering[B]): A = {
+      reduce((x, y) => if (cmp.lteq(x, y)) x else y)
+    }
+
+    override def max[B >: A](implicit cmp: Ordering[B]): A = {
+      reduce((x, y) => if (cmp.gteq(x, y)) x else y)
+    }
+
+    override def maxBy[B](f: A => B)(implicit cmp: Ordering[B]): A = {
+      reduce((x, y) => if (cmp.gteq(f(x), f(y))) x else y)
+    }
+    override def minBy[B](f: A => B)(implicit cmp: Ordering[B]): A = {
+      reduce((x, y) => if (cmp.lteq(f(x), f(y))) x else y)
+    }
+
     override def wireSortBy[B: Manifest: WireFormat: Ordering](f: A => B): HadoopSeq[A] = {
       val values = dList.map(p => (f(p._1), p._2)).hither.toList
       tagsCache = Some(values.map(_._2))
       val tagIndexer = values.sortBy({ p: (B, Int) => p._1 }).map(_._2).zipWithIndex.toMap
       replaceTags(tagIndexer)
     }
-    override def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Seq[A] = {
+    override def sortBy[B](f: A => B)(implicit ord: Ordering[B]): HadoopSeq[A] = {
       implicit val bManifest = anyRefManifest[B]
       implicit val bWireFormat = serializingWireFormat[B]
 
@@ -203,7 +224,7 @@ object HadoopSeq extends Logging { hadoopSeq =>
       new HadoopSeqImpl(dList.map(p => (f(p._1), p._2)), tagState.copy(hint = tagsCache, sizeHint = sizeCache))
     }
 
-    override def map[B, That](f: (A) => B)(implicit bf: CanBuildFrom[Seq[A], B, That]): That = {
+    override def map[B, That](f: (A) => B)(implicit bf: CanBuildFrom[HadoopSeq[A], B, That]): That = {
       implicit val bManifest = anyRefManifest[B]
       implicit val bWireFormat = serializingWireFormat[B]
 
@@ -226,7 +247,7 @@ object HadoopSeq extends Logging { hadoopSeq =>
       ???
     }
 
-    override def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[Seq[A], (A1, B), That]): That = {
+    override def zip[A1 >: A, B, That](that: GenIterable[B])(implicit bf: CanBuildFrom[HadoopSeq[A], (A1, B), That]): That = {
       (if (that.isInstanceOf[HadoopSeq[_]]) {
         wireZip(that.asInstanceOf[HadoopSeq[B]])
       } else {
@@ -239,7 +260,7 @@ object HadoopSeq extends Logging { hadoopSeq =>
     }
 
     // breaks unless B = A
-    override def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[Seq[A], B, That]): That = {
+    override def patch[B >: A, That](from: Int, patch: GenSeq[B], replaced: Int)(implicit bf: CanBuildFrom[HadoopSeq[A], B, That]): That = {
       val patchLength = patch.size
       val patchDList = patch match {
         case patch: HadoopSeqImpl[_] => for ((a, i) <- patch.asInstanceOf[HadoopSeqImpl[A]].packTags.dList) yield { (a, i + from) }

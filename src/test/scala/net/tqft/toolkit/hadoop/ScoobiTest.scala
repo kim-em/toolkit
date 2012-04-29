@@ -5,7 +5,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
-import com.nicta.scoobi.Scoobi._
+import com.nicta.scoobi.Scoobi.DList
 import ScoobiHelper._
 
 @RunWith(classOf[JUnitRunner])
