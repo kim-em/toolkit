@@ -2,12 +2,12 @@ name := "toolkit"
 
 organization := "net.tqft.toolkit"
 
-version := "0.1.4"
+version := "0.1.5"
 
 scalaVersion := "2.9.1"
 
-// in order to compile against 2.10.0-M2, you need to run the hack described at http://www.scala-lang.org/node/12251
-crossScalaVersions := Seq("2.9.0", "2.9.1", "2.9.2", "2.10.0-M2")
+// in order to compile against 2.10.0-M3, you need to run the hack described at http://www.scala-lang.org/node/12251
+crossScalaVersions := Seq("2.9.1", "2.9.2")
 
 resolvers ++= Seq(
 	"Java.net Maven2 Repository" at "http://download.java.net/maven/2/",
@@ -16,10 +16,6 @@ resolvers ++= Seq(
 	"Sonatype Nexus Releases" at "https://oss.sonatype.org/content/repositories/releases",
 	"Scala Snapshots" at "http://scala-tools.org/repo-snapshots/"
 )
-
-resolvers += "Cloudera Maven Repository" at "https://repository.cloudera.com/content/repositories/releases/"
-
-resolvers += "Packaged Avro" at "http://nicta.github.com/scoobi/releases/"
 
 libraryDependencies ++= Seq(
 	"junit" % "junit" % "4.8" % "test",
@@ -30,11 +26,8 @@ libraryDependencies ++= Seq(
 	"com.google.code.typica" % "typica" % "1.7.2",
 	"com.google.guava" % "guava" % "r09",
    	"org.apache.commons" % "commons-math" % "2.2",
-	"org.apfloat" % "apfloat" % "1.6.3",
-	"com.nicta" % "scoobi_2.9.1" % "0.4.0-SNAPSHOT" // % "provided"
+	"org.apfloat" % "apfloat" % "1.6.3"
 )
-
-
 
 libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>
     	deps :+ ("org.scala-lang" % "scala-compiler" % sv)

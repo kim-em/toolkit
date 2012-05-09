@@ -169,7 +169,7 @@ class Matrix[B](
     // we carry around the row indexes separately, because remainingRows might be living off in Hadoop or something...
 
     implicit val bManifest = fieldElementManifest
-    import net.tqft.toolkit.hadoop.WiredCollections._
+//    import net.tqft.toolkit.hadoop.WiredCollections._
 
     @scala.annotation.tailrec
     def recurse(finishedRows: List[Seq[B]], remainingRows: GenSeq[(Seq[B], Int)], remainingIndexes: Seq[Int]): List[Seq[B]] = {
@@ -199,7 +199,7 @@ class Matrix[B](
 
         val others = pp match {
           case Some(k) => {
-            rest.invariantMap({
+            rest.map({
               case (row, index) =>
                 (if (row(k) == field.zero) {
                   if (forward) {
@@ -233,7 +233,9 @@ class Matrix[B](
     val resultList = recurse(Nil, rowsWithIndexes, 0 until numberOfRows toList).map(_.padLeft(numberOfColumns, field.zero))
 
     // TODO this is not so cool:
-    val bf = rows.newBuilder
+    // need this from WiredCollection
+//    val bf = rows.newBuilder
+    val bf = rows.genericBuilder[Seq[B]]
     bf ++= resultList
     bf.result
   }
