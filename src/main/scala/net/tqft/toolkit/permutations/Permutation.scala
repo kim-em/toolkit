@@ -5,10 +5,10 @@ import net.tqft.toolkit.arithmetic.BinomialCoefficient
 import net.tqft.toolkit.functions.Memo
 
 object Permutations {
-  type Permutation = List[Int]
+  type Permutation = Seq[Int]
 
   class RichPermutation(p: Permutation) {
-    def permute[A](s: List[A]): List[A] = {
+    def permute[A](s: Seq[A]): Seq[A] = {
       for (n <- p) yield { s(n) }
     }
     def inverse(): Permutation = {
@@ -19,7 +19,8 @@ object Permutations {
   implicit def Permutation2RichPermutation(p: Permutation) = new RichPermutation(p)
 
   def identity(n: Int): Permutation = (0 to n - 1).toList
-
+  def inverse(x: Permutation): Permutation = x.zipWithIndex.sorted.map(_._2)
+  
   // return all permutations which take list1 to list2
   def mapping[A](list1: List[A], list2: List[A]): Iterable[Permutation] = {
     findOneMapping(list1, list2) match {
@@ -34,10 +35,10 @@ object Permutations {
     }
   }
   
-  def findOneMapping[A](list1: List[A], list2: List[A]): Option[Permutation] = findOneMappingWithSameTest(list1, list2)({ case (a, b) => a == b })
+  def findOneMapping[A](list1: List[A], list2: List[A]): Option[List[Int]] = findOneMappingWithSameTest(list1, list2)({ case (a, b) => a == b })
 
   // TODO we only use this for relatively short lists; otherwise it should be tail-recursive
-  def findOneMappingWithSameTest[A](list1: List[A], list2: List[A])(implicit sameTest: (A, A) => Boolean): Option[Permutation] = {
+  def findOneMappingWithSameTest[A](list1: List[A], list2: List[A])(implicit sameTest: (A, A) => Boolean): Option[List[Int]] = {
     list2 match {
       case list2Head :: list2Tail =>
         list1.indexWhere(sameTest(_, list2Head)) match {
@@ -65,7 +66,7 @@ object Permutations {
             None
           } else {
             val l = p lastIndexWhere { _ > p(k) }
-            Some(p.take(k) ::: List(p(l)) ::: (p.slice(k + 1, l) ::: List(p(k)) ::: p.drop(l + 1)).reverse)
+            Some(p.take(k) ++ Seq(p(l)) ++ (p.slice(k + 1, l) ++ Seq(p(k)) ++ p.drop(l + 1)).reverse)
           }
         })
     }
@@ -78,7 +79,7 @@ object Permutations {
   }
   def randomPermutationsOf(n: Int) = NonStrictIterable.continually(randomPermutationOf(n))
 
-  def of[A](l: List[A]): Iterable[List[A]] = {
+  def of[A](l: List[A]): Iterable[Seq[A]] = {
     of(l.size) map (_ permute l)
   }
 

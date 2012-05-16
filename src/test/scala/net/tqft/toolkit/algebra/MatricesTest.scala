@@ -17,14 +17,13 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
   import Implicits.Doubles
 
   "Matrix operations" should "be correct" in {
-
     val m: Matrix[Fraction[Int]] = Matrix(3, List(List(1, 2, 3), List(4, 5, 6), List(5, 7, 9)))
 
     m.rank() should equal(2)
 
     val intMatrix = Matrix(3, List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)))
     val rationalMatrix = Matrices.matricesOver(3)(Gadgets.integersAsRationals)(intMatrix)
-    rationalMatrix.nullSpace(Gadgets.Rationals).numberOfColumns should equal(1)
+    rationalMatrix.nullSpace(Gadgets.Rationals).size should equal(1)
 
   }
 
@@ -57,4 +56,8 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
     m2.preimageOf(a2) should equal(Some(b2))
   }
 
+  "characteristicPolynomial" should "work" in {
+    val m: Matrix[Fraction[Int]] = Matrix(2, List(List(20, 12), List(12, 60)))
+    m.characteristicPolynomial should equal(Polynomial((0, Fraction(1056, 1)), (1, Fraction(-80, 1)), (2, Fraction(1, 1))))
+  }
 }

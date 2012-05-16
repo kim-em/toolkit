@@ -3,7 +3,7 @@ package net.tqft.toolkit.algebra
 sealed trait Fraction[A] extends Serializable {
   def denominator: A
   def numerator: A
-  
+
   override def toString = numerator.toString + " / " + denominator.toString
   override def equals(other: Any) = {
     other match {
@@ -19,15 +19,15 @@ object Fraction {
     new Fraction[A] {
       val numerator = ring.quotient(_numerator, gcd)
       val denominator = ring.quotient(_denominator, gcd)
-      
-      if(denominator.isInstanceOf[BigInt]) {
-        if(denominator.asInstanceOf[BigInt].compare(BigInt(0)) < 0) require(false)
+
+      if (denominator.isInstanceOf[BigInt]) {
+        if (denominator.asInstanceOf[BigInt].compare(BigInt(0)) < 0) require(false)
       }
     }
   }
-  
+
   def alreadyReduced[A](_numerator: A, _denominator: A): Fraction[A] = new Fraction[A] { val numerator = _numerator; val denominator = _denominator }
-  
+
   implicit def toMathematicaExpression[A <% net.tqft.toolkit.mathematica.MathematicaExpression](f: Fraction[A]) = new net.tqft.toolkit.mathematica.ShortMathematicaExpression {
     def toMathematicaInputString = "(" + f.numerator.toMathematicaInputString + ")/(" + f.denominator.toMathematicaInputString + ")"
   }
@@ -36,15 +36,36 @@ object Fraction {
 object NumberField {
   def apply[A](p: Polynomial[A])(implicit field: Field[A]) = new Field[Polynomial[A]] {
     val polynomials = Polynomials.over(field)
-    
+
     def normalize(q: Polynomial[A]) = polynomials.remainder(q, p)
-    
+
     def inverse(q: Polynomial[A]) = (extendedEuclideanAlgorithm(p, q) ensuring { _._3 == one })._1
     def negate(q: Polynomial[A]) = polynomials.negate(q)
     def zero = polynomials.zero
     def one = normalize(polynomials.one)
     def multiply(a: Polynomial[A], b: Polynomial[A]) = normalize(polynomials.multiply(a, b))
     def add(a: Polynomial[A], b: Polynomial[A]) = polynomials.multiply(a, b)
+  }
+}
+
+object Mod {
+  def apply(p: Int) = {
+    require(p < scala.math.sqrt(Integer.MAX_VALUE))
+    require(BigInt(p).isProbablePrime(60))
+    new Field[Int] with Elements[Int] {
+      import net.tqft.toolkit.arithmetic.Mod._
+
+      def elements = (0 until p).toSet
+      def inverse(x: Int) = {
+        if(x == 0) throw new ArithmeticException("/ by zero")
+        Gadgets.Integers.extendedEuclideanAlgorithm(x, p)._1
+      }
+      def negate(x: Int) = (p - x) mod p
+      def zero = 0
+      def one = 1
+      override def multiply(x: Int, y: Int) = (x * y) mod p
+      def add(x: Int, y: Int) = (x + y) mod p
+    }
   }
 }
 
@@ -68,22 +89,22 @@ object Fields extends HomomorphismCategory[Field] {
   }
 
   class FieldOfFractions[A](ring: EuclideanDomain[A]) extends Field[Fraction[A]] {
-      implicit val _ring = ring
-      def one = Fraction(ring.one, ring.one)
-      def zero = Fraction(ring.zero, ring.one)
-      def multiply(x: Fraction[A], y: Fraction[A]) = Fraction(ring.multiply(x.numerator, y.numerator), ring.multiply(x.denominator, y.denominator))
-      def add(x: Fraction[A], y: Fraction[A]) = {
-        val denominatorGCD = ring.gcd(x.denominator, y.denominator)
-        Fraction(ring.add(ring.multiply(x.numerator, ring.quotient(y.denominator, denominatorGCD)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.numerator)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.denominator))
-      }
-      def negate(x: Fraction[A]) = Fraction(ring.negate(x.numerator), x.denominator)
-      def inverse(x: Fraction[A]) = Fraction(x.denominator, x.numerator)
+    implicit val _ring = ring
+    def one = Fraction(ring.one, ring.one)
+    def zero = Fraction(ring.zero, ring.one)
+    def multiply(x: Fraction[A], y: Fraction[A]) = Fraction(ring.multiply(x.numerator, y.numerator), ring.multiply(x.denominator, y.denominator))
+    def add(x: Fraction[A], y: Fraction[A]) = {
+      val denominatorGCD = ring.gcd(x.denominator, y.denominator)
+      Fraction(ring.add(ring.multiply(x.numerator, ring.quotient(y.denominator, denominatorGCD)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.numerator)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.denominator))
     }
-  
+    def negate(x: Fraction[A]) = Fraction(ring.negate(x.numerator), x.denominator)
+    def inverse(x: Fraction[A]) = Fraction(x.denominator, x.numerator)
+  }
+
   val fieldOfFractions = new Functor[EuclideanDomain, Field, Fraction] { self =>
     def source = EuclideanDomains
     def target = Fields
-    def apply[A](ring: EuclideanDomain[A]): Field[Fraction[A]] =  new FieldOfFractions(ring)
+    def apply[A](ring: EuclideanDomain[A]): Field[Fraction[A]] = new FieldOfFractions(ring)
     def apply[A](ring: OrderedEuclideanDomain[A]): OrderedField[Fraction[A]] = new FieldOfFractions(ring) with OrderedField[Fraction[A]] {
       def compare(x: Fraction[A], y: Fraction[A]) = ring.compare(ring.multiply(x.numerator, y.denominator), ring.multiply(y.numerator, x.denominator))
     }

@@ -11,10 +11,17 @@ import scala.math._
 class PermutationTest extends FlatSpec with ShouldMatchers {
 
   "of" should "0 should have size 1" in {
-	  Permutations.of(0) should have size(1)
+    Permutations.of(0) should have size (1)
   }
   "of" should "1 should have size 1" in {
-	  Permutations.of(1) should have size(1)
+    Permutations.of(1) should have size (1)
+  }
+
+  "inverse" should "give the inverse permutation" in {
+    import Permutations._
+    for (p <- randomPermutationsOf(7).take(5)) {
+      p permute inverse(p) should equal(identity(7))
+    }
   }
 
 }
