@@ -34,6 +34,7 @@ object Gadgets {
   }
 
   val Integers: OrderedEuclideanDomain[Int] = new IntegralEuclideanDomain(scala.math.Numeric.IntIsIntegral)
+  val Longs: OrderedEuclideanDomain[Long] = new IntegralEuclideanDomain(scala.math.Numeric.LongIsIntegral)
   val BigIntegers: OrderedEuclideanDomain[BigInt] = new IntegralEuclideanDomain(scala.math.Numeric.BigIntIsIntegral)
   val Doubles: OrderedField[Double] = new FractionalField(scala.math.Numeric.DoubleIsFractional)
 

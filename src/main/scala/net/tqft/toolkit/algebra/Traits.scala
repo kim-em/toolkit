@@ -3,6 +3,13 @@ import net.tqft.toolkit.mathematica.MathematicaExpression
 
 trait Semigroup[A] {
   def multiply(x: A, y: A): A
+  def multiply(x0: A, x1: A*): A = {
+    x1.size match {
+      case 0 => x0
+      case 1 => multiply(x0, x1.head)
+      case _ => multiply(x0, multiply(x1.head, x1.tail: _*))
+    }
+  }
   def power(x: A, k: Int): A = {
     require(k >= 1)
     List.fill(k)(x).reduce(multiply(_, _))
@@ -14,6 +21,11 @@ trait One[A] {
 }
 
 trait Monoid[A] extends Semigroup[A] with One[A] {
+  def multiply(xs: Seq[A]): A = xs.size match {
+    case 0 => one
+    case 1 => xs.head
+    case _ => multiply(xs.head, xs.tail:_*)
+  }
   override def power(x: A, k: Int): A = {
     require(k >= 0)
     List.fill(k)(x).foldLeft(one)(multiply(_, _))
@@ -154,6 +166,22 @@ trait EuclideanDomain[A] extends CommutativeRing[A] {
   }
 
   def gcd(x: A, y: A): A = euclideanAlgorithm(x, y) // ensuring { _ == extendedEuclideanAlgorithm(x, y)._3 }
+  def gcd(xs: A*): A = {
+    xs.size match {
+      case 0 => one
+      case 1 => xs.head
+      case _ => gcd((gcd(xs(0), xs(1)) +: xs.drop(2)): _*)
+    }
+  }
+  def lcm(x: A, y: A): A = quotient(multiply(x, y), gcd(x, y))
+  def lcm(xs: A*): A = {
+    xs.size match {
+      case 0 => one
+      case 1 => xs.head
+      case _ => lcm((lcm(xs(0), xs(1)) +: xs.drop(2)): _*)
+    }
+  }
+
 }
 
 trait OrderedEuclideanDomain[A] extends EuclideanDomain[A] with Ordering[A] {
@@ -208,7 +236,7 @@ trait ApproximateField[A] extends OrderedField[A] {
   // TODO this should probably use epsilon to decide to fixed point
   def sqrt(x: A): A = {
     import net.tqft.toolkit.functions.FixedPoint
-    val initialGuess = one //new BigDecimal(x.underlying.scaleByPowerOfTen(-x.scale / 2), x.mc)
+    val initialGuess = one
     val result = abs(FixedPoint.sameTest(close _)({ g: A => quotient(add(quotient(x, g), g), fromInt(2)) })(initialGuess))
     result
   }
@@ -387,3 +415,13 @@ trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanD
   }
 
 }
+
+trait Enumerable[A] {
+  def elements: Iterable[A]
+}
+
+trait Elements[A] extends Enumerable[A] {
+  override def elements: Set[A]
+  def size = elements.size
+}
+

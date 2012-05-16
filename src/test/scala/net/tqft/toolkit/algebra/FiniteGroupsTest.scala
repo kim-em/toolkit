@@ -17,10 +17,10 @@ class FiniteGroupsTest extends FlatSpec with ShouldMatchers {
     g.verifyAssociativity
     g.verifyNormalSubgroup(g.elements)
     
-    val s1 = FiniteGroups.subgroup(g, Set((0, false), (0, true)))
-    val s2 = FiniteGroups.subgroup(g, Set((0, false), (2, false)))
-    val s3 = FiniteGroups.subgroup(g, Set((0, false), (2, true)))
-    val s4 = FiniteGroups.subgroup(g, Set((0, false), (0, true), (2, false), (2, true)))
+    val s1 = g.subgroup(Set((0, false), (0, true)))
+    val s2 = g.subgroup(Set((0, false), (2, false)))
+    val s3 = g.subgroup(Set((0, false), (2, true)))
+    val s4 = g.subgroup(Set((0, false), (0, true), (2, false), (2, true)))
     
     for(s <- List(s1,s2,s3,s4)) g.verifySubgroup(s.elements)
     
@@ -34,16 +34,16 @@ class FiniteGroupsTest extends FlatSpec with ShouldMatchers {
     d6.verifyAssociativity
     d6.verifyNormalSubgroup(d6.elements)
 
-    val s = FiniteGroups.subgroup(d6, Set((0,true), (3,true), (0,false), (3,false)))
+    val s = d6.subgroup(Set((0,true), (3,true), (0,false), (3,false)))
     s.verifyInverses
     
     FiniteGroups.quotient(d6, s).elements.size should equal(3)
   }
   "doubleCosets" should "work" in {
     val d6 = FiniteGroups.dihedralGroup(6)
-    val h = FiniteGroups.subgroup(d6, Set((1,true), (4,true), (0,false), (3,false)))
+    val h = d6.subgroup(Set((1,true), (4,true), (0,false), (3,false)))
     d6.verifySubgroup(h.elements)
-    val g = FiniteGroups.subgroup(d6, Set((0,true), (3,true), (0,false), (3,false)))
+    val g = d6.subgroup(Set((0,true), (3,true), (0,false), (3,false)))
     d6.verifySubgroup(g.elements)
     
     FiniteGroups.doubleCosets(d6, h, g).size should equal (2)

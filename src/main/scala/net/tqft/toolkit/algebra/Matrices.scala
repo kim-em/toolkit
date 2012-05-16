@@ -8,6 +8,7 @@ object Matrices {
   def matricesOver(size: Int) = new Endofunctor[Ring, Matrix] { self =>
     def source = Rings
     def target = Rings
+    // TODO should use endomorphismAlgebra, so we can multiply by scalars from A
     def apply[A](ring: Ring[A]): Ring[Matrix[A]] = new MatrixCategoryOverRing(ring).endomorphismRing(size)
     def apply[A, B](hom: Homomorphism[Ring, A, B]): RingHomomorphism[Matrix[A], Matrix[B]] = new RingHomomorphism[Matrix[A], Matrix[B]] {
       def source = self.apply(hom.source)
@@ -139,7 +140,7 @@ class Matrix[B](
     new Matrix(numberOfColumns + other.numberOfColumns, (entries zip other.entries) map { case (r1, r2) => r1 ++ r2 })
   }
 
-  def apply(vector: List[B])(implicit field: Field[B]) = {
+  def apply(vector: Seq[B])(implicit field: Field[B]) = {
     for (row <- entries) yield {
       import AlgebraicNotation._
       sum(for ((x, y) <- row zip vector) yield field.multiply(x, y))(field)
@@ -169,23 +170,23 @@ class Matrix[B](
     // we carry around the row indexes separately, because remainingRows might be living off in Hadoop or something...
 
     implicit val bManifest = fieldElementManifest
-//    import net.tqft.toolkit.hadoop.WiredCollections._
+    //    import net.tqft.toolkit.hadoop.WiredCollections._
 
     @scala.annotation.tailrec
     def recurse(finishedRows: List[Seq[B]], remainingRows: GenSeq[(Seq[B], Int)], remainingIndexes: Seq[Int]): List[Seq[B]] = {
-      println("finished " + finishedRows.size + " rows")
+//      println("finished " + finishedRows.size + " rows")
 
       if (remainingIndexes.isEmpty) {
         finishedRows.reverse
       } else {
-        
-        val (h, targetRow) = if(forward) {
+
+        val (h, targetRow) = if (forward) {
           implicit val BOrdering = elementOrdering
           remainingRows.minBy({ ri: (Seq[B], Int) => rowPriority(ri._1) })
         } else {
           remainingRows.minBy(_._2)
         }
-        
+
         val rest = remainingRows.filter(_._2 != targetRow)
         val pp = pivotPosition2(h)
         val hn = if (forward) {
@@ -234,7 +235,7 @@ class Matrix[B](
 
     // TODO this is not so cool:
     // need this from WiredCollection
-//    val bf = rows.newBuilder
+    //    val bf = rows.newBuilder
     val bf = rows.genericBuilder[Seq[B]]
     bf ++= resultList
     bf.result
@@ -267,6 +268,7 @@ class Matrix[B](
     }
   }
 
+  // TODO move down to SquareMatrix?
   def inverse(implicit field: Field[B]): Option[Matrix[B]] = {
     if (numberOfRows != numberOfColumns) {
       None
@@ -285,8 +287,27 @@ class Matrix[B](
     }
   }
 
-  // returns a basis for the nullspace as the columns of a new matrix
-  def nullSpace(implicit field: Field[B]): Matrix[B] = {
+  def determinant(implicit field: Field[B]): B = {
+    require(numberOfRows == numberOfColumns)
+    field.multiply(rowEchelonForm.entries.zipWithIndex.map({ case (r, i) => r(i) }).seq)
+  }
+
+  def characteristicPolynomial(implicit field: Field[B]): Polynomial[B] = {
+    require(numberOfRows == numberOfColumns)
+
+    implicit val rationalFunctions = RationalFunctions.over(field)
+    val functionMatrices = Matrices.matricesOver(rationalFunctions, numberOfRows)
+    val lift = Matrices.matricesOver(numberOfRows)(RationalFunctions.embeddingAsConstants(field))(this)
+    val lambda = functionMatrices.scalarMultiply(RationalFunction.identity, functionMatrices.one)
+    val determinant = functionMatrices.subtract(lambda, lift).determinant
+    require(determinant.denominator == Polynomials.embeddingAsConstants(field)(field.one))
+    determinant.numerator
+  }
+  
+  def eigenvalues(implicit field: Field[B] with Elements[B]): Set[B] = characteristicPolynomial.roots
+
+  // returns a basis for the nullspace
+  def nullSpace(implicit field: Field[B]): Seq[Seq[B]] = {
     val reduced = reducedRowEchelonForm.entries
 
     val pivots = reduced.zipWithIndex map { case (row, i) => (i, pivotPosition2(row)) } collect { case (i, Some(j)) => (i, j) }
@@ -311,12 +332,11 @@ class Matrix[B](
       }
     }
 
-    Matrix(generators.size, entries)
+    entries.transpose
   }
 
   def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)
 }
-
 
 class MatrixCategoryOverRing[R](ring: Ring[R]) extends LinearCategory[Int, Matrix[R], R] {
   val inner = new AbstractMatrixCategory(ring)({ (sources: List[Unit], targets: List[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) })
@@ -330,6 +350,7 @@ class MatrixCategoryOverRing[R](ring: Ring[R]) extends LinearCategory[Int, Matri
   override def target(x: Matrix[R]) = x.numberOfRows
   override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => r map { x => ring.multiply(a, x) } })
 
+  override def endomorphismRing(o: Int) = ???
 }
 
 class MatrixCategoryOverField[F](field: Field[F]) extends MatrixCategoryOverRing(field) with LinearCategory[Int, Matrix[F], F] {
