@@ -23,4 +23,13 @@ class NumberFieldTest extends FlatSpec with ShouldMatchers {
     nf.multiply(q1, q1) should equal(Polynomial(0 -> Fraction(1129, 15625), 2 -> Fraction(-228, 15625), 4 -> Fraction(-276, 15625)))
   }
 
+  "Cyclotomic field arithmetic" should "be correct" in {
+    implicit val rationals = Gadgets.Rationals
+    val cyclotomicNumbers = NumberField.cyclotomic(6)(rationals)
+    val zeta = Polynomial.identity(rationals)
+    cyclotomicNumbers.multiply(cyclotomicNumbers.power(zeta, 1), 0) should equal(cyclotomicNumbers.zero)
+    cyclotomicNumbers.multiply(cyclotomicNumbers.power(zeta, 0), 1) should not equal(cyclotomicNumbers.zero)
+    cyclotomicNumbers.add(cyclotomicNumbers.multiply(cyclotomicNumbers.power(zeta, 0), 1), cyclotomicNumbers.multiply(cyclotomicNumbers.power(zeta, 1), 0))  should not equal(cyclotomicNumbers.zero)
+  }
+  
 }

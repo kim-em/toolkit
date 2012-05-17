@@ -8,7 +8,7 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   override def toString = if (terms.isEmpty) {
     "0"
   } else {
-    (terms map { case (g, p) => p.toString + " * x^(" + g.toString + ")" }).mkString(" + ")
+    (terms map { case (g, p) => p.toString + (if(g == 0) "" else " * x^(" + g.toString + ")") }).mkString(" + ")
   }
 
   def minimumDegree = (terms map { _._1 }) minOption
@@ -26,7 +26,14 @@ object Polynomial {
   def apply[A](terms: Map[Int, A])(implicit ring: Ring[A]) = Polynomials.over(ring).wrap(terms)
 
   def identity[A](implicit ring: Ring[A]) = apply((1, ring.one))
-  
+
+  def cyclotomic[A:Field](n: Int): Polynomial[A] = {
+    val field = implicitly[Field[A]]
+    val polynomials = Polynomials.over(field)
+    val divisors = for(d <- 1 until n; if n % d == 0) yield cyclotomic(d)
+    polynomials.quotient(apply((0, field.negate(field.one)), (n, field.one)), polynomials.multiply(divisors))
+  }
+    
   // TODO move this somewhere else?
   implicit def asMathematicaExpression[A <% MathematicaExpression](p: Polynomial[A]) = new ShortMathematicaExpression {
     val symbol = "x" // TODO work out how to allow varying this?

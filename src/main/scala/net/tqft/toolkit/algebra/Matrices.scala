@@ -141,10 +141,10 @@ class Matrix[B](
   }
 
   def apply(vector: Seq[B])(implicit field: Field[B]) = {
-    for (row <- entries) yield {
+    (for (row <- entries) yield {
       import AlgebraicNotation._
       sum(for ((x, y) <- row zip vector) yield field.multiply(x, y))(field)
-    }
+    }).seq
   }
 
   private def rowPriority(row: Seq[B])(implicit field: Field[B]): (Int, B) = {
