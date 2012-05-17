@@ -24,7 +24,7 @@ trait Monoid[A] extends Semigroup[A] with One[A] {
   def multiply(xs: Seq[A]): A = xs.size match {
     case 0 => one
     case 1 => xs.head
-    case _ => multiply(xs.head, xs.tail:_*)
+    case _ => multiply(xs.head, xs.tail: _*)
   }
   override def power(x: A, k: Int): A = {
     require(k >= 0)
@@ -34,17 +34,37 @@ trait Monoid[A] extends Semigroup[A] with One[A] {
 
 trait Group[A] extends Monoid[A] {
   def inverse(x: A): A
+  override def power(x: A, k: Int): A = {
+    if(k < 0) {
+      super.power(inverse(x), -k)
+    } else {
+      super.power(x, k)
+    }
+  }
 }
 
 trait CommutativeSemigroup[A] {
   def add(x: A, y: A): A
+  def add(x0: A, x1: A*): A = {
+    x1.size match {
+      case 0 => x0
+      case 1 => add(x0, x1.head)
+      case _ => add(x0, add(x1.head, x1.tail: _*))
+    }
+  }
 }
 
 trait Zero[A] {
   def zero: A
 }
 
-trait CommutativeMonoid[A] extends CommutativeSemigroup[A] with Zero[A]
+trait CommutativeMonoid[A] extends CommutativeSemigroup[A] with Zero[A] {
+  def add(xs: Seq[A]): A = xs.size match {
+    case 0 => zero
+    case 1 => xs.head
+    case _ => add(xs.head, xs.tail: _*)
+  }
+}
 
 trait Subtractive[A] extends CommutativeSemigroup[A] {
   def negate(x: A): A
@@ -201,7 +221,7 @@ trait WithInverses[A] {
   def inverse(x: A): A
 }
 
-trait Field[A] extends EuclideanDomain[A] with WithInverses[A] {
+trait Field[A] extends EuclideanDomain[A] with Group[A] {
   override def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
   override def remainder(x: A, y: A) = zero
 }

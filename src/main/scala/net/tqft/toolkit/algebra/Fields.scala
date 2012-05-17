@@ -11,18 +11,28 @@ sealed trait Fraction[A] extends Serializable {
       case _ => false
     }
   }
+  override def hashCode = (numerator, denominator).hashCode
 }
 
 object Fraction {
   def apply[A](_numerator: A, _denominator: A)(implicit ring: EuclideanDomain[A]): Fraction[A] = {
     val gcd = ring.gcd(_numerator, _denominator)
-    new Fraction[A] {
-      val numerator = ring.quotient(_numerator, gcd)
-      val denominator = ring.quotient(_denominator, gcd)
+    ring.quotient(_denominator, gcd) match {
+      case q if q == ring.one =>
+        new Fraction[A] {
+          val numerator = ring.quotient(_numerator, gcd)
+          val denominator = ring.one
+          override def toString = numerator.toString
+        }
+      case _ =>
+        new Fraction[A] {
+          val numerator = ring.quotient(_numerator, gcd)
+          val denominator = ring.quotient(_denominator, gcd)
 
-      if (denominator.isInstanceOf[BigInt]) {
-        if (denominator.asInstanceOf[BigInt].compare(BigInt(0)) < 0) require(false)
-      }
+          if (denominator.isInstanceOf[BigInt]) {
+            if (denominator.asInstanceOf[BigInt].compare(BigInt(0)) < 0) require(false)
+          }
+        }
     }
   }
 
@@ -34,7 +44,7 @@ object Fraction {
 }
 
 object NumberField {
-  def apply[A](p: Polynomial[A])(implicit field: Field[A]) = new Field[Polynomial[A]] {
+  def apply[A](p: Polynomial[A])(implicit field: Field[A]): Field[Polynomial[A]] = new Field[Polynomial[A]] {
     val polynomials = Polynomials.over(field)
 
     def normalize(q: Polynomial[A]) = polynomials.remainder(q, p)
@@ -44,8 +54,10 @@ object NumberField {
     def zero = polynomials.zero
     def one = normalize(polynomials.one)
     def multiply(a: Polynomial[A], b: Polynomial[A]) = normalize(polynomials.multiply(a, b))
-    def add(a: Polynomial[A], b: Polynomial[A]) = polynomials.multiply(a, b)
+    def add(a: Polynomial[A], b: Polynomial[A]) = normalize(polynomials.add(a, b))
   }
+
+  def cyclotomic[A: Field](n: Int) = apply(Polynomial.cyclotomic(n))
 }
 
 object Mod {
@@ -57,7 +69,7 @@ object Mod {
 
       def elements = (0 until p).toSet
       def inverse(x: Int) = {
-        if(x == 0) throw new ArithmeticException("/ by zero")
+        if (x == 0) throw new ArithmeticException("/ by zero")
         Gadgets.Integers.extendedEuclideanAlgorithm(x, p)._1
       }
       def negate(x: Int) = (p - x) mod p
@@ -65,6 +77,19 @@ object Mod {
       def one = 1
       override def multiply(x: Int, y: Int) = (x * y) mod p
       def add(x: Int, y: Int) = (x + y) mod p
+      override def power(x: Int, k: Int) = {
+        if (k < 0) {
+          power(inverse(x), -k)
+        } else if (k == 0) {
+          1
+        } else {
+          if (k % 2 == 1) {
+            multiply(x, power(multiply(x, x), k / 2))
+          } else {
+            power(multiply(x, x), k / 2)
+          }
+        }
+      }
     }
   }
 }
