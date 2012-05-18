@@ -43,40 +43,92 @@ object Fraction {
   }
 }
 
-object NumberField {
-  def apply[A](p: Polynomial[A])(implicit field: Field[A]): Field[Polynomial[A]] = new Field[Polynomial[A]] {
-    val polynomials = Polynomials.over(field)
-
-    def normalize(q: Polynomial[A]) = polynomials.remainder(q, p)
-
-    def inverse(q: Polynomial[A]) = (extendedEuclideanAlgorithm(p, q) ensuring { _._3 == one })._1
-    def negate(q: Polynomial[A]) = polynomials.negate(q)
-    def zero = polynomials.zero
-    def one = normalize(polynomials.one)
-    def multiply(a: Polynomial[A], b: Polynomial[A]) = normalize(polynomials.multiply(a, b))
-    def add(a: Polynomial[A], b: Polynomial[A]) = normalize(polynomials.add(a, b))
+trait NumberField[A] extends Field[Polynomial[A]] {
+  def coefficientField: Field[A]
+  val generator: Polynomial[A]
+  lazy val degree = generator.maximumDegree.get
+  
+  protected lazy val polynomials = Polynomials.over(coefficientField) // has to be lazy so coefficientField is available
+  
+  private val powers = {
+    import net.tqft.toolkit.functions.Memo._
+    def f(n: Int) = polynomials.remainder(polynomials.monomial(n), generator)
+    (f _).memo
+  }
+  protected def normalize(q: Polynomial[A]) = {
+    q.maximumDegree match {
+      case None => zero
+      case Some(k) if k < degree => q
+      case Some(k) if k < 2*degree => {
+        Polynomial((q.terms.flatMap {
+          case (n, a) if n < degree => List((n, a))
+          case (n,a) => powers(n).terms.map { case (m, b) => (m, coefficientField.multiply(a, b)) }
+        }):_*)(coefficientField)
+      }
+      case _ => polynomials.remainder(q, generator)
+    } 
   }
 
-  def cyclotomic[A: Field](n: Int) = apply(Polynomial.cyclotomic(n))
+  override def fromInt(x: Int) = polynomials.fromInt(x)
+  override def inverse(q: Polynomial[A]) = {
+    if (q == zero) throw new ArithmeticException("/ by zero")
+    val (_, b, u) = (polynomials.extendedEuclideanAlgorithm(generator, q))
+    require(u.maximumDegree == Some(0))
+    scalarMultiply(coefficientField.inverse(u.constantTerm(coefficientField)), b)
+  }
+  override def negate(q: Polynomial[A]) = polynomials.negate(q)
+  override def zero = polynomials.zero
+  override def one = polynomials.one
+  override def multiply(a: Polynomial[A], b: Polynomial[A]) = normalize(polynomials.multiply(a, b))
+  override def add(a: Polynomial[A], b: Polynomial[A]) = polynomials.add(a, b)
+  
+  def scalarMultiply(a: A, p: Polynomial[A]): Polynomial[A] = polynomials.scalarMultiply(a, p)
+}
+
+trait CyclotomicNumberField[A] extends NumberField[A] {
+  val order: Int
+  override lazy val generator = Polynomial.cyclotomic(order)(coefficientField) // has to be lazy so coefficentField is available
+
+  private def zeta = Polynomial.identity(coefficientField)
+  private val zetaInversePowers = {
+    import net.tqft.toolkit.functions.Memo._
+    def f(n: Int) = inverse(power(zeta, n))
+    (f _).memo
+  }
+
+  def bar(q: Polynomial[A]) = add(normalize(q).terms.map({ case (k, a) => scalarMultiply(a, zetaInversePowers(k)) }))
+}
+
+object NumberField {
+  def apply[A: Field](p: Polynomial[A]): NumberField[A] = new NumberField[A] {
+    override val generator = p
+    override val coefficientField = implicitly[Field[A]]
+  }
+
+  def cyclotomic[A: Field](n: Int): CyclotomicNumberField[A] = new CyclotomicNumberField[A] {
+    override val order = n
+    override val coefficientField = implicitly[Field[A]]
+  }
 }
 
 object Mod {
   def apply(p: Int) = {
     require(p < scala.math.sqrt(Integer.MAX_VALUE))
-    require(BigInt(p).isProbablePrime(60))
+    require(BigInt(p).isProbablePrime(20))
     new Field[Int] with Elements[Int] {
       import net.tqft.toolkit.arithmetic.Mod._
 
-      def elements = (0 until p).toSet
-      def inverse(x: Int) = {
+      override def elements = (0 until p).toSet
+      override def inverse(x: Int) = {
         if (x == 0) throw new ArithmeticException("/ by zero")
         Gadgets.Integers.extendedEuclideanAlgorithm(x, p)._1
       }
-      def negate(x: Int) = (p - x) mod p
-      def zero = 0
-      def one = 1
+      override def negate(x: Int) = (p - x) mod p
+      override def zero = 0
+      override def one = 1
       override def multiply(x: Int, y: Int) = (x * y) mod p
-      def add(x: Int, y: Int) = (x + y) mod p
+      override def add(x: Int, y: Int) = (x + y) mod p
+      override def fromInt(x: Int) = x mod p
       override def power(x: Int, k: Int) = {
         if (k < 0) {
           power(inverse(x), -k)
@@ -115,15 +167,16 @@ object Fields extends HomomorphismCategory[Field] {
 
   class FieldOfFractions[A](ring: EuclideanDomain[A]) extends Field[Fraction[A]] {
     implicit val _ring = ring
-    def one = Fraction(ring.one, ring.one)
-    def zero = Fraction(ring.zero, ring.one)
-    def multiply(x: Fraction[A], y: Fraction[A]) = Fraction(ring.multiply(x.numerator, y.numerator), ring.multiply(x.denominator, y.denominator))
-    def add(x: Fraction[A], y: Fraction[A]) = {
+    override def one = Fraction(ring.one, ring.one)
+    override def zero = Fraction(ring.zero, ring.one)
+    override def multiply(x: Fraction[A], y: Fraction[A]) = Fraction(ring.multiply(x.numerator, y.numerator), ring.multiply(x.denominator, y.denominator))
+    override def add(x: Fraction[A], y: Fraction[A]) = {
       val denominatorGCD = ring.gcd(x.denominator, y.denominator)
       Fraction(ring.add(ring.multiply(x.numerator, ring.quotient(y.denominator, denominatorGCD)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.numerator)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.denominator))
     }
-    def negate(x: Fraction[A]) = Fraction(ring.negate(x.numerator), x.denominator)
-    def inverse(x: Fraction[A]) = Fraction(x.denominator, x.numerator)
+    override def fromInt(x: Int) = Fraction(ring.fromInt(x), ring.one)
+    override def negate(x: Fraction[A]) = Fraction(ring.negate(x.numerator), x.denominator)
+    override def inverse(x: Fraction[A]) = Fraction(x.denominator, x.numerator)
   }
 
   val fieldOfFractions = new Functor[EuclideanDomain, Field, Fraction] { self =>

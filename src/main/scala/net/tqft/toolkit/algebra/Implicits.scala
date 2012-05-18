@@ -18,5 +18,5 @@ object Implicits {
   implicit val BigIntegerPolynomials = Gadgets.BigIntegerPolynomials
   implicit val BigRationalPolynomials = Gadgets.BigRationalPolynomials
 
-  implicit def asConstantPolynomial[A](a: A)(implicit ring: Ring[A]): Polynomial[A] = Polynomial[A]((0, a))
+  implicit def asConstants[A](a: A)(implicit ring: Ring[A]): Polynomial[A] = Polynomial[A]((0, a))
 }

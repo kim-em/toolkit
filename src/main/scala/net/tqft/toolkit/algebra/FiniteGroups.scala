@@ -1,10 +1,12 @@
 package net.tqft.toolkit.algebra
 
 import scala.collection.immutable.TreeSet
+import scala.collection.immutable.HashSet
+import scala.collection.GenSet
 
 trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
   implicit def ordering: Ordering[A]
-  
+
   def verifyInverses = {
     for (x <- elements) {
       require(multiply(x, inverse(x)) == one)
@@ -47,13 +49,15 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
   }
   private class FinitelyGeneratedSubgroup(val generators: Set[A]) extends Subgroup({
     import net.tqft.toolkit.functions.FixedPoint
-    FixedPoint({ s: Set[A] => s flatMap { x => generators map { multiply(_, x) } } })(Set(one))
+    FixedPoint({ s: GenSet[A] => s flatMap { x => generators map { multiply(_, x) } } })(Set(one).par).seq.toSet
   }) with FinitelyGeneratedFiniteGroup[A]
 
   def subgroup(elements: Set[A]): FiniteGroup[A] = new Subgroup(elements)
   def subgroupGeneratedBy(generators: Set[A]): FinitelyGeneratedFiniteGroup[A] = new FinitelyGeneratedSubgroup(generators)
 
-  lazy val conjugacyClasses = GroupActions.conjugationAction(finiteGroup).orbits(elements, elements).toSeq.sortBy({ c => (c.representative != one, c.elements.size) })
+  protected def unsortedConjugacyClasses = GroupActions.conjugationAction(finiteGroup).orbits(elements, elements).toSeq
+
+  lazy val conjugacyClasses = unsortedConjugacyClasses.sortBy({ c => (c.representative != one, c.elements.size) })
   lazy val conjugacyClassOrders = for (c <- conjugacyClasses) yield orderOfElement(c.representative)
   val exponentiationOnConjugacyClasses: Int => Seq[Int] = {
     def impl(k: Int) = conjugacyClasses.map({ cx => conjugacyClasses.indexWhere({ cy => cy.elements.contains(power(cx.representative, k)) }) })
@@ -85,84 +89,78 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     p
   }
 
-  lazy val classCoefficientSimultaneousEigenvectorsModPrime = {
-    import net.tqft.toolkit.arithmetic.Mod._
-    implicit val modP = Mod(preferredPrime)
-    val zeroVector = List.fill(conjugacyClasses.size)(0).toSeq
+  lazy val characterTable: (Int, Seq[Seq[Polynomial[Fraction[Int]]]]) = {
+    def classCoefficientSimultaneousEigenvectorsModPrime = {
+      import net.tqft.toolkit.arithmetic.Mod._
+      implicit val modP = Mod(preferredPrime)
+      val zeroVector = List.fill(conjugacyClasses.size)(0).toSeq
 
-    def subtractDiagonal(m: Seq[Seq[Int]], lambda: Int) = {
-      m.zipWithIndex.map({ case (r, i) => r.updated(i, (r(i) - lambda) mod preferredPrime) })
-    }
+      def subtractDiagonal(m: Seq[Seq[Int]], lambda: Int) = {
+        m.zipWithIndex.map({ case (r, i) => r.updated(i, (r(i) - lambda) mod preferredPrime) })
+      }
 
-    def eigenvalues(m: Seq[Seq[Int]]) = new Matrix(m.size, m).eigenvalues
+      def eigenvalues(m: Seq[Seq[Int]]) = new Matrix(m.size, m).eigenvalues
 
-    case class PartialEigenspace(annihilators: Seq[Seq[Seq[Int]]], eigenvalues: Seq[Int], eigenvectors: Option[Seq[Seq[Int]]]) {
-      def splitAlong(m: Seq[Seq[Int]], mEigenvalues: Set[Int]): Set[PartialEigenspace] = {
-        //        println(annihilators)
-        //        println(eigenvalues)
-        //        println(eigenvectors)
-        //        println("splitting along: " + m)
-        //        println("splitting along eigenvalues: " + mEigenvalues)
-        eigenvectors.map(_.size) match {
-          case Some(0) => Set()
-          case Some(1) => {
-            //            val newEigenvalue: Int = mEigenvalues.find({ x => new Matrix(conjugacyClasses.size, subtractDiagonal(m, x)).apply(eigenvectors.get.head).map(_ mod preferredPrime) == zeroVector }).get
-            //            Set(PartialEigenspace(annihilators :+ subtractDiagonal(m, newEigenvalue), eigenvalues :+ newEigenvalue, eigenvectors))
-            Set(this)
-          }
-          case _ => {
-            for (lambda <- mEigenvalues) yield {
-              val newAnnihilators = annihilators :+ subtractDiagonal(m, lambda)
-              PartialEigenspace(newAnnihilators, eigenvalues :+ lambda, Some(new Matrix(conjugacyClasses.size, newAnnihilators.flatten.toSeq).nullSpace))
+      case class PartialEigenspace(annihilators: Seq[Seq[Seq[Int]]], eigenvalues: Seq[Int], eigenvectors: Option[Seq[Seq[Int]]]) {
+        def splitAlong(m: Seq[Seq[Int]], mEigenvalues: Set[Int]): Set[PartialEigenspace] = {
+          eigenvectors.map(_.size) match {
+            case Some(0) => Set()
+            case Some(1) => {
+              Set(this)
+            }
+            case _ => {
+              for (lambda <- mEigenvalues) yield {
+                val newAnnihilators = annihilators :+ subtractDiagonal(m, lambda)
+                PartialEigenspace(newAnnihilators, eigenvalues :+ lambda, Some(new Matrix(conjugacyClasses.size, newAnnihilators.flatten.toSeq).nullSpace))
+              }
             }
           }
         }
       }
+
+      val classCoefficientsWithEigenvalues = classCoefficients.tail.par.map({ cc => (cc, eigenvalues(cc)) }).seq
+      val unnormalizedEigenvectors = classCoefficientsWithEigenvalues.foldLeft(Set(PartialEigenspace(Seq(), Seq(), None)).par)({ case (s, (cc, ev)) => s.flatMap({ p => p.splitAlong(cc, ev) }) }).flatMap(_.eigenvectors.get).toSeq
+      val normalizedEigenvectors = unnormalizedEigenvectors.map({ v => v.map({ x => modP.quotient(x, v(0)) }) })
+
+      //      def proportional(w: Seq[Int], v: Seq[Int]) = {
+      //        if (v == zeroVector) {
+      //          w == zeroVector
+      //        } else {
+      //          val ratios = (w zip v).filter(_ != (0, 0))
+      //          if (ratios.indexWhere({ p => p._2 == 0 }) < 0) {
+      //            ratios.map({ p => modP.quotient(p._1, p._2) }).distinct.size == 1
+      //          } else {
+      //            false
+      //          }
+      //        }
+      //      }
+      //
+      //    for (v <- normalizedEigenvectors; m0 <- classCoefficients; w = new Matrix(m0.size, m0).apply(v)(modP)) {
+      //      require(proportional(w, v))
+      //    }
+      //
+      //    require(new Matrix(conjugacyClasses.size, normalizedEigenvectors).rank() == conjugacyClasses.size)
+
+      normalizedEigenvectors
     }
 
-    val unnormalizedEigenvectors = classCoefficients.tail.par.map({ cc => (cc, eigenvalues(cc)) }).foldLeft(Set(PartialEigenspace(Seq(), Seq(), None)).par)({ case (s, (cc, ev)) => s.flatMap({ p => p.splitAlong(cc, ev) }) }).seq.flatMap(_.eigenvectors.get).toSeq
-    val normalizedEigenvectors = unnormalizedEigenvectors.map({ v => v.map({ x => modP.quotient(x, v(0)) }) })
+    def characterTableModPreferredPrime = {
+      val k = conjugacyClasses.size
+      implicit val modP = Mod(preferredPrime)
 
-    def proportional(w: Seq[Int], v: Seq[Int]) = {
-      if (v == zeroVector) {
-        w == zeroVector
-      } else {
-        val ratios = (w zip v).filter(_ != (0, 0))
-        if (ratios.indexWhere({ p => p._2 == 0 }) < 0) {
-          ratios.map({ p => modP.quotient(p._1, p._2) }).distinct.size == 1
-        } else {
-          false
-        }
+      def sqrt(x: Int) = {
+        import net.tqft.toolkit.arithmetic.Mod._
+        (0 to preferredPrime / 2).find({ n => ((n * n - x) mod preferredPrime) == 0 }).get
       }
+
+      val omega = classCoefficientSimultaneousEigenvectorsModPrime
+      val degrees = for (omega_i <- omega) yield {
+        sqrt(modP.quotient(finiteGroup.size, (for (j <- 0 until k) yield modP.quotient(omega_i(j) * omega_i(exponentiationOnConjugacyClasses(-1)(j)), conjugacyClasses(j).size)).sum))
+      }
+
+      for (i <- 0 until k) yield for (j <- 0 until k) yield modP.quotient(omega(i)(j) * degrees(i), conjugacyClasses(j).size)
     }
 
-    //    for (v <- normalizedEigenvectors; m0 <- classCoefficients; w = new Matrix(m0.size, m0).apply(v)(modP)) {
-    //      require(proportional(w, v))
-    //    }
-    //
-    //    require(new Matrix(conjugacyClasses.size, normalizedEigenvectors).rank() == conjugacyClasses.size)
-
-    normalizedEigenvectors
-  }
-
-  lazy val characterTableModPreferredPrime = {
-    val k = conjugacyClasses.size
-    implicit val modP = Mod(preferredPrime)
-
-    def sqrt(x: Int) = {
-      import net.tqft.toolkit.arithmetic.Mod._
-      (0 to preferredPrime / 2).find({ n => ((n * n - x) mod preferredPrime) == 0 }).get
-    }
-
-    val omega = classCoefficientSimultaneousEigenvectorsModPrime
-    val degrees = for (omega_i <- omega) yield {
-      sqrt(modP.quotient(finiteGroup.size, (for (j <- 0 until k) yield modP.quotient(omega_i(j) * omega_i(exponentiationOnConjugacyClasses(-1)(j)), conjugacyClasses(j).size)).sum))
-    }
-
-    for (i <- 0 until k) yield for (j <- 0 until k) yield modP.quotient(omega(i)(j) * degrees(i), conjugacyClasses(j).size)
-  }
-
-  lazy val characterTable: Seq[Seq[Polynomial[Fraction[Int]]]] = {
     val k = conjugacyClasses.size
 
     implicit val rationals = Gadgets.Rationals
@@ -182,17 +180,42 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       import net.tqft.toolkit.functions.Memo._
       { k: Int => cyclotomicNumbers.power(zeta, k) }.memo
     }
-    
+
     def mu(i: Int)(j: Int)(s: Int) = modP.quotient(modP.add(for (n <- 0 until exponent) yield modP.multiply(chi(i)(exponentiationOnConjugacyClasses(n)(j)), zpower(-s * n))), exponent)
 
-    (for (i <- 0 until k par) yield (for (j <- 0 until k par) yield cyclotomicNumbers.add(for (s <- 0 until exponent) yield cyclotomicNumbers.multiply(zetapower(s), mu(i)(j)(s)))).seq).seq
+    val unsortedCharacters = (for (i <- 0 until k par) yield (for (j <- 0 until k par) yield cyclotomicNumbers.add(for (s <- 0 until exponent) yield cyclotomicNumbers.multiplyByInt(zetapower(s), mu(i)(j)(s)))).seq).seq
+    (exponent, unsortedCharacters.sortBy({ v => (v(0).constantTerm, v.tail.headOption.map({ p => rationals.negate(p.constantTerm) })) }))
   }
 
+  lazy val tensorProductMultiplicities: Seq[Seq[Seq[Int]]] = {
+    val k = conjugacyClasses.size
+    val (p, chi) = characterTable
+    import Implicits.Rationals
+    implicit val Q = NumberField.cyclotomic(p)
+
+    def pairing(x: Seq[Polynomial[Fraction[Int]]], y: Seq[Polynomial[Fraction[Int]]]) = {
+      Q.quotientByInt(Q.add((x zip y zip conjugacyClasses.map(_.size)).map({ p => Q.multiplyByInt(Q.multiply(p._1._1, p._1._2), p._2) })), finiteGroup.size)
+    }
+
+    def lower(p: Polynomial[Fraction[Int]]) = {
+      require(p == Q.zero || p.maximumDegree == Some(0))
+      val c = p.constantTerm
+      require(c.denominator == 1)
+      c.numerator
+    }
+
+    (for (i <- 0 until k par) yield {
+      (for (j <- 0 until k par) yield {
+        val product = (chi(i) zip chi(j)).map({ p => Q.multiply(p._1, p._2) }) map (Q.bar _)
+        for (c <- chi) yield lower(pairing(product, c))
+      }).seq
+    }).seq
+  }
 }
 
 trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
   def generators: Set[A]
-  override lazy val conjugacyClasses = GroupActions.conjugationAction(fgFiniteGroup).orbits(generators, elements).toSeq
+  override def unsortedConjugacyClasses = GroupActions.conjugationAction(fgFiniteGroup).orbits(generators, elements).toSeq
 }
 
 trait EquivalenceClass[A] extends Elements[A] {
@@ -221,7 +244,7 @@ object EquivalenceClass {
 }
 
 trait FiniteGroupHomomorphism[A, B] extends Homomorphism[FiniteGroup, A, B] { homomorphism =>
-  def kernel = source.subgroup(source.elements.filter(homomorphism(_) == target.one))
+  def kernel = source.subgroup(source.elements.par.filter(homomorphism(_) == target.one).seq)
 }
 
 object FiniteGroups {
@@ -306,7 +329,7 @@ object FiniteGroups {
       def multiply(a: LeftCoset[A], b: LeftCoset[A]) = new C(_group.multiply(a.representative, b.representative))
 
       def elements = leftCosets(_group, normalSubgroup)
-      
+
       def ordering = ???
     }
   }
@@ -317,24 +340,27 @@ object FiniteGroups {
     def multiply(a: A, b: A) = identity
 
     val elements = Set(identity)
-    
+
     def ordering = ???
   }
 
-  // this is the dihedral group with 2*n elements
+  // this is the dihedral group with n elements
   private class DihedralGroup(n: Int) extends FiniteGroup[(Int, Boolean)] {
-    require(n > 0)
+    require(n > 0 && n % 2 == 0)
 
+    val k = n / 2
     import net.tqft.toolkit.arithmetic.Mod._
 
     override def one = (0, false)
-    override def inverse(a: (Int, Boolean)) = (if (a._2) a._1 else (-a._1 mod n), a._2)
-    //    override def multiply(a: (Int, Boolean), b: (Int, Boolean)) = ((b._1 + (if (b._2) -a._1 else a._1)) mod n, a._2 ^ b._2)
-    override def multiply(a: (Int, Boolean), b: (Int, Boolean)) = ((a._1 + (if (a._2) -b._1 else b._1)) mod n, a._2 ^ b._2)
+    override def inverse(a: (Int, Boolean)) = (if (a._2) a._1 else (-a._1 mod k), a._2)
+    override def multiply(a: (Int, Boolean), b: (Int, Boolean)) = ((a._1 + (if (a._2) -b._1 else b._1)) mod k, a._2 ^ b._2)
 
-    override val elements = (for (j <- Set(false, true); i <- 0 until n) yield (i, j))
-    
-    def ordering = ???
+    override val elements = (for (j <- Set(false, true); i <- 0 until k) yield (i, j))
+
+    def ordering = {
+      import net.tqft.toolkit.collections.LexicographicOrdering._
+      implicitly[Ordering[(Int, Boolean)]]
+    }
   }
   private class CyclicGroup(n: Int) extends FiniteGroup[Int] {
     import net.tqft.toolkit.arithmetic.Mod._
@@ -344,7 +370,7 @@ object FiniteGroups {
     override def multiply(a: Int, b: Int) = (a + b) mod n
 
     override val elements = (0 until n).toSet
-    
+
     def ordering = implicitly[Ordering[Int]]
   }
   private class PermutationGroup(n: Int) extends FiniteGroup[Seq[Int]] {
@@ -376,7 +402,24 @@ object FiniteGroups {
   def alternatingGroup(n: Int): FiniteGroup[Seq[Int]] = signature(n).kernel
   def signedPermutationGroup(n: Int): FiniteGroup[(Seq[Int], Seq[Int])] = semidirectProduct(symmetricGroup(n), power(cyclicGroup(2), n), GroupActions.permutationAction[Int])
 
-  lazy val Mathieu12 = symmetricGroup(12).subgroupGeneratedBy(Set(Seq(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 11), Seq(0, 1, 6, 9, 5, 3, 10, 2, 8, 4, 7, 11), Seq(11, 10, 5, 7, 8, 2, 9, 3, 4, 6, 1, 0)))
+  lazy val Mathieu11 = symmetricGroup(11).subgroupGeneratedBy(Set(
+    Seq(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0),
+    Seq(0, 1, 6, 9, 5, 3, 10, 2, 8, 4, 7)))
+  lazy val Mathieu12 = symmetricGroup(12).subgroupGeneratedBy(Set(
+    Seq(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 11),
+    Seq(0, 1, 6, 9, 5, 3, 10, 2, 8, 4, 7, 11),
+    Seq(11, 10, 5, 7, 8, 2, 9, 3, 4, 6, 1, 0)))
+  lazy val Mathieu22 = symmetricGroup(22).subgroupGeneratedBy(Set(
+    Seq(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 11),
+    Seq(3, 7, 0, 4, 8, 1, 5, 9, 2, 6, 10, 14, 18, 11, 15, 19, 12, 16, 20, 13, 17, 21),
+    Seq(20, 9, 12, 16, 18, 1, 6, 5, 17, 7, 21, 13, 3, 15, 14, 19, 2, 4, 8, 11, 0, 10)))
+  lazy val Mathieu23 = symmetricGroup(23).subgroupGeneratedBy(Set(
+    Seq(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 0),
+    Seq(0, 1, 16, 12, 3, 5, 8, 17, 2, 6, 11, 22, 13, 18, 19, 14, 9, 10, 4, 21, 15, 20, 7)))
+  lazy val Mathieu24 = symmetricGroup(24).subgroupGeneratedBy(Set(
+    Seq(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 0, 23),
+    Seq(0, 1, 16, 12, 3, 5, 8, 17, 2, 6, 11, 22, 13, 18, 19, 14, 9, 10, 4, 21, 15, 20, 7, 23),
+    Seq(23, 22, 11, 15, 17, 9, 19, 13, 20, 5, 16, 2, 21, 7, 18, 3, 10, 4, 14, 6, 8, 12, 1, 0)))
 
   def semidirectProduct[A, B](group1: FiniteGroup[A], group2: FiniteGroup[B], action: GroupAction[A, B]): FiniteGroup[(A, B)] = {
     new FiniteGroup[(A, B)] {
@@ -384,14 +427,14 @@ object FiniteGroups {
       def one = (group1.one, group2.one)
       def inverse(x: (A, B)) = ???
       def multiply(x: (A, B), y: (A, B)) = ???
-      
-    def ordering = {
-      import net.tqft.toolkit.collections.LexicographicOrdering._
-      implicit val ordering1 = group1.ordering
-      implicit val ordering2 = group2.ordering
-      implicitly[Ordering[(A, B)]]
-    }
-      
+
+      def ordering = {
+        import net.tqft.toolkit.collections.LexicographicOrdering._
+        implicit val ordering1 = group1.ordering
+        implicit val ordering2 = group2.ordering
+        implicitly[Ordering[(A, B)]]
+      }
+
     }
   }
 
@@ -403,12 +446,12 @@ object FiniteGroups {
       def one = List.fill(k)(group.one)
       def inverse(x: Seq[A]) = x.map(group.inverse _)
       def multiply(x: Seq[A], y: Seq[A]) = (x zip y).map({ case (xg, yg) => group.multiply(xg, yg) })
-     def ordering = {
-      import net.tqft.toolkit.collections.LexicographicOrdering._
-      implicit val orderingA = group.ordering
-      implicitly[Ordering[Seq[A]]]
+      def ordering = {
+        import net.tqft.toolkit.collections.LexicographicOrdering._
+        implicit val orderingA = group.ordering
+        implicitly[Ordering[Seq[A]]]
+      }
     }
-   }
   }
 }
 
@@ -417,15 +460,15 @@ trait GroupAction[A, B] {
   def orbits(generators: Set[A], objects: Set[B])(implicit ordering: Ordering[B]): Set[Orbit[A, B]] = {
     class O(val representative: B) extends Orbit[A, B] {
       override def stabilizer = ???
-      override lazy val elements = extendElements(TreeSet.empty[B], TreeSet(representative))
+      override lazy val elements = extendElements(HashSet.empty[B], Set(representative).par)
 
       @scala.annotation.tailrec
-      private def extendElements(elements: Set[B], newestElements: Set[B]): Set[B] = {
+      private def extendElements(elements: Set[B], newestElements: GenSet[B]): Set[B] = {
         if (newestElements.isEmpty) {
           elements
         } else {
-          val allElements = elements ++ newestElements;
-          extendElements(allElements, (for (b <- newestElements; a <- generators) yield act(a, b)) -- allElements)
+          val allElements = elements union newestElements;
+          extendElements(allElements, (for (b <- newestElements; a <- generators) yield act(a, b)) diff allElements)
         }
       }
     }
@@ -435,7 +478,7 @@ trait GroupAction[A, B] {
         orbits
       } else {
         val newOrbit = new O(objects.head)
-        extractOrbits(objects -- newOrbit.elements, orbits + newOrbit)
+        extractOrbits(objects diff newOrbit.elements, orbits + newOrbit)
       }
     }
 

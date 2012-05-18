@@ -56,11 +56,11 @@ object Polynomials extends HomomorphismCategory[PolynomialAlgebra] {
     def target = Rings
 
     def apply[A](_ring: Field[A]): PolynomialAlgebraOverField[A] = new PolynomialAlgebraOverField[A] {
-      val ring = _ring
+      override val ring = _ring
     }
 
     def apply[A](_ring: Ring[A]): PolynomialAlgebra[A] = new PolynomialAlgebra[A] {
-      val ring = _ring
+      override val ring = _ring
     }
 
     def apply[A, B](hom: Homomorphism[Ring, A, B]): Homomorphism[Ring, Polynomial[A], Polynomial[B]] = new RingHomomorphism[Polynomial[A], Polynomial[B]] {
@@ -77,7 +77,7 @@ object Polynomials extends HomomorphismCategory[PolynomialAlgebra] {
     def target: Ring[A] = ring
     def apply(p: Polynomial[A]) = AlgebraicNotation.sum(p.terms map { case (e, a) => ring.multiply(a, ring.power(x, e)) })
   }
-
+  
   val embeddingAsConstants = new NaturalTransformation[Ring, Ring, Functors.Identity, Polynomial] {
     def source = Functors.Identity(Rings)
 

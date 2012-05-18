@@ -2,18 +2,17 @@ package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.mathematica.MathematicaExpression
 
-
 object FreeModule {
   implicit def orderingToLinearComboOrdering[A, B](implicit o: Ordering[B]) = new Ordering[Map[B, A]] {
     def compare(x: Map[B, A], y: Map[B, A]) = {
       o.compare(x map (_._1) max, y map (_._1) max)
     }
-  }  
+  }
 }
 
 trait LinearCombo[A, B] {
   def terms: List[(B, A)]
-  
+
   def get(b: B) = terms.find(_._1 == b).map(_._2)
 
   override def toString = (terms map { case (g, p) => p.toString + " * " + g.toString }).mkString(" + ")
@@ -23,7 +22,7 @@ trait LinearCombo[A, B] {
       case _ => false
     }
   }
-  
+
   override def hashCode: Int = terms.toSet[(B, A)].hashCode
 }
 
@@ -31,7 +30,7 @@ trait GeneralFreeModule[A, B, LC <: LinearCombo[A, B]] extends Module[A, LC] {
   import AlgebraicNotation._
 
   implicit def ring: Ring[A]
-  
+
   def wrap(x: List[(B, A)]): LC
   def wrap(x: Map[B, A]): LC = wrap(x.toList)
 
@@ -61,7 +60,7 @@ trait MapFreeModule[A, B] extends FreeModule[A, B] {
   def wrap(x: List[(B, A)]) = {
     require(x.map(_._1).distinct.size == x.size)
     new LinearCombo[A, B] {
-    	val terms = x
+      val terms = x
     }
   }
 }
@@ -72,14 +71,12 @@ trait IntegerFreeModule[B, LC <: LinearCombo[Int, B]] extends GeneralFreeModule[
 
 trait FreeModuleOnMonoid[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModule[A, B, LC] with Ring[LC] {
   def monoid: CommutativeMonoid[B]
-  
-    def multiply(x: LC, y: LC) = {
-      apply(for ((bx, ax) <- x.terms; (by, ay) <- y.terms) yield (monoid.add(bx, by) -> ring.multiply(ax, ay)))
-    }
-    def one = wrap(Map(monoid.zero -> ring.one))
+
+  def multiply(x: LC, y: LC) = {
+    apply(for ((bx, ax) <- x.terms; (by, ay) <- y.terms) yield (monoid.add(bx, by) -> ring.multiply(ax, ay)))
+  }
+  def one = wrap(Map(monoid.zero -> ring.one))
 }
-
-
 
 trait FancyFreeModule[A, B, LC <: LinearCombo[A, B], K <: Ordered[K]] extends GeneralFreeModule[A, B, LC] {
   def invariant: B => K
