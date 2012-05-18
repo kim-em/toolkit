@@ -106,9 +106,9 @@ object Matrix extends Logging {
     case k => Some(k)
   }
 
-  def singleColumn[B](vector: List[B]) = new Matrix(1, vector map { x => List(x) })
+  def singleColumn[B](vector: Seq[B]) = new Matrix(1, vector map { x => List(x) })
 
-  def diagonalMatrix[B](vector: List[B])(implicit field: Field[B]) = new Matrix(vector.size, vector.zipWithIndex map { case (v, k) => List.fill(k)(field.zero) ::: List(v) ::: List.fill(vector.size - k - 1)(field.zero) })
+  def diagonalMatrix[B](vector: Seq[B])(implicit field: Field[B]) = new Matrix(vector.size, vector.zipWithIndex map { case (v, k) => List.fill(k)(field.zero) ::: List(v) ::: List.fill(vector.size - k - 1)(field.zero) })
 
   def identityMatrix[B](size: Int)(implicit field: Field[B]) = diagonalMatrix(List.fill(size)(field.one))
 }
@@ -249,7 +249,7 @@ class Matrix[B](
     Matrix(numberOfColumns, _rowReduce(rowEchelonForm.entries.reverse, false).reverse)
   }
 
-  def preimageOf(vector: List[B])(implicit field: Field[B]): Option[List[B]] = {
+  def preimageOf(vector: Seq[B])(implicit field: Field[B]): Option[Seq[B]] = {
     val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
     val rre = augmentedMatrix.reducedRowEchelonForm
 

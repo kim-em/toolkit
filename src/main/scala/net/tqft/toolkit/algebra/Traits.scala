@@ -3,13 +3,7 @@ import net.tqft.toolkit.mathematica.MathematicaExpression
 
 trait Semigroup[A] {
   def multiply(x: A, y: A): A
-  def multiply(x0: A, x1: A*): A = {
-    x1.size match {
-      case 0 => x0
-      case 1 => multiply(x0, x1.head)
-      case _ => multiply(x0, multiply(x1.head, x1.tail: _*))
-    }
-  }
+  def multiply(x0: A, x1: A*): A = x1.fold(x0)(multiply _)
   def power(x: A, k: Int): A = {
     require(k >= 1)
     List.fill(k)(x).reduce(multiply(_, _))
@@ -21,11 +15,7 @@ trait One[A] {
 }
 
 trait Monoid[A] extends Semigroup[A] with One[A] {
-  def multiply(xs: Seq[A]): A = xs.size match {
-    case 0 => one
-    case 1 => xs.head
-    case _ => multiply(xs.head, xs.tail: _*)
-  }
+  def multiply(xs: Seq[A]): A = xs.fold(one)(multiply _)
   override def power(x: A, k: Int): A = {
     require(k >= 0)
     List.fill(k)(x).foldLeft(one)(multiply(_, _))
@@ -45,13 +35,7 @@ trait Group[A] extends Monoid[A] {
 
 trait CommutativeSemigroup[A] {
   def add(x: A, y: A): A
-  def add(x0: A, x1: A*): A = {
-    x1.size match {
-      case 0 => x0
-      case 1 => add(x0, x1.head)
-      case _ => add(x0, add(x1.head, x1.tail: _*))
-    }
-  }
+  def add(x0: A, x1: A*): A = x1.fold(x0)(add _)
 }
 
 trait Zero[A] {
@@ -59,11 +43,7 @@ trait Zero[A] {
 }
 
 trait CommutativeMonoid[A] extends CommutativeSemigroup[A] with Zero[A] {
-  def add(xs: Seq[A]): A = xs.size match {
-    case 0 => zero
-    case 1 => xs.head
-    case _ => add(xs.head, xs.tail: _*)
-  }
+  def add(xs: Seq[A]): A = xs.fold(zero)(add _)
 }
 
 trait Subtractive[A] extends CommutativeSemigroup[A] {
@@ -92,17 +72,18 @@ trait NLinearCategory[O, M] extends Category[O, M] { nlc =>
   def add(x: M, y: M): M
 
   protected class EndomorphismRig(o: O) extends Rig[M] {
-    def zero = nlc.zeroMorphism(o, o)
-    def one = nlc.identityMorphism(o)
-    def multiply(x: M, y: M) = nlc.compose(x, y)
-    def add(x: M, y: M) = nlc.add(x, y)
+    override def zero = nlc.zeroMorphism(o, o)
+    override def one = nlc.identityMorphism(o)
+    override def multiply(x: M, y: M) = nlc.compose(x, y)
+    override def add(x: M, y: M) = nlc.add(x, y)
+    override def fromInt(x: Int): M = ???
   }
 
 }
 
 trait AdditiveCategory[O, M] extends NLinearCategory[O, M] with Subtractive[M] { ac =>
   protected class EndomorphismRing(o: O) extends EndomorphismRig(o) with Ring[M] {
-    def negate(x: M) = ac.negate(x)
+    override def negate(x: M) = ac.negate(x)
   }
 
   def endomorphismRing(o: O): Ring[M] = new EndomorphismRing(o)
@@ -112,7 +93,7 @@ trait LinearCategory[O, M, R] extends AdditiveCategory[O, M] { lc =>
   def scalarMultiply(r: R, m: M): M
 
   protected class EndomorphismAlgebra(o: O) extends EndomorphismRing(o) with Algebra[R, M] {
-    def scalarMultiply(a: R, b: M) = lc.scalarMultiply(a, b)
+    override def scalarMultiply(a: R, b: M) = lc.scalarMultiply(a, b)
   }
 
   def endomorphismAlgebra(o: O): Algebra[R, M] = new EndomorphismAlgebra(o)
@@ -125,7 +106,9 @@ trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMon
   override def compose(x: A, y: A) = multiply(x, y)
   override def zeroMorphism(o1: Unit, o2: Unit): A = zero
 
-  def fromInt(x: Int) = {
+  def multiplyByInt(x: A, y: Int): A = multiply(x, fromInt(y))
+
+  def fromInt(x: Int): A /*= {
     import AlgebraicNotation._
     implicit val hoc = this
 
@@ -134,21 +117,20 @@ trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMon
       case 0 => zero
       case x if x > 0 => List.fill(x)(one) reduceLeft (_ + _)
     }
-  }
+  }*/
 
 }
 
 trait Ring[A] extends Rig[A] with AdditiveCategory[Unit, A] with CommutativeGroup[A] {
-  def multiply(x: A, y: Int): A = multiply(x, fromInt(y))
-  override def fromInt(x: Int) = {
-    import AlgebraicNotation._
-    implicit val hoc = this
-
-    x match {
-      case x if x < 0 => -(List.fill(-x)(one) reduceLeft (_ + _))
-      case _ => super.fromInt(x)
-    }
-  }
+//  override def fromInt(x: Int) = {
+//    import AlgebraicNotation._
+//    implicit val hoc = this
+//
+//    x match {
+//      case x if x < 0 => -(List.fill(-x)(one) reduceLeft (_ + _))
+//      case _ => super.fromInt(x)
+//    }
+//  }
 
 }
 
@@ -185,7 +167,7 @@ trait EuclideanDomain[A] extends CommutativeRing[A] {
     }
   }
 
-  def gcd(x: A, y: A): A = euclideanAlgorithm(x, y) // ensuring { _ == extendedEuclideanAlgorithm(x, y)._3 }
+  def gcd(x: A, y: A): A = euclideanAlgorithm(x, y)
   def gcd(xs: A*): A = {
     xs.size match {
       case 0 => one
@@ -224,6 +206,7 @@ trait WithInverses[A] {
 trait Field[A] extends EuclideanDomain[A] with Group[A] {
   override def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
   override def remainder(x: A, y: A) = zero
+  def quotientByInt(x: A, y: Int): A = quotient(x, fromInt(y))
 }
 
 trait OrderedField[A] extends Field[A] with Ordering[A] { self =>
@@ -274,7 +257,7 @@ trait ApproximateField[A] extends OrderedField[A] {
 
   def normalize[CC[X] <: TraversableLike[X, CC[X]]](v: CC[A])(implicit cbf1: CanBuildFrom[CC[A], Int, CC[Int]], cbf2: CanBuildFrom[CC[A], A, CC[A]]): CC[A] = {
     val s = v.map(signum(_)).filter(_ != 0).head
-    val n = multiply(norm(v), s)
+    val n = multiplyByInt(norm(v), s)
     v map { x => quotient(x, n) }
   }
 
@@ -390,10 +373,12 @@ trait AssociativeAlgebra[A, B] extends Algebra[A, B]
 
 trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] with AssociativeAlgebra[A, Polynomial[A]] {
 
+
   def monomial(k: Int): Polynomial[A] = monomial(k, ring.one)
   def monomial(k: Int, a: A): Polynomial[A] = Polynomial((k, a))
 
   def constant(a: A) = monomial(0, a)
+  override def fromInt(x: Int): Polynomial[A] = constant(ring.fromInt(x))
 
   override val monoid = Gadgets.Integers
 
@@ -402,6 +387,10 @@ trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] wit
     val terms = reduce(_terms)
   }
 
+  def composeAsFunctions(p: Polynomial[A], q: Polynomial[A]): Polynomial[A] = {
+    add(p.terms map { case (e, a) => scalarMultiply(a, power(q, e)) })
+  }
+  
 }
 
 trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanDomain[Polynomial[A]] {
@@ -410,10 +399,10 @@ trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanD
   def quotientRemainder(x: Polynomial[A], y: Polynomial[A]): (Polynomial[A], Polynomial[A]) = {
     (x.maximumDegree, y.maximumDegree) match {
       case (_, None) => throw new ArithmeticException
-      case (None, Some(dy)) => (Polynomial(), Polynomial())
+      case (None, Some(dy)) => (zero, zero)
       case (Some(dx), Some(dy)) => {
         if (dy > dx) {
-          (Polynomial(), x)
+          (zero, x)
         } else {
           val ax = x.leadingCoefficient.get
           val ay = y.leadingCoefficient.get

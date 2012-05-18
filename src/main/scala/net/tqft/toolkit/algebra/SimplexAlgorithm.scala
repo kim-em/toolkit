@@ -33,7 +33,7 @@ trait LinearProgrammingHelper extends Logging {
 }
 
 object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
-  def slack[B](solution: List[B])(implicit field: OrderedField[B]) = {
+  def slack[B](solution: Seq[B])(implicit field: OrderedField[B]) = {
     import AlgebraicNotation._
     field.negate(sum(solution filter { x => field.compare(x, field.zero) < 0 })(field))
   }
@@ -51,7 +51,7 @@ object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
     (simplex1, slack(solution1), solution1)
   }
 
-  def replaceNegativeColumn[B](simplex: List[Int], solution: List[B], m: Matrix[B])(implicit field: OrderedField[B]): Option[List[Int]] = {
+  def replaceNegativeColumn[B](simplex: List[Int], solution: Seq[B], m: Matrix[B])(implicit field: OrderedField[B]): Option[List[Int]] = {
     info("replacing: " + simplex + " with slack " + slack(solution))
 
     val possibilities = for (

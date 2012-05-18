@@ -27,9 +27,9 @@ class NumberFieldTest extends FlatSpec with ShouldMatchers {
     implicit val rationals = Gadgets.Rationals
     val cyclotomicNumbers = NumberField.cyclotomic(6)(rationals)
     val zeta = Polynomial.identity(rationals)
-    cyclotomicNumbers.multiply(cyclotomicNumbers.power(zeta, 1), 0) should equal(cyclotomicNumbers.zero)
-    cyclotomicNumbers.multiply(cyclotomicNumbers.power(zeta, 0), 1) should not equal(cyclotomicNumbers.zero)
-    cyclotomicNumbers.add(cyclotomicNumbers.multiply(cyclotomicNumbers.power(zeta, 0), 1), cyclotomicNumbers.multiply(cyclotomicNumbers.power(zeta, 1), 0))  should not equal(cyclotomicNumbers.zero)
+    cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 1), 0) should equal(cyclotomicNumbers.zero)
+    cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 0), 1) should not equal(cyclotomicNumbers.zero)
+    cyclotomicNumbers.add(cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 0), 1), cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 1), 0))  should not equal(cyclotomicNumbers.zero)
   }
   
 }
