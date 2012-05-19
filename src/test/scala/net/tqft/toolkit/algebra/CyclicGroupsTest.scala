@@ -7,8 +7,8 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class CyclicGroupsTest extends FlatSpec with ShouldMatchers {
-  "C_2" should "compute tensor product multiplicities without choking" in {
-    FiniteGroups.cyclicGroup(2).tensorProductMultiplicities
+  "C_2" should "compute character table without choking" in {
+    FiniteGroups.cyclicGroup(2).characterTable
   }
 }
  

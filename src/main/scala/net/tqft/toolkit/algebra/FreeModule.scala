@@ -1,6 +1,5 @@
 package net.tqft.toolkit.algebra
 
-import net.tqft.toolkit.mathematica.MathematicaExpression
 
 object FreeModule {
   implicit def orderingToLinearComboOrdering[A, B](implicit o: Ordering[B]) = new Ordering[Map[B, A]] {
