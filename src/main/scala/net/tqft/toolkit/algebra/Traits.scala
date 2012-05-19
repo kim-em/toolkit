@@ -16,9 +16,6 @@ trait Semigroup[A] {
     }
   }
   
-  private def powerInternal(x: A, k: Int, extras: Int) = {
-    
-  }
 }
 
 trait One[A] {
@@ -34,7 +31,7 @@ trait Monoid[A] extends Semigroup[A] with One[A] {
       super.power(x, k)
     }
   }
-
+  def orderOfElement(a: A): Int = Iterator.iterate(a)(multiply(_, a)).indexOf(one) + 1 
 }
 
 trait Group[A] extends Monoid[A] {

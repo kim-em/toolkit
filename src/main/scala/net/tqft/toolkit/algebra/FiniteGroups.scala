@@ -69,23 +69,27 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
   lazy val conjugacyClasses = unsortedConjugacyClasses.sortBy({ c => (c.representative != one, c.elements.size) })
   lazy val conjugacyClassOrders = for (c <- conjugacyClasses) yield orderOfElement(c.representative)
-  private val primeExponentiationOnConjugacyClasses: Int => IndexedSeq[Int] = {
-    def primeImpl(k: Int) = conjugacyClasses.map({ cx => conjugacyClasses.indexWhere({ cy => cy.elements.contains(power(cx.representative, k)) }) }).toIndexedSeq
-    import net.tqft.toolkit.functions.Memo._
-    (primeImpl _).memo
+  private def exponentationOnConjugacyClassesImpl(k: Int) = conjugacyClasses.map({ cx => conjugacyClasses.indexWhere({ cy => cy.elements.contains(power(cx.representative, k)) }) }).toIndexedSeq
+  private lazy val primeExponentiationOnConjugacyClasses: (Int => IndexedSeq[Int]) = {
+    import net.tqft.toolkit.arithmetic.Primes
+    Primes.takeWhile({ n => n < exponent }).map({ n => n -> exponentationOnConjugacyClassesImpl(n) }).toMap
   }
-  def exponentiationOnConjugacyClasses: Int => IndexedSeq[Int] = {
+  lazy val exponentiationOnConjugacyClasses: Int => IndexedSeq[Int] = {
     def impl(k: Int) = {
-      import net.tqft.toolkit.arithmetic.Factor
-      import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
-      Factor(k).map(primeExponentiationOnConjugacyClasses(_)).fold(0 until conjugacyClasses.size)({ (p: IndexedSeq[Int], q: IndexedSeq[Int]) => p permute q })
+      if (k == 0) {
+        IndexedSeq.fill(conjugacyClasses.size)(0)
+      } else {
+        import net.tqft.toolkit.arithmetic.Factor
+        import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
+        Factor(k).map(primeExponentiationOnConjugacyClasses(_)).fold(0 until conjugacyClasses.size)({ (p: IndexedSeq[Int], q: IndexedSeq[Int]) => p permute q })
+      }
     }
-    import net.tqft.toolkit.functions.Memo._
-    (impl _).memo
+    (0 until exponent) map ({ n => n -> impl(n) }) toMap
   }
-  def inverseConjugacyClasses = {
+  lazy val inverseOnConjugacyClasses = exponentationOnConjugacyClassesImpl(-1)
+  lazy val inverseConjugacyClasses = {
     import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
-    exponentiationOnConjugacyClasses(-1) permute conjugacyClasses
+    inverseOnConjugacyClasses permute conjugacyClasses
   }
 
   val classCoefficients: Int => Seq[Seq[Int]] = {
@@ -102,7 +106,6 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     (impl _).memo
   }
 
-  def orderOfElement(a: A): Int = Iterator.iterate(a)(multiply(_, a)).indexOf(one) + 1
   lazy val exponent = Gadgets.Integers.lcm((elements map { orderOfElement _ }).toSeq: _*)
 
   lazy val preferredPrime = {
@@ -144,7 +147,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       }
 
       val cachedEigenvalues = {
-        def impl(n: Int) = new Matrix(k, classCoefficients(n)).eigenvalues
+        def impl(n: Int) = new Matrix(k, classCoefficients(n).par).eigenvalues
         import net.tqft.toolkit.functions.Memo._
         (impl _).memo
       }
@@ -186,7 +189,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
       val omega = classCoefficientSimultaneousEigenvectorsModPrime
       val degrees = for (omega_i <- omega) yield {
-        sqrt(modP.quotient(finiteGroup.size, (for (j <- 0 until k) yield modP.quotient(omega_i(j) * omega_i(exponentiationOnConjugacyClasses(-1)(j)), conjugacyClasses(j).size)).sum))
+        sqrt(modP.quotient(finiteGroup.size, (for (j <- 0 until k) yield modP.quotient(omega_i(j) * omega_i(inverseOnConjugacyClasses(j)), conjugacyClasses(j).size)).sum))
       }
 
       for (i <- 0 until k) yield for (j <- 0 until k) yield modP.quotient(omega(i)(j) * degrees(i), conjugacyClasses(j).size)
@@ -198,22 +201,22 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     val cyclotomicNumbers = NumberField.cyclotomic(exponent)(rationals)
     val zeta = Polynomial.identity(rationals)
     val chi = characterTableModPreferredPrime
-    def order(n: Int) = (1 until preferredPrime).find({ m => modP.power(n, m) == 1 }).get
-    val z = (1 until preferredPrime).find({ n => order(n) == exponent }).get
+    //    def order(n: Int) = (1 until preferredPrime).find({ m => modP.power(n, m) == 1 }).get
+    val z = (1 until preferredPrime).find({ n => modP.orderOfElement(n) == exponent }).get
 
-    val zpower = {
-      import net.tqft.toolkit.functions.Memo._
-      { k: Int => modP.power(z, k) }.memo
-    }
-    val zetapower = {
-      import net.tqft.toolkit.functions.Memo._
-      { k: Int => cyclotomicNumbers.power(zeta, k) }.memo
-    }
+    val zpower = IndexedSeq.tabulate(exponent)({ k: Int => modP.power(z, k) })
+    val zetapower = IndexedSeq.tabulate(exponent)({ k: Int => cyclotomicNumbers.power(zeta, k) })
 
-    def mu(i: Int)(j: Int)(s: Int) = modP.quotient(modP.add(for (n <- 0 until exponent) yield modP.multiply(chi(i)(exponentiationOnConjugacyClasses(n)(j)), zpower(-s * n))), exponent)
+    import net.tqft.toolkit.arithmetic.Mod._
+
+    // ACHTUNG!
+    // make sure we don't deadlock:
+    exponentiationOnConjugacyClasses(0)
+    
+    def mu(i: Int)(j: Int)(s: Int) = modP.quotient(modP.add(for (n <- 0 until exponent) yield modP.multiply(chi(i)(exponentiationOnConjugacyClasses(n)(j)), zpower((-s * n) mod exponent))), exponent)
 
     val unsortedCharacters = (for (i <- 0 until k par) yield (for (j <- 0 until k par) yield {
-      FiniteGroup.info("Computing entry " + (i,j) + " in the character table.")
+      FiniteGroup.info("Computing entry " + (i, j) + " in the character table.")
       cyclotomicNumbers.add(for (s <- 0 until exponent) yield cyclotomicNumbers.multiplyByInt(zetapower(s), mu(i)(j)(s)))
     }).seq).seq
     (exponent, unsortedCharacters.sortBy({ v => (v(0).constantTerm, v.tail.headOption.map({ p => rationals.negate(p.constantTerm) })) }))
@@ -237,6 +240,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     }
 
     (for (i <- 0 until k par) yield {
+      FiniteGroup.info("Computing tensor product multiplicities (" + i + ", *)")
       (for (j <- 0 until k par) yield {
         val product = (chi(i) zip chi(j)).map({ p => Q.multiply(p._1, p._2) }) map (Q.bar _)
         for (c <- chi) yield lower(pairing(product, c))
