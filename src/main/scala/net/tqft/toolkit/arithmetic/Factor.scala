@@ -24,10 +24,10 @@ object Factor {
       if (notPrime(crosses, current)) sieve(rest, adjustCrosses(crosses, current))
       else current #:: sieve(rest, Cross(current * current, current) :: crosses)
     }
-    sieve(Stream from 2, Nil)
+    sieve(Stream from 2, Nil).view
   }
 
-  def apply(n: Int): List[Int] = apply(n, Nil, primes takeWhile ({ k => k * k <= n }) iterator)
+  def apply(n: Int): List[Int] = apply(n, Nil, primes.takeWhile ({ k => k * k <= n }).iterator)
 
   @scala.annotation.tailrec
   private def apply(n: Int, previousFactors: List[Int], primes: Iterator[Int]): List[Int] = {

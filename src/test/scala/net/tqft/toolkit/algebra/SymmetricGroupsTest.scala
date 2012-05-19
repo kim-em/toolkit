@@ -24,6 +24,11 @@ class SymmetricGroupsTest extends FlatSpec with ShouldMatchers {
     }
   }
 
+  "signedPermutationGroup" should "be defined sensibly" in {
+    FiniteGroups.signedPermutationGroup(4).verifyInverses should be(true)
+    FiniteGroups.signedPermutationGroup(3).verifyAssociativity should be(true)
+  }
+  
   "S_3" should "have the right tensor product multiplicities" in {
      S_3.tensorProductMultiplicities should equal (List(List(List(1, 0, 0), List(0, 1, 0), List(0, 0, 1)), List(List(0, 1, 0), List(1, 0, 0), List(0, 0, 1)), List(List(0, 0, 1), List(0, 0, 1), List(1, 1, 1))))
   }
