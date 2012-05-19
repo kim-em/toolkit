@@ -129,19 +129,7 @@ object Mod {
       override def multiply(x: Int, y: Int) = (x * y) mod p
       override def add(x: Int, y: Int) = (x + y) mod p
       override def fromInt(x: Int) = x mod p
-      override def power(x: Int, k: Int) = {
-        if (k < 0) {
-          power(inverse(x), -k)
-        } else if (k == 0) {
-          1
-        } else {
-          if (k % 2 == 1) {
-            multiply(x, power(multiply(x, x), k / 2))
-          } else {
-            power(multiply(x, x), k / 2)
-          }
-        }
-      }
+      
     }
   }
 }

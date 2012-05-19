@@ -5,8 +5,19 @@ trait Semigroup[A] {
   def multiply(x: A, y: A): A
   def multiply(x0: A, x1: A*): A = x1.fold(x0)(multiply _)
   def power(x: A, k: Int): A = {
+    // TODO no need for this to be recursive; just use the binary expansion of k.
     require(k >= 1)
-    List.fill(k)(x).reduce(multiply(_, _))
+    if(k == 1) {
+      x
+    } else if (k % 2 == 1) {
+      multiply(x, power(multiply(x, x), k / 2))
+    } else {
+      power(multiply(x, x), k / 2)
+    }
+  }
+  
+  private def powerInternal(x: A, k: Int, extras: Int) = {
+    
   }
 }
 
@@ -17,15 +28,19 @@ trait One[A] {
 trait Monoid[A] extends Semigroup[A] with One[A] {
   def multiply(xs: Seq[A]): A = xs.fold(one)(multiply _)
   override def power(x: A, k: Int): A = {
-    require(k >= 0)
-    List.fill(k)(x).foldLeft(one)(multiply(_, _))
+    if (k == 0) {
+      one
+    } else {
+      super.power(x, k)
+    }
   }
+
 }
 
 trait Group[A] extends Monoid[A] {
   def inverse(x: A): A
   override def power(x: A, k: Int): A = {
-    if(k < 0) {
+    if (k < 0) {
       super.power(inverse(x), -k)
     } else {
       super.power(x, k)
@@ -122,15 +137,15 @@ trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMon
 }
 
 trait Ring[A] extends Rig[A] with AdditiveCategory[Unit, A] with CommutativeGroup[A] {
-//  override def fromInt(x: Int) = {
-//    import AlgebraicNotation._
-//    implicit val hoc = this
-//
-//    x match {
-//      case x if x < 0 => -(List.fill(-x)(one) reduceLeft (_ + _))
-//      case _ => super.fromInt(x)
-//    }
-//  }
+  //  override def fromInt(x: Int) = {
+  //    import AlgebraicNotation._
+  //    implicit val hoc = this
+  //
+  //    x match {
+  //      case x if x < 0 => -(List.fill(-x)(one) reduceLeft (_ + _))
+  //      case _ => super.fromInt(x)
+  //    }
+  //  }
 
 }
 
@@ -373,7 +388,6 @@ trait AssociativeAlgebra[A, B] extends Algebra[A, B]
 
 trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] with AssociativeAlgebra[A, Polynomial[A]] {
 
-
   def monomial(k: Int): Polynomial[A] = monomial(k, ring.one)
   def monomial(k: Int, a: A): Polynomial[A] = Polynomial((k, a))
 
@@ -390,7 +404,7 @@ trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] wit
   def composeAsFunctions(p: Polynomial[A], q: Polynomial[A]): Polynomial[A] = {
     add(p.terms map { case (e, a) => scalarMultiply(a, power(q, e)) })
   }
-  
+
 }
 
 trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanDomain[Polynomial[A]] {
