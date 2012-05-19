@@ -1,5 +1,4 @@
 package net.tqft.toolkit.algebra
-import net.tqft.toolkit.mathematica.MathematicaExpression
 
 trait Semigroup[A] {
   def multiply(x: A, y: A): A

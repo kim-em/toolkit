@@ -1,6 +1,4 @@
 package net.tqft.toolkit.algebra
-import net.tqft.toolkit.mathematica.MathematicaExpression
-import net.tqft.toolkit.mathematica.ShortMathematicaExpression
 
 trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   import net.tqft.toolkit.arithmetic.MinMax._
@@ -34,19 +32,7 @@ object Polynomial {
     polynomials.quotient(apply((0, field.negate(field.one)), (n, field.one)), polynomials.multiply(divisors))
   }
     
-  // TODO move this somewhere else?
-  implicit def asMathematicaExpression[A <% MathematicaExpression](p: Polynomial[A]) = new ShortMathematicaExpression {
-    val symbol = "x" // TODO work out how to allow varying this?
-
-    def toMathematicaInputString = {
-      if (p.terms.isEmpty) {
-        // TODO we need a ring in scope:
-        "0"
-      } else {
-        (for ((b, a) <- p.terms) yield a.toMathematicaInputString + " " + symbol + "^(" + b + ")").mkString(" + ")
-      }
-    }
-  }
+ 
 }
 
 object Polynomials extends HomomorphismCategory[PolynomialAlgebra] {

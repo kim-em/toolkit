@@ -211,7 +211,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
     // ACHTUNG!
     // make sure we don't deadlock:
-    exponentiationOnConjugacyClasses(0)
+//    exponentiationOnConjugacyClasses(0)
     
     def mu(i: Int)(j: Int)(s: Int) = modP.quotient(modP.add(for (n <- 0 until exponent) yield modP.multiply(chi(i)(exponentiationOnConjugacyClasses(n)(j)), zpower((-s * n) mod exponent))), exponent)
 
@@ -222,31 +222,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     (exponent, unsortedCharacters.sortBy({ v => (v(0).constantTerm, v.tail.headOption.map({ p => rationals.negate(p.constantTerm) })) }))
   }
 
-  lazy val tensorProductMultiplicities: Seq[Seq[Seq[Int]]] = {
-    val k = conjugacyClasses.size
-    val (p, chi) = characterTable
-    import Implicits.Rationals
-    implicit val Q = NumberField.cyclotomic(p)
 
-    def pairing(x: Seq[Polynomial[Fraction[Int]]], y: Seq[Polynomial[Fraction[Int]]]) = {
-      Q.quotientByInt(Q.add((x zip y zip conjugacyClasses.map(_.size)).map({ p => Q.multiplyByInt(Q.multiply(p._1._1, p._1._2), p._2) })), finiteGroup.size)
-    }
-
-    def lower(p: Polynomial[Fraction[Int]]) = {
-      require(p == Q.zero || p.maximumDegree == Some(0))
-      val c = p.constantTerm
-      require(c.denominator == 1)
-      c.numerator
-    }
-
-    (for (i <- 0 until k par) yield {
-      FiniteGroup.info("Computing tensor product multiplicities (" + i + ", *)")
-      (for (j <- 0 until k par) yield {
-        val product = (chi(i) zip chi(j)).map({ p => Q.multiply(p._1, p._2) }) map (Q.bar _)
-        for (c <- chi) yield lower(pairing(product, c))
-      }).seq
-    }).seq
-  }
 }
 
 object FiniteGroup extends Logging

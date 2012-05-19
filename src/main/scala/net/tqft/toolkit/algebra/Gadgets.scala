@@ -1,6 +1,5 @@
 package net.tqft.toolkit.algebra
 
-import net.tqft.toolkit.mathematica.MathematicaExpression
 import java.math.BigInteger
 import java.util.Comparator
 import org.apfloat.Apfloat
