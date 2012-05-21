@@ -250,6 +250,8 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
           val character = c.map(_.constantTerm)
         }
       } else {
+        // TODO really should find the smallest cyclotomic field
+        // see http://www.math.ru.nl/~bosma/pubs/AAECC1990.pdf
         new CyclotomicCharacter {
           val order = exponent
           val character = c
