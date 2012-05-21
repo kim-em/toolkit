@@ -95,7 +95,7 @@ object Gadgets {
     override def sqrt(x: Apfloat) = helper.sqrt(x)
   }
 
-  val Rationals = Fields.fieldOfFractions(Integers)
+  val Rationals = Fields.Rationals
   val BigRationals = Fields.fieldOfFractions(BigIntegers)
 
   val integersAsRationals = Fields.embeddingInFieldOfFractions(Integers)

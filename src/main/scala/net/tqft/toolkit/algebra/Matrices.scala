@@ -9,7 +9,7 @@ object Matrices {
     def source = Rings
     def target = Rings
     // TODO should use endomorphismAlgebra, so we can multiply by scalars from A
-    def apply[A](ring: Ring[A]): Ring[Matrix[A]] = new MatrixCategoryOverRing(ring).endomorphismRing(size)
+    def apply[A](ring: Ring[A]): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(ring).endomorphismAlgebra(size)
     def apply[A, B](hom: Homomorphism[Ring, A, B]): RingHomomorphism[Matrix[A], Matrix[B]] = new RingHomomorphism[Matrix[A], Matrix[B]] {
       def source = self.apply(hom.source)
       def target = self.apply(hom.target)
@@ -17,10 +17,13 @@ object Matrices {
     }
   }
 
-  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
+  def tensor[B: Ring](m1: Matrix[B], m2: Matrix[B]) = new MatrixCategoryOverRing(implicitly[Ring[B]]).tensorMorphisms(m1, m2)
+
+  def over[A](ring: Ring[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(ring).endomorphismAlgebra(size)
+//  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 }
 
-abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sources: List[A], val targets: List[A]) {
+abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sources: Seq[A], val targets: Seq[A]) {
   require(targets.size == entries.size)
   //  require(entries.find(_.size != numberOfColumns).isEmpty) // not a good idea if the entries are in Hadoop
 
@@ -60,7 +63,7 @@ abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sour
 
 }
 
-class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val entries: GenSeq[Seq[B]]) extends CategoricalMatrix[A, B, M](sources, targets) {
+class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A, B, M]](sources: Seq[A], targets: Seq[A], val entries: GenSeq[Seq[B]]) extends CategoricalMatrix[A, B, M](sources, targets) {
   override def equals(other: Any) = {
     // TODO this could be optimized
     other match {
@@ -85,7 +88,7 @@ class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A
 
 }
 
-class DenseCategoricalMatrix[A, B](sources: List[A], targets: List[A], entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[A, B, DenseCategoricalMatrix[A, B]](sources, targets, entries)
+class DenseCategoricalMatrix[A, B](sources: Seq[A], targets: Seq[A], entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[A, B, DenseCategoricalMatrix[A, B]](sources, targets, entries)
 
 class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val sparseEntries: List[SortedMap[Int, B]], default: B) extends CategoricalMatrix[A, B, M](sources, targets) {
   def entries = for (row <- sparseEntries) yield for (i <- (0 until numberOfColumns).toList) yield row.get(i).getOrElse(default)
@@ -117,8 +120,8 @@ class Matrix[B](
   override val numberOfColumns: Int,
   override val entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
 
-  def mapRows(rowMapper: Seq[B] => Seq[B], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
-  def mapEntries(entryMapper: B => B) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
+  def mapRows[C](rowMapper: Seq[B] => Seq[C], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
+  def mapEntries[C](entryMapper: B => C) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
 
   override def toString = (entries.toList.map { r => r.mkString("(", ", ", ")") }).mkString("\n")
 
@@ -174,7 +177,7 @@ class Matrix[B](
 
     @scala.annotation.tailrec
     def recurse(finishedRows: List[Seq[B]], remainingRows: GenSeq[(Seq[B], Int)], remainingIndexes: Seq[Int]): List[Seq[B]] = {
-//      println("finished " + finishedRows.size + " rows")
+      //      println("finished " + finishedRows.size + " rows")
 
       if (remainingIndexes.isEmpty) {
         finishedRows.reverse
@@ -296,15 +299,20 @@ class Matrix[B](
     require(numberOfRows == numberOfColumns)
 
     implicit val rationalFunctions = RationalFunctions.over(field)
-    val functionMatrices = Matrices.matricesOver(rationalFunctions, numberOfRows)
+    val functionMatrices = Matrices.matricesOver(numberOfRows)(rationalFunctions)
     val lift = Matrices.matricesOver(numberOfRows)(RationalFunctions.embeddingAsConstants(field))(this)
     val lambda = functionMatrices.scalarMultiply(RationalFunction.identity, functionMatrices.one)
     val determinant = functionMatrices.subtract(lambda, lift).determinant
     require(determinant.denominator == Polynomials.embeddingAsConstants(field)(field.one))
     determinant.numerator
   }
-  
+
   def eigenvalues(implicit field: Field[B] with Elements[B]): Set[B] = characteristicPolynomial.roots
+
+  def eigenspace(lambda: B)(implicit field: Field[B]): Seq[Seq[B]] = {
+    val matrices = Matrices.matricesOver(numberOfRows)(field)
+    matrices.subtract(this, matrices.scalarMultiply(lambda, matrices.one)).nullSpace
+  }
 
   // returns a basis for the nullspace
   def nullSpace(implicit field: Field[B]): Seq[Seq[B]] = {
@@ -338,22 +346,28 @@ class Matrix[B](
   def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)
 }
 
-class MatrixCategoryOverRing[R](ring: Ring[R]) extends LinearCategory[Int, Matrix[R], R] {
-  val inner = new AbstractMatrixCategory(ring)({ (sources: List[Unit], targets: List[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) })
+class MatrixCategoryOverRing[R](ring: Ring[R]) extends TensorCategory[Int, Matrix[R], R] {
+  val inner = new AbstractMatrixCategory(ring)({ (sources: Seq[Unit], targets: Seq[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) })
 
   override def identityMorphism(o: Int) = inner.identityMorphism(List.fill(o)(()))
-  override def zeroMorphism(o1: Int, o2: Int) = inner.zeroMorphism(List.fill(o1)(()), List.fill(o2)(()))
+  override def zeroMorphism(o1: Int, o2: Int) = {
+    val zero = ring.zero
+    val zeroRow = Seq.fill(o2)(zero)
+    new Matrix(o1, Seq.fill(o1)(zeroRow))
+  }
   override def negate(m: Matrix[R]) = inner.negate(m)
   override def add(x: Matrix[R], y: Matrix[R]) = inner.add(x, y)
   override def compose(x: Matrix[R], y: Matrix[R]) = inner.compose(x, y)
   override def source(x: Matrix[R]) = x.numberOfColumns
   override def target(x: Matrix[R]) = x.numberOfRows
   override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => r map { x => ring.multiply(a, x) } })
+  override def tensorObjects(o1: Int, o2: Int) = o1 * o2
+  override def tensorMorphisms(m1: Matrix[R], m2: Matrix[R]) = new Matrix(m1.numberOfColumns * m2.numberOfColumns, for (row1 <- m1.entries; row2 <- m2.entries) yield for (r1 <- row1; r2 <- row2) yield ring.multiply(r1, r2))
 
-  override def endomorphismRing(o: Int) = ???
+//  override def endomorphismRing(o: Int) = ???
 }
 
-class MatrixCategoryOverField[F](field: Field[F]) extends MatrixCategoryOverRing(field) with LinearCategory[Int, Matrix[F], F] {
+class MatrixCategoryOverField[F](field: Field[F]) extends MatrixCategoryOverRing(field) with TensorCategory[Int, Matrix[F], F] {
   /* FIXME override */ def inverseOption(x: Matrix[F]) = None // TODO
 }
 
@@ -361,9 +375,9 @@ class MatrixCategory[O, M](entryCategory: AdditiveCategory[O, M]) extends Abstra
 
 class AbstractMatrixCategory[O, M, MT <: CategoricalMatrix[O, M, MT]](
   entryCategory: AdditiveCategory[O, M])(
-    implicit val buildMatrix: (List[O], List[O], GenSeq[Seq[M]]) => MT) extends AdditiveCategory[List[O], MT] {
+    implicit val buildMatrix: (Seq[O], Seq[O], GenSeq[Seq[M]]) => MT) extends AdditiveCategory[Seq[O], MT] {
 
-  def identityMorphism(o: List[O]) = {
+  def identityMorphism(o: Seq[O]) = {
 
     val entries = for ((o1, k1) <- o zipWithIndex) yield {
       for ((o2, k2) <- o zipWithIndex) yield {
@@ -377,7 +391,7 @@ class AbstractMatrixCategory[O, M, MT <: CategoricalMatrix[O, M, MT]](
 
     buildMatrix(o, o, entries)
   }
-  def zeroMorphism(o1: List[O], o2: List[O]) = {
+  def zeroMorphism(o1: Seq[O], o2: Seq[O]) = {
 
     val entries = for (oo2 <- o2) yield {
       for (oo1 <- o1) yield {

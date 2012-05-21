@@ -1,5 +1,8 @@
 package net.tqft.toolkit.collections
 
+import scala.collection.IterableLike
+import scala.collection.GenIterable
+
 object Pairs {
 	
 	class UniformPair[A](pair: Pair[A,A]) {
@@ -25,4 +28,11 @@ object Pairs {
 			}
 	}
 
+	implicit def pairOfTraversablesAsTransposable[CC[X] <: IterableLike[X, CC[X]], A, B](p: (CC[A], GenIterable[B])): TransposablePairOfTraversables[CC, A, B] = new TransposablePairOfTraversables[CC, A, B](p)
+	
+	class TransposablePairOfTraversables[CC[X] <: IterableLike[X, CC[X]], A, B](p: (CC[A], GenIterable[B])) {
+	  def transpose(implicit bf: CanBuildFrom[CC[A], (A, B), CC[(A, B)]]): CC[(A, B)] = 
+	    p._1.zip[A, B, CC[(A, B)]](p._2)
+	}
+	
 }
