@@ -55,7 +55,7 @@ trait NumberField[A] extends Field[Polynomial[A]] {
     def f(n: Int) = polynomials.remainder(polynomials.monomial(n), generator)
     (f _).memo
   }
-  protected def normalize(q: Polynomial[A]) = {
+  def normalize(q: Polynomial[A]) = {
     q.maximumDegree match {
       case None => zero
       case Some(k) if k < degree => q

@@ -114,7 +114,25 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     p
   }
 
-  lazy val characterTable: (Int, Seq[Seq[Polynomial[Fraction[Int]]]]) = {
+  trait Character[F] {
+    def field: Field[F]
+    def character: Seq[F]
+  }
+  object Character {
+    implicit def lift(x: Seq[Fraction[Int]]): RationalCharacter = new RationalCharacter {
+      override val character = x
+    }
+  }
+
+  trait RationalCharacter extends Character[Fraction[Int]] {
+    override def field = Gadgets.Rationals
+  }
+  trait CyclotomicCharacter extends Character[Polynomial[Fraction[Int]]] {
+    def order: Int
+    override def field = NumberField.cyclotomic(order)(Gadgets.Rationals)
+  }
+
+  lazy val characters: Seq[Seq[Polynomial[Fraction[Int]]]] = {
     val k = conjugacyClasses.size
 
     def classCoefficientSimultaneousEigenvectorsModPrime = {
@@ -219,14 +237,61 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       FiniteGroup.info("Computing entry " + (i, j) + " in the character table.")
       cyclotomicNumbers.add(for (s <- 0 until exponent) yield cyclotomicNumbers.multiplyByInt(zetapower(s), mu(i)(j)(s)))
     }).seq).seq
-    (exponent, unsortedCharacters.sortBy({ v => (v(0).constantTerm, v.tail.headOption.map({ p => rationals.negate(p.constantTerm) })) }))
+    val sortedCharacters = unsortedCharacters.sortBy({ v => (v(0).constantTerm, v.tail.headOption.map({ p => rationals.negate(p.constantTerm) })) })
+
+    sortedCharacters
   }
 
+  def reducedCharacters: Seq[Character[_]] = {
+    for (c <- characters) yield {
+      if (c.map(_.maximumDegree.getOrElse(0)).max == 0) {
+        import Implicits.Rationals
+        new RationalCharacter {
+          val character = c.map(_.constantTerm)
+        }
+      } else {
+        new CyclotomicCharacter {
+          val order = exponent
+          val character = c
+        }
+      }
+    }
+  }
+  def rationalCharacters: Seq[RationalCharacter] = reducedCharacters collect { case c: RationalCharacter => c }
+
+  def characterPairing[M, N](m: Character[M], n: Character[N]): Int = {
+    def liftCharacterToCyclotomicFieldOfExponent(c: Character[_]) = {
+      val polynomials = Polynomials.over(Gadgets.Rationals)
+      new CyclotomicCharacter {
+        override val order = exponent
+        override val character = c match {
+          case c: RationalCharacter => c.character.map({ x => polynomials.constant(x) })
+          case c: CyclotomicCharacter => {
+            val power = exponent / c.order
+            c.character.map({ p => field.normalize(polynomials.composeAsFunctions(p, polynomials.monomial(power))) })
+          }
+        }
+      }
+    }
+    import Implicits.Rationals
+    val Q = NumberField.cyclotomic(exponent)
+    val result = Q.quotientByInt(
+      Q.add(
+        for (((a, b), t) <- liftCharacterToCyclotomicFieldOfExponent(m).character zip liftCharacterToCyclotomicFieldOfExponent(n).character zip conjugacyClasses.map(_.size)) yield {
+          Q.multiplyByInt(Q.multiply(a, Q.bar(b)), t)
+        }),
+      finiteGroup.size)
+    require(result.maximumDegree.getOrElse(0) == 0)
+    val rationalResult = result.constantTerm
+    require(rationalResult.denominator == 1)
+    rationalResult.numerator
+  }
+
+  // TODO rewrite this in terms of other stuff!
   lazy val tensorProductMultiplicities: Seq[Seq[Seq[Int]]] = {
     val k = conjugacyClasses.size
-    val (p, chi) = characterTable
     import Implicits.Rationals
-    implicit val Q = NumberField.cyclotomic(p)
+    implicit val Q = NumberField.cyclotomic(exponent)
 
     def pairing(x: Seq[Polynomial[Fraction[Int]]], y: Seq[Polynomial[Fraction[Int]]]) = {
       Q.quotientByInt(Q.add((x zip y zip conjugacyClasses.map(_.size)).map({ p => Q.multiplyByInt(Q.multiply(p._1._1, p._1._2), p._2) })), finiteGroup.size)
@@ -242,8 +307,8 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     (for (i <- 0 until k par) yield {
       FiniteGroup.info("Computing tensor product multiplicities (" + i + ", *)")
       (for (j <- 0 until k par) yield {
-        val product = (chi(i) zip chi(j)).map({ p => Q.multiply(p._1, p._2) }) map (Q.bar _)
-        for (c <- chi) yield lower(pairing(product, c))
+        val product = (characters(i) zip characters(j)).map({ p => Q.multiply(p._1, p._2) }) map (Q.bar _)
+        for (c <- characters) yield lower(pairing(product, c))
       }).seq
     }).seq
   }
@@ -531,25 +596,34 @@ object GroupActions {
 
 trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { representation =>
   def degree: Int
-  override def source: FiniteGroup[A]
+  override val source: FiniteGroup[A]
   override def target = ??? // GL(F, n)?
-  def basisForIsotypicComponent[FF](character: Seq[F])(implicit ring: Ring[F], field: Field[FF], lift: F => FF) = {
-    require(character.size == source.conjugacyClasses.size)
-    val matrices = Matrices.matricesOver(degree)(ring)
+
+  def character(implicit addition: CommutativeMonoid[F]): Seq[F] = {
+    for (c <- source.conjugacyClasses; g = c.representative) yield {
+      apply(g).trace
+    }
+  }
+
+  def irrepMultiplicities(implicit evidence: F =:= Fraction[Int]): Seq[Int] = {
+    val chi = character(Gadgets.Rationals.asInstanceOf[Field[F]]).map(evidence)
+    for (c <- source.reducedCharacters) yield {
+      source.characterPairing(chi, c)
+    }
+  }
+  def basisForIsotypicComponent(chi: source.RationalCharacter)(implicit field: Field[F]): Seq[Seq[F]] = {
+    require(chi.character.size == source.conjugacyClasses.size)
+    val matrices = Matrices.matricesOver(degree)(field)
     var j = 0
     def blip {
       j = j + 1
       if (j % 1000 == 0) println(j / 1000)
     }
-    val projector = matrices.add(for ((cc, chi) <- source.conjugacyClasses zip character par) yield {
-      val chibar = if (ring.isInstanceOf[ComplexConjugation[_]]) {
-        ring.asInstanceOf[ComplexConjugation[F]].bar(chi)
-      } else {
-        chi
-      }
-      matrices.scalarMultiply(chibar, cc.elements.foldLeft(matrices.zero)({ (m: Matrix[F], g: A) => blip; matrices.add(m, representation(g)) }))
+    val projector = matrices.add(for ((cc, c) <- source.conjugacyClasses zip chi.character par) yield {
+      val cF = field.fromRational(c)
+      matrices.scalarMultiply(cF, cc.elements.foldLeft(matrices.zero)({ (m: Matrix[F], g: A) => blip; matrices.add(m, representation(g)) }))
     })
-    projector.mapEntries(lift).eigenspace(ring.fromInt(source.size))
+    projector.eigenspace(field.fromInt(source.size))
   }
 }
 
@@ -558,8 +632,7 @@ object Representations {
   private def unitVector[A: Zero: One](n: Int, k: Int) = elementaryVector(implicitly[One[A]].one, implicitly[Zero[A]].zero, n, k)
 
   def permutationRepresentation[F: Ring](n: Int): Representation[Permutation, F] = permutationRepresentation(FiniteGroups.symmetricGroup(n))
-  def permutationRepresentation[F: Ring](source: FiniteGroup[Permutation]): Representation[Permutation, F] = {
-    val _source = source
+  def permutationRepresentation[F: Ring](_source: FiniteGroup[Permutation]): Representation[Permutation, F] = {
     new Representation[Permutation, F] {
       override val degree = _source.one.size
       override val source = _source
@@ -583,7 +656,7 @@ object Representations {
   def tensor[A, F: Ring](V: Representation[A, F], W: Representation[A, F]): Representation[A, F] = {
     require(V.source == W.source)
     new Representation[A, F] {
-      override def source = V.source
+      override val source = V.source
       override def degree = V.degree * W.degree
       override def apply(a: A) = Matrices.tensor(V(a), W(a))
     }
@@ -591,7 +664,7 @@ object Representations {
 
   def tensorPower[A, F: Ring](V: Representation[A, F], k: Int): Representation[A, F] = {
     new Representation[A, F] {
-      override def source = V.source
+      override val source = V.source
       override def degree = Gadgets.Integers.power(V.degree, k)
       override def apply(a: A) = {
         val Va = V(a)

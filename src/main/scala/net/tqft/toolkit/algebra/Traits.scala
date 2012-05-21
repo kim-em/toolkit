@@ -225,6 +225,7 @@ trait Field[A] extends EuclideanDomain[A] with Group[A] {
   override def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
   override def remainder(x: A, y: A) = zero
   def quotientByInt(x: A, y: Int): A = quotient(x, fromInt(y))
+  def fromRational(x: Fraction[Int]) = quotient(fromInt(x.numerator), fromInt(x.denominator))
 }
 
 trait OrderedField[A] extends Field[A] with Ordering[A] { self =>
@@ -388,59 +389,6 @@ trait Module[A, B] extends CommutativeGroup[B] {
 trait Algebra[A, B] extends Ring[B] with Module[A, B]
 
 trait AssociativeAlgebra[A, B] extends Algebra[A, B]
-
-trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] with AssociativeAlgebra[A, Polynomial[A]] {
-
-  def monomial(k: Int): Polynomial[A] = monomial(k, ring.one)
-  def monomial(k: Int, a: A): Polynomial[A] = Polynomial((k, a))
-
-  def constant(a: A) = monomial(0, a)
-  override def fromInt(x: Int): Polynomial[A] = constant(ring.fromInt(x))
-
-  override val monoid = Gadgets.Integers
-
-  override def wrap(terms: List[(Int, A)]): Polynomial[A] = new PolynomialImpl(terms)
-  private class PolynomialImpl(_terms: List[(Int, A)]) extends Polynomial[A] {
-    val terms = reduce(_terms)
-  }
-
-  def composeAsFunctions(p: Polynomial[A], q: Polynomial[A]): Polynomial[A] = {
-    add(p.terms map { case (e, a) => scalarMultiply(a, power(q, e)) })
-  }
-
-}
-
-trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanDomain[Polynomial[A]] {
-  override implicit def ring: Field[A]
-
-  def quotientRemainder(x: Polynomial[A], y: Polynomial[A]): (Polynomial[A], Polynomial[A]) = {
-    (x.maximumDegree, y.maximumDegree) match {
-      case (_, None) => throw new ArithmeticException
-      case (None, Some(dy)) => (zero, zero)
-      case (Some(dx), Some(dy)) => {
-        if (dy > dx) {
-          (zero, x)
-        } else {
-          val ax = x.leadingCoefficient.get
-          val ay = y.leadingCoefficient.get
-
-          require(ax != ring.zero)
-          require(ay != ring.zero)
-
-          val q = ring.quotient(ax, ay)
-
-          val quotientLeadingTerm = monomial(dx - dy, q)
-          val difference = add(x, negate(multiply(quotientLeadingTerm, y)))
-          require(difference.get(dx) == None)
-          val (restOfQuotient, remainder) = quotientRemainder(difference, y)
-
-          (add(quotientLeadingTerm, restOfQuotient), remainder)
-        }
-      }
-    }
-  }
-
-}
 
 trait Enumerable[A] {
   def elements: Iterable[A]
