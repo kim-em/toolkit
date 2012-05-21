@@ -22,10 +22,10 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
 }
 
 object Polynomial {
-  def apply[A](terms: (Int, A)*)(implicit ring: Ring[A]) = Polynomials.over(ring).wrap(terms.toList)
-  def apply[A](terms: Map[Int, A])(implicit ring: Ring[A]) = Polynomials.over(ring).wrap(terms)
-
-  def identity[A](implicit ring: Ring[A]) = apply((1, ring.one))
+  def apply[A:Ring](terms: (Int, A)*) = Polynomials.over(implicitly[Ring[A]]).wrap(terms.toList)
+  def apply[A:Ring](terms: Map[Int, A]) = Polynomials.over(implicitly[Ring[A]]).wrap(terms)
+  def constant[A:Ring](x: A) = apply((0, x)) 
+  def identity[A:Ring] = apply((1, implicitly[Ring[A]].one))
 
   def cyclotomic[A:Field](n: Int): Polynomial[A] = {
     val field = implicitly[Field[A]]
@@ -137,4 +137,56 @@ object RationalFunctions {
     }
   }
 
+}
+
+trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] with AssociativeAlgebra[A, Polynomial[A]] {
+
+  def monomial(k: Int): Polynomial[A] = monomial(k, ring.one)
+  def monomial(k: Int, a: A): Polynomial[A] = Polynomial((k, a))
+
+  def constant(a: A) = monomial(0, a)
+  override def fromInt(x: Int): Polynomial[A] = constant(ring.fromInt(x))
+
+  override val monoid = Gadgets.Integers
+
+  override def wrap(terms: List[(Int, A)]): Polynomial[A] = new PolynomialImpl(terms)
+  private class PolynomialImpl(_terms: List[(Int, A)]) extends Polynomial[A] {
+    val terms = reduce(_terms)
+  }
+
+  def composeAsFunctions(p: Polynomial[A], q: Polynomial[A]): Polynomial[A] = {
+    add(p.terms map { case (e, a) => scalarMultiply(a, power(q, e)) })
+  }
+
+}
+
+trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanDomain[Polynomial[A]] {
+  override implicit def ring: Field[A]
+
+  def quotientRemainder(x: Polynomial[A], y: Polynomial[A]): (Polynomial[A], Polynomial[A]) = {
+    (x.maximumDegree, y.maximumDegree) match {
+      case (_, None) => throw new ArithmeticException
+      case (None, Some(dy)) => (zero, zero)
+      case (Some(dx), Some(dy)) => {
+        if (dy > dx) {
+          (zero, x)
+        } else {
+          val ax = x.leadingCoefficient.get
+          val ay = y.leadingCoefficient.get
+
+          require(ax != ring.zero)
+          require(ay != ring.zero)
+
+          val q = ring.quotient(ax, ay)
+
+          val quotientLeadingTerm = monomial(dx - dy, q)
+          val difference = add(x, negate(multiply(quotientLeadingTerm, y)))
+          require(difference.get(dx) == None)
+          val (restOfQuotient, remainder) = quotientRemainder(difference, y)
+
+          (add(quotientLeadingTerm, restOfQuotient), remainder)
+        }
+      }
+    }
+  }
 }

@@ -150,6 +150,11 @@ class Matrix[B](
     }).seq
   }
 
+  def trace(implicit addition: CommutativeMonoid[B]): B = {
+    require(numberOfRows == numberOfColumns)
+    addition.add(for((row, i) <- entries.zipWithIndex) yield row(i))
+  }
+  
   private def rowPriority(row: Seq[B])(implicit field: Field[B]): (Int, B) = {
     field match {
       case o: OrderedField[_] => {

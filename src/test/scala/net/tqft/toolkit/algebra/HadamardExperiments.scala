@@ -24,11 +24,11 @@ class HadamardExperiments extends FlatSpec with ShouldMatchers {
     import Implicits.Rationals
     import Implicits.Integers
 
-    val chi4 = Seq(11, 11, 3, 3, -1, 2, 2, -1, -1, -1, 3, 0, 0, 0,
+    val chi4/* : Seq[Fraction[Int]]*/ = Seq(11, 11, 3, 3, -1, 2, 2, -1, -1, -1, 3, 0, 0, 0,
       0, -1, -1, 1, 1, -1, 1, -1, 1, -1, 0, 0)
     val chi5 = Seq(11, 11, 3, 3, -1, 2, 2, -1, -1, 3, -1, 0, 0, 0,
       0, -1, -1, 1, 1, 1, -1, 1, -1, -1, 0, 0)
-    Representations.tensorPower(Representations.signedPermutationRepresentation(half)(Integers), 2).basisForIsotypicComponent(chi4) should have size (1)
+//    Representations.tensorPower(Representations.signedPermutationRepresentation(half)(Integers), 2).basisForIsotypicComponent(chi4) should have size (1)
 //    Representations.tensorPower(Representations.signedPermutationRepresentation(half)(Integers), 2).basisForIsotypicComponent(chi5) should have size (1)
   }
 
@@ -41,7 +41,7 @@ class HadamardExperiments extends FlatSpec with ShouldMatchers {
     val chi13 = Seq(54, 54, 6, 6, 6, 0, 0, 0, 0, 2, 2, -1, -1, -1, -1, 1, 1, -1, -1, 0,
       0, 0, 0, 0, 0, 0)
 
-    Representations.tensorPower(Representations.signedPermutationRepresentation(half)(Integers), 4).basisForIsotypicComponent(chi13) should have size (18)
+//    Representations.tensorPower(Representations.signedPermutationRepresentation(half)(Integers), 4).basisForIsotypicComponent(chi13) should have size (18)
   }
   //  "the 12x12 Hadamard automorphism group" should "be able to compute a character table" in {
   //   println(half.characterTable)
