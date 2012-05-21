@@ -47,9 +47,9 @@ trait NumberField[A] extends Field[Polynomial[A]] {
   def coefficientField: Field[A]
   val generator: Polynomial[A]
   lazy val degree = generator.maximumDegree.get
-  
+
   protected lazy val polynomials = Polynomials.over(coefficientField) // has to be lazy so coefficientField is available
-  
+
   private val powers = {
     import net.tqft.toolkit.functions.Memo._
     def f(n: Int) = polynomials.remainder(polynomials.monomial(n), generator)
@@ -59,14 +59,14 @@ trait NumberField[A] extends Field[Polynomial[A]] {
     q.maximumDegree match {
       case None => zero
       case Some(k) if k < degree => q
-      case Some(k) if k < 2*degree => {
+      case Some(k) if k < 2 * degree => {
         Polynomial((q.terms.flatMap {
           case (n, a) if n < degree => List((n, a))
-          case (n,a) => powers(n).terms.map { case (m, b) => (m, coefficientField.multiply(a, b)) }
-        }):_*)(coefficientField)
+          case (n, a) => powers(n).terms.map { case (m, b) => (m, coefficientField.multiply(a, b)) }
+        }): _*)(coefficientField)
       }
       case _ => polynomials.remainder(q, generator)
-    } 
+    }
   }
 
   override def fromInt(x: Int) = polynomials.fromInt(x)
@@ -81,11 +81,15 @@ trait NumberField[A] extends Field[Polynomial[A]] {
   override def one = polynomials.one
   override def multiply(a: Polynomial[A], b: Polynomial[A]) = normalize(polynomials.multiply(a, b))
   override def add(a: Polynomial[A], b: Polynomial[A]) = polynomials.add(a, b)
-  
+
   def scalarMultiply(a: A, p: Polynomial[A]): Polynomial[A] = polynomials.scalarMultiply(a, p)
 }
 
-trait CyclotomicNumberField[A] extends NumberField[A] {
+trait ComplexConjugation[A] { self: Field[A] =>
+  def bar(q: A): A
+}
+
+trait CyclotomicNumberField[A] extends NumberField[A] with ComplexConjugation[Polynomial[A]] {
   val order: Int
   override lazy val generator = Polynomial.cyclotomic(order)(coefficientField) // has to be lazy so coefficentField is available
 
@@ -129,7 +133,7 @@ object Mod {
       override def multiply(x: Int, y: Int) = (x * y) mod p
       override def add(x: Int, y: Int) = (x + y) mod p
       override def fromInt(x: Int) = x mod p
-      
+
     }
   }
 }
@@ -167,13 +171,17 @@ object Fields extends HomomorphismCategory[Field] {
     override def inverse(x: Fraction[A]) = Fraction(x.denominator, x.numerator)
   }
 
+  class OrderedFieldOfFractions[A](ring: OrderedEuclideanDomain[A]) extends FieldOfFractions[A](ring) with OrderedField[Fraction[A]] {
+    def compare(x: Fraction[A], y: Fraction[A]) = ring.compare(ring.multiply(x.numerator, y.denominator), ring.multiply(y.numerator, x.denominator))
+  }
+  
+  object Rationals extends OrderedFieldOfFractions(Gadgets.Integers)
+
   val fieldOfFractions = new Functor[EuclideanDomain, Field, Fraction] { self =>
     def source = EuclideanDomains
     def target = Fields
     def apply[A](ring: EuclideanDomain[A]): Field[Fraction[A]] = new FieldOfFractions(ring)
-    def apply[A](ring: OrderedEuclideanDomain[A]): OrderedField[Fraction[A]] = new FieldOfFractions(ring) with OrderedField[Fraction[A]] {
-      def compare(x: Fraction[A], y: Fraction[A]) = ring.compare(ring.multiply(x.numerator, y.denominator), ring.multiply(y.numerator, x.denominator))
-    }
+    def apply[A](ring: OrderedEuclideanDomain[A]): OrderedField[Fraction[A]] = new OrderedFieldOfFractions(ring)
     def apply[A, B](hom: Homomorphism[EuclideanDomain, A, B]): FieldHomomorphism[Fraction[A], Fraction[B]] = new FieldHomomorphism[Fraction[A], Fraction[B]] {
       def source = self.apply(hom.source)
       def target = self.apply(hom.target)

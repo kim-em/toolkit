@@ -1,9 +1,9 @@
 package net.tqft.toolkit.algebra
 
-import scala.collection.immutable.TreeSet
 import scala.collection.immutable.HashSet
 import scala.collection.GenSet
 import net.tqft.toolkit.Logging
+import net.tqft.toolkit.permutations.Permutations.Permutation
 
 trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
@@ -126,7 +126,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
         m.zipWithIndex.map({ case (r, i) => r.updated(i, (r(i) - lambda) mod preferredPrime) })
       }
 
-      def eigenvalues(m: Seq[Seq[Int]]) = new Matrix(m.size, m).eigenvalues
+      def eigenvalues(m: Seq[Seq[Int]]) = new Matrix(m.size, m.par).eigenvalues
 
       // TODO save the row reduced annihilators instead
       case class PartialEigenspace(annihilators: Seq[Seq[Seq[Int]]], eigenvalues: Seq[Int], eigenvectors: Option[Seq[Seq[Int]]]) {
@@ -210,9 +210,9 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     import net.tqft.toolkit.arithmetic.Mod._
 
     // ACHTUNG!
-    // make sure we don't deadlock:
+    // make sure we don't deadlock (c.f. https://issues.scala-lang.org/browse/SI-5808)
     exponentiationOnConjugacyClasses(0)
-    
+
     def mu(i: Int)(j: Int)(s: Int) = modP.quotient(modP.add(for (n <- 0 until exponent) yield modP.multiply(chi(i)(exponentiationOnConjugacyClasses(n)(j)), zpower((-s * n) mod exponent))), exponent)
 
     val unsortedCharacters = (for (i <- 0 until k par) yield (for (j <- 0 until k par) yield {
@@ -403,6 +403,7 @@ object FiniteGroups {
 
     override val elements = (0 until n).toSet
   }
+  import net.tqft.toolkit.permutations.Permutations.Permutation
   private class PermutationGroup(n: Int) extends FiniteGroup[IndexedSeq[Int]] {
     import net.tqft.toolkit.permutations.Permutations
     import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
@@ -412,7 +413,7 @@ object FiniteGroups {
     override def one = 0 until n
   }
 
-  def symmetricGroup(n: Int): FiniteGroup[IndexedSeq[Int]] = new PermutationGroup(n)
+  def symmetricGroup(n: Int): FiniteGroup[Permutation] = new PermutationGroup(n)
 
   def signature(n: Int): FiniteGroupHomomorphism[IndexedSeq[Int], Int] = new FiniteGroupHomomorphism[IndexedSeq[Int], Int] {
     val source = symmetricGroup(n)
@@ -518,12 +519,84 @@ object GroupActions {
   def trivialAction[A, B]: GroupAction[A, B] = new GroupAction[A, B] {
     def act(a: A, b: B) = b
   }
-  def permutationAction[C]: GroupAction[IndexedSeq[Int], Seq[C]] = new GroupAction[IndexedSeq[Int], Seq[C]] {
+  def permutationAction[C]: GroupAction[Permutation, Seq[C]] = new GroupAction[Permutation, Seq[C]] {
     import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
 
-    def act(a: IndexedSeq[Int], b: Seq[C]) = a permute b
+    def act(a: Permutation, b: Seq[C]) = a permute b
   }
   def conjugationAction[A](group: Group[A]) = new GroupAction[A, A] {
     def act(a: A, b: A) = group.multiply(group.inverse(a), b, a)
+  }
+}
+
+trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { representation =>
+  def degree: Int
+  override def source: FiniteGroup[A]
+  override def target = ??? // GL(F, n)?
+  def basisForIsotypicComponent[FF](character: Seq[F])(implicit ring: Ring[F], field: Field[FF], lift: F => FF) = {
+    require(character.size == source.conjugacyClasses.size)
+    val matrices = Matrices.matricesOver(degree)(ring)
+    var j = 0
+    def blip {
+      j = j + 1
+      if (j % 1000 == 0) println(j / 1000)
+    }
+    val projector = matrices.add(for ((cc, chi) <- source.conjugacyClasses zip character par) yield {
+      val chibar = if (ring.isInstanceOf[ComplexConjugation[_]]) {
+        ring.asInstanceOf[ComplexConjugation[F]].bar(chi)
+      } else {
+        chi
+      }
+      matrices.scalarMultiply(chibar, cc.elements.foldLeft(matrices.zero)({ (m: Matrix[F], g: A) => blip; matrices.add(m, representation(g)) }))
+    })
+    projector.mapEntries(lift).eigenspace(ring.fromInt(source.size))
+  }
+}
+
+object Representations {
+  private def elementaryVector[A](entry: A, zero: A, n: Int, k: Int) = Seq.fill(k)(zero) ++ (entry +: Seq.fill(n - k - 1)(zero))
+  private def unitVector[A: Zero: One](n: Int, k: Int) = elementaryVector(implicitly[One[A]].one, implicitly[Zero[A]].zero, n, k)
+
+  def permutationRepresentation[F: Ring](n: Int): Representation[Permutation, F] = permutationRepresentation(FiniteGroups.symmetricGroup(n))
+  def permutationRepresentation[F: Ring](source: FiniteGroup[Permutation]): Representation[Permutation, F] = {
+    val _source = source
+    new Representation[Permutation, F] {
+      override val degree = _source.one.size
+      override val source = _source
+      override def apply(p: Permutation) = new Matrix(degree, for (k <- p) yield unitVector(degree, k))
+    }
+  }
+  def signedPermutationRepresentation[F: Ring](n: Int): Representation[(Seq[Int], Permutation), F] = signedPermutationRepresentation(FiniteGroups.signedPermutationGroup(n))
+  def signedPermutationRepresentation[F: Ring](source: FiniteGroup[(Seq[Int], Permutation)]): Representation[(Seq[Int], Permutation), F] = {
+    val _source = source
+    new Representation[(Seq[Int], Permutation), F] {
+      override val source = _source
+      override val degree = _source.one._1.size
+      override def apply(p: (Seq[Int], Permutation)) = {
+        val ring = implicitly[Ring[F]]
+        import net.tqft.toolkit.collections.Pairs._
+        new Matrix(degree, for ((s, k) <- p.transpose) yield elementaryVector(if (s == 0) ring.one else ring.fromInt(-1), ring.zero, degree, k))
+      }
+    }
+  }
+
+  def tensor[A, F: Ring](V: Representation[A, F], W: Representation[A, F]): Representation[A, F] = {
+    require(V.source == W.source)
+    new Representation[A, F] {
+      override def source = V.source
+      override def degree = V.degree * W.degree
+      override def apply(a: A) = Matrices.tensor(V(a), W(a))
+    }
+  }
+
+  def tensorPower[A, F: Ring](V: Representation[A, F], k: Int): Representation[A, F] = {
+    new Representation[A, F] {
+      override def source = V.source
+      override def degree = Gadgets.Integers.power(V.degree, k)
+      override def apply(a: A) = {
+        val Va = V(a)
+        Seq.fill(k)(Va).reduce(Matrices.tensor(_, _))
+      }
+    }
   }
 }

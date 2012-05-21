@@ -1,5 +1,6 @@
 package net.tqft.toolkit.algebra
 import net.tqft.toolkit.mathematica.MathematicaExpression
+import scala.collection.GenSeq
 
 trait Semigroup[A] {
   def multiply(x: A, y: A): A
@@ -23,7 +24,7 @@ trait One[A] {
 }
 
 trait Monoid[A] extends Semigroup[A] with One[A] {
-  def multiply(xs: Seq[A]): A = xs.fold(one)(multiply _)
+  def multiply(xs: GenSeq[A]): A = xs.fold(one)(multiply _)
   override def power(x: A, k: Int): A = {
     if (k == 0) {
       one
@@ -55,7 +56,7 @@ trait Zero[A] {
 }
 
 trait CommutativeMonoid[A] extends CommutativeSemigroup[A] with Zero[A] {
-  def add(xs: Seq[A]): A = xs.fold(zero)(add _)
+  def add(xs: GenSeq[A]): A = xs.fold(zero)(add _)
 }
 
 trait Subtractive[A] extends CommutativeSemigroup[A] {
@@ -109,6 +110,11 @@ trait LinearCategory[O, M, R] extends AdditiveCategory[O, M] { lc =>
   }
 
   def endomorphismAlgebra(o: O): Algebra[R, M] = new EndomorphismAlgebra(o)
+}
+
+trait TensorCategory[O, M, R] extends LinearCategory[O, M, R] {
+  def tensorObjects(o1: O, o2: O): O
+  def tensorMorphisms(m1: M, m2: M): M
 }
 
 trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMonoid[A] {
