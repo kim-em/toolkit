@@ -117,19 +117,25 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
   trait Character[F] {
     def field: Field[F]
     def character: Seq[F]
+    def degree: Int
   }
   object Character {
-    implicit def lift(x: Seq[Fraction[Int]]): RationalCharacter = new RationalCharacter {
+    implicit def liftRationals(x: Seq[Fraction[Int]]): RationalCharacter = new RationalCharacter {
       override val character = x
+    }
+    implicit def liftIntegers(x: Seq[Int]): RationalCharacter = new RationalCharacter {
+      override val character = x.map(Gadgets.Rationals.fromInt(_))
     }
   }
 
   trait RationalCharacter extends Character[Fraction[Int]] {
     override def field = Gadgets.Rationals
+    override def degree = character.head.ensuring(_.denominator == 1).numerator
   }
   trait CyclotomicCharacter extends Character[Polynomial[Fraction[Int]]] {
     def order: Int
     override def field = NumberField.cyclotomic(order)(Gadgets.Rationals)
+    override def degree = character.head.ensuring(_.maximumDegree.getOrElse(0) == 0).constantTerm(Gadgets.Rationals).ensuring(_.denominator == 1).numerator
   }
 
   lazy val characters: Seq[Seq[Polynomial[Fraction[Int]]]] = {
@@ -613,7 +619,7 @@ trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { represent
       source.characterPairing(chi, c)
     }
   }
-  def basisForIsotypicComponent(chi: source.RationalCharacter)(implicit field: Field[F]): Seq[Seq[F]] = {
+  def basisForIsotypicComponent(chi: source.RationalCharacter)(implicit field: Field[F], manifest: ClassManifest[F]): Seq[Seq[F]] = {
     require(chi.character.size == source.conjugacyClasses.size)
     val matrices = Matrices.matricesOver(degree)(field)
     var j = 0
@@ -621,11 +627,18 @@ trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { represent
       j = j + 1
       if (j % 1000 == 0) println(j / 1000)
     }
-    val projector = matrices.add(for ((cc, c) <- source.conjugacyClasses zip chi.character par) yield {
+    val projector = matrices.add((for ((cc, c) <- source.conjugacyClasses zip chi.character /*par*/) yield {
       val cF = field.fromRational(c)
-      matrices.scalarMultiply(cF, cc.elements.foldLeft(matrices.zero)({ (m: Matrix[F], g: A) => blip; matrices.add(m, representation(g)) }))
-    })
-    projector.eigenspace(field.fromInt(source.size))
+      val zeroMatrix = {
+        import net.tqft.toolkit.collections.SparseSeq
+//        matrices.zero.mapRows({r => SparseSeq.from(r, field.zero)})
+        matrices.zero.mapRows({r => r.toArray[F]})
+      }
+      matrices.scalarMultiply(cF, cc.elements.foldLeft(zeroMatrix)({ (m: Matrix[F], g: A) => blip; matrices.add(m, representation(g)) }))
+    }).seq).mapRows(_.toList)
+    val chidegree = (chi.character.head.ensuring(_.denominator == 1)).numerator
+    val eigenvalue = field.quotientByInt(field.fromInt(source.size), chidegree)
+    projector.eigenspace(eigenvalue)
   }
 }
 
@@ -638,7 +651,10 @@ object Representations {
     new Representation[Permutation, F] {
       override val degree = _source.one.size
       override val source = _source
-      override def apply(p: Permutation) = new Matrix(degree, for (k <- p) yield unitVector(degree, k))
+      override def apply(p: Permutation) = {
+        import net.tqft.toolkit.collections.SparseSeq
+        new Matrix(degree, for (k <- p) yield SparseSeq.elementaryVector[F](degree, k, implicitly[Ring[F]].one, implicitly[Ring[F]].zero))
+      }
     }
   }
   def signedPermutationRepresentation[F: Ring](n: Int): Representation[(Seq[Int], Permutation), F] = signedPermutationRepresentation(FiniteGroups.signedPermutationGroup(n))
