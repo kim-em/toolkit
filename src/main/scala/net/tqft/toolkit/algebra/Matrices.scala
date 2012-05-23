@@ -20,7 +20,7 @@ object Matrices {
   def tensor[B: Ring](m1: Matrix[B], m2: Matrix[B]) = new MatrixCategoryOverRing(implicitly[Ring[B]]).tensorMorphisms(m1, m2)
 
   def over[A](ring: Ring[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(ring).endomorphismAlgebra(size)
-//  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
+  //  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 }
 
 abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sources: Seq[A], val targets: Seq[A]) {
@@ -152,9 +152,9 @@ class Matrix[B](
 
   def trace(implicit addition: CommutativeMonoid[B]): B = {
     require(numberOfRows == numberOfColumns)
-    addition.add(for((row, i) <- entries.zipWithIndex) yield row(i))
+    addition.add(for ((row, i) <- entries.zipWithIndex) yield row(i))
   }
-  
+
   private def rowPriority(row: Seq[B])(implicit field: Field[B]): (Int, B) = {
     field match {
       case o: OrderedField[_] => {
@@ -352,7 +352,16 @@ class Matrix[B](
 }
 
 class MatrixCategoryOverRing[R](ring: Ring[R]) extends TensorCategory[Int, Matrix[R], R] {
-  val inner = new AbstractMatrixCategory(ring)({ (sources: Seq[Unit], targets: Seq[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) })
+  val inner = new AbstractMatrixCategory(ring)({ (sources: Seq[Unit], targets: Seq[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) }) {
+    override def add(x: Matrix[R], y: Matrix[R]) = {
+      require(x.numberOfColumns == y.numberOfColumns)
+      require(x.numberOfRows == y.numberOfRows)
+
+      val entries = (x.entries zip y.entries) map { case (rx, ry) => VectorOperations.add(rx, ry)(ring) }
+      buildMatrix(x.sources, y.targets, entries)
+    }
+
+  }
 
   override def identityMorphism(o: Int) = inner.identityMorphism(List.fill(o)(()))
   override def zeroMorphism(o1: Int, o2: Int) = {
@@ -365,11 +374,14 @@ class MatrixCategoryOverRing[R](ring: Ring[R]) extends TensorCategory[Int, Matri
   override def compose(x: Matrix[R], y: Matrix[R]) = inner.compose(x, y)
   override def source(x: Matrix[R]) = x.numberOfColumns
   override def target(x: Matrix[R]) = x.numberOfRows
-  override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => r map { x => ring.multiply(a, x) } })
+  override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => VectorOperations.scalarMultiply(a, r)(ring) })
   override def tensorObjects(o1: Int, o2: Int) = o1 * o2
-  override def tensorMorphisms(m1: Matrix[R], m2: Matrix[R]) = new Matrix(m1.numberOfColumns * m2.numberOfColumns, for (row1 <- m1.entries; row2 <- m2.entries) yield for (r1 <- row1; r2 <- row2) yield ring.multiply(r1, r2))
+  override def tensorMorphisms(m1: Matrix[R], m2: Matrix[R]) = {
+    new Matrix(m1.numberOfColumns * m2.numberOfColumns,
+      for (row1 <- m1.entries; row2 <- m2.entries) yield VectorOperations.tensor(row1, row2)(ring))
+  }
 
-//  override def endomorphismRing(o: Int) = ???
+  //  override def endomorphismRing(o: Int) = ???
 }
 
 class MatrixCategoryOverField[F](field: Field[F]) extends MatrixCategoryOverRing(field) with TensorCategory[Int, Matrix[F], F] {
