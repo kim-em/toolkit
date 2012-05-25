@@ -1,26 +1,30 @@
 package net.tqft.toolkit.algebra
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.junit.Test
+import org.junit.Assert._
+import net.tqft.toolkit.Logging
 
-@RunWith(classOf[JUnitRunner])
-class RepresentationTest extends FlatSpec with ShouldMatchers {
+class RepresentationTest {
 
   val S_3 = FiniteGroups.symmetricGroup(3)
   implicit val rationals = Gadgets.Rationals
   import Implicits.integersAsRationals;
 
-  "the permutation representation of S_3" should "include one copy of the trivial representation" in {
+  @Test
+  def testIrrepMultiplicities = {
     val V = Representations.permutationRepresentation(S_3)
-    V.irrepMultiplicities should equal(Seq(1, 0, 1))
+    assertEquals(Seq(1, 0, 1), V.irrepMultiplicities)
+  }
 
-    (S_3.reducedCharacters zip V.irrepMultiplicities).collect({ case (c: S_3.RationalCharacter, n) => V.basisForIsotypicComponent(c.character).size should equal(n * c.degree) })
-  } 
-  "the tensor cube of the permutation representation of S_3" should "decompose correctly" in {
-    val V = Representations.tensorPower(Representations.permutationRepresentation(3), 7)
-    (S_3.reducedCharacters zip V.irrepMultiplicities).collect({ case (c: S_3.RationalCharacter, n) => V.basisForIsotypicComponent(c.character).size should equal(n * c.degree) })
+  @Test
+  def testTensorPowersDecompose = {
+    for (k <- 1 to 7) {
+      Logging.info("Looking at the " + k + "-th tensor power.")
+      val V = Representations.tensorPower(Representations.permutationRepresentation(3), k)
+      (S_3.reducedCharacters zip V.irrepMultiplicities).collect({ case (c: S_3.RationalCharacter, n) => assertEquals(n * c.degree, V.basisForIsotypicComponent(c.character).size) })
+    }
   }
 
 }
+
+

@@ -27,6 +27,7 @@ trait Profiler {
 	 	  movingAverage(period)(Stream.continually(timing(f)._1))
 	  }
 }
+object Profiler extends Profiler
 
 abstract class Monoid[T] {
 	def add(x: T, y: T): T

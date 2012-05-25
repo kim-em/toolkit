@@ -7,7 +7,7 @@ import scala.collection.SeqLike
 object Pad {
   implicit def asPaddable[CC[+X] <: SeqLike[X, CC[X]], A](x: CC[A]) = new Paddable(x)
 
-  class Paddable[CC[+X] <: SeqLike[X, CC[X]], A](x: CC[A]) {
+  class Paddable[CC[+X] <: SeqLike[X, CC[X]], A](val x: CC[A]) {
     def padLeft[B >: A](len: Int, elem: B)(implicit bf: CanBuildFrom[CC[A], B, CC[B]]): CC[B] = {
       if (x.size >= len) {
         x

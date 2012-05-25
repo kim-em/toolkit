@@ -29,6 +29,7 @@ class AlternatingGroupsTest extends FlatSpec with ShouldMatchers {
 
   "A_5" should "have the right character table" in {
     import Implicits.{ Rationals, integersAsRationals, asConstants }
+//    import language.implicitConversions
     implicit def lift(k: Int): Polynomial[Fraction[Int]] = asConstants(integersAsRationals(k))
     A_5.characters should equal(
       Seq[Seq[Polynomial[Fraction[Int]]]](
