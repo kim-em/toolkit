@@ -239,7 +239,7 @@ class Matrix[B](
 
     import Pad._
     val rowsWithIndexes = rows.zipWithIndex
-    val resultList = recurse(Nil, rowsWithIndexes, 0 until numberOfRows toList).map(_.padLeft(numberOfColumns, field.zero))
+    val resultList = recurse(Nil, rowsWithIndexes, (0 until numberOfRows).toList).map(_.padLeft(numberOfColumns, field.zero))
 
     // TODO this is not so cool:
     // need this from WiredCollection
@@ -307,7 +307,7 @@ class Matrix[B](
     val functionMatrices = Matrices.matricesOver(numberOfRows)(rationalFunctions)
     val lift = Matrices.matricesOver(numberOfRows)(RationalFunctions.embeddingAsConstants(field))(this)
     val lambda = functionMatrices.scalarMultiply(RationalFunction.identity, functionMatrices.one)
-    val determinant = functionMatrices.subtract(lambda, lift).determinant
+    val determinant = functionMatrices.add(functionMatrices.negate(lift), lambda).determinant // it's important that lift is the first argument of add, to preserve its underlying implementation
     require(determinant.denominator == Polynomials.embeddingAsConstants(field)(field.one))
     determinant.numerator
   }
@@ -325,7 +325,7 @@ class Matrix[B](
 
     val pivots = reduced.zipWithIndex map { case (row, i) => (i, pivotPosition2(row)) } collect { case (i, Some(j)) => (i, j) }
     val pivotColumns = pivots.map(_._2).toList
-    val generators = (0 until numberOfColumns).toList filterNot (pivotColumns contains)
+    val generators = (0 until numberOfColumns).toList filterNot (pivotColumns.contains)
 
     val entries = for (j <- (0 until numberOfColumns).toList) yield {
       for (g <- generators) yield {
@@ -349,6 +349,9 @@ class Matrix[B](
   }
 
   def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)
+  
+  def par = new Matrix(numberOfColumns, entries.par)
+  def seq = new Matrix(numberOfColumns, entries.seq)
 }
 
 class MatrixCategoryOverRing[R](ring: Ring[R]) extends TensorCategory[Int, Matrix[R], R] {
@@ -396,8 +399,8 @@ class AbstractMatrixCategory[O, M, MT <: CategoricalMatrix[O, M, MT]](
 
   def identityMorphism(o: Seq[O]) = {
 
-    val entries = for ((o1, k1) <- o zipWithIndex) yield {
-      for ((o2, k2) <- o zipWithIndex) yield {
+    val entries = for ((o1, k1) <- o.zipWithIndex) yield {
+      for ((o2, k2) <- o.zipWithIndex) yield {
         if (k1 == k2) {
           entryCategory.identityMorphism(o1)
         } else {

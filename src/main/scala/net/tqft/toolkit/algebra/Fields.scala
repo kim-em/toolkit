@@ -77,8 +77,8 @@ trait NumberField[A] extends Field[Polynomial[A]] {
     scalarMultiply(coefficientField.inverse(u.constantTerm(coefficientField)), b)
   }
   override def negate(q: Polynomial[A]) = polynomials.negate(q)
-  override def zero = polynomials.zero
-  override def one = polynomials.one
+  override lazy val zero = polynomials.zero
+  override lazy val one = polynomials.one
   override def multiply(a: Polynomial[A], b: Polynomial[A]) = normalize(polynomials.multiply(a, b))
   override def add(a: Polynomial[A], b: Polynomial[A]) = polynomials.add(a, b)
 
@@ -116,7 +116,7 @@ object NumberField {
 }
 
 object Mod {
-  def apply(p: Int) = {
+  def apply(p: Int): Field[Int] with Elements[Int] = {
     require(p < scala.math.sqrt(Integer.MAX_VALUE))
     require(BigInt(p).isProbablePrime(20))
     new Field[Int] with Elements[Int] {
@@ -128,8 +128,8 @@ object Mod {
         Gadgets.Integers.extendedEuclideanAlgorithm(x, p)._1
       }
       override def negate(x: Int) = (p - x) mod p
-      override def zero = 0
-      override def one = 1
+      override val zero = 0
+      override val one = 1
       override def multiply(x: Int, y: Int) = (x * y) mod p
       override def add(x: Int, y: Int) = (x + y) mod p
       override def fromInt(x: Int) = x mod p
@@ -159,16 +159,16 @@ object Fields extends HomomorphismCategory[Field] {
 
   class FieldOfFractions[A](ring: EuclideanDomain[A]) extends Field[Fraction[A]] {
     implicit val _ring = ring
-    override def one = Fraction(ring.one, ring.one)
-    override def zero = Fraction(ring.zero, ring.one)
+    override val one = Fraction.alreadyReduced(ring.one, ring.one)
+    override val zero = Fraction.alreadyReduced(ring.zero, ring.one)
     override def multiply(x: Fraction[A], y: Fraction[A]) = Fraction(ring.multiply(x.numerator, y.numerator), ring.multiply(x.denominator, y.denominator))
     override def add(x: Fraction[A], y: Fraction[A]) = {
       val denominatorGCD = ring.gcd(x.denominator, y.denominator)
       Fraction(ring.add(ring.multiply(x.numerator, ring.quotient(y.denominator, denominatorGCD)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.numerator)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.denominator))
     }
-    override def fromInt(x: Int) = Fraction(ring.fromInt(x), ring.one)
-    override def negate(x: Fraction[A]) = Fraction(ring.negate(x.numerator), x.denominator)
-    override def inverse(x: Fraction[A]) = Fraction(x.denominator, x.numerator)
+    override def fromInt(x: Int) = Fraction.alreadyReduced(ring.fromInt(x), ring.one)
+    override def negate(x: Fraction[A]) = Fraction.alreadyReduced(ring.negate(x.numerator), x.denominator)
+    override def inverse(x: Fraction[A]) = Fraction.alreadyReduced(x.denominator, x.numerator)
   }
 
   class OrderedFieldOfFractions[A](ring: OrderedEuclideanDomain[A]) extends FieldOfFractions[A](ring) with OrderedField[Fraction[A]] {

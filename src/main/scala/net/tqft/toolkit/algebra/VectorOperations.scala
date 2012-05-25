@@ -28,20 +28,23 @@ object VectorOperations extends net.tqft.toolkit.Logging {
     }
   }
 
-  def scalarMultiply[A: Semigroup](a: A, v: Seq[A]): Seq[A] = {
-    val sg = implicitly[Semigroup[A]]
-    if(v.isInstanceOf[WrappedArray[_]]) {
+  def scalarMultiply[A: Rig](a: A, v: Seq[A]): Seq[A] = {
+    val rig = implicitly[Rig[A]]
+    if (v.isInstanceOf[WrappedArray[_]]) {
       warn
       val array = v.asInstanceOf[WrappedArray[A]]
-      for(i <- 0  until array.size) {
-        array(i) = sg.multiply(a, array(i))
+      for (i <- 0 until array.size) {
+        array(i) = rig.multiply(a, array(i))
       }
       array
-     } else {
-       v map { x => sg.multiply(a, x)}
-     }
+    } else if (v.isInstanceOf[SparseSeq[_]]) {
+      val s = v.asInstanceOf[SparseSeq[A]]
+      SparseSeq.withEntries(v.size, for ((b, i) <- s.asInstanceOf[SparseSeq[A]].nonZeroEntries; r = rig.multiply(a, b); if (r != rig.zero)) yield (r, i), rig.zero)
+    } else {
+      v map { x => rig.multiply(a, x) }
+    }
   }
-  
+
   def add[A: CommutativeMonoid](v1: Seq[A], v2: Seq[A]): Seq[A] = {
     require(v1.size == v2.size)
 
@@ -52,6 +55,13 @@ object VectorOperations extends net.tqft.toolkit.Logging {
       val e2 = v2.asInstanceOf[SparseSeq[A]].nonZeroEntries
       for ((a2, k2) <- e2) {
         array(k2) = monoid.add(array(k2), a2)
+      }
+      array
+    } else if (v1.isInstanceOf[WrappedArray[_]]) {
+      warn
+      val array = v1.asInstanceOf[WrappedArray[A]]
+      for ((a, k) <- v2.zipWithIndex) {
+        array(k) = monoid.add(array(k), a)
       }
       array
     } else if (v1.isInstanceOf[SparseSeq[_]] && v2.isInstanceOf[SparseSeq[_]]) {

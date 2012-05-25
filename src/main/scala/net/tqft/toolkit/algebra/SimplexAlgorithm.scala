@@ -46,7 +46,7 @@ object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
 
     def solution(simplex: List[Int]) = m.takeColumns(simplex).preimageOf(c).get
 
-    val (simplex1, solution1) = NonStrictIterable.iterateUntilNone((simplex0, solution(simplex0))) { case (si, sl) => replaceNegativeColumn(si, sl, m) map { nsi => (nsi, solution(nsi)) } } last
+    val (simplex1, solution1) = NonStrictIterable.iterateUntilNone((simplex0, solution(simplex0))) { case (si, sl) => replaceNegativeColumn(si, sl, m) map { nsi => (nsi, solution(nsi)) } }.last 
 
     (simplex1, slack(solution1), solution1)
   }
@@ -55,7 +55,7 @@ object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
     info("replacing: " + simplex + " with slack " + slack(solution))
 
     val possibilities = for (
-      (x, k) <- solution zipWithIndex;
+      (x, k) <- solution.zipWithIndex;
       if field.compare(x, field.zero) < 0;
       exitingColumn = simplex(k)
     ) yield {
@@ -156,7 +156,7 @@ object SimplexAlgorithm extends LinearProgrammingHelper {
     val slack0 = slack(simplex0, m, c).get
     info("   with initial slack: " + slack0)
 
-    val (simplex1, slack1) = NonStrictIterable.iterateUntilNone((simplex0, slack0)) { case (si, sl) => tryHarderToDecreaseSlack[B](si, sl, m, c) } last
+    val (simplex1, slack1) = NonStrictIterable.iterateUntilNone((simplex0, slack0))({ case (si, sl) => tryHarderToDecreaseSlack[B](si, sl, m, c) }).last
 
     (simplex1, slack1, m.takeColumns(simplex1).preimageOf(c).get)
   }

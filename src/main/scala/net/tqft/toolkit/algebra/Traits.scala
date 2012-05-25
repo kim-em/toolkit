@@ -8,7 +8,7 @@ trait Semigroup[A] {
   def power(x: A, k: Int): A = {
     // TODO no need for this to be recursive; just use the binary expansion of k.
     require(k >= 1)
-    if(k == 1) {
+    if (k == 1) {
       x
     } else if (k % 2 == 1) {
       multiply(x, power(multiply(x, x), k / 2))
@@ -16,7 +16,7 @@ trait Semigroup[A] {
       power(multiply(x, x), k / 2)
     }
   }
-  
+
 }
 
 trait One[A] {
@@ -32,7 +32,7 @@ trait Monoid[A] extends Semigroup[A] with One[A] {
       super.power(x, k)
     }
   }
-  def orderOfElement(a: A): Int = Iterator.iterate(a)(multiply(_, a)).indexOf(one) + 1 
+  def orderOfElement(a: A): Int = Iterator.iterate(a)(multiply(_, a)).indexOf(one) + 1
 }
 
 trait Group[A] extends Monoid[A] {
@@ -270,11 +270,7 @@ trait ApproximateField[A] extends OrderedField[A] {
   import collection.TraversableLike
 
   def norm[CC[X] <: TraversableLike[X, CC[X]]](v: CC[A]): A = {
-    if (v.isEmpty) {
-      zero
-    } else {
-      sqrt(v.map(power(_, 2)).reduceLeft(add(_, _)))
-    }
+    sqrt(v.fold(zero)({ (s, a) => add(s, power(a, 2)) }))
   }
 
   def normalize[CC[X] <: TraversableLike[X, CC[X]]](v: CC[A])(implicit cbf1: CanBuildFrom[CC[A], Int, CC[Int]], cbf2: CanBuildFrom[CC[A], A, CC[A]]): CC[A] = {

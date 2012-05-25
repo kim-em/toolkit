@@ -11,8 +11,8 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
     (terms map { case (g, p) => p.toString + (if(g == 0) "" else " * x^(" + g.toString + ")") }).mkString(" + ")
   }
 
-  def minimumDegree = (terms map { _._1 }) minOption
-  def maximumDegree = (terms map { _._1 }) maxOption
+  def minimumDegree = (terms map { _._1 }).minOption
+  def maximumDegree = (terms map { _._1 }).maxOption
   def leadingCoefficient = maximumDegree map { get(_).get }
   def constantTerm(implicit ring: Ring[A]) = get(0).getOrElse(ring.zero)
   

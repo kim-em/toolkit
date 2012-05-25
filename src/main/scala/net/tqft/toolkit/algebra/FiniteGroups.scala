@@ -4,6 +4,7 @@ import scala.collection.immutable.HashSet
 import scala.collection.GenSet
 import net.tqft.toolkit.Logging
 import net.tqft.toolkit.permutations.Permutations.Permutation
+import scala.collection.GenSeq
 
 trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
@@ -84,7 +85,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
         Factor(k).map(primeExponentiationOnConjugacyClasses(_)).fold(0 until conjugacyClasses.size)({ (p: IndexedSeq[Int], q: IndexedSeq[Int]) => p permute q })
       }
     }
-    (0 until exponent) map ({ n => n -> impl(n) }) toMap
+    (for(n <- 0 until exponent) yield n -> impl(n)).toMap
   }
   lazy val inverseOnConjugacyClasses = exponentationOnConjugacyClassesImpl(-1)
   lazy val inverseConjugacyClasses = {
@@ -120,6 +121,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     def degree: Int
   }
   object Character {
+//    import language.implicitConversions
     implicit def liftRationals(x: Seq[Fraction[Int]]): RationalCharacter = new RationalCharacter {
       override val character = x
     }
@@ -152,8 +154,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
       def eigenvalues(m: Seq[Seq[Int]]) = new Matrix(m.size, m.par).eigenvalues
 
-      // TODO save the row reduced annihilators instead
-      case class PartialEigenspace(annihilators: Seq[Seq[Seq[Int]]], eigenvalues: Seq[Int], eigenvectors: Option[Seq[Seq[Int]]]) {
+      case class PartialEigenspace(annihilators: GenSeq[Seq[Int]], eigenvalues: Seq[Int], eigenvectors: Option[Seq[Seq[Int]]]) {
         def splitAlong(m: => Seq[Seq[Int]], mEigenvalues: => Set[Int]): Set[PartialEigenspace] = {
           eigenvectors.map(_.size) match {
             case Some(0) => Set()
@@ -162,8 +163,8 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
             }
             case _ => {
               for (lambda <- mEigenvalues) yield {
-                val newAnnihilators = annihilators :+ subtractDiagonal(m, lambda)
-                PartialEigenspace(newAnnihilators, eigenvalues :+ lambda, Some(new Matrix(conjugacyClasses.size, newAnnihilators.flatten.toSeq).nullSpace))
+                val newAnnihilators = new Matrix(conjugacyClasses.size, annihilators ++ subtractDiagonal(m, lambda)).rowEchelonForm(modP)
+                PartialEigenspace(newAnnihilators.entries, eigenvalues :+ lambda, Some(newAnnihilators.nullSpace))
               }
             }
           }
@@ -176,7 +177,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
         (impl _).memo
       }
 
-      val unnormalizedEigenvectors = (1 until k).foldLeft(Set(PartialEigenspace(Seq(), Seq(), None)))({ case (s, i) => s.flatMap({ p => p.splitAlong(classCoefficients(i), cachedEigenvalues(i)) }) }).flatMap(_.eigenvectors.get).toSeq
+      val unnormalizedEigenvectors = (1 until k).foldLeft(Set(PartialEigenspace(Seq().par, Seq(), None)))({ case (s, i) => s.flatMap({ p => p.splitAlong(classCoefficients(i), cachedEigenvalues(i)) }) }).flatMap(_.eigenvectors.get).toSeq
       FiniteGroup.info("Found simultaneous eigenvectors.")
 
       val normalizedEigenvectors = unnormalizedEigenvectors.map({ v => v.map({ x => modP.quotient(x, v(0)) }) })
@@ -239,7 +240,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
     def mu(i: Int)(j: Int)(s: Int) = modP.quotient(modP.add(for (n <- 0 until exponent) yield modP.multiply(chi(i)(exponentiationOnConjugacyClasses(n)(j)), zpower((-s * n) mod exponent))), exponent)
 
-    val unsortedCharacters = (for (i <- 0 until k par) yield (for (j <- 0 until k par) yield {
+    val unsortedCharacters = (for (i <- (0 until k).par) yield (for (j <- (0 until k).par) yield {
       FiniteGroup.info("Computing entry " + (i, j) + " in the character table.")
       cyclotomicNumbers.add(for (s <- 0 until exponent) yield cyclotomicNumbers.multiplyByInt(zetapower(s), mu(i)(j)(s)))
     }).seq).seq
@@ -312,9 +313,12 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       c.numerator
     }
 
-    (for (i <- 0 until k par) yield {
+    // hmm, deadlocks; maybe this will make sure they don't happen!
+    characters(0)
+
+    (for (i <- (0 until k).par) yield {
       FiniteGroup.info("Computing tensor product multiplicities (" + i + ", *)")
-      (for (j <- 0 until k par) yield {
+      (for (j <- (0 until k).par) yield {
         val product = (characters(i) zip characters(j)).map({ p => Q.multiply(p._1, p._2) }) map (Q.bar _)
         for (c <- characters) yield lower(pairing(product, c))
       }).seq
@@ -486,7 +490,10 @@ object FiniteGroups {
     override def one = 0 until n
   }
 
-  def symmetricGroup(n: Int): FiniteGroup[Permutation] = new PermutationGroup(n)
+  val symmetricGroup: Int => FiniteGroup[Permutation] = {
+    import net.tqft.toolkit.functions.Memo._
+    { n => new PermutationGroup(n) }.memo
+  }
 
   def signature(n: Int): FiniteGroupHomomorphism[IndexedSeq[Int], Int] = new FiniteGroupHomomorphism[IndexedSeq[Int], Int] {
     val source = symmetricGroup(n)
@@ -498,8 +505,14 @@ object FiniteGroups {
     }
   }
 
-  def alternatingGroup(n: Int): FiniteGroup[IndexedSeq[Int]] = signature(n).kernel
-  def signedPermutationGroup(k: Int) = semidirectProduct(power(cyclicGroup(2), k), symmetricGroup(k), GroupActions.permutationAction[Int])
+  val alternatingGroup: Int => FiniteGroup[Permutation] = {
+    import net.tqft.toolkit.functions.Memo._
+    { n: Int => signature(n).kernel }.memo
+  }
+  val signedPermutationGroup: Int => FiniteGroup[(Seq[Int], Permutation)] = {
+    import net.tqft.toolkit.functions.Memo._
+    { k: Int => semidirectProduct(power(cyclicGroup(2), k), symmetricGroup(k), GroupActions.permutationAction[Int]) }.memo
+  }
 
   lazy val Mathieu11 = symmetricGroup(11).subgroupGeneratedBy(Set(
     IndexedSeq(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0),
@@ -627,21 +640,30 @@ trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { represent
       j = j + 1
       if (j % 1000 == 0) println(j / 1000)
     }
-    val projector = matrices.add((for ((cc, c) <- source.conjugacyClasses zip chi.character /*par*/) yield {
-      val cF = field.fromRational(c)
-      val zeroMatrix = {
-        import net.tqft.toolkit.collections.SparseSeq
-//        matrices.zero.mapRows({r => SparseSeq.from(r, field.zero)})
-        matrices.zero.mapRows({r => r.toArray[F]})
-      }
-      matrices.scalarMultiply(cF, cc.elements.foldLeft(zeroMatrix)({ (m: Matrix[F], g: A) => blip; matrices.add(m, representation(g)) }))
-    }).seq).mapRows(_.toList)
-    val chidegree = (chi.character.head.ensuring(_.denominator == 1)).numerator
-    val eigenvalue = field.quotientByInt(field.fromInt(source.size), chidegree)
-    projector.eigenspace(eigenvalue)
+    def volatileZeroMatrix = {
+      import net.tqft.toolkit.collections.SparseSeq
+      matrices.zero.par.mapRows({ r => r.toArray[F] })
+    }
+    def projectorConjugacyClass(cc: Set[A], c: Fraction[Int]) = {
+      val result = matrices.scalarMultiply(field.fromRational(c), cc.foldLeft(volatileZeroMatrix)({ (m: Matrix[F], g: A) => blip; matrices.add(m, representation(g)) }))
+      require(result.entries.head.isInstanceOf[scala.collection.mutable.WrappedArray[_]])
+      result
+    }
+    val projector = (source.conjugacyClasses zip chi.character).foldLeft(volatileZeroMatrix)({
+      (m: Matrix[F], p: (Orbit[A, A], Fraction[Int])) =>
+        {
+          Representation.info("Preparing projector to the " + chi.character + " isotypic component in conjugacy class " + p._1.representative)
+          matrices.add(m, projectorConjugacyClass(p._1.elements, p._2))
+        }
+    }).ensuring(_.entries.head.isInstanceOf[scala.collection.mutable.WrappedArray[_]]).mapRows(_.toList)
+    //    val chidegree = (chi.character.head.ensuring(_.denominator == 1)).numerator
+    //    val eigenvalue = field.quotientByInt(field.fromInt(source.size), chidegree)
+    //    projector.eigenspace(eigenvalue)
+    projector.par.rowEchelonForm.entries.filter({ x => x.find(_ != field.zero).nonEmpty }).seq
   }
 }
 
+object Representation extends Logging
 object Representations {
   private def elementaryVector[A](entry: A, zero: A, n: Int, k: Int) = Seq.fill(k)(zero) ++ (entry +: Seq.fill(n - k - 1)(zero))
   private def unitVector[A: Zero: One](n: Int, k: Int) = elementaryVector(implicitly[One[A]].one, implicitly[Zero[A]].zero, n, k)
@@ -653,7 +675,9 @@ object Representations {
       override val source = _source
       override def apply(p: Permutation) = {
         import net.tqft.toolkit.collections.SparseSeq
-        new Matrix(degree, for (k <- p) yield SparseSeq.elementaryVector[F](degree, k, implicitly[Ring[F]].one, implicitly[Ring[F]].zero))
+        new Matrix(degree, for (k <- p) yield {
+          SparseSeq.elementaryVector[F](degree, k, implicitly[Ring[F]].one, implicitly[Ring[F]].zero)
+        })
       }
     }
   }
@@ -664,9 +688,12 @@ object Representations {
       override val source = _source
       override val degree = _source.one._1.size
       override def apply(p: (Seq[Int], Permutation)) = {
+        import net.tqft.toolkit.collections.SparseSeq
         val ring = implicitly[Ring[F]]
         import net.tqft.toolkit.collections.Pairs._
-        new Matrix(degree, for ((s, k) <- p.transpose) yield elementaryVector(if (s == 0) ring.one else ring.fromInt(-1), ring.zero, degree, k))
+        new Matrix(degree, for ((s, k) <- p.transpose) yield {
+          SparseSeq.elementaryVector[F](degree, k, if (s == 0) ring.one else ring.fromInt(-1), ring.zero)
+        })
       }
     }
   }

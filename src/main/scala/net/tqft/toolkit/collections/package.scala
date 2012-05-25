@@ -1,5 +1,6 @@
 package net.tqft.toolkit
 
 package object collections {
-	def ??? = throw new NoSuchMethodException
+//  import language.higherKinds
+  def ??? = throw new NoSuchMethodException
 }

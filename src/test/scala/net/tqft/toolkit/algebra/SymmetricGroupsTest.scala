@@ -35,6 +35,7 @@ class SymmetricGroupsTest extends FlatSpec with ShouldMatchers {
   
   "S_5" should "have the right character table" in {
     import Implicits.{ Rationals, integersAsRationals, asConstants }
+//    import language.implicitConversions
     implicit def lift(k: Int): Polynomial[Fraction[Int]] = asConstants(integersAsRationals(k))
     
     S_5.characters should equal(

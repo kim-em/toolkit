@@ -105,38 +105,39 @@ object GroupBy {
       }
     }
 
-    def parallelChooseRepresentatives[B](equivalence: (A, A) => Boolean, invariant: A => B): List[A] = {
-      val underlying = x.iterator
-      def newMap = com.google.common.collect.Sets.newSetFromMap[A](new ConcurrentHashMap[A, java.lang.Boolean]());
-      val previous = new com.google.common.collect.MapMaker().makeMap[B, java.util.Set[A]]()
-        import JavaConversions._
-      import net.tqft.toolkit.collections.Iterators._
-      val actors = underlying.consume({ a: A => {
-        val b = invariant(a)
-        previous.putIfAbsent(b, newMap)
-        val s = previous.get(b)
-        s.find(_a => equivalence(a, _a)) match {
-                case Some(_) => ()
-                case None => {
-                  s += a
-                }
-              }
-      } }, 16)
+//    def parallelChooseRepresentatives[B](equivalence: (A, A) => Boolean, invariant: A => B): List[A] = {
+//      val underlying = x.iterator
+//      def newMap = com.google.common.collect.Sets.newSetFromMap[A](new ConcurrentHashMap[A, java.lang.Boolean]());
+//      val previous = new com.google.common.collect.MapMaker().makeMap[B, java.util.Set[A]]()
+//      import JavaConversions._
+//      import net.tqft.toolkit.collections.Iterators._
+//      val actors = underlying.consume({ a: A =>
+//        {
+//          val b = invariant(a)
+//          previous.putIfAbsent(b, newMap)
+//          val s = previous.get(b)
+//          s.find(_a => equivalence(a, _a)) match {
+//            case Some(_) => ()
+//            case None => {
+//              s += a
+//            }
+//          }
+//        }
+//      }, 16)
+//
+//      for (a <- actors) {
+//        a !? 'finished_? match {
+//          case 'done =>
+//        }
+//      }
+//
+//      val initialCut = previous.values.flatMap(x => x).toList
+//      Logging.info("initial cut: " + initialCut.size)
+//      val result = new Groupable(initialCut).lazilyChooseRepresentatives(equivalence, invariant).toList
+//      Logging.info("final size: " + result.size)
+//      result
+//    }
 
-      for(a <- actors) {
-        a !? 'finished_? match {
-          case 'done =>
-        }
-      }
-
-      val initialCut = previous.values.flatMap(x => x).toList
-      Logging.info("initial cut: " + initialCut.size)
-      val result = new Groupable(initialCut).lazilyChooseRepresentatives(equivalence, invariant).toList
-      Logging.info("final size: " + result.size)
-      result
-    }
-    
-    
     def lazilyChooseRepresentatives[B](equivalence: (A, A) => Boolean, invariant: A => B) = new Iterable[A] {
       def iterator = new Iterator[A] {
         import scala.collection.mutable.Map

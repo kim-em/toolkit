@@ -1,6 +1,6 @@
 package net.tqft.toolkit.collections
-import scala.actors.Actor
-import scala.actors.IScheduler
+//import scala.actors.Actor
+//import scala.actors.IScheduler
 
 object Iterators {
   implicit def iterator2RichIterator[A](iterator: Iterator[A]) = new RichIterator(iterator)
@@ -8,38 +8,38 @@ object Iterators {
   class RichIterator[A](iterator: Iterator[A]) {
     def mapWhileDefined[B](pf: PartialFunction[A, B]) = iterator.takeWhile(pf.isDefinedAt(_)).map(pf)
 
-    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
-      val si = this.synchronized
-
-      class Worker extends Actor { worker =>
-        var done = false
-        def act() {
-          loop {
-            react {
-              case 'stop => exit
-              case 'work if !done =>{
-                synced.nextOption match {
-                  case Some(n) => { f(n); worker ! 'work }
-                  case None => { done = true }
-                }
-              }
-              case 'finished_? if done => reply('done)
-//                if (si.hasNext) {            
-//                f(si.next)
-//                worker ! 'work
+//    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
+//      val si = this.synchronized
+//
+//      class Worker extends Actor { worker =>
+//        var done = false
+//        def act() {
+//          loop {
+//            react {
+//              case 'stop => exit
+//              case 'work if !done =>{
+//                synced.nextOption match {
+//                  case Some(n) => { f(n); worker ! 'work }
+//                  case None => { done = true }
+//                }
 //              }
-            }
-          }
-        }
-      }
-
-      for (i <- (1 to numberOfWorkers).toList) yield {
-        val worker = new Worker
-        worker.start
-        worker ! 'work
-        worker
-      }
-    }
+//              case 'finished_? if done => reply('done)
+////                if (si.hasNext) {            
+////                f(si.next)
+////                worker ! 'work
+////              }
+//            }
+//          }
+//        }
+//      }
+//
+//      for (i <- (1 to numberOfWorkers).toList) yield {
+//        val worker = new Worker
+//        worker.start
+//        worker ! 'work
+//        worker
+//      }
+//    }
 
     object synced {
       def nextOption = synchronized {

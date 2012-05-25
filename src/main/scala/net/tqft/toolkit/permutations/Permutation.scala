@@ -75,7 +75,7 @@ object Permutations {
   val cachedOf = Memo({ n: Int => ofImpl(n).toList })
 
   def randomPermutationOf(n: Int): Permutation = {
-    scala.util.Random.shuffle(0 until n)
+    scala.util.Random.shuffle(0 until n toIndexedSeq)
   }
   def randomPermutationsOf(n: Int) = NonStrictIterable.continually(randomPermutationOf(n))
 
