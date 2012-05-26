@@ -1,7 +1,7 @@
 package net.tqft.toolkit.arithmetic
 
 object Factor {
-  val cached: Int => List[Int] = net.tqft.toolkit.functions.Memo(apply _)
+//  val cached: Int => List[Int] = net.tqft.toolkit.functions.Memo(apply _)
   def apply(n: Int): List[Int] = impl(n, Nil, Primes.view.takeWhile({ k => k * k <= n }).iterator)
 
   @scala.annotation.tailrec
