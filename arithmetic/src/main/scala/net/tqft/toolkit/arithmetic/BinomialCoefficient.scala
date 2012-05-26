@@ -1,5 +1,5 @@
 package net.tqft.toolkit.arithmetic
-import net.tqft.toolkit.functions.Memo
+//import net.tqft.toolkit.functions.Memo
 
 object BinomialCoefficient {
   def apply(n: Int, k0: Int): Long = {
@@ -11,12 +11,12 @@ object BinomialCoefficient {
       k = m
     }
 
-    for (i <- (k + 1 to n) reverse) {
+    for (i <- (k + 1 to n).reverse) {
       t = t * i / (n - i + 1)
     }
     t
   }
 
-  val cached = Memo(apply _)
+//  val cached = Memo(apply _)
 
 }

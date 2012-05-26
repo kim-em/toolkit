@@ -1,5 +1,5 @@
 package net.tqft.toolkit.arithmetic
-import net.tqft.toolkit.functions.Memo
+//import net.tqft.toolkit.functions.Memo
 
 object Factorial {
 
@@ -9,5 +9,5 @@ object Factorial {
     case n => (1L to n) reduce (_ * _)
   }
   
-  val cached = Memo { apply _ }
+//  val cached = Memo { apply _ }
 }
