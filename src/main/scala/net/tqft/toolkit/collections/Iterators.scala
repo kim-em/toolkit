@@ -6,6 +6,29 @@ object Iterators {
   implicit def iterator2RichIterator[A](iterator: Iterator[A]) = new RichIterator(iterator)
 
   class RichIterator[A](iterator: Iterator[A]) {
+    def distinct: Iterator[A] = {
+      new Iterator[A] {
+        val store = scala.collection.mutable.Set[A]()
+        var nextOption: Option[A] = None
+        def hasNext = {
+          while(iterator.hasNext && nextOption.isEmpty) {
+            val n = iterator.next
+            if(!store.contains(n)) {
+              store += n
+              nextOption = Some(n)
+            }
+          }
+          nextOption.nonEmpty
+        }
+        def next = {
+          val result = nextOption.get
+          nextOption = None
+          result
+        }
+      }
+    }
+    
+    
     def mapWhileDefined[B](pf: PartialFunction[A, B]) = iterator.takeWhile(pf.isDefinedAt(_)).map(pf)
 
 //    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {

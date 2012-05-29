@@ -8,7 +8,7 @@ object Pairs {
 	class UniformPair[A](pair: Pair[A,A]) {
 		def map[B](f: A => B): Pair[B, B] = (f(pair._1), f(pair._2))
 		def toList: List[A] = List(pair._1, pair._2)
-		def toSeq: Seq[A] = List(pair._1, pair._2)
+		def toSeq: Seq[A] = Seq(pair._1, pair._2)
 		def toSet: Set[A] = Set(pair._1, pair._2)
 	}
 	

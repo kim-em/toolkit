@@ -11,7 +11,7 @@ object Involutions {
       List(List(1)),
       (of.tail zip of) map (p => ((p._1 flatMap (extendInvolutionByOne _)) ::: (p._2 flatMap (extendInvolutionByTwo _))) sortWith { _ < _ })))
 
-  def countFixedPoints(i: Involution) = (i zipWithIndex) count { case (a, b) => a == b + 1 }
+  def countFixedPoints(i: Involution) = (i.zipWithIndex) count { case (a, b) => a == b + 1 }
   def countPairs(i: Involution) = (i.size - countFixedPoints(i))/2
   
   private def extendInvolutionByOne(i: Involution): List[Involution] = List(i ::: List(i.size + 1))

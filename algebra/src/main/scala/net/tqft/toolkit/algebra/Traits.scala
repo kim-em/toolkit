@@ -262,7 +262,7 @@ trait ApproximateField[A] extends OrderedField[A] {
   def sqrt(x: A): A = {
     import net.tqft.toolkit.functions.FixedPoint
     val initialGuess = one
-    val result = abs(FixedPoint.sameTest(close _)({ g: A => quotient(add(quotient(x, g), g), fromInt(2)) })(initialGuess))
+    val result = abs(FixedPoint.withSameTest(close _)({ g: A => quotient(add(quotient(x, g), g), fromInt(2)) })(initialGuess))
     result
   }
 
