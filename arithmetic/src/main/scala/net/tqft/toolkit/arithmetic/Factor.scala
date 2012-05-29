@@ -3,22 +3,27 @@ package net.tqft.toolkit.arithmetic
 object Factor {
   //  val cached: Int => List[Int] = net.tqft.toolkit.functions.Memo(apply _)
 
-  def apply(i: BigInt): List[BigInt] = ecmFactor(i.toString).map(BigInt(_))
-  def apply(i: Long): List[Long] = ecmFactor(i.toString).map(_.toLong)
+  def apply(i: BigInt): List[BigInt] = byECM(i.toString).map(BigInt(_))
+  def apply(i: Long): List[Long] = byECM(i.toString).map(_.toLong)
   def apply(n: Int): List[Int] = {
-    if (n.abs < 40000000) {
-      (if (n < 0) {
+    if (n.abs < 3000000) {
+      bySieve(n)
+    } else {
+      byECM(n)
+    }
+  }
+
+  def bySieve(n: Int): List[Int] = {
+    if (n < 0) {
         -1 :: apply(-n)
       } else if (n == 0) {
         List(0)
       } else {
         impl(n, Nil, Primes.iterator).flatMap({ case (1, k) => Seq(); case (p, k) => Seq.fill(k)(p) })
-      })
-    } else {
-      ecmFactor(n.toString).map(_.toInt)
-    }
+      }
   }
-
+  def byECM(n: Int): List[Int] = byECM(n.toString).map(_.toInt)
+  
   @scala.annotation.tailrec
   private def impl(n: Int, previousFactors: List[(Int, Int)], primes: Iterator[Int]): List[(Int, Int)] = {
     val p = primes.next
@@ -46,12 +51,12 @@ object Factor {
     ECMAppletCache(currentThread)
   }
 
-  private def ecmFactor(i: String): List[String] = {
-    try {
-      BigInt(i)
-    } catch {
-      case _ => throw new NumberFormatException("Could not parse " + i + " as a BigInt")
-    }
+  private def byECM(i: String): List[String] = {
+//    try {
+//      BigInt(i)
+//    } catch {
+//      case _ => throw new NumberFormatException("Could not parse " + i + " as a BigInt")
+//    }
 
     if (i == "0") {
       List(i)
