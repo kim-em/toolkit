@@ -1,4 +1,4 @@
-package net.tqft.toolkit.arithmetic.ecm;
+package net.tqft.toolkit.arithmetic;
 // Elliptic Curve Method (ECM) Prime Factorization
 //
 // Written by Dario Alejandro Alpern (Buenos Aires - Argentina)
@@ -411,12 +411,12 @@ class ecm implements Runnable
   final int MontgomeryMultAfterInv[] = new int[NLen];
   long MontgomeryMultN;
   final double ProbArray[] = new double[6];
-  public String upperTextArea;
-  public String lowerTextArea;
+  public String upperTextArea = "";
+  public String lowerTextArea = "";
   String labelStatus;
   String labelBottom;
   String labelTop;
-  public String textNumber;
+  public String textNumber = "";
   TextField textCurve;
   TextField textFactor;
   Button btnCurve;
@@ -1155,7 +1155,7 @@ class ecm implements Runnable
     }
     if (NumberToFactor.abs().compareTo(BigInt1) <= 0)
     {                    // Factor number -1, 0 or 1.
-      lowerTextArea=NumberToFactor.toString()+" = "+
+      upperTextArea=NumberToFactor.toString()+" = "+
                             NumberToFactor.toString();
       return;
     }
@@ -1556,10 +1556,10 @@ class ecm implements Runnable
       {
         OldTimeElapsed += New - Old;
       }
-      System.gc();
+//      System.gc();
       return;
     }
-    System.gc();
+//    System.gc();
   }
 
   long GetSmallFactors(
