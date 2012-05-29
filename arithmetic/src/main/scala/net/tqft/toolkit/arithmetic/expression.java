@@ -1,4 +1,4 @@
-package net.tqft.toolkit.arithmetic.ecm;
+package net.tqft.toolkit.arithmetic;
 // <XMP>
 // Compute Expressions
 //
