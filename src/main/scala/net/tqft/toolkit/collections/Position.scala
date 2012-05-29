@@ -5,7 +5,7 @@ object Position {
   implicit def anyToPositionable(a: Any) = new Positionable(a)
   
   class Positionable(a: Any) {
-    def position(pf: PartialFunction[Any, Boolean]): List[List[Int]] = {
+    def position(pf: PartialFunction[Any, Boolean]): Seq[Seq[Int]] = {
       
       val matchesEntire = if(pf.isDefinedAt(a) && pf(a)) {
         List(List())
@@ -13,10 +13,10 @@ object Position {
         Nil
       }
       val matchesParts = a match {
-        case a: Seq[_] => a.toList.zipWithIndex.map(p => p._1.position(pf).map(p._2 :: _)).flatten
+        case a: Seq[_] => a.toSeq.zipWithIndex.map(p => p._1.position(pf).map(p._2 +: _)).flatten
         case _ => Nil
       }
-      matchesEntire ::: matchesParts
+      matchesEntire ++ matchesParts
     }
   }
   
