@@ -1,0 +1,8 @@
+.DS_Store
+
+.cache
+
+target
+lib_managed
+project/boot
+bin
