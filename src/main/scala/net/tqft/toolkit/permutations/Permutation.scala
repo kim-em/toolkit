@@ -1,7 +1,6 @@
 package net.tqft.toolkit.permutations
 
 import net.tqft.toolkit.collections.NonStrictIterable
-import net.tqft.toolkit.arithmetic.BinomialCoefficient
 import net.tqft.toolkit.functions.Memo
 
 object Permutations {
@@ -75,7 +74,7 @@ object Permutations {
   val cachedOf = Memo({ n: Int => ofImpl(n).toList })
 
   def randomPermutationOf(n: Int): Permutation = {
-    scala.util.Random.shuffle(0 until n toIndexedSeq)
+    scala.util.Random.shuffle((0 until n).toIndexedSeq)
   }
   def randomPermutationsOf(n: Int) = NonStrictIterable.continually(randomPermutationOf(n))
 
@@ -102,7 +101,7 @@ object Permutations {
   private val preservingIntCached = Memo({ l: List[Int] => NonStrictIterable.from(preserving(l).toList) })
   
   def preserving[A](list: Seq[A]): Iterable[Permutation] = {
-    val listWithIndices = list zipWithIndex
+    val listWithIndices = list.zipWithIndex
 //    val positions = list.distinct.toIndexedSeq.map({ x: A => listWithIndices collect { case (`x`, n) => n } })
     val positions = list.zipWithIndex.groupBy(_._1).mapValues(_.map(_._2)).values.toIndexedSeq
     val factors = positions map { l => of(l.size) }
