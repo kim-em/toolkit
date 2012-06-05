@@ -1,4 +1,4 @@
-name := "toolkit.algebra"
+name := "toolkit.base"
 
 organization := "net.tqft.toolkit"
 
@@ -20,8 +20,8 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
 	"junit" % "junit" % "4.8" % "test",
-        "org.apfloat" % "apfloat" % "1.6.3",		// arbitrary precision integers and floats; much better than BigInt and BigDecimal
-        "org.apache.commons" % "commons-math" % "2.2"	// simplex algorithm
+        "org.slf4j" % "slf4j-log4j12" % "1.6.1",
+        "commons-logging" % "commons-logging" % "1.1.1"
 )
 
 // Scalatest

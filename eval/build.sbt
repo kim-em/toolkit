@@ -1,4 +1,4 @@
-name := "toolkit.algebra"
+name := "toolkit.eval"
 
 organization := "net.tqft.toolkit"
 
@@ -19,9 +19,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-	"junit" % "junit" % "4.8" % "test",
-        "org.apfloat" % "apfloat" % "1.6.3",		// arbitrary precision integers and floats; much better than BigInt and BigDecimal
-        "org.apache.commons" % "commons-math" % "2.2"	// simplex algorithm
+	"junit" % "junit" % "4.8" % "test"
 )
 
 // Scalatest
@@ -31,6 +29,11 @@ libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>
 		case sv if sv.startsWith("2.10") => ("1.8-SNAPSHOT", "2.10.0-M3")
 	}
     	deps :+ ("org.scalatest" % ("scalatest_" + scalatestScalaVersion) % scalatestVersion % "test" )
+}
+
+// the compiler
+libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>
+        deps :+ ("org.scala-lang" % "scala-compiler" % sv)
 }
 
 //scalacOptions += "-Xprint:typer"
