@@ -1,4 +1,4 @@
-name := "toolkit.algebra"
+name := "toolkit.amazon"
 
 organization := "net.tqft.toolkit"
 
@@ -20,8 +20,8 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
 	"junit" % "junit" % "4.8" % "test",
-        "org.apfloat" % "apfloat" % "1.6.3",		// arbitrary precision integers and floats; much better than BigInt and BigDecimal
-        "org.apache.commons" % "commons-math" % "2.2"	// simplex algorithm
+        "net.java.dev.jets3t" % "jets3t" % "0.8.1",
+        "com.google.code.typica" % "typica" % "1.7.2"
 )
 
 // Scalatest
