@@ -1,5 +1,5 @@
 <projectDescription>
-  <name>toolkit.amazon</name>
+  <name>toolkit-amazon</name>
   <buildSpec>
     <buildCommand>
       <name>org.scala-ide.sdt.core.scalabuilder</name>

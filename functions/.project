@@ -1,5 +1,5 @@
 <projectDescription>
-  <name>toolkit.functions</name>
+  <name>toolkit-functions</name>
   <buildSpec>
     <buildCommand>
       <name>org.scala-ide.sdt.core.scalabuilder</name>

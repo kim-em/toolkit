@@ -11,7 +11,7 @@ object BreadthFirst {
 
     /** breadthFirstFlatten does a breadth-first flatten */
     def breadthFirstFlatten: Iterable[A] = {
-      iterables.flexibleTranspose.flatten
+      iterables.flexibleTranspose.flatMap({ x => x})
     }
 
     /**
@@ -27,7 +27,7 @@ object BreadthFirst {
   }
 
   class BreadthFirst3[A](iterables: Iterable[Iterable[Iterable[A]]]) {
-    def breathFirstSearchNonEmpty = iterables.breadthFirstSearch(_.nonEmpty).flatten
+    def breathFirstSearchNonEmpty = iterables.breadthFirstSearch(_.nonEmpty).flatMap({ x => x })
     def breathFirstSearchNonEmptyThrottled(throttle: Throttle) = iterables.breadthFirstSearch(_.nonEmpty) flatMap { o => { throttle(o.nonEmpty); o } }
   }
 }

@@ -1,5 +1,5 @@
 <projectDescription>
-  <name>toolkit.arithmetic</name>
+  <name>toolkit-arithmetic</name>
   <buildSpec>
     <buildCommand>
       <name>org.scala-ide.sdt.core.scalabuilder</name>
