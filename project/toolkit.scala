@@ -9,31 +9,31 @@ object Toolkit extends Build {
     base = file("."),
     settings = buildSettings) aggregate (base, arithmetic, amazon, collections, algebra, functions, eval)
 
-  lazy val base: Project = Project(id = "toolkit.base",
+  lazy val base: Project = Project(id = "toolkit-base",
     base = file("base"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.logging))) dependsOn ()
 
-  lazy val arithmetic = Project(id = "toolkit.arithmetic",
+  lazy val arithmetic = Project(id = "toolkit-arithmetic",
     base = file("arithmetic"),
     settings = buildSettings) dependsOn ()
 
-  lazy val amazon = Project(id = "toolkit.amazon",
+  lazy val amazon = Project(id = "toolkit-amazon",
     base = file("amazon"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(jets3t, typica))) dependsOn (base, collections)
 
-  lazy val collections = Project(id = "toolkit.collections",
+  lazy val collections = Project(id = "toolkit-collections",
     base = file("collections"),
     settings = buildSettings) dependsOn (base, functions)
 
-  lazy val algebra = Project(id = "toolkit.algebra",
+  lazy val algebra = Project(id = "toolkit-algebra",
     base = file("algebra"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat))) dependsOn (base, arithmetic, functions, collections)
 
-  lazy val functions = Project(id = "toolkit.functions",
+  lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(guava)))
 
-  lazy val eval = Project(id = "toolkit.eval",
+  lazy val eval = Project(id = "toolkit-eval",
     base = file("eval"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(compiler(buildScalaVersion))))
 
@@ -44,7 +44,7 @@ object BuildSettings {
   import Dependencies._
 
   val buildOrganization = "net.tqft"
-  val buildVersion = "0.1.6"
+  val buildVersion = "0.1.7"
   val buildScalaVersion = "2.10.0-M3"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(

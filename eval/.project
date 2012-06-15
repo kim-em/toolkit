@@ -1,5 +1,5 @@
 <projectDescription>
-  <name>toolkit.eval</name>
+  <name>toolkit-eval</name>
   <buildSpec>
     <buildCommand>
       <name>org.scala-ide.sdt.core.scalabuilder</name>

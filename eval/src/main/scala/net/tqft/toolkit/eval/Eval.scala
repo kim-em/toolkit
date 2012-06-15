@@ -16,12 +16,8 @@ trait Eval {
 
   protected val settings = {
     val s = new Settings
-    // when running that compiler, give it a scala-library to the classpath
-    s.classpath.value = System.getProperty("java.class.path")
-    // FIXME
-    s.classpath.value = "/Users/scott/projects/fusionatlas/development/nct/project/boot/scala-2.9.0/lib/scala-compiler.jar:/Users/scott/projects/fusionatlas/development/nct/project/boot/scala-2.9.0/lib/scala-library.jar:/Users/scott/projects/fusionatlas/development/nct/target/scala_2.9.0/nct_2.9.0-1.0.jar"
-    s.bootclasspath.value = "/Users/scott/projects/fusionatlas/development/nct/project/boot/scala-2.9.0/lib/"
-    s.usejavacp.value = true
+
+    s.embeddedDefaults[Eval]    
     s
   }
 
@@ -29,14 +25,14 @@ trait Eval {
   val reader = new BufferedReader(new InputStreamReader(pis))
   def newConsoleLines = {
     val output = new ListBuffer[String]
-    while(reader.ready) {
+    while (reader.ready) {
       output += reader.readLine()
     }
     output.mkString("\n")
   }
-  
-  private val interpreter = new IMain(settings, new PrintWriter(new PipedOutputStream(pis)))
-  private val _history = new ListBuffer[(String, Option[(String, Any)], String)]
+
+  private lazy val interpreter = new IMain(settings, new PrintWriter(new PipedOutputStream(pis)))
+  private lazy val _history = new ListBuffer[(String, Option[(String, Any)], String)]
 
   def history = _history.toList
 
@@ -49,7 +45,7 @@ trait Eval {
   }
 
   def apply(command: String): Option[Any] = eval(command)
-  
+
   def evalWithNameAndOutput(command: String) = {
     interpreter.interpret(command)
     val output = extractOutput
@@ -60,7 +56,5 @@ trait Eval {
   def eval(command: String): Option[Any] = evalWithNameAndOutput(command)._1 map { _._2 }
 
 }
-
-
 
 object Eval extends Eval
