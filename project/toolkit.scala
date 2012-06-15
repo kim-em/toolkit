@@ -35,7 +35,7 @@ object Toolkit extends Build {
 
   lazy val eval = Project(id = "toolkit-eval",
     base = file("eval"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(compiler(buildScalaVersion))))
+    settings = buildSettings ++ Seq(dependsOnCompiler))
 
 }
 
@@ -46,11 +46,13 @@ object BuildSettings {
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.7"
   val buildScalaVersion = "2.10.0-M3"
+  val buildCrossScalaVersions = Seq("2.9.2", "2.10.0-M3")
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
+    crossScalaVersions := buildCrossScalaVersions,
     publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
     resolvers := sonatypeResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += {
@@ -61,6 +63,8 @@ object BuildSettings {
         ("org.scalatest" % ("scalatest_" + scalatestScalaVersion) % scalatestVersion % "test" )
     },
     libraryDependencies ++= Seq(junit, slf4j))
+
+  val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
 }
 
 object SonatypeSettings {
@@ -115,6 +119,5 @@ object Dependencies {
         val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.8.1"
         val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "12.0"
-        def compiler(scalaVersion: String) = "org.scala-lang" % "scala-compiler" % scalaVersion
 }
 
