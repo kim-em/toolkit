@@ -21,6 +21,63 @@ object Matrices {
 
   def over[A](ring: Ring[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(ring).endomorphismAlgebra(size)
   //  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
+
+  def positiveSymmetricDecompositions(M: Matrix[Int]): Iterator[Matrix[Int]] = {
+    def partialDecompositions(m: Int): Iterator[Matrix[Int]] = {
+      import Gadgets.Integers
+
+      def newRows(d: Seq[(Int, Int)], P: Matrix[Int]): Iterator[Seq[Int]] = {
+        def candidates(j: Int, remaining: Seq[Int], gaps: Seq[Int]): Iterator[Seq[Int]] = {
+          require(gaps.size == m - 1)
+
+          j match {
+            case 0 => {
+              if (gaps.forall(_ == 0)) {
+                Seq(Seq.empty).iterator
+              } else {
+                Iterator.empty
+              }
+            }
+            case j => {
+              for (
+                next <- (0 +: remaining.distinct).iterator;
+                newGaps = {
+                  for (l <- 0 until m - 1) yield gaps(l) - next * P.entries(l)(j)
+                };
+                if (newGaps.forall(_ >= 0));
+                newRemaining = {
+                  import net.tqft.toolkit.collections.DeleteOne._;
+                  remaining.deleteAtMostOne(next)
+                };
+                c <- candidates(j - 1, newRemaining, newGaps)
+              ) yield next +: c
+            }
+          }
+        }
+
+        val d_expanded = d.flatMap(p => Seq.fill(p._2)(p._1))
+        for (candidate <- candidates(P.numberOfColumns, d_expanded, M.entries(m).take(m - 1))) yield {
+          candidate ++ (d_expanded diff candidate)
+        }
+      }
+
+      m match {
+        case 0 => Seq(Matrix[Int](0, Seq.empty)).iterator
+        case m => {
+          for (
+            P <- partialDecompositions(m - 1);
+            d <- Integers.sumOfSquaresDecomposition(M.entries(m)(m));
+            v <- newRows(d, P)
+          ) yield {
+            val extraColumns = v.size - P.numberOfColumns
+            val zeroBlock = Matrix(extraColumns, Seq.fill(P.numberOfRows)(Seq.fill(extraColumns)(0)))
+            P.joinRows(zeroBlock).appendRow(v)
+          }
+        }
+      }
+    }
+    partialDecompositions(M.numberOfRows)
+  }
 }
 
 abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sources: Seq[A], val targets: Seq[A]) {
@@ -349,7 +406,7 @@ class Matrix[B](
   }
 
   def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)
-  
+
   def par = new Matrix(numberOfColumns, entries.par)
   def seq = new Matrix(numberOfColumns, entries.seq)
 }

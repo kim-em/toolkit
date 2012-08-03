@@ -38,7 +38,13 @@ object Gadgets {
      * returns an iterator of {(a_i, b_i)}_i, with \sum b_i a_i^2 = n
      */
     def sumOfSquaresDecomposition(n: Int): Iterator[Seq[(Int, Int)]] = {
-      def sqrt(k: Int) = scala.math.sqrt(k).floor.intValue
+      def sqrt(k: Int) = {
+        if (k <= 0) {
+          0
+        } else {
+          scala.math.sqrt(k).floor.intValue
+        }
+      }
 
       def extend(limit: Int, remainder: Int, partial: Seq[(Int, Int)]): Iterator[Seq[(Int, Int)]] = {
         for (
@@ -49,7 +55,7 @@ object Gadgets {
           result <- extend(nextLimit, nextRemainder, next)
         ) yield result
       }
-      
+
       extend(sqrt(n), n, Nil)
     }
   }
