@@ -42,18 +42,34 @@ object Gadgets {
         if (k <= 0) {
           0
         } else {
-          scala.math.sqrt(k).floor.intValue
+          val closest = scala.math.sqrt(k).round.intValue
+          if(closest * closest > k) {
+            closest - 1
+          } else {
+            closest
+          }
         }
       }
 
       def extend(limit: Int, remainder: Int, partial: Seq[(Int, Int)]): Iterator[Seq[(Int, Int)]] = {
-        for (
-          b <- (0 until (remainder / (limit * limit))).iterator;
-          next = (limit, b) +: partial;
-          nextRemainder = remainder - b * limit * limit;
-          nextLimit = scala.math.min(limit - 1, sqrt(nextRemainder));
-          result <- extend(nextLimit, nextRemainder, next)
-        ) yield result
+        limit match {
+          case 0 => {
+            remainder match {
+              case 0 => Iterator(partial)
+              case _ => Iterator.empty
+            }
+          }
+          case 1 => Iterator((1, remainder) +: partial)
+          case limit => {
+            for (
+              b <- (0 to (remainder / (limit * limit))).iterator;
+              next = (limit, b) +: partial;
+              nextRemainder = remainder - b * limit * limit;
+              nextLimit = scala.math.min(limit - 1, sqrt(nextRemainder));
+              result <- extend(nextLimit, nextRemainder, next)
+            ) yield result
+          }
+        }
       }
 
       extend(sqrt(n), n, Nil)
