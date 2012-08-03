@@ -33,7 +33,26 @@ object Gadgets {
     override def remainder(x: T, y: T) = zero
   }
 
-  val Integers: OrderedEuclideanDomain[Int] = new IntegralEuclideanDomain(scala.math.Numeric.IntIsIntegral)
+  object Integers extends IntegralEuclideanDomain(scala.math.Numeric.IntIsIntegral) {
+    /**
+     * returns an iterator of {(a_i, b_i)}_i, with \sum b_i a_i^2 = n
+     */
+    def sumOfSquaresDecomposition(n: Int): Iterator[Seq[(Int, Int)]] = {
+      def sqrt(k: Int) = scala.math.sqrt(k).floor.intValue
+
+      def extend(limit: Int, remainder: Int, partial: Seq[(Int, Int)]): Iterator[Seq[(Int, Int)]] = {
+        for (
+          b <- (0 until (remainder / (limit * limit))).iterator;
+          next = (limit, b) +: partial;
+          nextRemainder = remainder - b * limit * limit;
+          nextLimit = scala.math.min(limit - 1, sqrt(nextRemainder));
+          result <- extend(nextLimit, nextRemainder, next)
+        ) yield result
+      }
+      
+      extend(sqrt(n), n, Nil)
+    }
+  }
   val Longs: OrderedEuclideanDomain[Long] = new IntegralEuclideanDomain(scala.math.Numeric.LongIsIntegral)
   val BigIntegers: OrderedEuclideanDomain[BigInt] = new IntegralEuclideanDomain(scala.math.Numeric.BigIntIsIntegral)
   val Doubles: OrderedField[Double] = new FractionalField(scala.math.Numeric.DoubleIsFractional)
@@ -76,7 +95,7 @@ object Gadgets {
 
   def Apfloats(precision: Int = 128): ApproximateReals[Apfloat] = new ApproximateReals[Apfloat] {
     val helper = new FixedPrecisionApfloatHelper(precision)
-    
+
     override def fromInt(x: Int) = new Apfloat(x, precision)
     override def fromDouble(x: Double) = new Apfloat(x, precision)
     override def fromBigDecimal(x: BigDecimal) = new Apfloat(x.underlying, precision)
@@ -89,8 +108,8 @@ object Gadgets {
     override def compare(x: Apfloat, y: Apfloat) = x.compareTo(y)
     override def inverse(x: Apfloat) = helper.pow(x, -1)
     override def negate(x: Apfloat) = helper.negate(x)
-    override def add(x: Apfloat, y: Apfloat) = helper.add(x,y)
-    override def multiply(x: Apfloat, y: Apfloat) = helper.multiply(x,y)
+    override def add(x: Apfloat, y: Apfloat) = helper.add(x, y)
+    override def multiply(x: Apfloat, y: Apfloat) = helper.multiply(x, y)
     override def power(x: Apfloat, k: Int) = helper.pow(x, k)
     override def sqrt(x: Apfloat) = helper.sqrt(x)
   }
