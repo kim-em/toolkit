@@ -13,8 +13,9 @@ import org.scalatest.junit.JUnitRunner
 class MatrixDecompositionTest extends FlatSpec with ShouldMatchers {
 
   "positiveSymmetricDecompositions" should "should find all decompositions M=AA^t" in {
-    val m: Matrix[Int] = Matrix(2, List(List(2,1), List(1,2)))
-
-    println(Matrices.positiveSymmetricDecompositions(m).toList)
+    Matrices.positiveSymmetricDecompositions(Matrix(2, List(List(1,1), List(1,1)))).toList.size should equal(1)
+    Matrices.positiveSymmetricDecompositions(Matrix(1, List(List(5)))).toList.size should equal(2)
+    Matrices.positiveSymmetricDecompositions(Matrix(2, List(List(1,2),List(2,4)))).toList.size should equal(1)
+    Matrices.positiveSymmetricDecompositions(Matrix(2, List(List(6,7),List(7,14)))).toList.size should equal(174)
   }
 }

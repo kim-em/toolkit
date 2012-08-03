@@ -33,7 +33,7 @@ object Matrices {
           j match {
             case 0 => {
               if (gaps.forall(_ == 0)) {
-                Seq(Seq.empty).iterator
+                Iterator(Seq.empty)
               } else {
                 Iterator.empty
               }
@@ -42,7 +42,7 @@ object Matrices {
               for (
                 next <- (0 +: remaining.distinct).iterator;
                 newGaps = {
-                  for (l <- 0 until m - 1) yield gaps(l) - next * P.entries(l)(j)
+                  for (l <- 0 until m - 1) yield gaps(l) - next * P.entries(l)(j - 1)
                 };
                 if (newGaps.forall(_ >= 0));
                 newRemaining = {
@@ -56,7 +56,7 @@ object Matrices {
         }
 
         val d_expanded = d.flatMap(p => Seq.fill(p._2)(p._1))
-        for (candidate <- candidates(P.numberOfColumns, d_expanded, M.entries(m).take(m - 1))) yield {
+        for (candidate <- candidates(P.numberOfColumns, d_expanded, M.entries(m - 1).take(m - 1))) yield {
           candidate ++ (d_expanded diff candidate)
         }
       }
@@ -66,7 +66,7 @@ object Matrices {
         case m => {
           for (
             P <- partialDecompositions(m - 1);
-            d <- Integers.sumOfSquaresDecomposition(M.entries(m)(m));
+            d <- Integers.sumOfSquaresDecomposition(M.entries(m - 1)(m - 1));
             v <- newRows(d, P)
           ) yield {
             val extraColumns = v.size - P.numberOfColumns

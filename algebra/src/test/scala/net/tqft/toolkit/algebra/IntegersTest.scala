@@ -27,4 +27,9 @@ class IntegersTest extends FlatSpec with ShouldMatchers {
       BigIntegers.gcd(-5, 1) should equal(1)
       BigIntegers.gcd(5, -1) should equal(-1)
   }
+  
+  "sumOfSquareDecomposition" should "find all ways to write a positive integer as a sum of squares" in {
+    import Gadgets.Integers
+    Integers.sumOfSquaresDecomposition(5).size should equal (2)
+  }
 }
