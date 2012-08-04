@@ -32,17 +32,25 @@ trait FusionRingWithDimensions[A] extends FusionRing[A] {
 trait AlgebraicNumber[I, D] {
   def approximateWithin(epsilon: D)(implicit integers: EuclideanDomain[I], reals: OrderedField[D]): D = ???
 }
-trait RootOfMinimalPolynomial[I, D] extends AlgebraicNumber[I, D] {
-  def coefficients: Seq[I]
-  def goodEnoughApproximation: D
-}
-trait PolynomialAlgebraicNumber[I, D] extends AlgebraicNumber[I, D] {
-  def root: RootOfMinimalPolynomial[I, D]
-  def coefficients: Seq[I]
-}
+case class RootOfMinimalPolynomial[I, D](coefficients: Polynomial[I], goodEnoughApproximation: D) extends AlgebraicNumber[I, D]
+case class PolynomialAlgebraicNumber[I, D](root: RootOfMinimalPolynomial[I, D], polynomial: Polynomial[Fraction[I]]) extends AlgebraicNumber[I, D]
 
 object AlgebraicNumberField {
-  def apply[I: EuclideanDomain, D: OrderedField](generator: RootOfMinimalPolynomial[I, D]): OrderedField[PolynomialAlgebraicNumber[I, D]] = ???
+  def apply[I: EuclideanDomain, D: OrderedField](generator: RootOfMinimalPolynomial[I, D]): AlgebraicNumberField[I, D] = {
+    val _generator = generator
+    new AlgebraicNumberField[I, D] {
+      override val approximateGenerator = _generator
+      override val coefficientField = Fields.fieldOfFractions(implicitly[EuclideanDomain[I]])
+    }
+  }
+}
+
+trait AlgebraicNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[Polynomial[Fraction[I]]] {
+  type P = Polynomial[Fraction[I]]
+
+  val approximateGenerator: RootOfMinimalPolynomial[I, D]
+  override val generator = approximateGenerator.coefficients.coefficientsAsFractions(???)
+  override def compare(x: P, y: P) = ???
 }
 
 trait Groupoid
