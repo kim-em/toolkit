@@ -13,11 +13,17 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
 
   def minimumDegree = (terms map { _._1 }).minOption
   def maximumDegree = (terms map { _._1 }).maxOption
+  def degree = maximumDegree.get
   def leadingCoefficient = maximumDegree map { get(_).get }
   def constantTerm(implicit ring: Ring[A]) = get(0).getOrElse(ring.zero)
   
   def roots(implicit ring: Ring[A] with Elements[A]) = {
     for(x <- ring.elements; if Polynomials.evaluateAt(x).apply(polynomial) == ring.zero) yield x
+  }
+  
+  def coefficientsAsFractions(implicit domain: EuclideanDomain[A]): Polynomial[Fraction[A]] = {
+    implicit val fractions = Fields.fieldOfFractions(domain)
+    Polynomial(terms.map({ case (i, a) => (i, Fraction(a, ???))}):_*) 
   }
 }
 
