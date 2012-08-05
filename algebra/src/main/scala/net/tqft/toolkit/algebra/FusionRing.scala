@@ -28,10 +28,10 @@ object AlgebraicNumberField {
     new AlgebraicNumberField[I, D] {
       override val generator = minimalPolynomial.coefficientsAsFractions
       override val goodEnoughApproximation = approximation
-            
+
       override var bestApproximation = approximation
       override var errorBound = implicitly[Field[D]].one
-      
+
       override val integers = implicitly[EuclideanDomain[I]]
       override val approximateReals = implicitly[ApproximateReals[D]]
       override val coefficientField = Fields.fieldOfFractions(integers)
@@ -46,19 +46,22 @@ trait AlgebraicNumberField[I, D] extends NumberField[Fraction[I]] with OrderedFi
 
   protected var bestApproximation: D
   protected var errorBound: D
+  private def errorBoundOnLargestPower: D = ???
 
-  def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = ???
+  def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = {
+    ???
+  }
 
   override def compare(x: Polynomial[Fraction[I]], y: Polynomial[Fraction[I]]) = {
-    if(x == y) {
+    if (x == y) {
       0
     } else {
       var epsilon = approximateReals.fromDouble(0.0001)
       def gap = approximateReals.subtract(approximateWithin(epsilon)(x), approximateWithin(epsilon)(y))
-      while(approximateReals.compare(approximateReals.abs(gap), approximateReals.multiplyByInt(epsilon, 4)) < 0) {
+      while (approximateReals.compare(approximateReals.abs(gap), approximateReals.multiplyByInt(epsilon, 4)) < 0) {
         epsilon = approximateReals.quotientByInt(epsilon, 10)
       }
-      approximateReals.compare(gap, approximateReals.zero)
+      approximateReals.compare(gap, approximateReals.zero).ensuring(_ != 0)
     }
   }
 }
