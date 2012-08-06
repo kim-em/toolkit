@@ -11,7 +11,7 @@ object VectorOperations extends net.tqft.toolkit.Logging {
     }
   }
 
-  def tensor[A: Rig](v1: Seq[A], v2: Seq[A]) = {
+  def tensor[A: Rig](v1: Seq[A], v2: Seq[A]): Seq[A] = {
     val rig = implicitly[Rig[A]]
     if (v1.isInstanceOf[SparseSeq[_]] || v2.isInstanceOf[SparseSeq[_]]) {
       val s1 = SparseSeq.from(v1, rig.zero)
