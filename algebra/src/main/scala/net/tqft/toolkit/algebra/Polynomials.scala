@@ -4,11 +4,11 @@ import net.tqft.toolkit.mathematica.ShortMathematicaExpression
 
 trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   import net.tqft.toolkit.arithmetic.MinMax._
- 
+
   override def toString = if (terms.isEmpty) {
     "0"
   } else {
-    (terms map { case (g, p) => p.toString + (if(g == 0) "" else " * x^(" + g.toString + ")") }).mkString(" + ")
+    (terms map { case (g, p) => p.toString + (if (g == 0) "" else " * x^(" + g.toString + ")") }).mkString(" + ")
   }
 
   def minimumDegree = (terms map { _._1 }).minOption
@@ -16,30 +16,30 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   def degree = maximumDegree.get
   def leadingCoefficient = maximumDegree map { get(_).get }
   def constantTerm(implicit ring: Ring[A]) = get(0).getOrElse(ring.zero)
-  
+
   def roots(implicit ring: Ring[A] with Elements[A]) = {
-    for(x <- ring.elements; if Polynomials.evaluateAt(x).apply(polynomial) == ring.zero) yield x
+    for (x <- ring.elements; if Polynomials.evaluationAt(x).apply(polynomial) == ring.zero) yield x
   }
-  
+
   def coefficientsAsFractions(implicit domain: EuclideanDomain[A]): Polynomial[Fraction[A]] = {
     implicit val fractions = Fields.fieldOfFractions(domain)
-    Polynomial(terms.map({ case (i, a) => (i, Fraction(a, ???))}):_*) 
+    Polynomial(terms.map({ case (i, a) => (i, Fraction(a, ???)) }): _*)
   }
 }
 
 object Polynomial {
-  def apply[A:Ring](terms: (Int, A)*) = Polynomials.over(implicitly[Ring[A]]).wrap(terms.toList)
-  def apply[A:Ring](terms: Map[Int, A]) = Polynomials.over(implicitly[Ring[A]]).wrap(terms)
-  def constant[A:Ring](x: A) = apply((0, x)) 
-  def identity[A:Ring] = apply((1, implicitly[Ring[A]].one))
+  def apply[A: Ring](terms: (Int, A)*) = Polynomials.over(implicitly[Ring[A]]).wrap(terms.toList)
+  def apply[A: Ring](terms: Map[Int, A]) = Polynomials.over(implicitly[Ring[A]]).wrap(terms)
+  def constant[A: Ring](x: A) = apply((0, x))
+  def identity[A: Ring] = apply((1, implicitly[Ring[A]].one))
 
-  def cyclotomic[A:Field](n: Int): Polynomial[A] = {
+  def cyclotomic[A: Field](n: Int): Polynomial[A] = {
     val field = implicitly[Field[A]]
     val polynomials = Polynomials.over(field)
-    val divisors = for(d <- 1 until n; if n % d == 0) yield cyclotomic(d)
+    val divisors = for (d <- 1 until n; if n % d == 0) yield cyclotomic(d)
     polynomials.quotient(apply((0, field.negate(field.one)), (n, field.one)), polynomials.multiply(divisors))
   }
-    
+
   // TODO move this somewhere else?
   implicit def asMathematicaExpression[A <% MathematicaExpression](p: Polynomial[A]) = new ShortMathematicaExpression {
     val symbol = "x" // TODO work out how to allow varying this?
@@ -78,12 +78,12 @@ object Polynomials extends HomomorphismCategory[PolynomialAlgebra] {
     }
   }
 
-  def evaluateAt[A](x: A)(implicit ring: Ring[A]) = new Homomorphism[Ring, Polynomial[A], A] {
+  def evaluationAt[A](x: A)(implicit ring: Ring[A]) = new Homomorphism[Ring, Polynomial[A], A] {
     def source: Ring[Polynomial[A]] = over[A](ring)
     def target: Ring[A] = ring
     def apply(p: Polynomial[A]) = AlgebraicNotation.sum(p.terms map { case (e, a) => ring.multiply(a, ring.power(x, e)) })
   }
-  
+
   val embeddingAsConstants = new NaturalTransformation[Ring, Ring, Functors.Identity, Polynomial] {
     def source = Functors.Identity(Rings)
 
@@ -99,7 +99,7 @@ object Polynomials extends HomomorphismCategory[PolynomialAlgebra] {
 }
 
 object RationalFunction {
-    def identity[A](implicit ring: Field[A]) = Fraction(Polynomial.identity, Polynomials.over(ring).one)(Polynomials.over(ring))
+  def identity[A](implicit ring: Field[A]) = Fraction(Polynomial.identity, Polynomials.over(ring).one)(Polynomials.over(ring))
 }
 
 object RationalFunctions {
@@ -122,10 +122,10 @@ object RationalFunctions {
     }
   }
 
-  def evaluateAt[A](x: A)(implicit field: Field[A]) = new Homomorphism[Field, RationalFunction[A], A] {
+  def evaluationAt[A](x: A)(implicit field: Field[A]) = new Homomorphism[Field, RationalFunction[A], A] {
     def source: Field[RationalFunction[A]] = over[A](field)
     def target: Field[A] = field
-    def apply(p: RationalFunction[A]) = field.quotient(Polynomials.evaluateAt(x).apply(p.numerator), Polynomials.evaluateAt(x).apply(p.denominator))
+    def apply(p: RationalFunction[A]) = field.quotient(Polynomials.evaluationAt(x).apply(p.numerator), Polynomials.evaluationAt(x).apply(p.denominator))
   }
 
   val embeddingAsConstants = new NaturalTransformation[Field, Field, Functors.Identity, RationalFunction] {
@@ -164,6 +164,9 @@ trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] wit
     add(p.terms map { case (e, a) => scalarMultiply(a, power(q, e)) })
   }
 
+  def formalDerivative(p: Polynomial[A]): Polynomial[A] = {
+    Polynomial((p.terms map { case (0, _) => (0, ring.zero); case (k, a) => (k - 1, ring.multiplyByInt(a, k)) }): _*)
+  }
 }
 
 trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanDomain[Polynomial[A]] {
@@ -194,5 +197,52 @@ trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanD
         }
       }
     }
+  }
+
+  def removeMultipleRoots(p: Polynomial[A]): Polynomial[A] = {
+    quotient(p, gcd(p, formalDerivative(p)))
+  }
+}
+
+case class Interval[D](lower: D, upper: D) {
+  def width(implicit field: OrderedField[D]) = field.subtract(upper, lower)
+  def midpoint(implicit field: OrderedField[D]) = field.quotientByInt(field.add(upper, lower), 2)
+}
+
+trait PolynomialSolver[A] {
+  type Embedding[D] = A => D
+  def approximateSimpleRootWithin[D: OrderedField: Embedding](epsilon: D)(p: Polynomial[A])(bounds: Interval[D]): Interval[D]
+}
+
+// the bisection method is quite slow, but at least this gets us off the ground
+trait BisectionMethod[A] extends PolynomialSolver[A] {
+  override def approximateSimpleRootWithin[D: OrderedField: Embedding](epsilon: D)(p: Polynomial[A])(bounds: Interval[D]): Interval[D] = {
+
+    val field = implicitly[OrderedField[D]]    
+    def evaluateAt(x: D): D = field.add(p.terms map { case (e, a) => field.multiply(a, field.power(x, e)) })
+    
+    // if the function isn't increasing across the interval, fake it
+    val increasing = field.signum(evaluateAt(bounds.upper)) > 0
+    def evaluateIncreasingAt(x: D): D = if(increasing) {
+      evaluateAt(x)
+    } else {
+      field.negate(evaluateAt(x))
+    }
+    
+    @scala.annotation.tailrec
+    def impl(bounds: Interval[D]): Interval[D] = {
+      if (field.compare(bounds.width, field.multiplyByInt(epsilon, 2)) < 0) {
+        bounds
+      } else {
+        val midpoint = bounds.midpoint
+        if (field.signum(evaluateIncreasingAt(midpoint)) < 0) {
+          impl(Interval(midpoint, bounds.upper))
+        } else {
+          impl(Interval(bounds.lower, midpoint))
+        }
+      }
+    }
+
+    impl(bounds)
   }
 }

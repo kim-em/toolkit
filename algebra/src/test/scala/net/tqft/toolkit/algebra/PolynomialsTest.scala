@@ -26,11 +26,11 @@ class PolynomialsTest extends FlatSpec with ShouldMatchers {
     (p % q) should equal(Polynomial(0 -> Fraction(11, 1)))
 
     val a: Polynomial[Int] = Polynomial(3 -> 1, 2 -> -8, 1 -> 21, 0 -> -18)
-    Polynomials.evaluateAt(5)(Integers)(a) should equal(12)
+    Polynomials.evaluationAt(5).apply(a) should equal(12)
 
     val z: Polynomial[BigInt] = Polynomial(3 -> BigInt(1), 1 -> BigInt(16), 0 -> BigInt(-12), 2 -> BigInt(-7))
     val bigN = Fraction(BigInt(499), BigInt(100))
-    (Polynomials.over(bigIntegersAsBigRationals) andThen Polynomials.evaluateAt(bigN))(z) should equal(Fraction(BigInt(17790799), BigInt(1000000)))
+    (Polynomials.over(bigIntegersAsBigRationals) andThen Polynomials.evaluationAt(bigN))(z) should equal(Fraction(BigInt(17790799), BigInt(1000000)))
   }
 
   "cyclotomic" should "give the cyclotomic polynomials" in {
