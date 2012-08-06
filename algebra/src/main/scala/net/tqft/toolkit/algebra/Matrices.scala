@@ -23,6 +23,7 @@ object Matrices {
   //  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 
   def positiveSymmetricDecompositions(M: Matrix[Int]): Iterator[Matrix[Int]] = {
+    require(M.numberOfColumns == M.numberOfRows)
     def partialDecompositions(m: Int): Iterator[Matrix[Int]] = {
       import Gadgets.Integers
 
@@ -82,7 +83,7 @@ object Matrices {
 
 abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sources: Seq[A], val targets: Seq[A]) {
   require(targets.size == entries.size)
-  //  require(entries.find(_.size != numberOfColumns).isEmpty) // not a good idea if the entries are in Hadoop
+    require(entries.find(_.size != numberOfColumns).isEmpty) // not a good idea if the entries are in Hadoop
 
   def entries: GenSeq[Seq[B]]
   def lookupEntry(row: Int)(column: Int): B

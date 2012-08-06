@@ -2,17 +2,51 @@ package net.tqft.toolkit.algebra
 
 // this is just scratch work for now!
 
+// Usually A = Int, for a concrete fusion ring. We allow other possibilities so we can write fusion solvers, etc.
 trait FusionRing[A] extends Rig[Seq[A]] {
-  def basis: Seq[Seq[A]]
+  def coefficients: Rig[A]
+
+  val rank: Int
+
+  // TODO a lot of this should be implemented somewhere higher up.
+  def basis = for (i <- 0 until rank) yield for (j <- 0 until rank) yield if (i == j) coefficients.one else coefficients.zero
+  def regularRepresentation(x: Seq[A]) = new Matrix(rank, for (b <- basis) yield multiply(x, b))
+
+  override def fromInt(x: Int) = coefficients.fromInt(x) +: Seq.fill(rank - 1)(coefficients.zero)
+  override val one = fromInt(1)
+  override val zero = Seq.fill(rank)(coefficients.zero)
+  override def add(x: Seq[A], y: Seq[A]) = x.zip(y).map(p => coefficients.add(p._1, p._2))
+
+  def verifyAssociativity = (for(x <- basis; y <- basis; z <- basis) yield multiply(x, multiply(y, z)) == multiply(multiply(x,y), z)).reduce(_ && _)
+  def verifyIdentity = (for(x <- basis) yield x == multiply(one, x) && x == multiply(x, one)).reduce(_ && _)
 }
 
-trait FusionRingWithDimensions[A] extends FusionRing[A] {
-  def field: AlgebraicNumberField[Int, Double]
-  def dimension(x: Seq[A]): Polynomial[Int]
+trait FusionRingWithDimensions extends FusionRing[Int] {
+  // TODO
+  //  def field: RealNumberField[Int, Double] = ???
+  //  def dimension(x: Seq[A]): Polynomial[Int] = ???
+
+  def dimensionBounds(x: Seq[Int]): Double
+
+  def objectsSmallEnoughToBeAlgebras: Iterator[Seq[Int]] = {
+    val start = Iterator(Seq(1))
+    basis.tail.foldLeft(start)({
+      (i: Iterator[Seq[Int]], b: Seq[Int]) =>
+        i.flatMap({
+          a: Seq[Int] => for (m <- 0 to dimensionBounds(b).floor.intValue) yield a :+ m
+        })
+    })
+  }
+
+  def candidateAlgebras: Iterator[Seq[Int]] = {
+    for (
+      o <- objectsSmallEnoughToBeAlgebras;
+      a = regularRepresentation(o);
+      if Matrices.positiveSymmetricDecompositions(a).nonEmpty
+    ) yield o
+  }
 
   def candidateBrauerPicardGroupoids: Seq[Groupoid] = {
-    def objectsSmallEnoughToBeAlgebras: Iterator[Seq[A]] = ???
-
     val admissibleModules: Seq[FusionModule] = ???
     val bimodules: Seq[(FusionModule, Seq[FusionBimodule])] = ???
     ???
@@ -23,76 +57,40 @@ trait FusionRingWithDimensions[A] extends FusionRing[A] {
 
 }
 
-object AlgebraicNumberField {
-  def apply[I: EuclideanDomain, D: ApproximateReals](minimalPolynomial: Polynomial[I], approximation: D): AlgebraicNumberField[I, D] = {
-    new AlgebraicNumberField[I, D] {
-      override val generator = minimalPolynomial.coefficientsAsFractions
-      override val goodEnoughApproximation = approximation
-
-      override var bestApproximation = approximation
-      override var errorBound = implicitly[Field[D]].one
-
-      override val integers = implicitly[EuclideanDomain[I]]
-      override val approximateReals = implicitly[ApproximateReals[D]]
-      override val coefficientField = Fields.fieldOfFractions(integers)
-    }
-  }
-}
-
-trait AlgebraicNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[Polynomial[Fraction[I]]] {
-  val goodEnoughApproximation: D
-  val integers: EuclideanDomain[I]
-  val approximateReals: ApproximateReals[D]
-
-  protected var bestApproximation: D
-  protected var errorBound: D
-  private def errorBoundOnLargestPower: D = ???
-
-  def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = {
-    ???
-  }
-
-  override def compare(x: Polynomial[Fraction[I]], y: Polynomial[Fraction[I]]) = {
-    if (x == y) {
-      0
-    } else {
-      var epsilon = approximateReals.fromDouble(0.0001)
-      def gap = approximateReals.subtract(approximateWithin(epsilon)(x), approximateWithin(epsilon)(y))
-      while (approximateReals.compare(approximateReals.abs(gap), approximateReals.multiplyByInt(epsilon, 4)) < 0) {
-        epsilon = approximateReals.quotientByInt(epsilon, 10)
-      }
-      approximateReals.compare(gap, approximateReals.zero).ensuring(_ != 0)
-    }
-  }
-}
-
 trait Groupoid
 
 object FusionRing {
-  def fromStructureCoefficients(rank: Int, m: (Int, Int) => Seq[Int]): FusionRing[Int] = new StructureCoefficientFusionRing(rank, m)
+  def apply[A: Rig](multiplicities: Seq[Seq[Seq[A]]]): FusionRing[A] = new StructureCoefficientFusionRing(multiplicities)
+  def apply(multiplicities: Seq[Seq[Seq[Int]]], dimensionBoundsForSimples: Seq[Double]): FusionRingWithDimensions = new StructureCoefficientFusionRingWithDimensions(multiplicities, dimensionBoundsForSimples)
 
-  private class FreeRigModule[A: Rig](rank: Int) extends CommutativeMonoid[Seq[A]] {
-    val zero = Seq.fill(rank)(implicitly[Rig[A]].zero)
-    def add(x: Seq[A], y: Seq[A]) = x.zip(y).map(p => implicitly[Rig[A]].add(p._1, p._2))
-  }
+  private class StructureCoefficientFusionRing[A: Rig](multiplicities: Seq[Seq[Seq[A]]]) extends FusionRing[A] {
+    override lazy val coefficients = implicitly[Rig[A]]
+    override lazy val rank = multiplicities.size
 
-  import Implicits.Integers
-  private class StructureCoefficientFusionRing(rank: Int, multiplicity: (Int, Int) => Seq[Int]) extends FreeRigModule[Int](rank) with FusionRing[Int] {
-    def basis = for (i <- 0 to rank) yield for (j <- 0 to rank) yield if (i == j) 1 else 0
-
-    def fromInt(x: Int) = x +: Seq.fill(rank - 1)(0)
-    val one = fromInt(1)
-    def multiply(x: Seq[Int], y: Seq[Int]) = {
-      for ((xi, i) <- x.zipWithIndex; (yj, j) <- y.zipWithIndex) yield ???
+    override def multiply(x: Seq[A], y: Seq[A]) = {
+      val zero = coefficients.zero
+      val terms = for ((xi, i) <- x.zipWithIndex; if(xi != zero); (yj, j) <- y.zipWithIndex; if(yj != zero)) yield for (k <- 0 until rank) yield coefficients.multiply(xi, yj, multiplicities(i)(j)(k)) 
+      val result = add(terms)
+      result
     }
   }
+
+  private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Seq[Seq[Int]]], dimensionBoundsForSimples: Seq[Double]) extends StructureCoefficientFusionRing[Int](multiplicities)(Gadgets.Integers) with FusionRingWithDimensions {
+    override def dimensionBounds(x: Seq[Int]) = (for ((c, d) <- x.zip(dimensionBoundsForSimples)) yield (c * d)).sum
+  }
 }
 
-trait IndeterminateFusionRing extends FusionRing[Option[Int]] {
-
-}
-
-object Goals {
-  val AH: FusionRingWithDimensions[Int] = ???
-  AH.candidateBrauerPicardGroupoids
+object Goals extends App {
+  val haagerupFusionRing: FusionRingWithDimensions = {
+    val haagerupMultiplicities: Seq[Seq[Seq[Int]]] =
+      List(
+        List(List(1, 0, 0, 0), List(0, 1, 0, 0), List(0, 0, 1, 0), List(0, 0, 0, 1)),
+        List(List(0, 1, 0, 0), List(1, 2, 2, 1), List(0, 2, 1, 1), List(0, 1, 1, 1)),
+        List(List(0, 0, 1, 0), List(0, 2, 1, 1), List(1, 1, 1, 1), List(0, 1, 1, 0)),
+        List(List(0, 0, 0, 1), List(0, 1, 1, 1), List(0, 1, 1, 0), List(1, 1, 0, 0)))
+    val haagerupDimensionBounds: Seq[Double] = Seq(1.0, 4.31, 3.31, 2.31)
+    FusionRing(haagerupMultiplicities, haagerupDimensionBounds).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+  }
+  println(haagerupFusionRing.candidateAlgebras.toList)
+  haagerupFusionRing.candidateBrauerPicardGroupoids
 }

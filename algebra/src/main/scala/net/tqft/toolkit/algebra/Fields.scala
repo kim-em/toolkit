@@ -115,6 +115,51 @@ object NumberField {
   }
 }
 
+// needs lots of work!
+object RealNumberField {
+  def apply[I: EuclideanDomain, D: ApproximateReals](minimalPolynomial: Polynomial[I], approximation: D): RealNumberField[I, D] = {
+    new RealNumberField[I, D] {
+      override val generator = minimalPolynomial.coefficientsAsFractions
+      override val goodEnoughApproximation = approximation
+
+      override var bestApproximation = approximation
+      override var errorBound = implicitly[Field[D]].one
+
+      override val integers = implicitly[EuclideanDomain[I]]
+      override val approximateReals = implicitly[ApproximateReals[D]]
+      override val coefficientField = Fields.fieldOfFractions(integers)
+    }
+  }
+}
+
+trait RealNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[Polynomial[Fraction[I]]] {
+  val goodEnoughApproximation: D
+  val integers: EuclideanDomain[I]
+  val approximateReals: ApproximateReals[D]
+
+  protected var bestApproximation: D
+  protected var errorBound: D
+  private def errorBoundOnLargestPower: D = ???
+
+  def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = {
+    ???
+  }
+
+  override def compare(x: Polynomial[Fraction[I]], y: Polynomial[Fraction[I]]) = {
+    if (x == y) {
+      0
+    } else {
+      var epsilon = approximateReals.fromDouble(0.0001)
+      def gap = approximateReals.subtract(approximateWithin(epsilon)(x), approximateWithin(epsilon)(y))
+      while (approximateReals.compare(approximateReals.abs(gap), approximateReals.multiplyByInt(epsilon, 4)) < 0) {
+        epsilon = approximateReals.quotientByInt(epsilon, 10)
+      }
+      approximateReals.compare(gap, approximateReals.zero).ensuring(_ != 0)
+    }
+  }
+}
+
+
 object Mod {
   def apply(p: Int): Field[Int] with Elements[Int] = {
     require(p < scala.math.sqrt(Integer.MAX_VALUE))
