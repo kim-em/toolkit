@@ -42,17 +42,18 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
 //  def act(left: Seq[A], m: Seq[A], right: Seq[A]): Seq[A]  
 //}
 
-trait FusionRingWithDimensions extends FusionRing[Int] {
-   def dimensionField: RealNumberField[Int, Double]
-   def dimensions: Seq[Polynomial[Int]]
-   def dimension(x: Seq[Int]): Polynomial[Int] = {
-     val polynomials =Polynomials.over(Gadgets.Integers)
-     polynomials.add(x.zip(dimensions).map(p => polynomials.scalarMultiply(p._1, p._2)))
-   }
+trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
+  def dimensionField: RealNumberField[Int, Double]
+  def dimensions: Seq[Polynomial[Fraction[Int]]]
+  def dimension(x: Seq[Int]): Polynomial[Fraction[Int]] = {
+    val polynomials = Polynomials.over(Gadgets.Rationals)
+    import Implicits.integersAsRationals
+    polynomials.add(x.zip(dimensions).map(p => polynomials.scalarMultiply(p._1, p._2)))
+  }
 
   def dimensionBounds(x: Seq[Int]): Double = {
     import Implicits.Integers
-    dimensionField.approximateWithin(0.0001)(dimension(x).coefficientsAsFractions) + 0.0001
+    dimensionField.approximateWithin(0.0001)(dimension(x)) + 0.0001
   }
 
   def objectsSmallEnoughToBeAlgebras: Iterator[Seq[Int]] = {
@@ -65,22 +66,36 @@ trait FusionRingWithDimensions extends FusionRing[Int] {
     })
   }
 
-  def candidateAlgebraObjects: Iterator[Seq[Int]] = {
+  case class FusionMatrix(algebraObject: Seq[Int], matrix: Matrix[Int]) {
+    val dimensions = {
+      val dxi = fr.dimension(algebraObject)
+      import Implicits.{Integers,integersAsRationals}
+      implicit val polynomials = Polynomials.over(Gadgets.Rationals)
+      val Atd = matrix.transpose.mapEntries(polynomials.constant(_)).apply(fr.dimensions)
+      Atd.map(p => dimensionField.quotient(p, dxi))
+    }
+    lazy val sortedMatrix = Matrix(matrix.numberOfColumns, matrix.entries.seq.transpose.zip(dimensions).sortBy(_._2)(dimensionField).map(_._1).transpose)
+  }
+
+  def candidateFusionMatrices: Iterator[FusionMatrix] = {
     for (
       o <- objectsSmallEnoughToBeAlgebras;
       a = regularModule.asMatrix(o);
-      if Matrices.positiveSymmetricDecompositions(a).hasNext
-    ) yield o
+      m <- Matrices.positiveSymmetricDecompositions(a)
+    ) yield {
+      FusionMatrix(o, m)
+    }
   }
 
-  def candidateFusionMatrices: Iterator[Matrix[Int]] = {
-    for (a <- candidateAlgebraObjects; m <- Matrices.positiveSymmetricDecompositions(regularModule.asMatrix(a))) yield m
+  def candidateAlgebraObjects: Iterator[Seq[Int]] = {
+    import net.tqft.toolkit.collections.RemoveDuplicates._
+    candidateFusionMatrices.map(_.algebraObject).removeDuplicates()
   }
 
   def candidateFusionModules: Iterator[FusionModule] = {
-    val matricesBySize = candidateFusionMatrices.toList.groupBy(_.numberOfColumns)
-    for(n <- (1 to matricesBySize.keys.max).iterator) yield {
-    	???
+    val matricesBySize = candidateFusionMatrices.toList.groupBy(_.matrix.numberOfColumns)
+    for (n <- (1 to matricesBySize.keys.max).iterator) yield {
+      ???
     }
   }
 
@@ -99,7 +114,7 @@ trait Groupoid
 
 object FusionRing {
   def apply[A: Ring](multiplicities: Seq[Seq[Seq[A]]]): FusionRing[A] = new StructureCoefficientFusionRing(multiplicities)
-  def apply(multiplicities: Seq[Seq[Seq[Int]]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, dimensionBoundsForSimples: Seq[Double]): FusionRingWithDimensions = new StructureCoefficientFusionRingWithDimensions(multiplicities, fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon, dimensionBoundsForSimples)
+  def apply(multiplicities: Seq[Seq[Seq[Int]]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, dimensions: Seq[Polynomial[Fraction[Int]]]): FusionRingWithDimensions = new StructureCoefficientFusionRingWithDimensions(multiplicities, fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon, dimensions)
 
   private class StructureCoefficientFusionRing[A: Ring](multiplicities: Seq[Seq[Seq[A]]]) extends FusionRing[A] {
     override lazy val coefficients = implicitly[Ring[A]]
@@ -113,13 +128,12 @@ object FusionRing {
     }
   }
 
-  private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Seq[Seq[Int]]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, dimensionBoundsForSimples: Seq[Double]) extends StructureCoefficientFusionRing[Int](multiplicities)(Gadgets.Integers) with FusionRingWithDimensions {
+  private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Seq[Seq[Int]]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, override val dimensions: Seq[Polynomial[Fraction[Int]]]) extends StructureCoefficientFusionRing[Int](multiplicities)(Gadgets.Integers) with FusionRingWithDimensions {
     override def dimensionField = {
       import Implicits.{ Integers, Doubles }
       RealNumberField(fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon)(Gadgets.Integers, Gadgets.Doubles)
     }
-    override def dimensions = ???
-    override def dimensionBounds(x: Seq[Int]) = (for ((c, d) <- x.zip(dimensionBoundsForSimples)) yield (c * d)).sum
+//    override def dimensionBounds(x: Seq[Int]) = (for ((c, d) <- x.zip(dimensionBoundsForSimples)) yield (c * d)).sum
   }
 }
 
@@ -131,11 +145,24 @@ object Goals extends App {
         List(List(0, 1, 0, 0), List(1, 2, 2, 1), List(0, 2, 1, 1), List(0, 1, 1, 1)),
         List(List(0, 0, 1, 0), List(0, 2, 1, 1), List(1, 1, 1, 1), List(0, 1, 1, 0)),
         List(List(0, 0, 0, 1), List(0, 1, 1, 1), List(0, 1, 1, 0), List(1, 1, 0, 0)))
-    val haagerupFieldGenerator: Polynomial[Int] = ???
-    val haagerupFieldGeneratorApproximation: Double = ???
-    val haagerupFieldGeneratorEpsilon: Double = ???
+    
+    val haagerupFieldGenerator: Polynomial[Int] = {
+      import Implicits.Integers
+      Polynomial(2 -> 1, 0 -> 13)
+    }
+    val haagerupFieldGeneratorApproximation: Double = 3.60555
+    val haagerupFieldGeneratorEpsilon: Double = 0.00001
+    val haagerupDimensions: Seq[Polynomial[Fraction[Int]]] = {
+      import Implicits.{Integers, Rationals, integersAsRationals}
+      Seq(
+          Polynomial(0 -> Fraction(1, 1)),
+          Polynomial(0 -> Fraction(5,2), 1-> Fraction(1,2)),
+          Polynomial(0 -> Fraction(3,2), 1-> Fraction(1,2)),
+          Polynomial(0 -> Fraction(1,2), 1-> Fraction(1,2))
+      )
+    }
     val haagerupDimensionBounds: Seq[Double] = Seq(1.0, 4.31, 3.31, 2.31)
-    FusionRing(haagerupMultiplicities, haagerupFieldGenerator, haagerupFieldGeneratorApproximation, haagerupFieldGeneratorEpsilon, haagerupDimensionBounds).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+    FusionRing(haagerupMultiplicities, haagerupFieldGenerator, haagerupFieldGeneratorApproximation, haagerupFieldGeneratorEpsilon, haagerupDimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
   }
   //  println(haagerupFusionRing.regularRepresentation(Seq(1,1,0,0)))
   //  println(Matrices.positiveSymmetricDecompositions(haagerupFusionRing.regularRepresentation(Seq(1,1,0,0))).toList)
