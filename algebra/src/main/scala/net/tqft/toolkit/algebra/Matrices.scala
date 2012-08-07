@@ -218,10 +218,9 @@ class Matrix[B](
     new Matrix(numberOfColumns + other.numberOfColumns, (entries zip other.entries) map { case (r1, r2) => r1 ++ r2 })
   }
 
-  def apply(vector: Seq[B])(implicit field: Field[B]) = {
+  def apply(vector: Seq[B])(implicit rig: Rig[B]) = {
     (for (row <- entries) yield {
-      import AlgebraicNotation._
-      sum(for ((x, y) <- row zip vector) yield field.multiply(x, y))(field)
+      rig.add(for ((x, y) <- row zip vector) yield rig.multiply(x, y))
     }).seq
   }
 
