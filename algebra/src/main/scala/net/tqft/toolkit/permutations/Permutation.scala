@@ -2,6 +2,7 @@ package net.tqft.toolkit.permutations
 
 import net.tqft.toolkit.collections.NonStrictIterable
 import net.tqft.toolkit.functions.Memo
+import scala.collection.GenSeq
 
 object Permutations {
   type Permutation = IndexedSeq[Int]
@@ -34,10 +35,10 @@ object Permutations {
     }
   }
   
-  def findOneMapping[A](list1: Seq[A], list2: Seq[A]): Option[Permutation] = findOneMappingWithSameTest(list1, list2)({ case (a, b) => a == b })
+  def findOneMapping[A](list1: GenSeq[A], list2: GenSeq[A]): Option[Permutation] = findOneMappingWithSameTest(list1, list2)({ case (a, b) => a == b })
 
   // TODO we only use this for relatively short lists; otherwise it should be tail-recursive
-  def findOneMappingWithSameTest[A](list1: Seq[A], list2: Seq[A])(implicit sameTest: (A, A) => Boolean): Option[Permutation] = {
+  def findOneMappingWithSameTest[A](list1: GenSeq[A], list2: GenSeq[A])(implicit sameTest: (A, A) => Boolean): Option[Permutation] = {
     list2 match {
       case list2Head :: list2Tail =>
         list1.indexWhere(sameTest(_, list2Head)) match {
