@@ -117,7 +117,7 @@ object NumberField {
 
 // needs lots of work!
 object RealNumberField {
-  def apply[I: EuclideanDomain, D: ApproximateReals](minimalPolynomial: Polynomial[I], approximation: D, epsilon: D): RealNumberField[I, D] = {
+  def apply[I: IntegerModel, D: ApproximateReals](minimalPolynomial: Polynomial[I], approximation: D, epsilon: D): RealNumberField[I, D] = {
     new RealNumberField[I, D] {
       override val generator = minimalPolynomial.coefficientsAsFractions
       override val goodEnoughApproximation = approximation
@@ -125,7 +125,7 @@ object RealNumberField {
       override var bestApproximation = approximation
       override var errorBound = epsilon
 
-      override val integers = implicitly[EuclideanDomain[I]]
+      override val integers = implicitly[IntegerModel[I]]
       override val approximateReals = implicitly[ApproximateReals[D]]
       override val coefficientField = Fields.fieldOfFractions(integers)
     }
@@ -134,21 +134,29 @@ object RealNumberField {
 
 trait RealNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[Polynomial[Fraction[I]]] {
   val goodEnoughApproximation: D
-  val integers: EuclideanDomain[I]
+  implicit val integers: IntegerModel[I]
+  lazy val rationals = Fields.fieldOfFractions(integers)
   val approximateReals: ApproximateReals[D]
 
   protected var bestApproximation: D
   protected var errorBound: D
-  private def errorBoundForPower(k: Int): D = ???
+  private def errorBoundForPower(k: Int): D = k match {
+    case 0 => approximateReals.zero
+    case k => approximateReals.multiplyByInt(approximateReals.multiply(errorBound, approximateReals.power(bestApproximation, k - 1)), k)
+  }
 
   def improveErrorBound = ???
 
+  def evaluateAt(d: D)(p: Polynomial[Fraction[I]]): D = approximateReals.add(for ((i, c) <- p.terms) yield approximateReals.multiply(evaluateFraction(c), approximateReals.power(d, i)))
+  def evaluateFraction(x: Fraction[I]) = approximateReals.quotient(approximateReals.fromInteger(x.numerator), approximateReals.fromInteger(x.denominator))
+
   def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = {
     for (i <- 0 until degree) {
-      while (approximateReals.compare(errorBoundForPower(i) /* TODO * generator(i) */ , approximateReals.quotientByInt(epsilon, degree)) > 0) improveErrorBound
+      while (approximateReals.compare(approximateReals.multiply(errorBoundForPower(i), evaluateFraction(generator.coefficientOf(i).getOrElse(rationals.zero))), approximateReals.quotientByInt(epsilon, degree)) > 0) {
+        improveErrorBound
+      }
     }
-    // TODO evaluate at bestApproximation
-    ???
+    evaluateAt(bestApproximation)(p)
   }
 
   override def compare(x: Polynomial[Fraction[I]], y: Polynomial[Fraction[I]]) = {

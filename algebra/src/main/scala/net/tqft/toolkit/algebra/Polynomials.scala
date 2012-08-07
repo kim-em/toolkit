@@ -14,9 +14,11 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   def minimumDegree = (terms map { _._1 }).minOption
   def maximumDegree = (terms map { _._1 }).maxOption
   def degree = maximumDegree.get
-  def leadingCoefficient = maximumDegree map { get(_).get }
-  def constantTerm(implicit ring: Ring[A]) = get(0).getOrElse(ring.zero)
+  def leadingCoefficient = maximumDegree map { coefficientOf(_).get }
+  def constantTerm(implicit ring: Ring[A]) = coefficientOf(0).getOrElse(ring.zero)
 
+  
+  
   def roots(implicit ring: Ring[A] with Elements[A]) = {
     for (x <- ring.elements; if Polynomials.evaluationAt(x).apply(polynomial) == ring.zero) yield x
   }
@@ -190,7 +192,7 @@ trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanD
 
           val quotientLeadingTerm = monomial(dx - dy, q)
           val difference = add(x, negate(multiply(quotientLeadingTerm, y)))
-          require(difference.get(dx) == None)
+//          require(difference.coefficientOf(dx) == None)
           val (restOfQuotient, remainder) = quotientRemainder(difference, y)
 
           (add(quotientLeadingTerm, restOfQuotient), remainder)

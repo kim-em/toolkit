@@ -20,10 +20,11 @@ object Gadgets {
     override def compare(x: T, y: T) = numeric.compare(x, y)
   }
 
-  class IntegralEuclideanDomain[T](numeric: Integral[T]) extends NumericRing(numeric) with OrderedEuclideanDomain[T] {
+  class IntegralEuclideanDomain[T](numeric: Integral[T]) extends NumericRing(numeric) with IntegerModel[T] {
     override def quotientRemainder(x: T, y: T) = (numeric.quot(x, y), numeric.rem(x, y))
     override def quotient(x: T, y: T) = numeric.quot(x, y)
     override def remainder(x: T, y: T) = numeric.rem(x, y)
+    override def toBigInt(t: T) = BigInt(t.toString)
   }
 
   class FractionalField[T](numeric: Fractional[T]) extends NumericRing(numeric) with OrderedField[T] {
@@ -34,6 +35,8 @@ object Gadgets {
   }
 
   object Integers extends IntegralEuclideanDomain(scala.math.Numeric.IntIsIntegral) {
+    override def toBigInt(i: Int) = BigInt(i)
+
     /**
      * returns an iterator of {(a_i, b_i)}_i, with \sum b_i a_i^2 = n
      */
@@ -43,7 +46,7 @@ object Gadgets {
           0
         } else {
           val closest = scala.math.sqrt(k).round.intValue
-          if(closest * closest > k) {
+          if (closest * closest > k) {
             closest - 1
           } else {
             closest
@@ -75,9 +78,13 @@ object Gadgets {
       extend(sqrt(n), n, Nil)
     }
   }
-  val Longs: OrderedEuclideanDomain[Long] = new IntegralEuclideanDomain(scala.math.Numeric.LongIsIntegral)
-  val BigIntegers: OrderedEuclideanDomain[BigInt] = new IntegralEuclideanDomain(scala.math.Numeric.BigIntIsIntegral)
-  
+  object Longs extends IntegralEuclideanDomain(scala.math.Numeric.LongIsIntegral) {
+    override def toBigInt(i: Long) = BigInt(i)
+  }
+  object BigIntegers extends IntegralEuclideanDomain(scala.math.Numeric.BigIntIsIntegral) {
+    override def toBigInt(i: BigInt) = i
+  }
+
   val Doubles: ApproximateReals[Double] = new FractionalField(scala.math.Numeric.DoubleIsFractional) with ApproximateReals[Double] {
     override def bigDecimalValue(x: Double) = BigDecimal(x)
     override def setPrecision(x: Double) = x

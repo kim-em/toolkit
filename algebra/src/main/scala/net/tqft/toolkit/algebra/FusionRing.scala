@@ -69,7 +69,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
   case class FusionMatrix(algebraObject: Seq[Int], matrix: Matrix[Int]) {
     val dimensions = {
       val dxi = fr.dimension(algebraObject)
-      import Implicits.{Integers,integersAsRationals}
+      import Implicits.{ Integers, integersAsRationals }
       implicit val polynomials = Polynomials.over(Gadgets.Rationals)
       val Atd = matrix.transpose.mapEntries(polynomials.constant(_)).apply(fr.dimensions)
       Atd.map(p => dimensionField.quotient(p, dxi))
@@ -133,7 +133,6 @@ object FusionRing {
       import Implicits.{ Integers, Doubles }
       RealNumberField(fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon)(Gadgets.Integers, Gadgets.Doubles)
     }
-//    override def dimensionBounds(x: Seq[Int]) = (for ((c, d) <- x.zip(dimensionBoundsForSimples)) yield (c * d)).sum
   }
 }
 
@@ -145,7 +144,7 @@ object Goals extends App {
         List(List(0, 1, 0, 0), List(1, 2, 2, 1), List(0, 2, 1, 1), List(0, 1, 1, 1)),
         List(List(0, 0, 1, 0), List(0, 2, 1, 1), List(1, 1, 1, 1), List(0, 1, 1, 0)),
         List(List(0, 0, 0, 1), List(0, 1, 1, 1), List(0, 1, 1, 0), List(1, 1, 0, 0)))
-    
+
     val haagerupFieldGenerator: Polynomial[Int] = {
       import Implicits.Integers
       Polynomial(2 -> 1, 0 -> 13)
@@ -153,15 +152,14 @@ object Goals extends App {
     val haagerupFieldGeneratorApproximation: Double = 3.60555
     val haagerupFieldGeneratorEpsilon: Double = 0.00001
     val haagerupDimensions: Seq[Polynomial[Fraction[Int]]] = {
-      import Implicits.{Integers, Rationals, integersAsRationals}
+      import Implicits.{ Integers, Rationals, integersAsRationals }
       Seq(
-          Polynomial(0 -> Fraction(1, 1)),
-          Polynomial(0 -> Fraction(5,2), 1-> Fraction(1,2)),
-          Polynomial(0 -> Fraction(3,2), 1-> Fraction(1,2)),
-          Polynomial(0 -> Fraction(1,2), 1-> Fraction(1,2))
-      )
+        Polynomial(0 -> Fraction(1, 1)),
+        Polynomial(0 -> Fraction(5, 2), 1 -> Fraction(1, 2)),
+        Polynomial(0 -> Fraction(3, 2), 1 -> Fraction(1, 2)),
+        Polynomial(0 -> Fraction(1, 2), 1 -> Fraction(1, 2)))
     }
-    val haagerupDimensionBounds: Seq[Double] = Seq(1.0, 4.31, 3.31, 2.31)
+//    val haagerupDimensionBounds: Seq[Double] = Seq(1.0, 4.31, 3.31, 2.31)
     FusionRing(haagerupMultiplicities, haagerupFieldGenerator, haagerupFieldGeneratorApproximation, haagerupFieldGeneratorEpsilon, haagerupDimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
   }
   //  println(haagerupFusionRing.regularRepresentation(Seq(1,1,0,0)))

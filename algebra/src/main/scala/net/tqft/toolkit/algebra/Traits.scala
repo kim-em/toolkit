@@ -281,7 +281,17 @@ trait ApproximateField[A] extends OrderedField[A] {
 
 }
 
+trait IntegerModel[I] extends OrderedEuclideanDomain[I] {
+  def toBigInt(i: I): BigInt
+}
+
 trait ApproximateReals[A] extends ApproximateField[A] {
+  def fromInteger[I:IntegerModel](i: I): A = {
+    i match {
+      case i: Int => fromInt(i)
+      case i => fromBigDecimal(BigDecimal(implicitly[IntegerModel[I]].toBigInt(i)))
+    }
+  }
   def fromDouble(x: Double): A
   def fromBigDecimal(x: BigDecimal): A
   def setPrecision(x: A): A

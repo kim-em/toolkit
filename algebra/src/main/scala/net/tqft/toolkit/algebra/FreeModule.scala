@@ -13,7 +13,7 @@ object FreeModule {
 trait LinearCombo[A, B] {
   def terms: List[(B, A)]
 
-  def get(b: B) = terms.find(_._1 == b).map(_._2)
+  def coefficientOf(b: B): Option[A] = terms.find(_._1 == b).map(_._2)
 
   override def toString = (terms map { case (g, p) => p.toString + " * " + g.toString }).mkString(" + ")
   override def equals(other: Any) = {
