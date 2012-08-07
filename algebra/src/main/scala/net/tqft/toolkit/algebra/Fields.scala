@@ -117,13 +117,13 @@ object NumberField {
 
 // needs lots of work!
 object RealNumberField {
-  def apply[I: EuclideanDomain, D: ApproximateReals](minimalPolynomial: Polynomial[I], approximation: D): RealNumberField[I, D] = {
+  def apply[I: EuclideanDomain, D: ApproximateReals](minimalPolynomial: Polynomial[I], approximation: D, epsilon: D): RealNumberField[I, D] = {
     new RealNumberField[I, D] {
       override val generator = minimalPolynomial.coefficientsAsFractions
       override val goodEnoughApproximation = approximation
 
       override var bestApproximation = approximation
-      override var errorBound = implicitly[Field[D]].one
+      override var errorBound = epsilon
 
       override val integers = implicitly[EuclideanDomain[I]]
       override val approximateReals = implicitly[ApproximateReals[D]]
@@ -139,9 +139,15 @@ trait RealNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[P
 
   protected var bestApproximation: D
   protected var errorBound: D
-  private def errorBoundOnLargestPower: D = ???
+  private def errorBoundForPower(k: Int): D = ???
+
+  def improveErrorBound = ???
 
   def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = {
+    for (i <- 0 until degree) {
+      while (approximateReals.compare(errorBoundForPower(i) /* TODO * generator(i) */ , approximateReals.quotientByInt(epsilon, degree)) > 0) improveErrorBound
+    }
+    // TODO evaluate at bestApproximation
     ???
   }
 
@@ -158,7 +164,6 @@ trait RealNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[P
     }
   }
 }
-
 
 object Mod {
   def apply(p: Int): Field[Int] with Elements[Int] = {
@@ -219,7 +224,7 @@ object Fields extends HomomorphismCategory[Field] {
   class OrderedFieldOfFractions[A](ring: OrderedEuclideanDomain[A]) extends FieldOfFractions[A](ring) with OrderedField[Fraction[A]] {
     def compare(x: Fraction[A], y: Fraction[A]) = ring.compare(ring.multiply(x.numerator, y.denominator), ring.multiply(y.numerator, x.denominator))
   }
-  
+
   object Rationals extends OrderedFieldOfFractions(Gadgets.Integers)
 
   val fieldOfFractions = new Functor[EuclideanDomain, Field, Fraction] { self =>

@@ -77,7 +77,14 @@ object Gadgets {
   }
   val Longs: OrderedEuclideanDomain[Long] = new IntegralEuclideanDomain(scala.math.Numeric.LongIsIntegral)
   val BigIntegers: OrderedEuclideanDomain[BigInt] = new IntegralEuclideanDomain(scala.math.Numeric.BigIntIsIntegral)
-  val Doubles: OrderedField[Double] = new FractionalField(scala.math.Numeric.DoubleIsFractional)
+  
+  val Doubles: ApproximateReals[Double] = new FractionalField(scala.math.Numeric.DoubleIsFractional) with ApproximateReals[Double] {
+    override def bigDecimalValue(x: Double) = BigDecimal(x)
+    override def setPrecision(x: Double) = x
+    override def fromBigDecimal(x: BigDecimal) = x.doubleValue
+    override def fromDouble(x: Double) = x
+    override def epsilon = Double.MinPositiveValue
+  }
 
   def BigDecimals(precision: Int = 128): ApproximateReals[BigDecimal] = BigDecimals(new java.math.MathContext(precision, java.math.RoundingMode.HALF_EVEN))
   def BigDecimals(mc: java.math.MathContext): ApproximateReals[BigDecimal] = new FractionalField(scala.math.Numeric.BigDecimalIsFractional) with ApproximateReals[BigDecimal] {

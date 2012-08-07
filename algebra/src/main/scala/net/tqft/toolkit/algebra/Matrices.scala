@@ -22,13 +22,17 @@ object Matrices {
   def over[A](ring: Ring[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(ring).endomorphismAlgebra(size)
   //  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 
+  // return all ways to write M=AA^t, up to permuting the columns of A
   def positiveSymmetricDecompositions(M: Matrix[Int]): Iterator[Matrix[Int]] = {
     require(M.numberOfColumns == M.numberOfRows)
     def partialDecompositions(m: Int): Iterator[Matrix[Int]] = {
       import Gadgets.Integers
 
       def newRows(d: Seq[(Int, Int)], P: Matrix[Int]): Iterator[Seq[Int]] = {
+//        println("investigating new rows for " + d + " " + P.entries)
+        
         def candidates(j: Int, remaining: Seq[Int], gaps: Seq[Int]): Iterator[Seq[Int]] = {
+//          println(List.fill(m-j)(" ").mkString("") + "running candidates(j = " + j + ", remaining = " + remaining + ", gaps = " + gaps + ")")
           require(gaps.size == m - 1)
 
           j match {
@@ -51,13 +55,14 @@ object Matrices {
                   remaining.deleteAtMostOne(next)
                 };
                 c <- candidates(j - 1, newRemaining, newGaps)
-              ) yield next +: c
+              ) yield c :+ next
             }
           }
         }
 
         val d_expanded = d.flatMap(p => Seq.fill(p._2)(p._1))
         for (candidate <- candidates(P.numberOfColumns, d_expanded, M.entries(m - 1).take(m - 1))) yield {
+//          println(candidate)
           candidate ++ (d_expanded diff candidate)
         }
       }
@@ -77,13 +82,25 @@ object Matrices {
         }
       }
     }
-    partialDecompositions(M.numberOfRows)
+
+    val integerMatrices = new MatrixCategoryOverRing(Gadgets.Integers)
+
+    // we need to filter the results; if M wasn't positive definite there are spurious answers.
+    val decompositions = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
+
+    def columnPermutation(A: Matrix[Int], B: Matrix[Int]): Boolean = {
+      import net.tqft.toolkit.permutations.Permutations
+      Permutations.mapping(A.transpose.entries.seq, B.transpose.entries.seq).nonEmpty
+    }
+
+    import net.tqft.toolkit.collections.RemoveDuplicates._
+    decompositions.removeDuplicates(columnPermutation _)
   }
 }
 
 abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sources: Seq[A], val targets: Seq[A]) {
   require(targets.size == entries.size)
-    require(entries.find(_.size != numberOfColumns).isEmpty) // not a good idea if the entries are in Hadoop
+  require(entries.find(_.size != numberOfColumns).isEmpty) // not a good idea if the entries are in Hadoop
 
   def entries: GenSeq[Seq[B]]
   def lookupEntry(row: Int)(column: Int): B
