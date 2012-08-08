@@ -1,5 +1,6 @@
 package net.tqft.toolkit.collections
 import net.tqft.toolkit.Logging
+import scala.collection.GenTraversableOnce
 
 object RemoveDuplicates {
   implicit def iterable2RemoveDuplicates[A, CC[X] <: TraversableOnce[X]](xs: CC[A]) = new RemoveDuplicatesable(xs)

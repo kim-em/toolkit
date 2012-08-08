@@ -25,14 +25,20 @@ object Matrices {
   // return all ways to write M=AA^t, up to permuting the columns of A
   def positiveSymmetricDecompositions(M: Matrix[Int]): Iterator[Matrix[Int]] = {
     require(M.numberOfColumns == M.numberOfRows)
+
+    def columnPermutation(A: Matrix[Int], B: Matrix[Int]): Boolean = {
+      import net.tqft.toolkit.permutations.Permutations
+      Permutations.mapping(A.transpose.entries.seq, B.transpose.entries.seq).nonEmpty
+    }
+
     def partialDecompositions(m: Int): Iterator[Matrix[Int]] = {
       import Gadgets.Integers
 
       def newRows(d: Seq[(Int, Int)], P: Matrix[Int]): Iterator[Seq[Int]] = {
-//        println("investigating new rows for " + d + " " + P.entries)
-        
+        //        println("investigating new rows for " + d + " " + P.entries)
+
         def candidates(j: Int, remaining: Seq[Int], gaps: Seq[Int]): Iterator[Seq[Int]] = {
-//          println(List.fill(m-j)(" ").mkString("") + "running candidates(j = " + j + ", remaining = " + remaining + ", gaps = " + gaps + ")")
+          //          println(List.fill(m-j)(" ").mkString("") + "running candidates(j = " + j + ", remaining = " + remaining + ", gaps = " + gaps + ")")
           require(gaps.size == m - 1)
 
           j match {
@@ -62,23 +68,24 @@ object Matrices {
 
         val d_expanded = d.flatMap(p => Seq.fill(p._2)(p._1))
         for (candidate <- candidates(P.numberOfColumns, d_expanded, M.entries(m - 1).take(m - 1))) yield {
-//          println(candidate)
+          //          println(candidate)
           candidate ++ (d_expanded diff candidate)
         }
       }
 
       m match {
-        case 0 => Seq(Matrix[Int](0, Seq.empty)).iterator
+        case 0 => Iterator(Matrix[Int](0, Seq.empty))
         case m => {
-          for (
+          import net.tqft.toolkit.collections.RemoveDuplicates._
+          (for (
             P <- partialDecompositions(m - 1);
             d <- Integers.sumOfSquaresDecomposition(M.entries(m - 1)(m - 1));
             v <- newRows(d, P)
           ) yield {
-            val extraColumns = v.size - P.numberOfColumns
-            val zeroBlock = Matrix(extraColumns, Seq.fill(P.numberOfRows)(Seq.fill(extraColumns)(0)))
+            val extraColumns = v.size - P.numberOfColumns;
+            val zeroBlock = Matrix(extraColumns, Seq.fill(P.numberOfRows)(Seq.fill(extraColumns)(0)));
             P.joinRows(zeroBlock).appendRow(v)
-          }
+          }).removeDuplicates(columnPermutation _)
         }
       }
     }
@@ -86,15 +93,8 @@ object Matrices {
     val integerMatrices = new MatrixCategoryOverRing(Gadgets.Integers)
 
     // we need to filter the results; if M wasn't positive definite there are spurious answers.
-    val decompositions = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
-
-    def columnPermutation(A: Matrix[Int], B: Matrix[Int]): Boolean = {
-      import net.tqft.toolkit.permutations.Permutations
-      Permutations.mapping(A.transpose.entries.seq, B.transpose.entries.seq).nonEmpty
-    }
-
-    import net.tqft.toolkit.collections.RemoveDuplicates._
-    decompositions.removeDuplicates(columnPermutation _)
+    partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
+    
   }
 }
 
