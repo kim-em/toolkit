@@ -4,7 +4,7 @@ import scala.collection.immutable.SortedMap
 import scala.collection.GenSeq
 import net.tqft.toolkit.collections.Pad
 
-object Matrices {
+object Matrices extends Logging {
   def matricesOver(size: Int) = new Endofunctor[Ring, Matrix] { self =>
     def source = Rings
     def target = Rings
@@ -23,7 +23,9 @@ object Matrices {
   //  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 
   // return all ways to write M=AA^t, up to permuting the columns of A
-  def positiveSymmetricDecompositions(M: Matrix[Int]): Iterator[Matrix[Int]] = {
+  def positiveSymmetricDecompositions(M: Matrix[Int]): Seq[Matrix[Int]] = {
+    info("finding positiveSymmetricDecompositions of " + M.entries)
+    
     require(M.numberOfColumns == M.numberOfRows)
 
     def columnPermutation(A: Matrix[Int], B: Matrix[Int]): Boolean = {
@@ -31,27 +33,27 @@ object Matrices {
       Permutations.mapping(A.transpose.entries.seq, B.transpose.entries.seq).nonEmpty
     }
 
-    def partialDecompositions(m: Int): Iterator[Matrix[Int]] = {
+    def partialDecompositions(m: Int): Seq[Matrix[Int]] = {
       import Gadgets.Integers
 
-      def newRows(d: Seq[(Int, Int)], P: Matrix[Int]): Iterator[Seq[Int]] = {
+      def newRows(d: Seq[(Int, Int)], P: Matrix[Int]): Seq[Seq[Int]] = {
         //        println("investigating new rows for " + d + " " + P.entries)
 
-        def candidates(j: Int, remaining: Seq[Int], gaps: Seq[Int]): Iterator[Seq[Int]] = {
+        def candidates(j: Int, remaining: Seq[Int], gaps: Seq[Int]): Seq[Seq[Int]] = {
           //          println(List.fill(m-j)(" ").mkString("") + "running candidates(j = " + j + ", remaining = " + remaining + ", gaps = " + gaps + ")")
           require(gaps.size == m - 1)
 
           j match {
             case 0 => {
               if (gaps.forall(_ == 0)) {
-                Iterator(Seq.empty)
+                Seq(Seq.empty)
               } else {
-                Iterator.empty
+                Seq.empty
               }
             }
             case j => {
               for (
-                next <- (0 +: remaining.distinct).iterator;
+                next <- (0 +: remaining.distinct);
                 newGaps = {
                   for (l <- 0 until m - 1) yield gaps(l) - next * P.entries(l)(j - 1)
                 };
@@ -74,7 +76,7 @@ object Matrices {
       }
 
       m match {
-        case 0 => Iterator(Matrix[Int](0, Seq.empty))
+        case 0 => Seq(Matrix[Int](0, Seq.empty))
         case m => {
           import net.tqft.toolkit.collections.RemoveDuplicates._
           (for (
@@ -93,7 +95,10 @@ object Matrices {
     val integerMatrices = new MatrixCategoryOverRing(Gadgets.Integers)
 
     // we need to filter the results; if M wasn't positive definite there are spurious answers.
-    partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
+    val result = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
+    
+    info("... finished, " + result.size + " decompositions")
+    result
     
   }
 }

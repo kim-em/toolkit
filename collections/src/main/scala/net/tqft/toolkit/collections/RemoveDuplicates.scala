@@ -1,11 +1,10 @@
 package net.tqft.toolkit.collections
 import net.tqft.toolkit.Logging
-import scala.collection.GenTraversableOnce
 
 object RemoveDuplicates {
-  implicit def iterable2RemoveDuplicates[A, CC[X] <: TraversableOnce[X]](xs: CC[A]) = new RemoveDuplicatesable(xs)
+  implicit def iterable2RemoveDuplicates[A](xs: Seq[A]) = new RemoveDuplicatesable(xs)
 
-  class RemoveDuplicatesable[A, CC[X] <: TraversableOnce[X]](xs: CC[A]) {
+  class RemoveDuplicatesable[A](xs: Seq[A]) {
 //    def removeDuplicates(f: (A, A) => Boolean = { (p: A, q: A) => p == q }): List[A] = {
 //      def addToListIfNew(list: List[A], x: A) = {
 //        if (list.contains({ y: A => f(x, y) })) list else x :: list
@@ -13,7 +12,7 @@ object RemoveDuplicates {
 //      xs.foldLeft(List[A]())(addToListIfNew(_, _))
 //    }
 
-    def removeDuplicates(f: (A, A) => Boolean = { (p: A, q: A) => p == q }): CC[A] = {
+    def removeDuplicates(f: (A, A) => Boolean = { (p: A, q: A) => p == q }): Seq[A] = {
       (xs.filter {
         var set = scala.collection.mutable.Set[A]()
         a => {
@@ -24,7 +23,7 @@ object RemoveDuplicates {
             true
           }
         }
-      }).asInstanceOf[CC[A]]
+      })
     }
 
     def removeDuplicatesAndSort(f: (A, A) => Boolean, ordering: Ordering[A]): List[A] = {

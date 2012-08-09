@@ -37,46 +37,56 @@ object Gadgets {
   object Integers extends IntegralEuclideanDomain(scala.math.Numeric.IntIsIntegral) {
     override def toBigInt(i: Int) = BigInt(i)
 
+    private val sumOfSquaresCache = scala.collection.mutable.Map[Int, Seq[Seq[(Int, Int)]]]()
     /**
      * returns an iterator of {(a_i, b_i)}_i, with \sum b_i a_i^2 = n
      */
-    def sumOfSquaresDecomposition(n: Int): Iterator[Seq[(Int, Int)]] = {
-      def sqrt(k: Int) = {
-        if (k <= 0) {
-          0
-        } else {
-          val closest = scala.math.sqrt(k).round.intValue
-          if (closest * closest > k) {
-            closest - 1
+    def sumOfSquaresDecomposition(n: Int): Seq[Seq[(Int, Int)]] = {
+      def impl: Seq[Seq[(Int, Int)]] = {
+        def sqrt(k: Int) = {
+          if (k <= 0) {
+            0
           } else {
-            closest
-          }
-        }
-      }
-
-      def extend(limit: Int, remainder: Int, partial: Seq[(Int, Int)]): Iterator[Seq[(Int, Int)]] = {
-        limit match {
-          case 0 => {
-            remainder match {
-              case 0 => Iterator(partial)
-              case _ => Iterator.empty
+            val closest = scala.math.sqrt(k).round.intValue
+            if (closest * closest > k) {
+              closest - 1
+            } else {
+              closest
             }
           }
-          case 1 => Iterator((1, remainder) +: partial)
-          case limit => {
-            for (
-              b <- (0 to (remainder / (limit * limit))).iterator;
-              next = (limit, b) +: partial;
-              nextRemainder = remainder - b * limit * limit;
-              nextLimit = scala.math.min(limit - 1, sqrt(nextRemainder));
-              result <- extend(nextLimit, nextRemainder, next)
-            ) yield result
+        }
+
+        def extend(limit: Int, remainder: Int, partial: Seq[(Int, Int)]): Seq[Seq[(Int, Int)]] = {
+          limit match {
+            case 0 => {
+              remainder match {
+                case 0 => Seq(partial)
+                case _ => Seq.empty
+              }
+            }
+            case 1 => Seq((1, remainder) +: partial)
+            case limit => {
+              for (
+                b <- (0 to (remainder / (limit * limit)));
+                next = (limit, b) +: partial;
+                nextRemainder = remainder - b * limit * limit;
+                nextLimit = scala.math.min(limit - 1, sqrt(nextRemainder));
+                result <- extend(nextLimit, nextRemainder, next)
+              ) yield result
+            }
           }
         }
+
+        extend(sqrt(n), n, Nil)
       }
 
-      extend(sqrt(n), n, Nil)
+      if (n < 20) {
+        sumOfSquaresCache.getOrElseUpdate(n, impl)
+      } else {
+        impl
+      }
     }
+
   }
   object Longs extends IntegralEuclideanDomain(scala.math.Numeric.LongIsIntegral) {
     override def toBigInt(i: Long) = BigInt(i)
