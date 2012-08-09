@@ -66,6 +66,14 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     })
   }
 
+  def smallObjectsWithPositiveSemidefiniteMultiplication: Seq[Seq[Int]] = {
+    import Implicits.Rationals
+    
+    for(o <- objectsSmallEnoughToBeAlgebras;
+    m = regularModule.asMatrix(o);
+    if(m.mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)) yield o     
+  }
+  
   trait FusionMatrix {
     def algebraObject: Seq[Int]
     def matrix: Matrix[Int]
@@ -107,7 +115,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     FusionMatrix
     
     (for (
-      o <- objectsSmallEnoughToBeAlgebras.par;
+      o <- smallObjectsWithPositiveSemidefiniteMultiplication.par;
       a = regularModule.asMatrix(o);
       m <- Matrices.positiveSymmetricDecompositions(a)
     ) yield {
@@ -250,6 +258,7 @@ object Goals extends App {
 
   def test(G: FusionRingWithDimensions) {
     println("Start: " + new java.util.Date())
+    println("dimension bounds: " + G.basis.map(G.dimensionBounds))
     println(G.candidateAlgebraObjects.toList)
     for (m <- G.candidateFusionMatrices) {
       println(m.algebraObject)
