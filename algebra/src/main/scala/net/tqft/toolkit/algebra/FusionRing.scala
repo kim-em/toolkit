@@ -56,10 +56,10 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     dimensionField.approximateWithin(0.0001)(dimensionOf(x)) + 0.0001
   }
 
-  def objectsSmallEnoughToBeAlgebras: Iterator[Seq[Int]] = {
-    val start = Iterator(Seq(1))
+  def objectsSmallEnoughToBeAlgebras: Seq[Seq[Int]] = {
+    val start = Seq(Seq(1))
     basis.tail.foldLeft(start)({
-      (i: Iterator[Seq[Int]], b: Seq[Int]) =>
+      (i: Seq[Seq[Int]], b: Seq[Int]) =>
         i.flatMap({
           a: Seq[Int] => for (m <- 0 to dimensionBounds(b).floor.intValue) yield a :+ m
         })
@@ -101,17 +101,21 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     }
   }
 
-  def candidateFusionMatrices: Iterator[FusionMatrix] = {
-    for (
-      o <- objectsSmallEnoughToBeAlgebras;
+  lazy val candidateFusionMatrices: Seq[FusionMatrix] = {
+    // mention some internal objects first, so we don't deadlock trying to instantiate them in parallel below...
+    regularModule
+    FusionMatrix
+    
+    (for (
+      o <- objectsSmallEnoughToBeAlgebras.par;
       a = regularModule.asMatrix(o);
       m <- Matrices.positiveSymmetricDecompositions(a)
     ) yield {
       FusionMatrix(o, m)
-    }
+    }).seq
   }
 
-  def candidateAlgebraObjects: Iterator[Seq[Int]] = {
+  def candidateAlgebraObjects: Seq[Seq[Int]] = {
     import net.tqft.toolkit.collections.RemoveDuplicates._
     candidateFusionMatrices.map(_.algebraObject).removeDuplicates()
   }
@@ -245,6 +249,7 @@ object Goals extends App {
   }
 
   def test(G: FusionRingWithDimensions) {
+    println("Start: " + new java.util.Date())
     println(G.candidateAlgebraObjects.toList)
     for (m <- G.candidateFusionMatrices) {
       println(m.algebraObject)
@@ -252,9 +257,10 @@ object Goals extends App {
       println(m.dimensionsSquared)
       println(m.dimensionsSquared.map(G.dimensionField.approximateWithin(0.001)))
     }
+    println("Finish: " + new java.util.Date())
     println(G.candidateFusionModules)
   }
-  //  test(haagerup4FusionRing)
+//    test(haagerup4FusionRing)
   test(AH1FusionRing)
   //  haagerupFusionRing.candidateBrauerPicardGroupoids
 }
