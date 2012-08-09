@@ -336,6 +336,14 @@ class Matrix[B](
     Matrix(numberOfColumns, _rowReduce(rowEchelonForm.entries.reverse, false).reverse)
   }
 
+  def diagonals: Seq[B] = {
+    for(i <- 0 until scala.math.min(numberOfRows, numberOfColumns)) yield entries(i)(i)
+  }
+  
+  def positiveSemidefinite_?(implicit field: OrderedField[B]): Boolean = {
+    (for(x <- rowEchelonForm.diagonals; if field.compare(x, field.zero) < 0) yield x).isEmpty
+  }
+  
   def preimageOf(vector: Seq[B])(implicit field: Field[B]): Option[Seq[B]] = {
     val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
     val rre = augmentedMatrix.reducedRowEchelonForm
