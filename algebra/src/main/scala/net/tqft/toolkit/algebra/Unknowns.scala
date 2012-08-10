@@ -11,8 +11,13 @@ object Unknowns {
       for(xx <- x; yy <- y) yield ring.add(xx,yy)
     }
     override def multiply(x: Option[A], y:Option[A]) = {
-      // TODO zero should beat None
-      for(xx <- x; yy <- y) yield ring.multiply(xx,yy)
+      (x,y ) match {
+        case (x, _) if x == ring.zero => Some(ring.zero)
+        case (_, y) if y == ring.zero => Some(ring.zero)
+        case (None, _) => None
+        case (_, None) => None
+        case (Some(xx), Some(yy)) => Some(ring.multiply(xx, yy))
+      }
     }
   }
   
@@ -22,7 +27,11 @@ object Unknowns {
     val rank = fusionRing.rank
     def coefficients = Unknowns(fusionRing.coefficients)
     override def multiply(x: Seq[Option[A]], y:Seq[Option[A]]) = {
-      ???
+      def unitVector(k: Int) = Seq.tabulate(rank)(i => if(i == k) fusionRing.coefficients.one else fusionRing.coefficients.zero)
+      add(for((xi, i) <- x.zipWithIndex; (yj, j) <- y.zipWithIndex) yield {
+        val z = coefficients.multiply(xi, yj)
+        fusionRing.multiply(unitVector(i), unitVector(j)).map(s => coefficients.multiply(Some(s), z))
+      })
     }
   }
   
