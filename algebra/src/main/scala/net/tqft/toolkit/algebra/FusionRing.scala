@@ -2,8 +2,8 @@ package net.tqft.toolkit.algebra
 
 trait FiniteDimensionalFreeModule[A] extends Module[A, Seq[A]] {
   def coefficients: Ring[A]
-  val rank: Int
-  override val zero = Seq.fill(rank)(coefficients.zero)
+  def rank: Int
+  override lazy val zero = Seq.fill(rank)(coefficients.zero)
   override def add(x: Seq[A], y: Seq[A]) = x.zip(y).map(p => coefficients.add(p._1, p._2))
   override def scalarMultiply(a: A, b: Seq[A]) = b.map(x => coefficients.multiply(a, x))
   override def negate(x: Seq[A]) = x.map(coefficients.negate)
@@ -17,20 +17,54 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
   override val one = fromInt(1)
 
   def associativityConstraints = for (x <- basis; y <- basis; z <- basis) yield subtract(multiply(x, multiply(y, z)), multiply(multiply(x, y), z))
+  def structureCoefficients = for (y <- basis) yield for (x <- basis) yield multiply(x, y)
 
   def verifyAssociativity = associativityConstraints.map(_ == zero).reduce(_ && _)
   def verifyIdentity = (for (x <- basis) yield x == multiply(one, x) && x == multiply(x, one)).reduce(_ && _)
 
   trait FusionModule extends FiniteDimensionalFreeModule[A] {
+    override def coefficients = fr.coefficients
+
     def act(x: Seq[A], m: Seq[A]): Seq[A]
     def associativityConstraints = for (x <- fr.basis; y <- fr.basis; z <- basis) yield subtract(act(x, act(y, z)), act(fr.multiply(x, y), z))
     def verifyAssociativity = associativityConstraints.map(_ == zero).reduce(_ && _)
     def asMatrix(x: Seq[A]) = new Matrix(rank, for (b <- basis) yield act(x, b))
+
+    def structureCoefficients = for (y <- basis) yield for (x <- basis) yield act(x, y)
+
+    override def equals(other: Any) = {
+      other match {
+        case other: fr.FusionModule => structureCoefficients == other.structureCoefficients
+        case _ => false
+      }
+    }
+    override def hashCode = (fr, structureCoefficients).hashCode
   }
+
+  protected class StructureCoefficientFusionModule(matrices: Seq[Matrix[A]]) extends FusionModule {
+    override val rank = matrices.size
+    override def act(x: Seq[A], m: Seq[A]) = {
+      require(m.nonEmpty)
+      val zero = coefficients.zero
+      val terms = for (
+        (xi, i) <- x.zipWithIndex;
+        if (xi != zero);
+        (mj, j) <- m.zipWithIndex;
+        if (mj != zero)
+      ) yield {
+        for (k <- 0 until rank) yield coefficients.multiply(xi, mj, matrices(j).entries(i)(k))
+      }
+      val result = add(terms)
+      require(m.size == result.size)
+      result
+    }
+
+  }
+
+  def moduleFromStructureCoefficients(matrices: Seq[Matrix[A]]): FusionModule = new StructureCoefficientFusionModule(matrices)
 
   object regularModule extends FusionModule {
     override val rank = fr.rank
-    override val coefficients = fr.coefficients
     override def act(x: Seq[A], m: Seq[A]) = fr.multiply(x, m)
   }
 }
@@ -68,12 +102,14 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
 
   def smallObjectsWithPositiveSemidefiniteMultiplication: Seq[Seq[Int]] = {
     import Implicits.Rationals
-    
-    for(o <- objectsSmallEnoughToBeAlgebras;
-    m = regularModule.asMatrix(o);
-    if(m.mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)) yield o     
+
+    for (
+      o <- objectsSmallEnoughToBeAlgebras;
+      m = regularModule.asMatrix(o);
+      if (m.mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)
+    ) yield o
   }
-  
+
   trait FusionMatrix {
     def algebraObject: Seq[Int]
     def matrix: Matrix[Int]
@@ -113,7 +149,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     // mention some internal objects first, so we don't deadlock trying to instantiate them in parallel below...
     regularModule
     FusionMatrix
-    
+
     (for (
       o <- smallObjectsWithPositiveSemidefiniteMultiplication.par;
       a = regularModule.asMatrix(o);
@@ -132,18 +168,20 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     val matricesBySize = candidateFusionMatrices.toList.groupBy(_.matrix.numberOfColumns)
     (for (n <- (1 to matricesBySize.keys.max).iterator) yield {
 
-      def proportionalDimensions(x: FusionMatrix, y: FusionMatrix) = {
-        val ratios = x.dimensionsSquared.zip(y.dimensionsSquared).map(p => dimensionField.quotient(p._1, p._2))
-        ratios.distinct.size == 1
-      }
+      println("Looking at rank " + n + " fusion matrices.")
 
       val classes = {
-        import net.tqft.toolkit.collections.GroupBy._
-        matricesBySize.getOrElse(n, Nil).equivalenceClasses(proportionalDimensions _)
+        matricesBySize.getOrElse(n, Nil).groupBy(_.dimensionsSquared).values.toSeq.par
+      }
+
+      println("found classes: ")
+      for (c <- classes) {
+        println("* with dimension vector " + c.head.dimensionsSquared.map(dimensionField.approximateWithin(0.001)))
+        for (cc <- c) println(cc)
       }
 
       val n_tuples = {
-        (for (c <- classes.iterator; d_squared = c.head.dimensionsSquared) yield {
+        (for (c <- classes.par; d_squared = c.head.dimensionsSquared) yield {
           def acc(j: Int, partial: List[FusionMatrix]): Iterator[List[FusionMatrix]] = {
             j match {
               case 0 => Iterator(partial)
@@ -160,9 +198,32 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
         }).flatten
       }
 
-      println(n -> n_tuples.toList.size)
-    }).toList
-    ???
+      println("possible " + n + "-tuples:")
+      for (t <- n_tuples.seq) println(t)
+
+      (for (t <- n_tuples) yield {
+        import net.tqft.toolkit.permutations.Permutations
+        import net.tqft.toolkit.permutations.Permutations._
+        val permutations = Permutations.preserving(t.head.dimensionsSquared).toSeq.par
+        val permutedMatrices = t.foldLeft(Iterable(Seq.empty[Matrix[Int]]))({ (i: Iterable[Seq[Matrix[Int]]], M: FusionMatrix) =>
+          def permuteColumns(p: Permutation) = new Matrix(M.matrix.numberOfColumns, p.permute(M.matrix.entries.seq.transpose).transpose)
+          def verifyPartialAssociativity(structureCoefficients: Seq[Matrix[Int]]): Boolean = {
+
+            val partialStructureCoefficients: Seq[Matrix[Option[Int]]] = {
+              structureCoefficients.map(_.mapEntries[Option[Int]](Some(_))) ++ Seq.fill(n - structureCoefficients.size)(new Matrix[Option[Int]](n, Seq.fill(fr.rank)(Seq.fill(n)(None))))
+            }
+
+            Unknowns(fr).moduleFromStructureCoefficients(partialStructureCoefficients).associativityConstraints.flatten.map(x => x == Some(0) || x == None).reduce(_ && _)
+          }
+
+          for (s <- i; pM <- permutations.map(permuteColumns _).distinct; ns = s :+ pM; if verifyPartialAssociativity(ns)) yield {
+            ns
+          }
+        }).toList.distinct // this .distinct's are probably performance killers
+        for (pm <- permutedMatrices) yield moduleFromStructureCoefficients(pm)
+      }).flatten.toList.distinct
+
+    }).flatten
   }
 
   def candidateBrauerPicardGroupoids: Seq[Groupoid] = {
@@ -171,7 +232,6 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     ???
   }
 
-  trait FusionModule
   trait FusionBimodule
 
 }
@@ -267,9 +327,26 @@ object Goals extends App {
       println(m.dimensionsSquared.map(G.dimensionField.approximateWithin(0.001)))
     }
     println("Finish: " + new java.util.Date())
-    println(G.candidateFusionModules)
+    //    println(G.candidateFusionModules.size)
+    var count = 0
+    for (fm <- G.candidateFusionModules) {
+      println(fm.structureCoefficients)
+      count = count + 1
+      println("found " + count + " modules so far")
+    }
   }
-//    test(haagerup4FusionRing)
-  test(AH1FusionRing)
+  //  test(haagerup4FusionRing)
+      test(AH1FusionRing)
+
+//  val v = Seq(1, 1, 2, 3, 3, 4)
+////  val v = Seq(1,2,3,4,5,7)
+//  println(AH1FusionRing.objectsSmallEnoughToBeAlgebras.contains(v))
+//  println(AH1FusionRing.smallObjectsWithPositiveSemidefiniteMultiplication.contains(v))
+//  println(AH1FusionRing.regularModule.asMatrix(v));
+//  {
+//    import Implicits.Rationals
+//    println(AH1FusionRing.regularModule.asMatrix(v).mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)
+//  }
+//  println(Matrices.positiveSymmetricDecompositions(AH1FusionRing.regularModule.asMatrix(v)).toList)
   //  haagerupFusionRing.candidateBrauerPicardGroupoids
 }

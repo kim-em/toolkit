@@ -25,7 +25,7 @@ object Matrices extends Logging {
   // return all ways to write M=AA^t, up to permuting the columns of A
   def positiveSymmetricDecompositions(M: Matrix[Int]): Seq[Matrix[Int]] = {
     info("finding positiveSymmetricDecompositions of " + M.entries)
-    
+
     require(M.numberOfColumns == M.numberOfRows)
 
     def columnPermutation(A: Matrix[Int], B: Matrix[Int]): Boolean = {
@@ -96,10 +96,10 @@ object Matrices extends Logging {
 
     // we need to filter the results; if M wasn't positive definite there are spurious answers.
     val result = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
-    
+
     info("... finished, " + result.size + " decompositions")
     result
-    
+
   }
 }
 
@@ -211,8 +211,11 @@ class Matrix[B](
 
   def takeColumn(column: Int) = entries map { row => row(column) }
 
-  def takeColumns(columns: List[Int]) = new Matrix(columns.size, entries map { row => columns map { i => row(i) } })
-  def dropColumns(columns: List[Int]) = takeColumns((0 until numberOfColumns).toList filterNot (columns contains _))
+  def takeColumns(columns: Seq[Int]) = new Matrix(columns.size, entries map { row => columns map { i => row(i) } })
+  def dropColumns(columns: Seq[Int]) = takeColumns((0 until numberOfColumns).toList filterNot (columns contains _))
+
+  def takeRows(rows: Seq[Int]) = new Matrix(numberOfColumns, rows map { i => entries(i) })
+  def dropRows(rows: Seq[Int]) = takeRows((0 until numberOfRows).toList filterNot (rows contains _))
 
   def appendRow(row: Seq[B]) = {
     require(row.size == numberOfColumns)
@@ -277,7 +280,8 @@ class Matrix[B](
         val rest = remainingRows.filter(_._2 != targetRow)
         val pp = pivotPosition2(h)
         val hn = if (forward) {
-          h
+          val sign = if(remainingIndexes.indexOf(targetRow).ensuring(_ != -1) % 2 == 0) field.one else field.negate(field.one)
+          h map { x => field.multiply(x, sign) }
         } else {
           pp match {
             case Some(p) => h map { x => field.quotient(x, h(p)) }
@@ -337,13 +341,9 @@ class Matrix[B](
   }
 
   def diagonals: Seq[B] = {
-    for(i <- 0 until scala.math.min(numberOfRows, numberOfColumns)) yield entries(i)(i)
+    for (i <- 0 until scala.math.min(numberOfRows, numberOfColumns)) yield entries(i)(i)
   }
-  
-  def positiveSemidefinite_?(implicit field: OrderedField[B]): Boolean = {
-    (for(x <- rowEchelonForm.diagonals; if field.compare(x, field.zero) < 0) yield x).isEmpty
-  }
-  
+
   def preimageOf(vector: Seq[B])(implicit field: Field[B]): Option[Seq[B]] = {
     val augmentedMatrix = joinRows(Matrix.singleColumn(vector))
     val rre = augmentedMatrix.reducedRowEchelonForm
@@ -384,7 +384,19 @@ class Matrix[B](
 
   def determinant(implicit field: Field[B]): B = {
     require(numberOfRows == numberOfColumns)
-    field.multiply(rowEchelonForm.entries.zipWithIndex.map({ case (r, i) => r(i) }).seq)
+    field.multiply(rowEchelonForm.diagonals)
+  }
+
+  def positiveSemidefinite_?(implicit field: OrderedField[B]): Boolean = {
+    require(numberOfRows == numberOfColumns)
+
+//    rowEchelonForm.diagonals.map(field.compare(_, field.zero) >= 0).reduce(_ && _)
+    
+    // far from optimal
+    (for (i <- 0 until numberOfColumns) yield {
+      val det = takeRows(0 to i).takeColumns(0 to i).determinant
+      field.compare(det, field.zero) >= 0
+    }).reduce(_ && _)
   }
 
   def characteristicPolynomial(implicit field: Field[B]): Polynomial[B] = {
