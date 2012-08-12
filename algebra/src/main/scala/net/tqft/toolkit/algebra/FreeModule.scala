@@ -5,7 +5,7 @@ import net.tqft.toolkit.mathematica.MathematicaExpression
 object FreeModule {
   implicit def orderingToLinearComboOrdering[A, B](implicit o: Ordering[B]) = new Ordering[Map[B, A]] {
     def compare(x: Map[B, A], y: Map[B, A]) = {
-      o.compare(x.map(_._1).max, y.map (_._1).max)
+      o.compare(x.map(_._1).max, y.map(_._1).max)
     }
   }
 }
@@ -76,6 +76,12 @@ trait FreeModuleOnMonoid[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModul
     apply(for ((bx, ax) <- x.terms; (by, ay) <- y.terms) yield (monoid.add(bx, by) -> ring.multiply(ax, ay)))
   }
   def one = wrap(Map(monoid.zero -> ring.one))
+
+  def monomial(b: B): LC = wrap(Map(b -> ring.one))
+  def monomial(b: B, a: A): LC = wrap(Map(b -> a))
+
+  def constant(a: A) = monomial(monoid.zero, a)
+  override def fromInt(x: Int) = constant(ring.fromInt(x))
 }
 
 trait FancyFreeModule[A, B, LC <: LinearCombo[A, B], K <: Ordered[K]] extends GeneralFreeModule[A, B, LC] {

@@ -1,13 +1,8 @@
 package net.tqft.toolkit.algebra
 
 
+
 trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] with AssociativeAlgebra[A, Polynomial[A]] {
-
-  def monomial(k: Int): Polynomial[A] = monomial(k, ring.one)
-  def monomial(k: Int, a: A): Polynomial[A] = Polynomial((k, a))
-
-  def constant(a: A) = monomial(0, a)
-  override def fromInt(x: Int): Polynomial[A] = constant(ring.fromInt(x))
 
   override val monoid = Gadgets.Integers
 

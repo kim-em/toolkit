@@ -16,9 +16,7 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   def degree = maximumDegree.get
   def leadingCoefficient = maximumDegree map { coefficientOf(_).get }
   def constantTerm(implicit ring: Ring[A]) = coefficientOf(0).getOrElse(ring.zero)
-
-  
-  
+ 
   def roots(implicit ring: Ring[A] with Elements[A]) = {
     for (x <- ring.elements; if Polynomials.evaluationAt(x).apply(polynomial) == ring.zero) yield x
   }
