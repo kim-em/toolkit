@@ -15,11 +15,6 @@ object AlgebraicNotation {
     def unary_-() = ring.negate(a)
   }
 
-//  implicit def polynomialAlgebraElement[A](p: Polynomial[A])(implicit polynomials: PolynomialAlgebra[A]) = new PolynomialAlgebraElement(p, polynomials)
-//  class PolynomialAlgebraElement[A](p: Polynomial[A], polynomials: PolynomialAlgebra[A]) {
-//    def +(b: A) = polynomials.add(p, polynomials.constant(b))
-//  }
-//  
   implicit def euclideanDomainElement[A](a: A)(implicit domain: EuclideanDomain[A]) = new EuclideanDomainElement(a, domain)
   class EuclideanDomainElement[A](a: A, domain: EuclideanDomain[A]) {
     def %(b: A) = domain.remainder(a, b)

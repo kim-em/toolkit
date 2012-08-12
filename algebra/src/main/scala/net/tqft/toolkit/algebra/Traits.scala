@@ -2,70 +2,6 @@ package net.tqft.toolkit.algebra
 import net.tqft.toolkit.mathematica.MathematicaExpression
 import scala.collection.GenSeq
 
-trait Semigroup[A] {
-  def multiply(x: A, y: A): A
-  def multiply(x0: A, x1: A*): A = x1.fold(x0)(multiply _)
-  def power(x: A, k: Int): A = {
-    // TODO no need for this to be recursive; just use the binary expansion of k.
-    require(k >= 1)
-    if (k == 1) {
-      x
-    } else if (k % 2 == 1) {
-      multiply(x, power(multiply(x, x), k / 2))
-    } else {
-      power(multiply(x, x), k / 2)
-    }
-  }
-
-}
-
-trait One[A] {
-  def one: A
-}
-
-trait Monoid[A] extends Semigroup[A] with One[A] {
-  def multiply(xs: GenSeq[A]): A = xs.fold(one)(multiply _)
-  override def power(x: A, k: Int): A = {
-    if (k == 0) {
-      one
-    } else {
-      super.power(x, k)
-    }
-  }
-  def orderOfElement(a: A): Int = Iterator.iterate(a)(multiply(_, a)).indexOf(one) + 1
-}
-
-trait Group[A] extends Monoid[A] {
-  def inverse(x: A): A
-  override def power(x: A, k: Int): A = {
-    if (k < 0) {
-      super.power(inverse(x), -k)
-    } else {
-      super.power(x, k)
-    }
-  }
-}
-
-trait CommutativeSemigroup[A] {
-  def add(x: A, y: A): A
-  def add(x0: A, x1: A*): A = x1.fold(x0)(add _)
-}
-
-trait Zero[A] {
-  def zero: A
-}
-
-trait CommutativeMonoid[A] extends CommutativeSemigroup[A] with Zero[A] {
-  def add(xs: GenSeq[A]): A = xs.fold(zero)(add _)
-}
-
-trait Subtractive[A] extends CommutativeSemigroup[A] {
-  def negate(x: A): A
-  def subtract(x: A, y: A) = add(x, negate(y))
-}
-
-trait CommutativeGroup[A] extends CommutativeMonoid[A] with Subtractive[A]
-
 trait Category[O, M] {
   def identityMorphism(o: O): M
   def source(m: M): O
@@ -117,172 +53,18 @@ trait TensorCategory[O, M, R] extends LinearCategory[O, M, R] {
   def tensorMorphisms(m1: M, m2: M): M
 }
 
-trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMonoid[A] {
-  override def identityMorphism(o: Unit) = one
-  override def source(a: A) = ()
-  override def target(a: A) = ()
-  override def compose(x: A, y: A) = multiply(x, y)
-  override def zeroMorphism(o1: Unit, o2: Unit): A = zero
-
-  def multiplyByInt(x: A, y: Int): A = multiply(x, fromInt(y))
-
-  def fromInt(x: Int): A /*= {
-    import AlgebraicNotation._
-    implicit val hoc = this
-
-    x match {
-      case x if x < 0 => throw new UnsupportedOperationException
-      case 0 => zero
-      case x if x > 0 => List.fill(x)(one) reduceLeft (_ + _)
-    }
-  }*/
-
-}
-
-trait Ring[A] extends Rig[A] with AdditiveCategory[Unit, A] with CommutativeGroup[A] {
-  //  override def fromInt(x: Int) = {
-  //    import AlgebraicNotation._
-  //    implicit val hoc = this
-  //
-  //    x match {
-  //      case x if x < 0 => -(List.fill(-x)(one) reduceLeft (_ + _))
-  //      case _ => super.fromInt(x)
-  //    }
-  //  }
-
-}
+trait Ring[A] extends Rig[A] with AdditiveCategory[Unit, A] with CommutativeGroup[A]
 
 trait RingHomomorphism[A, B] extends Homomorphism[Ring, A, B]
 
 trait CommutativeRing[A] extends Ring[A]
 
-trait EuclideanDomain[A] extends CommutativeRing[A] {
-  def quotientRemainder(x: A, y: A): (A, A)
-  def quotient(x: A, y: A): A = quotientRemainder(x, y)._1
-  def remainder(x: A, y: A): A = quotientRemainder(x, y)._2
-
-  @scala.annotation.tailrec
-  final def euclideanAlgorithm(x: A, y: A): A = {
-    if (y == zero) {
-      x
-    } else {
-      euclideanAlgorithm(y, remainder(x, y))
-    }
-  }
-
-  /**
-   *
-   * @param x
-   * @param y
-   * @return (a,b,g) such that a*x + b*y == g, and g is the gcd of x and y
-   */
-  final def extendedEuclideanAlgorithm(x: A, y: A): (A, A, A) = {
-    if (y == zero) {
-      (one, zero, x)
-    } else {
-      val (a1, b1, g) = extendedEuclideanAlgorithm(y, remainder(x, y))
-      (b1, subtract(a1, multiply(b1, quotient(x, y))), g)
-    }
-  }
-
-  def gcd(x: A, y: A): A = euclideanAlgorithm(x, y)
-  def gcd(xs: A*): A = {
-    xs.size match {
-      case 0 => one
-      case 1 => xs.head
-      case _ => gcd((gcd(xs(0), xs(1)) +: xs.drop(2)): _*)
-    }
-  }
-  def lcm(x: A, y: A): A = quotient(multiply(x, y), gcd(x, y))
-  def lcm(xs: A*): A = {
-    xs.size match {
-      case 0 => one
-      case 1 => xs.head
-      case _ => lcm((lcm(xs(0), xs(1)) +: xs.drop(2)): _*)
-    }
-  }
-
-}
-
-trait OrderedEuclideanDomain[A] extends EuclideanDomain[A] with Ordering[A] {
-  def signum(x: A): A = compare(x, zero) match {
-    case 0 => zero
-    case x if x < 0 => negate(one)
-    case _ => one
-  }
-
-  override def gcd(x: A, y: A) = {
-    val gcd = super.gcd(x, y)
-    multiply(gcd, multiply(signum(gcd), signum(y)))
-  }
-}
-
-trait WithInverses[A] {
-  def inverse(x: A): A
-}
-
-trait DivisionRing[A] extends EuclideanDomain[A] with Group[A] {
-  override def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
-  override def remainder(x: A, y: A) = zero
-  def quotientByInt(x: A, y: Int): A = quotient(x, fromInt(y))
-  def fromRational(x: Fraction[Int]) = quotient(fromInt(x.numerator), fromInt(x.denominator))
-}
-
-// there's not much to say here; the only additional requirement to be a field is commutativity, but the type system doesn't see that.
-trait Field[A] extends DivisionRing[A]
-
-trait OrderedField[A] extends Field[A] with Ordering[A] { self =>
-  def abs(x: A): A = {
-    signum(x) match {
-      case s if s >= 0 => x
-      case s if s < 0 => negate(x)
-    }
-  }
-  def signum(x: A) = compare(x, zero)
-  def chop(x: A, epsilon: A): A = {
-    if (compare(abs(x), epsilon) < 0) zero else x
-  }
-}
-
-trait ApproximateField[A] extends OrderedField[A] {
-  /* a small quantity, but 1 and 1+epsilon are still distinguishable */
-  def epsilon: A
-  def chop(x: A): A = chop(x, epsilon)
-  def close(x: A, y: A) = {
-    if (chop(x) == zero) {
-      chop(y) == zero
-    } else if (chop(y) == zero) {
-      chop(x) == zero
-    } else {
-      chop(subtract(quotient(x, y), one)) == zero
-    }
-  }
-
-  // TODO this should probably use epsilon to decide to fixed point
-  def sqrt(x: A): A = {
-    import net.tqft.toolkit.functions.FixedPoint
-    val initialGuess = one
-    val result = abs(FixedPoint.withSameTest(close _)({ g: A => quotient(add(quotient(x, g), g), fromInt(2)) })(initialGuess))
-    result
-  }
-
-  import collection.generic.CanBuildFrom
-  import collection.TraversableLike
-
-  def norm[CC[X] <: TraversableLike[X, CC[X]]](v: CC[A]): A = {
-    sqrt(v.fold(zero)({ (s, a) => add(s, power(a, 2)) }))
-  }
-
-  def normalize[CC[X] <: TraversableLike[X, CC[X]]](v: CC[A])(implicit cbf1: CanBuildFrom[CC[A], Int, CC[Int]], cbf2: CanBuildFrom[CC[A], A, CC[A]]): CC[A] = {
-    val s = v.map(signum(_)).filter(_ != 0).head
-    val n = multiplyByInt(norm(v), s)
-    v map { x => quotient(x, n) }
-  }
-
-}
-
 trait IntegerModel[I] extends OrderedEuclideanDomain[I] {
   def toBigInt(i: I): BigInt
+  def fromBigInt(i: BigInt): I
+  def from[II:IntegerModel](i: II): I = {
+    fromBigInt(implicitly[IntegerModel[II]].toBigInt(i))
+  }
 }
 
 trait ApproximateReals[A] extends ApproximateField[A] {
@@ -398,13 +180,4 @@ trait Module[A, B] extends CommutativeGroup[B] {
 trait Algebra[A, B] extends Ring[B] with Module[A, B]
 
 trait AssociativeAlgebra[A, B] extends Algebra[A, B]
-
-trait Enumerable[A] {
-  def elements: Iterable[A]
-}
-
-trait Elements[A] extends Enumerable[A] {
-  override def elements: Set[A]
-  def size = elements.size
-}
 
