@@ -20,7 +20,7 @@ object Gadgets {
     override def compare(x: T, y: T) = numeric.compare(x, y)
   }
 
-  class IntegralEuclideanDomain[T](numeric: Integral[T]) extends NumericRing(numeric) with IntegerModel[T] {
+  abstract class IntegralEuclideanDomain[T](numeric: Integral[T]) extends NumericRing(numeric) with IntegerModel[T] {
     override def quotientRemainder(x: T, y: T) = (numeric.quot(x, y), numeric.rem(x, y))
     override def quotient(x: T, y: T) = numeric.quot(x, y)
     override def remainder(x: T, y: T) = numeric.rem(x, y)
@@ -36,6 +36,7 @@ object Gadgets {
 
   object Integers extends IntegralEuclideanDomain(scala.math.Numeric.IntIsIntegral) {
     override def toBigInt(i: Int) = BigInt(i)
+    override def fromBigInt(b: BigInt) = b.ensuring(_.isValidInt).intValue
 
     private val sumOfSquaresCache = scala.collection.mutable.Map[Int, Seq[Seq[(Int, Int)]]]()
     /**
@@ -90,9 +91,11 @@ object Gadgets {
   }
   object Longs extends IntegralEuclideanDomain(scala.math.Numeric.LongIsIntegral) {
     override def toBigInt(i: Long) = BigInt(i)
+    override def fromBigInt(b: BigInt) = b.ensuring(_ <= Long.MaxValue).ensuring(_ >= Long.MinValue).longValue
   }
   object BigIntegers extends IntegralEuclideanDomain(scala.math.Numeric.BigIntIsIntegral) {
     override def toBigInt(i: BigInt) = i
+    override def fromBigInt(b: BigInt) = b
   }
 
   val Doubles: ApproximateReals[Double] = new FractionalField(scala.math.Numeric.DoubleIsFractional) with ApproximateReals[Double] {
