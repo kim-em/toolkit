@@ -12,10 +12,19 @@ trait MultivariablePolynomialAlgebra[A, V] extends FreeModuleOnMonoid[A, Map[V, 
       }).toMap
     }
   }
+  
+  def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
+    add(for((m, a) <- p.terms) yield {
+      val (toReplace, toKeep) = m.keySet.partition(v => values.contains(v))
+      val newFactors = for(v <- toReplace.toSeq) yield power(values(v), m(v))
+      val oldFactor = monomial(toKeep.map(v => v -> m(v)).toMap, a)
+      multiply(oldFactor, newFactors:_*)
+    })
+  }
 }
 
 object MultivariablePolynomialAlgebras {
-  def over[A: Ring, V] = new MultivariablePolynomialAlgebra[A, V] {
+  def over[A: Ring, V]: MultivariablePolynomialAlgebra[A, V] = new MultivariablePolynomialAlgebra[A, V] {
     override val ring = implicitly[Ring[A]]
   }
 }
