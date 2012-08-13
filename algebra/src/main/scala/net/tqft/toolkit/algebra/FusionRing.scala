@@ -16,21 +16,23 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
   override def fromInt(x: Int) = coefficients.fromInt(x) +: Seq.fill(rank - 1)(coefficients.zero)
   override val one = fromInt(1)
 
-  def associativityConstraints = for (x <- basis; y <- basis; z <- basis) yield subtract(multiply(x, multiply(y, z)), multiply(multiply(x, y), z))
-  def structureCoefficients = for (y <- basis) yield for (x <- basis) yield multiply(x, y)
+  def associativityConstraints = for (x <- basis.iterator; y <- basis; z <- basis) yield subtract(multiply(x, multiply(y, z)), multiply(multiply(x, y), z))
+  def identityConstraints = for (x <- basis.iterator) yield x == multiply(one, x) && x == multiply(x, one)
 
   def verifyAssociativity = associativityConstraints.map(_ == zero).reduce(_ && _)
-  def verifyIdentity = (for (x <- basis) yield x == multiply(one, x) && x == multiply(x, one)).reduce(_ && _)
+  def verifyIdentity = identityConstraints.reduce(_ && _)
+
+  lazy val structureCoefficients = for (y <- basis) yield for (x <- basis) yield multiply(x, y)
 
   trait FusionModule extends FiniteDimensionalFreeModule[A] {
     override def coefficients = fr.coefficients
 
     def act(x: Seq[A], m: Seq[A]): Seq[A]
-    def associativityConstraints = for (x <- fr.basis; y <- fr.basis; z <- basis) yield subtract(act(x, act(y, z)), act(fr.multiply(x, y), z))
+    def associativityConstraints = for (x <- fr.basis.iterator; y <- fr.basis; z <- basis) yield subtract(act(x, act(y, z)), act(fr.multiply(x, y), z))
     def verifyAssociativity = associativityConstraints.map(_ == zero).reduce(_ && _)
     def asMatrix(x: Seq[A]) = new Matrix(rank, for (b <- basis) yield act(x, b))
 
-    def structureCoefficients = for (y <- basis) yield for (x <- basis) yield act(x, y)
+    def structureCoefficients = for (y <- basis) yield for (x <- fr.basis) yield act(x, y)
 
     override def equals(other: Any) = {
       other match {
@@ -58,10 +60,11 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
       require(m.size == result.size)
       result
     }
-
   }
 
-  def moduleFromStructureCoefficients(matrices: Seq[Matrix[A]]): FusionModule = new StructureCoefficientFusionModule(matrices)
+  def moduleFromStructureCoefficients(matrices: Seq[Matrix[A]]): FusionModule = {
+    (new StructureCoefficientFusionModule(matrices)).ensuring(fm => matrices.map(_.entries) == fm.structureCoefficients)
+  }
 
   object regularModule extends FusionModule {
     override val rank = fr.rank
@@ -201,6 +204,8 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
       println("possible " + n + "-tuples:")
       for (t <- n_tuples.seq) println(t)
 
+      val integerMatrices = new MatrixCategoryOverRing(Gadgets.Integers)
+
       (for (t <- n_tuples) yield {
         import net.tqft.toolkit.permutations.Permutations
         import net.tqft.toolkit.permutations.Permutations._
@@ -209,19 +214,55 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
           def permuteColumns(p: Permutation) = new Matrix(M.matrix.numberOfColumns, p.permute(M.matrix.entries.seq.transpose).transpose)
           def verifyPartialAssociativity(structureCoefficients: Seq[Matrix[Int]]): Boolean = {
 
-            val partialStructureCoefficients: Seq[Matrix[Option[Int]]] = {
-              structureCoefficients.map(_.mapEntries[Option[Int]](Some(_))) ++ Seq.fill(n - structureCoefficients.size)(new Matrix[Option[Int]](n, Seq.fill(fr.rank)(Seq.fill(n)(None))))
-            }
+            //            val partialStructureCoefficients: Seq[Matrix[Option[Int]]] = {
+            //              structureCoefficients.map(_.mapEntries[Option[Int]](Some(_))) ++ Seq.fill(n - structureCoefficients.size)(new Matrix[Option[Int]](n, Seq.fill(fr.rank)(Seq.fill(n)(None))))
+            //            }
 
-            Unknowns(fr).moduleFromStructureCoefficients(partialStructureCoefficients).associativityConstraints.flatten.map(x => x == Some(0) || x == None).reduce(_ && _)
+            val n0 = structureCoefficients.size
+
+            val result2 = (for (
+              (m, mi) <- structureCoefficients.iterator.zipWithIndex;
+              yj <- 0 until rank;
+              if (m.entries(yj).drop(n0).forall(_ == 0))
+            ) yield {
+              val `x(ym)` = (for (
+                (a, mk) <- m.entries(yj).take(n0).zipWithIndex
+              ) yield {
+                integerMatrices.scalarMultiply(a, structureCoefficients(mk))
+              }).reduce(integerMatrices.add _)
+
+              val `(xy)m` = integerMatrices.compose(Matrix(fr.rank, fr.structureCoefficients(yj)), m)
+
+              `x(ym)` == `(xy)m`
+            }).forall(_ == true)
+
+            //            val result0 = if(n == n0) {
+            //              Some(fr.moduleFromStructureCoefficients(structureCoefficients).verifyAssociativity)
+            //            } else {
+            //              None
+            //            }
+
+            //            val constraints = Unknowns(fr).moduleFromStructureCoefficients(partialStructureCoefficients).associativityConstraints.flatten
+            //            val result1 = !constraints.exists(x => x.nonEmpty && x.get > 0)
+//            result1.ensuring(_ == result2)
+
+            result2
           }
 
-          for (s <- i; pM <- permutations.map(permuteColumns _).distinct; ns = s :+ pM; if verifyPartialAssociativity(ns)) yield {
+          for (
+            s <- i;
+            pM <- permutations.map(permuteColumns _).distinct;
+            if (pM.entries(0)(s.size) == 1);
+            ns = s :+ pM;
+            if verifyPartialAssociativity(ns)
+          ) yield {
             ns
           }
-        }).toList.distinct // this .distinct's are probably performance killers
+        }).toList.distinct // these .distinct's are probably performance killers
         for (pm <- permutedMatrices) yield moduleFromStructureCoefficients(pm)
       }).flatten.toList.distinct
+      
+      // TODO there are still duplicates; we need to consider some more permutations...
 
     }).flatten
   }
@@ -336,17 +377,17 @@ object Goals extends App {
     }
   }
   //  test(haagerup4FusionRing)
-      test(AH1FusionRing)
+  test(AH1FusionRing)
 
-//  val v = Seq(1, 1, 2, 3, 3, 4)
-////  val v = Seq(1,2,3,4,5,7)
-//  println(AH1FusionRing.objectsSmallEnoughToBeAlgebras.contains(v))
-//  println(AH1FusionRing.smallObjectsWithPositiveSemidefiniteMultiplication.contains(v))
-//  println(AH1FusionRing.regularModule.asMatrix(v));
-//  {
-//    import Implicits.Rationals
-//    println(AH1FusionRing.regularModule.asMatrix(v).mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)
-//  }
-//  println(Matrices.positiveSymmetricDecompositions(AH1FusionRing.regularModule.asMatrix(v)).toList)
+  //  val v = Seq(1, 1, 2, 3, 3, 4)
+  ////  val v = Seq(1,2,3,4,5,7)
+  //  println(AH1FusionRing.objectsSmallEnoughToBeAlgebras.contains(v))
+  //  println(AH1FusionRing.smallObjectsWithPositiveSemidefiniteMultiplication.contains(v))
+  //  println(AH1FusionRing.regularModule.asMatrix(v));
+  //  {
+  //    import Implicits.Rationals
+  //    println(AH1FusionRing.regularModule.asMatrix(v).mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)
+  //  }
+  //  println(Matrices.positiveSymmetricDecompositions(AH1FusionRing.regularModule.asMatrix(v)).toList)
   //  haagerupFusionRing.candidateBrauerPicardGroupoids
 }
