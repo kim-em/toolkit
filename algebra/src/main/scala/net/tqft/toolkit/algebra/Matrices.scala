@@ -145,15 +145,11 @@ abstract class CategoricalMatrix[A, B, M <: CategoricalMatrix[A, B, M]](val sour
 
 class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A, B, M]](sources: Seq[A], targets: Seq[A], val entries: GenSeq[Seq[B]]) extends CategoricalMatrix[A, B, M](sources, targets) {
   override def equals(other: Any) = {
-    // TODO this could be optimized
     other match {
       case other: AbstractDenseCategoricalMatrix[_, _, _] => {
         sources == other.sources &&
           targets == other.targets &&
-          entries.toList.size == other.entries.toList.size &&
-          (for ((row1, row2) <- entries.toList zip other.entries.toList) yield {
-            row1.size == row2.size && (for ((x1, x2) <- row1 zip row2) yield { x1 == x2 }).foldLeft(true)(_ && _)
-          }).foldLeft(true)(_ && _)
+          entries == other.entries
       }
       case _ => false
     }
@@ -473,7 +469,14 @@ class MatrixCategoryOverRing[R](ring: Ring[R]) extends TensorCategory[Int, Matri
   }
   override def negate(m: Matrix[R]) = inner.negate(m)
   override def add(x: Matrix[R], y: Matrix[R]) = inner.add(x, y)
-  override def compose(x: Matrix[R], y: Matrix[R]) = inner.compose(x, y)
+  override def compose(x: Matrix[R], y: Matrix[R]) = {
+    val yt= y.transpose
+    new Matrix(y.numberOfColumns, for(rx <- x.entries) yield { 
+      for(ry <- yt.entries.seq) yield {
+        ring.add(rx.zip(ry).map(p => ring.multiply(p._1, p._2)))
+      }
+    })
+  }
   override def source(x: Matrix[R]) = x.numberOfColumns
   override def target(x: Matrix[R]) = x.numberOfRows
   override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => VectorOperations.scalarMultiply(a, r)(ring) })
@@ -531,13 +534,12 @@ class AbstractMatrixCategory[O, M, MT <: CategoricalMatrix[O, M, MT]](
     buildMatrix(x.sources, y.targets, entries)
   }
 
-  def compose(x: MT, y: MT) = {
+  def compose(x: MT, y: MT): MT = {
     val entries = for (rx <- x.entries) yield {
-      for (ryi <- (0 until y.numberOfColumns).toList) yield {
+      for (ryi <- 0 until y.numberOfColumns) yield {
         (rx zip (y.entries map { _(ryi) })) map { case (ex, ey) => entryCategory.compose(ex, ey) } reduceLeft { entryCategory.add(_, _) }
       }
     }
-
     buildMatrix(y.sources, x.targets, entries)
   }
 
