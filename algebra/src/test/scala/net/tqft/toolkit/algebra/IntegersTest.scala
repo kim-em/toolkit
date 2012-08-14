@@ -9,7 +9,7 @@ import org.scalatest.junit.JUnitRunner
 class IntegersTest extends FlatSpec with ShouldMatchers {
   
   "Integer arithmetic" should "be correct" in {	  
-      import Implicits.Integers
+      import Gadgets.Integers
 	  import AlgebraicNotation._
 	  
 	  Integers.gcd(15, 27) should equal(3)
@@ -19,7 +19,7 @@ class IntegersTest extends FlatSpec with ShouldMatchers {
       Integers.gcd(5, -1) should equal(-1)
   }
   "BigInt arithmetic" should "be correct" in {	  
-      import Implicits.BigIntegers
+      import Gadgets.BigIntegers
 	  
 	  BigIntegers.gcd(15, 27) should equal(3)
       

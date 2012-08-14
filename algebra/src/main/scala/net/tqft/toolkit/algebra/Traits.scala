@@ -53,8 +53,6 @@ trait TensorCategory[O, M, R] extends LinearCategory[O, M, R] {
   def tensorMorphisms(m1: M, m2: M): M
 }
 
-trait Ring[A] extends Rig[A] with AdditiveCategory[Unit, A] with CommutativeGroup[A]
-
 trait RingHomomorphism[A, B] extends Homomorphism[Ring, A, B]
 
 trait CommutativeRing[A] extends Ring[A]

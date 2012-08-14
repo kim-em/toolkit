@@ -13,3 +13,12 @@ trait OrderedField[A] extends Field[A] with Ordering[A] { self =>
     if (compare(abs(x), epsilon) < 0) zero else x
   }
 }
+
+trait ImplicitOrderedFields extends ImplicitFields {
+  override implicit val Rationals: OrderedField[Fraction[Int]] = Gadgets.Rationals
+  override implicit val BigRationals: OrderedField[Fraction[BigInt]] = Gadgets.BigRationals
+    override    implicit val Doubles: OrderedField[Double] = Gadgets.Doubles
+
+}
+
+object OrderedField extends ImplicitOrderedFields

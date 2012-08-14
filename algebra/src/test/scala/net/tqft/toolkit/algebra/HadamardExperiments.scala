@@ -20,9 +20,7 @@ class HadamardExperiments extends FlatSpec with ShouldMatchers {
 
   "the automorphism group of H_12" should "have one copy of each of the 11d irreps in the tensor square of the 12d irrep" in {
 
-    import Implicits.integersAsRationals
-    import Implicits.Rationals
-    import Implicits.Integers;
+    import Implicits.integersAsRationals;
 
     //    val chi4 : Seq[Fraction[Int]] = Seq(11, 11, 3, 3, -1, 2, 2, -1, -1, -1, 3, 0, 0, 0,
     //      0, -1, -1, 1, 1, -1, 1, -1, 1, -1, 0, 0)
@@ -35,8 +33,7 @@ class HadamardExperiments extends FlatSpec with ShouldMatchers {
   "the automorphism group of H_12" should "have 18 copies of the 54d irrep in the 4-th tensor power of the 12d irrep" in {
 
     import Implicits.integersAsRationals
-    import Implicits.Rationals
-    import Implicits.Integers
+
 
     val chi13 = Seq(54, 54, 6, 6, 6, 0, 0, 0, 0, 2, 2, -1, -1, -1, -1, 1, 1, -1, -1, 0,
       0, 0, 0, 0, 0, 0)

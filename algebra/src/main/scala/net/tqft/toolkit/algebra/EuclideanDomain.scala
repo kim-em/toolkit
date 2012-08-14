@@ -48,6 +48,16 @@ trait EuclideanDomain[A] extends CommutativeRing[A] {
 
 }
 
+trait ImplicitEuclideanDomains extends ImplicitRings {
+  override implicit val Integers: EuclideanDomain[Int] = Gadgets.Integers
+  override implicit val Rationals: EuclideanDomain[Fraction[Int]] = Gadgets.Rationals
+  override implicit val BigInts: EuclideanDomain[BigInt] = Gadgets.BigIntegers
+  override implicit val BigRationals: EuclideanDomain[Fraction[BigInt]] = Gadgets.BigRationals 
+  override implicit val RationalPolynomials: EuclideanDomain[Polynomial[Fraction[Int]]] = Gadgets.RationalPolynomials
+}
+
+object EuclideanDomain extends ImplicitEuclideanDomains
+
 trait OrderedEuclideanDomain[A] extends EuclideanDomain[A] with Ordering[A] {
   def signum(x: A): A = compare(x, zero) match {
     case 0 => zero

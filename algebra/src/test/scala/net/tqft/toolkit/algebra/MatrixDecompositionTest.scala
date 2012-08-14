@@ -1,7 +1,5 @@
 package net.tqft.toolkit.algebra
 
-import net.tqft.toolkit.algebra.Implicits.Integers;
-import net.tqft.toolkit.algebra.Implicits.Rationals;
 import net.tqft.toolkit.algebra.Implicits.integersAsRationals;
 
 import org.scalatest.FlatSpec
