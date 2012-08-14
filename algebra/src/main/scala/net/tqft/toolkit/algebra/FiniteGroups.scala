@@ -252,7 +252,6 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
   def reducedCharacters: Seq[Character[_]] = {
     for (c <- characters) yield {
       if (c.map(_.maximumDegree.getOrElse(0)).max == 0) {
-        import Implicits.Rationals
         new RationalCharacter {
           val character = c.map(_.constantTerm)
         }
@@ -282,8 +281,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
         }
       }
     }
-    import Implicits.Rationals
-    val Q = NumberField.cyclotomic(exponent)
+    val Q = NumberField.cyclotomic[Fraction[Int]](exponent)
     val result = Q.quotientByInt(
       Q.add(
         for (((a, b), t) <- liftCharacterToCyclotomicFieldOfExponent(m).character zip liftCharacterToCyclotomicFieldOfExponent(n).character zip conjugacyClasses.map(_.size)) yield {
@@ -299,8 +297,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
   // TODO rewrite this in terms of other stuff!
   lazy val tensorProductMultiplicities: Seq[Seq[Seq[Int]]] = {
     val k = conjugacyClasses.size
-    import Implicits.Rationals
-    implicit val Q = NumberField.cyclotomic(exponent)
+    implicit val Q = NumberField.cyclotomic[Fraction[Int]](exponent)
 
     def pairing(x: Seq[Polynomial[Fraction[Int]]], y: Seq[Polynomial[Fraction[Int]]]) = {
       Q.quotientByInt(Q.add((x zip y zip conjugacyClasses.map(_.size)).map({ p => Q.multiplyByInt(Q.multiply(p._1._1, p._1._2), p._2) })), finiteGroup.size)

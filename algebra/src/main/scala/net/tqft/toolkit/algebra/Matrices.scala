@@ -174,7 +174,7 @@ class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix
 
 object Matrix extends Logging {
   def apply[B](numberOfColumns: Int, entries: GenSeq[Seq[B]]): Matrix[B] = new Matrix(numberOfColumns, entries)
-  def apply[B](entries: GenSeq[Seq[B]]): Matrix[B] = {
+  implicit def apply[B](entries: GenSeq[Seq[B]]): Matrix[B] = {
     require(entries.nonEmpty)
     apply(entries.head.size, entries)
   }
@@ -187,9 +187,9 @@ object Matrix extends Logging {
 
   def singleColumn[B](vector: Seq[B]) = new Matrix(1, vector map { x => List(x) })
 
-  def diagonalMatrix[B](vector: Seq[B])(implicit field: Field[B]) = new Matrix(vector.size, vector.zipWithIndex map { case (v, k) => List.fill(k)(field.zero) ::: List(v) ::: List.fill(vector.size - k - 1)(field.zero) })
+  def diagonalMatrix[B](vector: Seq[B])(implicit rig: Rig[B]) = new Matrix(vector.size, vector.zipWithIndex map { case (v, k) => List.fill(k)(rig.zero) ::: List(v) ::: List.fill(vector.size - k - 1)(rig.zero) })
 
-  def identityMatrix[B](size: Int)(implicit field: Field[B]) = diagonalMatrix(List.fill(size)(field.one))
+  def identityMatrix[B](size: Int)(implicit rig: Rig[B]) = diagonalMatrix(List.fill(size)(rig.one))
 }
 
 class Matrix[B](

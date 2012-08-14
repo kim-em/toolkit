@@ -15,7 +15,12 @@ trait LinearCombo[A, B] {
 
   def coefficientOf(b: B): Option[A] = terms.find(_._1 == b).map(_._2)
 
-  override def toString = (terms map { case (g, p) => p.toString + " * " + g.toString }).mkString(" + ")
+  override def toString = {
+    terms match {
+      case Nil => "0"
+      case _ => terms.map({ case (g, p) => p.toString + " * " + g.toString }).mkString(" + ")
+    }
+  }
   override def equals(other: Any) = {
     other match {
       case other: LinearCombo[_, _] => terms.toSet == other.terms.toSet
@@ -80,7 +85,7 @@ trait FreeModuleOnMonoid[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModul
   def monomial(b: B): LC = wrap(Map(b -> ring.one))
   def monomial(b: B, a: A): LC = wrap(Map(b -> a))
 
-  def constant(a: A) = monomial(monoid.zero, a)
+  def constant(a: A): LC = monomial(monoid.zero, a)
   override def fromInt(x: Int) = constant(ring.fromInt(x))
 }
 

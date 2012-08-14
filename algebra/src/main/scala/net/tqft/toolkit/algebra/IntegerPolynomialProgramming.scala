@@ -1,41 +1,182 @@
 package net.tqft.toolkit.algebra
 
 object IntegerPolynomialProgramming {
-
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials
-  def solve[V](polynomials: Set[MultivariablePolynomial[Int, V]], variables: Set[V]): Iterable[Map[V, Int]] = {
-    
-    val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V](Gadgets.Integers)
-    
-    trait SolveStrategy {
-      def solutions: Map[V, Int]
-      def substitutions: Map[V, MultivariablePolynomial[Int, V]]
-      def polynomials: Set[MultivariablePolynomial[Int, V]]
-      def consider(p: MultivariablePolynomial[Int, V]): Iterable[SolveStrategy] 
-      
-      protected def simplify(p: MultivariablePolynomial[Int, V]): MultivariablePolynomial[Int, V] = {
-        polynomialAlgebra.substitute(solutions.mapValues(polynomialAlgebra.constant(_)) ++ substitutions)(p)
+  def solve[V: Ordering](polynomials: Seq[MultivariablePolynomial[Int, V]]): (Iterable[Map[V, Int]], Iterable[Seq[MultivariablePolynomial[Int, V]]]) = {
+
+    // this "BogusScope" protects us from https://issues.scala-lang.org/browse/SI-6231
+    object BogusScope {
+      type P = MultivariablePolynomial[Int, V]
+
+      case class PartialSolution(substitutions: Map[V, P], remainingPolynomials: Seq[P]) {
+        require((remainingPolynomials.flatMap(_.variables).toSet.intersect(substitutions.keySet)).isEmpty)
+
+        def add(newSubstitutions: Map[V, P]): PartialSolution = {
+          require(newSubstitutions.values.toSet[P].flatMap(_.variables).intersect(newSubstitutions.keySet).isEmpty)
+
+          def substitute(p: P): P = {
+            polynomialAlgebra.substitute(newSubstitutions)(p)
+          }
+          def substituteSeq(polynomials: Seq[P]): Seq[P] = {
+            for (
+              p <- polynomials;
+              q = substitute(p);
+              if q.nonZero
+            ) yield { q }
+          }
+
+          val updatedSubstitutions = substitutions.mapValues(p => substitute(p))
+          val differences = {
+            for (
+              v <- updatedSubstitutions.keySet.intersect(newSubstitutions.keySet);
+              d = polynomialAlgebra.subtract(updatedSubstitutions(v), newSubstitutions(v));
+              if d.nonZero
+            ) yield d
+          }
+
+          require(differences.isEmpty)
+
+          val substitutedPolynomials = substituteSeq(remainingPolynomials)
+          PartialSolution(newSubstitutions ++ updatedSubstitutions, substitutedPolynomials ++ differences)
+        }
+      }
+
+      val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
+      implicit def constant(k: Int) = polynomialAlgebra.constant(k)
+
+      trait Strategy {
+        def apply(sol: PartialSolution): Option[Iterable[PartialSolution]]
+      }
+
+      trait SolveOneAtATimeStrategy extends Strategy {
+        protected val findSubstitutions: PartialFunction[P, Iterable[Map[V, P]]]
+        private def findSomeSubstitutions(ps: Seq[P]): Option[Iterable[Map[V, P]]] = {
+          ps.iterator.map(findSubstitutions.lift).find(_.nonEmpty).getOrElse(None)
+        }
+        override def apply(sol: PartialSolution) = findSomeSubstitutions(sol.remainingPolynomials) map { iterable =>
+          for (newSubstitutions <- iterable) yield {
+            sol.add(newSubstitutions).ensuring(_ != sol)
+          }
+        }
+      }
+      trait ReplacingStrategy extends Strategy {
+        protected val findReplacements: PartialFunction[P, Seq[P]]
+        override def apply(sol: PartialSolution) = {
+          val (replacements, keep) = sol.remainingPolynomials.map(p => (p, findReplacements.lift(p))).partition(_._2.nonEmpty)
+          if (replacements.isEmpty) {
+            None
+          } else {
+            val next = PartialSolution(sol.substitutions,
+              replacements.flatMap(_._2.get) ++ keep.map(_._1))
+            require(sol != next)
+            Some(Iterable(next))
+          }
+        }
+      }
+
+      case object SplitPositiveLinearCombinations extends ReplacingStrategy {
+        override val findReplacements: PartialFunction[P, Seq[P]] = {
+          case p if p.terms.size > 1 && p.terms.forall(_._2 > 0) => p.terms.map({ case (m, a) => polynomialAlgebra.monomial(m) })
+        }
+      }
+      case object `a=0` extends SolveOneAtATimeStrategy {
+        override val findSubstitutions: PartialFunction[P, Iterable[Map[V, P]]] = {
+          case p if p.totalDegree == Some(0) => {
+            require(p.constantTerm != 0)
+            Iterable.empty
+          }
+        }
+      }
+      case object `V^k=0` extends SolveOneAtATimeStrategy {
+        override val findSubstitutions: PartialFunction[P, Iterable[Map[V, P]]] = {
+          case MultivariablePolynomial((m, a)) if m.size == 1 => {
+            require(a != 0)
+            Iterable(Map(m.keysIterator.next -> 0))
+          }
+        }
+      }
+      case object `a+bV=0` extends SolveOneAtATimeStrategy {
+        override val findSubstitutions: PartialFunction[P, Iterable[Map[V, P]]] = {
+          case MultivariablePolynomial((m0, a), (m1, b)) if m0.isEmpty && m1.values.sum == 1 => {
+            val v = m1.keysIterator.next
+            if (a % b != 0) {
+              Iterable.empty
+            } else {
+              val r = -a / b
+              if (r < 0) {
+                Iterable.empty
+              } else {
+                Iterable(Map(v -> r))
+              }
+            }
+          }
+        }
+      }
+      case object `V+aW=0` extends SolveOneAtATimeStrategy {
+        override val findSubstitutions: PartialFunction[P, Iterable[Map[V, P]]] = {
+          case p @ MultivariablePolynomial((m0, a), (m1, b)) if p.totalDegree == Some(1) && (a.abs == 1 || b.abs == 1) => {
+            if (a.abs == 1) {
+              val v = m0.keysIterator.next
+              Iterable(Map(v -> polynomialAlgebra.monomial(m1, -b / a)))
+            } else {
+              val v = m1.keysIterator.next
+              Iterable(Map(v -> polynomialAlgebra.monomial(m0, -a / b)))
+            }
+          }
+        }
+      }
+      case object LinearWithUnitCoefficient extends SolveOneAtATimeStrategy {
+        override val findSubstitutions: PartialFunction[P, Iterable[Map[V, P]]] = {
+          case p if p.totalDegree == Some(1) && p.terms.exists(_._2.abs == 1) => {
+            val (m, a) = p.terms.find(_._2.abs == 1).get
+            ???
+          }
+        }
+      }
+
+      case class CombinedStrategy(strategies: List[Strategy]) extends Strategy {
+        def apply(sol: PartialSolution) = {
+          strategies match {
+            case Nil => None
+            case head :: tail => {
+              head(sol) match {
+                case None => {
+                  copy(tail)(sol)
+                }
+                case Some(iterable) => Some(iterable)
+              }
+            }
+          }
+        }
+      }
+      case class RepeatingStrategy(strategy: Strategy) extends Strategy {
+        def apply(sol: PartialSolution) = {
+          strategy(sol).map(iterable =>
+            for (next <- iterable; result <- apply(next).getOrElse(Iterable(next))) yield {
+              result
+            })
+        }
+      }
+
+      val strategies: List[Strategy] = List(SplitPositiveLinearCombinations, `a=0`, `V^k=0`, `a+bV=0`, `V+aW=0`)
+      val strategy = RepeatingStrategy(CombinedStrategy(strategies))
+
+      def result = strategy(PartialSolution(Map.empty, polynomials)) match {
+        case None => {
+          (Iterable.empty, Iterable(polynomials))
+        }
+        case Some(iterable) => {
+          val (finished, unfinished) = iterable.partition(_.remainingPolynomials.isEmpty)
+          val solutions = for (f <- finished) yield {
+            f.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm)
+          }
+          val tooHard = unfinished.map(_.remainingPolynomials)
+          (solutions, tooHard)
+        }
       }
     }
-    
-    case class TrivialSolver(solutions: Map[V, Int], substitutions: Map[V, MultivariablePolynomial[Int, V]], polynomials: Set[MultivariablePolynomial[Int, V]]) extends SolveStrategy {
-      override def consider(p: MultivariablePolynomial[Int, V]): Iterable[SolveStrategy] = Iterable(copy(polynomials = polynomials + p))
-    }
-    
-    case class EasySolver(solutions: Map[V, Int], substitutions: Map[V, MultivariablePolynomial[Int, V]], polynomials: Set[MultivariablePolynomial[Int, V]]) extends SolveStrategy {
-      override def consider(p: MultivariablePolynomial[Int, V]): Iterable[EasySolver] = {
-        ???
-      }
-    }
-    
-    val strategies: List[(Map[V,Int], Map[V, MultivariablePolynomial[Int, V]], Set[MultivariablePolynomial[Int, V]]) => SolveStrategy] = List(TrivialSolver, EasySolver)
-    
-    val empty: SolveStrategy = strategies.head(Map.empty, Map.empty, Set.empty)
-    
-    val finished = polynomials.foldLeft(Iterable(empty))((i, p) => i.flatMap(_.consider(p)))
-    for(s <- finished; if s.polynomials.isEmpty) yield s.solutions
-      
+    BogusScope.result
   }
 
 }

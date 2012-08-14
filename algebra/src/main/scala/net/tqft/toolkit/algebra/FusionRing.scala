@@ -72,13 +72,6 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
   }
 }
 
-//
-//trait FusionBimodule[A] extends FiniteDimensionalFreeModule[A] {
-//  val leftFusionRing: FusionRing[A]
-//  val rightFusionRing: FusionRing[A]
-//  def act(left: Seq[A], m: Seq[A], right: Seq[A]): Seq[A]  
-//}
-
 trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
   def dimensionField: RealNumberField[Int, Double]
   def dimensions: Seq[Polynomial[Fraction[Int]]]
@@ -89,7 +82,6 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
   }
 
   def dimensionBounds(x: Seq[Int]): Double = {
-    import Implicits.Integers
     dimensionField.approximateWithin(0.0001)(dimensionOf(x)) + 0.0001
   }
 
@@ -104,8 +96,6 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
   }
 
   def smallObjectsWithPositiveSemidefiniteMultiplication: Seq[Seq[Int]] = {
-    import Implicits.Rationals
-
     for (
       o <- objectsSmallEnoughToBeAlgebras;
       m = regularModule.asMatrix(o);
@@ -135,8 +125,8 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
         private val sorted = {
           val unsortedDimensionsSquared = {
             val dxi = fr.dimensionOf(algebraObject)
-            import Implicits.{ Integers, integersAsRationals }
-            implicit val polynomials = Polynomials.over(Gadgets.Rationals)
+            import Implicits.{ integersAsRationals }
+            val polynomials = Polynomials.over(Gadgets.Rationals)
             val Atd = unsortedMatrix.transpose.mapEntries(polynomials.constant(_)).apply(fr.dimensions)
             Atd.map(p => dimensionField.quotient(dimensionField.power(p, 2), dxi))
           }
@@ -244,7 +234,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
 
             //            val constraints = Unknowns(fr).moduleFromStructureCoefficients(partialStructureCoefficients).associativityConstraints.flatten
             //            val result1 = !constraints.exists(x => x.nonEmpty && x.get > 0)
-//            result1.ensuring(_ == result2)
+            //            result1.ensuring(_ == result2)
 
             result2
           }
@@ -261,7 +251,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
         }).toList.distinct // these .distinct's are probably performance killers
         for (pm <- permutedMatrices) yield moduleFromStructureCoefficients(pm)
       }).flatten.toList.distinct
-      
+
       // TODO there are still duplicates; we need to consider some more permutations...
 
     }).flatten
@@ -280,24 +270,47 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
 trait Groupoid
 
 object FusionRing {
-  def apply[A: Ring](multiplicities: Seq[Seq[Seq[A]]]): FusionRing[A] = new StructureCoefficientFusionRing(multiplicities)
-  def apply(multiplicities: Seq[Seq[Seq[Int]]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, dimensions: Seq[Polynomial[Fraction[Int]]]): FusionRingWithDimensions = new StructureCoefficientFusionRingWithDimensions(multiplicities, fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon, dimensions)
+  def apply[A: Ring](multiplicities: Seq[Matrix[A]]): FusionRing[A] = new StructureCoefficientFusionRing(multiplicities)
+  def apply(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, dimensions: Seq[Polynomial[Fraction[Int]]]): FusionRingWithDimensions = new StructureCoefficientFusionRingWithDimensions(multiplicities, fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon, dimensions)
 
-  private class StructureCoefficientFusionRing[A: Ring](multiplicities: Seq[Seq[Seq[A]]]) extends FusionRing[A] {
+  def fromFusionMatrix[V: Ordering](m: Matrix[Int], variable: (Int, Int, Int) => V): FusionRing[MultivariablePolynomial[Int, V]] = {
+    implicit val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
+
+    val rank = m.numberOfRows
+    val identity = Matrix.identityMatrix[MultivariablePolynomial[Int, V]](rank)
+    val generator = m.mapEntries(polynomialAlgebra.constant)
+    val unknowns = for (i <- 2 until rank) yield {
+      Matrix(rank,
+        for (j <- 0 until rank) yield {
+          for (k <- 0 until rank) yield polynomialAlgebra.monomial(variable(i, j, k))
+        })
+    }
+    apply(identity +: generator +: unknowns)
+  }
+
+  private class StructureCoefficientFusionRing[A: Ring](multiplicities: Seq[Matrix[A]]) extends FusionRing[A] {
     override lazy val coefficients = implicitly[Ring[A]]
     override lazy val rank = multiplicities.size
 
     override def multiply(x: Seq[A], y: Seq[A]) = {
       val zero = coefficients.zero
-      val terms = for ((xi, i) <- x.zipWithIndex; if (xi != zero); (yj, j) <- y.zipWithIndex; if (yj != zero)) yield for (k <- 0 until rank) yield coefficients.multiply(xi, yj, multiplicities(i)(j)(k))
+      val terms = for (
+        (xi, i) <- x.zipWithIndex;
+        if (xi != zero);
+        (yj, j) <- y.zipWithIndex;
+        if (yj != zero)
+      ) yield {
+        for (k <- 0 until rank) yield {
+          coefficients.multiply(xi, yj, multiplicities(j).entries(i)(k))
+        }
+      }
       val result = add(terms)
       result
     }
   }
 
-  private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Seq[Seq[Int]]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, override val dimensions: Seq[Polynomial[Fraction[Int]]]) extends StructureCoefficientFusionRing[Int](multiplicities)(Gadgets.Integers) with FusionRingWithDimensions {
+  private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, override val dimensions: Seq[Polynomial[Fraction[Int]]]) extends StructureCoefficientFusionRing[Int](multiplicities)(Gadgets.Integers) with FusionRingWithDimensions {
     override def dimensionField = {
-      import Implicits.{ Integers, Doubles }
       RealNumberField(fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon)(Gadgets.Integers, Gadgets.Doubles)
     }
   }
@@ -305,7 +318,7 @@ object FusionRing {
 
 object Goals extends App {
   val haagerup4FusionRing: FusionRingWithDimensions = {
-    val haagerup4Multiplicities: Seq[Seq[Seq[Int]]] =
+    val haagerup4Multiplicities: Seq[Matrix[Int]] =
       List(
         List(List(1, 0, 0, 0), List(0, 1, 0, 0), List(0, 0, 1, 0), List(0, 0, 0, 1)),
         List(List(0, 1, 0, 0), List(1, 2, 2, 1), List(0, 2, 1, 1), List(0, 1, 1, 1)),
@@ -313,13 +326,12 @@ object Goals extends App {
         List(List(0, 0, 0, 1), List(0, 1, 1, 1), List(0, 1, 1, 0), List(1, 1, 0, 0)))
 
     val haagerup4FieldGenerator: Polynomial[Int] = {
-      import Implicits.Integers
       Polynomial(2 -> 1, 0 -> -13)
     }
     val haagerup4FieldGeneratorApproximation: Double = 3.60555
     val haagerup4FieldGeneratorEpsilon: Double = 0.00001
     val haagerup4Dimensions: Seq[Polynomial[Fraction[Int]]] = {
-      import Implicits.{ Integers, Rationals, integersAsRationals }
+      import Implicits.{ integersAsRationals }
       Seq(
         Polynomial(0 -> Fraction(1, 1)),
         Polynomial(0 -> Fraction(5, 2), 1 -> Fraction(1, 2)),
@@ -329,7 +341,7 @@ object Goals extends App {
     FusionRing(haagerup4Multiplicities, haagerup4FieldGenerator, haagerup4FieldGeneratorApproximation, haagerup4FieldGeneratorEpsilon, haagerup4Dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
   }
   val AH1FusionRing: FusionRingWithDimensions = {
-    val AH1Multiplicities: Seq[Seq[Seq[Int]]] =
+    val AH1Multiplicities: Seq[Matrix[Int]] =
       List(
         List(List(1, 0, 0, 0, 0, 0), List(0, 1, 0, 0, 0, 0), List(0, 0, 1, 0, 0, 0), List(0, 0, 0, 1, 0, 0), List(0, 0, 0, 0, 1, 0), List(0, 0, 0, 0, 0, 1)),
         List(List(0, 1, 0, 0, 0, 0), List(1, 1, 0, 0, 1, 0), List(0, 0, 1, 0, 0, 1), List(0, 0, 0, 0, 1, 1), List(0, 1, 0, 1, 1, 1), List(0, 0, 1, 1, 1, 2)),
@@ -339,13 +351,12 @@ object Goals extends App {
         List(List(0, 0, 0, 0, 0, 1), List(0, 0, 1, 1, 1, 2), List(0, 1, 1, 1, 2, 2), List(0, 1, 1, 1, 2, 3), List(0, 1, 2, 2, 3, 4), List(1, 2, 2, 3, 4, 6)))
 
     val AH1FieldGenerator: Polynomial[Int] = {
-      import Implicits.Integers
       Polynomial(2 -> 1, 0 -> -17)
     }
     val AH1FieldGeneratorApproximation: Double = 4.12311
     val AH1FieldGeneratorEpsilon: Double = 0.00001
     val AH1Dimensions: Seq[Polynomial[Fraction[Int]]] = {
-      import Implicits.{ Integers, Rationals, integersAsRationals }
+      import Implicits.{ integersAsRationals }
       Seq(
         Polynomial(0 -> Fraction(1, 1)),
         Polynomial(0 -> Fraction(3, 2), 1 -> Fraction(1, 2)),
@@ -355,6 +366,24 @@ object Goals extends App {
         Polynomial(0 -> Fraction(11, 2), 1 -> Fraction(3, 2)))
     }
     FusionRing(AH1Multiplicities, AH1FieldGenerator, AH1FieldGeneratorApproximation, AH1FieldGeneratorEpsilon, AH1Dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+  }
+
+  val associativity = FusionRing.fromFusionMatrix(haagerup4FusionRing.structureCoefficients(1), (i, j, k) => "F(" + i + "," + j + "," + k + ")").associativityConstraints.flatten.toSeq
+  for (
+    c <- associativity;
+    if c.nonZero
+  ) {
+    println(c)
+  }
+
+  val (solutions, tooHard) = IntegerPolynomialProgramming.solve(associativity)
+  for (sol <- solutions) {
+    println("Solution: ")
+    println(sol)
+  }
+  for (th <- tooHard) {
+    println("Too hard: ")
+    for (c <- th) println(c)
   }
 
   def test(G: FusionRingWithDimensions) {
@@ -377,7 +406,7 @@ object Goals extends App {
     }
   }
   //  test(haagerup4FusionRing)
-  test(AH1FusionRing)
+  //  test(AH1FusionRing)
 
   //  val v = Seq(1, 1, 2, 3, 3, 4)
   ////  val v = Seq(1,2,3,4,5,7)

@@ -9,13 +9,7 @@ import org.scalatest.junit.JUnitRunner
 class PolynomialsTest extends FlatSpec with ShouldMatchers {
 
   "Polynomial arithmetic" should "be correct" in {
-    import Implicits.Integers
-    import Implicits.BigIntegers
-    import Implicits.BigRationals
     import Gadgets.bigIntegersAsBigRationals
-    import Implicits.Rationals
-    import Implicits.IntegerPolynomials
-    import Implicits.RationalPolynomials
     import Implicits.integersAsRationals
     //      import Implicits.asConstantPolynomial
     import AlgebraicNotation._
@@ -34,14 +28,12 @@ class PolynomialsTest extends FlatSpec with ShouldMatchers {
   }
 
   "cyclotomic" should "give the cyclotomic polynomials" in {
-    import Implicits.Integers
-    import Implicits.Rationals
-    Polynomial.cyclotomic(1) should equal(Polynomial(0 -> Fraction(-1, 1), 1 -> Fraction(1, 1)))
-    Polynomial.cyclotomic(2) should equal(Polynomial(0 -> Fraction(1, 1), 1 -> Fraction(1, 1)))
-    Polynomial.cyclotomic(3) should equal(Polynomial(0 -> Fraction(1, 1), 1 -> Fraction(1, 1), 2 -> Fraction(1, 1)))
-    Polynomial.cyclotomic(4) should equal(Polynomial(0 -> Fraction(1, 1), 2 -> Fraction(1, 1)))
-    Polynomial.cyclotomic(5) should equal(Polynomial(0 -> Fraction(1, 1), 1 -> Fraction(1, 1), 2 -> Fraction(1, 1), 3 -> Fraction(1, 1), 4 -> Fraction(1, 1)))
-    Polynomial.cyclotomic(6) should equal(Polynomial(0 -> Fraction(1, 1), 1 -> Fraction(-1, 1), 2 -> Fraction(1, 1)))
+    Polynomial.cyclotomic[Fraction[Int]](1) should equal(Polynomial(0 -> Fraction(-1, 1), 1 -> Fraction(1, 1)))
+    Polynomial.cyclotomic[Fraction[Int]](2) should equal(Polynomial(0 -> Fraction(1, 1), 1 -> Fraction(1, 1)))
+    Polynomial.cyclotomic[Fraction[Int]](3) should equal(Polynomial(0 -> Fraction(1, 1), 1 -> Fraction(1, 1), 2 -> Fraction(1, 1)))
+    Polynomial.cyclotomic[Fraction[Int]](4) should equal(Polynomial(0 -> Fraction(1, 1), 2 -> Fraction(1, 1)))
+    Polynomial.cyclotomic[Fraction[Int]](5) should equal(Polynomial(0 -> Fraction(1, 1), 1 -> Fraction(1, 1), 2 -> Fraction(1, 1), 3 -> Fraction(1, 1), 4 -> Fraction(1, 1)))
+    Polynomial.cyclotomic[Fraction[Int]](6) should equal(Polynomial(0 -> Fraction(1, 1), 1 -> Fraction(-1, 1), 2 -> Fraction(1, 1)))
 
   }
 }

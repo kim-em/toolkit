@@ -1,7 +1,5 @@
 package net.tqft.toolkit.algebra
 
-import net.tqft.toolkit.algebra.Implicits.Integers;
-import net.tqft.toolkit.algebra.Implicits.Rationals;
 import net.tqft.toolkit.algebra.Implicits.integersAsRationals;
 
 import org.scalatest.FlatSpec
@@ -11,10 +9,6 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class MatricesTest extends FlatSpec with ShouldMatchers {
-  import Implicits.Integers
-  import Implicits.Rationals
-  import Implicits.integersAsRationals
-  import Implicits.Doubles
 
   "Matrix operations" should "be correct" in {
     val m: Matrix[Fraction[Int]] = Matrix(3, List(List(1, 2, 3), List(4, 5, 6), List(5, 7, 9)))

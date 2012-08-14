@@ -23,9 +23,9 @@ trait Profiler {
 	 	  partialSums(Stream.continually(timing(f)._1)).zipWithIndex.tail map { case (t,n) => t/n }
 	  }
 	   
-	  def movingTimingAverages[R](period: Int)(f: => R): TraversableOnce[Long] = {
-	 	  movingAverage(period)(Stream.continually(timing(f)._1))
-	  }
+//	  def movingTimingAverages[R](period: Int)(f: => R): TraversableOnce[Long] = {
+//	 	  movingAverage(period)(Stream.continually(timing(f)._1))
+//	  }
 }
 object Profiler extends Profiler
 
