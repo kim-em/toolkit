@@ -6,8 +6,8 @@ trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] wit
 
   override val monoid = Gadgets.Integers
 
-  override def wrap(terms: List[(Int, A)]): Polynomial[A] = new PolynomialImpl(terms)
-  private class PolynomialImpl(_terms: List[(Int, A)]) extends Polynomial[A] {
+  override def wrap(terms: Seq[(Int, A)]): Polynomial[A] = new PolynomialImpl(terms)
+  private class PolynomialImpl(_terms: Seq[(Int, A)]) extends Polynomial[A] {
     val terms = reduce(_terms)
   }
 

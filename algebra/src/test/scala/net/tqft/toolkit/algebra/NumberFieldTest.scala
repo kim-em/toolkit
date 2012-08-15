@@ -10,8 +10,6 @@ import java.math.BigInteger
 class NumberFieldTest extends FlatSpec with ShouldMatchers {
 
   "Number field arithmetic" should "be correct" in {
-    import Implicits.Integers
-    import Implicits.Rationals
     import Implicits.integersAsRationals
     import AlgebraicNotation._
 

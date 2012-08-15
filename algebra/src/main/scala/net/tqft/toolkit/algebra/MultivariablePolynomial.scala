@@ -5,12 +5,12 @@ trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
     import net.tqft.toolkit.arithmetic.MinMax._
     terms.map(_._1.values.sum).maxOption
   }
+  def termsOfDegree(k: Int) = terms.filter(_._1.values.sum == k)
   def constantTerm(implicit ring: Ring[A]) = terms.find(_._1.isEmpty).map(_._2).getOrElse(ring.zero)
 
   def nonZero = terms.nonEmpty
-def variables = terms.flatMap(_._1.keySet).toSet
-  
-  
+  def variables = terms.flatMap(_._1.keySet).toSet
+
   override def toString = {
     terms match {
       case Nil => "0"
@@ -24,11 +24,14 @@ def variables = terms.flatMap(_._1.keySet).toSet
     }
   }
   override def equals(other: Any) = {
-    other match {
+    val result = other match {
       case other: MultivariablePolynomial[_, _] => terms == other.terms
       case _ => false
     }
+    if(result == false) require(toString != other.toString)
+    result
   }
+  override lazy val hashCode: Int = terms.hashCode
 
 }
 
