@@ -160,8 +160,7 @@ class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A
     entries(row).indexWhere { b: B => b != ignoring } match {
       case -1 => None
       case k => Some(k)
-    }
-
+    }    
 }
 
 class DenseCategoricalMatrix[A, B](sources: Seq[A], targets: Seq[A], entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[A, B, DenseCategoricalMatrix[A, B]](sources, targets, entries)
@@ -222,6 +221,15 @@ class Matrix[B](
     new Matrix(numberOfColumns + other.numberOfColumns, (entries zip other.entries) map { case (r1, r2) => r1 ++ r2 })
   }
 
+  def permuteColumns(p: IndexedSeq[Int]) = {
+    import net.tqft.toolkit.permutations.Permutations._
+    new Matrix(numberOfColumns, entries.map(row => p.permute(row)))
+  }
+  def permuteRows(p: IndexedSeq[Int]) = {
+    import net.tqft.toolkit.permutations.Permutations._
+    new Matrix(numberOfColumns, p.permute(entries))
+  }
+  
   def apply(vector: Seq[B])(implicit rig: Rig[B]) = {
     (for (row <- entries) yield {
       rig.add(for ((x, y) <- row zip vector) yield rig.multiply(x, y))

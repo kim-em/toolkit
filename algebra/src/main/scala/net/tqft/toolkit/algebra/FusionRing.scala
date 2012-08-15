@@ -57,8 +57,24 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
 
   }
 
+  object FusionModules {
+    def equivalent_?(m1: FusionModule, m2: FusionModule) = {
+      if (m1.rank == m2.rank) {
+        import net.tqft.toolkit.permutations.Permutations
+        import net.tqft.toolkit.permutations.Permutations._
+        
+        val s1 = m1.structureCoefficients
+        val s2 = m2.structureCoefficients
+        
+        Permutations.of(m1.rank).find(p => s2 == p.permute(s1.map(m => m.permuteColumns(p)))).nonEmpty
+      } else {
+        false
+      }
+    }
+  }
+
   protected class StructureCoefficientFusionModule(matrices: Seq[Matrix[A]]) extends FusionModule {
-    for(m <- matrices) {
+    for (m <- matrices) {
       require(m.numberOfColumns == matrices.size)
       require(m.numberOfRows == fr.rank)
     }
@@ -214,6 +230,8 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
 
       val integerMatrices = new MatrixCategoryOverRing(Gadgets.Integers)
 
+      import net.tqft.toolkit.collections.GroupBy._
+      
       (for (t <- n_tuples) yield {
         import net.tqft.toolkit.permutations.Permutations
         import net.tqft.toolkit.permutations.Permutations._
@@ -256,7 +274,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
           }
         }).toList.distinct // these .distinct's are probably performance killers
         for (pm <- permutedMatrices) yield moduleFromStructureCoefficients(pm)
-      }).flatten.toList.distinct
+      }).flatten.chooseEquivalenceClassRepresentatives(FusionModules.equivalent_? _)
 
       // TODO there are still duplicates; we need to consider some more permutations...
 
@@ -485,11 +503,14 @@ object Goals extends App {
     FusionRing(AH1Multiplicities, AH1FieldGenerator, AH1FieldGeneratorApproximation, AH1FieldGeneratorEpsilon, AH1Dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
   }
 
-  for (fm <- haagerup4FusionRing.candidateFusionModules; b <- FusionBimodules.commutants(fm, 6, 4)) {
-    println(b.rightRing.structureCoefficients)
-  }
+  println(haagerup4FusionRing.candidateFusionModules.size)
 
-  //  for (r <- FusionRings.withObject(AH1FusionRing.structureCoefficients(1)); m <- r.structureCoefficients) { println(m); println() }
+    
+    for (fm <- haagerup4FusionRing.candidateFusionModules; b <- FusionBimodules.commutants(fm, 4, 4)) {
+      println(b.rightRing.structureCoefficients)
+    }
+
+  //    for (r <- FusionRings.withObject(AH1FusionRing.structureCoefficients(1)); m <- r.structureCoefficients) { println(m); println() }
 
   def test(G: FusionRingWithDimensions) {
     println("Start: " + new java.util.Date())

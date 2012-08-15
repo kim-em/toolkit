@@ -7,7 +7,7 @@ import scala.collection.GenSeq
 object Permutations {
 
   class RichPermutation(p: Permutation) {
-    def permute[A](s: Seq[A]): IndexedSeq[A] = {
+    def permute[A](s: GenSeq[A]): IndexedSeq[A] = {
       for (n <- p) yield { s(n) }
     }
     def inverse(): Permutation = {

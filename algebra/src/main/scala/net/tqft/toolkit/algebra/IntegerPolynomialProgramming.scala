@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra
 
 object IntegerPolynomialProgramming {
+  
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials
   def solve[V: Ordering](polynomials: Seq[MultivariablePolynomial[Int, V]]): (Iterable[Map[V, Int]], Iterable[Seq[MultivariablePolynomial[Int, V]]]) = {
@@ -10,6 +11,7 @@ object IntegerPolynomialProgramming {
       type P = MultivariablePolynomial[Int, V]
 
       case class PartialSolution(substitutions: Map[V, P], remainingPolynomials: Seq[P]) {
+        println("new PartialSolution() with " + substitutions.size + " substitutions and " + remainingPolynomials.size + " polynomials.")
 //        require((remainingPolynomials.flatMap(_.variables).toSet.intersect(substitutions.keySet)).isEmpty)
 
         def add(newSubstitutions: Map[V, P]): PartialSolution = {
@@ -56,7 +58,9 @@ object IntegerPolynomialProgramming {
           findSubstitutions.lift.memo
         }
         private def findSomeSubstitutions(ps: Seq[P]): Option[Iterable[Map[V, P]]] = {
-          ps.iterator.map(memo).find(_.nonEmpty).getOrElse(None)
+          val result = ps.iterator.map(memo).find(_.nonEmpty).getOrElse(None)
+//          println(result)
+          result
         }
         override def apply(sol: PartialSolution) = findSomeSubstitutions(sol.remainingPolynomials) map { iterable =>
           for (newSubstitutions <- iterable) yield {
@@ -92,6 +96,7 @@ object IntegerPolynomialProgramming {
         override val findSubstitutions: PartialFunction[P, Iterable[Map[V, P]]] = {
           case p if p.totalDegree == Some(0) => {
             require(p.constantTerm != 0)
+            println("found impossible polynomial: " + p)
             Iterable.empty
           }
         }
@@ -106,13 +111,15 @@ object IntegerPolynomialProgramming {
       }
       case object `a+bV=0` extends SolveOneAtATimeStrategy {
         override val findSubstitutions: PartialFunction[P, Iterable[Map[V, P]]] = {
-          case MultivariablePolynomial((m0, a), (m1, b)) if m0.isEmpty && m1.values.sum == 1 => {
+          case p @ MultivariablePolynomial((m0, a), (m1, b)) if m0.isEmpty && m1.values.sum == 1 => {
             val v = m1.keysIterator.next
             if (a % b != 0) {
+              println("found impossible polynomial: " + p)
               Iterable.empty
             } else {
               val r = -a / b
               if (r < 0) {
+                println("found impossible polynomial: " + p)
                 Iterable.empty
               } else {
                 Iterable(Map(v -> r))
@@ -161,6 +168,7 @@ object IntegerPolynomialProgramming {
       }
       case class RepeatingStrategy(strategy: Strategy) extends Strategy {
         def apply(sol: PartialSolution) = {
+          println("beginning " + this)
           strategy(sol).map({ iterable =>
             val newSolutions = scala.collection.mutable.ListBuffer[PartialSolution]()
             val fixedSolutions = scala.collection.mutable.ListBuffer[PartialSolution]()
@@ -169,9 +177,17 @@ object IntegerPolynomialProgramming {
               val processing = newSolutions.toList
               newSolutions.clear
               for (s <- processing) {
+                println("trying PartialSolution() with " + s.substitutions.size + " substitutions and " + s.remainingPolynomials.size + " polynomials.")
                 strategy(s) match {
-                  case None => fixedSolutions += s
-                  case Some(iterable) => newSolutions ++= iterable
+                  case None => {
+                    println("no further progress on " + s)
+                    fixedSolutions += s
+                  }
+                  case Some(iterable) => {
+                    val n = iterable.toList
+                    println("made some further progress: " + n.size)
+                    newSolutions ++= n
+                  }
                 }
               }
             }
@@ -183,11 +199,12 @@ object IntegerPolynomialProgramming {
       val strategies: List[Strategy] = List(SplitPositiveLinearCombinations, `a=0`, `V^k=0`, `a+bV=0`, `V+aW=0`, LinearWithUnitCoefficient)
       val strategy = RepeatingStrategy(CombinedStrategy(strategies))
 
-      def result = strategy(PartialSolution(Map.empty, polynomials)) match {
+      def result = strategy(PartialSolution(Map.empty, polynomials)).map(_.toSeq) match {
         case None => {
           (Iterable.empty, Iterable(polynomials))
         }
         case Some(iterable) => {
+          println(iterable)
           val (finished, unfinished) = iterable.partition(_.remainingPolynomials.isEmpty)
           val solutions = for (f <- finished) yield {
             f.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm)
