@@ -42,7 +42,6 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
 
     implicit val integersAsBigRationals = Gadgets.integersAsBigInts andThen Gadgets.bigIntegersAsBigRationals
     implicit val rationalsAsBigRationals = Gadgets.rationalsAsBigRationals
-    import Implicits.BigRationals
 
     val m2: Matrix[Fraction[BigInt]] = Matrix(List(List(13, 9, 14, 7, 4), List(0, 12, 12, 19, 15), List(3, 10, 0, 1, 15), List(17, 0, 11, 14, 19), List(8, 4, 6, 11, 13)))
     val a2: List[Fraction[BigInt]] = List(72, 65, 74, 18, 87)

@@ -27,6 +27,28 @@ trait Memo {
     }
   }
 
+  def apply[A, B](f: PartialFunction[A, B]): PartialFunction[A, B] = {
+    apply(f, new com.google.common.collect.MapMaker().makeMap[A, Option[B]]())
+  }
+
+  def apply[A, B](f: PartialFunction[A, B], cache: java.util.concurrent.ConcurrentMap[A, Option[B]]): PartialFunction[A, B] = new PartialFunction[A, B] {
+    private def getOrElseUpdate(a: A) = {
+      if (cache.containsKey(a)) {
+        cache.get(a)
+      } else {
+        val result = f.lift(a)
+        cache.putIfAbsent(a, result)
+        result
+      }
+    }
+    override def isDefinedAt(a: A): Boolean = {
+      getOrElseUpdate(a).isDefined
+    }
+    def apply(a: A) = {
+      getOrElseUpdate(a).get
+    }
+  }
+
   def apply[A1, A2, B](f: (A1, A2) => B): (A1, A2) => B = {
     apply(f, new com.google.common.collect.MapMaker().makeMap[(A1, A2), B]())
   }

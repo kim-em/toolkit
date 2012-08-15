@@ -1,6 +1,8 @@
 package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.mathematica.MathematicaExpression
+import scala.collection.GenSeq
+import scala.collection.GenIterable
 
 object FreeModule {
   implicit def orderingToLinearComboOrdering[A, B](implicit o: Ordering[B]) = new Ordering[Map[B, A]] {
@@ -11,7 +13,7 @@ object FreeModule {
 }
 
 trait LinearCombo[A, B] {
-  def terms: List[(B, A)]
+  def terms: Seq[(B, A)]
 
   def coefficientOf(b: B): Option[A] = terms.find(_._1 == b).map(_._2)
 
@@ -36,25 +38,24 @@ trait GeneralFreeModule[A, B, LC <: LinearCombo[A, B]] extends Module[A, LC] {
 
   implicit def ring: Ring[A]
 
-  def wrap(x: List[(B, A)]): LC
-  def wrap(x: Map[B, A]): LC = wrap(x.toList)
+  def wrap(x: Seq[(B, A)]): LC
+  def wrap(x: Map[B, A]): LC = wrap(x.toSeq)
 
-  protected def discardZeros(x: List[(B, A)]) = (x filterNot (_._2 == ring.zero))
-  protected def collect(x: Iterable[(B, A)]): List[(B, Iterable[A])] = (x.groupBy(_._1) mapValues { v => v map (_._2) }).toList
-  protected def reduce(x: Iterable[(B, A)]) = discardZeros(collect(x) map { case (b, t) => (b, sum(t)) })
+  protected def discardZeros(x: Seq[(B, A)]) = (x filterNot (_._2 == ring.zero))
+  protected def collect(x: Iterable[(B, A)]): Seq[(B, Iterable[A])] = (x.groupBy(_._1).seq.mapValues({ v => v map (_._2) })).toSeq
+  protected def reduce(x: Iterable[(B, A)]) = discardZeros(collect(x) map { case (b, t) => (b, ring.add(t.toSeq)) })
   def simplify(x: Iterable[(B, A)]): LC = wrap(reduce(x))
 
-  def negate(x: LC) = {
+  override def negate(x: LC) = {
     simplify(x.terms map { case (b, a) => (b, -a) })
   }
-  def scalarMultiply(a: A, x: LC) = {
+  override def scalarMultiply(a: A, x: LC) = {
     simplify(x.terms map (t => (t._1, a * t._2)))
   }
-  def add(x: LC, y: LC) = {
-    simplify(x.terms ::: y.terms)
+  override def add(x: LC, y: LC) = {
+    simplify(x.terms ++ y.terms)
   }
-  def apply(b: B) = simplify(List((b, ring.one)))
-  def apply(x: Iterable[(B, A)]) = simplify(x)
+  override def add(xs: GenIterable[LC]) = simplify(xs.flatMap(_.terms).seq)  
 
   def zero = wrap(Nil)
 }
@@ -78,7 +79,7 @@ trait FreeModuleOnMonoid[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModul
   def monoid: CommutativeMonoid[B]
 
   def multiply(x: LC, y: LC) = {
-    apply(for ((bx, ax) <- x.terms; (by, ay) <- y.terms) yield (monoid.add(bx, by) -> ring.multiply(ax, ay)))
+    simplify(for ((bx, ax) <- x.terms; (by, ay) <- y.terms) yield (monoid.add(bx, by) -> ring.multiply(ax, ay)))
   }
   def one = wrap(Map(monoid.zero -> ring.one))
 

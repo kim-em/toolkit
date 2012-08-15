@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-import scala.collection.GenSeq
+import scala.collection.GenIterable
 
 trait CommutativeSemigroup[A] {
   def add(x: A, y: A): A
@@ -12,7 +12,7 @@ trait Zero[A] {
 }
 
 trait CommutativeMonoid[A] extends CommutativeSemigroup[A] with Zero[A] {
-  def add(xs: GenSeq[A]): A = xs.fold(zero)(add _)
+  def add(xs: GenIterable[A]): A = xs.fold(zero)(add _)
 }
 
 trait Subtractive[A] extends CommutativeSemigroup[A] {

@@ -3,7 +3,7 @@ package net.tqft.toolkit.algebra
 import scala.collection.immutable.HashSet
 import scala.collection.GenSet
 import net.tqft.toolkit.Logging
-import net.tqft.toolkit.permutations.Permutations.Permutation
+import net.tqft.toolkit.permutations.Permutation
 import scala.collection.GenSeq
 
 trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
@@ -477,7 +477,7 @@ object FiniteGroups {
 
     override val elements = (0 until n).toSet
   }
-  import net.tqft.toolkit.permutations.Permutations.Permutation
+  import net.tqft.toolkit.permutations.Permutation
   private class PermutationGroup(n: Int) extends FiniteGroup[IndexedSeq[Int]] {
     import net.tqft.toolkit.permutations.Permutations
     import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
