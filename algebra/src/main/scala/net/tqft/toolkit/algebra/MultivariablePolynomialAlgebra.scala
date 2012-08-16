@@ -35,6 +35,8 @@ trait MultivariablePolynomialAlgebra[A, V] extends FreeModuleOnMonoid[A, Map[V, 
       multiply(oldFactor, newFactors: _*)
     })
   }
+  def substituteConstants(values: Map[V, A])(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = substitute(values.mapValues(constant))(p)
+
 }
 
 object MultivariablePolynomialAlgebras {

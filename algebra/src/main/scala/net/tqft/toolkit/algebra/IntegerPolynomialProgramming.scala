@@ -4,16 +4,24 @@ object IntegerPolynomialProgramming {
   
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials
-  def solve[V: Ordering](polynomials: Seq[MultivariablePolynomial[Int, V]]): (Iterable[Map[V, Int]], Iterable[Seq[MultivariablePolynomial[Int, V]]]) = {
+  def solve[V: Ordering](polynomials: Seq[MultivariablePolynomial[Int, V]], knownSolution: Option[Map[V, Int]] = None): (Iterable[Map[V, Int]], Iterable[Seq[MultivariablePolynomial[Int, V]]]) = {
 
     // this "BogusScope" protects us from https://issues.scala-lang.org/browse/SI-6231
     object BogusScope {
       type P = MultivariablePolynomial[Int, V]
 
       case class PartialSolution(substitutions: Map[V, P], remainingPolynomials: Seq[P]) {
+        knownSolution.map({ solution => 
+        	substitutions.filter(_._2.totalDegree.getOrElse(0) == 0).map({
+        	  case (v, p) => require(solution(v) == p.constantTerm) 
+        	})
+        	val polynomials = for(p <- remainingPolynomials; q = polynomialAlgebra.substituteConstants(solution)(p); if q.nonZero) yield {q}
+        	require(polynomials.isEmpty)
+        })
+        
         println("new PartialSolution() with " + substitutions.size + " substitutions and " + remainingPolynomials.size + " polynomials.")
 //        require((remainingPolynomials.flatMap(_.variables).toSet.intersect(substitutions.keySet)).isEmpty)
-
+        
         def add(newSubstitutions: Map[V, P]): PartialSolution = {
 //          require(newSubstitutions.values.toSet[P].flatMap(_.variables).intersect(newSubstitutions.keySet).isEmpty)
 
@@ -29,18 +37,8 @@ object IntegerPolynomialProgramming {
           }
 
           val updatedSubstitutions = substitutions.mapValues(p => substitute(p))
-//          val differences = {
-//            for (
-//              v <- updatedSubstitutions.keySet.intersect(newSubstitutions.keySet);
-//              d = polynomialAlgebra.subtract(updatedSubstitutions(v), newSubstitutions(v));
-//              if d.nonZero
-//            ) yield d
-//          }
-//
-//          require(differences.isEmpty)
-
           val substitutedPolynomials = substituteSeq(remainingPolynomials)
-          PartialSolution(newSubstitutions ++ updatedSubstitutions, substitutedPolynomials/* ++ differences*/)
+          PartialSolution(newSubstitutions ++ updatedSubstitutions, substitutedPolynomials)
         }
       }
 
