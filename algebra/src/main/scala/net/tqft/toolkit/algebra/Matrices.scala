@@ -173,7 +173,7 @@ class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix
 
 object Matrix extends Logging {
   def apply[B](numberOfColumns: Int, entries: GenSeq[Seq[B]]): Matrix[B] = new Matrix(numberOfColumns, entries)
-  implicit def apply[B](entries: GenSeq[Seq[B]]): Matrix[B] = {
+  implicit def from[B](entries: GenSeq[Seq[B]]): Matrix[B] = {
     require(entries.nonEmpty)
     apply(entries.head.size, entries)
   }

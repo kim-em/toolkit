@@ -22,7 +22,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
   def identityConstraints = (for (x <- basis.iterator) yield Seq(subtract(x, multiply(one, x)), subtract(x, multiply(x, one)))).flatten
   def dualityConstraints(duality: Permutation = duality) = for (x <- basis.iterator; y <- basis) yield {
     import net.tqft.toolkit.permutations.Permutations._
-    subtract(duality.permute(multiply(x, y)), multiply(duality.permute(y), duality.permute(y)))
+    subtract(duality.permute(multiply(x, y)), multiply(duality.permute(y), duality.permute(x)))
   }
 
   def duality: Permutation = {
@@ -31,6 +31,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
 
   def verifyAssociativity = associativityConstraints.map(_ == zero).reduce(_ && _)
   def verifyIdentity = identityConstraints.map(_ == zero).reduce(_ && _)
+  def verifyDuality(duality: Permutation = duality) = dualityConstraints(duality).map(_ == zero).reduce(_ && _)
 
   lazy val structureCoefficients = for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
 
@@ -62,10 +63,10 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
       if (m1.rank == m2.rank) {
         import net.tqft.toolkit.permutations.Permutations
         import net.tqft.toolkit.permutations.Permutations._
-        
+
         val s1 = m1.structureCoefficients
         val s2 = m2.structureCoefficients
-        
+
         Permutations.of(m1.rank).find(p => s2 == p.permute(s1.map(m => m.permuteColumns(p)))).nonEmpty
       } else {
         false
@@ -103,226 +104,6 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
   object regularModule extends FusionModule {
     override val rank = fr.rank
     override def act(x: Seq[A], m: Seq[A]) = fr.multiply(x, m)
-  }
-}
-
-trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
-  def dimensionField: RealNumberField[Int, Double]
-  def dimensions: Seq[Polynomial[Fraction[Int]]]
-  def dimensionOf(x: Seq[Int]): Polynomial[Fraction[Int]] = {
-    val polynomials = Polynomials.over(Gadgets.Rationals)
-    import Implicits.integersAsRationals
-    polynomials.add(x.zip(dimensions).map(p => polynomials.scalarMultiply(p._1, p._2)))
-  }
-
-  def dimensionBounds(x: Seq[Int]): Double = {
-    dimensionField.approximateWithin(0.0001)(dimensionOf(x)) + 0.0001
-  }
-
-  def objectsSmallEnoughToBeAlgebras: Seq[Seq[Int]] = {
-    val start = Seq(Seq(1))
-    basis.tail.foldLeft(start)({
-      (i: Seq[Seq[Int]], b: Seq[Int]) =>
-        i.flatMap({
-          a: Seq[Int] => for (m <- 0 to dimensionBounds(b).floor.intValue) yield a :+ m
-        })
-    })
-  }
-
-  def smallObjectsWithPositiveSemidefiniteMultiplication: Seq[Seq[Int]] = {
-    for (
-      o <- objectsSmallEnoughToBeAlgebras;
-      m = regularModule.asMatrix(o);
-      if (m.mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)
-    ) yield o
-  }
-
-  trait FusionMatrix {
-    def algebraObject: Seq[Int]
-    def matrix: Matrix[Int]
-    def dimensionsSquared: Seq[Polynomial[Fraction[Int]]]
-
-    override def toString = "FusionMatrix(" + algebraObject + ", Matrix(" + matrix.numberOfColumns + ", " + matrix.entries + "))"
-    override def equals(other: Any) = {
-      other match {
-        case other: FusionMatrix => algebraObject == other.algebraObject && matrix == other.matrix
-        case _ => false
-      }
-    }
-  }
-
-  object FusionMatrix {
-    def apply(algebraObject: Seq[Int], unsortedMatrix: Matrix[Int]): FusionMatrix = {
-      val _algebraObject = algebraObject
-      new FusionMatrix {
-        val algebraObject = _algebraObject
-        private val sorted = {
-          val unsortedDimensionsSquared = {
-            val dxi = fr.dimensionOf(algebraObject)
-            import Implicits.{ integersAsRationals }
-            val polynomials = Polynomials.over(Gadgets.Rationals)
-            val Atd = unsortedMatrix.transpose.mapEntries(polynomials.constant(_)).apply(fr.dimensions)
-            Atd.map(p => dimensionField.quotient(dimensionField.power(p, 2), dxi))
-          }
-          unsortedMatrix.entries.seq.transpose.zip(unsortedDimensionsSquared).sortBy(_._2)(dimensionField)
-        }
-        val matrix = Matrix(unsortedMatrix.numberOfColumns, sorted.map(_._1).transpose)
-        val dimensionsSquared = sorted.map(_._2)
-      }
-    }
-  }
-
-  lazy val candidateFusionMatrices: Seq[FusionMatrix] = {
-    // mention some internal objects first, so we don't deadlock trying to instantiate them in parallel below...
-    regularModule
-    FusionMatrix
-
-    (for (
-      o <- smallObjectsWithPositiveSemidefiniteMultiplication.par;
-      a = regularModule.asMatrix(o);
-      m <- Matrices.positiveSymmetricDecompositions(a)
-    ) yield {
-      FusionMatrix(o, m)
-    }).seq
-  }
-
-  def candidateAlgebraObjects: Seq[Seq[Int]] = {
-    import net.tqft.toolkit.collections.RemoveDuplicates._
-    candidateFusionMatrices.map(_.algebraObject).removeDuplicates()
-  }
-
-  def candidateFusionModules: Iterator[FusionModule] = {
-    val matricesBySize = candidateFusionMatrices.toList.groupBy(_.matrix.numberOfColumns)
-    (for (n <- (1 to matricesBySize.keys.max).iterator) yield {
-
-      println("Looking at rank " + n + " fusion matrices.")
-
-      val classes = {
-        matricesBySize.getOrElse(n, Nil).groupBy(_.dimensionsSquared).values.toSeq.par
-      }
-
-      println("found classes: ")
-      for (c <- classes) {
-        println("* with dimension vector " + c.head.dimensionsSquared.map(dimensionField.approximateWithin(0.001)))
-        for (cc <- c) println(cc)
-      }
-
-      val n_tuples = {
-        (for (c <- classes.par; d_squared = c.head.dimensionsSquared) yield {
-          def acc(j: Int, partial: List[FusionMatrix]): Iterator[List[FusionMatrix]] = {
-            j match {
-              case 0 => Iterator(partial)
-              case j => {
-                for (
-                  A <- c.iterator;
-                  if (dimensionOf(A.algebraObject) == d_squared(j - 1));
-                  r <- acc(j - 1, A :: partial)
-                ) yield r
-              }
-            }
-          }
-          acc(n, Nil)
-        }).flatten
-      }
-
-      println("possible " + n + "-tuples:")
-      for (t <- n_tuples.seq) println(t)
-
-      val integerMatrices = new MatrixCategoryOverRing(Gadgets.Integers)
-
-      import net.tqft.toolkit.collections.GroupBy._
-      
-      (for (t <- n_tuples) yield {
-        import net.tqft.toolkit.permutations.Permutations
-        import net.tqft.toolkit.permutations.Permutations._
-        val permutations = Permutations.preserving(t.head.dimensionsSquared).toSeq.par
-        val permutedMatrices = t.foldLeft(Iterable(Seq.empty[Matrix[Int]]))({ (i: Iterable[Seq[Matrix[Int]]], M: FusionMatrix) =>
-          def permuteColumns(p: Permutation) = new Matrix(M.matrix.numberOfColumns, p.permute(M.matrix.entries.seq.transpose).transpose)
-          def verifyPartialAssociativity(structureCoefficients: Seq[Matrix[Int]]): Boolean = {
-
-            //            val partialStructureCoefficients: Seq[Matrix[Option[Int]]] = {
-            //              structureCoefficients.map(_.mapEntries[Option[Int]](Some(_))) ++ Seq.fill(n - structureCoefficients.size)(new Matrix[Option[Int]](n, Seq.fill(fr.rank)(Seq.fill(n)(None))))
-            //            }
-
-            val n0 = structureCoefficients.size
-
-            (for (
-              (m, mi) <- structureCoefficients.iterator.zipWithIndex;
-              yj <- 0 until rank;
-              if (m.entries(yj).drop(n0).forall(_ == 0))
-            ) yield {
-              val `x(ym)` = (for (
-                (a, mk) <- m.entries(yj).take(n0).zipWithIndex
-              ) yield {
-                integerMatrices.scalarMultiply(a, structureCoefficients(mk))
-              }).reduce(integerMatrices.add _)
-
-              val `(xy)m` = integerMatrices.compose(fr.structureCoefficients(yj), m)
-
-              `x(ym)` == `(xy)m`
-            }).forall(_ == true)
-          }
-
-          for (
-            s <- i;
-            pM <- permutations.map(permuteColumns _).distinct;
-            if (pM.entries(0)(s.size) == 1);
-            ns = s :+ pM;
-            if verifyPartialAssociativity(ns)
-          ) yield {
-            ns
-          }
-        }).toList.distinct // these .distinct's are probably performance killers
-        for (pm <- permutedMatrices) yield moduleFromStructureCoefficients(pm)
-      }).flatten.chooseEquivalenceClassRepresentatives(FusionModules.equivalent_? _)
-
-      // TODO there are still duplicates; we need to consider some more permutations...
-
-    }).flatten
-  }
-
-  def candidateBrauerPicardGroupoids: Seq[Groupoid] = {
-    val admissibleModules: Seq[FusionModule] = ???
-    val bimodules: Seq[(FusionModule, Seq[FusionBimodule])] = ???
-    ???
-  }
-
-  trait FusionBimodule
-
-}
-
-trait Groupoid
-
-object FusionRings {
-  def withObject(m: Matrix[Int]): Iterable[FusionRing[Int]] = {
-    val rank = m.numberOfColumns
-    require(m.entries.head == 0 :: 1 :: List.fill(rank - 2)(0))
-
-    type V = (Int, Int, Int)
-
-    implicit val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
-
-    val identity = Matrix.identityMatrix[MultivariablePolynomial[Int, V]](rank)
-    val generator = m.mapEntries(polynomialAlgebra.constant)
-    val unknowns = for (i <- 2 until rank) yield {
-      Matrix(rank,
-        for (j <- 0 until rank) yield {
-          for (k <- 0 until rank) yield polynomialAlgebra.monomial((i, j, k))
-        })
-    }
-    val variableStructureCoefficients = identity +: generator +: unknowns
-    val variableRing = FusionRing(identity +: generator +: unknowns)
-
-    val (solutions, tooHard) = IntegerPolynomialProgramming.solve(variableRing.associativityConstraints.flatten.toSeq)
-    require(tooHard.isEmpty)
-
-    for (solution <- solutions) yield {
-      val structureCoefficients = variableStructureCoefficients.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => solution(p.terms.head._1.keySet.iterator.next)
-        case p => p.constantTerm
-      }))
-      FusionRing(structureCoefficients).ensuring(_.structureCoefficients(1) == m)
-    }
   }
 }
 
@@ -365,152 +146,25 @@ object FusionRing {
   }
 }
 
-trait FusionBimodule[A] extends FiniteDimensionalFreeModule[A] {
-  def coefficients = leftRing.coefficients.ensuring(_ == rightRing.coefficients)
-
-  override def rank = leftRing.rank
-
-  val leftRing: FusionRing[A]
-  val rightRing: FusionRing[A]
-  def leftModule: leftRing.FusionModule
-  def rightModule: rightRing.FusionModule
-
-  def associativityConstraints = {
-    leftRing.associativityConstraints ++
-      rightRing.associativityConstraints ++
-      leftModule.associativityConstraints ++
-      rightModule.associativityConstraints ++
-      (for (x <- leftRing.basis.iterator; y <- leftModule.basis; z <- rightRing.basis) yield {
-        subtract(rightModule.act(z, leftModule.act(x, y)), leftModule.act(x, rightModule.act(z, y)))
-      })
-  }
-  def identityConstraints = leftRing.identityConstraints ++ rightRing.identityConstraints ++ leftModule.identityConstraints ++ rightModule.identityConstraints
-}
-
-object FusionBimodule {
-  def apply[A: Ring](leftMultiplication: Seq[Matrix[A]], leftAction: Seq[Matrix[A]], rightMultiplication: Seq[Matrix[A]], rightAction: Seq[Matrix[A]]): FusionBimodule[A] = new StructureCoefficientFusionBimodule(leftMultiplication, leftAction, rightMultiplication, rightAction)
-
-  private class StructureCoefficientFusionBimodule[A: Ring](leftMultiplication: Seq[Matrix[A]], leftAction: Seq[Matrix[A]], rightMultiplication: Seq[Matrix[A]], rightAction: Seq[Matrix[A]]) extends FusionBimodule[A] {
-
-    override val coefficients = implicitly[Ring[A]]
-    override val leftRing = FusionRing(leftMultiplication)
-    override val rightRing = FusionRing(rightMultiplication)
-
-    override val leftModule = leftRing.moduleFromStructureCoefficients(leftAction)
-    override val rightModule = rightRing.moduleFromStructureCoefficients(rightAction)
-  }
-
-}
-
-object FusionBimodules {
-  def commutants(leftModule: FusionRing[Int]#FusionModule, otherRank: Int, otherNumberOfSelfDualObjects: Int): Iterable[FusionBimodule[Int]] = {
-    // first, make a FusionBimodule with variable entries
-
-    val leftRing = leftModule.fusionRing
-    type V = (Int, Int, Int, Int)
-
-    implicit val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
-
-    val fusionRingUnknowns = for (i <- 0 until otherRank) yield {
-      Matrix(otherRank,
-        for (j <- 0 until otherRank) yield {
-          for (k <- 0 until otherRank) yield polynomialAlgebra.monomial((0, i, j, k))
-        })
-    }
-    val fusionModuleUnknowns = for (i <- 0 until leftModule.rank) yield {
-      Matrix(leftModule.rank,
-        for (j <- 0 until otherRank) yield {
-          for (k <- 0 until leftModule.rank) yield polynomialAlgebra.monomial((1, i, j, k))
-        })
-
-    }
-
-    val leftRingStructureCoefficients = leftRing.structureCoefficients.map(_.mapEntries(x => polynomialAlgebra.constant(x)))
-    val leftModuleStructureCoefficients = leftModule.structureCoefficients.map(_.mapEntries(x => polynomialAlgebra.constant(x)))
-
-    val variableBimodule = FusionBimodule(leftRingStructureCoefficients, leftModuleStructureCoefficients, fusionRingUnknowns, fusionModuleUnknowns)
-
-    val otherDuality = (0 until otherNumberOfSelfDualObjects) ++ (for (i <- otherNumberOfSelfDualObjects until otherRank by 2; j <- Seq(i + 1, i)) yield j)
-
-    val (solutions, tooHard) = IntegerPolynomialProgramming.solve(
-      (variableBimodule.associativityConstraints.flatten ++ variableBimodule.identityConstraints.flatten ++ variableBimodule.rightRing.dualityConstraints(otherDuality).flatten).toSeq)
-    require(tooHard.isEmpty)
-
-    for (solution <- solutions) yield {
-      val rightRingStructureCoefficients = fusionRingUnknowns.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => solution(p.terms.head._1.keySet.iterator.next)
-        case p => p.constantTerm
-      }))
-      val rightModuleStructureCoefficients = fusionModuleUnknowns.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => solution(p.terms.head._1.keySet.iterator.next)
-        case p => p.constantTerm
-      }))
-      FusionBimodule(leftRing.structureCoefficients, leftModule.structureCoefficients, rightRingStructureCoefficients, rightRingStructureCoefficients)
-    }
-  }
-
-}
-
 object Goals extends App {
-  val haagerup4FusionRing: FusionRingWithDimensions = {
-    val haagerup4Multiplicities: Seq[Matrix[Int]] =
-      List(
-        List(List(1, 0, 0, 0), List(0, 1, 0, 0), List(0, 0, 1, 0), List(0, 0, 0, 1)),
-        List(List(0, 1, 0, 0), List(1, 2, 2, 1), List(0, 2, 1, 1), List(0, 1, 1, 1)),
-        List(List(0, 0, 1, 0), List(0, 2, 1, 1), List(1, 1, 1, 1), List(0, 1, 1, 0)),
-        List(List(0, 0, 0, 1), List(0, 1, 1, 1), List(0, 1, 1, 0), List(1, 1, 0, 0)))
 
-    val haagerup4FieldGenerator: Polynomial[Int] = {
-      Polynomial(2 -> 1, 0 -> -13)
-    }
-    val haagerup4FieldGeneratorApproximation: Double = 3.60555
-    val haagerup4FieldGeneratorEpsilon: Double = 0.00001
-    val haagerup4Dimensions: Seq[Polynomial[Fraction[Int]]] = {
-      import Implicits.{ integersAsRationals }
-      Seq(
-        Polynomial(0 -> Fraction(1, 1)),
-        Polynomial(0 -> Fraction(5, 2), 1 -> Fraction(1, 2)),
-        Polynomial(0 -> Fraction(3, 2), 1 -> Fraction(1, 2)),
-        Polynomial(0 -> Fraction(1, 2), 1 -> Fraction(1, 2)))
-    }
-    FusionRing(haagerup4Multiplicities, haagerup4FieldGenerator, haagerup4FieldGeneratorApproximation, haagerup4FieldGeneratorEpsilon, haagerup4Dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
-  }
-  val AH1FusionRing: FusionRingWithDimensions = {
-    val AH1Multiplicities: Seq[Matrix[Int]] =
-      List(
-        List(List(1, 0, 0, 0, 0, 0), List(0, 1, 0, 0, 0, 0), List(0, 0, 1, 0, 0, 0), List(0, 0, 0, 1, 0, 0), List(0, 0, 0, 0, 1, 0), List(0, 0, 0, 0, 0, 1)),
-        List(List(0, 1, 0, 0, 0, 0), List(1, 1, 0, 0, 1, 0), List(0, 0, 1, 0, 0, 1), List(0, 0, 0, 0, 1, 1), List(0, 1, 0, 1, 1, 1), List(0, 0, 1, 1, 1, 2)),
-        List(List(0, 0, 1, 0, 0, 0), List(0, 0, 1, 0, 0, 1), List(1, 1, 1, 0, 0, 1), List(0, 0, 0, 1, 1, 1), List(0, 0, 0, 1, 1, 2), List(0, 1, 1, 1, 2, 2)),
-        List(List(0, 0, 0, 1, 0, 0), List(0, 0, 0, 0, 1, 1), List(0, 0, 0, 1, 1, 1), List(1, 0, 1, 1, 1, 1), List(0, 1, 1, 1, 1, 2), List(0, 1, 1, 1, 2, 3)),
-        List(List(0, 0, 0, 0, 1, 0), List(0, 1, 0, 1, 1, 1), List(0, 0, 0, 1, 1, 2), List(0, 1, 1, 1, 1, 2), List(1, 1, 1, 1, 2, 3), List(0, 1, 2, 2, 3, 4)),
-        List(List(0, 0, 0, 0, 0, 1), List(0, 0, 1, 1, 1, 2), List(0, 1, 1, 1, 2, 2), List(0, 1, 1, 1, 2, 3), List(0, 1, 2, 2, 3, 4), List(1, 2, 2, 3, 4, 6)))
+  val H1 = FusionRings.Examples.H1
+  val AH1 = FusionRings.Examples.AH1
 
-    val AH1FieldGenerator: Polynomial[Int] = {
-      Polynomial(2 -> 1, 0 -> -17)
-    }
-    val AH1FieldGeneratorApproximation: Double = 4.12311
-    val AH1FieldGeneratorEpsilon: Double = 0.00001
-    val AH1Dimensions: Seq[Polynomial[Fraction[Int]]] = {
-      import Implicits.{ integersAsRationals }
-      Seq(
-        Polynomial(0 -> Fraction(1, 1)),
-        Polynomial(0 -> Fraction(3, 2), 1 -> Fraction(1, 2)),
-        Polynomial(0 -> Fraction(5, 2), 1 -> Fraction(1, 2)),
-        Polynomial(0 -> Fraction(7, 2), 1 -> Fraction(1, 2)),
-        Polynomial(0 -> Fraction(4, 1), 1 -> Fraction(1, 1)),
-        Polynomial(0 -> Fraction(11, 2), 1 -> Fraction(3, 2)))
-    }
-    FusionRing(AH1Multiplicities, AH1FieldGenerator, AH1FieldGeneratorApproximation, AH1FieldGeneratorEpsilon, AH1Dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
-  }
+  H1.verifyDuality()
+  H1.verifyDuality(IndexedSeq(0,1,2,3))
+  
+  println(H1.candidateFusionModules.size)
 
-  println(haagerup4FusionRing.candidateFusionModules.size)
-
-    
-    for (fm <- haagerup4FusionRing.candidateFusionModules; b <- FusionBimodules.commutants(fm, 4, 4)) {
+  val fm = H1.candidateFusionModules.next
+  val bm = FusionBimodule(H1.structureCoefficients, fm.structureCoefficients, H1.structureCoefficients, fm.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+  println(bm)
+  
+    for (fm <- H1.candidateFusionModules; b <- FusionBimodules.commutants(fm, 4, 4, Some(bm))) {
       println(b.rightRing.structureCoefficients)
     }
 
-  //    for (r <- FusionRings.withObject(AH1FusionRing.structureCoefficients(1)); m <- r.structureCoefficients) { println(m); println() }
+  //    for (r <- FusionRings.withObject(AH1.structureCoefficients(1)); m <- r.structureCoefficients) { println(m); println() }
 
   def test(G: FusionRingWithDimensions) {
     println("Start: " + new java.util.Date())
@@ -531,18 +185,18 @@ object Goals extends App {
       println("found " + count + " modules so far")
     }
   }
-  //  test(haagerup4FusionRing)
-  //  test(AH1FusionRing)
+  //  test(H1)
+  //  test(AH1)
 
   //  val v = Seq(1, 1, 2, 3, 3, 4)
   ////  val v = Seq(1,2,3,4,5,7)
-  //  println(AH1FusionRing.objectsSmallEnoughToBeAlgebras.contains(v))
-  //  println(AH1FusionRing.smallObjectsWithPositiveSemidefiniteMultiplication.contains(v))
-  //  println(AH1FusionRing.regularModule.asMatrix(v));
+  //  println(AH1.objectsSmallEnoughToBeAlgebras.contains(v))
+  //  println(AH1.smallObjectsWithPositiveSemidefiniteMultiplication.contains(v))
+  //  println(AH1.regularModule.asMatrix(v));
   //  {
   //    import Implicits.Rationals
-  //    println(AH1FusionRing.regularModule.asMatrix(v).mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)
+  //    println(AH1.regularModule.asMatrix(v).mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)
   //  }
-  //  println(Matrices.positiveSymmetricDecompositions(AH1FusionRing.regularModule.asMatrix(v)).toList)
+  //  println(Matrices.positiveSymmetricDecompositions(AH1.regularModule.asMatrix(v)).toList)
   //  haagerupFusionRing.candidateBrauerPicardGroupoids
 }

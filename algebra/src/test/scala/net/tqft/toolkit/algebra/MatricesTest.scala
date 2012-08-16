@@ -43,7 +43,7 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
     implicit val integersAsBigRationals = Gadgets.integersAsBigInts andThen Gadgets.bigIntegersAsBigRationals
     implicit val rationalsAsBigRationals = Gadgets.rationalsAsBigRationals
 
-    val m2: Matrix[Fraction[BigInt]] = Matrix(List(List(13, 9, 14, 7, 4), List(0, 12, 12, 19, 15), List(3, 10, 0, 1, 15), List(17, 0, 11, 14, 19), List(8, 4, 6, 11, 13)))
+    val m2: Matrix[Fraction[BigInt]] = Matrix.from(List(List(13, 9, 14, 7, 4), List(0, 12, 12, 19, 15), List(3, 10, 0, 1, 15), List(17, 0, 11, 14, 19), List(8, 4, 6, 11, 13)))
     val a2: List[Fraction[BigInt]] = List(72, 65, 74, 18, 87)
     val b2: List[Fraction[BigInt]] = List(Fraction(152938, 10207), Fraction(684843, 40828), Fraction(-1020225, 40828), Fraction(685601, 40828), Fraction(-423201, 40828))
     m2.preimageOf(a2) should equal(Some(b2))
