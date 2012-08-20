@@ -37,7 +37,12 @@ trait FusionBimoduleWithLeftDimensions extends FusionBimodule[Int] {
   override def rightModule: rightRing.FusionModule
 
   def verifyRightSmallerThanLeftInequalities = {
-    (for(b <- leftModule.basis.iterator) yield rightModule.dimensionLowerBounds(b) < leftModule.dimensionUpperBounds(b)).forall(_ == true)
+    (for(b <- leftModule.basis.iterator) yield {
+      val lb = rightModule.dimensionLowerBounds(b)
+      val ub = leftModule.dimensionUpperBounds(b)
+      println(lb + " < " + ub)
+      lb < ub
+    }).forall(_ == true)
   }
 }
 
