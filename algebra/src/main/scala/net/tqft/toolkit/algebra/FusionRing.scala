@@ -110,8 +110,9 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
 trait ConcreteFusionRing extends FusionRing[Int] {
   trait FusionModule extends super.FusionModule {
     def dimensionLowerBounds(x: Seq[Int]): Double = {
-      val A = asMatrix(x)
-      val AAt = Matrices.over[Int].compose(A, A.transpose)
+      val matrices = Matrices.over[Int]
+      val A = x.zip(structureCoefficients).map(p => matrices.scalarMultiply(p._1, p._2)).reduce(matrices.add)
+      val AAt = matrices.compose(A, A.transpose)
       val result = scala.math.sqrt(FrobeniusPerronEigenvalues.estimate(AAt) - 0.0001)
       result
     }

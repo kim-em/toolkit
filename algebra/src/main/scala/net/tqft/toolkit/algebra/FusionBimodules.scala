@@ -47,7 +47,7 @@ object FusionBimodules {
         case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
         case p => p.constantTerm
       }))
-      FusionBimoduleWithLeftDimensions(leftModule, rightRingStructureCoefficients, rightRingStructureCoefficients)
+      FusionBimoduleWithLeftDimensions(leftModule, rightRingStructureCoefficients, rightModuleStructureCoefficients)
     }
 
     def checkInequalities(m: Map[V, Int]): Boolean = {

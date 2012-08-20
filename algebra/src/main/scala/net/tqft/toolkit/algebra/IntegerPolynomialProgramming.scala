@@ -15,7 +15,7 @@ object IntegerPolynomialProgramming {
       val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
       implicit def constant(k: Int) = polynomialAlgebra.constant(k)
 
-      case class PartialSolution(substitutions: Map[V, P], remainingPolynomials: Seq[P]) {
+      case class PartialSolution(substitutions: Map[V, P], remainingPolynomials: Seq[P], cases: Seq[V]) {
         knownSolution.map({ solution =>
           substitutions.filter(_._2.totalDegree.getOrElse(0) == 0).map({
             case (v, p) => require(solution(v) == p.constantTerm)
@@ -24,16 +24,17 @@ object IntegerPolynomialProgramming {
           require(polynomials.isEmpty)
         })
 
-        println("new PartialSolution() with " + substitutions.size + " substitutions and " + remainingPolynomials.size + " polynomials.")
-        //        require((remainingPolynomials.flatMap(_.variables).toSet.intersect(substitutions.keySet)).isEmpty)
+        println("new PartialSolution() with " + substitutions.size + " substitutions and " + remainingPolynomials.size + " polynomials, split into cases along: " + cases)
+        require((remainingPolynomials.flatMap(_.variables).toSet.intersect(substitutions.keySet)).isEmpty)
 
-        def remainingVariables = remainingPolynomials.flatMap(_.variables)
+        def remainingVariables = remainingPolynomials.flatMap(_.variables).distinct.ensuring(rv => rv.intersect(substitutions.keys.toSeq).isEmpty)
         def minimalSubstitution: Map[V, Int] = {
           add(remainingVariables.map(x => x -> constant(0)).toMap).substitutions.mapValues(_.constantTerm)
         }
 
+        def addCase(v: V, k: Int) = copy(cases = v +: cases).add(Map(v -> constant(k)))
         def add(newSubstitutions: Map[V, P]): PartialSolution = {
-          //          require(newSubstitutions.values.toSet[P].flatMap(_.variables).intersect(newSubstitutions.keySet).isEmpty)
+          require(newSubstitutions.values.toSet[P].flatMap(_.variables).intersect(newSubstitutions.keySet).isEmpty)
 
           def substitute(p: P): P = {
             polynomialAlgebra.substitute(newSubstitutions)(p)
@@ -48,7 +49,7 @@ object IntegerPolynomialProgramming {
 
           val updatedSubstitutions = substitutions.mapValues(p => substitute(p))
           val substitutedPolynomials = substituteSeq(remainingPolynomials)
-          PartialSolution(newSubstitutions ++ updatedSubstitutions, substitutedPolynomials)
+          PartialSolution(newSubstitutions ++ updatedSubstitutions, substitutedPolynomials, cases)
         }
       }
 
@@ -84,7 +85,7 @@ object IntegerPolynomialProgramming {
           if (replacements.isEmpty) {
             None
           } else {
-            val next = PartialSolution(sol.substitutions,
+            val next = sol.copy(remainingPolynomials =
               replacements.flatMap(_._2.get) ++ keep.map(_._1))
             require(sol != next)
             Some(Iterable(next))
@@ -163,16 +164,17 @@ object IntegerPolynomialProgramming {
       }
       case object SplitIntoCases extends Strategy {
         def apply(ps: PartialSolution) = {
-          boundary.map ({ limit =>
-          val remainingVariables = ps.remainingVariables
-          val v = variables.filter(remainingVariables.contains).head
-          println("Splitting into cases trying values of " + v)
+          boundary.map({ limit =>
+            val remainingVariables = ps.remainingVariables
+            val v = variables.filter(remainingVariables.contains).head
+            println("Splitting into cases trying values of " + v)
 
-          val cases = Iterator.from(0).map({ k =>
-            println("  considering " + v + " = " + k)
-            ps.add(Map(v -> constant(k)))
-          })
-          cases.takeWhile(psk => limit(psk.minimalSubstitution)).toStream
+            val cases = Iterator.from(0).map({ k =>
+              println("  considering " + v + " = " + k)
+              def maxValue(s: Map[V, P]) = s.values.map(_.constantTerm).max
+              ps.addCase(v, k).ensuring(psk => maxValue(psk.substitutions) >= k)
+            })
+            cases.takeWhile(psk => limit(psk.minimalSubstitution)).toStream
           })
         }
       }
@@ -196,11 +198,16 @@ object IntegerPolynomialProgramming {
         def apply(sol: PartialSolution) = {
           println("beginning " + this)
           strategy(sol).map({ iterable =>
+            // TODO parallelize these, getting rid of the ListBuffers
+            // TODO depth first, rather than breadth first
             val newSolutions = scala.collection.mutable.ListBuffer[PartialSolution]()
             val fixedSolutions = scala.collection.mutable.ListBuffer[PartialSolution]()
             newSolutions ++= iterable
             while (newSolutions.nonEmpty) {
               val processing = newSolutions.toList
+              if(processing.size > 1) { 
+                println("currently considering " + processing.size + " cases!")
+              }
               newSolutions.clear
               for (s <- processing) {
                 println("trying PartialSolution() with " + s.substitutions.size + " substitutions and " + s.remainingPolynomials.size + " polynomials.")
@@ -225,7 +232,7 @@ object IntegerPolynomialProgramming {
       val strategies: List[Strategy] = List(SplitPositiveLinearCombinations, `a=0`, `V^k=0`, `a+bV=0`, LinearWithUnitCoefficient, SplitIntoCases)
       val strategy = RepeatingStrategy(CombinedStrategy(strategies))
 
-      def result = strategy(PartialSolution(Map.empty, polynomials)).map(_.toSeq) match {
+      def result = strategy(PartialSolution(Map.empty, polynomials, Seq.empty)).map(_.toSeq) match {
         case None => {
           (Iterable.empty, Iterable(polynomials))
         }
