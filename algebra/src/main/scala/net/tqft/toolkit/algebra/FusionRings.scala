@@ -20,7 +20,9 @@ object FusionRings {
     val variableStructureCoefficients = identity +: generator +: unknowns
     val variableRing = FusionRing(identity +: generator +: unknowns)
 
-    val (solutions, tooHard) = IntegerPolynomialProgramming.solve(variableRing.associativityConstraints.flatten.toSeq)
+    val variables = for(i <- 2 until rank; j <- 0 until rank; k <- 0 until rank) yield (i,j,k)
+    
+    val (solutions, tooHard) = IntegerPolynomialProgramming.solve(variableRing.associativityConstraints.flatten.toSeq, variables)
     require(tooHard.isEmpty)
 
     for (solution <- solutions) yield {

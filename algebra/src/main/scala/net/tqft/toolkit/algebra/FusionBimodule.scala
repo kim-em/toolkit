@@ -26,7 +26,29 @@ trait FusionBimodule[A] extends FiniteDimensionalFreeModule[A] {
   }
   def verifyIdentity = {
     identityConstraints.find(_ != zero).isEmpty
+  }  
+
+}
+
+trait FusionBimoduleWithLeftDimensions extends FusionBimodule[Int] {
+  override val leftRing: FusionRingWithDimensions
+  override val rightRing: ConcreteFusionRing
+  override  def leftModule: leftRing.FusionModule
+  override def rightModule: rightRing.FusionModule
+
+  def verifyRightSmallerThanLeftInequalities = {
+    (for(b <- leftModule.basis.iterator) yield rightModule.dimensionLowerBounds(b) < leftModule.dimensionUpperBounds(b)).forall(_ == true)
   }
+}
+
+trait FusionBimoduleWithDimensions extends FusionBimoduleWithLeftDimensions {
+  override val rightRing: FusionRingWithDimensions
+  override def rightModule: rightRing.FusionModule
+
+  def verifyLeftSmallerThanRightInequalities = {
+    (for(b <- leftModule.basis.iterator) yield leftModule.dimensionLowerBounds(b) < rightModule.dimensionUpperBounds(b)).forall(_ == true)
+  }
+  def verifyInequalities = verifyLeftSmallerThanRightInequalities && verifyRightSmallerThanLeftInequalities  
 }
 
 object FusionBimodule {
@@ -40,5 +62,17 @@ object FusionBimodule {
     override val leftModule = leftRing.moduleFromStructureCoefficients(leftAction)
     override val rightModule = rightRing.moduleFromStructureCoefficients(rightAction)
   }
+}
 
+object FusionBimoduleWithLeftDimensions {
+  def apply(_leftModule: FusionRingWithDimensions#FusionModule, rightMultiplication: Seq[Matrix[Int]], rightAction: Seq[Matrix[Int]]): FusionBimoduleWithLeftDimensions = new FusionBimoduleWithLeftDimensions {
+    override val coefficients = Gadgets.Integers
+    override val leftRing = _leftModule.fusionRing
+    override val rightRing = FusionRing(rightMultiplication)
+
+    override val leftModule = leftRing.moduleFromStructureCoefficients(_leftModule.structureCoefficients)
+    override val rightModule = rightRing.moduleFromStructureCoefficients(rightAction)    
+  }
+
+  
 }

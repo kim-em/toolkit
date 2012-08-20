@@ -57,26 +57,6 @@ trait RingHomomorphism[A, B] extends Homomorphism[Ring, A, B]
 
 trait CommutativeRing[A] extends Ring[A]
 
-trait IntegerModel[I] extends OrderedEuclideanDomain[I] {
-  def toBigInt(i: I): BigInt
-  def fromBigInt(i: BigInt): I
-  def from[II:IntegerModel](i: II): I = {
-    fromBigInt(implicitly[IntegerModel[II]].toBigInt(i))
-  }
-}
-
-trait ApproximateReals[A] extends ApproximateField[A] {
-  def fromInteger[I:IntegerModel](i: I): A = {
-    i match {
-      case i: Int => fromInt(i)
-      case i => fromBigDecimal(BigDecimal(implicitly[IntegerModel[I]].toBigInt(i)))
-    }
-  }
-  def fromDouble(x: Double): A
-  def fromBigDecimal(x: BigDecimal): A
-  def setPrecision(x: A): A
-  def bigDecimalValue(x: A): BigDecimal
-}
 
 trait FieldHomomorphism[A, B] extends Homomorphism[Field, A, B]
 
