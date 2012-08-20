@@ -33,5 +33,4 @@ trait ApproximateField[A] extends OrderedField[A] {
     val n = multiplyByInt(norm(v), s)
     v map { x => quotient(x, n) }
   }
-
 }

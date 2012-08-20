@@ -98,7 +98,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
   }
 
   def moduleFromStructureCoefficients(matrices: Seq[Matrix[A]]): FusionModule = {
-    (new StructureCoefficientFusionModule(matrices)).ensuring(_.structureCoefficients == matrices)
+    (new StructureCoefficientFusionModule(matrices)) //.ensuring(_.structureCoefficients == matrices)
   }
 
   object regularModule extends FusionModule {
@@ -107,14 +107,36 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
   }
 }
 
+trait ConcreteFusionRing extends FusionRing[Int] {
+  trait FusionModule extends super.FusionModule {
+    def dimensionLowerBounds(x: Seq[Int]): Double = {
+      val A = asMatrix(x)
+      val AAt = Matrices.over[Int].compose(A, A.transpose)
+      val result = scala.math.sqrt(FrobeniusPerronEigenvalues.estimate(AAt) - 0.0001)
+      require(result > 2)
+      result
+    }
+  }
+
+  override def moduleFromStructureCoefficients(matrices: Seq[Matrix[Int]]): FusionModule = {
+    (new StructureCoefficientFusionModule(matrices)) // .ensuring(_.structureCoefficients == matrices)
+  }
+
+  protected class StructureCoefficientFusionModule(matrices: Seq[Matrix[Int]]) extends super.StructureCoefficientFusionModule(matrices) with FusionModule
+
+}
+
 object FusionRing {
   def apply[A: Ring](multiplicities: Seq[Matrix[A]]): FusionRing[A] = {
     val result = new StructureCoefficientFusionRing(multiplicities)
-    require({
-      val sc = result.structureCoefficients
-      sc == multiplicities
-    })
+    //    require({
+    //      val sc = result.structureCoefficients
+    //      sc == multiplicities
+    //    })
     result
+  }
+  def apply(multiplicities: Seq[Matrix[Int]]): ConcreteFusionRing = {
+    new ConcreteStructureCoefficientFusionRing(multiplicities)
   }
   def apply(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, dimensions: Seq[Polynomial[Fraction[Int]]]): FusionRingWithDimensions = new StructureCoefficientFusionRingWithDimensions(multiplicities, fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon, dimensions).ensuring(_.structureCoefficients == multiplicities)
 
@@ -139,6 +161,8 @@ object FusionRing {
     }
   }
 
+  private class ConcreteStructureCoefficientFusionRing(multiplicities: Seq[Matrix[Int]]) extends StructureCoefficientFusionRing[Int](multiplicities) with ConcreteFusionRing
+
   private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, override val dimensions: Seq[Polynomial[Fraction[Int]]]) extends StructureCoefficientFusionRing[Int](multiplicities)(Gadgets.Integers) with FusionRingWithDimensions {
     override def dimensionField = {
       RealNumberField(fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon)(Gadgets.Integers, Gadgets.Doubles)
@@ -152,23 +176,23 @@ object Goals extends App {
   val AH1 = FusionRings.Examples.AH1
 
   H1.verifyDuality()
-  H1.verifyDuality(IndexedSeq(0,1,2,3))
-  
+  H1.verifyDuality(IndexedSeq(0, 1, 2, 3))
+
   println(H1.candidateFusionModules.size)
 
   val fm = H1.candidateFusionModules.next
   val bm = FusionBimodule(H1.structureCoefficients, fm.structureCoefficients, H1.structureCoefficients, fm.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
   println(bm)
-  
-    for (fm <- H1.candidateFusionModules; b <- FusionBimodules.commutants(fm, 4, 4, Some(bm))) {
-      println(b.rightRing.structureCoefficients)
-    }
+
+  for (fm <- H1.candidateFusionModules; b <- FusionBimodules.commutants(fm, 4, 4, None)) {
+    println(b.rightRing.structureCoefficients)
+  }
 
   //    for (r <- FusionRings.withObject(AH1.structureCoefficients(1)); m <- r.structureCoefficients) { println(m); println() }
 
   def test(G: FusionRingWithDimensions) {
     println("Start: " + new java.util.Date())
-    println("dimension bounds: " + G.basis.map(G.dimensionBounds))
+    println("dimension bounds: " + G.basis.map(G.dimensionUpperBounds))
     println(G.candidateAlgebraObjects.toList)
     for (m <- G.candidateFusionMatrices) {
       println(m.algebraObject)

@@ -19,7 +19,8 @@ object Matrices extends Logging {
 
   def tensor[B: Ring](m1: Matrix[B], m2: Matrix[B]) = new MatrixCategoryOverRing(implicitly[Ring[B]]).tensorMorphisms(m1, m2)
 
-  def over[A](ring: Ring[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(ring).endomorphismAlgebra(size)
+//  def over[A:Ring](size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(implicitly[Ring[A]]).endomorphismAlgebra(size)
+  def over[A: Ring] = new MatrixCategoryOverRing(implicitly[Ring[A]])
   //  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 
   // return all ways to write M=AA^t, up to permuting the columns of A

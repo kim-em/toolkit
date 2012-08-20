@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
+trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
   def dimensionField: RealNumberField[Int, Double]
   def dimensions: Seq[Polynomial[Fraction[Int]]]
   def dimensionOf(x: Seq[Int]): Polynomial[Fraction[Int]] = {
@@ -9,7 +9,11 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     polynomials.add(x.zip(dimensions).map(p => polynomials.scalarMultiply(p._1, p._2)))
   }
 
-  def dimensionBounds(x: Seq[Int]): Double = {
+  def dimensionLowerBounds(x: Seq[Int]): Double = {
+    FrobeniusPerronEigenvalues.estimate(regularModule.asMatrix(x)) - 0.0001
+  }
+
+  def dimensionUpperBounds(x: Seq[Int]): Double = {
     dimensionField.approximateWithin(0.0001)(dimensionOf(x)) + 0.0001
   }
 
@@ -18,7 +22,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     basis.tail.foldLeft(start)({
       (i: Seq[Seq[Int]], b: Seq[Int]) =>
         i.flatMap({
-          a: Seq[Int] => for (m <- 0 to dimensionBounds(b).floor.intValue) yield a :+ m
+          a: Seq[Int] => for (m <- 0 to dimensionUpperBounds(b).floor.intValue) yield a :+ m
         })
     })
   }
@@ -85,6 +89,22 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
     candidateFusionMatrices.map(_.algebraObject).removeDuplicates()
   }
 
+  trait FusionModule extends super.FusionModule {
+    override val fusionRing: fr.type = fr
+
+    def dimensionUpperBounds(x: Seq[Int]): Double = {
+      val A = asMatrix(x)
+      val AAt = Matrices.over[Int].compose(A, A.transpose)
+      scala.math.sqrt(fr.dimensionUpperBounds(AAt.entries.head))
+    }
+  }
+
+  override def moduleFromStructureCoefficients(matrices: Seq[Matrix[Int]]): FusionModule = {
+    (new StructureCoefficientFusionModule(matrices)) // .ensuring(_.structureCoefficients == matrices)
+  }
+
+  protected class StructureCoefficientFusionModule(matrices: Seq[Matrix[Int]]) extends super.StructureCoefficientFusionModule(matrices) with FusionModule
+
   def candidateFusionModules: Iterator[FusionModule] = {
     val matricesBySize = candidateFusionMatrices.toList.groupBy(_.matrix.numberOfColumns)
     (for (n <- (1 to matricesBySize.keys.max).iterator) yield {
@@ -125,7 +145,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
       val integerMatrices = new MatrixCategoryOverRing(Gadgets.Integers)
 
       import net.tqft.toolkit.collections.GroupBy._
-      
+
       (for (t <- n_tuples) yield {
         import net.tqft.toolkit.permutations.Permutation
         import net.tqft.toolkit.permutations.Permutations
