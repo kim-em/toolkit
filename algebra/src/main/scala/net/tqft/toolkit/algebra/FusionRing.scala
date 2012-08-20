@@ -113,7 +113,6 @@ trait ConcreteFusionRing extends FusionRing[Int] {
       val A = asMatrix(x)
       val AAt = Matrices.over[Int].compose(A, A.transpose)
       val result = scala.math.sqrt(FrobeniusPerronEigenvalues.estimate(AAt) - 0.0001)
-      require(result > 2)
       result
     }
   }
