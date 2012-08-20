@@ -40,7 +40,6 @@ trait FusionBimoduleWithLeftDimensions extends FusionBimodule[Int] {
     (for(b <- leftModule.basis.iterator) yield {
       val lb = rightModule.dimensionLowerBounds(b)
       val ub = leftModule.dimensionUpperBounds(b)
-      println(lb + " < " + ub)
       lb < ub
     }).forall(_ == true)
   }
