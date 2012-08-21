@@ -43,6 +43,29 @@ trait FusionBimoduleWithLeftDimensions extends FusionBimodule[Int] {
       lb < ub
     }).forall(_ == true)
   }
+  
+  def rightRingDimensionLowerBounds(x: Seq[Int]): Double = {
+    // for each simple y in the bimodule category, compute yx (another object in the bimodule category)
+    // d(x) = d(yx)/d(y)
+    
+//    println("lower bounds for " + x)
+    val lowerBound = (for(y <- leftModule.basis) yield {
+      val dxy = leftModule.dimensionLowerBounds(rightModule.act(x, y))
+      val dy =  leftModule.dimensionUpperBounds(y)
+//      println("lower bound from " + y + ": " + dxy / dy + " = " + dxy + "/"+dy)
+      dxy / dy
+    }).max
+//    println("lower bounds from the ring: " + rightRing.dimensionLowerBounds(x))
+    
+    List(lowerBound, rightRing.dimensionLowerBounds(x)).max
+  }
+  
+  def verifyGlobalDimensionInequality = {
+    val leftGlobalDimensionUpperBound = (for(b <- leftRing.basis) yield leftRing.dimensionUpperBounds(b) * leftRing.dimensionUpperBounds(b)).sum
+    val rightGlobalDimensionLowerBound = (for(b <- rightRing.basis) yield rightRingDimensionLowerBounds(b) * rightRingDimensionLowerBounds(b)).sum
+//    print("[ub: " + leftGlobalDimensionUpperBound+ ", lb: " + rightGlobalDimensionLowerBound + "]")
+    rightGlobalDimensionLowerBound < leftGlobalDimensionUpperBound
+  }
 }
 
 trait FusionBimoduleWithDimensions extends FusionBimoduleWithLeftDimensions {
