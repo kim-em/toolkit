@@ -1,7 +1,7 @@
 package net.tqft.toolkit.algebra
 
 object FusionRings {
-  def withObject(m: Matrix[Int]): Iterable[FusionRing[Int]] = {
+  def withObject(m: Matrix[Int], knownRing: Option[FusionRing[Int]] = None ): Iterable[FusionRing[Int]] = {
     val rank = m.numberOfColumns
     require(m.entries.head == 0 :: 1 :: List.fill(rank - 2)(0))
 
@@ -20,9 +20,17 @@ object FusionRings {
     val variableStructureCoefficients = identity +: generator +: unknowns
     val variableRing = FusionRing(identity +: generator +: unknowns)
 
-    val variables = for(i <- 2 until rank; j <- 0 until rank; k <- 0 until rank) yield (i,j,k)
-    
-    val (solutions, tooHard) = IntegerPolynomialProgramming.solve(variableRing.associativityConstraints.flatten.toSeq, variables)
+    val variables = for (i <- 2 until rank; j <- 0 until rank; k <- 0 until rank) yield (i, j, k)
+
+    val knownSolution = knownRing.map({ ring =>
+      val rsc = ring.structureCoefficients
+      (for (i <- 2 until rank; j <- 0 until rank; k <- 0 until rank) yield (i, j, k) -> rsc(i).entries(j)(k)).toMap
+    })
+
+    val (solutions, tooHard) = IntegerPolynomialProgramming2.solve(variableRing.associativityConstraints.flatten.toSeq, variables, knownSolution = knownSolution)
+    for (th <- tooHard) {
+      for (e <- th) println(e)
+    }
     require(tooHard.isEmpty)
 
     for (solution <- solutions) yield {

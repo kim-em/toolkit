@@ -101,20 +101,39 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
     (new StructureCoefficientFusionModule(matrices)) //.ensuring(_.structureCoefficients == matrices)
   }
 
-  object regularModule extends FusionModule {
+  trait RegularModule extends FusionModule {
     override val rank = fr.rank
     override def act(x: Seq[A], m: Seq[A]) = fr.multiply(x, m)
   }
+
+  lazy val regularModule: RegularModule = new RegularModule {}
 }
 
 trait ConcreteFusionRing extends FusionRing[Int] {
+  def dimensionLowerBounds(x: Seq[Int]): Double = {
+    val matrices = Matrices.over[Int]
+    val A = x.zip(structureCoefficients).map(p => matrices.scalarMultiply(p._1, p._2)).reduce(matrices.add)
+    val AAt = matrices.compose(A, A.transpose)
+    val result = scala.math.sqrt(FrobeniusPerronEigenvalues.estimate(AAt) - 0.0001)
+    if (A.entries.flatten.max > 4 && result < 2) require(false)
+    result
+  }
+
   trait FusionModule extends super.FusionModule {
     def dimensionLowerBounds(x: Seq[Int]): Double = {
-      val matrices = Matrices.over[Int]
-      val A = x.zip(structureCoefficients).map(p => matrices.scalarMultiply(p._1, p._2)).reduce(matrices.add)
-      val AAt = matrices.compose(A, A.transpose)
-      val result = scala.math.sqrt(FrobeniusPerronEigenvalues.estimate(AAt) - 0.0001)
-      result
+      if (x.forall(_ == 0)) {
+        0
+      } else {
+        val matrices = Matrices.over[Int]
+        val A = x.zip(structureCoefficients).map(p => matrices.scalarMultiply(p._1, p._2)).reduce(matrices.add)
+        require(A.entries.flatten.forall(_ >= 0))
+        require(A.entries.flatten.exists(_ > 0))
+        val AAt = matrices.compose(A, A.transpose)
+        val estimate = FrobeniusPerronEigenvalues.estimate(AAt)
+        require(estimate > 0.999)
+        val result = scala.math.sqrt(estimate - 0.0001)
+        result
+      }
     }
   }
 
@@ -180,13 +199,18 @@ object Goals extends App {
 
   println(H1.candidateFusionModules.size)
 
-  val fm = H1.candidateFusionModules.next
-  val bm = FusionBimodule(H1.structureCoefficients, fm.structureCoefficients, H1.structureCoefficients, fm.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+  val fm = H1.regularModule
+  val bm = FusionBimoduleWithLeftDimensions(H1.regularModule, H1.structureCoefficients, fm.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
   println(bm)
+  println(bm.verifyGlobalDimensionInequality)
 
-  for (fm <- H1.candidateFusionModules; b <- FusionBimodules.commutants(fm, 4, 4, None)) {
+  for (b <- FusionBimodules.commutants(fm, 4, 4, Some(bm))) {
     println(b.rightRing.structureCoefficients)
   }
+
+  //  for (fm <- H1.candidateFusionModules; b <- FusionBimodules.commutants(fm, 4, 4, None)) {
+  //    println(b.rightRing.structureCoefficients)
+  //  }
 
   //    for (r <- FusionRings.withObject(AH1.structureCoefficients(1)); m <- r.structureCoefficients) { println(m); println() }
 

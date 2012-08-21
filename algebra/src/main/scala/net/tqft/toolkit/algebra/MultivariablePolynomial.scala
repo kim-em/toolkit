@@ -11,6 +11,11 @@ trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
   def nonZero = terms.nonEmpty
   def variables = terms.flatMap(_._1.keySet).toSet
 
+  def divideByCoefficientGCD(implicit euclideanDomain: EuclideanDomain[A], ordering: Ordering[V]) = {
+    val gcd = euclideanDomain.gcd(terms.map(_._2): _*)
+    MultivariablePolynomial(terms.map(p => p.copy(_2 = euclideanDomain.quotient(p._2, gcd))): _*)
+  }
+
   override def toString = {
     terms match {
       case Nil => "0"
@@ -28,7 +33,7 @@ trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
       case other: MultivariablePolynomial[_, _] => terms == other.terms
       case _ => false
     }
-    if(result == false) require(toString != other.toString)
+    if (result == false) require(toString != other.toString)
     result
   }
   override lazy val hashCode: Int = terms.hashCode

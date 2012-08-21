@@ -51,13 +51,16 @@ object FusionBimodules {
     }
 
     def checkInequalities(m: Map[V, Int]): Boolean = {
-      reconstituteBimodule(m).verifyRightSmallerThanLeftInequalities
+     val bimodule = reconstituteBimodule(m)
+//     println(bimodule.rightModule.structureCoefficients)
+//     println(bimodule.rightRing.structureCoefficients)
+     bimodule.verifyRightSmallerThanLeftInequalities && bimodule.verifyGlobalDimensionInequality
     }
 
     val polynomials = (variableBimodule.associativityConstraints.flatten ++ variableBimodule.identityConstraints.flatten ++ variableBimodule.rightRing.dualityConstraints(otherDuality).flatten).toSeq
     val variables = (fusionModuleUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++ fusionRingUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq)).distinct
     
-    val (solutions, tooHard) = IntegerPolynomialProgramming.solve(
+    val (solutions, tooHard) = IntegerPolynomialProgramming2.solve(
       polynomials, variables, boundary = Some(checkInequalities _), knownSolution = knownSolution)
 
     // failing here, because, well, the problem is too hard as specified. 

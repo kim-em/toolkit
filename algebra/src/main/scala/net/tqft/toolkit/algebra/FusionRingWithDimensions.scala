@@ -9,7 +9,11 @@ trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
     polynomials.add(x.zip(dimensions).map(p => polynomials.scalarMultiply(p._1, p._2)))
   }
 
-  def dimensionLowerBounds(x: Seq[Int]): Double = {
+  trait RegularModule extends super.RegularModule with FusionModule
+  
+  override lazy val regularModule: RegularModule = new RegularModule {}
+  
+  override def dimensionLowerBounds(x: Seq[Int]): Double = {
     FrobeniusPerronEigenvalues.estimate(regularModule.asMatrix(x)) - 0.0001
   }
 
