@@ -59,6 +59,7 @@ object FusionBimodules {
 
     val polynomials = (variableBimodule.associativityConstraints.flatten ++ variableBimodule.identityConstraints.flatten ++ variableBimodule.rightRing.dualityConstraints(otherDuality).flatten).toSeq
     val variables = (fusionModuleUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++ fusionRingUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq)).distinct
+    require(variables.size == otherRank * otherRank * otherRank + leftModule.rank * otherRank * leftModule.rank)
     
     val (solutions, tooHard) = IntegerPolynomialProgramming2.solve(
       polynomials, variables, boundary = Some(checkInequalities _), knownSolution = knownSolution)
