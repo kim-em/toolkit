@@ -9,6 +9,9 @@ trait FiniteDimensionalFreeModule[A] extends Module[A, Seq[A]] {
   override def add(x: Seq[A], y: Seq[A]) = x.zip(y).map(p => coefficients.add(p._1, p._2))
   override def scalarMultiply(a: A, b: Seq[A]) = b.map(x => coefficients.multiply(a, x))
   override def negate(x: Seq[A]) = x.map(coefficients.negate)
+  
+  def innerProduct(x: Seq[A], y: Seq[A]) = coefficients.add(x.zip(y).map(p => coefficients.multiply(p._1, p._2)))
+  
   def basis = for (i <- 0 until rank) yield for (j <- 0 until rank) yield if (i == j) coefficients.one else coefficients.zero
 }
 
@@ -41,9 +44,19 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
     def fusionRing = fr
 
     def act(x: Seq[A], m: Seq[A]): Seq[A]
+    def rightMultiplicationByDuals(m: Seq[A], n: Seq[A]): Seq[A] = for(i <- 0 until fr.rank) yield {
+      innerProduct(m, act(fr.basis(i), n))
+    }
+    
     def associativityConstraints = for (x <- fr.basis.iterator; y <- fr.basis; z <- basis) yield subtract(act(x, act(y, z)), act(fr.multiply(x, y), z))
+    def admissibilityConstraints = for(m <- basis.iterator; x <- fr.basis; h <- fr.basis) yield {
+      coefficients.subtract(innerProduct(act(x, m), act(h, m)), fr.innerProduct(fr.multiply(x, rightMultiplicationByDuals(m, m)), h))
+    }
     def identityConstraints = for (x <- basis.iterator) yield subtract(x, act(fr.one, x))
+    
     def verifyAssociativity = associativityConstraints.map(_ == zero).reduce(_ && _)
+    def verifyAdmissibility = admissibilityConstraints.map(_ == coefficients.zero).reduce(_ && _)
+    
     def asMatrix(x: Seq[A]) = new Matrix(rank, for (b <- basis) yield act(x, b))
 
     def structureCoefficients = for (y <- basis) yield Matrix(rank, for (x <- fr.basis) yield act(x, y))
@@ -199,8 +212,8 @@ object Goals extends App {
 
   println(H1.candidateFusionModules.size)
 
-  val fm = H1.regularModule
-  val bm = FusionBimoduleWithLeftDimensions(H1.regularModule, H1.structureCoefficients, fm.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+  val fm = H1.regularModule.ensuring(_.verifyAdmissibility)
+  val bm = FusionBimoduleWithLeftDimensions(H1.regularModule, H1.structureCoefficients, fm.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyAdmissibility).ensuring(_.verifyIdentity)
   println(bm)
   println(bm.verifyGlobalDimensionInequality)
 
