@@ -80,7 +80,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
         val s1 = m1.structureCoefficients
         val s2 = m2.structureCoefficients
 
-        Permutations.of(m1.rank).find(p => s2 == p.permute(s1.map(m => m.permuteColumns(p)))).nonEmpty
+        Permutations.of(m1.rank).exists(p => s2 == p.permute(s1.map(m => m.permuteColumns(p))))
       } else {
         false
       }
@@ -128,7 +128,6 @@ trait ConcreteFusionRing extends FusionRing[Int] {
     val A = x.zip(structureCoefficients).map(p => matrices.scalarMultiply(p._1, p._2)).reduce(matrices.add)
     val AAt = matrices.compose(A, A.transpose)
     val result = scala.math.sqrt(FrobeniusPerronEigenvalues.estimate(AAt) - 0.0001)
-    if (A.entries.flatten.max > 4 && result < 2) require(false)
     result
   }
 
@@ -210,15 +209,19 @@ object Goals extends App {
   H1.verifyDuality()
   H1.verifyDuality(IndexedSeq(0, 1, 2, 3))
 
-  println(H1.candidateFusionModules.size)
 
-  val fm = H1.regularModule.ensuring(_.verifyAdmissibility)
-  val bm = FusionBimoduleWithLeftDimensions(H1.regularModule, H1.structureCoefficients, fm.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyAdmissibility).ensuring(_.verifyIdentity)
-  println(bm)
-  println(bm.verifyGlobalDimensionInequality)
+  val H1r = H1.regularModule.ensuring(_.verifyAdmissibility)
+  val bm = FusionBimoduleWithLeftDimensions(H1.regularModule, H1.structureCoefficients, H1r.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyAdmissibility).ensuring(_.verifyIdentity)
 
-  for (b <- FusionBimodules.commutants(fm, 4, 4, Some(bm))) {
-    println(b.rightRing.structureCoefficients)
+  for(fm <- H1.candidateFusionModules) {
+    println(fm.verifyAdmissibility)
+    println(H1.FusionModules.equivalent_?(fm, H1r))
+  }
+//  println(FusionBimodules.commutants(H1r, rankBound=Some(6)).size)
+  
+  for (fm <- H1.candidateFusionModules) {
+    val commutants = FusionBimodules.commutants(fm, rankBound = Some(6))
+    println(fm + " has " + commutants.size + " commutants")
   }
 
   //  for (fm <- H1.candidateFusionModules; b <- FusionBimodules.commutants(fm, 4, 4, None)) {

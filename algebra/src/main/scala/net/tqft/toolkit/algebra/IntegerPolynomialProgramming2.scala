@@ -1,6 +1,8 @@
 package net.tqft.toolkit.algebra
 
-object IntegerPolynomialProgramming2 {
+import net.tqft.toolkit.Logging
+
+object IntegerPolynomialProgramming2 extends Logging {
 
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials
@@ -11,26 +13,17 @@ object IntegerPolynomialProgramming2 {
     // make sure all the hash codes are computed
     polynomials.par.map(_.hashCode)
 
-    var foundNonZeroConstant = 0
-    var foundVariableZero = 0
-    var foundSplitting = 0
-    var foundImpossible = 0
-    var foundSubstitution = 0
-
-    def status = List(foundNonZeroConstant, foundVariableZero, foundSplitting, foundImpossible, foundSubstitution)
-
     type P = MultivariablePolynomial[Int, V]
     val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
     val integers = implicitly[EuclideanDomain[Int]]
 
-    case class Equations(substitutions: Map[V, P], equations: Seq[P]) {
+    case class Equations(substitutions: Map[V, P], equations: Set[P]) {
       //      require(equations.flatMap(_.variables).toSet.intersect(substitutions.keySet).isEmpty)
 
       def addSubstitution(v: V, k: Int): Option[Equations] = {
         //        knownSolution map { solution =>
         //          require(solution.get(v).getOrElse(k) == k)
         //        }
-        foundSubstitution = foundSubstitution + 1
         addSubstitution(v, polynomialAlgebra.constant(k))
       }
       def addSubstitution(v: V, p: P): Option[Equations] = {
@@ -42,7 +35,6 @@ object IntegerPolynomialProgramming2 {
           }
 
           updated.addEquation(polynomialAlgebra.subtract(p, substitutions(v)))
-          //          Some(updated)
         } else {
           val newSubstitutions = substitutions.mapValues(q => polynomialAlgebra.substitute(Map(v -> p))(q))
           val (toReprocess, toKeep) = equations.partition(_.variables.contains(v))
@@ -50,7 +42,7 @@ object IntegerPolynomialProgramming2 {
           Equations(newSubstitutions + (v -> p), toKeep).addEquations(toReprocess)
         }
       }
-      def addEquations(qs: Seq[P]): Option[Equations] = {
+      def addEquations(qs: Iterable[P]): Option[Equations] = {
         qs.foldLeft[Option[Equations]](Some(this))({ (o, e) => o.flatMap(_.addEquation(e)) })
       }
       def addEquation(q: P): Option[Equations] = {
@@ -59,7 +51,6 @@ object IntegerPolynomialProgramming2 {
         def splitIfAllPositive: Option[Equations] = {
           if (p.terms.size > 1 && (p.terms.forall(_._2 > 0) || p.terms.forall(_._2 < 0))) {
             val xs = for (t <- p.terms; x = polynomialAlgebra.monomial(t._1)) yield x
-            foundSplitting = foundSplitting + 1
             addEquations(xs)
           } else {
             None
@@ -68,7 +59,11 @@ object IntegerPolynomialProgramming2 {
 
         def splitIfPositiveOrOtherwiseAdd: Option[Equations] = {
           splitIfAllPositive.orElse({
-            Some(copy(equations = (p +: equations).distinct))
+            if(equations.contains(p)) {
+              Some(this)
+            } else {
+              Some(copy(equations = equations + p))
+            }
           })
         }
 
@@ -77,7 +72,6 @@ object IntegerPolynomialProgramming2 {
           case Some(0) => {
             val r = p.constantTerm
             require(r != 0)
-            foundNonZeroConstant = foundNonZeroConstant + 1
             None
           }
           case Some(1) => {
@@ -85,7 +79,6 @@ object IntegerPolynomialProgramming2 {
               val t = p.terms.head
               require(t._2 != 0)
               val v = t._1.keysIterator.next
-              foundVariableZero = foundVariableZero + 1
               addSubstitution(v, 0)
             } else if (p.terms.size == 2) {
               if (p.constantTerm != 0) {
@@ -95,7 +88,6 @@ object IntegerPolynomialProgramming2 {
                 val v = t._1.keysIterator.next
                 val b = t._2
                 if (a % b != 0 || a / b > 0) {
-                  foundImpossible = foundImpossible + 1
                   None
                 } else {
                   addSubstitution(v, -a / b)
@@ -137,7 +129,7 @@ object IntegerPolynomialProgramming2 {
                 require(h._2 != 0)
                 h._1.keys.toSeq match {
                   case Seq(v) => addSubstitution(v, 0)
-                  case _ => Some(copy(equations = p +: equations))
+                  case _ => splitIfPositiveOrOtherwiseAdd
                 }
               }
               case _ => {
@@ -185,10 +177,8 @@ object IntegerPolynomialProgramming2 {
         }
 
         val cases = Iterator.from(0).takeWhile({ k => limit(minimalSubstitution(k)) }).toSeq
-//        if (v.toString.startsWith("(1") || v.toString.startsWith("(0,1")) {
-          println(Seq.fill(variables.indexOf(v))(" ").mkString + "case bashing " + v + " via " + cases.size + " cases, " + equations.size + " remaining equations, status: " + status)
-//        }
-        (for (k <- cases; r <- addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield r).seq
+        info(Seq.fill(variables.indexOf(v))(" ").mkString + "case bashing " + v + " via " + cases.size + " cases, " + equations.size + " remaining equations")
+        (for (k <- cases.par; r <- addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield r).seq
       }
       def caseBash: Iterable[Equations] = {
         if (equations.isEmpty) {
@@ -199,7 +189,7 @@ object IntegerPolynomialProgramming2 {
       }
     }
 
-    val iterable = Equations(Map.empty, Seq.empty).addEquations(polynomials).flatMap(_.solveLinearEquations).map(_.caseBash).flatten
+    val iterable = Equations(Map.empty, Set.empty).addEquations(polynomials).flatMap(_.solveLinearEquations).map(_.caseBash).flatten
 
     (iterable.map(_.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm)), Nil)
   }
