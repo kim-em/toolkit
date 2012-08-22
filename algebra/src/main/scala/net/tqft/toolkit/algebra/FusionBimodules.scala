@@ -1,7 +1,24 @@
 package net.tqft.toolkit.algebra
 
-object FusionBimodules {
-  def commutants(leftModule: FusionRingWithDimensions#FusionModule, otherRank: Int, otherNumberOfSelfDualObjects: Int, knownBimodule: Option[FusionBimodule[Int]]): Iterable[FusionBimodule[Int]] = {
+import net.tqft.toolkit.Logging
+
+object FusionBimodules extends Logging {
+  def commutants(leftModule: FusionRingWithDimensions#FusionModule, rankBound: Option[Int] = None): Iterable[FusionBimodule[Int]] = {
+    val upperBoundFromGlobalDimension = leftModule.fusionRing.globalDimensionUpperBound.floor.toInt
+    val upperBoundFromMatrixBlocks = 1 + implicitly[Ring[Int]].power(leftModule.fusionRing.rank - 1, 2) // this is probably just bogus
+    val upperBound = (rankBound ++ List(upperBoundFromGlobalDimension, upperBoundFromMatrixBlocks)).min
+
+    (for (otherRank <- (upperBound to 1 by -1).par; commutant <- commutantsWithRank(leftModule, otherRank)) yield commutant).seq
+  }
+
+  def commutantsWithRank(leftModule: FusionRingWithDimensions#FusionModule, otherRank: Int): Iterable[FusionBimodule[Int]] = {
+    (for (nsd <- (otherRank to 0 by -2).par; commutant <- commutantsWithRank(leftModule, otherRank, nsd)) yield commutant).seq
+  }
+
+  def commutantsWithRank(leftModule: FusionRingWithDimensions#FusionModule, otherRank: Int, otherNumberOfSelfDualObjects: Int, knownBimodule: Option[FusionBimodule[Int]] = None): Iterable[FusionBimodule[Int]] = {
+
+    info("Trying to find commutants with total rank " + otherRank + " and " + otherNumberOfSelfDualObjects + " self-dual objects.")
+
     // first, make a FusionBimodule with variable entries
 
     val leftRing = leftModule.fusionRing
@@ -51,24 +68,41 @@ object FusionBimodules {
     }
 
     def checkInequalities(m: Map[V, Int]): Boolean = {
-     val bimodule = reconstituteBimodule(m)
-//     println(bimodule.rightModule.structureCoefficients)
-//     println(bimodule.rightRing.structureCoefficients)
-     bimodule.verifyRightSmallerThanLeftInequalities && bimodule.verifyGlobalDimensionInequality
+      val bimodule = reconstituteBimodule(m)
+      //     println(bimodule.rightModule.structureCoefficients)
+      //     println(bimodule.rightRing.structureCoefficients)
+      bimodule.verifyRightSmallerThanLeftInequalities && bimodule.verifyGlobalDimensionInequality
     }
 
     val polynomials = (variableBimodule.associativityConstraints.flatten ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints.flatten ++ variableBimodule.rightRing.dualityConstraints(otherDuality).flatten).toSeq
     val variables = (fusionModuleUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++ fusionRingUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq)).distinct
     require(variables.size == otherRank * otherRank * otherRank + leftModule.rank * otherRank * leftModule.rank)
-    
+
     val (solutions, tooHard) = IntegerPolynomialProgramming2.solve(
       polynomials, variables, boundary = Some(checkInequalities _), knownSolution = knownSolution)
 
-    // failing here, because, well, the problem is too hard as specified. 
-
     require(tooHard.isEmpty)
 
-    for (solution <- solutions) yield reconstituteBimodule(solution)
+    info("... finished finding commutants with total rank " + otherRank + " and " + otherNumberOfSelfDualObjects + " self-dual objects.")
+
+    def equivalent_?(b1: FusionBimoduleWithLeftDimensions, b2: FusionBimoduleWithLeftDimensions): Boolean = {
+      import net.tqft.toolkit.permutations.Permutations
+      import net.tqft.toolkit.permutations.Permutations._
+
+      val r1 = b1.rightRing.structureCoefficients
+      val r2 = b2.rightRing.structureCoefficients
+      val m1 = b1.rightModule.structureCoefficients
+      val m2 = b2.rightModule.structureCoefficients
+
+      Permutations.of(r1.size).exists({ p =>
+        r2 == p.permute(r1.map(m => m.permuteColumns(p).permuteRows(p))) &&
+          m2 == m1.map(m => m.permuteRows(p))
+      })
+    }
+
+    import net.tqft.toolkit.collections.GroupBy._
+
+    (for (solution <- solutions) yield reconstituteBimodule(solution)).chooseEquivalenceClassRepresentatives(equivalent_?)
   }
 
 }
