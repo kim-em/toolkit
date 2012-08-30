@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.Logging
 
-object IntegerPolynomialProgramming2 extends Logging {
+object IntegerPolynomialProgramming extends Logging {
 
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials

@@ -27,7 +27,7 @@ object FusionRings {
       (for (i <- 2 until rank; j <- 0 until rank; k <- 0 until rank) yield (i, j, k) -> rsc(i).entries(j)(k)).toMap
     })
 
-    val (solutions, tooHard) = IntegerPolynomialProgramming2.solve(variableRing.associativityConstraints.flatten.toSeq, variables, knownSolution = knownSolution)
+    val (solutions, tooHard) = IntegerPolynomialProgramming.solve(variableRing.associativityConstraints.flatten.toSeq, variables, knownSolution = knownSolution)
     for (th <- tooHard) {
       for (e <- th) println(e)
     }
