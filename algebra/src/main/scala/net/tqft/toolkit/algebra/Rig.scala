@@ -15,6 +15,7 @@ trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMon
 trait Ring[A] extends Rig[A] with AdditiveCategory[Unit, A] with CommutativeGroup[A]
 
 trait ImplicitRigs {
+  implicit val CountableCardinals: Rig[CountableCardinal] = CountableCardinals
   implicit val Integers: Rig[Int] = Gadgets.Integers
   implicit val Rationals: Rig[Fraction[Int]] = Gadgets.Rationals
   implicit val BigInts: Rig[BigInt] = Gadgets.BigIntegers

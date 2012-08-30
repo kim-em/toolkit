@@ -78,18 +78,6 @@ object Functors {
     def apply[A](o: O[A]) = o
     def apply[A, B](hom: Homomorphism[O, A, B]) = hom
   }
-
-  object Rings {
-    def matricesOver(size: Int) = Matrices.matricesOver(size)
-  }
-
-  object EuclideanDomains {
-    def fieldOfFractions = net.tqft.toolkit.algebra.Fields.fieldOfFractions
-  }
-
-  object Fields {
-
-  }
 }
 
 trait Homomorphism[+O[_], A, B] extends (A => B) {
@@ -147,9 +135,7 @@ trait HomomorphismCategory[O[_]] extends GeneralHomomorphismCategory[O, ({ type 
   }
 }
 
-object Rings extends HomomorphismCategory[Ring] {
-  val Functors = net.tqft.toolkit.algebra.Functors.Rings
-}
+object Rings extends HomomorphismCategory[Ring]
 
 trait Module[A, B] extends CommutativeGroup[B] {
   def scalarMultiply(a: A, b: B): B

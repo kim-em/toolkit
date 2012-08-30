@@ -46,13 +46,22 @@ trait EuclideanDomain[A] extends CommutativeRing[A] {
     }
   }
 
+  def digits(x: A, base: A = fromInt(10)): Seq[A] = {
+    if (x == zero) {
+      Seq.empty
+    } else {
+      quotientRemainder(x, base) match {
+        case (q, r) => digits(q, base) :+ r
+      }
+    }
+  }
 }
 
 trait ImplicitEuclideanDomains extends ImplicitRings {
   override implicit val Integers: EuclideanDomain[Int] = Gadgets.Integers
   override implicit val Rationals: EuclideanDomain[Fraction[Int]] = Gadgets.Rationals
   override implicit val BigInts: EuclideanDomain[BigInt] = Gadgets.BigIntegers
-  override implicit val BigRationals: EuclideanDomain[Fraction[BigInt]] = Gadgets.BigRationals 
+  override implicit val BigRationals: EuclideanDomain[Fraction[BigInt]] = Gadgets.BigRationals
   override implicit val RationalPolynomials: EuclideanDomain[Polynomial[Fraction[Int]]] = Gadgets.RationalPolynomials
 }
 
