@@ -1,9 +1,9 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.fusion
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.FlatSpec
 
 @RunWith(classOf[JUnitRunner])
 class FusionRingsTest extends FlatSpec with ShouldMatchers {

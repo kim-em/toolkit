@@ -1,5 +1,6 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.fusion
 
+import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.Logging
 
 object FusionBimodules extends Logging {
