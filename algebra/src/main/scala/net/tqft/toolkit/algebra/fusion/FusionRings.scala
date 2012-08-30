@@ -1,4 +1,7 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.fusion
+
+import net.tqft.toolkit.algebra._
+import scala.collection.TraversableOnce.flattenTraversableOnce
 
 object FusionRings {
   def withObject(m: Matrix[Int], knownRing: Option[FusionRing[Int]] = None ): Iterable[FusionRing[Int]] = {

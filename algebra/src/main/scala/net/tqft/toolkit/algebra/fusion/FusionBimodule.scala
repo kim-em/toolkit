@@ -1,4 +1,6 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.fusion
+
+import net.tqft.toolkit.algebra._
 
 trait FusionBimodule[A] extends FiniteDimensionalFreeModule[A] {
   def coefficients = leftRing.coefficients.ensuring(_ == rightRing.coefficients)
