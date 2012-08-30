@@ -5,7 +5,7 @@ trait IntegerModel[I] extends OrderedEuclideanDomain[I] {
   def fromBigInt(i: BigInt): I
   def from[II:IntegerModel](i: II): I = {
     fromBigInt(implicitly[IntegerModel[II]].toBigInt(i))
-  }
+  }  
 }
 
 trait ImplicitIntegerModels extends ImplicitEuclideanDomains {
