@@ -189,7 +189,10 @@ object IntegerPolynomialProgramming extends Logging {
       }
     }
 
-    val iterable = Equations(Map.empty, Set.empty).addEquations(polynomials).flatMap(_.solveLinearEquations).map(_.caseBash).flatten
+    val iterable = Equations(Map.empty, Set.empty).addEquations(polynomials).flatMap(_.solveLinearEquations) match {
+      case None => Iterable.empty
+      case Some(equations) => equations.caseBash
+    }
 
     (iterable.map(_.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm)), Nil)
   }
