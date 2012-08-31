@@ -1,4 +1,6 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.grouptheory
+
+import net.tqft.toolkit.algebra._
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
