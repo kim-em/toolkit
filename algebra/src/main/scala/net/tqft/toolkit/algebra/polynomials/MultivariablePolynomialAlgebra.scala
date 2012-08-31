@@ -1,4 +1,6 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.polynomials
+
+import net.tqft.toolkit.algebra._
 
 trait MultivariablePolynomialAlgebra[A, V] extends FreeModuleOnMonoid[A, Map[V, Int], MultivariablePolynomial[A, V]] with AssociativeAlgebra[A, MultivariablePolynomial[A, V]] {
   val monomialOrdering: Ordering[Map[V, Int]]

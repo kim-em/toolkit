@@ -1,16 +1,17 @@
-package net.tqft.toolkit.algebra
-
-import net.tqft.toolkit.algebra.Implicits.integersAsRationals;
+package net.tqft.toolkit.algebra.matrices
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import net.tqft.toolkit.algebra._
+import net.tqft.toolkit.algebra.polynomials.Polynomial
 
 @RunWith(classOf[JUnitRunner])
 class MatricesTest extends FlatSpec with ShouldMatchers {
 
   "Matrix operations" should "be correct" in {
+    import Implicits.integersAsRationals
     val m: Matrix[Fraction[Int]] = Matrix(3, List(List(1, 2, 3), List(4, 5, 6), List(5, 7, 9)))
 
     m.rank() should equal(2)
@@ -22,6 +23,7 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
   }
 
   "echelonForm" should "work" in {
+    import Implicits.integersAsRationals
     val m: Matrix[Fraction[Int]] = Matrix(3, List(List(20, 12, 1), List(12, 60, 1)))
     //    val r: Matrix[Fraction[Int]] = Matrix(3, List(List(1,Fraction(3,5),Fraction(1,20)), List(0,1,Fraction(1,132))))
     val r: Matrix[Fraction[Int]] = Matrix(3, List(List(20, 12, 1), List(0, Fraction(264, 5), Fraction(2, 5))))
@@ -35,6 +37,8 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
   }
 
   "preimageOf" should "work" in {
+    import Implicits.integersAsRationals
+
     val m: Matrix[Fraction[Int]] = Matrix(2, List(List(20, 12), List(12, 60)))
 
     m.rank() should equal(2)
@@ -50,6 +54,8 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
   }
 
   "characteristicPolynomial" should "work" in {
+    import Implicits.integersAsRationals
+
     val m: Matrix[Fraction[Int]] = Matrix(2, List(List(20, 12), List(12, 60)))
     m.characteristicPolynomial should equal(Polynomial((0, Fraction(1056, 1)), (1, Fraction(-80, 1)), (2, Fraction(1, 1))))
   }

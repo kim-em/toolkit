@@ -1,7 +1,10 @@
 package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
-import scala.collection.TraversableOnce.flattenTraversableOnce
+import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 
 object FusionRings {
   def withObject(m: Matrix[Int], knownRing: Option[FusionRing[Int]] = None ): Iterable[FusionRing[Int]] = {

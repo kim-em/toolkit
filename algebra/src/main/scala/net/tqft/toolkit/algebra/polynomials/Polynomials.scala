@@ -1,6 +1,7 @@
-package net.tqft.toolkit.algebra
-import net.tqft.toolkit.mathematica.MathematicaExpression
-import net.tqft.toolkit.mathematica.ShortMathematicaExpression
+package net.tqft.toolkit.algebra.polynomials
+
+import net.tqft.toolkit.algebra._
+import net.tqft.toolkit.arithmetic.MinMax.toMinMaxIterable
 
 trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   import net.tqft.toolkit.arithmetic.MinMax._

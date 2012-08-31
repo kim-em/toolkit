@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+
 trait EuclideanDomain[A] extends CommutativeRing[A] {
   def quotientRemainder(x: A, y: A): (A, A)
   def quotient(x: A, y: A): A = quotientRemainder(x, y)._1
@@ -57,25 +59,12 @@ trait EuclideanDomain[A] extends CommutativeRing[A] {
   }
 }
 
-trait ImplicitEuclideanDomains extends ImplicitRings {
-  override implicit val Integers: EuclideanDomain[Int] = Gadgets.Integers
-  override implicit val Rationals: EuclideanDomain[Fraction[Int]] = Gadgets.Rationals
-  override implicit val BigInts: EuclideanDomain[BigInt] = Gadgets.BigIntegers
-  override implicit val BigRationals: EuclideanDomain[Fraction[BigInt]] = Gadgets.BigRationals
-  override implicit val RationalPolynomials: EuclideanDomain[Polynomial[Fraction[Int]]] = Gadgets.RationalPolynomials
+trait ImplicitEuclideanDomains {
+  implicit def forgetField[A: Field]: EuclideanDomain[A] = implicitly[Field[A]]
+  // we can't forget from OrderedEuclideanDomains, because Field[Fraction[Int]] could then be found two different ways.
+  implicit def forgetIntegerModel[A: IntegerModel]: OrderedEuclideanDomain[A] = implicitly[IntegerModel[A]]
+  implicit def polynomialAlgebra[A: polynomials.PolynomialAlgebraOverField]: EuclideanDomain[polynomials.Polynomial[A]] = implicitly[polynomials.PolynomialAlgebraOverField[A]]
 }
 
 object EuclideanDomain extends ImplicitEuclideanDomains
 
-trait OrderedEuclideanDomain[A] extends EuclideanDomain[A] with Ordering[A] {
-  def signum(x: A): A = compare(x, zero) match {
-    case 0 => zero
-    case x if x < 0 => negate(one)
-    case _ => one
-  }
-
-  override def gcd(x: A, y: A) = {
-    val gcd = super.gcd(x, y)
-    multiply(gcd, multiply(signum(gcd), signum(y)))
-  }
-}

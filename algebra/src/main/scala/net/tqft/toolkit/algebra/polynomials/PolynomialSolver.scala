@@ -1,5 +1,6 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.polynomials
 
+import net.tqft.toolkit.algebra.OrderedField
 
 case class Interval[D](lower: D, upper: D) {
   def width(implicit field: OrderedField[D]) = field.subtract(upper, lower)

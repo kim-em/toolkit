@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+
 
 
 // needs lots of work!

@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+
 trait ComplexConjugation[A] { self: Field[A] =>
   def bar(q: A): A
 }
