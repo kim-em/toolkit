@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-trait DivisionRing[A] extends EuclideanDomain[A] with Group[A] {
+trait DivisionRing[@specialized(Int, Long, Float, Double) A] extends EuclideanDomain[A] with Group[A] {
   override def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
   override def remainder(x: A, y: A) = zero
   def quotientByInt(x: A, y: Int): A = quotient(x, fromInt(y))
@@ -8,7 +8,7 @@ trait DivisionRing[A] extends EuclideanDomain[A] with Group[A] {
 }
 
 // there's not much to say here; the only additional requirement to be a field is commutativity, but the type system doesn't see that.
-trait Field[A] extends DivisionRing[A]
+trait Field[@specialized(Int, Long, Float, Double) A] extends DivisionRing[A]
 
 trait ImplicitFields extends ImplicitEuclideanDomains {
   implicit def forget[A: OrderedField]: Field[A] = implicitly[OrderedField[A]]

@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 
-trait EuclideanDomain[A] extends CommutativeRing[A] {
+trait EuclideanDomain[@specialized(Int, Long, Float, Double) A] extends CommutativeRing[A] {
   def quotientRemainder(x: A, y: A): (A, A)
   def quotient(x: A, y: A): A = quotientRemainder(x, y)._1
   def remainder(x: A, y: A): A = quotientRemainder(x, y)._2

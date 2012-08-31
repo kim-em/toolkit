@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-trait OrderedEuclideanDomain[A] extends EuclideanDomain[A] with Ordering[A] {
+trait OrderedEuclideanDomain[@specialized(Int, Long, Float, Double) A] extends EuclideanDomain[A] with Ordering[A] {
   def signum(x: A): Int = compare(x, zero)
   def abs(x: A): A = {
     signum(x) match {

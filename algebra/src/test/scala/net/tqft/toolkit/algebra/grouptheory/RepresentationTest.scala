@@ -1,8 +1,9 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.grouptheory
 
-import org.junit.Test
-import org.junit.Assert._
+import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.Logging
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class RepresentationTest {
 

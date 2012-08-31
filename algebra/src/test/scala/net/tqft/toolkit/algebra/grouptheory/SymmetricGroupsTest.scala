@@ -1,10 +1,12 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.grouptheory
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import net.tqft.toolkit.algebra.Fraction.whole
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.Fraction
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import net.tqft.toolkit.algebra.polynomials.Polynomial
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.FlatSpec
 
 @RunWith(classOf[JUnitRunner])
 class SymmetricGroupsTest extends FlatSpec with ShouldMatchers {
@@ -35,9 +37,8 @@ class SymmetricGroupsTest extends FlatSpec with ShouldMatchers {
   }
   
   "S_5" should "have the right character table" in {
-    import Gadgets.integersAsRationals
 //    import language.implicitConversions
-    implicit def lift(k: Int): Polynomial[Fraction[Int]] = Polynomial(0->integersAsRationals(k))
+    implicit def lift(k: Int): Polynomial[Fraction[Int]] = Polynomial(0 -> (k: Fraction[Int]))
     
     S_5.characters should equal(
       Seq[Seq[Polynomial[Fraction[Int]]]](

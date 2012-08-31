@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 
-trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMonoid[A] {
+trait Rig[@specialized(Int, Long, Float, Double) A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMonoid[A] {
   override def identityMorphism(o: Unit) = one
   override def source(a: A) = ()
   override def target(a: A) = ()
