@@ -36,11 +36,10 @@ trait LinearProgrammingHelper extends Logging {
 
 object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
   def slack[B](solution: Seq[B])(implicit field: OrderedField[B]) = {
-    import AlgebraicNotation._
-    field.negate(sum(solution filter { x => field.compare(x, field.zero) < 0 })(field))
+    field.negate(field.add(solution filter { x => field.compare(x, field.zero) < 0 }))
   }
 
-  def apply[B](m: Matrix[B], c: List[B])(implicit field: OrderedField[B]) = {
+  def apply[B:OrderedField](m: Matrix[B], c: List[B]) = {
 
     val simplex0 = m.findBasisForColumnSpace()
 
@@ -80,12 +79,10 @@ object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
 object SimplexAlgorithm extends LinearProgrammingHelper {
 
   def slack[B](simplex: List[Int], m: Matrix[B], c: List[B])(implicit field: OrderedField[B]): Option[B] = {
-    import AlgebraicNotation._
-
     m.takeColumns(simplex).preimageOf(c) match {
       case None => None
       case Some(v) => {
-        val result = field.negate(sum(v filter { x => field.compare(x, field.zero) < 0 }))
+        val result = field.negate(field.add(v filter { x => field.compare(x, field.zero) < 0 }))
         //        info("Calculated slack " + result + " for  " + simplex)
         Some(result)
       }
