@@ -5,7 +5,7 @@ import scala.collection.GenIterable
 // TODO should have
 //		@specialized(Int, Long, Float, Double) 
 // but this crashes the compiler (somewhere in FiniteGroups??).
-trait CommutativeSemigroup[ A] {
+trait CommutativeSemigroup[@specialized(Int) A] {
   def add(x: A, y: A): A
   def add(x0: A, x1: A*): A = x1.fold(x0)(add _)
 }
