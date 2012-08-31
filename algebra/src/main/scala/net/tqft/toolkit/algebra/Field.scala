@@ -11,10 +11,9 @@ trait DivisionRing[A] extends EuclideanDomain[A] with Group[A] {
 trait Field[A] extends DivisionRing[A]
 
 trait ImplicitFields extends ImplicitEuclideanDomains {
-  override implicit val Rationals: Field[Fraction[Int]] = Gadgets.Rationals
-  override implicit val BigRationals: Field[Fraction[BigInt]] = Gadgets.BigRationals
-  override implicit val Doubles: Field[Double] = Gadgets.Doubles
+  implicit def forget[A: OrderedField]: Field[A] = implicitly[OrderedField[A]]
 
+  implicit def fieldOfFractions[A:EuclideanDomain]: Field[Fraction[A]] = Fields.fieldOfFractions(implicitly[EuclideanDomain[A]])
 }
 
 object Field extends ImplicitFields

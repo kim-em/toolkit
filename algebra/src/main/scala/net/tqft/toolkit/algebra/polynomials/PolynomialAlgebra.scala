@@ -1,6 +1,9 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.polynomials
 
-
+import net.tqft.toolkit.algebra.AssociativeAlgebra
+import net.tqft.toolkit.algebra.FreeModuleOnMonoid
+import net.tqft.toolkit.algebra.Gadgets
+import net.tqft.toolkit.algebra.Ring
 
 trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] with AssociativeAlgebra[A, Polynomial[A]] {
 
@@ -18,4 +21,8 @@ trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] wit
   def formalDerivative(p: Polynomial[A]): Polynomial[A] = {
     Polynomial((p.terms map { case (0, _) => (0, ring.zero); case (k, a) => (k - 1, ring.multiplyByInt(a, k)) }): _*)
   }
+}
+
+object PolynomialAlgebra {
+  implicit def over[A:Ring] = Polynomials.over(implicitly[Ring[A]])
 }

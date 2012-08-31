@@ -1,6 +1,8 @@
 package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.Logging
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 
 object IntegerPolynomialProgramming extends Logging {
 

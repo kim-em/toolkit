@@ -1,5 +1,9 @@
 package net.tqft.toolkit.algebra
 
+import net.tqft.toolkit.algebra.polynomials.Polynomials
+
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+
 object RationalFunction {
   def identity[A](implicit ring: Field[A]) = Fraction(Polynomial.identity, Polynomials.over(ring).one)(Polynomials.over(ring))
 }

@@ -1,12 +1,11 @@
 package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.collections.GroupBy.groupable
-import net.tqft.toolkit.collections.RemoveDuplicates.iterable2RemoveDuplicates
-import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
 import net.tqft.toolkit.permutations.Permutation
 import net.tqft.toolkit.permutations.Permutations
-import scala.collection.TraversableOnce.flattenTraversableOnce
+import net.tqft.toolkit.algebra.polynomials.Polynomials
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.matrices._
 
 trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
   def dimensionField: RealNumberField[Int, Double]

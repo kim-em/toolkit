@@ -1,5 +1,9 @@
 package net.tqft.toolkit.algebra
 
+import net.tqft.toolkit.algebra.polynomials.Polynomials
+
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+
 trait NumberField[A] extends Field[Polynomial[A]] {
   def coefficientField: Field[A]
   val generator: Polynomial[A]

@@ -4,6 +4,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import net.tqft.toolkit.algebra.polynomials.Polynomial
 
 @RunWith(classOf[JUnitRunner])
 class AlternatingGroupsTest extends FlatSpec with ShouldMatchers {

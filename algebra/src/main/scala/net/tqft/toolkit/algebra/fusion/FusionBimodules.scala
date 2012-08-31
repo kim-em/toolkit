@@ -1,9 +1,10 @@
 package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.Logging
+import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
 
-object FusionBimodules extends Logging {
+object FusionBimodules extends net.tqft.toolkit.Logging {
   def commutants(leftModule: FusionRingWithDimensions#FusionModule, rankBound: Option[Int] = None): Iterable[FusionBimodule[Int]] = {
     val upperBoundFromGlobalDimension = leftModule.fusionRing.globalDimensionUpperBound.floor.toInt
     val upperBoundFromMatrixBlocks = 1 + implicitly[Ring[Int]].power(leftModule.fusionRing.rank - 1, 2) // this is probably just bogus

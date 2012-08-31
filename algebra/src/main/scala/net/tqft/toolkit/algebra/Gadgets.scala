@@ -6,6 +6,9 @@ import java.util.Comparator
 import org.apfloat.Apfloat
 import org.apfloat.ApfloatMath
 import org.apfloat.FixedPrecisionApfloatHelper
+import net.tqft.toolkit.algebra.polynomials.Polynomials
+import net.tqft.toolkit.algebra.polynomials.PolynomialAlgebra
+import net.tqft.toolkit.algebra.polynomials.PolynomialAlgebraOverField
 
 object Gadgets {
   class NumericRing[T](numeric: Numeric[T]) extends Ring[T] with Comparator[T] {
@@ -169,8 +172,8 @@ object Gadgets {
   val integersAsRationals = Fields.embeddingInFieldOfFractions(Integers)
   val bigIntegersAsBigRationals = Fields.embeddingInFieldOfFractions(BigIntegers)
 
-  val IntegerPolynomials = Polynomials.over(Integers)
-  val RationalPolynomials = Polynomials.over(Rationals)
+  val IntegerPolynomials = implicitly[PolynomialAlgebra[Int]]
+  val RationalPolynomials = implicitly[PolynomialAlgebraOverField[Fraction[Int]]]
 
   val integersAsBigInts = new Homomorphism[EuclideanDomain, Int, BigInt] {
     val source = Integers
@@ -195,6 +198,10 @@ object Gadgets {
     def apply(f: Double) = BigDecimal(f, new java.math.MathContext(precision, java.math.RoundingMode.HALF_EVEN))
   }
 
-  val BigIntegerPolynomials = Polynomials.over(BigIntegers)
-  val BigRationalPolynomials = Polynomials.over(BigRationals)
+  object BigIntegerPolynomials extends PolynomialAlgebra[BigInt] {
+    override val ring = BigIntegers
+  }
+  object BigRationalPolynomials extends PolynomialAlgebraOverField[Fraction[BigInt]] {
+    override val ring = BigRationals
+  }
 }

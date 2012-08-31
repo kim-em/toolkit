@@ -1,4 +1,7 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.polynomials
+
+import net.tqft.toolkit.algebra.EuclideanDomain
+import net.tqft.toolkit.algebra.Field
 
 trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanDomain[Polynomial[A]] {
   override implicit def ring: Field[A]
@@ -33,4 +36,8 @@ trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanD
   def removeMultipleRoots(p: Polynomial[A]): Polynomial[A] = {
     quotient(p, gcd(p, formalDerivative(p)))
   }
+}
+
+object PolynomialAlgebraOverField {
+  implicit def over[A:Field] = Polynomials.over(implicitly[Field[A]])
 }

@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+
 trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMonoid[A] {
   override def identityMorphism(o: Unit) = one
   override def source(a: A) = ()
@@ -14,12 +16,8 @@ trait Rig[A] extends NLinearCategory[Unit, A] with Monoid[A] with CommutativeMon
 
 trait ImplicitRigs {
   implicit val CountableCardinals: Rig[CountableCardinal] = CountableCardinals
-  implicit val Integers: Rig[Int] = Gadgets.Integers
-  implicit val Rationals: Rig[Fraction[Int]] = Gadgets.Rationals
-  implicit val BigInts: Rig[BigInt] = Gadgets.BigIntegers
-  implicit val BigRationals: Rig[Fraction[BigInt]] = Gadgets.BigRationals  
-  implicit val Doubles: Rig[Double] = Gadgets.Doubles
-  implicit val RationalPolynomials: Rig[Polynomial[Fraction[Int]]] = Gadgets.RationalPolynomials
+
+  implicit def forget[A:Ring]: Rig[A] = implicitly[Ring[A]]
 }
 
 object Rig extends ImplicitRigs

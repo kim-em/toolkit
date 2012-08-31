@@ -1,4 +1,9 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.polynomials
+
+import net.tqft.toolkit.algebra.EuclideanDomain
+import net.tqft.toolkit.algebra.LinearCombo
+import net.tqft.toolkit.algebra.Ring
+import net.tqft.toolkit.arithmetic.MinMax.toMinMaxIterable
 
 trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
   def totalDegree = {

@@ -1,10 +1,13 @@
 package net.tqft.toolkit.algebra
 
 import scala.collection.immutable.HashSet
+import scala.collection.GenSeq
 import scala.collection.GenSet
 import net.tqft.toolkit.Logging
 import net.tqft.toolkit.permutations.Permutation
-import scala.collection.GenSeq
+import net.tqft.toolkit.algebra.polynomials.Polynomials
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.matrices._
 
 trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 

@@ -1,5 +1,7 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.matrices
 
+import net.tqft.toolkit.algebra.ApproximateReals
+import net.tqft.toolkit.algebra.IntegerModel
 import net.tqft.toolkit.functions.FixedPoint
 
 object FrobeniusPerronEigenvalues {

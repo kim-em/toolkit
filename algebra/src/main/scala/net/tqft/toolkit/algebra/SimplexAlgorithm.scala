@@ -1,4 +1,6 @@
 package net.tqft.toolkit.algebra
+
+import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.collections.KSubsets
 import net.tqft.toolkit.collections.NonStrictIterable
 import net.tqft.toolkit.Logging
