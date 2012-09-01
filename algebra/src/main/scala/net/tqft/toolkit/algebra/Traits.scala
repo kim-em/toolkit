@@ -48,6 +48,21 @@ trait LinearCategory[O, M, R] extends AdditiveCategory[O, M] { lc =>
   def endomorphismAlgebra(o: O): Algebra[R, M] = new EndomorphismAlgebra(o)
 }
 
+object LinearCategory {
+  implicit def ringAsLinearCategory[A](ring: Ring[A]): LinearCategory[Unit, A, A] = {
+    new LinearCategory[Unit, A, A] {
+      override def identityMorphism(o: Unit) = ring.one
+      override def source(a: A) = ()
+      override def target(a: A) = ()
+      override def compose(x: A, y: A) = ring.multiply(x, y)
+      override def zeroMorphism(o1: Unit, o2: Unit): A = ring.zero
+      override def negate(a: A) = ring.negate(a)
+      override def add(x: A, y: A) = ring.add(x, y)
+      override def scalarMultiply(x: A, y: A) = ring.multiply(x, y)
+    }
+  }  
+}
+
 trait TensorCategory[O, M, R] extends LinearCategory[O, M, R] {
   def tensorObjects(o1: O, o2: O): O
   def tensorMorphisms(m1: M, m2: M): M
