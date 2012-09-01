@@ -75,7 +75,7 @@ trait IntegerFreeModule[B, LC <: LinearCombo[Int, B]] extends GeneralFreeModule[
 }
 
 trait FreeModuleOnMonoid[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModule[A, B, LC] with Ring[LC] {
-  def monoid: CommutativeMonoid[B]
+  def monoid: AdditiveMonoid[B]
 
   def multiply(x: LC, y: LC) = {
     simplify(for ((bx, ax) <- x.terms; (by, ay) <- y.terms) yield (monoid.add(bx, by) -> ring.multiply(ax, ay)))

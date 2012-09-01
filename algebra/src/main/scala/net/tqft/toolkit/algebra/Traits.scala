@@ -57,7 +57,6 @@ trait RingHomomorphism[A, B] extends Homomorphism[Ring, A, B]
 
 trait CommutativeRing[@specialized(Int, Long, Float, Double) A] extends Ring[A]
 
-
 trait FieldHomomorphism[A, B] extends Homomorphism[Field, A, B]
 
 object Functors {
@@ -137,7 +136,7 @@ trait HomomorphismCategory[O[_]] extends GeneralHomomorphismCategory[O, ({ type 
 
 object Rings extends HomomorphismCategory[Ring]
 
-trait Module[A, B] extends CommutativeGroup[B] {
+trait Module[A, B] extends AdditiveGroup[B] {
   def scalarMultiply(a: A, b: B): B
 }
 

@@ -1,21 +1,21 @@
 package net.tqft.toolkit.algebra
 
 object AlgebraicNotation {
-  implicit def summable[A: CommutativeMonoid](i: Iterable[A]): Summable[A] = new Summable(i)
-  class Summable[A: CommutativeMonoid](i: Iterable[A]) {
-    def sum = {
-      val cm = implicitly[CommutativeMonoid[A]]
-      i.foldLeft(cm.zero)(cm.add(_, _))
-    }
-  }
+//  implicit def summable[A: CommutativeMonoid](i: Iterable[A]): Summable[A] = new Summable(i)
+//  class Summable[A: CommutativeMonoid](i: Iterable[A]) {
+//    def sum = {
+//      val cm = implicitly[CommutativeMonoid[A]]
+//      i.foldLeft(cm.zero)(cm.add(_, _))
+//    }
+//  }
 
-  implicit def commutativeMonoidElement[A: CommutativeMonoid](a: A) = new CommutativeMonoidElement(a)
-  class CommutativeMonoidElement[A: CommutativeMonoid](a: A) {
-    def +(b: A) = implicitly[CommutativeMonoid[A]].add(a, b)
+  implicit def additiveMonoidElement[A: AdditiveMonoid](a: A) = new AdditiveMonoidElement(a)
+  class AdditiveMonoidElement[A: AdditiveMonoid](a: A) {
+    def +(b: A) = implicitly[AdditiveMonoid[A]].add(a, b)
   }
-  implicit def commutativeGroupElement[A: CommutativeGroup](a: A) = new CommutativeGroupElement(a)
-  class CommutativeGroupElement[A: CommutativeGroup](a: A) {
-    def group = implicitly[CommutativeGroup[A]]
+  implicit def additiveGroupElement[A: AdditiveGroup](a: A) = new AdditiveGroupElement(a)
+  class AdditiveGroupElement[A: AdditiveGroup](a: A) {
+    private def group = implicitly[AdditiveGroup[A]]
     def -(b: A) = group.subtract(a, b)
     def unary_-() = group.negate(a)
   }
