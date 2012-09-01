@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.algebra.diophantine._
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
@@ -33,7 +34,7 @@ object FusionRings {
       (for (i <- 2 until rank; j <- 0 until rank; k <- 0 until rank) yield (i, j, k) -> rsc(i).entries(j)(k)).toMap
     })
 
-    val (solutions, tooHard) = IntegerPolynomialProgramming.solve(variableRing.associativityConstraints.flatten.toSeq, variables, knownSolution = knownSolution)
+    val (solutions, tooHard) = BoundedDiophantineSolver.solve(variableRing.associativityConstraints.flatten.toSeq, variables, knownSolution = knownSolution)
     for (th <- tooHard) {
       for (e <- th) println(e)
     }

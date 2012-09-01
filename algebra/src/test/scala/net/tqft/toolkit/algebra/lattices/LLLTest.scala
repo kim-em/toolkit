@@ -1,9 +1,10 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.lattices
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.FlatSpec
+import scala.math.BigInt.int2bigInt
 
 @RunWith(classOf[JUnitRunner])
 class LLLTest extends FlatSpec with ShouldMatchers {

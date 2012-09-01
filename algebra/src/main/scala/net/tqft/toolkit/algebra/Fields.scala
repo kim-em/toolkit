@@ -1,11 +1,6 @@
 package net.tqft.toolkit.algebra
 
 object Fields extends HomomorphismCategory[Field] {
-  private def reduceFraction[A](ring: EuclideanDomain[A], numerator: A, denominator: A): (A, A) = {
-    val gcd = ring.gcd(numerator, denominator)
-    (ring.quotient(numerator, gcd), ring.quotient(denominator, gcd))
-  }
-
   val embeddingInFieldOfFractions = new NaturalTransformation[EuclideanDomain, EuclideanDomain, Functors.Identity, Fraction] {
     def source = Functors.Identity(EuclideanDomains)
 
@@ -39,7 +34,7 @@ object Fields extends HomomorphismCategory[Field] {
 
   object Rationals extends OrderedFieldOfFractions(Gadgets.Integers)
 
-  val fieldOfFractions = new Functor[EuclideanDomain, Field, Fraction] { self =>
+  val fieldOfFractions: Functor[EuclideanDomain, Field, Fraction] { def apply[A](ring: OrderedEuclideanDomain[A]): OrderedField[Fraction[A]] } = new Functor[EuclideanDomain, Field, Fraction] { self =>
     def source = EuclideanDomains
     def target = Fields
     def apply[A](ring: EuclideanDomain[A]): Field[Fraction[A]] = new FieldOfFractions(ring)

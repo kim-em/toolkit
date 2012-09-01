@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
+import net.tqft.toolkit.algebra.diophantine._
 import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
 
@@ -80,7 +81,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     val variables = (fusionModuleUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++ fusionRingUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq)).distinct
     require(variables.size == otherRank * otherRank * otherRank + leftModule.rank * otherRank * leftModule.rank)
 
-    val (solutions, tooHard) = IntegerPolynomialProgramming.solve(
+    val (solutions, tooHard) = BoundedDiophantineSolver.solve(
       polynomials, variables, boundary = Some(checkInequalities _), knownSolution = knownSolution)
 
     require(tooHard.isEmpty)

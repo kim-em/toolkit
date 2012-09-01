@@ -1,7 +1,6 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.modules
 
-import net.tqft.toolkit.mathematica.MathematicaExpression
-import scala.collection.GenSeq
+import net.tqft.toolkit.algebra._
 import scala.collection.GenIterable
 
 object FreeModule {

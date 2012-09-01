@@ -8,9 +8,7 @@ trait IntegerModel[@specialized(Int, Long) I] extends OrderedEuclideanDomain[I] 
   }
 }
 
-trait ImplicitIntegerModels {
+object IntegerModel {
   implicit val Integers: IntegerModel[Int] = Gadgets.Integers
   implicit val BigInts: IntegerModel[BigInt] = Gadgets.BigIntegers
 }
-
-object IntegerModel extends ImplicitIntegerModels

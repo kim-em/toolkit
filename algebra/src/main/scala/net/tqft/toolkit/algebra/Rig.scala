@@ -14,10 +14,7 @@ trait Rig[@specialized(Int, Long, Float, Double) A] extends NLinearCategory[Unit
   def fromInt(x: Int): A
 }
 
-trait ImplicitRigs {
+object Rig {
   implicit val CountableCardinals: Rig[CountableCardinal] = CountableCardinals
-
-  implicit def forget[A:Ring]: Rig[A] = implicitly[Ring[A]]
+  implicit def forget[A:Ring]: Rig[A] = implicitly[Ring[A]]  
 }
-
-object Rig extends ImplicitRigs

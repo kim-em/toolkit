@@ -1,10 +1,9 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.diophantine
 
-import net.tqft.toolkit.Logging
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
+import net.tqft.toolkit.algebra._
+import net.tqft.toolkit.algebra.polynomials._
 
-object IntegerPolynomialProgramming extends Logging {
+object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
 
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials

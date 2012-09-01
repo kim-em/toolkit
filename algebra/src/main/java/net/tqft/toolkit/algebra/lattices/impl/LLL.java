@@ -1,4 +1,4 @@
-package net.tqft.toolkit.algebra.impl;
+package net.tqft.toolkit.algebra.lattices.impl;
 
 // This has been adopted from <http://code.google.com/p/monos-algebra/source/browse/trunk/platform/src/com/milowski/monos/binomial/LLL.java>
 // under the BSD license.

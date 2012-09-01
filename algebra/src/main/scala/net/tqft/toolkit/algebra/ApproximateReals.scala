@@ -14,8 +14,6 @@ trait ApproximateReals[A] extends ApproximateField[A] {
   def bigDecimalValue(x: A): BigDecimal
 }
 
-trait ImplicitApproximateReals extends ImplicitOrderedFields {
-  override implicit val Doubles: ApproximateReals[Double] = Gadgets.Doubles
+object ApproximateReals {
+    implicit val Doubles: ApproximateReals[Double] = Gadgets.Doubles
 }
-
-object ApproximateReals extends ImplicitApproximateReals

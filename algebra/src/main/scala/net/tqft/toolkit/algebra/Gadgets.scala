@@ -197,11 +197,4 @@ object Gadgets {
     def target = BigDecimals(precision)
     def apply(f: Double) = BigDecimal(f, new java.math.MathContext(precision, java.math.RoundingMode.HALF_EVEN))
   }
-
-  object BigIntegerPolynomials extends PolynomialAlgebra[BigInt] {
-    override val ring = BigIntegers
-  }
-  object BigRationalPolynomials extends PolynomialAlgebraOverField[Fraction[BigInt]] {
-    override val ring = BigRationals
-  }
 }
