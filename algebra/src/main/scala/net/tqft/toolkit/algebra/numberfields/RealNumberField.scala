@@ -1,6 +1,11 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.numberfields
 
 import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.Fields
+import net.tqft.toolkit.algebra.Fraction
+import net.tqft.toolkit.algebra.IntegerModel
+import net.tqft.toolkit.algebra.OrderedField
+import net.tqft.toolkit.algebra.ApproximateReals
 
 // needs lots of work!
 object RealNumberField {

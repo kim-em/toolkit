@@ -1,5 +1,6 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.numberfields
 
+import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 
 trait ComplexConjugation[A] { self: Field[A] =>

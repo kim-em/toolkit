@@ -1,19 +1,17 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.numberfields
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import java.math.BigInteger
+
+import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 
 @RunWith(classOf[JUnitRunner])
 class NumberFieldTest extends FlatSpec with ShouldMatchers {
 
   "Number field arithmetic" should "be correct" in {
-    import Implicits.integersAsRationals
-    import AlgebraicNotation._
-
     val p: Polynomial[Fraction[Int]] = Polynomial(6 -> Fraction(1, 1), 4 -> Fraction(2, 1), 2 -> Fraction(-3, 1), 0 -> Fraction(-5, 1))
     val nf = NumberField(p)
 
@@ -23,9 +21,8 @@ class NumberFieldTest extends FlatSpec with ShouldMatchers {
   }
 
   "Cyclotomic field arithmetic" should "be correct" in {
-    implicit val rationals = Gadgets.Rationals
-    val cyclotomicNumbers = NumberField.cyclotomic(6)(rationals)
-    val zeta = Polynomial.identity(rationals)
+    val cyclotomicNumbers = NumberField.cyclotomic[Fraction[Int]](6)
+    val zeta = Polynomial.identity[Fraction[Int]]
     cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 1), 0) should equal(cyclotomicNumbers.zero)
     cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 0), 1) should not equal(cyclotomicNumbers.zero)
     cyclotomicNumbers.add(cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 0), 1), cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 1), 0))  should not equal(cyclotomicNumbers.zero)

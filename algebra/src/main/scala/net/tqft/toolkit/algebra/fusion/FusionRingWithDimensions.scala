@@ -6,6 +6,7 @@ import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.algebra.polynomials.Polynomials
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.algebra.numberfields.RealNumberField
 
 trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
   def dimensionField: RealNumberField[Int, Double]
