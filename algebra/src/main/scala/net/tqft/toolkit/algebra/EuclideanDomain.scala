@@ -22,6 +22,7 @@ trait EuclideanDomain[@specialized(Int, Long, Float, Double) A] extends Commutat
    * @param y
    * @return (a,b,g) such that a*x + b*y == g, and g is the gcd of x and y
    */
+  // TODO tail recursive
   final def extendedEuclideanAlgorithm(x: A, y: A): (A, A, A) = {
     if (y == zero) {
       (one, zero, x)

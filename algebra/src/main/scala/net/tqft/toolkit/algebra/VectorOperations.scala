@@ -45,10 +45,10 @@ object VectorOperations extends net.tqft.toolkit.Logging {
     }
   }
 
-  def add[A: CommutativeMonoid](v1: Seq[A], v2: Seq[A]): Seq[A] = {
+  def add[A: AdditiveMonoid](v1: Seq[A], v2: Seq[A]): Seq[A] = {
     require(v1.size == v2.size)
 
-    val monoid = implicitly[CommutativeMonoid[A]]
+    val monoid = implicitly[AdditiveMonoid[A]]
     if (v1.isInstanceOf[WrappedArray[_]] && v2.isInstanceOf[SparseSeq[_]]) {
       warn
       val array = v1.asInstanceOf[WrappedArray[A]]

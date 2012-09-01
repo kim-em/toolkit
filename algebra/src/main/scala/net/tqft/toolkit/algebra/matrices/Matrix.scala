@@ -68,7 +68,7 @@ class Matrix[B](
     }).seq
   }
 
-  def trace(implicit addition: CommutativeMonoid[B]): B = {
+  def trace(implicit addition: AdditiveMonoid[B]): B = {
     require(numberOfRows == numberOfColumns)
     addition.add(for ((row, i) <- entries.zipWithIndex) yield row(i))
   }

@@ -11,7 +11,7 @@ trait MultivariablePolynomialAlgebra[A, V] extends FreeModuleOnMonoid[A, Map[V, 
   }
   private case class MultivariablePolynomialImpl(terms: Seq[(Map[V, Int], A)]) extends MultivariablePolynomial[A, V]
 
-  override object monoid extends CommutativeMonoid[Map[V, Int]] {
+  override object monoid extends AdditiveMonoid[Map[V, Int]] {
     override val zero = Map.empty[V, Int]
     override def add(x: Map[V, Int], y: Map[V, Int]): Map[V, Int] = {
       (for (k <- x.keySet ++ y.keySet) yield {

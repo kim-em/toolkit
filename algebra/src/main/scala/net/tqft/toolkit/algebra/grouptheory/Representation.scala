@@ -8,7 +8,7 @@ trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { represent
   override val source: FiniteGroup[A]
   override def target = ??? // GL(F, n)?
 
-  def character(implicit addition: CommutativeMonoid[F]): Seq[F] = {
+  def character(implicit addition: AdditiveMonoid[F]): Seq[F] = {
     for (c <- source.conjugacyClasses; g = c.representative) yield {
       apply(g).trace
     }
