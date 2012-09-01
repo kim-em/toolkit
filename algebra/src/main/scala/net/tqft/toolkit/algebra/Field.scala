@@ -10,10 +10,7 @@ trait DivisionRing[@specialized(Int, Long, Float, Double) A] extends EuclideanDo
 // there's not much to say here; the only additional requirement to be a field is commutativity, but the type system doesn't see that.
 trait Field[@specialized(Int, Long, Float, Double) A] extends DivisionRing[A]
 
-trait ImplicitFields extends ImplicitEuclideanDomains {
+object Field {
   implicit def forget[A: OrderedField]: Field[A] = implicitly[OrderedField[A]]
-
-  implicit def fieldOfFractions[A:EuclideanDomain]: Field[Fraction[A]] = Fields.fieldOfFractions(implicitly[EuclideanDomain[A]])
+  implicit def fieldOfFractions[A: EuclideanDomain]: Field[Fraction[A]] = Fields.fieldOfFractions(implicitly[EuclideanDomain[A]])
 }
-
-object Field extends ImplicitFields

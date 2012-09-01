@@ -6,10 +6,7 @@ trait OrderedField[@specialized(Int, Long, Float, Double) A] extends Field[A] wi
   }
 }
 
-trait ImplicitOrderedFields {
+object OrderedField {
   implicit val Doubles: OrderedField[Double] = Gadgets.Doubles
-
   implicit def fieldOfFractions[A: OrderedEuclideanDomain]: OrderedField[Fraction[A]] = Fields.fieldOfFractions(implicitly[OrderedEuclideanDomain[A]])
 }
-
-object OrderedField extends ImplicitOrderedFields

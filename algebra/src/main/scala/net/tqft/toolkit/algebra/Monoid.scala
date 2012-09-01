@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra
 
 import scala.collection.GenSeq
 
-trait One[A] {
+trait One[@specialized(Int, Long, Float, Double) A] {
   def one: A
 }
 

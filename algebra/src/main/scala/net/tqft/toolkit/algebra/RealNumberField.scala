@@ -2,8 +2,6 @@ package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 
-
-
 // needs lots of work!
 object RealNumberField {
   def apply[I: IntegerModel, D: ApproximateReals](minimalPolynomial: Polynomial[I], approximation: D, epsilon: D): RealNumberField[I, D] = {

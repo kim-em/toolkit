@@ -59,12 +59,10 @@ trait EuclideanDomain[@specialized(Int, Long, Float, Double) A] extends Commutat
   }
 }
 
-trait ImplicitEuclideanDomains {
+object EuclideanDomain {
   implicit def forgetField[A: Field]: EuclideanDomain[A] = implicitly[Field[A]]
   // we can't forget from OrderedEuclideanDomains, because Field[Fraction[Int]] could then be found two different ways.
   implicit def forgetIntegerModel[A: IntegerModel]: OrderedEuclideanDomain[A] = implicitly[IntegerModel[A]]
   implicit def polynomialAlgebra[A: polynomials.PolynomialAlgebraOverField]: EuclideanDomain[polynomials.Polynomial[A]] = implicitly[polynomials.PolynomialAlgebraOverField[A]]
 }
-
-object EuclideanDomain extends ImplicitEuclideanDomains
 
