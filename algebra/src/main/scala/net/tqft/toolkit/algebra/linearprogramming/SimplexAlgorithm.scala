@@ -1,11 +1,16 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.linearprogramming
 
-import net.tqft.toolkit.algebra.matrices._
-import net.tqft.toolkit.collections.KSubsets
+import net.tqft.toolkit.algebra.matrices.Matrix
+import net.tqft.toolkit.algebra.Field
+import net.tqft.toolkit.algebra.OrderedField
 import net.tqft.toolkit.collections.NonStrictIterable
-import net.tqft.toolkit.Logging
+import org.apache.commons.math.optimization.linear.LinearConstraint
+import org.apache.commons.math.optimization.linear.LinearObjectiveFunction
+import org.apache.commons.math.optimization.linear.Relationship
+import org.apache.commons.math.optimization.linear.SimplexSolver
+import org.apache.commons.math.optimization.GoalType
 
-trait LinearProgrammingHelper extends Logging {
+trait LinearProgrammingHelper extends net.tqft.toolkit.Logging {
   //  def initialSimplex[B](m: Matrix[B], c: List[B])(implicit field: Field[B]): List[Int] = {
   //    KSubsets(m.numberOfColumns, m.numberOfRows) filter { simplex => m.takeColumns(simplex).preimageOf(c).nonEmpty } head
   //  }
