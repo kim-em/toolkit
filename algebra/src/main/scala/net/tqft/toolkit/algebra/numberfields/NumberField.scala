@@ -1,8 +1,7 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.numberfields
 
-import net.tqft.toolkit.algebra.polynomials.Polynomials
-
-import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.Field
+import net.tqft.toolkit.algebra.polynomials._
 
 trait NumberField[A] extends Field[Polynomial[A]] {
   def coefficientField: Field[A]

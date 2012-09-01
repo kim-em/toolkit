@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.algebra.numberfields.RealNumberField
 import net.tqft.toolkit.permutations.Permutation
 import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.algebra.polynomials.Polynomial

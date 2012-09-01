@@ -1,11 +1,11 @@
-package net.tqft.toolkit.algebra
+package net.tqft.toolkit.algebra.polynomials
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import net.tqft.toolkit.algebra._
+
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import net.tqft.toolkit.algebra.polynomials.Polynomials
-import net.tqft.toolkit.algebra.polynomials.Polynomial
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.FlatSpec
 
 @RunWith(classOf[JUnitRunner])
 class PolynomialsTest extends FlatSpec with ShouldMatchers {

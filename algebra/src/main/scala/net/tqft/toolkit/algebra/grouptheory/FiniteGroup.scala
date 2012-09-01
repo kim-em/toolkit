@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.grouptheory
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.algebra.numberfields._
 import scala.collection.GenSet
 import scala.collection.GenSeq
 

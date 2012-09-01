@@ -238,6 +238,8 @@ class Matrix[B](
   def characteristicPolynomial(implicit field: Field[B]): polynomials.Polynomial[B] = {
     require(numberOfRows == numberOfColumns)
 
+    import polynomials._
+    
     implicit val rationalFunctions = RationalFunctions.over(field)
     val functionMatrices = Matrices.matricesOver(numberOfRows)(rationalFunctions)
     val lift = Matrices.matricesOver(numberOfRows)(RationalFunctions.embeddingAsConstants(field))(this)
