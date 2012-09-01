@@ -116,7 +116,7 @@ class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix
 
 
 class MatrixCategoryOverRing[R](ring: Ring[R]) extends TensorCategory[Int, Matrix[R], R] {
-  val inner = new AbstractMatrixCategory(ring)({ (sources: Seq[Unit], targets: Seq[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) }) {
+  val inner = new AbstractMatrixCategory(ring: LinearCategory[Unit, R, R])({ (sources: Seq[Unit], targets: Seq[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) }) {
     override def add(x: Matrix[R], y: Matrix[R]) = {
       require(x.numberOfColumns == y.numberOfColumns)
       require(x.numberOfRows == y.numberOfRows)

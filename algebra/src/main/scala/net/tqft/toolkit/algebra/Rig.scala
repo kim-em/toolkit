@@ -2,15 +2,8 @@ package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 
-trait Rig[@specialized(Int, Long, Float, Double) A] extends NLinearCategory[Unit, A] with Monoid[A] with AdditiveMonoid[A] {
-  override def identityMorphism(o: Unit) = one
-  override def source(a: A) = ()
-  override def target(a: A) = ()
-  override def compose(x: A, y: A) = multiply(x, y)
-  override def zeroMorphism(o1: Unit, o2: Unit): A = zero
-
+trait Rig[@specialized(Int, Long, Float, Double) A] extends Monoid[A] with AdditiveMonoid[A] {
   def multiplyByInt(x: A, y: Int): A = multiply(x, fromInt(y))
-
   def fromInt(x: Int): A
 }
 
