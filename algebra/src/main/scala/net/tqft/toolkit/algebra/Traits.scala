@@ -151,9 +151,11 @@ trait HomomorphismCategory[O[_]] extends GeneralHomomorphismCategory[O, ({ type 
 
 object Rings extends HomomorphismCategory[Ring]
 
-trait Module[A, B] extends AdditiveGroup[B] {
-  def scalarMultiply(a: A, b: B): B
+trait ModuleOverRig[A, B] extends AdditiveMonoid[B] {
+  def scalarMultiply(a: A, b: B): B  
 }
+
+trait Module[A, B] extends ModuleOverRig[A, B] with AdditiveGroup[B]
 
 trait Algebra[A, B] extends Ring[B] with Module[A, B]
 
