@@ -3,22 +3,15 @@ package net.tqft.toolkit.algebra.polynomials
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.modules._
 
-trait MultivariablePolynomialAlgebra[A, V] extends FreeModuleOnMonoid[A, Map[V, Int], MultivariablePolynomial[A, V]] with AssociativeAlgebra[A, MultivariablePolynomial[A, V]] {
+trait MultivariablePolynomialAlgebraOverRig[A, V]
+  extends FreeModuleOnMonoidOverRig[A, Map[V, Int], MultivariablePolynomial[A, V]] {
+
   val monomialOrdering: Ordering[Map[V, Int]]
 
   override def wrap(terms: Seq[(Map[V, Int], A)]): MultivariablePolynomial[A, V] = {
     MultivariablePolynomialImpl(terms.sortBy(_._1)(monomialOrdering))
   }
   private case class MultivariablePolynomialImpl(terms: Seq[(Map[V, Int], A)]) extends MultivariablePolynomial[A, V]
-
-  override object monoid extends AdditiveMonoid[Map[V, Int]] {
-    override val zero = Map.empty[V, Int]
-    override def add(x: Map[V, Int], y: Map[V, Int]): Map[V, Int] = {
-      (for (k <- x.keySet ++ y.keySet) yield {
-        k -> Gadgets.Integers.add(x.getOrElse(k, 0), y.getOrElse(k, 0))
-      }).toMap
-    }
-  }
 
   def monomial(v: V): MultivariablePolynomial[A, V] = MultivariablePolynomialImpl(Seq((Map(v -> 1), ring.one)))
   override def monomial(m: Map[V, Int]): MultivariablePolynomial[A, V] = MultivariablePolynomialImpl(Seq((m, ring.one)))
@@ -27,6 +20,15 @@ trait MultivariablePolynomialAlgebra[A, V] extends FreeModuleOnMonoid[A, Map[V, 
       MultivariablePolynomialImpl(Seq())
     } else {
       MultivariablePolynomialImpl(Seq((m, a)))
+    }
+  }
+
+  override object monoid extends AdditiveMonoid[Map[V, Int]] {
+    override val zero = Map.empty[V, Int]
+    override def add(x: Map[V, Int], y: Map[V, Int]): Map[V, Int] = {
+      (for (k <- x.keySet ++ y.keySet) yield {
+        k -> Gadgets.Integers.add(x.getOrElse(k, 0), y.getOrElse(k, 0))
+      }).toMap
     }
   }
 
@@ -42,12 +44,24 @@ trait MultivariablePolynomialAlgebra[A, V] extends FreeModuleOnMonoid[A, Map[V, 
 
 }
 
+trait MultivariablePolynomialAlgebra[A, V]
+  extends MultivariablePolynomialAlgebraOverRig[A, V]
+  with FreeModuleOnMonoid[A, Map[V, Int], MultivariablePolynomial[A, V]]
+  with AssociativeAlgebra[A, MultivariablePolynomial[A, V]]
+
 object MultivariablePolynomialAlgebras {
-  def over[A: Ring, V: Ordering]: MultivariablePolynomialAlgebra[A, V] = new MultivariablePolynomialAlgebra[A, V] {
-    override val ring = implicitly[Ring[A]]
+
+  private abstract class WithLexicographicOrdering[A: Rig, V: Ordering] extends MultivariablePolynomialAlgebraOverRig[A, V] {
     override val monomialOrdering = {
       import net.tqft.toolkit.collections.LexicographicOrdering._
       implicitly[Ordering[Map[V, Int]]]
     }
+  }
+
+  def overRig[A: Rig, V: Ordering]: MultivariablePolynomialAlgebraOverRig[A, V] = new WithLexicographicOrdering {
+    override val ring = implicitly[Rig[A]]
+  }
+  def over[A: Ring, V: Ordering]: MultivariablePolynomialAlgebra[A, V] = new WithLexicographicOrdering with MultivariablePolynomialAlgebra[A, V] {
+    override val ring = implicitly[Ring[A]]
   }
 }

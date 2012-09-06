@@ -70,7 +70,8 @@ trait TensorCategory[O, M, R] extends LinearCategory[O, M, R] {
 
 trait RingHomomorphism[A, B] extends Homomorphism[Ring, A, B]
 
-trait CommutativeRing[@specialized(Int, Long, Float, Double) A] extends Ring[A]
+trait CommutativeRig[A] extends Rig[A]
+trait CommutativeRing[@specialized(Int, Long, Float, Double) A] extends CommutativeRig[A] with Ring[A]
 
 trait FieldHomomorphism[A, B] extends Homomorphism[Field, A, B]
 

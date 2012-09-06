@@ -32,10 +32,8 @@ trait LinearCombo[A, B] {
   override def hashCode: Int = terms.toSet[(B, A)].hashCode
 }
 
-trait GeneralFreeModule[A, B, LC <: LinearCombo[A, B]] extends Module[A, LC] {
-  import AlgebraicNotation._
-
-  implicit def ring: Ring[A]
+trait GeneralFreeModuleOverRig[A, B, LC <: LinearCombo[A, B]] extends ModuleOverRig[A, LC] {
+  implicit def ring: Rig[A]
 
   def wrap(x: Seq[(B, A)]): LC
   def wrap(x: Map[B, A]): LC = wrap(x.toSeq)
@@ -45,18 +43,25 @@ trait GeneralFreeModule[A, B, LC <: LinearCombo[A, B]] extends Module[A, LC] {
   protected def reduce(x: Iterable[(B, A)]) = discardZeros(collect(x) map { case (b, t) => (b, ring.add(t.toSeq)) })
   def simplify(x: Iterable[(B, A)]): LC = wrap(reduce(x))
 
-  override def negate(x: LC) = {
-    simplify(x.terms map { case (b, a) => (b, -a) })
-  }
   override def scalarMultiply(a: A, x: LC) = {
+    import AlgebraicNotation._
     simplify(x.terms map (t => (t._1, a * t._2)))
   }
   override def add(x: LC, y: LC) = {
     simplify(x.terms ++ y.terms)
   }
-  override def add(xs: GenIterable[LC]) = simplify(xs.flatMap(_.terms).seq)  
+  override def add(xs: GenIterable[LC]) = simplify(xs.flatMap(_.terms).seq)
 
   def zero = wrap(Nil)
+}
+
+trait GeneralFreeModule[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModuleOverRig[A, B, LC] with Module[A, LC] {
+  override implicit def ring: Ring[A]
+
+  override def negate(x: LC) = {
+    import AlgebraicNotation._
+    simplify(x.terms map { case (b, a) => (b, -a) })
+  }
 }
 
 trait FreeModule[A, B] extends GeneralFreeModule[A, B, LinearCombo[A, B]]
@@ -74,7 +79,7 @@ trait IntegerFreeModule[B, LC <: LinearCombo[Int, B]] extends GeneralFreeModule[
   val ring = Gadgets.Integers
 }
 
-trait FreeModuleOnMonoid[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModule[A, B, LC] with Ring[LC] {
+trait FreeModuleOnMonoidOverRig[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModuleOverRig[A, B, LC] with Rig[LC] {
   def monoid: AdditiveMonoid[B]
 
   def multiply(x: LC, y: LC) = {
@@ -87,6 +92,8 @@ trait FreeModuleOnMonoid[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModul
 
   def constant(a: A): LC = monomial(monoid.zero, a)
   override def fromInt(x: Int) = constant(ring.fromInt(x))
+}
+trait FreeModuleOnMonoid[A, B, LC <: LinearCombo[A, B]] extends FreeModuleOnMonoidOverRig[A, B, LC] with GeneralFreeModule[A, B, LC] with Ring[LC] {
 }
 
 trait FancyFreeModule[A, B, LC <: LinearCombo[A, B], K <: Ordered[K]] extends GeneralFreeModule[A, B, LC] {
