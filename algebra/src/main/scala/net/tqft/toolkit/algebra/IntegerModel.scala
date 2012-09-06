@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-trait IntegerModel[@specialized(Int, Long) I] extends OrderedEuclideanDomain[I] {
+trait IntegerModel[@specialized(Int, Long) I] extends OrderedEuclideanRing[I] {
   def toBigInt(i: I): BigInt
   def fromBigInt(i: BigInt): I
   def from[II: IntegerModel](i: II): I = {

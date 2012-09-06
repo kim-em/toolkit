@@ -43,7 +43,7 @@ trait EuclideanRig[A] extends CommutativeRig[A] {
 
 }
 
-trait EuclideanDomain[@specialized(Int, Long, Float, Double) A] extends EuclideanRig[A] with CommutativeRing[A] {
+trait EuclideanRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRig[A] with CommutativeRing[A] {
   /**
    *
    * @param x
@@ -61,10 +61,14 @@ trait EuclideanDomain[@specialized(Int, Long, Float, Double) A] extends Euclidea
   }
 }
 
-object EuclideanDomain {
-  implicit def forgetField[A: Field]: EuclideanDomain[A] = implicitly[Field[A]]
-  // we can't forget from OrderedEuclideanDomains, because Field[Fraction[Int]] could then be found two different ways.
-  implicit def forgetIntegerModel[A: IntegerModel]: OrderedEuclideanDomain[A] = implicitly[IntegerModel[A]]
-  implicit def polynomialAlgebra[A: polynomials.PolynomialAlgebraOverField]: EuclideanDomain[polynomials.Polynomial[A]] = implicitly[polynomials.PolynomialAlgebraOverField[A]]
+object EuclideanRig {
+  implicit def forgetRing[A: EuclideanRing]: EuclideanRig[A] = implicitly[EuclideanRing[A]]  
+}
+
+object EuclideanRing {
+  implicit def forgetField[A: Field]: EuclideanRing[A] = implicitly[Field[A]]
+  // we can't forget from OrderedEuclideanRings, because Field[Fraction[Int]] could then be found two different ways.
+  implicit def forgetIntegerModel[A: IntegerModel]: OrderedEuclideanRing[A] = implicitly[IntegerModel[A]]
+  implicit def polynomialAlgebra[A: polynomials.PolynomialAlgebraOverField]: EuclideanRing[polynomials.Polynomial[A]] = implicitly[polynomials.PolynomialAlgebraOverField[A]]
 }
 

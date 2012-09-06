@@ -1,20 +1,20 @@
 package net.tqft.toolkit.algebra
 
 object Fields extends HomomorphismCategory[Field] {
-  val embeddingInFieldOfFractions = new NaturalTransformation[EuclideanDomain, EuclideanDomain, Functors.Identity, Fraction] {
-    def source = Functors.Identity(EuclideanDomains)
+  val embeddingInFieldOfFractions = new NaturalTransformation[EuclideanRing, EuclideanRing, Functors.Identity, Fraction] {
+    def source = Functors.Identity(EuclideanRings)
 
     // TODO why aren't types inferred here?
-    def target = fieldOfFractions.andThen[EuclideanDomain, EuclideanDomains.Homomorphism, Functors.Identity](Functors.Forget(Fields, EuclideanDomains))
+    def target = fieldOfFractions.andThen[EuclideanRing, EuclideanRings.Homomorphism, Functors.Identity](Functors.Forget(Fields, EuclideanRings))
 
-    def apply[A](o: EuclideanDomain[A]): Homomorphism[EuclideanDomain, A, Fraction[A]] = new Homomorphism[EuclideanDomain, A, Fraction[A]] {
+    def apply[A](o: EuclideanRing[A]): Homomorphism[EuclideanRing, A, Fraction[A]] = new Homomorphism[EuclideanRing, A, Fraction[A]] {
       def source = o
       def target = fieldOfFractions(o)
       def apply(a: A) = Fraction(a, o.one)(o)
     }
   }
 
-  class FieldOfFractions[A](ring: EuclideanDomain[A]) extends Field[Fraction[A]] {
+  class FieldOfFractions[A](ring: EuclideanRing[A]) extends Field[Fraction[A]] {
     implicit val _ring = ring
     override val one = Fraction.alreadyReduced(ring.one, ring.one)
     override val zero = Fraction.alreadyReduced(ring.zero, ring.one)
@@ -28,18 +28,18 @@ object Fields extends HomomorphismCategory[Field] {
     override def inverse(x: Fraction[A]) = Fraction.alreadyReduced(x.denominator, x.numerator)
   }
 
-  class OrderedFieldOfFractions[A](ring: OrderedEuclideanDomain[A]) extends FieldOfFractions[A](ring) with OrderedField[Fraction[A]] {
+  class OrderedFieldOfFractions[A](ring: OrderedEuclideanRing[A]) extends FieldOfFractions[A](ring) with OrderedField[Fraction[A]] {
     def compare(x: Fraction[A], y: Fraction[A]) = ring.compare(ring.multiply(x.numerator, y.denominator), ring.multiply(y.numerator, x.denominator))
   }
 
   object Rationals extends OrderedFieldOfFractions(Gadgets.Integers)
 
-  val fieldOfFractions: Functor[EuclideanDomain, Field, Fraction] { def apply[A](ring: OrderedEuclideanDomain[A]): OrderedField[Fraction[A]] } = new Functor[EuclideanDomain, Field, Fraction] { self =>
-    def source = EuclideanDomains
+  val fieldOfFractions: Functor[EuclideanRing, Field, Fraction] { def apply[A](ring: OrderedEuclideanRing[A]): OrderedField[Fraction[A]] } = new Functor[EuclideanRing, Field, Fraction] { self =>
+    def source = EuclideanRings
     def target = Fields
-    def apply[A](ring: EuclideanDomain[A]): Field[Fraction[A]] = new FieldOfFractions(ring)
-    def apply[A](ring: OrderedEuclideanDomain[A]): OrderedField[Fraction[A]] = new OrderedFieldOfFractions(ring)
-    def apply[A, B](hom: Homomorphism[EuclideanDomain, A, B]): FieldHomomorphism[Fraction[A], Fraction[B]] = new FieldHomomorphism[Fraction[A], Fraction[B]] {
+    def apply[A](ring: EuclideanRing[A]): Field[Fraction[A]] = new FieldOfFractions(ring)
+    def apply[A](ring: OrderedEuclideanRing[A]): OrderedField[Fraction[A]] = new OrderedFieldOfFractions(ring)
+    def apply[A, B](hom: Homomorphism[EuclideanRing, A, B]): FieldHomomorphism[Fraction[A], Fraction[B]] = new FieldHomomorphism[Fraction[A], Fraction[B]] {
       def source = self.apply(hom.source)
       def target = self.apply(hom.target)
       def apply(m: Fraction[A]) = Fraction(hom(m.numerator), hom(m.denominator))(hom.target)

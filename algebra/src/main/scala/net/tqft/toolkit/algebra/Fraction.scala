@@ -16,11 +16,11 @@ sealed trait Fraction[@specialized(Int, Long) A] extends Serializable {
 
 object Fraction {
   
-  implicit def whole[@specialized(Int, Long) A: EuclideanDomain](x: A): Fraction[A] = alreadyReduced(x, implicitly[EuclideanDomain[A]].one)
-  def apply[@specialized(Int, Long) A:EuclideanDomain](numerator: A, denominator: A): Fraction[A] = {
+  implicit def whole[@specialized(Int, Long) A: EuclideanRing](x: A): Fraction[A] = alreadyReduced(x, implicitly[EuclideanRing[A]].one)
+  def apply[@specialized(Int, Long) A:EuclideanRing](numerator: A, denominator: A): Fraction[A] = {
     val _numerator = numerator
     val _denominator = denominator
-    val ring = implicitly[EuclideanDomain[A]]
+    val ring = implicitly[EuclideanRing[A]]
     val gcd = ring.gcd(_numerator, _denominator)
     ring.quotient(_denominator, gcd) match {
       case q if q == ring.one =>

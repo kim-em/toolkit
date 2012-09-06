@@ -23,7 +23,7 @@ object Gadgets {
     override def compare(x: T, y: T) = numeric.compare(x, y)
   }
 
-  abstract class IntegralEuclideanDomain[@specialized(Int, Long) T](numeric: Integral[T]) extends NumericRing(numeric) with IntegerModel[T] {
+  abstract class IntegralEuclideanRing[@specialized(Int, Long) T](numeric: Integral[T]) extends NumericRing(numeric) with IntegerModel[T] {
     override def quotientRemainder(x: T, y: T) = (numeric.quot(x, y), numeric.rem(x, y))
     override def quotient(x: T, y: T) = numeric.quot(x, y)
     override def remainder(x: T, y: T) = numeric.rem(x, y)
@@ -37,7 +37,7 @@ object Gadgets {
     override def remainder(x: T, y: T) = zero
   }
 
-  object Integers extends IntegralEuclideanDomain(scala.math.Numeric.IntIsIntegral) {
+  object Integers extends IntegralEuclideanRing(scala.math.Numeric.IntIsIntegral) {
     override def toBigInt(i: Int) = BigInt(i)
     override def fromBigInt(b: BigInt) = b.ensuring(_.isValidInt).intValue
 
@@ -92,11 +92,11 @@ object Gadgets {
     }
 
   }
-  object Longs extends IntegralEuclideanDomain(scala.math.Numeric.LongIsIntegral) {
+  object Longs extends IntegralEuclideanRing(scala.math.Numeric.LongIsIntegral) {
     override def toBigInt(i: Long) = BigInt(i)
     override def fromBigInt(b: BigInt) = b.ensuring(_ <= Long.MaxValue).ensuring(_ >= Long.MinValue).longValue
   }
-  object BigIntegers extends IntegralEuclideanDomain(scala.math.Numeric.BigIntIsIntegral) {
+  object BigIntegers extends IntegralEuclideanRing(scala.math.Numeric.BigIntIsIntegral) {
     override def toBigInt(i: BigInt) = i
     override def fromBigInt(b: BigInt) = b
   }
@@ -175,7 +175,7 @@ object Gadgets {
   val IntegerPolynomials = implicitly[PolynomialAlgebra[Int]]
   val RationalPolynomials = implicitly[PolynomialAlgebraOverField[Fraction[Int]]]
 
-  val integersAsBigInts = new Homomorphism[EuclideanDomain, Int, BigInt] {
+  val integersAsBigInts = new Homomorphism[EuclideanRing, Int, BigInt] {
     val source = Integers
     val target = BigIntegers
     def apply(k: Int) = BigInt(k)

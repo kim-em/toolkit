@@ -28,9 +28,9 @@ object AlgebraicNotation {
     def ^(k: Int) = rig.power(a, k)
   }
 
-  implicit def euclideanDomainElement[A: EuclideanDomain](a: A) = new EuclideanDomainElement(a)
-  class EuclideanDomainElement[A: EuclideanDomain](a: A) {
-    private def domain = implicitly[EuclideanDomain[A]]
+  implicit def euclideanRigElement[A: EuclideanRig](a: A) = new EuclideanRigElement(a)
+  class EuclideanRigElement[A: EuclideanRig](a: A) {
+    private def domain = implicitly[EuclideanRig[A]]
     def %(b: A) = domain.remainder(a, b)
     def /(b: A) = domain.quotient(a, b)
   }

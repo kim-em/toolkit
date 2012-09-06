@@ -1,9 +1,9 @@
 package net.tqft.toolkit.algebra.polynomials
 
-import net.tqft.toolkit.algebra.EuclideanDomain
+import net.tqft.toolkit.algebra.EuclideanRing
 import net.tqft.toolkit.algebra.Field
 
-trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanDomain[Polynomial[A]] {
+trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanRing[Polynomial[A]] {
   override implicit def ring: Field[A]
 
   def quotientRemainder(x: Polynomial[A], y: Polynomial[A]): (Polynomial[A], Polynomial[A]) = {
