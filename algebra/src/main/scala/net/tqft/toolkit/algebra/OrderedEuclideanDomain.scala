@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-trait OrderedEuclideanDomain[@specialized(Int, Long, Float, Double) A] extends EuclideanDomain[A] with Ordering[A] {
+trait OrderedEuclideanRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRing[A] with Ordering[A] {
   def signum(x: A): Int = compare(x, zero)
   def abs(x: A): A = {
     signum(x) match {
@@ -15,7 +15,7 @@ trait OrderedEuclideanDomain[@specialized(Int, Long, Float, Double) A] extends E
   }
 }
 
-object OrderedEuclideanDomain {
-  implicit def forgetOrderedField[A: OrderedField]: OrderedEuclideanDomain[A] = implicitly[OrderedField[A]]
+object OrderedEuclideanRing {
+  implicit def forgetOrderedField[A: OrderedField]: OrderedEuclideanRing[A] = implicitly[OrderedField[A]]
 }
 

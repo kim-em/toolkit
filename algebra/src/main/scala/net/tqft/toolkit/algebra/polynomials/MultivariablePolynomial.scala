@@ -1,7 +1,7 @@
 package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra.Ring
-import net.tqft.toolkit.algebra.EuclideanDomain
+import net.tqft.toolkit.algebra.EuclideanRing
 import net.tqft.toolkit.algebra.modules.LinearCombo
 
 trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
@@ -15,7 +15,7 @@ trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
   def nonZero = terms.nonEmpty
   lazy val variables = terms.flatMap(_._1.keySet).toSet
 
-  def divideByCoefficientGCD(implicit euclideanDomain: EuclideanDomain[A], ordering: Ordering[V]) = {
+  def divideByCoefficientGCD(implicit euclideanDomain: EuclideanRing[A], ordering: Ordering[V]) = {
     val gcd = euclideanDomain.gcd(terms.map(_._2): _*)
     MultivariablePolynomial(terms.map(p => p.copy(_2 = euclideanDomain.quotient(p._2, gcd))): _*)
   }

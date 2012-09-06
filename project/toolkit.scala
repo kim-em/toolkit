@@ -57,7 +57,7 @@ object BuildSettings {
     resolvers := sonatypeResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += {
         val (scalatestVersion, scalatestScalaVersion) = buildScalaVersion match {
-                case sv if sv.startsWith("2.9") => ("2.0.M2", "2.9.2")
+                case sv if sv.startsWith("2.9") => ("2.0.M4", "2.9.2")
                 case sv if sv.startsWith("2.10") => ("1.9-2.10.0-M6-B2", "2.10.0-M6")
         }
         ("org.scalatest" % ("scalatest_" + scalatestScalaVersion) % scalatestVersion % "test" )

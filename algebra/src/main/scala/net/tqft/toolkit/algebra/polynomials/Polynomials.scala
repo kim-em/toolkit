@@ -22,7 +22,7 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
     for (x <- ring.elements; if Polynomials.evaluationAt(x).apply(polynomial) == ring.zero) yield x
   }
 
-  def coefficientsAsFractions(implicit domain: EuclideanDomain[A]): Polynomial[Fraction[A]] = {
+  def coefficientsAsFractions(implicit domain: EuclideanRing[A]): Polynomial[Fraction[A]] = {
     implicit val fractions = Fields.fieldOfFractions(domain)
     Polynomial(terms.map({ case (i, a) => (i, Fraction.alreadyReduced(a, domain.one)) }): _*)
   }
