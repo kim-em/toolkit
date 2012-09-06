@@ -45,7 +45,7 @@ object BuildSettings {
 
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.8"
-  val buildScalaVersion = "2.9.2"
+  val buildScalaVersion = "2.10.0-M7"
   val buildCrossScalaVersions = Seq("2.9.2", "2.10.0-M7")
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -59,6 +59,7 @@ object BuildSettings {
         val (scalatestVersion, scalatestScalaVersion) = buildScalaVersion match {
                 case sv if sv.startsWith("2.9") => ("2.0.M4", "2.9.2")
                 case sv if sv.startsWith("2.10") => ("1.9-2.10.0-M6-B2", "2.10.0-M6")
+                case sv if sv.startsWith("2.11") => ("1.9-2.10.0-M6-B2", "2.10.0-M6")
         }
         ("org.scalatest" % ("scalatest_" + scalatestScalaVersion) % scalatestVersion % "test" )
     },
