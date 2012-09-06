@@ -5,12 +5,17 @@ import scala.collection.GenIterable
 // TODO should have
 //		@specialized(Int, Long, Float, Double) 
 // but this crashes the compiler (somewhere in FiniteGroups??).
-trait AdditiveSemigroup[ A] {
+// Fixed by Paul Phillips, c.f. https://issues.scala-lang.org/browse/SI-6301 but hasn't hit master yet.
+trait AdditiveSemigroup[A] {
   def add(x: A, y: A): A
   def add(x0: A, x1: A*): A = x1.fold(x0)(add _)
 }
 
-trait Zero[@specialized(Int, Long, Float, Double) A] {
+// TODO should have
+//	    @specialized(Int, Long, Float, Double) 
+// but this causes Gadgets.Integers.zero to stack overflow!
+// Also fixed by Paul, see above.
+trait Zero[A] {
   def zero: A
 }
 
