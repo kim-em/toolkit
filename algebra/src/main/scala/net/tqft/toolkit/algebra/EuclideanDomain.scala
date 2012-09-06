@@ -1,8 +1,6 @@
 package net.tqft.toolkit.algebra
 
-import net.tqft.toolkit.algebra.polynomials.Polynomial
-
-trait EuclideanDomain[@specialized(Int, Long, Float, Double) A] extends CommutativeRing[A] {
+trait EuclideanRig[A] extends CommutativeRig[A] {
   def quotientRemainder(x: A, y: A): (A, A)
   def quotient(x: A, y: A): A = quotientRemainder(x, y)._1
   def remainder(x: A, y: A): A = quotientRemainder(x, y)._2
@@ -13,22 +11,6 @@ trait EuclideanDomain[@specialized(Int, Long, Float, Double) A] extends Commutat
       x
     } else {
       euclideanAlgorithm(y, remainder(x, y))
-    }
-  }
-
-  /**
-   *
-   * @param x
-   * @param y
-   * @return (a,b,g) such that a*x + b*y == g, and g is the gcd of x and y
-   */
-  // TODO tail recursive
-  final def extendedEuclideanAlgorithm(x: A, y: A): (A, A, A) = {
-    if (y == zero) {
-      (one, zero, x)
-    } else {
-      val (a1, b1, g) = extendedEuclideanAlgorithm(y, remainder(x, y))
-      (b1, subtract(a1, multiply(b1, quotient(x, y))), g)
     }
   }
 
@@ -56,6 +38,25 @@ trait EuclideanDomain[@specialized(Int, Long, Float, Double) A] extends Commutat
       quotientRemainder(x, base) match {
         case (q, r) => digits(q, base) :+ r
       }
+    }
+  }
+
+}
+
+trait EuclideanDomain[@specialized(Int, Long, Float, Double) A] extends EuclideanRig[A] with CommutativeRing[A] {
+  /**
+   *
+   * @param x
+   * @param y
+   * @return (a,b,g) such that a*x + b*y == g, and g is the gcd of x and y
+   */
+  // TODO tail recursive
+  final def extendedEuclideanAlgorithm(x: A, y: A): (A, A, A) = {
+    if (y == zero) {
+      (one, zero, x)
+    } else {
+      val (a1, b1, g) = extendedEuclideanAlgorithm(y, remainder(x, y))
+      (b1, subtract(a1, multiply(b1, quotient(x, y))), g)
     }
   }
 }

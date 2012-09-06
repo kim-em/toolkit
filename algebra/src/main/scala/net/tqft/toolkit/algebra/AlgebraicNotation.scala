@@ -20,12 +20,12 @@ object AlgebraicNotation {
     def unary_-() = group.negate(a)
   }
 
-  implicit def ringElement[A: Ring](a: A) = new RingElement(a)
-  class RingElement[A: Ring](a: A) {
-    private def ring = implicitly[Ring[A]]
+  implicit def rigElement[A: Rig](a: A) = new RigElement(a)
+  class RigElement[A: Rig](a: A) {
+    private def rig = implicitly[Rig[A]]
 
-    def *(b: A) = ring.multiply(a, b)
-    def ^(k: Int) = ring.power(a, k)
+    def *(b: A) = rig.multiply(a, b)
+    def ^(k: Int) = rig.power(a, k)
   }
 
   implicit def euclideanDomainElement[A: EuclideanDomain](a: A) = new EuclideanDomainElement(a)
