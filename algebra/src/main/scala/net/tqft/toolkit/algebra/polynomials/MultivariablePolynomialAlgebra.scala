@@ -33,12 +33,17 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
   }
 
   def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
-    add(for ((m, a) <- p.terms) yield {
-      val (toReplace, toKeep) = m.keySet.partition(v => values.contains(v))
-      val newFactors = for (v <- toReplace.toSeq) yield power(values(v), m(v))
-      val oldFactor = monomial(toKeep.map(v => v -> m(v)).toMap, a)
-      multiply(oldFactor, newFactors: _*)
-    })
+    val relevantValues = values.filterKeys(p.variables.contains)
+    if (relevantValues.isEmpty) {
+      p
+    } else {
+      add(for ((m, a) <- p.terms) yield {
+        val (toReplace, toKeep) = m.keySet.partition(v => relevantValues.contains(v))
+        val newFactors = for (v <- toReplace.toSeq) yield power(relevantValues(v), m(v))
+        val oldFactor = monomial(toKeep.map(v => v -> m(v)).toMap, a)
+        multiply(oldFactor, newFactors: _*)
+      })
+    }
   }
   def substituteConstants(values: Map[V, A])(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = substitute(values.mapValues(constant))(p)
 

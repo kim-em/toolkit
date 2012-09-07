@@ -23,9 +23,7 @@ object Matrices extends net.tqft.toolkit.Logging {
 
   def tensor[B: Ring](m1: Matrix[B], m2: Matrix[B]) = new MatrixCategoryOverRing[B].tensorMorphisms(m1, m2)
 
-//  def over[A:Ring](size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(implicitly[Ring[A]]).endomorphismAlgebra(size)
   def over[A: Ring] = new MatrixCategoryOverRing[A]
-  //  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 
   // return all ways to write M=AA^t, up to permuting the columns of A
   def positiveSymmetricDecompositions(M: Matrix[Int]): Seq[Matrix[Int]] = {
@@ -106,8 +104,6 @@ object Matrices extends net.tqft.toolkit.Logging {
   }
 }
 
-
-
 class DenseCategoricalMatrix[A, B](sources: Seq[A], targets: Seq[A], entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[A, B, DenseCategoricalMatrix[A, B]](sources, targets, entries)
 
 class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val sparseEntries: List[SortedMap[Int, B]], default: B) extends CategoricalMatrix[A, B, M](sources, targets) {
@@ -116,8 +112,7 @@ class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix
   def pivotPosition(row: Int, ignoring: B) = (sparseEntries(row).find { _._2 != ignoring }).map(_._1)
 }
 
-
-class MatrixCategoryOverRing[R:Ring] extends TensorCategory[Int, Matrix[R], R] {
+class MatrixCategoryOverRing[R: Ring] extends TensorCategory[Int, Matrix[R], R] {
   private val ring = implicitly[Ring[R]]
   val inner = new AbstractMatrixCategory(ring: LinearCategory[Unit, R, R])({ (sources: Seq[Unit], targets: Seq[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) }) {
     override def add(x: Matrix[R], y: Matrix[R]) = {
@@ -139,9 +134,9 @@ class MatrixCategoryOverRing[R:Ring] extends TensorCategory[Int, Matrix[R], R] {
   override def negate(m: Matrix[R]) = inner.negate(m)
   override def add(x: Matrix[R], y: Matrix[R]) = inner.add(x, y)
   override def compose(x: Matrix[R], y: Matrix[R]) = {
-    val yt= y.transpose
-    new Matrix(y.numberOfColumns, for(rx <- x.entries) yield { 
-      for(ry <- yt.entries.seq) yield {
+    val yt = y.transpose
+    new Matrix(y.numberOfColumns, for (rx <- x.entries) yield {
+      for (ry <- yt.entries.seq) yield {
         ring.add(rx.zip(ry).map(p => ring.multiply(p._1, p._2)))
       }
     })
@@ -158,7 +153,7 @@ class MatrixCategoryOverRing[R:Ring] extends TensorCategory[Int, Matrix[R], R] {
   //  override def endomorphismRing(o: Int) = ???
 }
 
-class MatrixCategoryOverField[F:Field] extends MatrixCategoryOverRing[F] with TensorCategory[Int, Matrix[F], F] {
+class MatrixCategoryOverField[F: Field] extends MatrixCategoryOverRing[F] with TensorCategory[Int, Matrix[F], F] {
   /* FIXME override */ def inverseOption(x: Matrix[F]) = None // TODO
 }
 

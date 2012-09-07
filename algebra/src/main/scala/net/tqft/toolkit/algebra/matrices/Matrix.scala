@@ -52,6 +52,9 @@ class Matrix[B](
   def joinRows(other: Matrix[B]) = {
     new Matrix(numberOfColumns + other.numberOfColumns, (entries zip other.entries) map { case (r1, r2) => r1 ++ r2 })
   }
+  def appendColumn(column: Seq[B]) = {
+    new Matrix(numberOfColumns + 1, (entries zip column) map { case (r, c) => r :+ c })
+  }
 
   def permuteColumns(p: IndexedSeq[Int]) = {
     import net.tqft.toolkit.permutations.Permutations._

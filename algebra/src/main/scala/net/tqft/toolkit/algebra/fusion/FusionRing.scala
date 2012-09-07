@@ -32,7 +32,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   override val one = fromInt(1)
 
   def associativityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis; z <- basis) yield multiply(x, multiply(y, z)).zip(multiply(multiply(x, y), z))).flatten
-  def identityConstraints: Iterator[(A,A)] = (for (x <- basis.iterator) yield Seq(x.zip(multiply(one, x)), x.zip(multiply(x, one)))).flatten.flatten
+  def identityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator) yield Seq(x.zip(multiply(one, x)), x.zip(multiply(x, one)))).flatten.flatten
   def dualityConstraints(duality: Permutation = duality): Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis) yield {
     import net.tqft.toolkit.permutations.Permutations._
     duality.permute(multiply(x, y)).zip(multiply(duality.permute(y), duality.permute(x)))
@@ -64,10 +64,20 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
           case 0 => Seq(0)
           case 1 => Seq(0)
           case k if k % 2 == 0 => {
-            ???
+            ((for (i <- objectsAtDepth(k - 1)) yield {
+              for (
+                (x, j) <- rightMultiplicationByDuals(basis(i), basis.head).zipWithIndex;
+                if (x != coefficients.zero)
+              ) yield j
+            }).flatten.toSet -- objectsAtDepth(k - 2)).toSeq.sorted
           }
           case k if k % 2 == 1 => {
-            ???
+            ((for (i <- objectsAtDepth(k - 1)) yield {
+              for (
+                (x, j) <- act(fr.basis(i), basis.head).zipWithIndex;
+                if (x != coefficients.zero)
+              ) yield j
+            }).flatten.toSet -- objectsAtDepth(k - 2)).toSeq.sorted
           }
         }
       }
@@ -75,10 +85,14 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       Memo(impl _)
     }
     def depthOfRingObject(k: Int): Int = {
-      ???
+      (0 to Integer.MAX_VALUE by 2).iterator.find(i => objectsAtDepth(i).contains(k)).get
     }
     def depthOfModuleObject(k: Int): Int = {
-      ???
+      (1 to Integer.MAX_VALUE by 2).iterator.find(i => objectsAtDepth(i).contains(k)).get
+    }
+    lazy val depth = {
+      ((for (i <- 0 until fr.rank) yield depthOfRingObject(i)) ++
+        (for (i <- 0 until fm.rank) yield depthOfModuleObject(i))).max
     }
 
     def associativityConstraints = (for (x <- fr.basis.iterator; y <- fr.basis; z <- basis) yield act(x, act(y, z)).zip(act(fr.multiply(x, y), z))).flatten
@@ -191,12 +205,8 @@ trait ConcreteFusionRing extends FusionRing[Int] {
 }
 
 object FusionRing {
-  def apply[A: Ring](multiplicities: Seq[Matrix[A]]): FusionRing[A] = {
+  def apply[A: Rig](multiplicities: Seq[Matrix[A]]): FusionRing[A] = {
     val result = new StructureCoefficientFusionRing(multiplicities)
-    //    require({
-    //      val sc = result.structureCoefficients
-    //      sc == multiplicities
-    //    })
     result
   }
   def apply(multiplicities: Seq[Matrix[Int]]): ConcreteFusionRing = {
@@ -204,8 +214,8 @@ object FusionRing {
   }
   def apply(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, dimensions: Seq[Polynomial[Fraction[Int]]]): FusionRingWithDimensions = new StructureCoefficientFusionRingWithDimensions(multiplicities, fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon, dimensions).ensuring(_.structureCoefficients == multiplicities)
 
-  private class StructureCoefficientFusionRing[A: Ring](multiplicities: Seq[Matrix[A]]) extends FusionRing[A] {
-    override lazy val coefficients = implicitly[Ring[A]]
+  private class StructureCoefficientFusionRing[A: Rig](multiplicities: Seq[Matrix[A]]) extends FusionRing[A] {
+    override lazy val coefficients = implicitly[Rig[A]]
     override lazy val rank = multiplicities.size
 
     override def multiply(x: Seq[A], y: Seq[A]) = {

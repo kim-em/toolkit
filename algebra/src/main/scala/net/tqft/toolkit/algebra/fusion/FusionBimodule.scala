@@ -97,10 +97,10 @@ trait FusionBimoduleWithDimensions extends FusionBimoduleWithLeftDimensions {
 }
 
 object FusionBimodule {
-  def apply[A: Ring](leftMultiplication: Seq[Matrix[A]], leftAction: Seq[Matrix[A]], rightMultiplication: Seq[Matrix[A]], rightAction: Seq[Matrix[A]]): FusionBimodule[A] = new StructureCoefficientFusionBimodule(leftMultiplication, leftAction, rightMultiplication, rightAction)
+  def apply[A: Rig](leftMultiplication: Seq[Matrix[A]], leftAction: Seq[Matrix[A]], rightMultiplication: Seq[Matrix[A]], rightAction: Seq[Matrix[A]]): FusionBimodule[A] = new StructureCoefficientFusionBimodule(leftMultiplication, leftAction, rightMultiplication, rightAction)
 
-  private class StructureCoefficientFusionBimodule[A: Ring](leftMultiplication: Seq[Matrix[A]], leftAction: Seq[Matrix[A]], rightMultiplication: Seq[Matrix[A]], rightAction: Seq[Matrix[A]]) extends FusionBimodule[A] {
-    override val coefficients = implicitly[Ring[A]]
+  private class StructureCoefficientFusionBimodule[A: Rig](leftMultiplication: Seq[Matrix[A]], leftAction: Seq[Matrix[A]], rightMultiplication: Seq[Matrix[A]], rightAction: Seq[Matrix[A]]) extends FusionBimodule[A] {
+    override val coefficients = implicitly[Rig[A]]
     override val leftRing = FusionRing(leftMultiplication)
     override val rightRing = FusionRing(rightMultiplication)
 

@@ -40,7 +40,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           val newSubstitutions = substitutions.mapValues(q => polynomialAlgebra.substitute(Map(v -> p))(q))
           val (toReprocess, toKeep) = equations.partition(_.variables.contains(v))
 
-          Equations(newSubstitutions + (v -> p), toKeep).addEquations(toReprocess)
+          Equations(newSubstitutions + (v -> p), toKeep).addEquations(toReprocess.par.map(polynomialAlgebra.substitute(Map(v -> p))).seq)
         }
       }
       def addEquations(qs: Iterable[P]): Option[Equations] = {
@@ -60,7 +60,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
 
         def splitIfPositiveOrOtherwiseAdd: Option[Equations] = {
           splitIfAllPositive.orElse({
-            if(equations.contains(p)) {
+            if (equations.contains(p)) {
               Some(this)
             } else {
               Some(copy(equations = equations + p))
