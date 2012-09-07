@@ -77,7 +77,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
       bimodule.verifyRightSmallerThanLeftInequalities && bimodule.verifyGlobalDimensionInequality
     }
 
-    val polynomials = (variableBimodule.associativityConstraints.flatten ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints.flatten ++ variableBimodule.rightRing.dualityConstraints(otherDuality).flatten).toSeq
+    val polynomials = (variableBimodule.associativityConstraints ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints ++ variableBimodule.rightRing.dualityConstraints(otherDuality)).map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
     val variables = (fusionModuleUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++ fusionRingUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq)).distinct
     require(variables.size == otherRank * otherRank * otherRank + leftModule.rank * otherRank * leftModule.rank)
 

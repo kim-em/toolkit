@@ -34,7 +34,8 @@ object FusionRings {
       (for (i <- 2 until rank; j <- 0 until rank; k <- 0 until rank) yield (i, j, k) -> rsc(i).entries(j)(k)).toMap
     })
 
-    val (solutions, tooHard) = BoundedDiophantineSolver.solve(variableRing.associativityConstraints.flatten.toSeq, variables, knownSolution = knownSolution)
+    val polynomials = variableRing.associativityConstraints.map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
+    val (solutions, tooHard) = BoundedDiophantineSolver.solve(polynomials, variables, knownSolution = knownSolution)
     for (th <- tooHard) {
       for (e <- th) println(e)
     }

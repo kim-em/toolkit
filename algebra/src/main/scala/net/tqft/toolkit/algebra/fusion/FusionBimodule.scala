@@ -3,7 +3,7 @@ package net.tqft.toolkit.algebra.fusion
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
 
-trait FusionBimodule[A] extends FiniteDimensionalFreeModule[A] {
+trait FusionBimodule[A] extends FiniteDimensionalFreeModuleOverRig[A] {
   def coefficients = leftRing.coefficients.ensuring(_ == rightRing.coefficients)
 
   override def rank = leftRing.rank
@@ -13,37 +13,37 @@ trait FusionBimodule[A] extends FiniteDimensionalFreeModule[A] {
   def leftModule: leftRing.FusionModule
   def rightModule: rightRing.FusionModule
 
-  def associativityConstraints = {
+  def associativityConstraints: Iterator[(A, A)] = {
     leftRing.associativityConstraints ++
       rightRing.associativityConstraints ++
       leftModule.associativityConstraints ++
       rightModule.associativityConstraints ++
       (for (x <- leftRing.basis.iterator; y <- leftModule.basis; z <- rightRing.basis) yield {
-        subtract(rightModule.act(z, leftModule.act(x, y)), leftModule.act(x, rightModule.act(z, y)))
-      })
+        rightModule.act(z, leftModule.act(x, y)).zip(leftModule.act(x, rightModule.act(z, y)))
+      }).flatten
   }
   def identityConstraints = leftRing.identityConstraints ++ rightRing.identityConstraints ++ leftModule.identityConstraints ++ rightModule.identityConstraints
   def admissibilityConstraints = {
     leftModule.admissibilityConstraints ++ rightModule.admissibilityConstraints ++ (
       for (m <- leftModule.basis.iterator; n <- rightModule.basis) yield {
         Seq(
-          coefficients.subtract(
+          (
             leftRing.innerProduct(leftModule.rightMultiplicationByDuals(m, n), leftModule.rightMultiplicationByDuals(m, n)),
             rightRing.innerProduct(rightModule.rightMultiplicationByDuals(m, m), rightModule.rightMultiplicationByDuals(n, n))),
-          coefficients.subtract(
+          (
             rightRing.innerProduct(rightModule.rightMultiplicationByDuals(n, m), rightModule.rightMultiplicationByDuals(n, m)),
             leftRing.innerProduct(leftModule.rightMultiplicationByDuals(m, m), leftModule.rightMultiplicationByDuals(n, n))))
       }).flatten
   }
 
   def verifyAssociativity = {
-    associativityConstraints.forall(_ == zero)
+    associativityConstraints.forall(p => p._1 == p._2)
   }
   def verifyAdmissibility = {
-    admissibilityConstraints.forall(_ == coefficients.zero)
+    admissibilityConstraints.forall(p => p._1 == p._2)
   }
   def verifyIdentity = {
-    identityConstraints.forall(_ == zero)
+    identityConstraints.forall(p => p._1 == p._2)
   }
 
 }

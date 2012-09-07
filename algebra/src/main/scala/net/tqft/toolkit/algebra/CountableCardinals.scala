@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+// TODO probably ditch this, it's not that interesting
+
 trait CountableCardinal
 object CountableCardinal {
   implicit def lift(i: Int) = FiniteCardinal(i)
