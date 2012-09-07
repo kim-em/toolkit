@@ -65,7 +65,6 @@ object FusionRings {
       val haagerup4FieldGeneratorApproximation: Double = 3.60555
       val haagerup4FieldGeneratorEpsilon: Double = 0.00001
       val haagerup4Dimensions: Seq[Polynomial[Fraction[Int]]] = {
-        import Implicits.{ integersAsRationals }
         Seq(
           Polynomial(0 -> Fraction(1, 1)),
           Polynomial(0 -> Fraction(5, 2), 1 -> Fraction(1, 2)),
@@ -90,7 +89,6 @@ object FusionRings {
       val AH1FieldGeneratorApproximation: Double = 4.12311
       val AH1FieldGeneratorEpsilon: Double = 0.00001
       val AH1Dimensions: Seq[Polynomial[Fraction[Int]]] = {
-        import Implicits.{ integersAsRationals }
         Seq(
           Polynomial(0 -> Fraction(1, 1)),
           Polynomial(0 -> Fraction(3, 2), 1 -> Fraction(1, 2)),

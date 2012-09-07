@@ -98,6 +98,10 @@ trait Homomorphism[+O[_], A, B] extends (A => B) {
   def source: O[A]
   def target: O[B]
 }
+abstract class HomomorphismImpl[O[_], A:O, B:O] extends Homomorphism[O, A, B] {
+  override def source = implicitly[O[A]]
+  override def target = implicitly[O[B]]
+}
 
 trait GeneralFunctor[O1[_], H1[A, B] <: Homomorphism[O1, A, B], O2[_], H2[A, B] <: Homomorphism[O2, A, B], Q[_]] { outer =>
   def source: GeneralHomomorphismCategory[O1, H1]

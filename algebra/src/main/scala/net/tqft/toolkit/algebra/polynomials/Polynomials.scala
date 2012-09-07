@@ -29,31 +29,17 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
 }
 
 object Polynomial {
-  def apply[A: Ring](terms: (Int, A)*) = Polynomials.over(implicitly[Ring[A]]).wrap(terms.toList)
-  def apply[A: Ring](terms: Map[Int, A]) = Polynomials.over(implicitly[Ring[A]]).wrap(terms)
+  def apply[A: Ring](terms: (Int, A)*) = implicitly[PolynomialAlgebra[A]].wrap(terms.toList)
+  def apply[A: Ring](terms: Map[Int, A]) = implicitly[PolynomialAlgebra[A]].wrap(terms)
   def constant[A: Ring](x: A) = apply((0, x))
   def identity[A: Ring] = apply((1, implicitly[Ring[A]].one))
 
-  def cyclotomic[A: Field](n: Int): Polynomial[A] = {
-    val field = implicitly[Field[A]]
-    val polynomials = Polynomials.over(field)
+  def cyclotomic[F: Field](n: Int): Polynomial[F] = {
+    val field = implicitly[Field[F]]
+    val polynomials = implicitly[PolynomialAlgebraOverField[F]]
     val divisors = for (d <- 1 until n; if n % d == 0) yield cyclotomic(d)
     polynomials.quotient(apply((0, field.negate(field.one)), (n, field.one)), polynomials.multiply(divisors))
   }
-
-  // TODO move this somewhere else?
-//  implicit def asMathematicaExpression[A <% MathematicaExpression](p: Polynomial[A]) = new ShortMathematicaExpression {
-//    val symbol = "x" // TODO work out how to allow varying this?
-//
-//    def toMathematicaInputString = {
-//      if (p.terms.isEmpty) {
-//        // TODO we need a ring in scope:
-//        "0"
-//      } else {
-//        (for ((b, a) <- p.terms) yield a.toMathematicaInputString + " " + symbol + "^(" + b + ")").mkString(" + ")
-//      }
-//    }
-//  }
 }
 
 object Polynomials extends HomomorphismCategory[PolynomialAlgebra] {

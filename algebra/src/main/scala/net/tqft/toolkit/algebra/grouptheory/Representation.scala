@@ -15,7 +15,7 @@ trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { represent
   }
 
   def irrepMultiplicities(implicit evidence: F =:= Fraction[Int]): Seq[Int] = {
-    val chi = character(Gadgets.Rationals.asInstanceOf[Field[F]]).map(evidence)
+    val chi = character(Rationals.asInstanceOf[Field[F]]).map(evidence)
     for (c <- source.reducedCharacters) yield {
       source.characterPairing(chi, c)
     }

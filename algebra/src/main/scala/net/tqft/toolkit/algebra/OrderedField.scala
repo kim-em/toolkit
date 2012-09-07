@@ -7,6 +7,6 @@ trait OrderedField[@specialized(Int, Long, Float, Double) A] extends Field[A] wi
 }
 
 object OrderedField {
-  implicit val Doubles: OrderedField[Double] = Gadgets.Doubles
+  implicit def forget[A:ApproximateReals]: OrderedField[A] = implicitly[ApproximateReals[A]]
   implicit def fieldOfFractions[A: OrderedEuclideanRing]: OrderedField[Fraction[A]] = Fields.fieldOfFractions(implicitly[OrderedEuclideanRing[A]])
 }

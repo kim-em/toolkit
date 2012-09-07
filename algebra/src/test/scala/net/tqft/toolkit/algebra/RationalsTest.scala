@@ -10,7 +10,6 @@ import java.math.BigInteger
 class RationalsTest extends FlatSpec with ShouldMatchers {
   
   "Rational arithmetic" should "be correct" in {	  
-      import Implicits.integersAsRationals
 	  import AlgebraicNotation._
 	  
 	  val x: Fraction[Int] = Fraction(3, 10)
@@ -24,8 +23,6 @@ class RationalsTest extends FlatSpec with ShouldMatchers {
   }
   
   "BigRational arithmetic" should "be correct" in {	  
-      import Implicits.integersAsBigInts
-      import Implicits.bigIntegersAsBigRationals
 	  import AlgebraicNotation._
 	  
 	  val x: Fraction[BigInt] = Fraction(3, 10)

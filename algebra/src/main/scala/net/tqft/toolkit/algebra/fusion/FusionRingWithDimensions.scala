@@ -7,13 +7,13 @@ import net.tqft.toolkit.algebra.polynomials.Polynomials
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.numberfields.RealNumberField
+import net.tqft.toolkit.algebra.polynomials.PolynomialAlgebra
 
 trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
   def dimensionField: RealNumberField[Int, Double]
   def dimensions: Seq[Polynomial[Fraction[Int]]]
   def dimensionOf(x: Seq[Int]): Polynomial[Fraction[Int]] = {
-    val polynomials = Polynomials.over(Gadgets.Rationals)
-    import Implicits.integersAsRationals
+    val polynomials = Polynomials.over(Rationals)
     polynomials.add(x.zip(dimensions).map(p => polynomials.scalarMultiply(p._1, p._2)))
   }
   def globalDimension: Polynomial[Fraction[Int]] = {
@@ -47,7 +47,7 @@ trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
     for (
       o <- objectsSmallEnoughToBeAlgebras;
       m = regularModule.asMatrix(o);
-      if (m.mapEntries(Implicits.integersAsRationals).positiveSemidefinite_?)
+      if (m.mapEntries(Conversions.integersAsRationals).positiveSemidefinite_?)
     ) yield o
   }
 
@@ -73,8 +73,7 @@ trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
         private val sorted = {
           val unsortedDimensionsSquared = {
             val dxi = fr.dimensionOf(algebraObject)
-            import Implicits.{ integersAsRationals }
-            val polynomials = Polynomials.over(Gadgets.Rationals)
+            val polynomials = PolynomialAlgebra.over[Fraction[Int]]
             val Atd = unsortedMatrix.transpose.mapEntries(polynomials.constant(_)).apply(fr.dimensions)
             Atd.map(p => dimensionField.quotient(dimensionField.power(p, 2), dxi))
           }
