@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       145,          7]
-NotebookDataLength[    107182,       2377]
-NotebookOptionsPosition[    106222,       2338]
-NotebookOutlinePosition[    106561,       2353]
-CellTagsIndexPosition[    106518,       2350]
+NotebookDataLength[    118142,       2674]
+NotebookOptionsPosition[    116321,       2605]
+NotebookOutlinePosition[    116920,       2629]
+CellTagsIndexPosition[    116833,       2624]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -50,7 +50,7 @@ http://tqft.net/wiki/Atlas_of_subfactors\"\>"}],
   "Loading FusionAtlas` version 0\n", 
    "Read more at http://tqft.net/wiki/Atlas_of_subfactors"],
   Editable->False]], "Print",
- CellChangeTimes->{3.555984759513268*^9}],
+ CellChangeTimes->{3.555984759513268*^9, 3.5559880427831507`*^9}],
 
 Cell[BoxData[
  InterpretationBox[
@@ -59,7 +59,7 @@ Cell[BoxData[
   SequenceForm[
   "Found precomputed data in ", "/Users/scott/projects/fusionatlas/data"],
   Editable->False]], "Print",
- CellChangeTimes->{3.555984759513754*^9}]
+ CellChangeTimes->{3.555984759513268*^9, 3.555988042784566*^9}]
 }, Open  ]]
 }, Open  ]],
 
@@ -473,7 +473,8 @@ DwtfmPmw8IfZD4sfmPtg8QdzPyx+Yf5Dj390PgDjUPJZ
   AspectRatio->Automatic,
   ImageSize->{287., 35.},
   PlotRange->{{0., 287.}, {0., 35.}}]], "Output",
- CellChangeTimes->{{3.55598477598615*^9, 3.55598479231807*^9}}]
+ CellChangeTimes->{{3.55598477598615*^9, 3.55598479231807*^9}, 
+   3.555988056004785*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -806,7 +807,67 @@ bJj1Ix/uf5j8MqZaJf+7+nD9bqx34y6F6MPNZ1mv+qT5ph7cfhbGgzK2eXpw
   AspectRatio->Automatic,
   ImageSize->{259., 40.},
   PlotRange->{{0., 259.}, {0., 40.}}]], "Output",
- CellChangeTimes->{3.555984798385708*^9}]
+ CellChangeTimes->{3.555984798385708*^9, 3.555988056219187*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FusionAtlas`GraphPairs`Private`OddToEvenAdjacency", "[", 
+   RowBox[{"g1", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+   "]"}], "//", "MatrixForm"}]], "Input",
+ CellChangeTimes->{{3.555988109110651*^9, 3.55598811068366*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "0", "0", "0"},
+     {"1", "1", "0", "0", "0", "0"},
+     {"0", "1", "1", "0", "0", "0"},
+     {"0", "0", "1", "1", "0", "0"},
+     {"0", "0", "1", "0", "1", "0"},
+     {"0", "0", "0", "1", "0", "1"},
+     {"0", "0", "0", "0", "1", "0"},
+     {"0", "0", "0", "0", "1", "0"},
+     {"0", "0", "0", "0", "0", "1"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{3.555988111025256*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"GraphToString", "[", "g1", "]"}]], "Input",
+ CellChangeTimes->{{3.5559897973954983`*^9, 3.5559897997438583`*^9}}],
+
+Cell[BoxData["\<\"\
+bwd1v1v1v1v1v1p1v1x0p0x1v1x0p0x1p0x1v1x0x0v1duals1v1v1v1x2v2x1x3v1\"\>"], \
+"Output",
+ CellChangeTimes->{3.555989800149028*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"GraphToString", "[", "g2", "]"}]], "Input",
+ CellChangeTimes->{{3.5559898006364193`*^9, 3.555989802375543*^9}}],
+
+Cell[BoxData["\<\"bwd1v1v1v1v1v1p1v0x1p0x1v0x1v1duals1v1v1v1x2v1\"\>"], \
+"Output",
+ CellChangeTimes->{3.555989802751585*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -832,7 +893,7 @@ List(0, 1, 1, 0, 0, 0), List(0, 0, 1, 1, 0, 0), List(0, 0, 1, 0, 1, 0), \
 List(0, 0, 0, 1, 0, 1), List(0, 0, 0, 0, 1, 0), List(0, 0, 0, 0, 1, 0), \
 List(0, 0, 0, 0, 0, 1))\"\>"], "Output",
  CellChangeTimes->{{3.555984868066518*^9, 3.555984894900469*^9}, {
-  3.555984940269418*^9, 3.555984966374193*^9}}]
+   3.555984940269418*^9, 3.555984966374193*^9}, 3.55598805633276*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -854,7 +915,213 @@ Cell[BoxData[
 Cell[BoxData["\<\"List(List(1, 0, 0, 0, 0, 0), List(1, 1, 0, 0, 0, 0), \
 List(0, 1, 1, 0, 0, 0), List(0, 0, 1, 0, 0, 0), List(0, 0, 1, 1, 1, 0), \
 List(0, 0, 0, 0, 1, 1))\"\>"], "Output",
- CellChangeTimes->{3.5559850963007097`*^9}]
+ CellChangeTimes->{3.5559850963007097`*^9, 3.555988056462841*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"??", "FusionAtlas`GraphPairs`Private`OddToEvenAdjacency"}]], "Input",\
+
+ CellChangeTimes->{{3.55598803808358*^9, 3.555988038498002*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["FusionAtlas`GraphPairs`Private`OddToEvenAdjacency", "Print", "PrintUsage",
+ CellChangeTimes->{3.555988056749092*^9},
+ CellTags->"Info3556024056-6974037"],
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {GridBox[{
+       {
+        RowBox[{
+         RowBox[{"FusionAtlas`GraphPairs`Private`OddToEvenAdjacency", "[", 
+          RowBox[{"GradedBigraph", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", "1", "}"}], ",", 
+              RowBox[{"{", "1", "}"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"0", ",", "1"}], "}"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "1"}], "}"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", 
+              RowBox[{"0", ",", "1"}], "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}]}], "]"}], "]"}], "=", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"1", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "1", ",", "1", ",", "0", ",", "0", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0", ",", "1", ",", "1", ",", "1", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "1"}], 
+            "}"}]}], "}"}]}]},
+       {" "},
+       {
+        RowBox[{
+         RowBox[{"FusionAtlas`GraphPairs`Private`OddToEvenAdjacency", "[", 
+          RowBox[{"GradedBigraph", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", "1", "}"}], ",", 
+              RowBox[{"{", "1", "}"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"1", ",", "0"}], "}"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "1"}], "}"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"{", 
+               RowBox[{"1", ",", "0"}], "}"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "1"}], "}"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "1"}], "}"}]}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", 
+              RowBox[{"1", ",", "0", ",", "0"}], "}"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"{", "1", "}"}], "}"}]}], "]"}], "]"}], "=", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"1", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "1", ",", "1", ",", "0", ",", "0", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0", ",", "1", ",", "1", ",", "0", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0", ",", "1", ",", "0", ",", "1", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "1"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0"}], 
+            "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "1"}], 
+            "}"}]}], "}"}]}]},
+       {" "},
+       {
+        RowBox[{
+         RowBox[{
+         "FusionAtlas`GraphPairs`Private`OddToEvenAdjacency", "[", 
+          "FusionAtlas`GraphPairs`Private`g_GradedBigraph", "]"}], ":=", 
+         RowBox[{
+          RowBox[{
+          "FusionAtlas`GraphPairs`Private`OddToEvenAdjacency", "[", 
+           "FusionAtlas`GraphPairs`Private`g", "]"}], "=", 
+          RowBox[{"BlockMatrix", "[", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"Switch", "[", 
+              RowBox[{
+               RowBox[{
+               "FusionAtlas`GraphPairs`Private`i", "-", 
+                "FusionAtlas`GraphPairs`Private`j"}], ",", 
+               "\[IndentingNewLine]", 
+               RowBox[{"-", "1"}], ",", 
+               RowBox[{"Transpose", "[", 
+                RowBox[{
+                "FusionAtlas`GraphPairs`Private`g", "\[LeftDoubleBracket]", 
+                 "FusionAtlas`GraphPairs`Private`i", 
+                 "\[RightDoubleBracket]"}], "]"}], ",", "\[IndentingNewLine]",
+                "1", ",", 
+               RowBox[{
+               "FusionAtlas`GraphPairs`Private`g", "\[LeftDoubleBracket]", 
+                "FusionAtlas`GraphPairs`Private`j", "\[RightDoubleBracket]"}],
+                ",", "\[IndentingNewLine]", "_", ",", 
+               RowBox[{"ZeroMatrix", "[", 
+                RowBox[{
+                 RowBox[{"RankAtDepth", "[", 
+                  RowBox[{"FusionAtlas`GraphPairs`Private`g", ",", 
+                   RowBox[{"FusionAtlas`GraphPairs`Private`i", "-", "1"}]}], 
+                  "]"}], ",", 
+                 RowBox[{"RankAtDepth", "[", 
+                  RowBox[{"FusionAtlas`GraphPairs`Private`g", ",", 
+                   RowBox[{"FusionAtlas`GraphPairs`Private`j", "-", "1"}]}], 
+                  "]"}]}], "]"}]}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"FusionAtlas`GraphPairs`Private`i", ",", "1", ",", 
+               RowBox[{
+                RowBox[{
+                "GraphDepth", "[", "FusionAtlas`GraphPairs`Private`g", "]"}], 
+                "+", "1"}], ",", "2"}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"FusionAtlas`GraphPairs`Private`j", ",", "2", ",", 
+               RowBox[{
+                RowBox[{
+                "GraphDepth", "[", "FusionAtlas`GraphPairs`Private`g", "]"}], 
+                "+", "1"}], ",", "2"}], "}"}]}], "]"}], "]"}]}]}]}
+      },
+      BaselinePosition->{Baseline, {1, 1}},
+      GridBoxAlignment->{
+       "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+        "RowsIndexed" -> {}},
+      GridBoxItemSize->{"Columns" -> {{
+           Scaled[0.999]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+        "RowsIndexed" -> {}}]}
+   },
+   BaselinePosition->{Baseline, {1, 1}},
+   GridBoxAlignment->{
+    "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+     "RowsIndexed" -> {}}],
+  Definition[FusionAtlas`GraphPairs`Private`OddToEvenAdjacency],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.555988056797688*^9},
+ CellTags->"Info3556024056-6974037"]
+}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2338,6 +2605,7 @@ Cell[BoxData[
 },
 WindowSize->{1321, 820},
 WindowMargins->{{4, Automatic}, {Automatic, 4}},
+ShowSelection->True,
 FrontEndVersion->"7.0 for Mac OS X x86 (32-bit) (February 18, 2009)",
 StyleDefinitions->"Default.nb"
 ]
@@ -2345,43 +2613,71 @@ StyleDefinitions->"Default.nb"
 
 (* Internal cache information *)
 (*CellTagsOutline
-CellTagsIndex->{}
+CellTagsIndex->{
+ "Info3556024056-6974037"->{
+  Cell[45598, 929, 159, 2, 39, "Print",
+   CellTags->"Info3556024056-6974037"],
+  Cell[45760, 933, 7702, 189, 220, "Print",
+   CellTags->"Info3556024056-6974037"]}
+ }
 *)
 (*CellTagsIndex
-CellTagsIndex->{}
+CellTagsIndex->{
+ {"Info3556024056-6974037", 116645, 2616}
+ }
 *)
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
 Cell[567, 22, 773, 17, 58, "Input"],
 Cell[CellGroupData[{
-Cell[1365, 43, 370, 9, 36, "Print"],
-Cell[1738, 54, 321, 7, 20, "Print"]
+Cell[1365, 43, 394, 9, 36, "Print"],
+Cell[1762, 54, 343, 7, 20, "Print"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2108, 67, 179, 3, 27, "Input"],
-Cell[2290, 72, 21838, 403, 50, "Output"]
+Cell[2154, 67, 179, 3, 27, "Input"],
+Cell[2336, 72, 21864, 404, 50, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[24165, 480, 181, 3, 27, "Input"],
-Cell[24349, 485, 17266, 323, 55, "Output"]
+Cell[24237, 481, 181, 3, 27, "Input"],
+Cell[24421, 486, 17288, 323, 55, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[41652, 813, 600, 14, 27, "Input"],
-Cell[42255, 829, 376, 5, 43, "Output"]
+Cell[41746, 814, 273, 5, 27, "Input"],
+Cell[42022, 821, 926, 25, 169, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[42668, 839, 473, 12, 27, "Input"],
-Cell[43144, 853, 231, 3, 27, "Output"]
+Cell[42985, 851, 137, 2, 27, "Input"],
+Cell[43125, 855, 147, 3, 27, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[43412, 861, 248, 5, 27, "Input"],
-Cell[43663, 868, 62543, 1467, 943, "Output"]
+Cell[43309, 863, 135, 2, 27, "Input"],
+Cell[43447, 867, 125, 2, 27, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[43609, 874, 600, 14, 27, "Input"],
+Cell[44212, 890, 398, 5, 43, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[44647, 900, 473, 12, 27, "Input"],
+Cell[45123, 914, 253, 3, 27, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[45413, 922, 160, 3, 27, "Input"],
+Cell[CellGroupData[{
+Cell[45598, 929, 159, 2, 39, "Print",
+ CellTags->"Info3556024056-6974037"],
+Cell[45760, 933, 7702, 189, 220, "Print",
+ CellTags->"Info3556024056-6974037"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[53511, 1128, 248, 5, 27, "Input"],
+Cell[53762, 1135, 62543, 1467, 943, "Output"]
 }, Open  ]]
 }
 ]
 *)
 
 (* End of internal cache information *)
-
