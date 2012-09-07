@@ -10,7 +10,7 @@ object Mod {
       override def elements = (0 until p).toSet
       override def inverse(x: Int) = {
         if (x == 0) throw new ArithmeticException("/ by zero")
-        Gadgets.Integers.extendedEuclideanAlgorithm(x, p)._1
+        Integers.extendedEuclideanAlgorithm(x, p)._1
       }
       override def negate(x: Int) = (p - x) mod p
       override val zero = 0

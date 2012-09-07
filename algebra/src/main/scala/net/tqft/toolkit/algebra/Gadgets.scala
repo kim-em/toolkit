@@ -37,70 +37,6 @@ object Gadgets {
     override def remainder(x: T, y: T) = zero
   }
 
-  object Integers extends IntegralEuclideanRing(scala.math.Numeric.IntIsIntegral) {
-    override def toBigInt(i: Int) = BigInt(i)
-    override def fromBigInt(b: BigInt) = b.ensuring(_.isValidInt).intValue
-
-    private val sumOfSquaresCache = scala.collection.mutable.Map[Int, Seq[Seq[(Int, Int)]]]()
-    /**
-     * returns an iterator of {(a_i, b_i)}_i, with \sum b_i a_i^2 = n
-     */
-    def sumOfSquaresDecomposition(n: Int): Seq[Seq[(Int, Int)]] = {
-      def impl: Seq[Seq[(Int, Int)]] = {
-        def sqrt(k: Int) = {
-          if (k <= 0) {
-            0
-          } else {
-            val closest = scala.math.sqrt(k).round.intValue
-            if (closest * closest > k) {
-              closest - 1
-            } else {
-              closest
-            }
-          }
-        }
-
-        def extend(limit: Int, remainder: Int, partial: Seq[(Int, Int)]): Seq[Seq[(Int, Int)]] = {
-          limit match {
-            case 0 => {
-              remainder match {
-                case 0 => Seq(partial)
-                case _ => Seq.empty
-              }
-            }
-            case 1 => Seq((1, remainder) +: partial)
-            case limit => {
-              for (
-                b <- (0 to (remainder / (limit * limit)));
-                next = (limit, b) +: partial;
-                nextRemainder = remainder - b * limit * limit;
-                nextLimit = scala.math.min(limit - 1, sqrt(nextRemainder));
-                result <- extend(nextLimit, nextRemainder, next)
-              ) yield result
-            }
-          }
-        }
-
-        extend(sqrt(n), n, Nil)
-      }
-
-      if (n < 20) {
-        sumOfSquaresCache.getOrElseUpdate(n, impl)
-      } else {
-        impl
-      }
-    }
-
-  }
-  object Longs extends IntegralEuclideanRing(scala.math.Numeric.LongIsIntegral) {
-    override def toBigInt(i: Long) = BigInt(i)
-    override def fromBigInt(b: BigInt) = b.ensuring(_ <= Long.MaxValue).ensuring(_ >= Long.MinValue).longValue
-  }
-  object BigIntegers extends IntegralEuclideanRing(scala.math.Numeric.BigIntIsIntegral) {
-    override def toBigInt(i: BigInt) = i
-    override def fromBigInt(b: BigInt) = b
-  }
-
   val Doubles: ApproximateReals[Double] = new FractionalField(scala.math.Numeric.DoubleIsFractional) with ApproximateReals[Double] {
     override def bigDecimalValue(x: Double) = BigDecimal(x)
     override def setPrecision(x: Double) = x
@@ -197,4 +133,68 @@ object Gadgets {
     def target = BigDecimals(precision)
     def apply(f: Double) = BigDecimal(f, new java.math.MathContext(precision, java.math.RoundingMode.HALF_EVEN))
   }
+}
+
+object Integers extends Gadgets.IntegralEuclideanRing(scala.math.Numeric.IntIsIntegral) {
+  override def toBigInt(i: Int) = BigInt(i)
+  override def fromBigInt(b: BigInt) = b.ensuring(_.isValidInt).intValue
+
+  private val sumOfSquaresCache = scala.collection.mutable.Map[Int, Seq[Seq[(Int, Int)]]]()
+  /**
+   * returns an iterator of {(a_i, b_i)}_i, with \sum b_i a_i^2 = n
+   */
+  def sumOfSquaresDecomposition(n: Int): Seq[Seq[(Int, Int)]] = {
+    def impl: Seq[Seq[(Int, Int)]] = {
+      def sqrt(k: Int) = {
+        if (k <= 0) {
+          0
+        } else {
+          val closest = scala.math.sqrt(k).round.intValue
+          if (closest * closest > k) {
+            closest - 1
+          } else {
+            closest
+          }
+        }
+      }
+
+      def extend(limit: Int, remainder: Int, partial: Seq[(Int, Int)]): Seq[Seq[(Int, Int)]] = {
+        limit match {
+          case 0 => {
+            remainder match {
+              case 0 => Seq(partial)
+              case _ => Seq.empty
+            }
+          }
+          case 1 => Seq((1, remainder) +: partial)
+          case limit => {
+            for (
+              b <- (0 to (remainder / (limit * limit)));
+              next = (limit, b) +: partial;
+              nextRemainder = remainder - b * limit * limit;
+              nextLimit = scala.math.min(limit - 1, sqrt(nextRemainder));
+              result <- extend(nextLimit, nextRemainder, next)
+            ) yield result
+          }
+        }
+      }
+
+      extend(sqrt(n), n, Nil)
+    }
+
+    if (n < 20) {
+      sumOfSquaresCache.getOrElseUpdate(n, impl)
+    } else {
+      impl
+    }
+  }
+
+}
+object Longs extends Gadgets.IntegralEuclideanRing(scala.math.Numeric.LongIsIntegral) {
+  override def toBigInt(i: Long) = BigInt(i)
+  override def fromBigInt(b: BigInt) = b.ensuring(_ <= Long.MaxValue).ensuring(_ >= Long.MinValue).longValue
+}
+object BigIntegers extends Gadgets.IntegralEuclideanRing(scala.math.Numeric.BigIntIsIntegral) {
+  override def toBigInt(i: BigInt) = i
+  override def fromBigInt(b: BigInt) = b
 }

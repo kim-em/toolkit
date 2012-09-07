@@ -1,13 +1,13 @@
 package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra.AssociativeAlgebra
-import net.tqft.toolkit.algebra.Gadgets
+import net.tqft.toolkit.algebra.Integers
 import net.tqft.toolkit.algebra.Ring
 import net.tqft.toolkit.algebra.modules.FreeModuleOnMonoid
 
 trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] with AssociativeAlgebra[A, Polynomial[A]] {
 
-  override val monoid = Gadgets.Integers
+  override val monoid = Integers
 
   override def wrap(terms: Seq[(Int, A)]): Polynomial[A] = new PolynomialImpl(terms)
   private class PolynomialImpl(_terms: Seq[(Int, A)]) extends Polynomial[A] {

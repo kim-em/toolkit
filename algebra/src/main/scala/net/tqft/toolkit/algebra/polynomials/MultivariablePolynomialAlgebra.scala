@@ -27,7 +27,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
     override val zero = Map.empty[V, Int]
     override def add(x: Map[V, Int], y: Map[V, Int]): Map[V, Int] = {
       (for (k <- x.keySet ++ y.keySet) yield {
-        k -> Gadgets.Integers.add(x.getOrElse(k, 0), y.getOrElse(k, 0))
+        k -> Integers.add(x.getOrElse(k, 0), y.getOrElse(k, 0))
       }).toMap
     }
   }

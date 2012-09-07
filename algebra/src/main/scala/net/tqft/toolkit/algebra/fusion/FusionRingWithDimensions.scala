@@ -158,7 +158,7 @@ trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
       println("possible " + n + "-tuples:")
       for (t <- n_tuples.seq) println(t)
 
-      val integerMatrices = new MatrixCategoryOverRing(Gadgets.Integers)
+      val integerMatrices = new MatrixCategoryOverRing[Int]
 
       import net.tqft.toolkit.collections.GroupBy._
 

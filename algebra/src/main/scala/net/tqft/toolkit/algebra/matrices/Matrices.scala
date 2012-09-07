@@ -6,21 +6,24 @@ import scala.collection.GenSeq
 
 object Matrices extends net.tqft.toolkit.Logging {
   def matricesOver(size: Int) = new Endofunctor[Ring, Matrix] { self =>
-    def source = Rings
-    def target = Rings
+    override def source = Rings
+    override def target = Rings
     // TODO should use endomorphismAlgebra, so we can multiply by scalars from A
-    def apply[A](ring: Ring[A]): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(ring).endomorphismAlgebra(size)
-    def apply[A, B](hom: Homomorphism[Ring, A, B]): RingHomomorphism[Matrix[A], Matrix[B]] = new RingHomomorphism[Matrix[A], Matrix[B]] {
+    override def apply[A](ring: Ring[A]): Algebra[A, Matrix[A]] = {
+      implicit def r = ring
+      new MatrixCategoryOverRing[A].endomorphismAlgebra(size)
+    }
+    override def apply[A, B](hom: Homomorphism[Ring, A, B]): RingHomomorphism[Matrix[A], Matrix[B]] = new RingHomomorphism[Matrix[A], Matrix[B]] {
       def source = self.apply(hom.source)
       def target = self.apply(hom.target)
       def apply(m: Matrix[A]) = Matrix(m.numberOfColumns, m.entries map { row => row map { hom(_) } })
     }
   }
 
-  def tensor[B: Ring](m1: Matrix[B], m2: Matrix[B]) = new MatrixCategoryOverRing(implicitly[Ring[B]]).tensorMorphisms(m1, m2)
+  def tensor[B: Ring](m1: Matrix[B], m2: Matrix[B]) = new MatrixCategoryOverRing[B].tensorMorphisms(m1, m2)
 
 //  def over[A:Ring](size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverRing(implicitly[Ring[A]]).endomorphismAlgebra(size)
-  def over[A: Ring] = new MatrixCategoryOverRing(implicitly[Ring[A]])
+  def over[A: Ring] = new MatrixCategoryOverRing[A]
   //  def matricesOver[A](field: Field[A], size: Int): Algebra[A, Matrix[A]] = new MatrixCategoryOverField(field).endomorphismAlgebra(size)
 
   // return all ways to write M=AA^t, up to permuting the columns of A
@@ -35,8 +38,6 @@ object Matrices extends net.tqft.toolkit.Logging {
     }
 
     def partialDecompositions(m: Int): Seq[Matrix[Int]] = {
-      import Gadgets.Integers
-
       def newRows(d: Seq[(Int, Int)], P: Matrix[Int]): Seq[Seq[Int]] = {
         //        println("investigating new rows for " + d + " " + P.entries)
 
@@ -93,7 +94,7 @@ object Matrices extends net.tqft.toolkit.Logging {
       }
     }
 
-    val integerMatrices = new MatrixCategoryOverRing(Gadgets.Integers)
+    val integerMatrices = new MatrixCategoryOverRing[Int]
 
     // we need to filter the results; if M wasn't positive definite there are spurious answers.
     val result = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
@@ -115,13 +116,14 @@ class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix
 }
 
 
-class MatrixCategoryOverRing[R](ring: Ring[R]) extends TensorCategory[Int, Matrix[R], R] {
+class MatrixCategoryOverRing[R:Ring] extends TensorCategory[Int, Matrix[R], R] {
+  private val ring = implicitly[Ring[R]]
   val inner = new AbstractMatrixCategory(ring: LinearCategory[Unit, R, R])({ (sources: Seq[Unit], targets: Seq[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) }) {
     override def add(x: Matrix[R], y: Matrix[R]) = {
       require(x.numberOfColumns == y.numberOfColumns)
       require(x.numberOfRows == y.numberOfRows)
 
-      val entries = (x.entries zip y.entries) map { case (rx, ry) => VectorOperations.add(rx, ry)(ring) }
+      val entries = (x.entries zip y.entries) map { case (rx, ry) => VectorOperations.add(rx, ry) }
       buildMatrix(x.sources, y.targets, entries)
     }
 
@@ -129,7 +131,7 @@ class MatrixCategoryOverRing[R](ring: Ring[R]) extends TensorCategory[Int, Matri
 
   override def identityMorphism(o: Int) = inner.identityMorphism(List.fill(o)(()))
   override def zeroMorphism(o1: Int, o2: Int) = {
-    val zero = ring.zero
+    val zero = implicitly[Ring[R]].zero
     val zeroRow = Seq.fill(o2)(zero)
     new Matrix(o1, Seq.fill(o1)(zeroRow))
   }
@@ -145,17 +147,17 @@ class MatrixCategoryOverRing[R](ring: Ring[R]) extends TensorCategory[Int, Matri
   }
   override def source(x: Matrix[R]) = x.numberOfColumns
   override def target(x: Matrix[R]) = x.numberOfRows
-  override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => VectorOperations.scalarMultiply(a, r)(ring) })
+  override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => VectorOperations.scalarMultiply(a, r) })
   override def tensorObjects(o1: Int, o2: Int) = o1 * o2
   override def tensorMorphisms(m1: Matrix[R], m2: Matrix[R]) = {
     new Matrix(m1.numberOfColumns * m2.numberOfColumns,
-      for (row1 <- m1.entries; row2 <- m2.entries) yield VectorOperations.tensor(row1, row2)(ring))
+      for (row1 <- m1.entries; row2 <- m2.entries) yield VectorOperations.tensor(row1, row2))
   }
 
   //  override def endomorphismRing(o: Int) = ???
 }
 
-class MatrixCategoryOverField[F](field: Field[F]) extends MatrixCategoryOverRing(field) with TensorCategory[Int, Matrix[F], F] {
+class MatrixCategoryOverField[F:Field] extends MatrixCategoryOverRing[F] with TensorCategory[Int, Matrix[F], F] {
   /* FIXME override */ def inverseOption(x: Matrix[F]) = None // TODO
 }
 

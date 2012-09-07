@@ -50,7 +50,7 @@ object Representations {
   def tensorPower[A, F: Ring](V: Representation[A, F], k: Int): Representation[A, F] = {
     new Representation[A, F] {
       override val source = V.source
-      override def degree = Gadgets.Integers.power(V.degree, k)
+      override def degree = Integers.power(V.degree, k)
       override def apply(a: A) = {
         val Va = V(a)
         Seq.fill(k)(Va).reduce(Matrices.tensor(_, _))

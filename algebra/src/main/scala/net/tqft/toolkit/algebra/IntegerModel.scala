@@ -9,6 +9,6 @@ trait IntegerModel[@specialized(Int, Long) I] extends OrderedEuclideanRing[I] {
 }
 
 object IntegerModel {
-  implicit val Integers: IntegerModel[Int] = Gadgets.Integers
-  implicit val BigInts: IntegerModel[BigInt] = Gadgets.BigIntegers
+  implicit def Integers: IntegerModel[Int] = Integers
+  implicit def BigInts: IntegerModel[BigInt] = BigIntegers
 }
