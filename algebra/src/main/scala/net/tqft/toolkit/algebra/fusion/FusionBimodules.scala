@@ -108,6 +108,43 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     (for (solution <- solutions) yield reconstituteBimodule(solution)).chooseEquivalenceClassRepresentatives(equivalent_?)
   }
 
+  
+  // FIXME this is broken
+  def withGenerator(left: String, right: String): Iterable[FusionBimodule[Int]] = {
+    def extract(s: String): (Matrix[Int], IndexedSeq[Int]) = {
+      val graph :: duals :: Nil = s.stripPrefix("bwd").split("duals").toList
+      val matrices = graph.split("v").toSeq.map(c => (c.split("p").toSeq.map(_.split("x").toSeq.map(_.toInt))): Matrix[Int])
+
+      val ranks = 1 +: matrices.map(_.numberOfRows)
+      val evenRanks = for (i <- 0 until ranks.size by 2) yield ranks(i)
+      val oddRanks = for (i <- 1 until ranks.size by 2) yield ranks(i)
+      val generator: Matrix[Int] = for ((e, ed) <- evenRanks.zipWithIndex; i <- 0 until e) yield {
+        for ((o, od) <- oddRanks.zipWithIndex; j <- 0 until o) yield {
+          2 * ed - 2 * od - 1 match {
+            case 1 => {
+              matrices(2 * od + 1).entries(i)(j)
+            }
+            case -1 => {
+              matrices(2 * ed).entries(j)(i)
+            }
+            case _ => 0
+          }
+        }
+      }
+      val duality = {
+        import PartialSums._
+        duals.split("v").toIndexedSeq.map({ s: String => s.split("x").toSeq.map(_.toInt) }).zip(evenRanks.partialSums).map(p => p._1.map(_ + p._2)).flatten
+      }
+
+      (generator, duality)
+    }
+
+    val (leftGenerator, leftDuality) = extract(left)
+    val (rightGenerator, rightDuality) = extract(right)
+
+    withGenerator(leftGenerator, rightGenerator, leftDuality, rightDuality)
+  }
+
   def withGenerator(leftGenerator: Matrix[Int], rightGenerator: Matrix[Int], leftDuality: IndexedSeq[Int], rightDuality: IndexedSeq[Int]): Iterable[FusionBimodule[Int]] = {
     val leftRank = leftGenerator.numberOfRows
     val rightRank = rightGenerator.numberOfRows
@@ -163,7 +200,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
 
     val (solutions, tooHard) = BoundedDiophantineSolver.solve(polynomials, variables)
     require(tooHard.isEmpty)
-    for(s <- solutions) yield reconstituteBimodule(s)
+    for (s <- solutions) yield reconstituteBimodule(s)
   }
 
 }
