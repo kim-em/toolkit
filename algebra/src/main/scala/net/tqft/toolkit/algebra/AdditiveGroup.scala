@@ -5,7 +5,7 @@ import scala.collection.GenIterable
 // TODO should have
 //		@specialized(Int, Long, Float, Double) 
 // but this crashes the compiler (somewhere in FiniteGroups??).
-// Fixed by Paul Phillips, c.f. https://issues.scala-lang.org/browse/SI-6301 but hasn't hit master yet.
+// Fixed by Paul Phillips, c.f. https://issues.scala-lang.org/browse/SI-6301 but hasn't hit 2.10 yet.
 trait AdditiveSemigroup[A] {
   def add(x: A, y: A): A
   def add(x0: A, x1: A*): A = x1.fold(x0)(add _)

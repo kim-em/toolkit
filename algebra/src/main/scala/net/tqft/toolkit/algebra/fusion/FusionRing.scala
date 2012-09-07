@@ -7,44 +7,47 @@ import net.tqft.toolkit.permutations.Permutation
 import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 
-// TODO make this just a ModuleOverRig, not a Module
-trait FiniteDimensionalFreeModule[A] extends Module[A, Seq[A]] {
-  def coefficients: Ring[A]
+trait FiniteDimensionalFreeModuleOverRig[A] extends ModuleOverRig[A, Seq[A]] {
+  def coefficients: Rig[A]
   def rank: Int
   override lazy val zero = Seq.fill(rank)(coefficients.zero)
   override def add(x: Seq[A], y: Seq[A]) = x.zip(y).map(p => coefficients.add(p._1, p._2))
   override def scalarMultiply(a: A, b: Seq[A]) = b.map(x => coefficients.multiply(a, x))
-  override def negate(x: Seq[A]) = x.map(coefficients.negate)
 
   def innerProduct(x: Seq[A], y: Seq[A]) = coefficients.add(x.zip(y).map(p => coefficients.multiply(p._1, p._2)))
 
   def basis = for (i <- 0 until rank) yield for (j <- 0 until rank) yield if (i == j) coefficients.one else coefficients.zero
 }
 
+trait FiniteDimensionalFreeModule[A] extends FiniteDimensionalFreeModuleOverRig[A] with Module[A, Seq[A]] {
+  override def coefficients: Ring[A]
+  override def negate(x: Seq[A]) = x.map(coefficients.negate)
+}
+
 // Usually A = Int, for a concrete fusion ring. We allow other possibilities so we can write fusion solvers, etc.
-trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr =>
+trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A]] { fr =>
 
   override def fromInt(x: Int) = coefficients.fromInt(x) +: Seq.fill(rank - 1)(coefficients.zero)
   override val one = fromInt(1)
 
-  def associativityConstraints = for (x <- basis.iterator; y <- basis; z <- basis) yield subtract(multiply(x, multiply(y, z)), multiply(multiply(x, y), z))
-  def identityConstraints = (for (x <- basis.iterator) yield Seq(subtract(x, multiply(one, x)), subtract(x, multiply(x, one)))).flatten
-  def dualityConstraints(duality: Permutation = duality) = for (x <- basis.iterator; y <- basis) yield {
+  def associativityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis; z <- basis) yield multiply(x, multiply(y, z)).zip(multiply(multiply(x, y), z))).flatten
+  def identityConstraints: Iterator[(A,A)] = (for (x <- basis.iterator) yield Seq(x.zip(multiply(one, x)), x.zip(multiply(x, one)))).flatten.flatten
+  def dualityConstraints(duality: Permutation = duality): Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis) yield {
     import net.tqft.toolkit.permutations.Permutations._
-    subtract(duality.permute(multiply(x, y)), multiply(duality.permute(y), duality.permute(x)))
-  }
+    duality.permute(multiply(x, y)).zip(multiply(duality.permute(y), duality.permute(x)))
+  }).flatten
 
   def duality: Permutation = {
     structureCoefficients.map(_.entries.indexWhere(_.head == coefficients.one).ensuring(_ != -1))
   }
 
-  def verifyAssociativity = associativityConstraints.map(_ == zero).reduce(_ && _)
-  def verifyIdentity = identityConstraints.map(_ == zero).reduce(_ && _)
-  def verifyDuality(duality: Permutation = duality) = dualityConstraints(duality).map(_ == zero).reduce(_ && _)
+  def verifyAssociativity = associativityConstraints.forall(p => p._1 == p._2)
+  def verifyIdentity = identityConstraints.forall(p => p._1 == p._2)
+  def verifyDuality(duality: Permutation = duality) = dualityConstraints(duality).forall(p => p._1 == p._2)
 
   lazy val structureCoefficients = for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
 
-  trait FusionModule extends FiniteDimensionalFreeModule[A] { fm =>
+  trait FusionModule extends FiniteDimensionalFreeModuleOverRig[A] { fm =>
     override def coefficients = fr.coefficients
 
     def fusionRing = fr
@@ -77,11 +80,11 @@ trait FusionRing[A] extends FiniteDimensionalFreeModule[A] with Rig[Seq[A]] { fr
       ???
     }
 
-    def associativityConstraints = for (x <- fr.basis.iterator; y <- fr.basis; z <- basis) yield subtract(act(x, act(y, z)), act(fr.multiply(x, y), z))
+    def associativityConstraints = (for (x <- fr.basis.iterator; y <- fr.basis; z <- basis) yield act(x, act(y, z)).zip(act(fr.multiply(x, y), z))).flatten
     def admissibilityConstraints = for (m <- basis.iterator; x <- fr.basis; h <- fr.basis) yield {
-      coefficients.subtract(innerProduct(act(x, m), act(h, m)), fr.innerProduct(fr.multiply(x, rightMultiplicationByDuals(m, m)), h))
+      (innerProduct(act(x, m), act(h, m)), fr.innerProduct(fr.multiply(x, rightMultiplicationByDuals(m, m)), h))
     }
-    def identityConstraints = for (x <- basis.iterator) yield subtract(x, act(fr.one, x))
+    def identityConstraints = (for (x <- basis.iterator) yield x.zip(act(fr.one, x))).flatten
 
     def verifyAssociativity = associativityConstraints.map(_ == zero).reduce(_ && _)
     def verifyAdmissibility = admissibilityConstraints.map(_ == coefficients.zero).reduce(_ && _)

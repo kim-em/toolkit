@@ -23,7 +23,7 @@ object Gadgets {
     override def compare(x: T, y: T) = numeric.compare(x, y)
   }
 
-  abstract class IntegralEuclideanRing[@specialized(Int, Long) T](numeric: Integral[T]) extends NumericRing(numeric) with IntegerModel[T] {
+  abstract class IntegralEuclideanRing[T](numeric: Integral[T]) extends NumericRing(numeric) with IntegerModel[T] {
     override def quotientRemainder(x: T, y: T) = (numeric.quot(x, y), numeric.rem(x, y))
     override def quotient(x: T, y: T) = numeric.quot(x, y)
     override def remainder(x: T, y: T) = numeric.rem(x, y)

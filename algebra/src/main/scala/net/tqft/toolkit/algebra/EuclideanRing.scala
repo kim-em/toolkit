@@ -43,7 +43,7 @@ trait EuclideanRig[A] extends CommutativeRig[A] {
 
 }
 
-trait EuclideanRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRig[A] with CommutativeRing[A] {
+trait EuclideanRing[A] extends EuclideanRig[A] with CommutativeRing[A] {
   /**
    *
    * @param x
