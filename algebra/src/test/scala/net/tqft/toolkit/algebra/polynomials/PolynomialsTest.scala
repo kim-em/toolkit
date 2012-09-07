@@ -11,9 +11,6 @@ import org.scalatest.FlatSpec
 class PolynomialsTest extends FlatSpec with ShouldMatchers {
 
   "Polynomial arithmetic" should "be correct" in {
-    import Gadgets.bigIntegersAsBigRationals
-    import Implicits.integersAsRationals
-    //      import Implicits.asConstantPolynomial
     import AlgebraicNotation._
 
     val p: Polynomial[Fraction[Int]] = Polynomial(2 -> Fraction(1, 1), 1 -> Fraction(3, 1), 0 -> Fraction(1, 1))
@@ -26,7 +23,7 @@ class PolynomialsTest extends FlatSpec with ShouldMatchers {
 
     val z: Polynomial[BigInt] = Polynomial(3 -> BigInt(1), 1 -> BigInt(16), 0 -> BigInt(-12), 2 -> BigInt(-7))
     val bigN = Fraction(BigInt(499), BigInt(100))
-    (Polynomials.over(bigIntegersAsBigRationals) andThen Polynomials.evaluationAt(bigN))(z) should equal(Fraction(BigInt(17790799), BigInt(1000000)))
+    (Polynomials.over(Conversions.bigIntegersAsBigRationals) andThen Polynomials.evaluationAt(bigN))(z) should equal(Fraction(BigInt(17790799), BigInt(1000000)))
   }
 
   "cyclotomic" should "give the cyclotomic polynomials" in {

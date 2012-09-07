@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.polynomials
 import net.tqft.toolkit.algebra.AssociativeAlgebra
 import net.tqft.toolkit.algebra.Integers
 import net.tqft.toolkit.algebra.Ring
+import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.modules.FreeModuleOnMonoid
 
 trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] with AssociativeAlgebra[A, Polynomial[A]] {

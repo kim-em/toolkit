@@ -129,18 +129,18 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       override val character = x
     }
     implicit def liftIntegers(x: Seq[Int]): RationalCharacter = new RationalCharacter {
-      override val character = x.map(Gadgets.Rationals.fromInt(_))
+      override val character = x.map(Rationals.fromInt(_))
     }
   }
 
   trait RationalCharacter extends Character[Fraction[Int]] {
-    override def field = Gadgets.Rationals
+    override def field = Rationals
     override def degree = character.head.ensuring(_.denominator == 1).numerator
   }
   trait CyclotomicCharacter extends Character[Polynomial[Fraction[Int]]] {
     def order: Int
-    override def field = NumberField.cyclotomic(order)(Gadgets.Rationals)
-    override def degree = character.head.ensuring(_.maximumDegree.getOrElse(0) == 0).constantTerm(Gadgets.Rationals).ensuring(_.denominator == 1).numerator
+    override def field = NumberField.cyclotomic(order)
+    override def degree = character.head.ensuring(_.maximumDegree.getOrElse(0) == 0).constantTerm.ensuring(_.denominator == 1).numerator
   }
 
   lazy val characters: Seq[Seq[Polynomial[Fraction[Int]]]] = {
@@ -204,11 +204,10 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       for (i <- 0 until k) yield for (j <- 0 until k) yield modP.quotient(omega(i)(j) * degrees(i), conjugacyClasses(j).size)
     }
 
-    implicit val rationals = Gadgets.Rationals
     implicit val modP = Mod(preferredPrime)
 
-    val cyclotomicNumbers = NumberField.cyclotomic(exponent)(rationals)
-    val zeta = Polynomial.identity(rationals)
+    val cyclotomicNumbers = NumberField.cyclotomic[Fraction[Int]](exponent)
+    val zeta = Polynomial.identity[Fraction[Int]]
     val chi = characterTableModPreferredPrime
     val z = (1 until preferredPrime).find({ n => modP.orderOfElement(n) == exponent }).get
 
@@ -227,7 +226,10 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       FiniteGroup.info("Computing entry " + (i, j) + " in the character table.")
       cyclotomicNumbers.add(for (s <- 0 until exponent) yield cyclotomicNumbers.multiplyByInt(zetapower(s), mu(i)(j)(s)))
     }).seq).seq
-    val sortedCharacters = unsortedCharacters.sortBy({ v => (v(0).constantTerm, v.tail.headOption.map({ p => rationals.negate(p.constantTerm) })) })
+    val sortedCharacters = {
+      implicit val rationals = implicitly[OrderedField[Fraction[Int]]]
+      unsortedCharacters.sortBy({ v => (v(0).constantTerm, v.tail.headOption.map({ p => rationals.negate(p.constantTerm) })) })
+    }
 
     sortedCharacters
   }
@@ -252,7 +254,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
   def characterPairing[M, N](m: Character[M], n: Character[N]): Int = {
     def liftCharacterToCyclotomicFieldOfExponent(c: Character[_]) = {
-      val polynomials = Polynomials.over(Gadgets.Rationals)
+      val polynomials = PolynomialAlgebra.over[Fraction[Int]]
       new CyclotomicCharacter {
         override val order = exponent
         override val character = c match {

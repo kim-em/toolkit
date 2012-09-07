@@ -8,12 +8,10 @@ import org.junit.Test
 class RepresentationTest {
 
   val S_3 = FiniteGroups.symmetricGroup(3)
-  implicit val rationals = Gadgets.Rationals
-  import Implicits.integersAsRationals;
 
   @Test
   def testIrrepMultiplicities = {
-    val V = Representations.permutationRepresentation(S_3)
+    val V = Representations.permutationRepresentation[Fraction[Int]](S_3)
     assertEquals(Seq(1, 0, 1), V.irrepMultiplicities)
   }
 
@@ -21,7 +19,7 @@ class RepresentationTest {
   def testTensorPowersDecompose = {
     for (k <- 1 to 7) {
       Logging.info("Looking at the " + k + "-th tensor power.")
-      val V = Representations.tensorPower(Representations.permutationRepresentation(3), k)
+      val V = Representations.tensorPower(Representations.permutationRepresentation[Fraction[Int]](3), k)
       (S_3.reducedCharacters zip V.irrepMultiplicities).collect({ case (c: S_3.RationalCharacter, n) => assertEquals(n * c.degree, V.basisForIsotypicComponent(c.character).size) })
     }
   }

@@ -38,8 +38,8 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
     m.rank() should equal(2)
     m.preimageOf(List(9, 12)) should equal(Some(List(Fraction(3, 8), Fraction(1, 8))))
 
-    implicit val integersAsBigRationals = Gadgets.integersAsBigInts andThen Gadgets.bigIntegersAsBigRationals
-    implicit val rationalsAsBigRationals = Gadgets.rationalsAsBigRationals
+    implicit val integersAsBigRationals = Conversions.integersAsBigInts andThen Conversions.bigIntegersAsBigRationals
+    implicit val rationalsAsBigRationals = Conversions.rationalsAsBigRationals
 
     val m2: Matrix[Fraction[BigInt]] = Matrix.from(List(List(13, 9, 14, 7, 4), List(0, 12, 12, 19, 15), List(3, 10, 0, 1, 15), List(17, 0, 11, 14, 19), List(8, 4, 6, 11, 13)))
     val a2: List[Fraction[BigInt]] = List(72, 65, 74, 18, 87)
@@ -48,8 +48,6 @@ class MatricesTest extends FlatSpec with ShouldMatchers {
   }
 
   "characteristicPolynomial" should "work" in {
-    import Implicits.integersAsRationals
-
     val m: Matrix[Fraction[Int]] = Matrix(2, List(List(20, 12), List(12, 60)))
     m.characteristicPolynomial should equal(Polynomial((0, Fraction(1056, 1)), (1, Fraction(-80, 1)), (2, Fraction(1, 1))))
   }

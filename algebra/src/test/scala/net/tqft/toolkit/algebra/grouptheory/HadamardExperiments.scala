@@ -22,7 +22,6 @@ class HadamardExperiments extends FlatSpec with ShouldMatchers {
 
   "the automorphism group of H_12" should "have one copy of each of the 11d irreps in the tensor square of the 12d irrep" in {
 
-    import Implicits.integersAsRationals;
 
     //    val chi4 : Seq[Fraction[Int]] = Seq(11, 11, 3, 3, -1, 2, 2, -1, -1, -1, 3, 0, 0, 0,
     //      0, -1, -1, 1, 1, -1, 1, -1, 1, -1, 0, 0)
@@ -34,8 +33,6 @@ class HadamardExperiments extends FlatSpec with ShouldMatchers {
 
   "the automorphism group of H_12" should "have 18 copies of the 54d irrep in the 4-th tensor power of the 12d irrep" in {
 
-    import Implicits.integersAsRationals
-
 
     val chi13 = Seq(54, 54, 6, 6, 6, 0, 0, 0, 0, 2, 2, -1, -1, -1, -1, 1, 1, -1, -1, 0,
       0, 0, 0, 0, 0, 0)
@@ -44,11 +41,9 @@ class HadamardExperiments extends FlatSpec with ShouldMatchers {
   }
 
   "the tensor powers of the permutation representation" should "decompose correctly" in {
-    implicit val rationals = Gadgets.Rationals
-    import Implicits.integersAsRationals;
     for (k <- 2 to 4) {
       println("Looking at tensor power " + k)
-      val V = Representations.tensorPower(Representations.signedPermutationRepresentation(half), k)
+      val V = Representations.tensorPower(Representations.signedPermutationRepresentation[Fraction[Int]](half), k)
       (half.reducedCharacters zip V.irrepMultiplicities).collect({
         case (c: half.RationalCharacter, n) if n == 12 => {
           println("Looking for the isotypic component with character " + c.character)
