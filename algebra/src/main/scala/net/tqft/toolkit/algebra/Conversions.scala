@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import net.tqft.toolkit.algebra.categories._
+
 object Conversions {
   val integersAsRationals = Fields.embeddingInFieldOfFractions(Integers)
   val bigIntegersAsBigRationals = Fields.embeddingInFieldOfFractions(BigIntegers)

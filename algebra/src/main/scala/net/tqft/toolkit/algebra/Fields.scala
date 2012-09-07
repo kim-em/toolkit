@@ -1,5 +1,9 @@
 package net.tqft.toolkit.algebra
 
+import net.tqft.toolkit.algebra.categories._
+
+trait FieldHomomorphism[A, B] extends Homomorphism[Field, A, B]
+
 object Fields extends HomomorphismCategory[Field] {
   val embeddingInFieldOfFractions = new NaturalTransformation[EuclideanRing, EuclideanRing, Functors.Identity, Fraction] {
     def source = Functors.Identity(EuclideanRings)

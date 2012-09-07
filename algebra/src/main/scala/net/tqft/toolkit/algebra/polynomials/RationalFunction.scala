@@ -4,10 +4,7 @@ import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.FieldHomomorphism
 import net.tqft.toolkit.algebra.Fields
 import net.tqft.toolkit.algebra.Fraction
-import net.tqft.toolkit.algebra.Functor
-import net.tqft.toolkit.algebra.Functors
-import net.tqft.toolkit.algebra.Homomorphism
-import net.tqft.toolkit.algebra.NaturalTransformation
+import net.tqft.toolkit.algebra.categories._
 
 object RationalFunction {
   def identity[A](implicit ring: Field[A]) = Fraction(Polynomial.identity, Polynomials.over(ring).one)(Polynomials.over(ring))

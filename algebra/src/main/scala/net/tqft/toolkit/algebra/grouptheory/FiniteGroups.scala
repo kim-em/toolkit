@@ -8,6 +8,7 @@ import net.tqft.toolkit.permutations.Permutation
 import net.tqft.toolkit.permutations.Permutations
 import scala.collection.GenSeq
 import scala.collection.GenSet
+import net.tqft.toolkit.algebra.categories.Homomorphism
 
 
 object FiniteGroups {
@@ -214,4 +215,7 @@ object FiniteGroups {
   }
 }
 
+trait FiniteGroupHomomorphism[A, B] extends Homomorphism[FiniteGroup, A, B] { homomorphism =>
+  def kernel = source.subgroup(source.elements.par.filter(homomorphism(_) == target.one).seq)
+}
 

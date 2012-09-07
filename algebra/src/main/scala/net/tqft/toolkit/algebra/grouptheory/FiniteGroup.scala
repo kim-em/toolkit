@@ -313,9 +313,6 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
   override def unsortedConjugacyClasses = GroupActions.conjugationAction(fgFiniteGroup).orbits(generators, elements).toSeq
 }
 
-trait FiniteGroupHomomorphism[A, B] extends Homomorphism[FiniteGroup, A, B] { homomorphism =>
-  def kernel = source.subgroup(source.elements.par.filter(homomorphism(_) == target.one).seq)
-}
 
 
 
