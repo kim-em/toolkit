@@ -1,14 +1,8 @@
 package net.tqft.toolkit.algebra
 
-object AlgebraicNotation {
-//  implicit def summable[A: CommutativeMonoid](i: Iterable[A]): Summable[A] = new Summable(i)
-//  class Summable[A: CommutativeMonoid](i: Iterable[A]) {
-//    def sum = {
-//      val cm = implicitly[CommutativeMonoid[A]]
-//      i.foldLeft(cm.zero)(cm.add(_, _))
-//    }
-//  }
+import net.tqft.toolkit.algebra.modules.Module
 
+object AlgebraicNotation {
   implicit def additiveMonoidElement[A: AdditiveMonoid](a: A) = new AdditiveMonoidElement(a)
   class AdditiveMonoidElement[A: AdditiveMonoid](a: A) {
     def +(b: A) = implicitly[AdditiveMonoid[A]].add(a, b)

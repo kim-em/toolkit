@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.grouptheory
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.algebra.categories._
 
 trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { representation =>
   def degree: Int

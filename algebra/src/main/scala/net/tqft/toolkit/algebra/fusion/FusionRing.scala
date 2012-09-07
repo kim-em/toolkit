@@ -6,6 +6,7 @@ import net.tqft.toolkit.algebra.numberfields.RealNumberField
 import net.tqft.toolkit.permutations.Permutation
 import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.modules._
 
 trait FiniteDimensionalFreeModuleOverRig[A] extends ModuleOverRig[A, Seq[A]] {
   def coefficients: Rig[A]

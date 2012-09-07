@@ -8,6 +8,7 @@ import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.numberfields.RealNumberField
 import net.tqft.toolkit.algebra.polynomials.PolynomialAlgebra
+import net.tqft.toolkit.algebra.categories.Groupoid
 
 trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
   def dimensionField: RealNumberField[Int, Double]
