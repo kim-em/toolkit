@@ -226,9 +226,9 @@ object FusionRing {
 
   private class ConcreteStructureCoefficientFusionRing(multiplicities: Seq[Matrix[Int]]) extends StructureCoefficientFusionRing[Int](multiplicities) with ConcreteFusionRing
 
-  private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, override val dimensions: Seq[Polynomial[Fraction[Int]]]) extends StructureCoefficientFusionRing[Int](multiplicities)(Gadgets.Integers) with FusionRingWithDimensions {
+  private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, override val dimensions: Seq[Polynomial[Fraction[Int]]]) extends StructureCoefficientFusionRing[Int](multiplicities) with FusionRingWithDimensions {
     override def dimensionField = {
-      RealNumberField(fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon)(Gadgets.Integers, Gadgets.Doubles)
+      RealNumberField(fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon)
     }
   }
 }

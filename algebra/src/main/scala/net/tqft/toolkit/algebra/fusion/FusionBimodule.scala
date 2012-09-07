@@ -111,7 +111,7 @@ object FusionBimodule {
 
 object FusionBimoduleWithLeftDimensions {
   def apply(_leftModule: FusionRingWithDimensions#FusionModule, rightMultiplication: Seq[Matrix[Int]], rightAction: Seq[Matrix[Int]]): FusionBimoduleWithLeftDimensions = new FusionBimoduleWithLeftDimensions {
-    override val coefficients = Gadgets.Integers
+    override val coefficients = Integers
     override val leftRing = _leftModule.fusionRing
     override val rightRing = FusionRing(rightMultiplication)
 

@@ -32,7 +32,7 @@ object Fields extends HomomorphismCategory[Field] {
     def compare(x: Fraction[A], y: Fraction[A]) = ring.compare(ring.multiply(x.numerator, y.denominator), ring.multiply(y.numerator, x.denominator))
   }
 
-  object Rationals extends OrderedFieldOfFractions(Gadgets.Integers)
+  object Rationals extends OrderedFieldOfFractions(Integers)
 
   val fieldOfFractions: Functor[EuclideanRing, Field, Fraction] { def apply[A](ring: OrderedEuclideanRing[A]): OrderedField[Fraction[A]] } = new Functor[EuclideanRing, Field, Fraction] { self =>
     def source = EuclideanRings

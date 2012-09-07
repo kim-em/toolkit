@@ -9,7 +9,7 @@ import org.scalatest.junit.JUnitRunner
 class RigsTest extends FlatSpec with ShouldMatchers {
   
   "adjoinUnknown" should "give something sensible" in {	  
-	 val N_? = Rigs.adjoinUnknown(Gadgets.Integers)
+	 val N_? = Rigs.adjoinUnknown(Integers)
 	 import net.tqft.toolkit.UnionTypes._
 	 import Unknowns.?
 	 N_?.multiply(2, 3) should equal(Left(6))

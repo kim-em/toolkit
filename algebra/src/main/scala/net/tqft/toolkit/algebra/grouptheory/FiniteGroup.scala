@@ -110,7 +110,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     (impl _).memo
   }
 
-  lazy val exponent = Gadgets.Integers.lcm((elements map { orderOfElement _ }).toSeq: _*)
+  lazy val exponent = Integers.lcm((elements map { orderOfElement _ }).toSeq: _*)
 
   lazy val preferredPrime = {
     var p = exponent + 1

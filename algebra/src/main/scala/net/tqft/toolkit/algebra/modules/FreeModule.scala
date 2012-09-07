@@ -76,7 +76,7 @@ trait MapFreeModule[A, B] extends FreeModule[A, B] {
 }
 
 trait IntegerFreeModule[B, LC <: LinearCombo[Int, B]] extends GeneralFreeModule[Int, B, LC] {
-  val ring = Gadgets.Integers
+  val ring = Integers
 }
 
 trait FreeModuleOnMonoidOverRig[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModuleOverRig[A, B, LC] with Rig[LC] {
