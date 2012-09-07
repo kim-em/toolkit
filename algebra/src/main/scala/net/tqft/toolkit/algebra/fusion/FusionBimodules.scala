@@ -3,7 +3,7 @@ package net.tqft.toolkit.algebra.fusion
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.diophantine._
 import net.tqft.toolkit.algebra.matrices._
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
+import net.tqft.toolkit.algebra.polynomials._
 
 object FusionBimodules extends net.tqft.toolkit.Logging {
   def commutants(leftModule: FusionRingWithDimensions#FusionModule, rankBound: Option[Int] = None): Iterable[FusionBimodule[Int]] = {
@@ -106,6 +106,64 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     import net.tqft.toolkit.collections.GroupBy._
 
     (for (solution <- solutions) yield reconstituteBimodule(solution)).chooseEquivalenceClassRepresentatives(equivalent_?)
+  }
+
+  def withGenerator(leftGenerator: Matrix[Int], rightGenerator: Matrix[Int], leftDuality: IndexedSeq[Int], rightDuality: IndexedSeq[Int]): Iterable[FusionBimodule[Int]] = {
+    val leftRank = leftGenerator.numberOfRows
+    val rightRank = rightGenerator.numberOfRows
+    val moduleRank = leftGenerator.numberOfColumns.ensuring(_ == rightGenerator.numberOfColumns)
+
+    type V = (Int, Int, Int, Int)
+
+    implicit val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
+
+    val leftMultiplication = for (i <- 0 until leftRank) yield {
+      Matrix(leftRank,
+        for (j <- 0 until leftRank) yield {
+          for (k <- 0 until leftRank) yield polynomialAlgebra.monomial((0, i, j, k))
+        })
+    }
+    val leftAction = leftGenerator.mapEntries(polynomialAlgebra.constant) +: (for (i <- 1 until moduleRank) yield {
+      Matrix(moduleRank,
+        for (j <- 0 until leftRank) yield {
+          for (k <- 0 until moduleRank) yield polynomialAlgebra.monomial((1, i, j, k))
+        })
+    })
+    val rightMultiplication = for (i <- 0 until rightRank) yield {
+      Matrix(rightRank,
+        for (j <- 0 until rightRank) yield {
+          for (k <- 0 until rightRank) yield polynomialAlgebra.monomial((2, i, j, k))
+        })
+    }
+    val rightAction = rightGenerator.mapEntries(polynomialAlgebra.constant) +: (for (i <- 1 until moduleRank) yield {
+      Matrix(moduleRank,
+        for (j <- 0 until rightRank) yield {
+          for (k <- 0 until moduleRank) yield polynomialAlgebra.monomial((3, i, j, k))
+        })
+    })
+
+    val variableBimodule = FusionBimodule(leftMultiplication, leftAction, rightMultiplication, rightAction)
+
+    val polynomials = (variableBimodule.associativityConstraints ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints ++ variableBimodule.leftRing.dualityConstraints(leftDuality) ++ variableBimodule.rightRing.dualityConstraints(rightDuality)).map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
+    val variables = (leftMultiplication.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++
+      leftAction.tail.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++
+      rightMultiplication.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++
+      rightAction.tail.flatMap(_.entries).flatten.flatMap(_.variables.toSeq))
+
+    def reconstituteBimodule(m: Map[V, Int]): FusionBimodule[Int] = {
+      def substitute(matrices: Seq[Matrix[MultivariablePolynomial[Int, V]]]): Seq[Matrix[Int]] = {
+        matrices.map(_.mapEntries({
+          case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
+          case p => p.constantTerm
+        }))
+      }
+
+      FusionBimodule(substitute(leftMultiplication), substitute(leftAction), substitute(rightMultiplication), substitute(rightAction))
+    }
+
+    val (solutions, tooHard) = BoundedDiophantineSolver.solve(polynomials, variables)
+    require(tooHard.isEmpty)
+    for(s <- solutions) yield reconstituteBimodule(s)
   }
 
 }

@@ -40,7 +40,6 @@ trait EuclideanRig[A] extends CommutativeRig[A] {
       }
     }
   }
-
 }
 
 trait EuclideanRing[A] extends EuclideanRig[A] with CommutativeRing[A] {
