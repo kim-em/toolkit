@@ -23,6 +23,10 @@ trait AdditiveMonoid[@specialized(Int, Long, Float, Double) A] extends AdditiveS
   def add(xs: GenIterable[A]): A = xs.fold(zero)(add _)
 }
 
+object AdditiveMonoid {
+  implicit def forget[A:Rig]: AdditiveMonoid[A] = implicitly[AdditiveMonoid[A]]
+}
+
 trait Subtractive[@specialized(Int, Long, Float, Double) A] extends AdditiveSemigroup[A] {
   def negate(x: A): A
   def subtract(x: A, y: A) = add(x, negate(y))
