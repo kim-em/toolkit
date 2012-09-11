@@ -17,7 +17,11 @@ trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
 
   def divideByCoefficientGCD(implicit euclideanDomain: EuclideanRing[A], ordering: Ordering[V]) = {
     val gcd = euclideanDomain.gcd(terms.map(_._2): _*)
-    MultivariablePolynomial(terms.map(p => p.copy(_2 = euclideanDomain.quotient(p._2, gcd))): _*)
+    if (gcd == euclideanDomain.one) {
+      this
+    } else {
+      MultivariablePolynomial(terms.map(p => p.copy(_2 = euclideanDomain.quotient(p._2, gcd))): _*)
+    }
   }
 
   override def toString = {

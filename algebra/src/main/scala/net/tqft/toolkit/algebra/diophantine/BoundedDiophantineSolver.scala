@@ -44,7 +44,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
         }
       }
       def addEquations(qs: Iterable[P]): Option[Equations] = {
-        qs.foldLeft[Option[Equations]](Some(this))({ (o, e) => o.flatMap(_.addEquation(e)) })
+        qs.toSeq.sortBy(p => (p.totalDegree, p.terms.size)).foldLeft[Option[Equations]](Some(this))({ (o, e) => o.flatMap(_.addEquation(e)) })
       }
       def addEquation(q: P): Option[Equations] = {
         val p = polynomialAlgebra.substitute(substitutions)(q).divideByCoefficientGCD

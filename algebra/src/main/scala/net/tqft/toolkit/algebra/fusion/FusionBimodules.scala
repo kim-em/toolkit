@@ -109,7 +109,6 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
   }
 
   
-  // FIXME this is broken
   def withGenerator(left: String, right: String): Iterable[FusionBimodule[Int]] = {
     def extract(s: String): (Matrix[Int], IndexedSeq[Int]) = {
       val graph :: duals :: Nil = s.stripPrefix("bwd").split("duals").toList
@@ -133,7 +132,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
       }
       val duality = {
         import PartialSums._
-        duals.split("v").toIndexedSeq.map({ s: String => s.split("x").toSeq.map(_.toInt) }).zip(evenRanks.partialSums).map(p => p._1.map(_ + p._2)).flatten
+        duals.split("v").toIndexedSeq.map({ s: String => s.split("x").toSeq.map(_.toInt) }).zip(evenRanks.partialSums).map(p => p._1.map(_ + p._2)).flatten.map(_ - 1)
       }
 
       (generator, duality)
