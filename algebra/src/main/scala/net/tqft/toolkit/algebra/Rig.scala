@@ -15,7 +15,6 @@ trait Rig[@specialized(Int, Long, Float, Double) A] extends Monoid[A] with Addit
 }
 
 object Rig {
-  implicit val CountableCardinals: Rig[CountableCardinal] = CountableCardinals
   implicit def forget[A: Ring]: Rig[A] = implicitly[Ring[A]]
 }
 
