@@ -4,15 +4,19 @@ import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.algebra.Rig
 import net.tqft.toolkit.algebra.Rigs
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
+import net.tqft.toolkit.algebra.diophantine.BoundedDiophantineSolver
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 
 trait PartialFusionBimodule {
   def depth: Int
 
-  def addObjects: Iterable[PartialFusionBimodule]
+  def addObjects(boundary: FusionBimodule[Int] => Boolean): Iterable[PartialFusionBimodule]
   def increaseDepth: PartialFusionBimodule
 
+  /*protected*/ lazy val fusionBimodule = FusionBimodule(leftRingStructureCoefficients, leftModuleStructureCoefficients, rightRingStructureCoefficients, rightModuleStructureCoefficients)
+
   def get: Option[FusionBimodule[Int]] = {
-    FusionBimodule(leftRingStructureCoefficients, leftModuleStructureCoefficients, rightRingStructureCoefficients, rightModuleStructureCoefficients) match {
+    fusionBimodule match {
       case b if b.verifyAdmissibility && b.verifyAssociativity => Some(b)
       case _ => None
     }
@@ -94,14 +98,13 @@ object PartialFusionBimodule {
     FusionBimodule(leftMultiplication, leftAction, rightMultiplication, rightAction)
   }
 
-  def addMysteryObjects[P: Rig](bimodule: FusionBimodule[P]): FusionBimodule[P or ?] = {
-    // We need to add one mystery object at the each of the next two depths
+  def addMysteryObjects[P: Rig](bimodule: FusionBimodule[P], depth: Int): FusionBimodule[P or ?] = {
+    // We need to add one mystery object at depth and another at depth+1
     val lifted = lift(bimodule)
-    val depth = bimodule.leftModule.depth
     if (depth % 2 == 0) {
-      addEvenMysteryObject(addOddMysteryObject(lifted, depth + 1), depth + 2)
+      addOddMysteryObject(addEvenMysteryObject(lifted, depth), depth + 1)
     } else {
-      addOddMysteryObject(addEvenMysteryObject(lifted, depth + 1), depth + 2)
+      addEvenMysteryObject(addOddMysteryObject(lifted, depth), depth + 1)
     }
   }
 
@@ -113,39 +116,125 @@ case class EvenPartialFusionBimodule(
   leftModuleStructureCoefficients: Seq[Matrix[Int]],
   rightRingStructureCoefficients: Seq[Matrix[Int]],
   rightModuleStructureCoefficients: Seq[Matrix[Int]]) extends PartialFusionBimodule {
-  
+
+  def switch = EvenPartialFusionBimodule(depth, rightRingStructureCoefficients, rightModuleStructureCoefficients, leftRingStructureCoefficients, leftModuleStructureCoefficients)
+
   override def increaseDepth = OddPartialFusionBimodule(depth + 1, leftRingStructureCoefficients, leftModuleStructureCoefficients, rightRingStructureCoefficients, rightModuleStructureCoefficients)
-  
-  def addLeftObjects = folding[EvenPartialFusionBimodule]({ e => e.addLeftObject })
-  def addRightObjects = folding[EvenPartialFusionBimodule]({ e => e.addRightObject })
-  override def addObjects: Iterable[PartialFusionBimodule] = {
-    for (left <- addLeftObjects; right <- left.addRightObjects) yield right
+
+  def addLeftSelfDualObjects(boundary: FusionBimodule[Int] => Boolean) = folding[EvenPartialFusionBimodule]({ e => e.addLeftObjects(boundary, 1) })
+  def addLeftDualObjectPairs(boundary: FusionBimodule[Int] => Boolean) = folding[EvenPartialFusionBimodule]({ e => e.addLeftObjects(boundary, 2) })
+  override def addObjects(boundary: FusionBimodule[Int] => Boolean): Iterable[PartialFusionBimodule] = {
+    val switchedBoundary = { b: FusionBimodule[Int] => boundary(b.switch) }
+    for (left1 <- addLeftSelfDualObjects(boundary); left2 <- addLeftDualObjectPairs(boundary); right1 <- left2.switch.addLeftSelfDualObjects(switchedBoundary); right2 <- right1.addLeftDualObjectPairs(switchedBoundary)) yield right2.switch
   }
 
-  private type V = Int
-  private val polynomials = implicitly[MultivariablePolynomialAlgebra[Int, V]]
-  private def asPolynomials(ms: Seq[Matrix[Int]]) = ms.map(m => m.mapEntries(x => polynomials.constant(x)))
-  
-  def addLeftObject: Iterable[EvenPartialFusionBimodule] = {
-    val variableLeftRing = asPolynomials(leftRingStructureCoefficients)
-    val variableLeftModule = asPolynomials(leftModuleStructureCoefficients)
+  private type V = (Int, Int, Int, Int)
+  private val polynomialAlgebra = implicitly[MultivariablePolynomialAlgebra[Int, V]]
+  private def asPolynomials(ms: Seq[Matrix[Int]]) = ms.map(m => m.mapEntries(x => polynomialAlgebra.constant(x)))
+
+  def addLeftObjects(boundary: FusionBimodule[Int] => Boolean, number: Int): Iterable[EvenPartialFusionBimodule] = {
+
+    def leftRingVariable(i: Int, j: Int, k: Int): MultivariablePolynomial[Int, V] = {
+      if (i >= fusionBimodule.leftRing.rank || j >= fusionBimodule.leftRing.rank) {
+        polynomialAlgebra.monomial((0, i, j, k))
+      } else {
+        val di = fusionBimodule.leftModule.depthOfRingObject(i)
+        val dj = fusionBimodule.leftModule.depthOfRingObject(j)
+        val dk = if (k >= fusionBimodule.leftRing.rank) {
+          depth
+        } else {
+          fusionBimodule.leftModule.depthOfRingObject(k)
+        }
+        if (dk <= di + dj && dk >= scala.math.abs(di - dj)) {
+          polynomialAlgebra.monomial((0, i, j, k))
+        } else {
+          polynomialAlgebra.zero
+        }
+      }
+    }
+    def leftModuleVariable(i: Int, j: Int, k: Int): MultivariablePolynomial[Int, V] = {
+      require(j >= fusionBimodule.leftRing.rank)
+      val di = fusionBimodule.leftModule.depthOfModuleObject(i)
+      val dj = depth
+      val dk = fusionBimodule.leftModule.depthOfModuleObject(k)
+      if (dk <= di + dj && dk >= scala.math.abs(di - dj)) {
+        polynomialAlgebra.monomial((1, i, j, k))
+      } else {
+        polynomialAlgebra.zero
+      }
+    }
+
+    def addLeftRingVariableObject(ms: Seq[Matrix[MultivariablePolynomial[Int, V]]]): Seq[Matrix[MultivariablePolynomial[Int, V]]] = {
+      val rank = ms.size
+      (for ((matrix, i) <- ms.zipWithIndex) yield {
+        // add an extra row and column
+        matrix
+          .appendColumn(Seq.tabulate(rank)(j => leftRingVariable(i, j, rank + 1)))
+          .appendRow(Seq.tabulate(rank + 1)(k => leftRingVariable(i, rank + 1, k)))
+      }) :+ {
+        Matrix.tabulate(rank + 1, rank + 1)({ (i, j) =>
+          leftRingVariable(rank + 1, i, j)
+        })
+      }
+    }
+
+    def addLeftModuleVariableObject(ms: Seq[Matrix[MultivariablePolynomial[Int, V]]]): Seq[Matrix[MultivariablePolynomial[Int, V]]] = {
+      val frrank = ms.head.numberOfRows
+      val fmrank = ms.size
+      for ((matrix, i) <- ms.zipWithIndex) yield {
+        // add an extra row
+        matrix.appendRow(Seq.tabulate(fmrank)(k => leftModuleVariable(i, frrank + 1, k)))
+      }
+    }
+
+    val variableLeftRing = Seq.fill(number)(addLeftRingVariableObject _).reduce(_.andThen(_))(asPolynomials(leftRingStructureCoefficients))
+    val variableLeftModule = Seq.fill(number)(addLeftModuleVariableObject _).reduce(_.andThen(_))(asPolynomials(leftModuleStructureCoefficients))
     val variableRightRing = asPolynomials(rightRingStructureCoefficients)
     val variableRightModule = asPolynomials(rightModuleStructureCoefficients)
-    
-    
-    // let's see; we need to add some extra entries corresponding to multiplicities with the new object
-    // some of these should be zero (by the grading)
-    // others are variable
-    // we then need to add an unknown object
-    // prepare all the equations, and throw out those involving unknowns...
-    // solve those
-    // and finally only keep those that actually connected to the new object
 
-    ???
+    def reconstituteBimodule(m: Map[V, Int]): EvenPartialFusionBimodule = {
+      val newLeftRingStructureCoefficients = variableLeftRing.map(_.mapEntries({
+        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
+        case p => p.constantTerm
+      }))
+      val newLeftModuleStructureCoefficients = variableLeftModule.map(_.mapEntries({
+        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
+        case p => p.constantTerm
+      }))
+      EvenPartialFusionBimodule(depth, newLeftRingStructureCoefficients, newLeftModuleStructureCoefficients, rightRingStructureCoefficients, rightModuleStructureCoefficients)
+    }
+
+    val mysteryBimodule = PartialFusionBimodule.addMysteryObjects(FusionBimodule(variableLeftRing, variableLeftModule, variableRightRing, variableRightModule), depth)
+
+    // watch out, we need to add an extra element to each of the dualities, for the mystery object
+    val leftDuality = fusionBimodule.leftRing.duality.get ++ (number match {
+      case 1 => Seq(fusionBimodule.leftRing.rank, fusionBimodule.leftRing.rank + 1)
+      case 2 => Seq(fusionBimodule.leftRing.rank + 1, fusionBimodule.leftRing.rank, fusionBimodule.leftRing.rank + 2)
+    })
+    val rightDuality = fusionBimodule.rightRing.duality.get :+ fusionBimodule.rightRing.rank
+
+    val mysteryEquations = mysteryBimodule.admissibilityConstraints ++ mysteryBimodule.associativityConstraints ++ mysteryBimodule.identityConstraints ++ mysteryBimodule.dualityConstraints(leftDuality, rightDuality)
+    val polynomials = mysteryEquations.collect({
+      case (Left(p), Left(q)) => polynomialAlgebra.subtract(p, q)
+    }).toSeq
+    val variables = variableLeftRing.flatMap(_.entries.flatten).flatMap(_.variables) ++ variableLeftModule.flatMap(_.entries.flatten).flatMap(_.variables)
+    def orderingBoundary(b: FusionBimodule[Int]): Boolean = {
+      boundary(b) && {
+        // TODO make sure we add the objects in order?
+        true
+      }
+    }
+
+    val (solutions, tooHard) = BoundedDiophantineSolver.solve(polynomials, variables, boundary = Some({ m: Map[V, Int] => orderingBoundary(reconstituteBimodule(m).fusionBimodule) }))
+    require(tooHard.isEmpty)
+
+    def newObjectsConnected(b: EvenPartialFusionBimodule) = {
+      b.leftModuleStructureCoefficients.map(_.entries.seq.reverse.take(number)).transpose.map(_.flatten).forall(_.exists(_ != 0))
+    }
+
+    for (solution <- solutions; b = reconstituteBimodule(solution); if newObjectsConnected(b)) yield b
   }
-  def addRightObject: Iterable[EvenPartialFusionBimodule] = {
-    ???
-  }
+
 }
 
 case class OddPartialFusionBimodule(
@@ -156,7 +245,7 @@ case class OddPartialFusionBimodule(
   rightModuleStructureCoefficients: Seq[Matrix[Int]]) extends PartialFusionBimodule {
   override def increaseDepth = EvenPartialFusionBimodule(depth + 1, leftRingStructureCoefficients, leftModuleStructureCoefficients, rightRingStructureCoefficients, rightModuleStructureCoefficients)
 
-  override def addObjects = folding[OddPartialFusionBimodule]({ e => e.addObject })
+  override def addObjects(boundary: FusionBimodule[Int] => Boolean) = folding[OddPartialFusionBimodule]({ e => e.addObject(boundary) })
 
-  def addObject: Iterable[OddPartialFusionBimodule] = ???
+  def addObject(boundary: FusionBimodule[Int] => Boolean): Iterable[OddPartialFusionBimodule] = ???
 }

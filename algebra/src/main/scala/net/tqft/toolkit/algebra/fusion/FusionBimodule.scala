@@ -2,10 +2,13 @@ package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.permutations.Permutation
 
 trait FusionBimodule[A] extends FiniteDimensionalFreeModuleOverRig[A] {
   def coefficients = leftRing.coefficients.ensuring(_ == rightRing.coefficients)
 
+  def switch(implicit rig: Rig[A]) = FusionBimodule(rightRing.structureCoefficients, rightModule.structureCoefficients, leftRing.structureCoefficients, leftModule.structureCoefficients)
+  
   override def rank = leftRing.rank
 
   val leftRing: FusionRing[A]
@@ -35,6 +38,9 @@ trait FusionBimodule[A] extends FiniteDimensionalFreeModuleOverRig[A] {
             leftRing.innerProduct(leftModule.rightMultiplicationByDuals(m, m), leftModule.rightMultiplicationByDuals(n, n))))
       }).flatten
   }
+  def dualityConstraints(leftDuality: Permutation, rightDuality: Permutation) = {
+    leftRing.dualityConstraints(Some(leftDuality)) ++ rightRing.dualityConstraints(Some(rightDuality))
+  }
 
   def verifyAssociativity = {
     associativityConstraints.forall(p => p._1 == p._2)
@@ -46,11 +52,15 @@ trait FusionBimodule[A] extends FiniteDimensionalFreeModuleOverRig[A] {
     identityConstraints.forall(p => p._1 == p._2)
   }
 
+  def globalDimensionLowerBound(implicit ev: A =:= Int): Double = {
+    List(leftRing.globalDimensionLowerBound, leftModule.globalDimensionLowerBound, rightRing.globalDimensionLowerBound, rightModule.globalDimensionLowerBound).max
+  }
+  
 }
 
 trait FusionBimoduleWithLeftDimensions extends FusionBimodule[Int] {
   override val leftRing: FusionRingWithDimensions
-  override val rightRing: ConcreteFusionRing
+  override val rightRing: FusionRing[Int]
   override def leftModule: leftRing.FusionModule
   override def rightModule: rightRing.FusionModule
 
@@ -66,14 +76,11 @@ trait FusionBimoduleWithLeftDimensions extends FusionBimodule[Int] {
     // for each simple y in the bimodule category, compute yx (another object in the bimodule category)
     // d(x) = d(yx)/d(y)
 
-    //    println("lower bounds for " + x)
     val lowerBound = (for (y <- leftModule.basis) yield {
       val dxy = leftModule.dimensionLowerBounds(rightModule.act(x, y))
       val dy = leftModule.dimensionUpperBounds(y)
-      //      println("lower bound from " + y + ": " + dxy / dy + " = " + dxy + "/"+dy)
       dxy / dy
     }).max
-    //    println("lower bounds from the ring: " + rightRing.dimensionLowerBounds(x))
 
     List(lowerBound, rightRing.dimensionLowerBounds(x)).max
   }

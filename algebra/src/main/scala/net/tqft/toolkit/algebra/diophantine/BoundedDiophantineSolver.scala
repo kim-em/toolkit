@@ -163,10 +163,8 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
         FixedPoint({ o: Option[Equations] => o.flatMap(_.solveALinearEquation) })(Some(this))
       }
 
-      def caseBashOneStep: Iterable[Equations] = {
+      def caseBashOneStep(v: V, remainingVariables: List[V]): Iterable[Equations] = {
         val limit = boundary.get
-
-        val v :: remainingVariables = variables.filterNot(substitutions.keySet.contains).toList
 
         val minimalSubstitutionBase = {
           val newSubstitutions = remainingVariables.map(w => w -> polynomialAlgebra.constant(0)).toMap
@@ -181,16 +179,20 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
         (for (k <- cases.par; r <- addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield r).seq
       }
       def caseBash: Iterable[Equations] = {
-        if (equations.isEmpty) {
-          List(this)
-        } else {
-          (for (c1 <- caseBashOneStep.par; c2 <- c1.caseBash) yield c2).seq
+        variables.filterNot(substitutions.keySet.contains).toList match {
+          case v :: remainingVariables => {
+            (for (c1 <- caseBashOneStep(v, remainingVariables).par; c2 <- c1.caseBash) yield c2).seq
+          } 
+          case Nil => List(this)
         }
       }
     }
 
     val iterable = Equations(Map.empty, Set.empty).addEquations(polynomials).flatMap(_.solveLinearEquations) match {
-      case None => Iterable.empty
+      case None => {
+//        ???
+        Iterable.empty
+      }
       case Some(equations) => equations.caseBash
     }
 
