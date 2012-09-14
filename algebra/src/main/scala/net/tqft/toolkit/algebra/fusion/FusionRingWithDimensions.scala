@@ -10,7 +10,7 @@ import net.tqft.toolkit.algebra.numberfields.RealNumberField
 import net.tqft.toolkit.algebra.polynomials.PolynomialAlgebra
 import net.tqft.toolkit.algebra.categories.Groupoid
 
-trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
+trait FusionRingWithDimensions extends FusionRing[Int] { fr =>
   def dimensionField: RealNumberField[Int, Double]
   def dimensions: Seq[Polynomial[Fraction[Int]]]
   def dimensionOf(x: Seq[Int]): Polynomial[Fraction[Int]] = {
@@ -25,10 +25,6 @@ trait FusionRingWithDimensions extends ConcreteFusionRing { fr =>
   trait RegularModule extends super.RegularModule with FusionModule
 
   override lazy val regularModule: RegularModule = new RegularModule {}
-
-  override def dimensionLowerBounds(x: Seq[Int]): Double = {
-    FrobeniusPerronEigenvalues.estimate(regularModule.asMatrix(x)) - 0.0001
-  }
 
   def dimensionUpperBounds(x: Seq[Int]): Double = {
     dimensionField.approximateWithin(0.0001)(dimensionOf(x)) + 0.0001

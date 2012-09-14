@@ -21,6 +21,10 @@ object Matrix extends net.tqft.toolkit.Logging {
   def diagonalMatrix[B](vector: Seq[B])(implicit rig: Rig[B]) = new Matrix(vector.size, vector.zipWithIndex map { case (v, k) => List.fill(k)(rig.zero) ::: List(v) ::: List.fill(vector.size - k - 1)(rig.zero) })
 
   def identityMatrix[B](size: Int)(implicit rig: Rig[B]) = diagonalMatrix(List.fill(size)(rig.one))
+  
+  def tabulate[B](numberOfRows:Int, numberOfColumns:Int)(entries: (Int, Int) => B): Matrix[B] = {
+    Matrix(numberOfColumns, Seq.tabulate(numberOfRows, numberOfColumns)(entries))
+  }
 }
 
 class Matrix[B](
