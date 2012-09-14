@@ -27,7 +27,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     val leftRing = leftModule.fusionRing
     type V = (Int, Int, Int, Int)
 
-    implicit val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
+    val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
 
     val fusionRingUnknowns = for (i <- 0 until otherRank) yield {
       Matrix(otherRank,
@@ -108,7 +108,6 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     (for (solution <- solutions) yield reconstituteBimodule(solution)).chooseEquivalenceClassRepresentatives(equivalent_?)
   }
 
-  
   def withGenerator(left: String, right: String): Iterable[FusionBimodule[Int]] = {
     def extract(s: String): (Matrix[Int], IndexedSeq[Int]) = {
       val graph :: duals :: Nil = s.stripPrefix("bwd").split("duals").toList
@@ -151,7 +150,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
 
     type V = (Int, Int, Int, Int)
 
-    implicit val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
+    val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
 
     val leftMultiplication = for (i <- 0 until leftRank) yield {
       Matrix(leftRank,

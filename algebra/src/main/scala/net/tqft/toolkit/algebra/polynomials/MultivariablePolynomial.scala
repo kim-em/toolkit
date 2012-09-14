@@ -47,6 +47,6 @@ trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
 }
 
 object MultivariablePolynomial {
-  def apply[A: Ring, V: Ordering](terms: (Map[V, Int], A)*) = MultivariablePolynomialAlgebras.over.wrap(terms.toList)
+  def apply[A: Ring, V: Ordering](terms: (Map[V, Int], A)*) = MultivariablePolynomialAlgebra.over.wrap(terms.toList)
   def unapplySeq[A, V](p: MultivariablePolynomial[A, V]) = Some(p.terms)
 }
