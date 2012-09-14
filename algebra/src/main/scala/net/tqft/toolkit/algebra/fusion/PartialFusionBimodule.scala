@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.fusion
 import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.algebra.Rig
 import net.tqft.toolkit.algebra.Rigs
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 
 trait PartialFusionBimodule {
   def depth: Int
@@ -10,7 +11,12 @@ trait PartialFusionBimodule {
   def addObjects: Iterable[PartialFusionBimodule]
   def increaseDepth: PartialFusionBimodule
 
-  def get: Option[FusionBimodule[Int]] = ???
+  def get: Option[FusionBimodule[Int]] = {
+    FusionBimodule(leftRingStructureCoefficients, leftModuleStructureCoefficients, rightRingStructureCoefficients, rightModuleStructureCoefficients) match {
+      case b if b.verifyAdmissibility && b.verifyAssociativity => Some(b)
+      case _ => None
+    }
+  }
 
   protected def leftRingStructureCoefficients: Seq[Matrix[Int]]
   protected def leftModuleStructureCoefficients: Seq[Matrix[Int]]
@@ -61,7 +67,7 @@ object PartialFusionBimodule {
     val rightMultiplication = addRingObject(bimodule.rightRing.structureCoefficients, bimodule.rightModule.depthOfRingObject _)
     val rightAction = addModuleObject(bimodule.rightModule.structureCoefficients)
 
-    implicit val rig_? = Rigs.adjoinUnknown[P]
+    implicit val rigWith_? = Rigs.adjoinUnknown[P]
 
     FusionBimodule(leftMultiplication, leftAction, rightMultiplication, rightAction)
   }
@@ -83,7 +89,7 @@ object PartialFusionBimodule {
     val rightMultiplication = bimodule.rightRing.structureCoefficients
     val rightAction = addModuleObject(bimodule.rightModule.structureCoefficients, bimodule.rightModule.depthOfRingObject _, bimodule.rightModule.depthOfModuleObject _)
 
-    implicit val rig_? = Rigs.adjoinUnknown[P]
+    implicit val rigWith_? = Rigs.adjoinUnknown[P]
 
     FusionBimodule(leftMultiplication, leftAction, rightMultiplication, rightAction)
   }
@@ -98,17 +104,35 @@ object PartialFusionBimodule {
       addOddMysteryObject(addEvenMysteryObject(lifted, depth + 1), depth + 2)
     }
   }
-  
+
 }
 
-trait EvenPartialFusionBimodule extends PartialFusionBimodule {
+case class EvenPartialFusionBimodule(
+  depth: Int,
+  leftRingStructureCoefficients: Seq[Matrix[Int]],
+  leftModuleStructureCoefficients: Seq[Matrix[Int]],
+  rightRingStructureCoefficients: Seq[Matrix[Int]],
+  rightModuleStructureCoefficients: Seq[Matrix[Int]]) extends PartialFusionBimodule {
+  
+  override def increaseDepth = OddPartialFusionBimodule(depth + 1, leftRingStructureCoefficients, leftModuleStructureCoefficients, rightRingStructureCoefficients, rightModuleStructureCoefficients)
+  
   def addLeftObjects = folding[EvenPartialFusionBimodule]({ e => e.addLeftObject })
   def addRightObjects = folding[EvenPartialFusionBimodule]({ e => e.addRightObject })
   override def addObjects: Iterable[PartialFusionBimodule] = {
     for (left <- addLeftObjects; right <- left.addRightObjects) yield right
   }
 
+  private type V = Int
+  private val polynomials = implicitly[MultivariablePolynomialAlgebra[Int, V]]
+  private def asPolynomials(ms: Seq[Matrix[Int]]) = ms.map(m => m.mapEntries(x => polynomials.constant(x)))
+  
   def addLeftObject: Iterable[EvenPartialFusionBimodule] = {
+    val variableLeftRing = asPolynomials(leftRingStructureCoefficients)
+    val variableLeftModule = asPolynomials(leftModuleStructureCoefficients)
+    val variableRightRing = asPolynomials(rightRingStructureCoefficients)
+    val variableRightModule = asPolynomials(rightModuleStructureCoefficients)
+    
+    
     // let's see; we need to add some extra entries corresponding to multiplicities with the new object
     // some of these should be zero (by the grading)
     // others are variable
@@ -119,11 +143,20 @@ trait EvenPartialFusionBimodule extends PartialFusionBimodule {
 
     ???
   }
-  def addRightObject: Iterable[EvenPartialFusionBimodule]
+  def addRightObject: Iterable[EvenPartialFusionBimodule] = {
+    ???
+  }
 }
 
-trait OddPartialFusionBimodule extends PartialFusionBimodule {
+case class OddPartialFusionBimodule(
+  depth: Int,
+  leftRingStructureCoefficients: Seq[Matrix[Int]],
+  leftModuleStructureCoefficients: Seq[Matrix[Int]],
+  rightRingStructureCoefficients: Seq[Matrix[Int]],
+  rightModuleStructureCoefficients: Seq[Matrix[Int]]) extends PartialFusionBimodule {
+  override def increaseDepth = EvenPartialFusionBimodule(depth + 1, leftRingStructureCoefficients, leftModuleStructureCoefficients, rightRingStructureCoefficients, rightModuleStructureCoefficients)
+
   override def addObjects = folding[OddPartialFusionBimodule]({ e => e.addObject })
 
-  def addObject: Iterable[OddPartialFusionBimodule]
+  def addObject: Iterable[OddPartialFusionBimodule] = ???
 }

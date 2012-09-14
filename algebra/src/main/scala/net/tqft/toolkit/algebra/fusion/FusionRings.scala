@@ -4,7 +4,7 @@ import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.diophantine._
 import net.tqft.toolkit.algebra.polynomials.Polynomial
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 
 object FusionRings {
@@ -14,7 +14,7 @@ object FusionRings {
 
     type V = (Int, Int, Int)
 
-    implicit val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
+    implicit val polynomialAlgebra = implicitly[MultivariablePolynomialAlgebra[Int, V]]
 
     val identity = Matrix.identityMatrix[MultivariablePolynomial[Int, V]](rank)
     val generator = m.mapEntries(polynomialAlgebra.constant)

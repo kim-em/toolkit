@@ -15,8 +15,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
     polynomials.par.map(_.hashCode)
 
     type P = MultivariablePolynomial[Int, V]
-    val polynomialAlgebra = MultivariablePolynomialAlgebras.over[Int, V]
-    val integers = implicitly[EuclideanRing[Int]]
+    val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
 
     case class Equations(substitutions: Map[V, P], equations: Set[P]) {
       //      require(equations.flatMap(_.variables).toSet.intersect(substitutions.keySet).isEmpty)

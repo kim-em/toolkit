@@ -54,8 +54,7 @@ trait MultivariablePolynomialAlgebra[A, V]
   with FreeModuleOnMonoid[A, Map[V, Int], MultivariablePolynomial[A, V]]
   with AssociativeAlgebra[A, MultivariablePolynomial[A, V]]
 
-object MultivariablePolynomialAlgebras {
-
+object MultivariablePolynomialAlgebra {
   private abstract class WithLexicographicOrdering[A: Rig, V: Ordering] extends MultivariablePolynomialAlgebraOverRig[A, V] {
     override val monomialOrdering = {
       import net.tqft.toolkit.collections.LexicographicOrdering._
@@ -63,10 +62,10 @@ object MultivariablePolynomialAlgebras {
     }
   }
 
-  def overRig[A: Rig, V: Ordering]: MultivariablePolynomialAlgebraOverRig[A, V] = new WithLexicographicOrdering {
+  def overRig[A: Rig, V: Ordering]: MultivariablePolynomialAlgebraOverRig[A, V] = new WithLexicographicOrdering[A, V] {
     override val ring = implicitly[Rig[A]]
   }
-  def over[A: Ring, V: Ordering]: MultivariablePolynomialAlgebra[A, V] = new WithLexicographicOrdering with MultivariablePolynomialAlgebra[A, V] {
+  implicit def over[A: Ring, V: Ordering]: MultivariablePolynomialAlgebra[A, V] = new WithLexicographicOrdering[A, V] with MultivariablePolynomialAlgebra[A, V] {
     override val ring = implicitly[Ring[A]]
   }
 }
