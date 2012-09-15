@@ -46,6 +46,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     }
   }
 
+  // TODO maybe this shouldn't be an Option
   def duality: Option[Permutation] = {
     val candidate = structureCoefficients.map(_.entries.indexWhere(_.head == coefficients.one))
     if (candidate.exists(_ == -1)) {

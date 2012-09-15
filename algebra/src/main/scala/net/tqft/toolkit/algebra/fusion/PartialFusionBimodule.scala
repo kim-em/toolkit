@@ -220,8 +220,28 @@ case class EvenPartialFusionBimodule(
     val variables = variableLeftRing.flatMap(_.entries.flatten).flatMap(_.variables) ++ variableLeftModule.flatMap(_.entries.flatten).flatMap(_.variables)
     def orderingBoundary(b: FusionBimodule[Int]): Boolean = {
       boundary(b) && {
-        // TODO make sure we add the objects in order?
-        true
+        import net.tqft.toolkit.collections.LexicographicOrdering._
+        val duality = fusionBimodule.leftRing.duality.get
+        number match {
+          case 1 => {
+            // find all other self-dual objects at the same depth, and require that the new rows of the module matrices are lexicographically less than each
+            val selfDualObjectsAtDepth = for (i <- fusionBimodule.leftModule.objectsAtDepth(depth); if duality(i) == i) yield i
+            val m = b.leftModule.structureCoefficients.map(_.entries.seq.last)
+            selfDualObjectsAtDepth.forall({ i =>
+              m <= b.leftModule.structureCoefficients.map(_.entries(i))
+            })
+          }
+          case 2 => {
+            // find all dual pairs at the same depth, and require that the new rows of the module matrices are lexicographically less than each
+            val dualPairsAtDepth = for (i <- fusionBimodule.leftModule.objectsAtDepth(depth); j = duality(i); if i < j) yield (i, j)
+            val m = b.leftModule.structureCoefficients.map(_.entries.seq.reverse.take(2))
+            m.map(_(0)) < m.map(_(1)) && dualPairsAtDepth.forall({
+              case (i, j) => {
+                m <= b.leftModule.structureCoefficients.map(m => Seq(m.entries(i), m.entries(j)))
+              }
+            })
+          }
+        }
       }
     }
 
