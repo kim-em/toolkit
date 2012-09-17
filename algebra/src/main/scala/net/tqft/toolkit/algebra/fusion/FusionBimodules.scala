@@ -75,7 +75,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
       bimodule.verifyRightSmallerThanLeftInequalities && bimodule.verifyGlobalDimensionInequality
     }
 
-    val polynomials = (variableBimodule.associativityConstraints ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints ++ variableBimodule.rightRing.dualityConstraints(Some(otherDuality))).map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
+    val polynomials = (variableBimodule.associativityConstraints ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints ++ variableBimodule.rightRing.dualityConstraints(otherDuality)).map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
     val variables = (fusionModuleUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++ fusionRingUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq)).distinct
     require(variables.size == otherRank * otherRank * otherRank + leftModule.rank * otherRank * leftModule.rank)
 
@@ -177,7 +177,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
 
     val variableBimodule = FusionBimodule(leftMultiplication, leftAction, rightMultiplication, rightAction)
 
-    val polynomials = (variableBimodule.associativityConstraints ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints ++ variableBimodule.leftRing.dualityConstraints(Some(leftDuality)) ++ variableBimodule.rightRing.dualityConstraints(Some(rightDuality))).map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
+    val polynomials = (variableBimodule.associativityConstraints ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints ++ variableBimodule.leftRing.dualityConstraints(leftDuality) ++ variableBimodule.rightRing.dualityConstraints(rightDuality)).map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
     val variables = (leftMultiplication.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++
       leftAction.tail.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++
       rightMultiplication.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++

@@ -39,7 +39,7 @@ trait FusionBimodule[A] extends FiniteDimensionalFreeModuleOverRig[A] {
       }).flatten
   }
   def dualityConstraints(leftDuality: Permutation, rightDuality: Permutation) = {
-    leftRing.dualityConstraints(Some(leftDuality)) ++ rightRing.dualityConstraints(Some(rightDuality))
+    leftRing.dualityConstraints(leftDuality) ++ rightRing.dualityConstraints(rightDuality)
   }
 
   def verifyAssociativity = {

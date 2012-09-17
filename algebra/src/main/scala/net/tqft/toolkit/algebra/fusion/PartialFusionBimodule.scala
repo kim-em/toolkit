@@ -207,11 +207,11 @@ case class EvenPartialFusionBimodule(
     val mysteryBimodule = PartialFusionBimodule.addMysteryObjects(FusionBimodule(variableLeftRing, variableLeftModule, variableRightRing, variableRightModule), depth)
 
     // watch out, we need to add an extra element to each of the dualities, for the mystery object
-    val leftDuality = fusionBimodule.leftRing.duality.get ++ (number match {
+    val leftDuality = fusionBimodule.leftRing.duality ++ (number match {
       case 1 => Seq(fusionBimodule.leftRing.rank, fusionBimodule.leftRing.rank + 1)
       case 2 => Seq(fusionBimodule.leftRing.rank + 1, fusionBimodule.leftRing.rank, fusionBimodule.leftRing.rank + 2)
     })
-    val rightDuality = fusionBimodule.rightRing.duality.get :+ fusionBimodule.rightRing.rank
+    val rightDuality = fusionBimodule.rightRing.duality :+ fusionBimodule.rightRing.rank
 
     val mysteryEquations = mysteryBimodule.admissibilityConstraints ++ mysteryBimodule.associativityConstraints ++ mysteryBimodule.identityConstraints ++ mysteryBimodule.dualityConstraints(leftDuality, rightDuality)
     val polynomials = mysteryEquations.collect({
@@ -221,7 +221,7 @@ case class EvenPartialFusionBimodule(
     def orderingBoundary(b: FusionBimodule[Int]): Boolean = {
       boundary(b) && {
         import net.tqft.toolkit.collections.LexicographicOrdering._
-        val duality = fusionBimodule.leftRing.duality.get
+        val duality = fusionBimodule.leftRing.duality
         number match {
           case 1 => {
             // find all other self-dual objects at the same depth, and require that the new rows of the module matrices are lexicographically less than each

@@ -33,32 +33,21 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
   def associativityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis; z <- basis) yield multiply(x, multiply(y, z)).zip(multiply(multiply(x, y), z))).flatten
   def identityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator) yield Seq(x.zip(multiply(one, x)), x.zip(multiply(x, one)))).flatten.flatten
-  def dualityConstraints(dualityOption: Option[Permutation] = duality): Iterator[(A, A)] = {
-    dualityOption match {
-      case None => Iterator((coefficients.one, coefficients.zero))
-      case Some(duality) => {
-        require(duality.size == rank)
-        import net.tqft.toolkit.permutations.Permutations._
-        (for (x <- basis.iterator; y <- basis) yield {
-          duality.permute(multiply(x, y)).zip(multiply(duality.permute(y), duality.permute(x)))
-        }).flatten ++ (for (x <- basis.iterator) yield (multiply(x, duality.permute(x)).head, coefficients.one))
-      }
-    }
+  def dualityConstraints(duality: Permutation = duality): Iterator[(A, A)] = {
+    require(duality.size == rank)
+    import net.tqft.toolkit.permutations.Permutations._
+    (for (x <- basis.iterator; y <- basis) yield {
+      duality.permute(multiply(x, y)).zip(multiply(duality.permute(y), duality.permute(x)))
+    }).flatten ++ (for (x <- basis.iterator) yield (multiply(x, duality.permute(x)).head, coefficients.one))
   }
 
-  // TODO maybe this shouldn't be an Option
-  def duality: Option[Permutation] = {
-    val candidate = structureCoefficients.map(_.entries.indexWhere(_.head == coefficients.one))
-    if (candidate.exists(_ == -1)) {
-      None
-    } else {
-      Some(candidate)
-    }
+  def duality: Permutation = {
+    structureCoefficients.map(_.entries.indexWhere(_.head == coefficients.one)).ensuring(_.forall(_ != -1))
   }
 
   def verifyAssociativity = associativityConstraints.forall(p => p._1 == p._2)
   def verifyIdentity = identityConstraints.forall(p => p._1 == p._2)
-  def verifyDuality(dualityOption: Option[Permutation] = duality) = dualityConstraints(dualityOption).forall(p => p._1 == p._2)
+  def verifyDuality(duality: Permutation = duality) = dualityConstraints(duality).forall(p => p._1 == p._2)
 
   lazy val structureCoefficients = for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
 
@@ -253,7 +242,7 @@ object Goals extends App {
   val AH1 = FusionRings.Examples.AH1
 
   H1.verifyDuality()
-  H1.verifyDuality(Some(IndexedSeq(0, 1, 2, 3)))
+  H1.verifyDuality(IndexedSeq(0, 1, 2, 3))
 
   val H1r = H1.regularModule.ensuring(_.verifyAdmissibility)
   val bm = FusionBimoduleWithLeftDimensions(H1.regularModule, H1.structureCoefficients, H1r.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyAdmissibility).ensuring(_.verifyIdentity)
