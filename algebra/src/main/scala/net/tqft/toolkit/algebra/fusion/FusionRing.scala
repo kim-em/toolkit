@@ -38,7 +38,12 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     import net.tqft.toolkit.permutations.Permutations._
     (for (x <- basis.iterator; y <- basis) yield {
       duality.permute(multiply(x, y)).zip(multiply(duality.permute(y), duality.permute(x)))
-    }).flatten ++ (for (x <- basis.iterator) yield (multiply(x, duality.permute(x)).head, coefficients.one))
+    }).flatten ++
+      (for (x <- basis.iterator; y <- basis; z <- basis) yield {
+        Seq(
+          (innerProduct(multiply(x, y), z), innerProduct(x, multiply(z, duality.permute(y)))),
+          (innerProduct(multiply(x, y), z), innerProduct(y, multiply(duality.permute(x), z))))
+      }).flatten
   }
 
   def duality: Permutation = {
@@ -132,6 +137,12 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       (innerProduct(act(x, m), act(h, m)), fr.innerProduct(fr.multiply(x, rightMultiplicationByDuals(m, m)), h))
     }
     def identityConstraints = (for (x <- basis.iterator) yield x.zip(act(fr.one, x))).flatten
+    def dualityConstraints(duality: Permutation = fusionRing.duality) = {
+      import net.tqft.toolkit.permutations.Permutations._
+      for (x <- fr.basis.iterator; m <- basis; n <- basis) yield {
+        (innerProduct(act(x, m), n), innerProduct(m, act(duality.permute(x), n)))
+      }
+    }
 
     def verifyAssociativity = associativityConstraints.map(_ == zero).reduce(_ && _)
     def verifyAdmissibility = admissibilityConstraints.map(_ == coefficients.zero).reduce(_ && _)
