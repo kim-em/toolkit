@@ -6,6 +6,7 @@ import net.tqft.toolkit.algebra.Rigs
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 import net.tqft.toolkit.algebra.diophantine.BoundedDiophantineSolver
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
+import scala.collection.parallel.ParIterable
 
 trait PartialFusionBimodule {
   def depth: Int
@@ -28,8 +29,8 @@ trait PartialFusionBimodule {
   protected def rightModuleStructureCoefficients: Seq[Matrix[Int]]
 
   protected def folding[E](T: E => Iterable[E])(implicit ev: this.type <:< E): Iterable[E] = {
-    def S(iterable: Iterable[E]) = iterable.flatMap(T)
-    Iterator.iterate(Iterable[E](this))(S).takeWhile(_.nonEmpty).toIterable.flatten
+    def S(iterable: ParIterable[E]) = iterable.flatMap(T)
+    Iterator.iterate(ParIterable[E](this))(S).takeWhile(_.nonEmpty).map(_.seq).flatten.toIterable
   }
 }
 
