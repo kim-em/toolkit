@@ -18,9 +18,27 @@ class PartialFusionBimoduleTest extends FlatSpec with ShouldMatchers {
     println(m.dualityConstraints(IndexedSeq(0,2,1,3), IndexedSeq(0,1)).collect({case (Left(a),Left(b)) => (a,b)}).toList)
     println(m.admissibilityConstraints.collect({case (Left(a),Left(b)) => (a,b)}).toList)
   }
+   
+  def globalDimensionAssumingNoIntermediates(b: FusionBimodule[Int]) = {
+	  def ofRing(m: FusionRing[Int]#FusionModule): Double = {
+	    def v(k: Int) = Seq.fill(m.rank)(0).updated(k, 1)
+	    (for(i <- 0 to m.depth by 2; j <- m.objectsAtDepth(i)) yield {
+	      i match {
+	        case 0 => 1d
+	        case 2 => {
+	          List(m.dimensionLowerBounds(v(j)), scala.math.sqrt(2)).max
+	        }
+	        case _ => {
+	          m.dimensionLowerBounds(v(j))
+	        }
+	      }
+	    }).map(d => d * d).sum
+	  }
+    List(ofRing(b.leftModule), ofRing(b.rightModule), b.leftModule.globalDimensionLowerBound, b.rightModule.globalDimensionLowerBound).max
+  }
   
   "addLeftObject" should "correctly all ways to add a single object to A1, up to a global dimension limit" in {
-	 for(x <- EvenPartialFusionBimodule(2, Seq(List(List(1))), Seq(List(List(1))), Seq(List(List(1))), Seq(List(List(1)))).addObjects(b => b.globalDimensionLowerBound < 6)) {
+	 for(x <- EvenPartialFusionBimodule(2, Seq(List(List(1))), Seq(List(List(1))), Seq(List(List(1))), Seq(List(List(1)))).addObjects(b => globalDimensionAssumingNoIntermediates(b) < 6)) {
 	   println(x)
 	   println(x.fusionBimodule.globalDimensionLowerBound)
 	 }
