@@ -107,8 +107,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       (1 to (2 * rank - 1) by 2).iterator.find(i => objectsAtDepth(i).contains(k)).get
     }
     lazy val depth = {
-      ((for (i <- 0 until fr.rank) yield depthOfRingObject(i)) ++
-        (for (i <- 0 until fm.rank) yield depthOfModuleObject(i))).max
+      (for(d <- 0 to 2 * rank; if objectsAtDepth(d).nonEmpty) yield d).max
     }
 
     def dimensionLowerBounds(x: Seq[Int])(implicit ev: A =:= Int): Double = {
