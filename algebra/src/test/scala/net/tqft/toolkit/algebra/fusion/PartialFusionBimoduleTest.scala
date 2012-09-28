@@ -40,6 +40,7 @@ class PartialFusionBimoduleTest extends FlatSpec with ShouldMatchers {
   "addLeftObject" should "correctly all ways to add a single object to A1, up to a global dimension limit" in {
 	 for(x <- EvenPartialFusionBimodule(2, Seq(List(List(1))), Seq(List(List(1))), Seq(List(List(1))), Seq(List(List(1)))).addObjects(b => globalDimensionAssumingNoIntermediates(b) < 6)) {
 	   println(x)
+	   println(globalDimensionAssumingNoIntermediates(x.fusionBimodule))
 	   println(x.fusionBimodule.globalDimensionLowerBound)
 	 }
   }
