@@ -84,4 +84,11 @@ object LexicographicOrdering {
   }
 
   implicit def SeqSeq2LexicographicOrderedSeqSeq[A <% Ordered[A]](list1: Seq[Seq[A]]): Ordered[Seq[Seq[A]]] = Seq2LexicographicOrderedSeq(list1)
+  
+  implicit def LexicographicSeqSeqOrdering[A <% Ordered[A]]: Ordering[Seq[Seq[A]]] = new Ordering[Seq[Seq[A]]] {
+    def compare(seq1: Seq[Seq[A]], seq2: Seq[Seq[A]]) = seq1.compare(seq2)
+  }
+  implicit def LexicographicListListOrdering[A:Ordering]: Ordering[List[List[A]]] = new Ordering[List[List[A]]] {
+    def compare(seq1: List[List[A]], seq2: List[List[A]]) = seq1.compare(seq2)
+  }
 }
