@@ -2,14 +2,14 @@ package net.tqft.toolkit.collections
 import net.tqft.toolkit.Logging
 
 object KSubsets extends Logging {
-  def apply(n: Int, k: Int): Iterable[List[Int]] = {
-    new KSubsetable((0 until n).toList) ksubsets (k)
+  def apply(n: Int, k: Int): Iterable[Seq[Int]] = {
+    new KSubsetable(0 until n) kSubsets (k)
   }
 
-  implicit def ksubsets[A](list: List[A]) = new KSubsetable(list)
+  implicit def kSubsets[A](list: Seq[A]) = new KSubsetable(list)
 
-  class KSubsetable[A](list: List[A]) {
-    def ksubsets(k: Int): Iterable[List[A]] = new NonStrictIterable[List[A]] {
+  class KSubsetable[A](list: Seq[A]) {
+    def kSubsets(k: Int): Iterable[Seq[A]] = new NonStrictIterable[Seq[A]] {
       def iterator = {
 //        info("Generating ksubsets(" + k + ") iterator for " + list)
         
@@ -20,7 +20,7 @@ object KSubsets extends Logging {
         } else if (list.size == 1 && k == 1) {
           Some(list).iterator
         } else {
-          ((new KSubsetable(list.tail).ksubsets(k)) ++ (new KSubsetable(list.tail).ksubsets(k - 1) map { l => list.head :: l })).iterator
+          ((new KSubsetable(list.tail).kSubsets(k)) ++ (new KSubsetable(list.tail).kSubsets(k - 1) map { l => list.head +: l })).iterator
         }
       }
     }
