@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.diophantine
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials._
+import scala.collection.GenSeq
 
 object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
 
@@ -9,7 +10,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
   // we try to find positive integer roots of the polynomials
 
   // the order of variables matters; if we need to split into cases, we prefer splitting the first variables first.
-  def solve[V: Ordering](polynomials: Seq[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): (Iterable[Map[V, Int]], Iterable[Seq[MultivariablePolynomial[Int, V]]]) = {
+  def solve[V: Ordering](polynomials: GenSeq[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): (Iterable[Map[V, Int]], Iterable[Seq[MultivariablePolynomial[Int, V]]]) = {
 
     // make sure all the hash codes are computed
     polynomials.par.map(_.hashCode)
@@ -17,7 +18,8 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
     type P = MultivariablePolynomial[Int, V]
     val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
 
-    case class Equations(substitutions: Map[V, P], equations: Set[P]) {
+    case class Equations(substitutions: Map[V, P], equations: Seq[P]) {
+      info(equations.size)
       //      require(equations.flatMap(_.variables).toSet.intersect(substitutions.keySet).isEmpty)
 
       def addSubstitution(v: V, k: Int): Option[Equations] = {
@@ -39,11 +41,11 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           val newSubstitutions = substitutions.mapValues(q => polynomialAlgebra.substitute(Map(v -> p))(q))
           val (toReprocess, toKeep) = equations.partition(_.variables.contains(v))
 
-          Equations(newSubstitutions + (v -> p), toKeep).addEquations(toReprocess.par.map(polynomialAlgebra.substitute(Map(v -> p))).seq)
+          Equations(newSubstitutions + (v -> p), toKeep).addEquations(toReprocess.par.map(polynomialAlgebra.substitute(Map(v -> p))))
         }
       }
-      def addEquations(qs: Iterable[P]): Option[Equations] = {
-        qs.toSeq.sortBy(p => (p.totalDegree, p.terms.size)).foldLeft[Option[Equations]](Some(this))({ (o, e) => o.flatMap(_.addEquation(e)) })
+      def addEquations(qs: GenSeq[P]): Option[Equations] = {
+        qs.seq.sortBy(p => (p.totalDegree, p.terms.size)).foldLeft[Option[Equations]](Some(this))({ (o, e) => o.flatMap(_.addEquation(e)) })
       }
       def addEquation(q: P): Option[Equations] = {
         val p = polynomialAlgebra.substitute(substitutions)(q).divideByCoefficientGCD
@@ -62,7 +64,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
             if (equations.contains(p)) {
               Some(this)
             } else {
-              Some(copy(equations = equations + p))
+              Some(copy(equations = p +: equations))
             }
           })
         }
@@ -188,7 +190,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
       }
     }
 
-    val iterable = Equations(Map.empty, Set.empty).addEquations(polynomials).flatMap(_.solveLinearEquations) match {
+    val iterable = Equations(Map.empty, Seq.empty).addEquations(polynomials).flatMap(_.solveLinearEquations) match {
       case None => {
 //        ???
         Iterable.empty
