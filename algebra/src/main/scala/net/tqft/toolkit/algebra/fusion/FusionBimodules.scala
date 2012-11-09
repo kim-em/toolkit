@@ -177,7 +177,9 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
 
     val variableBimodule = FusionBimodule(leftMultiplication, leftAction, rightMultiplication, rightAction)
 
-    val polynomials = (variableBimodule.associativityConstraints ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints ++ variableBimodule.leftRing.dualityConstraints(leftDuality) ++ variableBimodule.rightRing.dualityConstraints(rightDuality)).map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
+    info("preparing polynomial constraints")
+    val polynomials = (variableBimodule.associativityConstraints ++ variableBimodule.admissibilityConstraints ++ variableBimodule.identityConstraints ++ variableBimodule.leftRing.dualityConstraints(leftDuality) ++ variableBimodule.rightRing.dualityConstraints(rightDuality)).toSeq.par.map(p => polynomialAlgebra.subtract(p._1, p._2))
+    info("finished polynomial constraints")
     val variables = (leftMultiplication.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++
       leftAction.tail.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++
       rightMultiplication.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++
