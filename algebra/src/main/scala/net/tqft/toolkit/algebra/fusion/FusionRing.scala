@@ -44,8 +44,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
           (innerProduct(multiply(x, y), z), innerProduct(x, multiply(z, duality.permute(y)))),
           (innerProduct(multiply(x, y), z), innerProduct(y, multiply(duality.permute(x), z))))
       }).flatten
-  }
-
+  }  
   def duality: Permutation = {
     structureCoefficients.map(_.entries.indexWhere(_.head == coefficients.one)).ensuring(_.forall(_ != -1))
   }
