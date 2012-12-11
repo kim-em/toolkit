@@ -93,10 +93,10 @@ trait FusionBimoduleWithLeftDimensions extends FusionBimodule[Int] {
   }
 }
 
-trait FusionBimoduleWithDimensions extends FusionBimoduleWithLeftDimensions {
+trait FusionBimoduleWithDimensions extends FusionBimoduleWithLeftDimensions with DimensionFunction {
   override val rightRing: FusionRingWithDimensions
   override def rightModule: rightRing.FusionModule
-
+  
   def verifyLeftSmallerThanRightInequalities = {
     (for (b <- leftModule.basis.iterator) yield leftModule.dimensionLowerBounds(b) < rightModule.dimensionUpperBounds(b)).forall(_ == true)
   }

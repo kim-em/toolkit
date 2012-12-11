@@ -9,7 +9,7 @@ object Subsets {
       if (list.size == 0) {
         Iterable(list.toSet)
       } else {
-        val tailSubsets = list.tail.subsets
+        val tailSubsets = new Subsetable(list.tail).subsets
         tailSubsets ++ tailSubsets.map(_ + list.head)
       }
     }
