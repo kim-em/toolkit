@@ -45,8 +45,8 @@ object BuildSettings {
 
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.8"
-  val buildScalaVersion = "2.9.2"
-  val buildCrossScalaVersions = Seq("2.9.2", "2.10.0-M7")
+  val buildScalaVersion = "2.10.0-RC3"
+  val buildCrossScalaVersions = Seq("2.9.2", "2.10.0-RC3")
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
