@@ -48,7 +48,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
     for (
       o <- objectsSmallEnoughToBeAlgebras;
       m = regularModule.asMatrix(o);
-      if (m.mapEntries(Conversions.integersAsRationals).positiveSemidefinite_?)
+      if (m.mapEntries(Conversions.integersAsBigRationals).positiveSemidefinite_?)
     ) yield o
   }
 
