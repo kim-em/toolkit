@@ -20,7 +20,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
     val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
 
     case class Equations(substitutions: Map[V, P], equations: Seq[P]) {
-      if ((equations.nonEmpty && equations.size % 1000 == 0) || (substitutions.nonEmpty && substitutions.size % 1000 == 0)) info(substitutions.size + " " + equations.size)
+//      if ((equations.nonEmpty && equations.size % 1000 == 0) || (substitutions.nonEmpty && substitutions.size % 1000 == 0)) info(substitutions.size + " " + equations.size)
       //      equations.headOption.map(info(_))
       //      require(equations.flatMap(_.variables).toSet.intersect(substitutions.keySet).isEmpty)
 
@@ -54,8 +54,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
 
         def splitIfAllPositive: Option[Equations] = {
           if (p.terms.size > 1 && (p.terms.forall(_._2 > 0) || p.terms.forall(_._2 < 0))) {
-            val xs = for (t <- p.terms; x = polynomialAlgebra.monomial(t._1)) yield x
-            addEquations(xs)
+            addEquations(p.terms.map(t => polynomialAlgebra.monomial(t._1)))
           } else {
             None
           }
