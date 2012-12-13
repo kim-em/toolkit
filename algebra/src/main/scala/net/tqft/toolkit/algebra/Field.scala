@@ -14,3 +14,7 @@ object Field {
   implicit def forget[A: OrderedField]: Field[A] = implicitly[OrderedField[A]]
   implicit def fieldOfFractions[A: EuclideanRing]: Field[Fraction[A]] = Fields.fieldOfFractions(implicitly[EuclideanRing[A]])
 }
+
+trait ComplexConjugation[A] { self: Field[A] =>
+  def bar(q: A): A
+}

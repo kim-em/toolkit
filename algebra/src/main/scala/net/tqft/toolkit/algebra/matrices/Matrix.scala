@@ -21,8 +21,8 @@ object Matrix extends net.tqft.toolkit.Logging {
   def diagonalMatrix[B](vector: Seq[B])(implicit rig: Rig[B]) = new Matrix(vector.size, vector.zipWithIndex map { case (v, k) => List.fill(k)(rig.zero) ::: List(v) ::: List.fill(vector.size - k - 1)(rig.zero) })
 
   def identityMatrix[B](size: Int)(implicit rig: Rig[B]) = diagonalMatrix(List.fill(size)(rig.one))
-  
-  def tabulate[B](numberOfRows:Int, numberOfColumns:Int)(entries: (Int, Int) => B): Matrix[B] = {
+
+  def tabulate[B](numberOfRows: Int, numberOfColumns: Int)(entries: (Int, Int) => B): Matrix[B] = {
     Matrix(numberOfColumns, Seq.tabulate(numberOfRows, numberOfColumns)(entries))
   }
 }
@@ -55,9 +55,9 @@ class Matrix[B](
 
   def prependRow(row: Seq[B]) = {
     require(row.size == numberOfColumns)
-    Matrix(numberOfColumns, row +: entries)    
+    Matrix(numberOfColumns, row +: entries)
   }
-  
+
   def joinRows(other: Matrix[B]) = {
     new Matrix(numberOfColumns + other.numberOfColumns, (entries zip other.entries) map { case (r1, r2) => r1 ++ r2 })
   }
@@ -76,7 +76,7 @@ class Matrix[B](
     import net.tqft.toolkit.permutations.Permutations._
     new Matrix(numberOfColumns, p.permute(entries))
   }
-  
+
   def apply(vector: Seq[B])(implicit rig: Rig[B]) = {
     (for (row <- entries) yield {
       rig.add(for ((x, y) <- row zip vector) yield rig.multiply(x, y))
@@ -131,7 +131,7 @@ class Matrix[B](
         val rest = remainingRows.filter(_._2 != targetRow)
         val pp = pivotPosition2(h)
         val hn = if (forward) {
-          val sign = if(remainingIndexes.indexOf(targetRow).ensuring(_ != -1) % 2 == 0) field.one else field.negate(field.one)
+          val sign = if (remainingIndexes.indexOf(targetRow).ensuring(_ != -1) % 2 == 0) field.one else field.negate(field.one)
           h map { x => field.multiply(x, sign) }
         } else {
           pp match {
@@ -238,23 +238,60 @@ class Matrix[B](
     field.multiply(rowEchelonForm.diagonals)
   }
 
-  def positiveSemidefinite_?(implicit field: OrderedField[B]): Boolean = {
+  def positiveSemidefinite_?(implicit field: ApproximateReals[B]): Boolean = {
     require(numberOfRows == numberOfColumns)
 
-//    rowEchelonForm.diagonals.map(field.compare(_, field.zero) >= 0).reduce(_ && _)
-    
-    // far from optimal
-    (for (i <- 0 until numberOfColumns) yield {
-      val det = takeRows(0 to i).takeColumns(0 to i).determinant
-      field.compare(det, field.zero) >= 0
-    }).reduce(_ && _)
+    choleskyDecomposition.nonEmpty
+  }
+
+  def choleskyDecomposition(implicit field: ApproximateReals[B]): Option[Matrix[B]] = {
+    require(numberOfColumns == numberOfRows)
+
+    import net.tqft.toolkit.functions.Memo
+
+    lazy val L: (Int, Int) => B = Memo({ (i: Int, j: Int) =>
+      val result = if (i == j) {
+        diagonalEntries(i).get
+      } else if (i > j) {
+        // what to do when the diagonal entries are zero?
+        // http://arxiv.org/pdf/1202.1490.pdf
+        if (field.compare(L(j, j), field.zero) == 0) {
+          field.zero
+        } else {
+          field.quotient(field.subtract(entries(i)(j), field.add(for (k <- 0 until j) yield field.multiply(L(i, k), L(j, k)))), L(j, j))
+        }
+      } else {
+        field.zero
+      }
+//      println(i + " " + j + " " + result)
+      result
+    })
+
+    lazy val diagonalEntries: Int => Option[B] = Memo({ i: Int =>
+      val r = field.subtract(entries(i)(i), field.add(for (k <- 0 until i) yield field.power(L(i, k), 2)))
+      val result = if (field.compare(field.chop(r), field.zero) < 0) {
+        None
+      } else if (field.compare(field.chop(r), field.zero) == 0) {
+        Some(field.zero)
+      } else {
+        Some(field.sqrt(r))
+      }
+//      println(i + " " + result)
+      result
+    })
+
+    if ((0 until numberOfColumns).forall(i => diagonalEntries(i).nonEmpty)) {
+      Some(Matrix(numberOfColumns, Seq.tabulate(numberOfColumns, numberOfColumns)({ (i, j) => L(i, j) })))
+    } else {
+      None
+    }
   }
 
   def characteristicPolynomial(implicit field: Field[B]): polynomials.Polynomial[B] = {
     require(numberOfRows == numberOfColumns)
 
     import polynomials._
-    
+
     implicit val rationalFunctions = RationalFunctions.over(field)
     val functionMatrices = Matrices.matricesOver(numberOfRows)(rationalFunctions)
     val lift = Matrices.matricesOver(numberOfRows)(RationalFunctions.embeddingAsConstants(field))(this)

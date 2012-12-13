@@ -44,16 +44,16 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
           (innerProduct(multiply(x, y), z), innerProduct(x, multiply(z, duality.permute(y)))),
           (innerProduct(multiply(x, y), z), innerProduct(y, multiply(duality.permute(x), z))))
       }).flatten
-  }  
+  }
   def duality: Permutation = {
-    structureCoefficients.map(_.entries.indexWhere(_.head == coefficients.one)).ensuring(_.forall(_ != -1))
+    structureCoefficients.map(_.entries.indexWhere(_.head == coefficients.one)).toIndexedSeq.ensuring({ _.forall(_ != -1) })
   }
 
   def verifyAssociativity = associativityConstraints.forall(p => p._1 == p._2)
   def verifyIdentity = identityConstraints.forall(p => p._1 == p._2)
   def verifyDuality(duality: Permutation = duality) = dualityConstraints(duality).forall(p => p._1 == p._2)
 
-  lazy val structureCoefficients = for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
+  def structureCoefficients: Seq[Matrix[A]] = for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
 
   def dimensionLowerBounds(x: Seq[Int])(implicit ev: A =:= Int): Double = {
     regularModule.dimensionLowerBounds(x)
@@ -106,7 +106,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       (1 to (2 * rank - 1) by 2).iterator.find(i => objectsAtDepth(i).contains(k)).get
     }
     lazy val depth = {
-      (for(d <- 0 to 2 * rank; if objectsAtDepth(d).nonEmpty) yield d).max
+      (for (d <- 0 to 2 * rank; if objectsAtDepth(d).nonEmpty) yield d).max
     }
 
     def dimensionLowerBounds(x: Seq[Int])(implicit ev: A =:= Int): Double = {
@@ -144,9 +144,15 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     def verifyAssociativity = associativityConstraints.map(p => p._1 == p._2).reduce(_ && _)
     def verifyAdmissibility = admissibilityConstraints.map(p => p._1 == p._2).reduce(_ && _)
 
-    def asMatrix(x: Seq[A]) = new Matrix(rank, for (b <- basis) yield act(x, b))
+    //    def asMatrix(x: Seq[A]) = new Matrix(rank, for (b <- basis) yield act(x, b))
 
-    def structureCoefficients = for (y <- basis) yield Matrix(rank, for (x <- fr.basis) yield act(x, y))
+    def asMatrix(x: Seq[A]) = {
+      Matrix(rank, for (i <- 0 until fr.rank) yield for (j <- 0 until rank) yield {
+        coefficients.add(for ((xi, mi) <- x.zip(structureCoefficients)) yield coefficients.multiply(xi, mi.entries(i)(j)))
+      })
+    }
+
+    def structureCoefficients: Seq[Matrix[A]] = for (y <- basis) yield Matrix(rank, for (x <- fr.basis) yield act(x, y))
 
     override def equals(other: Any) = {
       other match {
@@ -195,6 +201,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       require(m.size == result.size)
       result
     }
+    override val structureCoefficients = matrices
   }
 
   def moduleFromStructureCoefficients(matrices: Seq[Matrix[A]]): FusionModule = {
@@ -204,6 +211,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   trait RegularModule extends FusionModule {
     override val rank = fr.rank
     override def act(x: Seq[A], m: Seq[A]) = fr.multiply(x, m)
+    override def structureCoefficients = fr.structureCoefficients
   }
 
   lazy val regularModule: RegularModule = new RegularModule {}
@@ -235,6 +243,8 @@ object FusionRing {
       val result = add(terms)
       result
     }
+
+    override val structureCoefficients = multiplicities
   }
 
   private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, override val dimensions: Seq[Polynomial[Fraction[Int]]]) extends StructureCoefficientFusionRing[Int](multiplicities) with FusionRingWithDimensions {

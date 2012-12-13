@@ -13,11 +13,16 @@ object Conversions {
     override def apply(f: Fraction[Int]) = Fraction(BigInt(f.numerator), BigInt(f.denominator))(BigIntegers)
   }
 
+  val rationalsAsDoubles = new HomomorphismImpl[Field, Fraction[Int], Double] {
+    override def apply(f: Fraction[Int]) = f.numerator.toDouble / f.denominator.toDouble
+  }
+  
   val bigRationalsAsDoubles = new HomomorphismImpl[Field, Fraction[BigInt], Double] {
     override def apply(f: Fraction[BigInt]) = f.numerator.toDouble / f.denominator.toDouble
   }
 
   val integersAsBigRationals = integersAsRationals.andThen(rationalsAsBigRationals)
+  val integersAsDoubles = integersAsRationals.andThen(rationalsAsDoubles)
   
   def doublesAsBigDecimals(precision: Int = 128) = {
     implicit def bigDecimals = ApproximateReals.BigDecimals(precision)

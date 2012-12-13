@@ -27,7 +27,7 @@ object Toolkit extends Build {
 
   lazy val algebra = Project(id = "toolkit-algebra",
     base = file("algebra"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat))) dependsOn (base, arithmetic, functions, collections)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat))) dependsOn (base, arithmetic, amazon, functions, collections)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),

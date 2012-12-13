@@ -229,6 +229,7 @@ private class S3BucketStreaming(val s3Service: StorageService, val bucket: Strin
 }
 
 object S3 extends S3 {
-  val AWSAccount = "0D4BTQXQJ7SAKKQHF982"
-  val AWSSecretKey = "wQsXfibiPzfPFDZ84jWXIjNb9UfqnLh42+FHhqtp"
+  private val pair = scala.io.Source.fromFile(System.getProperty("user.home") + "/home/ec2-keys/access").getLines.filter(!_.startsWith("#")).next.split(",").toList
+  val AWSAccount = pair(0)
+  val AWSSecretKey = pair(1)
 }

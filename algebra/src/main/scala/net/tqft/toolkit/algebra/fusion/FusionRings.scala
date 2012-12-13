@@ -198,7 +198,105 @@ object FusionRings {
           Polynomial(0 -> Fraction(4, 1), 1 -> Fraction(1, 1)),
           Polynomial(0 -> Fraction(5, 1), 1 -> Fraction(1, 1)))
       }
-      FusionRing(AH2Multiplicities, AHFieldGenerator, AHFieldGeneratorApproximation, AHFieldGeneratorEpsilon, AH2Dimensions)//.ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+      FusionRing(AH2Multiplicities, AHFieldGenerator, AHFieldGeneratorApproximation, AHFieldGeneratorEpsilon, AH2Dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+    }
+    val AH3: FusionRingWithDimensions = {
+      val multiplicityString = """0 0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 0 
+0 1 0 0 0 0 0 0 
+0 0 0 0 1 0 0 0 
+0 0 1 0 0 0 0 0 
+0 0 0 0 0 0 1 0 
+0 0 0 0 0 1 0 0 
+0 0 0 0 0 0 0 1 
+
+0 0 1 0 0 0 0 0 
+0 1 0 0 0 1 0 1 
+0 0 0 0 1 1 1 0 
+1 0 1 0 0 0 1 1 
+0 0 0 1 0 1 1 0 
+0 1 0 1 1 1 1 1 
+0 0 1 1 1 1 1 1 
+0 1 1 0 0 1 1 1 
+
+0 1 0 0 0 0 0 0 
+0 0 0 0 1 1 1 0 
+0 1 0 0 0 1 0 1 
+0 0 0 1 0 1 1 0 
+1 0 1 0 0 0 1 1 
+0 0 1 1 1 1 1 1 
+0 1 0 1 1 1 1 1 
+0 1 1 0 0 1 1 1 
+
+0 0 0 0 1 0 0 0 
+1 0 0 1 0 0 1 1 
+0 0 1 0 0 1 1 0 
+0 0 0 0 1 1 0 1 
+0 1 0 0 0 1 1 0 
+0 1 1 1 0 1 1 1 
+0 1 1 0 1 1 1 1 
+0 0 0 1 1 1 1 1 
+
+0 0 0 1 0 0 0 0 
+0 0 1 0 0 1 1 0 
+1 0 0 1 0 0 1 1 
+0 1 0 0 0 1 1 0 
+0 0 0 0 1 1 0 1 
+0 1 1 0 1 1 1 1 
+0 1 1 1 0 1 1 1 
+0 0 0 1 1 1 1 1 
+
+0 0 0 0 0 0 1 0 
+0 1 1 0 1 1 1 1 
+0 0 1 1 1 1 1 1 
+0 1 1 1 0 1 1 1 
+0 1 0 1 1 1 1 1 
+0 1 1 1 1 2 2 2 
+1 1 1 1 1 2 2 2 
+0 1 1 1 1 2 2 1 
+
+0 0 0 0 0 1 0 0 
+0 0 1 1 1 1 1 1 
+0 1 1 0 1 1 1 1 
+0 1 0 1 1 1 1 1 
+0 1 1 1 0 1 1 1 
+1 1 1 1 1 2 2 2 
+0 1 1 1 1 2 2 2 
+0 1 1 1 1 2 2 1 
+
+0 0 0 0 0 0 0 1 
+0 1 0 1 0 1 1 1 
+0 1 0 1 0 1 1 1 
+0 0 1 0 1 1 1 1 
+0 0 1 0 1 1 1 1 
+0 1 1 1 1 2 2 1 
+0 1 1 1 1 2 2 1 
+1 1 1 1 1 1 1 2 """
+
+      import net.tqft.toolkit.Extractors.Int
+      val parsedMultiplicities: Seq[Seq[Seq[Int]]] = multiplicityString.split("\n\n").toSeq.map(p => p.split("\n").toSeq.map(_.split(" ").toSeq.collect({ case Int(n) => n })))
+      val dualData = Seq(0,1,2,4,3,5,6,7,8)
+      
+      val AH3Multiplicities: Seq[Matrix[Int]] = Matrix.identityMatrix[Int](9) +: (for (k <- 0 until 8) yield {
+        val m = Matrix(8, parsedMultiplicities.map(_(k)).transpose)
+        val firstRow = Seq.fill(8)(0).updated(k, 1)
+        val firstColumn = Seq.fill(9)(0).updated(dualData(k + 1), 1)
+        m.prependRow(firstRow).prependColumn(firstColumn)
+      })
+
+      val AH3Dimensions: Seq[Polynomial[Fraction[Int]]] = {
+        Seq(
+          Polynomial(0 -> Fraction(1, 1)),
+          Polynomial(0 -> Fraction(1, 1)),
+          Polynomial(0 -> Fraction(5, 2), 1 -> Fraction(1, 2)),
+          Polynomial(0 -> Fraction(5, 2), 1 -> Fraction(1, 2)),
+          Polynomial(0 -> Fraction(5, 2), 1 -> Fraction(1, 2)),
+          Polynomial(0 -> Fraction(5, 2), 1 -> Fraction(1, 2)),
+          Polynomial(0 -> Fraction(4, 1), 1 -> Fraction(1, 1)),
+          Polynomial(0 -> Fraction(4, 1), 1 -> Fraction(1, 1)),
+          Polynomial(0 -> Fraction(3, 1), 1 -> Fraction(1, 1)))
+      }
+      FusionRing(AH3Multiplicities, AHFieldGenerator, AHFieldGeneratorApproximation, AHFieldGeneratorEpsilon, AH3Dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
     }
 
   }
