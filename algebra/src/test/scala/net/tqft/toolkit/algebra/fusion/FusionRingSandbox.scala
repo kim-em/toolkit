@@ -5,7 +5,7 @@ object FusionRingSandbox extends App {
   val H1 = FusionRings.Examples.H1
   val AH1 = FusionRings.Examples.AH1
   val AH2 = FusionRings.Examples.AH2
-//  val AH3 = FusionRings.Examples.AH3
+  val AH3 = FusionRings.Examples.AH3
 
   H1.verifyDuality()
   H1.verifyDuality(IndexedSeq(0, 1, 2, 3))
@@ -24,8 +24,9 @@ object FusionRingSandbox extends App {
 //    println(fm + " has " + commutants.size + " commutants with rank at most 6.")
 //  }
 
-//  println(AH1.candidateFusionModules.size)
-  println(AH2.candidateFusionModules.size)
+//  println("AH1 has " + AH1.candidateFusionModules.size + " modules")
+  println("AH2 has " + AH2.candidateFusionModules.size + " modules")
+  println("AH3 has " + AH3.candidateFusionModules.size + " modules")
   
 //  for (fm <- AH1.candidateFusionModules) {
 //    val commutants = FusionBimodules.commutantsWithRank(fm, 9, 7)

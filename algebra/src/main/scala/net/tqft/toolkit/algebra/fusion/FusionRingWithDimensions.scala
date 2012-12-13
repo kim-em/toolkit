@@ -9,6 +9,8 @@ import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.numberfields.RealNumberField
 import net.tqft.toolkit.algebra.polynomials.PolynomialAlgebra
 import net.tqft.toolkit.algebra.categories.Groupoid
+import scala.collection.parallel.ParSeq
+import scala.collection.GenSeq
 
 trait DimensionFunction {
   def dimensionField: RealNumberField[Int, Double]
@@ -34,21 +36,21 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
     dimensionField.approximateWithin(0.0001)(dimensionOf(x)) + 0.0001
   }
 
-  def objectsSmallEnoughToBeAlgebras: Seq[Seq[Int]] = {
-    val start = Seq(Seq(1))
+  def objectsSmallEnoughToBeAlgebras: ParSeq[Seq[Int]] = {
+    val start = Seq(Seq(1)).par
     basis.tail.foldLeft(start)({
-      (i: Seq[Seq[Int]], b: Seq[Int]) =>
+      (i: ParSeq[Seq[Int]], b: Seq[Int]) =>
         i.flatMap({
           a: Seq[Int] => for (m <- 0 to dimensionUpperBounds(b).floor.intValue) yield a :+ m
         })
     })
   }
 
-  def smallObjectsWithPositiveSemidefiniteMultiplication: Seq[Seq[Int]] = {
+  def smallObjectsWithPositiveSemidefiniteMultiplication: ParSeq[Seq[Int]] = {
     for (
       o <- objectsSmallEnoughToBeAlgebras;
       m = regularModule.asMatrix(o);
-      if (m.mapEntries(Conversions.integersAsBigRationals).positiveSemidefinite_?)
+      if (m.mapEntries(Conversions.integersAsDoubles).positiveSemidefinite_?)
     ) yield o
   }
 
@@ -93,8 +95,9 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
 
     (for (
       o <- smallObjectsWithPositiveSemidefiniteMultiplication.par;
+//        o <- objectsSmallEnoughToBeAlgebras.par;
       a = regularModule.asMatrix(o);
-      m <- Matrices.positiveSymmetricDecompositions(a)
+      m <- Matrices.positiveSymmetricDecompositionsCached(a)
     ) yield {
       FusionMatrix(o, m)
     }).seq

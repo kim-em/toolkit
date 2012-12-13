@@ -1,11 +1,8 @@
 package net.tqft.toolkit.algebra.numberfields
 
 import net.tqft.toolkit.algebra.Field
+import net.tqft.toolkit.algebra.ComplexConjugation
 import net.tqft.toolkit.algebra.polynomials.Polynomial
-
-trait ComplexConjugation[A] { self: Field[A] =>
-  def bar(q: A): A
-}
 
 trait CyclotomicNumberField[A] extends NumberField[A] with ComplexConjugation[Polynomial[A]] {
   val order: Int
