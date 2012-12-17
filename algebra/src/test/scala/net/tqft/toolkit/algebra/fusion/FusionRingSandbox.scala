@@ -13,20 +13,23 @@ object FusionRingSandbox extends App {
   val H1r = H1.regularModule.ensuring(_.verifyAdmissibility)
   val bm = FusionBimoduleWithLeftDimensions(H1.regularModule, H1.structureCoefficients, H1r.structureCoefficients).ensuring(_.verifyAssociativity).ensuring(_.verifyAdmissibility).ensuring(_.verifyIdentity)
 
-//  for (fm <- H1.candidateFusionModules) {
-//    println(fm.verifyAdmissibility)
-//    println(H1.FusionModules.equivalent_?(fm, H1r))
+//  val H2s = H1.candidateFusionModules.flatMap(fm => FusionBimodules.commutantsWithRank(fm, 6, 4)).map(_.rightRing).toSeq
+//  
+//  println(H2s.size)
+//  for (h2 <- H2s) {
+//    println(h2)
 //  }
-  //  println(FusionBimodules.commutants(H1r, rankBound=Some(6)).size)
+//    println(FusionBimodules.commutants(H1r, rankBound=Some(6)).size)
+//    println(FusionBimodules.commutantsWithRank(H1r, 6, 4).size)
 
 //  for (fm <- H1.candidateFusionModules) {
 //    val commutants = FusionBimodules.commutants(fm, rankBound = Some(6))
 //    println(fm + " has " + commutants.size + " commutants with rank at most 6.")
 //  }
 
-//  println("AH1 has " + AH1.candidateFusionModules.size + " modules")
-  println("AH2 has " + AH2.candidateFusionModules.size + " modules")
-  println("AH3 has " + AH3.candidateFusionModules.size + " modules")
+  println("AH1 has " + AH1.candidateFusionModules.size + " modules")
+//  println("AH2 has " + AH2.candidateFusionModulesCached.size + " modules")
+//  println("AH3 has " + AH3.candidateFusionModulesCached.size + " modules")
   
 //  for (fm <- AH1.candidateFusionModules) {
 //    val commutants = FusionBimodules.commutantsWithRank(fm, 9, 7)

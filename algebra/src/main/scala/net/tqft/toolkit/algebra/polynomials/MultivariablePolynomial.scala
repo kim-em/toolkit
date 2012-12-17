@@ -24,7 +24,7 @@ trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
     }
   }
 
-  override def toString = {
+  override lazy val toString = {
     terms match {
       case Nil => "0"
       case _ => terms.map({

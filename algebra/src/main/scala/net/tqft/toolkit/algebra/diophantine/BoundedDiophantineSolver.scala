@@ -10,8 +10,9 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials
 
-  // the order of variables matters; if we need to split into cases, we prefer splitting the first variables first.
   def solve[V: Ordering](polynomials: GenTraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): (Iterable[Map[V, Int]], Iterable[Seq[MultivariablePolynomial[Int, V]]]) = {
+
+    val mentioned: scala.collection.mutable.Set[MultivariablePolynomial[Int, V]] = scala.collection.mutable.Set()
 
     // make sure all the hash codes are computed
     //    polynomials.par.map(_.hashCode)
@@ -19,10 +20,23 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
     type P = MultivariablePolynomial[Int, V]
     val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
 
-    case class Equations(substitutions: Map[V, P], equations: Seq[P]) {
-//      if ((equations.nonEmpty && equations.size % 1000 == 0) || (substitutions.nonEmpty && substitutions.size % 1000 == 0)) info(substitutions.size + " " + equations.size)
+    case class Equations(substitutions: Map[V, P], equations: Seq[P], caseBashProgress: Seq[(Int, Int)]) {
+      //      if ((equations.nonEmpty && equations.size % 1000 == 0) || (substitutions.nonEmpty && substitutions.size % 1000 == 0)) info(substitutions.size + " " + equations.size)
       //      equations.headOption.map(info(_))
       //      require(equations.flatMap(_.variables).toSet.intersect(substitutions.keySet).isEmpty)
+
+      //      if (equations.nonEmpty) {
+      //        val e = equations.minBy(_.toString.size)
+      //        if (e.totalDegree == Some(2) && e.terms.size == 1 && e.terms(0)._1.keys.size == 1) require(false)
+      //        if (!mentioned.contains(e)) {
+      //          if (e.totalDegree == Some(2) && e.terms.size == 1 && e.terms(0)._1.keys.size == 2) {
+      //
+      //          } else {
+      //            println(e)
+      //          }
+      //          mentioned += e
+      //        }
+      //      }
 
       def addSubstitution(v: V, k: Int): Option[Equations] = {
         //        knownSolution map { solution =>
@@ -43,31 +57,33 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           val newSubstitutions = substitutions.mapValues(q => polynomialAlgebra.substitute(Map(v -> p))(q))
           val (toReprocess, toKeep) = equations.partition(_.variables.contains(v))
 
-          Equations(newSubstitutions + (v -> p), toKeep).addEquations(toReprocess.par.map(polynomialAlgebra.substitute(Map(v -> p))))
+          Equations(newSubstitutions + (v -> p), toKeep, caseBashProgress).addEquations(toReprocess.par.map(polynomialAlgebra.substitute(Map(v -> p))))
         }
       }
+      def recordCaseBashProgress(caseIndex: Int, totalCases: Int) = copy(caseBashProgress = caseBashProgress :+ (caseIndex, totalCases))
       def addEquations(qs: GenTraversableOnce[P]): Option[Equations] = {
         qs /*.seq.sortBy(p => (p.totalDegree, p.terms.size))*/ .foldLeft[Option[Equations]](Some(this))({ (o, e) => o.flatMap(_.addEquation(e)) })
       }
       def addEquation(q: P): Option[Equations] = {
         val p = polynomialAlgebra.substitute(substitutions)(q).divideByCoefficientGCD
 
-        def splitIfAllPositive: Option[Equations] = {
+        def splitIfPositiveOrOtherwiseAdd: Option[Equations] = {
           if (p.terms.size > 1 && (p.terms.forall(_._2 > 0) || p.terms.forall(_._2 < 0))) {
             addEquations(p.terms.map(t => polynomialAlgebra.monomial(t._1)))
           } else {
-            None
+            add
           }
         }
 
-        def splitIfPositiveOrOtherwiseAdd: Option[Equations] = {
-          splitIfAllPositive.orElse({
-            if (equations.contains(p)) {
-              Some(this)
-            } else {
-              Some(copy(equations = p +: equations))
-            }
-          })
+        def add: Some[Equations] = {
+          if (p.terms.size > 1) {
+            require(p.terms.exists(_._2 > 0) && p.terms.exists(_._2 < 0))
+          }
+          if (equations.contains(p)) {
+            Some(this)
+          } else {
+            Some(copy(equations = p +: equations))
+          }
         }
 
         p.totalDegree match {
@@ -125,22 +141,99 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
               splitIfPositiveOrOtherwiseAdd
             }
           }
-          case Some(d) => {
-            p.terms match {
-              case h :: Nil => {
-                // just one term, set each variable to zero
+          case Some(2) => {
+            p.terms.size match {
+              case 1 => {
+                val h = p.terms(0)
+                // just one term
                 require(h._2 != 0)
-                h._1.keys.toSeq match {
-                  case Seq(v) => addSubstitution(v, 0)
-                  case _ => splitIfPositiveOrOtherwiseAdd
+                val keys = h._1.keys.toSeq
+                if (keys.size == 1) {
+                  addSubstitution(keys(0), 0)
+                } else {
+                  // x y
+                  add
+                }
+              }
+              case 2 => {
+                val List(t1, t2) = p.terms.toList.sortBy(_._1.values.sum)
+                require(t1._1.values.sum <= t2._1.values.sum)
+                if (t1._1.values.sum == 0) {
+                  if (t2._1.keys.size == 1) {
+                    // k + l v^2
+                    val k = t1._2
+                    val l = t2._2
+                    if (k % l != 0) {
+                      None
+                    } else {
+                      val v = t2._1.keys.head
+                      k / l match {
+                        case m if m > 0 => None
+                        case 0 => addSubstitution(v, 0)
+                        case -1 => addSubstitution(v, 1)
+                        case -2 | -3 => None
+                        case -4 => addSubstitution(v, 2)
+                        case _ => add
+                      }
+                    }
+                  } else if (t2._1.keys.size == 2) {
+                    // k + l uv
+                    val k = t1._2
+                    val l = t2._2
+                    if (k % l != 0) {
+                      None
+                    } else {
+                      val List(u, v) = t2._1.keys.toList
+                      k match {
+                        case k if k > 0 => None
+                        case -1 => addSubstitution(u, 1).flatMap(_.addSubstitution(v, 1))
+                        case _ => add
+                      }
+                    }
+                  } else {
+                    splitIfPositiveOrOtherwiseAdd
+                  }
+                } else if (t1._1.values.sum == 2 && t1._1.keys.size == 1 && t2._1.values.sum == 2 && t2._1.keys.size == 1) {
+                  // a x^2 + b x^y
+                  val a = t1._2
+                  val b = t2._2
+                  val x = t1._1.keys.head
+                  val y = t2._1.keys.head
+                  if (a == -b) {
+                    addSubstitution(x, polynomialAlgebra.monomial(y))
+                  } else if (a == b) {
+                    addSubstitution(x, 0).flatMap(_.addSubstitution(y, 0))
+                  } else {
+                    splitIfPositiveOrOtherwiseAdd
+                  }
+                } else {
+                  splitIfPositiveOrOtherwiseAdd
+                }
+              }
+              case 3 => {
+                val List(t1, t2, t3) = p.terms.toList.sortBy(t => (t._1.values.sum, t._2))
+                if (t1._1.values.sum == 0 && t2._1.values.sum == 2 && t3._1.values.sum == 2 && t2._1.keys.size == 1 && t3._1.keys.size == 1) {
+                  val x = t2._1.keys.head
+                  val y = t3._1.keys.head
+                  if (t1._2 == -2 && t2._2 == 1 & t3._2 == 1) {
+                    // -2 + x^2 + y^2
+                    addSubstitution(x, 1).flatMap(_.addSubstitution(y, 1))
+                  } else if (t1._2 == -1 && t2._2 == 1 && t3._2 == 2) {
+                    // -1 + x^2 + 2 y^2
+                    addSubstitution(x, 1).flatMap(_.addSubstitution(y, 0))
+                  } else {
+                    splitIfPositiveOrOtherwiseAdd
+                  }
+                } else {
+                  splitIfPositiveOrOtherwiseAdd
                 }
               }
               case _ => {
-                // nothing to do for now
                 splitIfPositiveOrOtherwiseAdd
               }
             }
           }
+          case Some(d) => splitIfPositiveOrOtherwiseAdd
         }
       }
 
@@ -166,7 +259,8 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
         FixedPoint({ o: Option[Equations] => o.flatMap(_.solveALinearEquation) })(Some(this))
       }
 
-      def caseBashOneStep(v: V, remainingVariables: List[V]): Iterable[Equations] = {
+      def cases(v: V): Seq[Int] = {
+        val remainingVariables = variables.filterNot(substitutions.keySet.contains).filterNot(_ == v)
         val limit = boundary.get
 
         val minimalSubstitutionBase = {
@@ -177,21 +271,28 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           minimalSubstitutionBase.mapValues(p => polynomialAlgebra.substituteConstants(Map(v -> k))(p).constantTerm) + (v -> k)
         }
 
-        val cases = Iterator.from(0).takeWhile({ k => limit(minimalSubstitution(k)) }).toSeq
-        info(Seq.fill(variables.indexOf(v))(" ").mkString + "case bashing " + v + " via " + cases.size + " cases, " + equations.size + " remaining equations")
-        (for (k <- cases.par; r <- addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield r).seq
+        Iterator.from(0).takeWhile({ k => limit(minimalSubstitution(k)) }).toSeq
+      }
+
+      def caseBashOneStep(v: V): Seq[Equations] = {
+        val c = cases(v)
+        (for (k <- c.par; r <- recordCaseBashProgress(k, c.size).addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield {
+          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
+          r
+        }).seq
       }
       def caseBash: Iterable[Equations] = {
-        variables.filterNot(substitutions.keySet.contains).toList match {
-          case v :: remainingVariables => {
-            (for (c1 <- caseBashOneStep(v, remainingVariables).par; c2 <- c1.caseBash) yield c2).seq
-          }
-          case Nil => List(this)
+        val remainingVariables = variables.filterNot(substitutions.keySet.contains)
+        if (remainingVariables.nonEmpty) {
+          val v = remainingVariables.minBy(v => cases(v).size)
+          (for (c1 <- caseBashOneStep(v).par; c2 <- c1.caseBash) yield c2).seq
+        } else {
+          List(this)
         }
       }
     }
 
-    val iterable = Equations(Map.empty, Seq.empty).addEquations(polynomials).flatMap(_.solveLinearEquations) match {
+    val iterable = Equations(Map.empty, Seq.empty, Seq.empty).addEquations(polynomials).flatMap(_.solveLinearEquations) match {
       case None => {
         //        ???
         Iterable.empty

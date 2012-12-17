@@ -41,7 +41,7 @@ trait LinearProgrammingHelper extends net.tqft.toolkit.Logging {
 
 object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
   def slack[B](solution: Seq[B])(implicit field: OrderedField[B]) = {
-    field.negate(field.add(solution filter { x => field.compare(x, field.zero) < 0 }))
+    field.negate(field.sum(solution filter { x => field.compare(x, field.zero) < 0 }))
   }
 
   def apply[B:OrderedField](m: Matrix[B], c: List[B]) = {
@@ -87,7 +87,7 @@ object SimplexAlgorithm extends LinearProgrammingHelper {
     m.takeColumns(simplex).preimageOf(c) match {
       case None => None
       case Some(v) => {
-        val result = field.negate(field.add(v filter { x => field.compare(x, field.zero) < 0 }))
+        val result = field.negate(field.sum(v filter { x => field.compare(x, field.zero) < 0 }))
         //        info("Calculated slack " + result + " for  " + simplex)
         Some(result)
       }

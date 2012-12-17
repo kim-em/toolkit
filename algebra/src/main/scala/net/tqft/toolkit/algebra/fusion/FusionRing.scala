@@ -15,7 +15,7 @@ trait FiniteDimensionalFreeModuleOverRig[A] extends ModuleOverRig[A, Seq[A]] {
   override def add(x: Seq[A], y: Seq[A]) = x.zip(y).map(p => coefficients.add(p._1, p._2))
   override def scalarMultiply(a: A, b: Seq[A]) = b.map(x => coefficients.multiply(a, x))
 
-  def innerProduct(x: Seq[A], y: Seq[A]) = coefficients.add(x.zip(y).map(p => coefficients.multiply(p._1, p._2)))
+  def innerProduct(x: Seq[A], y: Seq[A]) = coefficients.sum(x.zip(y).map(p => coefficients.multiply(p._1, p._2)))
 
   def basis = for (i <- 0 until rank) yield for (j <- 0 until rank) yield if (i == j) coefficients.one else coefficients.zero
 }
@@ -53,7 +53,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   def verifyIdentity = identityConstraints.forall(p => p._1 == p._2)
   def verifyDuality(duality: Permutation = duality) = dualityConstraints(duality).forall(p => p._1 == p._2)
 
-  def structureCoefficients: Seq[Matrix[A]] = for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
+  def structureCoefficients: Seq[Matrix[A]] = ??? // for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
 
   def dimensionLowerBounds(x: Seq[Int])(implicit ev: A =:= Int): Double = {
     regularModule.dimensionLowerBounds(x)
@@ -148,7 +148,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
     def asMatrix(x: Seq[A]) = {
       Matrix(rank, for (i <- 0 until fr.rank) yield for (j <- 0 until rank) yield {
-        coefficients.add(for ((xi, mi) <- x.zip(structureCoefficients)) yield coefficients.multiply(xi, mi.entries(i)(j)))
+        coefficients.sum(for ((xi, mi) <- x.zip(structureCoefficients)) yield coefficients.multiply(xi, mi.entries(i)(j)))
       })
     }
 
@@ -197,7 +197,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       ) yield {
         for (k <- 0 until rank) yield coefficients.multiply(xi, mj, matrices(j).entries(i)(k))
       }
-      val result = add(terms)
+      val result = sum(terms)
       require(m.size == result.size)
       result
     }
@@ -240,7 +240,7 @@ object FusionRing {
           coefficients.multiply(xi, yj, multiplicities(j).entries(i)(k))
         }
       }
-      val result = add(terms)
+      val result = sum(terms)
       result
     }
 

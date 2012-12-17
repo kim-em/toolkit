@@ -67,7 +67,7 @@ object VectorOperations extends net.tqft.toolkit.Logging {
     } else if (v1.isInstanceOf[SparseSeq[_]] && v2.isInstanceOf[SparseSeq[_]]) {
       val e1 = v1.asInstanceOf[SparseSeq[A]].nonZeroEntries
       val e2 = v2.asInstanceOf[SparseSeq[A]].nonZeroEntries
-      val entries = (e1 ++ e2).groupBy(_._2).mapValues({ v => monoid.add(v.map(_._1)) }).toSeq.map(_.swap).filter(_._1 != monoid.zero)
+      val entries = (e1 ++ e2).groupBy(_._2).mapValues({ v => monoid.sum(v.map(_._1)) }).toSeq.map(_.swap).filter(_._1 != monoid.zero)
       SparseSeq.withEntries(v1.size, entries, monoid.zero)
     } else {
       (v1 zip v2) map { p => monoid.add(p._1, p._2) }

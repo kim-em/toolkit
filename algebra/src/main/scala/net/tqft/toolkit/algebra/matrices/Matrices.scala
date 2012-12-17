@@ -36,7 +36,7 @@ object Matrices extends net.tqft.toolkit.Logging {
       m.split("p").toSeq.map(_.split("x").toSeq.collect({case Int(n) => n}))
     }
     def writeMatrices(ms: Seq[Matrix[Int]]): String = ms.map(writeMatrix).mkString("\n")
-    def readMatrices(ms: String): Seq[Matrix[Int]] = ms.split("\n").toSeq.map(readMatrix)
+    def readMatrices(ms: String): Seq[Matrix[Int]] = ms.split("\n").toSeq.filter(_.nonEmpty).map(readMatrix)
     
     import net.tqft.toolkit.collections.MapTransformer._
     val transformedBucket = bucket.transformKeys(readMatrix _, writeMatrix _).transformValues(readMatrices _, writeMatrices _)
@@ -164,7 +164,7 @@ class MatrixCategoryOverRing[R: Ring] extends TensorCategory[Int, Matrix[R], R] 
     val yt = y.transpose
     new Matrix(y.numberOfColumns, for (rx <- x.entries) yield {
       for (ry <- yt.entries.seq) yield {
-        ring.add(rx.zip(ry).map(p => ring.multiply(p._1, p._2)))
+        ring.sum(rx.zip(ry).map(p => ring.multiply(p._1, p._2)))
       }
     })
   }

@@ -15,5 +15,5 @@ trait CyclotomicNumberField[A] extends NumberField[A] with ComplexConjugation[Po
     (f _).memo
   }
 
-  def bar(q: Polynomial[A]) = add(normalize(q).terms.map({ case (k, a) => scalarMultiply(a, zetaInversePowers(k)) }))
+  def bar(q: Polynomial[A]) = sum(normalize(q).terms.map({ case (k, a) => scalarMultiply(a, zetaInversePowers(k)) }))
 }
