@@ -39,7 +39,7 @@ trait RealNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[P
 
   def improveErrorBound = ???
 
-  def evaluateAt(d: D)(p: Polynomial[Fraction[I]]): D = approximateReals.add(for ((i, c) <- p.terms) yield approximateReals.multiply(evaluateFraction(c), approximateReals.power(d, i)))
+  def evaluateAt(d: D)(p: Polynomial[Fraction[I]]): D = approximateReals.sum(for ((i, c) <- p.terms) yield approximateReals.multiply(evaluateFraction(c), approximateReals.power(d, i)))
   def evaluateFraction(x: Fraction[I]) = approximateReals.quotient(approximateReals.fromInteger(x.numerator), approximateReals.fromInteger(x.denominator))
 
   def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = {

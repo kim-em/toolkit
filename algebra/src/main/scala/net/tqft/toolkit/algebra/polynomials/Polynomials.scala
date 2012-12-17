@@ -39,7 +39,7 @@ object Polynomial {
     val field = implicitly[Field[F]]
     val polynomials = implicitly[PolynomialAlgebraOverField[F]]
     val divisors = for (d <- 1 until n; if n % d == 0) yield cyclotomic(d)
-    polynomials.quotient(apply((0, field.negate(field.one)), (n, field.one)), polynomials.multiply(divisors))
+    polynomials.quotient(apply((0, field.negate(field.one)), (n, field.one)), polynomials.product(divisors))
   }
 }
 
@@ -69,7 +69,7 @@ object Polynomials extends HomomorphismCategory[PolynomialAlgebra] {
   def evaluationAt[A](x: A)(implicit ring: Ring[A]) = new Homomorphism[Ring, Polynomial[A], A] {
     def source: Ring[Polynomial[A]] = over[A](ring)
     def target: Ring[A] = ring
-    def apply(p: Polynomial[A]) = ring.add(p.terms map { case (e, a) => ring.multiply(a, ring.power(x, e)) })
+    def apply(p: Polynomial[A]) = ring.sum(p.terms map { case (e, a) => ring.multiply(a, ring.power(x, e)) })
   }
 
   val embeddingAsConstants = new NaturalTransformation[Ring, Ring, Functors.Identity, Polynomial] {

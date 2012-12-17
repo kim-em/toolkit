@@ -241,11 +241,11 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     // make sure we don't deadlock (c.f. https://issues.scala-lang.org/browse/SI-5808)
     exponentiationOnConjugacyClasses(0)
 
-    def mu(i: Int)(j: Int)(s: Int) = modP.quotient(modP.add(for (n <- 0 until exponent) yield modP.multiply(chi(i)(exponentiationOnConjugacyClasses(n)(j)), zpower((-s * n) mod exponent))), exponent)
+    def mu(i: Int)(j: Int)(s: Int) = modP.quotient(modP.sum(for (n <- 0 until exponent) yield modP.multiply(chi(i)(exponentiationOnConjugacyClasses(n)(j)), zpower((-s * n) mod exponent))), exponent)
 
     val unsortedCharacters = (for (i <- (0 until k).par) yield (for (j <- (0 until k).par) yield {
       FiniteGroup.info("Computing entry " + (i, j) + " in the character table.")
-      cyclotomicNumbers.add(for (s <- 0 until exponent) yield cyclotomicNumbers.multiplyByInt(zetapower(s), mu(i)(j)(s)))
+      cyclotomicNumbers.sum(for (s <- 0 until exponent) yield cyclotomicNumbers.multiplyByInt(zetapower(s), mu(i)(j)(s)))
     }).seq).seq
     val sortedCharacters = {
       implicit val rationals = implicitly[OrderedField[Fraction[Int]]]
@@ -289,7 +289,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     }
     val Q = NumberField.cyclotomic[Fraction[Int]](exponent)
     val result = Q.quotientByInt(
-      Q.add(
+      Q.sum(
         for (((a, b), t) <- liftCharacterToCyclotomicFieldOfExponent(m).character zip liftCharacterToCyclotomicFieldOfExponent(n).character zip conjugacyClasses.map(_.size)) yield {
           Q.multiplyByInt(Q.multiply(a, Q.bar(b)), t)
         }),
@@ -306,7 +306,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     implicit val Q = NumberField.cyclotomic[Fraction[Int]](exponent)
 
     def pairing(x: Seq[Polynomial[Fraction[Int]]], y: Seq[Polynomial[Fraction[Int]]]) = {
-      Q.quotientByInt(Q.add((x zip y zip conjugacyClasses.map(_.size)).map({ p => Q.multiplyByInt(Q.multiply(p._1._1, p._1._2), p._2) })), finiteGroup.size)
+      Q.quotientByInt(Q.sum((x zip y zip conjugacyClasses.map(_.size)).map({ p => Q.multiplyByInt(Q.multiply(p._1._1, p._1._2), p._2) })), finiteGroup.size)
     }
 
     def lower(p: Polynomial[Fraction[Int]]) = {

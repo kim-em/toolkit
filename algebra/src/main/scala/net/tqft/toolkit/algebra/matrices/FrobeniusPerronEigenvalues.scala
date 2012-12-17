@@ -10,7 +10,7 @@ object FrobeniusPerronEigenvalues {
     val reals = implicitly[ApproximateReals[R]]
 
     val mR = m.mapEntries[R](reals.fromInteger)
-    val initialVector = reals.normalize(m.entries.map(v => reals.abs(reals.fromInteger(integers.add(integers.add(v), integers.one)))).seq)
+    val initialVector = reals.normalize(m.entries.map(v => reals.abs(reals.fromInteger(integers.add(integers.sum(v), integers.one)))).seq)
     val initialEstimate = reals.zero
 
     def next(p: (Seq[R], R)) = {

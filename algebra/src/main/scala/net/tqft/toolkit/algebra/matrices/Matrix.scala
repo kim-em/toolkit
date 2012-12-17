@@ -79,13 +79,13 @@ class Matrix[B](
 
   def apply(vector: Seq[B])(implicit rig: Rig[B]) = {
     (for (row <- entries) yield {
-      rig.add(for ((x, y) <- row zip vector) yield rig.multiply(x, y))
+      rig.sum(for ((x, y) <- row zip vector) yield rig.multiply(x, y))
     }).seq
   }
 
   def trace(implicit addition: AdditiveMonoid[B]): B = {
     require(numberOfRows == numberOfColumns)
-    addition.add(for ((row, i) <- entries.zipWithIndex) yield row(i))
+    addition.sum(for ((row, i) <- entries.zipWithIndex) yield row(i))
   }
 
   private def rowPriority(row: Seq[B])(implicit field: Field[B]): (Int, B) = {
@@ -235,7 +235,7 @@ class Matrix[B](
 
   def determinant(implicit field: Field[B]): B = {
     require(numberOfRows == numberOfColumns)
-    field.multiply(rowEchelonForm.diagonals)
+    field.product(rowEchelonForm.diagonals)
   }
 
   def positiveSemidefinite_?(implicit field: ApproximateReals[B]): Boolean = {
@@ -258,7 +258,7 @@ class Matrix[B](
         if (field.compare(L(j, j), field.zero) == 0) {
           field.zero
         } else {
-          field.quotient(field.subtract(entries(i)(j), field.add(for (k <- 0 until j) yield field.multiply(L(i, k), L(j, k)))), L(j, j))
+          field.quotient(field.subtract(entries(i)(j), field.sum(for (k <- 0 until j) yield field.multiply(L(i, k), L(j, k)))), L(j, j))
         }
       } else {
         field.zero
@@ -268,7 +268,7 @@ class Matrix[B](
     })
 
     lazy val diagonalEntries: Int => Option[B] = Memo({ i: Int =>
-      val r = field.subtract(entries(i)(i), field.add(for (k <- 0 until i) yield field.power(L(i, k), 2)))
+      val r = field.subtract(entries(i)(i), field.sum(for (k <- 0 until i) yield field.power(L(i, k), 2)))
       val result = if (field.compare(field.chop(r), field.zero) < 0) {
         None
       } else if (field.compare(field.chop(r), field.zero) == 0) {

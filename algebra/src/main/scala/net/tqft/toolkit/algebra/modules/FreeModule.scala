@@ -40,7 +40,7 @@ trait GeneralFreeModuleOverRig[A, B, LC <: LinearCombo[A, B]] extends ModuleOver
 
   protected def discardZeros(x: Seq[(B, A)]) = (x filterNot (_._2 == ring.zero))
   protected def collect(x: Iterable[(B, A)]): Seq[(B, Iterable[A])] = (x.groupBy(_._1).seq.mapValues({ v => v map (_._2) })).toSeq
-  protected def reduce(x: Iterable[(B, A)]) = discardZeros(collect(x) map { case (b, t) => (b, ring.add(t.toSeq)) })
+  protected def reduce(x: Iterable[(B, A)]) = discardZeros(collect(x) map { case (b, t) => (b, ring.sum(t.toSeq)) })
   def simplify(x: Iterable[(B, A)]): LC = wrap(reduce(x))
 
   override def scalarMultiply(a: A, x: LC) = {
@@ -50,7 +50,7 @@ trait GeneralFreeModuleOverRig[A, B, LC <: LinearCombo[A, B]] extends ModuleOver
   override def add(x: LC, y: LC) = {
     simplify(x.terms ++ y.terms)
   }
-  override def add(xs: GenIterable[LC]) = simplify(xs.flatMap(_.terms).seq)
+  override def sum(xs: GenIterable[LC]) = simplify(xs.flatMap(_.terms).seq)
 
   def zero = wrap(Nil)
 }

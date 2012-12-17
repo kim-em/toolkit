@@ -37,7 +37,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
     if (relevantValues.isEmpty) {
       p
     } else {
-      add(for ((m, a) <- p.terms) yield {
+      sum(for ((m, a) <- p.terms) yield {
         val (toReplace, toKeep) = m.keySet.partition(v => relevantValues.contains(v))
         val newFactors = for (v <- toReplace.toSeq) yield power(relevantValues(v), m(v))
         val oldFactor = monomial(toKeep.map(v => v -> m(v)).toMap, a)

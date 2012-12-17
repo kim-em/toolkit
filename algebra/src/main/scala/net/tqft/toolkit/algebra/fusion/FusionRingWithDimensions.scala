@@ -11,19 +11,20 @@ import net.tqft.toolkit.algebra.polynomials.PolynomialAlgebra
 import net.tqft.toolkit.algebra.categories.Groupoid
 import scala.collection.parallel.ParSeq
 import scala.collection.GenSeq
+import net.tqft.toolkit.SHA1
 
 trait DimensionFunction {
   def dimensionField: RealNumberField[Int, Double]
   def dimensions: Seq[Polynomial[Fraction[Int]]]
   def dimensionOf(x: Seq[Int]): Polynomial[Fraction[Int]] = {
     val polynomials = Polynomials.over(Rationals)
-    polynomials.add(x.zip(dimensions).map(p => polynomials.scalarMultiply(p._1, p._2)))
+    polynomials.sum(x.zip(dimensions).map(p => polynomials.scalarMultiply(p._1, p._2)))
   }
   def globalDimension: Polynomial[Fraction[Int]] = {
-    dimensionField.add(for (d <- dimensions) yield dimensionField.power(d, 2))  
+    dimensionField.sum(for (d <- dimensions) yield dimensionField.power(d, 2))
   }
   def globalDimensionUpperBound = dimensionField.approximateWithin(0.0001)(globalDimension) + 0.0001
-  
+
 }
 
 trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { fr =>
@@ -95,7 +96,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
 
     (for (
       o <- smallObjectsWithPositiveSemidefiniteMultiplication.par;
-//        o <- objectsSmallEnoughToBeAlgebras.par;
+      //        o <- objectsSmallEnoughToBeAlgebras.par;
       a = regularModule.asMatrix(o);
       m <- Matrices.positiveSymmetricDecompositionsCached(a)
     ) yield {
@@ -124,9 +125,42 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
 
   protected class StructureCoefficientFusionModule(matrices: Seq[Matrix[Int]]) extends super.StructureCoefficientFusionModule(matrices) with FusionModule
 
+  lazy val hashString = SHA1(structureCoefficients.toString)
+
+  def candidateFusionModulesCached = {
+    val bucket = net.tqft.toolkit.amazon.S3("fusion-modules")
+
+    def writeMatrix(m: Matrix[Int]): String = {
+      m.entries.map(_.mkString("x")).mkString("p")
+    }
+    def readMatrix(m: String): Matrix[Int] = {
+      import net.tqft.toolkit.Extractors.Int
+      m.split("p").toSeq.map(_.split("x").toSeq.collect({ case Int(n) => n }))
+    }
+
+    def writeModule(m: FusionModule): String = m.structureCoefficients.map(writeMatrix).mkString("\n")
+    def readModule(m: String): FusionModule = moduleFromStructureCoefficients(m.split("\n").toSeq.filter(_.nonEmpty).map(readMatrix))
+
+    def writeModules(ms: Seq[FusionModule]): String = {
+      "Fusion modules for " + hashString + "\n" +
+        (for ((m, i) <- ms.zipWithIndex) yield {
+          "Fusion module " + (i + 1) + "/" + ms.size + "\n" + writeModule(m)
+        }).mkString("\n")
+    }
+    def readModules(ms: String): Seq[FusionModule] = {
+      import net.tqft.toolkit.collections.Split._
+      ms.split("\n").toSeq.tail.splitOn(_.startsWith("Fusion module ")).filter(_.nonEmpty).map(lines => readModule(lines.mkString("\n"))).toSeq
+    }
+
+    import net.tqft.toolkit.collections.MapTransformer._
+    val transformedBucket = bucket.transformValues(readModules _, writeModules _)
+
+    transformedBucket.getOrElseUpdate(hashString, candidateFusionModules.toSeq)
+  }
+
   def candidateFusionModules: Iterator[FusionModule] = {
     val matricesBySize = candidateFusionMatrices.toList.groupBy(_.matrix.numberOfColumns)
-    (for (n <- (1 to matricesBySize.keys.max).iterator) yield {
+    (for (n <- (1 to matricesBySize.keys.max).reverse.iterator) yield {
 
       println("Looking at rank " + n + " fusion matrices.")
 
@@ -158,50 +192,55 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
         }).flatten
       }
 
-      println("possible " + n + "-tuples:")
-      for (t <- n_tuples.seq) println(t)
-
       val integerMatrices = new MatrixCategoryOverRing[Int]
 
       import net.tqft.toolkit.collections.GroupBy._
 
+      println("processing " + n_tuples.size + " " + n + "-tuples:")
       (for (t <- n_tuples) yield {
+        println(t)
         import net.tqft.toolkit.permutations.Permutation
         import net.tqft.toolkit.permutations.Permutations
         import net.tqft.toolkit.permutations.Permutations._
         val permutations = Permutations.preserving(t.head.dimensionsSquared).toSeq.par
-        val permutedMatrices = t.foldLeft(Iterable(Seq.empty[Matrix[Int]]))({ (i: Iterable[Seq[Matrix[Int]]], M: FusionMatrix) =>
-          def permuteColumns(p: Permutation) = new Matrix(M.matrix.numberOfColumns, p.permute(M.matrix.entries.seq.transpose).transpose)
-          def verifyPartialAssociativity(structureCoefficients: Seq[Matrix[Int]]): Boolean = {
 
-            val n0 = structureCoefficients.size
+        println(permutations.size + " possible permutations to consider, for each element of the tuple")
+        println("there are " + Permutations.preserving(t).size + " symmetries of the tuple")
+        
+        val permutedMatrices = t.foldLeft(Iterator(Seq.empty[Matrix[Int]]))({
+          case (i: Iterator[Seq[Matrix[Int]]], m0: FusionMatrix) =>
+            def permuteColumns(p: Permutation) = new Matrix(m0.matrix.numberOfColumns, p.permute(m0.matrix.entries.seq.transpose).transpose)
+            def verifyPartialAssociativity(structureCoefficients: Seq[Matrix[Int]]): Boolean = {
 
-            (for (
-              (m, mi) <- structureCoefficients.iterator.zipWithIndex;
-              yj <- 0 until rank;
-              if (m.entries(yj).drop(n0).forall(_ == 0))
-            ) yield {
-              val `x(ym)` = (for (
-                (a, mk) <- m.entries(yj).take(n0).zipWithIndex
+              val n0 = structureCoefficients.size
+
+              (for (
+                (m, mi) <- structureCoefficients.zipWithIndex.iterator;
+                yj <- 0 until rank;
+                if (m.entries(yj).drop(n0).forall(_ == 0)); // otherwise ym will include stuff we don't know yet
+                if mi == n0 - 1 || m.entries(yj)(n0 - 1) != 0 // avoid duplicating work?
               ) yield {
-                integerMatrices.scalarMultiply(a, structureCoefficients(mk))
-              }).reduce(integerMatrices.add _)
+                val `x(ym)` = integerMatrices.sum(for (
+                  (a, mk) <- m.entries(yj).take(n0).zipWithIndex
+                ) yield {
+                  integerMatrices.scalarMultiply(a, structureCoefficients(mk))
+                })
 
-              val `(xy)m` = integerMatrices.compose(fr.structureCoefficients(yj), m)
+                val `(xy)m` = integerMatrices.compose(fr.structureCoefficients(yj), m)
 
-              `x(ym)` == `(xy)m`
-            }).forall(_ == true)
-          }
+                `x(ym)` == `(xy)m`
+              }).forall(_ == true)
+            }
 
-          for (
-            s <- i;
-            pM <- permutations.map(permuteColumns _).distinct;
-            if (pM.entries(0)(s.size) == 1);
-            ns = s :+ pM;
-            if verifyPartialAssociativity(ns)
-          ) yield {
-            ns
-          }
+            for (
+              s <- i;
+              pm0 <- permutations.map(permuteColumns _).distinct;
+              if (pm0.entries(0)(s.size) == 1);
+              ns = s :+ pm0;
+              if verifyPartialAssociativity(ns)
+            ) yield {
+              ns
+            }
         }).toList.distinct // these .distinct's are probably performance killers
         for (pm <- permutedMatrices) yield moduleFromStructureCoefficients(pm)
       }).flatten.chooseEquivalenceClassRepresentatives(FusionModules.equivalent_? _)

@@ -79,7 +79,7 @@ private class S3BucketWrapper(map: scala.collection.mutable.Map[String, Either[I
       e match {
         case Left(stream) => {
           try {
-            val result = Source.fromInputStream(stream).getLines.mkString
+            val result = Source.fromInputStream(stream).getLines.mkString("\n")
             stream.close
             result
           } catch {
@@ -194,6 +194,16 @@ private class S3BucketStreaming(val s3Service: StorageService, val bucket: Strin
     keysWithPrefix("")
   }
 
+  override def size = {
+    s3Service.listObjects(bucket).length
+  }
+  
+  override def clear = {
+    for(so <- s3Service.listObjects(bucket).par) {
+      s3Service.deleteObject(bucket, so.getKey())
+    }
+  }
+  
   override def iterator: Iterator[(String, Left[InputStream, Array[Byte]])] = {
     val keys = try {
       (s3Service.listObjects(bucket) map { _.getKey() }).iterator

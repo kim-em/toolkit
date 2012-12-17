@@ -16,7 +16,7 @@ trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] wit
   }
 
   def composeAsFunctions(p: Polynomial[A], q: Polynomial[A]): Polynomial[A] = {
-    add(p.terms map { case (e, a) => scalarMultiply(a, power(q, e)) })
+    sum(p.terms map { case (e, a) => scalarMultiply(a, power(q, e)) })
   }
 
   def formalDerivative(p: Polynomial[A]): Polynomial[A] = {
