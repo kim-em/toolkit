@@ -44,9 +44,9 @@ object BuildSettings {
   import Dependencies._
 
   val buildOrganization = "net.tqft"
-  val buildVersion = "0.1.8"
-  val buildScalaVersion = "2.10.0-RC3"
-  val buildCrossScalaVersions = Seq("2.9.2", "2.10.0-RC3")
+  val buildVersion = "0.1.9"
+  val buildScalaVersion = "2.9.2"
+  val buildCrossScalaVersions = Seq("2.9.2", "2.10.0")
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -58,8 +58,8 @@ object BuildSettings {
     libraryDependencies += {
         val (scalatestVersion, scalatestScalaVersion) = buildScalaVersion match {
                 case sv if sv.startsWith("2.9") => ("2.0.M4", "2.9.2")
-                case sv if sv.startsWith("2.10") => ("1.9-2.10.0-M6-B2", "2.10.0-M6")
-                case sv if sv.startsWith("2.11") => ("1.9-2.10.0-M6-B2", "2.10.0-M6")
+                case sv if sv.startsWith("2.10") => ("1.9-2.10.0-M7-B1", "2.10.0-M7")
+                case sv if sv.startsWith("2.11") => ("1.9-2.10.0-M7-B1", "2.10.0-M7")
         }
         ("org.scalatest" % ("scalatest_" + scalatestScalaVersion) % scalatestVersion % "test" )
     },
