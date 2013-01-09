@@ -7,6 +7,8 @@ import net.tqft.toolkit.permutations.Permutation
 import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.modules._
+import net.tqft.toolkit.algebra.graphs.Graph
+import net.tqft.toolkit.algebra.graphs.ColouredGraph
 
 trait FiniteDimensionalFreeModuleOverRig[A] extends ModuleOverRig[A, Seq[A]] {
   def coefficients: Rig[A]
@@ -61,6 +63,18 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
   def globalDimensionLowerBound(implicit ev: A =:= Int): Double = {
     regularModule.globalDimensionLowerBound
+  }
+
+  def graphEncoding: ColouredGraph[String] = {
+    new ColouredGraph[String] {
+      override val vertices = (Seq.fill(rank)("A") ++ Seq.fill(rank)("B") ++ Seq.fill(rank)("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map(_.toString)).toIndexedSeq
+      override val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
+        Set(Set(a, 3 * rank + a * rank * rank + b * rank + c), Set(b + rank, 3 * rank + a * rank * rank + b * rank + c), Set(c + 2 * rank, 3 * rank + a * rank * rank + b * rank + c))
+      }).flatten ++ (for (i <- 0 until rank) yield {
+        Set(Set(i, rank + i), Set(i, 2 * rank + i), Set(rank + i, 2 * rank + i))
+      }).flatten
+
+    }
   }
 
   trait FusionModule extends FiniteDimensionalFreeModuleOverRig[A] { fm =>
