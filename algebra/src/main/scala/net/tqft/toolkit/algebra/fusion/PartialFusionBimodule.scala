@@ -8,6 +8,8 @@ import net.tqft.toolkit.algebra.diophantine.BoundedDiophantineSolver
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import scala.collection.parallel.ParIterable
 
+// this is probably all useless...
+
 trait PartialFusionBimodule {
   def depth: Int
 
