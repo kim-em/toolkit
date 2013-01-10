@@ -50,3 +50,4 @@ object Fields extends HomomorphismCategory[Field] {
 }
 
 object Rationals extends Fields.OrderedFieldOfFractions(Integers)
+object BigRationals extends Fields.OrderedFieldOfFractions(BigIntegers)
