@@ -1,0 +1,10 @@
+.DS_Store
+
+.cache
+.classpath
+.settings/org.scala-ide.sdt.core.prefs
+
+target
+lib_managed
+project/boot
+bin
