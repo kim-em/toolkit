@@ -305,11 +305,11 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     val k = conjugacyClasses.size
     implicit val Q = NumberField.cyclotomic[Fraction[Int]](exponent)
 
-    def pairing(x: Seq[Polynomial[Fraction[Int]]], y: Seq[Polynomial[Fraction[Int]]]) = {
+    def pairing(x: Seq[Polynomial[Fraction[Int]]], y: Seq[Polynomial[Fraction[Int]]]): Polynomial[Fraction[Int]] = {
       Q.quotientByInt(Q.sum((x zip y zip conjugacyClasses.map(_.size)).map({ p => Q.multiplyByInt(Q.multiply(p._1._1, p._1._2), p._2) })), finiteGroup.size)
     }
 
-    def lower(p: Polynomial[Fraction[Int]]) = {
+    def lower(p: Polynomial[Fraction[Int]]): Int = {
       require(p == Q.zero || p.maximumDegree == Some(0))
       val c = p.constantTerm
       require(c.denominator == 1)
@@ -322,7 +322,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     (for (i <- (0 until k).par) yield {
       FiniteGroup.info("Computing tensor product multiplicities (" + i + ", *)")
       (for (j <- (0 until k).par) yield {
-        val product = (characters(i) zip characters(j)).map({ p => Q.multiply(p._1, p._2) }) map (Q.bar _)
+        val product = (characters(i) zip characters(j)).map({ x => Q.multiply(x._1, x._2) }) map (Q.bar _)
         for (c <- characters) yield lower(pairing(product, c))
       }).seq
     }).seq

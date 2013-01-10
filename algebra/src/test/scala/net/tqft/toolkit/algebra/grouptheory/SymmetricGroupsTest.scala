@@ -32,11 +32,11 @@ class SymmetricGroupsTest extends FlatSpec with ShouldMatchers {
     FiniteGroups.signedPermutationGroup(3).verifyAssociativity should be(true)
   }
   
-  "S_3" should "have the right tensor product multiplicities" in {
-     S_3.tensorProductMultiplicities should equal (List(List(List(1, 0, 0), List(0, 1, 0), List(0, 0, 1)), List(List(0, 1, 0), List(1, 0, 0), List(0, 0, 1)), List(List(0, 0, 1), List(0, 0, 1), List(1, 1, 1))))
-  }
+//  "S_3" should "have the right tensor product multiplicities" in {
+//     S_3.tensorProductMultiplicities should equal (List(List(List(1, 0, 0), List(0, 1, 0), List(0, 0, 1)), List(List(0, 1, 0), List(1, 0, 0), List(0, 0, 1)), List(List(0, 0, 1), List(0, 0, 1), List(1, 1, 1))))
+//  }
   
-  "S_5" should "have the right character table" in {
+  "characters" should "give the right character table for S_5" in {
 //    import language.implicitConversions
     implicit def lift(k: Int): Polynomial[Fraction[Int]] = Polynomial(0 -> (k: Fraction[Int]))
     
@@ -50,5 +50,9 @@ class SymmetricGroupsTest extends FlatSpec with ShouldMatchers {
         Seq(5, -1, 1, -1, -1, 0, 1),
         Seq(6, 0, -2, 0, 0, 1, 0)
         ))
+  }
+  
+  "subgroups" should "return all subgroups" in {
+    S_3.subgroups.size should equal (6)
   }
 }

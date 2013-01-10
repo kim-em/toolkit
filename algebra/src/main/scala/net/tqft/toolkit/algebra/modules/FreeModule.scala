@@ -50,7 +50,7 @@ trait GeneralFreeModuleOverRig[A, B, LC <: LinearCombo[A, B]] extends ModuleOver
   override def add(x: LC, y: LC) = {
     simplify(x.terms ++ y.terms)
   }
-  override def sum(xs: GenIterable[LC]) = simplify(xs.flatMap(_.terms).seq)
+  override def sum(xs: GenIterable[LC]) = simplify(xs.toSeq.flatMap(_.terms).seq)
 
   def zero = wrap(Nil)
 }

@@ -8,7 +8,7 @@ import scala.collection.GenIterable
 // Fixed by Paul Phillips, c.f. https://issues.scala-lang.org/browse/SI-6301 but hasn't hit 2.10 yet.
 trait AdditiveSemigroup[A] {
   def add(x: A, y: A): A
-  def add(x0: A, x1: A*): A = x1.fold(x0)(add _)
+  final def add(x0: A, x1: A*): A = x1.fold(x0)(add _)
 }
 
 // TODO should have
