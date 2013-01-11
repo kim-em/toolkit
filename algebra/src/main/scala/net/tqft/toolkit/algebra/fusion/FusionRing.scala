@@ -65,16 +65,25 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     regularModule.globalDimensionLowerBound
   }
 
-  def graphEncoding: ColouredGraph[String] = {
+  private def graphEncoding(fixingFirstNObjects: Int = 1): ColouredGraph[String] = {
     new ColouredGraph[String] {
-      override val vertices = (Seq.fill(rank)("A") ++ Seq.fill(rank)("B") ++ Seq.fill(rank)("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map(_.toString)).toIndexedSeq
+      override def numberOfVertices = 3 * rank + rank * rank * rank
+      def labels(t: String) = (for (i <- 0 until fixingFirstNObjects) yield t + i) ++ Seq.fill(rank - fixingFirstNObjects)(t)
+      override val vertices = (labels("A") ++ labels("B") ++ labels("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map(_.toString)).toIndexedSeq
       override val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
         Set(Set(a, 3 * rank + a * rank * rank + b * rank + c), Set(b + rank, 3 * rank + a * rank * rank + b * rank + c), Set(c + 2 * rank, 3 * rank + a * rank * rank + b * rank + c))
       }).flatten ++ (for (i <- 0 until rank) yield {
         Set(Set(i, rank + i), Set(i, 2 * rank + i), Set(rank + i, 2 * rank + i))
       }).flatten
-
     }
+  }
+
+  def canonicalRelabelling(fixingFirstNObjects: Int = 1): FusionRing[A] = {
+    import net.tqft.toolkit.algebra.graphs.dreadnaut
+    import net.tqft.toolkit.permutations.Permutations._
+    val labelling = dreadnaut.canonicalLabelling(graphEncoding(fixingFirstNObjects)).take(rank)
+    val inverse = labelling.inverse
+    FusionRing(inverse.permute(structureCoefficients.map(m => Matrix(rank, inverse.permute(m.entries.map(r => inverse.permute(r)))))))(coefficients)
   }
 
   trait FusionModule extends FiniteDimensionalFreeModuleOverRig[A] { fm =>
