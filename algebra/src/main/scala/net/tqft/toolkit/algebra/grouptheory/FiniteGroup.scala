@@ -225,7 +225,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       for (i <- 0 until k) yield for (j <- 0 until k) yield modP.quotient(omega(i)(j) * degrees(i), conjugacyClasses(j).size)
     }
 
-    implicit val modP = Mod(preferredPrime)
+    val modP = Mod(preferredPrime)
 
     val cyclotomicNumbers = NumberField.cyclotomic[Fraction[Int]](exponent)
     val zeta = Polynomial.identity[Fraction[Int]]
