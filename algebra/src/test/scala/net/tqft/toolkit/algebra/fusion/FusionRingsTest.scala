@@ -9,6 +9,10 @@ import org.scalatest.FlatSpec
 class FusionRingsTest extends FlatSpec with ShouldMatchers {
 
   "withObject" should "correctly find all fusion rings with a given object" in {
-	  FusionRings.withObject(FusionRings.Examples.AH1.structureCoefficients(1), Some(FusionRings.Examples.AH1)) should have size(1)
+	  FusionRings.withObject(FusionRings.Examples.AH1.structureCoefficients(1)/*, Some(FusionRings.Examples.AH1)*/) should have size(1)
+  }
+  
+  "canonicalRelabelling" should "not break associativity" in {
+    FusionRings.Examples.AH1.canonicalRelabelling().verifyAssociativity should be (true)
   }
 }
