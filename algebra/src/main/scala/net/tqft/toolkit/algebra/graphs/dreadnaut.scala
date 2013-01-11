@@ -30,5 +30,6 @@ trait dreadnaut {
 
 object dreadnaut extends dreadnaut {
   override val dreadnautPath = "whereis dreadnaut" !!;
-  require(("echo n=3 g 1;2;0; cx" #| dreadnautPath !!).startsWith("(1 2)"))
+  require(dreadnautPath.nonEmpty, "There doesn't appear to be a copy of dreadnaut on the $PATH.")
+  require(("echo n=3 g 1;2;0; cx" #| dreadnautPath !!).startsWith("(1 2)"), "The copy of dreadnaut at " + dreadnautPath + " doesn't seem to be working.")
 }
