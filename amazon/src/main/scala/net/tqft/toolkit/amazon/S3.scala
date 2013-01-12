@@ -40,6 +40,15 @@ trait S3 {
 trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
   def s3Service: StorageService
   def bucket: String
+
+  override def toString = "https://s3.amazonaws.com/" + bucket
+  override def hashCode = toString.hashCode
+
+  override def equals(other: Any) = other match {
+    case other: S3Bucket[_] => bucket == other.bucket
+    case _ => false
+  }
+
   def keysWithPrefix(prefix: String, queryChunkSize: Int = 1000) = {
     val chunks = try {
       def initial = s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, null)
@@ -146,11 +155,6 @@ private class S3BucketStreamingGZIP(s3Service: StorageService, val bucket: Strin
 private class S3BucketStreaming(val s3Service: StorageService, val bucket: String) extends S3Bucket[Either[InputStream, Array[Byte]]] {
   val s3bucket = s3Service.getOrCreateBucket(bucket)
 
-  override def hashCode = s3bucket.toString.hashCode
-  override def equals(other: Any) = other match {
-    case other: S3Bucket[_] => bucket == other.bucket
-  }
-
   override def contains(key: String) = {
     try {
       s3Service.isObjectInBucket(bucket, key)
@@ -197,13 +201,13 @@ private class S3BucketStreaming(val s3Service: StorageService, val bucket: Strin
   override def size = {
     s3Service.listObjects(bucket).length
   }
-  
+
   override def clear = {
-    for(so <- s3Service.listObjects(bucket).par) {
+    for (so <- s3Service.listObjects(bucket).par) {
       s3Service.deleteObject(bucket, so.getKey())
     }
   }
-  
+
   override def iterator: Iterator[(String, Left[InputStream, Array[Byte]])] = {
     val keys = try {
       (s3Service.listObjects(bucket) map { _.getKey() }).iterator
