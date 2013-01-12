@@ -54,5 +54,6 @@ class SymmetricGroupsTest extends FlatSpec with ShouldMatchers {
   
   "subgroups" should "return all subgroups" in {
     S_3.subgroups.size should equal (6)
+    S_4.subgroups.size should equal (30)
   }
 }
