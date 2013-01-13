@@ -47,8 +47,8 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
           (innerProduct(multiply(x, y), z), innerProduct(y, multiply(duality.permute(x), z))))
       }).flatten
   }
-  def duality: Permutation = {
-    structureCoefficients.map(_.entries.indexWhere(_.head == coefficients.one)).toIndexedSeq.ensuring({ _.forall(_ != -1) })
+  lazy val duality: IndexedSeq[Int] = {
+    (for(x <- basis) yield basis.indexWhere(y => multiply(x, y).head == coefficients.one)).ensuring(!_.contains(-1))
   }
 
   def verifyAssociativity = associativityConstraints.forall(p => p._1 == p._2)
@@ -65,10 +65,10 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     regularModule.globalDimensionLowerBound
   }
 
-  private def graphEncoding(fixingFirstNObjects: Int = 1): ColouredGraph[String] = {
+  private def graphEncoding(colouring: Seq[Int]): ColouredGraph[String] = {
     new ColouredGraph[String] {
       override def numberOfVertices = 3 * rank + rank * rank * rank
-      def labels(t: String) = (for (i <- 0 until fixingFirstNObjects) yield t + i) ++ Seq.fill(rank - fixingFirstNObjects)(t)
+      def labels(t: String) = for(i <- colouring) yield t + i
       override val vertices = (labels("A") ++ labels("B") ++ labels("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map(_.toString)).toIndexedSeq
       override val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
         Set(Set(a, 3 * rank + a * rank * rank + b * rank + c), Set(b + rank, 3 * rank + a * rank * rank + b * rank + c), Set(c + 2 * rank, 3 * rank + a * rank * rank + b * rank + c))
@@ -78,14 +78,26 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     }
   }
 
-  def canonicalRelabelling(fixingFirstNObjects: Int = 1): FusionRing[A] = {
+  def automorphisms(colouring: Seq[Int] = Seq.fill(rank)(0)) = {
+    import net.tqft.toolkit.algebra.graphs.dreadnaut
+    dreadnaut.automorphismGroup(graphEncoding(colouring))
+  }
+  
+  def canonicalRelabelling(colouring: Seq[Int] = Seq.fill(rank)(0)): FusionRing[A] = {
     import net.tqft.toolkit.algebra.graphs.dreadnaut
     import net.tqft.toolkit.permutations.Permutations._
-    val labelling = dreadnaut.canonicalLabelling(graphEncoding(fixingFirstNObjects)).take(rank)
+    val labelling = dreadnaut.canonicalLabelling(graphEncoding(colouring)).take(rank)
     val inverse = labelling.inverse
     FusionRing(inverse.permute(structureCoefficients.map(m => Matrix(rank, inverse.permute(m.entries.map(r => inverse.permute(r)))))))(coefficients)
   }
 
+  def depthWithRespectTo(x: Seq[A]): Seq[Int] = {
+    val objectsAtDepth = for(k <- (0 until rank).toStream) yield power(x, k).zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i})
+    for(i <- 0 until rank) yield {
+      objectsAtDepth.indexWhere(_.contains(i))
+    }
+  }
+  
   trait FusionModule extends FiniteDimensionalFreeModuleOverRig[A] { fm =>
     override def coefficients = fr.coefficients
 
@@ -164,10 +176,8 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       }
     }
 
-    def verifyAssociativity = associativityConstraints.map(p => p._1 == p._2).reduce(_ && _)
-    def verifyAdmissibility = admissibilityConstraints.map(p => p._1 == p._2).reduce(_ && _)
-
-    //    def asMatrix(x: Seq[A]) = new Matrix(rank, for (b <- basis) yield act(x, b))
+    def verifyAssociativity = associativityConstraints.forall(p => p._1 == p._2)
+    def verifyAdmissibility = admissibilityConstraints.forall(p => p._1 == p._2)
 
     def asMatrix(x: Seq[A]) = {
       Matrix(rank, for (i <- 0 until fr.rank) yield for (j <- 0 until rank) yield {
@@ -228,7 +238,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   }
 
   def moduleFromStructureCoefficients(matrices: Seq[Matrix[A]]): FusionModule = {
-    (new StructureCoefficientFusionModule(matrices)) //.ensuring(_.structureCoefficients == matrices)
+    (new StructureCoefficientFusionModule(matrices))
   }
 
   trait RegularModule extends FusionModule {
@@ -241,7 +251,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 }
 
 object FusionRing {
-  def apply[A: Rig](multiplicities: Seq[Matrix[A]]): FusionRing[A] = {
+  def apply[A: Rig ](multiplicities: Seq[Matrix[A]]): FusionRing[A] = {
     val result = new StructureCoefficientFusionRing(multiplicities)
     result
   }

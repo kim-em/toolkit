@@ -19,7 +19,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G, B], G, B] { this: A =>
 
   // in each problem instance, we will specify what the upper and lower objects actually look like
   type Lower <: {
-    val result: A
+    def result: A
   }
   type Upper <: {
     val result: A
