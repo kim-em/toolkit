@@ -50,6 +50,22 @@ object FusionRings {
     }
   }
 
+//  (xn, y) = (x, yn) = (y^* x, n) = (n y^*, x^*)
+  
+  def withAnotherSelfDualObject(ring: FusionRing[Int], depths: Seq[Int], globalDimensionLimit: Double): Iterator[FusionRing[Int]] = {
+    val rank = ring.rank
+    type V = (Int, Int)
+
+    implicit val polynomialAlgebra = implicitly[MultivariablePolynomialAlgebra[Int, V]]
+    val variableRing = FusionRing(???)
+    
+    // V(i,j) = (n x_i, x_j)
+    
+//    val depthConditions = for(i <- 0 until rank; j <- 0 until rank; if depths(i))
+    val associativityConditions = variableRing.associativityConstraints.map(p => polynomialAlgebra.subtract(p._1, p._2))
+    ???
+  }
+
   object Examples {
     val H1: FusionRingWithDimensions = {
       val haagerup4Multiplicities: Seq[Matrix[Int]] =
@@ -71,7 +87,7 @@ object FusionRings {
           Polynomial(0 -> Fraction(3, 2), 1 -> Fraction(1, 2)),
           Polynomial(0 -> Fraction(1, 2), 1 -> Fraction(1, 2)))
       }
-      FusionRing(haagerup4Multiplicities, haagerup4FieldGenerator, haagerup4FieldGeneratorApproximation, haagerup4FieldGeneratorEpsilon, haagerup4Dimensions)//.ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+      FusionRing(haagerup4Multiplicities, haagerup4FieldGenerator, haagerup4FieldGeneratorApproximation, haagerup4FieldGeneratorEpsilon, haagerup4Dimensions) //.ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
     }
 
     val AHFieldGenerator: Polynomial[Int] = {
@@ -99,7 +115,7 @@ object FusionRings {
           Polynomial(0 -> Fraction(4, 1), 1 -> Fraction(1, 1)),
           Polynomial(0 -> Fraction(11, 2), 1 -> Fraction(3, 2)))
       }
-      FusionRing(AH1Multiplicities, AHFieldGenerator, AHFieldGeneratorApproximation, AHFieldGeneratorEpsilon, AH1Dimensions)//.ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+      FusionRing(AH1Multiplicities, AHFieldGenerator, AHFieldGeneratorApproximation, AHFieldGeneratorEpsilon, AH1Dimensions) //.ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
     }
     val AH2: FusionRingWithDimensions = {
       val multiplicityString = """0 0 0 0 0 0 0 0 
@@ -176,9 +192,9 @@ object FusionRings {
 
       import net.tqft.toolkit.Extractors.Int
       val parsedMultiplicities: Seq[Seq[Seq[Int]]] = multiplicityString.split("\n\n").toSeq.map(p => p.split("\n").toSeq.map(_.split(" ").toSeq.collect({ case Int(n) => n })))
-      
-      val dualData = Seq(0,1,2,4,3,5,6,7,8)
-      
+
+      val dualData = Seq(0, 1, 2, 4, 3, 5, 6, 7, 8)
+
       val AH2Multiplicities: Seq[Matrix[Int]] = Matrix.identityMatrix[Int](9) +: (for (k <- 0 until 8) yield {
         val m = Matrix(8, parsedMultiplicities.map(_(k)).transpose)
         val firstRow = Seq.fill(8)(0).updated(k, 1)
@@ -275,8 +291,8 @@ object FusionRings {
 
       import net.tqft.toolkit.Extractors.Int
       val parsedMultiplicities: Seq[Seq[Seq[Int]]] = multiplicityString.split("\n\n").toSeq.map(p => p.split("\n").toSeq.map(_.split(" ").toSeq.collect({ case Int(n) => n })))
-      val dualData = Seq(0,1,2,4,3,5,6,7,8)
-      
+      val dualData = Seq(0, 1, 2, 4, 3, 5, 6, 7, 8)
+
       val AH3Multiplicities: Seq[Matrix[Int]] = Matrix.identityMatrix[Int](9) +: (for (k <- 0 until 8) yield {
         val m = Matrix(8, parsedMultiplicities.map(_(k)).transpose)
         val firstRow = Seq.fill(8)(0).updated(k, 1)

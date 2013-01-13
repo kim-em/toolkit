@@ -44,7 +44,7 @@ class Matrix[B](
 
   def takeColumns(columns: Seq[Int]) = new Matrix(columns.size, entries map { row => columns map { i => row(i) } })
   def dropColumns(columns: Seq[Int]) = takeColumns((0 until numberOfColumns).toList filterNot (columns contains _))
-
+  
   def takeRows(rows: Seq[Int]) = new Matrix(numberOfColumns, rows map { i => entries(i) })
   def dropRows(rows: Seq[Int]) = takeRows((0 until numberOfRows).toList filterNot (rows contains _))
 
