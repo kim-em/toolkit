@@ -4,7 +4,7 @@ import net.tqft.toolkit.algebra.graphs.Graph
 
 // An incomplete example, just to make sure the framework is usable. 
 case class TriangleFreeGraph(numberOfVertices: Int, edges: Set[Set[Int]]) extends Graph with CanonicalGeneration[TriangleFreeGraph, IndexedSeq[Int], Graph] {
-//  import net.tqft.toolkit.permutations.Permutations._
+  import net.tqft.toolkit.permutations.Permutations._
   import net.tqft.toolkit.algebra.graphs._
   override lazy val automorphisms = dreadnaut.automorphismGroup(this)
   override implicit val ordering: Ordering[Graph] = {
@@ -36,15 +36,15 @@ case class TriangleFreeGraph(numberOfVertices: Int, edges: Set[Set[Int]]) extend
       (for (s <- independentSubsetsOf(0 until numberOfVertices toList)) yield Upper(s.toSet)).toSet
     }
     override def act(g: IndexedSeq[Int], upper: Upper) = {
-//      val h = g.inverse
-      Upper(upper.independentVertices.map(g))
+      val h = g.inverse
+      Upper(upper.independentVertices.map(h))
     }
   }
   override def lowerObjects = new automorphisms.Action[Lower] {
     override def elements = (for (k <- 0 until numberOfVertices) yield Lower(k)).toSet
     override def act(g: IndexedSeq[Int], lower: Lower) = {
-//      val h = g.inverse
-      Lower(g(lower.k))
+      val h = g.inverse
+      Lower(h(lower.k))
     }
   }
 }
