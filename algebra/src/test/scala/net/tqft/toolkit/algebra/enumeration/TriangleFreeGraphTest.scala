@@ -1,21 +1,21 @@
 package net.tqft.toolkit.algebra.enumeration
 
-
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import net.tqft.toolkit.algebra.graphs.Graph
 
-
 @RunWith(classOf[JUnitRunner])
 class TriangleFreeGraphTest extends FlatSpec with ShouldMatchers {
 
-  // Giving the wrong answer! 11 instead of 14.
-  val g0 = TriangleFreeGraph(1, Set.empty)
-  val graphs = g0.descendants(_.numberOfVertices <= 5).toSeq
-  for(g <- graphs) println(g)
-  println(graphs.groupBy(_.numberOfVertices).mapValues(_.size).toSeq.sortBy(_._1))
-  
-  
+  "descendants" should "enumerate all triangle free graphs with up to 8 vertices" in {
+    val n = 8
+    
+    val g0 = TriangleFreeGraph(1, Set.empty)
+    val graphs = g0.descendants(n - _.numberOfVertices).toStream
+    for (g <- graphs) println(g)
+    graphs.groupBy(_.numberOfVertices).mapValues(_.size).toSeq.sortBy(_._1).map(_._2) should equal(List(1, 2, 3, 7, 14, 38, 107, 410, 1897, 12172, 105071, 1262180, 20797002, 467871369).take(n))
+  }
+
 }

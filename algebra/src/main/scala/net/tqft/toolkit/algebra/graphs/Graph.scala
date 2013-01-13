@@ -1,18 +1,28 @@
 package net.tqft.toolkit.algebra.graphs
 
-import net.tqft.toolkit.permutations.Permutations
+import net.tqft.toolkit.permutations.Permutations._
 
 trait Graph {
   def numberOfVertices: Int
   def edges: Traversable[Set[Int]]
 
+  override def toString = "Graph(" + numberOfVertices + ", " + edges + ")"
+  override def hashCode = (numberOfVertices, edges).hashCode
+  override def equals(other: Any) = {
+    other match {
+      case other: Graph => numberOfVertices == other.numberOfVertices && edges == other.edges
+      case _ => false
+    }
+  }
+
   def toDreadnautString: String = {
     def adjacentTo(i: Int) = for (e <- edges; if e.contains(i); j <- (e - i)) yield j
     "n=" + numberOfVertices + " g " + (for (i <- 0 until numberOfVertices) yield adjacentTo(i).mkString(" ")).mkString("", "; ", ". ")
   }
-  
+
   def relabel(labels: IndexedSeq[Int]): Graph = {
-    Graph(numberOfVertices, edges.map(_.map(labels)))
+    val p = labels.inverse
+    Graph(numberOfVertices, edges.map(_.map(p)))
   }
 }
 
@@ -22,17 +32,41 @@ object Graph {
     val _edges = edges
     new Graph {
       override def numberOfVertices = _numberOfVertices
-      override def edges = _edges}
+      override def edges = _edges
     }
   }
+}
+
+object Graphs {
+  def cyclic(n: Int): Graph = {
+    Graph(n, for (i <- 0 until n) yield Set(i, (i + 1) % n))
+  }
+  def complete(n: Int): Graph = {
+    Graph(n, for (i <- 0 until n; j <- i + 1 until n) yield Set(i, j))
+  }
+  def onNVertices(n: Int): Iterator[Graph] = {
+    import net.tqft.toolkit.collections.Subsets._
+    val allEdges = for (i <- 0 until n; j <- i + 1 until n) yield Set(i, j)
+    for (edges <- allEdges.subsets) yield Graph(n, edges)
+  }
+}
 
 trait ColouredGraph[V] extends Graph {
   def vertices: IndexedSeq[V]
 
+  override def toString = "ColouredGraph(" + numberOfVertices + ", " + edges + ", " + vertices + ")"
+  override def hashCode = (numberOfVertices, edges, vertices).hashCode
+  override def equals(other: Any) = {
+    other match {
+      case other: ColouredGraph[_] => numberOfVertices == other.numberOfVertices && edges == other.edges && vertices == other.vertices
+      case _ => false
+    }
+  }
+
   override def toDreadnautString: String = {
     super.toDreadnautString + " f=" + vertices.distinct.map(v => (for ((w, i) <- vertices.zipWithIndex; if v == w) yield i).mkString(",")).mkString("[", "|", "]")
   }
-  
+
   override def relabel(labels: IndexedSeq[Int]): ColouredGraph[V] = {
     import net.tqft.toolkit.permutations.Permutations._
     ColouredGraph(numberOfVertices, super.relabel(labels).edges, labels.inverse.permute(vertices))

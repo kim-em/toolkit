@@ -3,6 +3,8 @@ package net.tqft.toolkit.algebra.grouptheory
 import net.tqft.toolkit.algebra._
 import scala.collection.GenSet
 
+// TODO eliminate this in favour of the inner version
+
 trait GroupAction[A, B] {
   def act(a: A, b: B): B
   def orbits(generators: Set[A], objects: Set[B]): Set[Orbit[A, B]] = {
