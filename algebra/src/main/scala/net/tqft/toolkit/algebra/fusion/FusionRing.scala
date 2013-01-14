@@ -30,6 +30,15 @@ trait FiniteDimensionalFreeModule[A] extends FiniteDimensionalFreeModuleOverRig[
 // Usually A = Int, for a concrete fusion ring. We allow other possibilities so we can write fusion solvers, etc.
 trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A]] { fr =>
 
+  override lazy val hashCode = structureCoefficients.hashCode
+  override def equals(other: Any) = {
+    other match {
+      case other: FusionRing[A] => structureCoefficients == other.structureCoefficients
+      case _ => false
+    }
+  }
+  override def toString = "FusionRing(" + structureCoefficients.map(_.entries) + ")"
+  
   override def fromInt(x: Int) = coefficients.fromInt(x) +: Seq.fill(rank - 1)(coefficients.zero)
   override val one = fromInt(1)
 
@@ -107,6 +116,10 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     val graphAutomorphisms = dreadnaut.automorphismGroup(graphEncoding(colouring))
     val generators = graphAutomorphisms.generators.map(_.take(rank))
 
+    for(g <- generators) {
+      require(this == relabel(g))
+    }
+    
     FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(generators)
   }
 
@@ -182,18 +195,25 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       } else {
         val matrices = Matrices.over[Int]
         val A = x.zip(structureCoefficients).map(p => matrices.scalarMultiply(p._1, p._2.mapEntries(xi => xi: Int))).reduce(matrices.add)
-        require(A.entries.flatten.forall(_ >= 0))
-        require(A.entries.flatten.exists(_ > 0))
+//        require(A.entries.flatten.forall(_ >= 0))
+//        require(A.entries.flatten.exists(_ > 0))
         val AAt = matrices.compose(A, A.transpose)
         val estimate = FrobeniusPerronEigenvalues.estimate(AAt)
-        require(estimate > 0.999)
+//        require(estimate > 0.999)
         val result = scala.math.sqrt(estimate - 0.0001)
         result
       }
     }
 
+    private lazy val `Sum VV*` = {
+      sum(for(i <- 0  until rank) yield {
+        multiply(basis(i), basis(duality(i)))
+      })
+    }
+    
     def globalDimensionLowerBound(implicit ev: A =:= Int): Double = {
-      (for (x <- basis; d = dimensionLowerBounds(x.map(xi => xi: Int))) yield d * d).sum
+      // FIXME just use FrobeniusPerronEigenvalues.estimate here
+      dimensionLowerBounds(`Sum VV*`.map(xi => xi: Int))
     }
 
     def associativityConstraints = (for (x <- fr.basis.iterator; y <- fr.basis; z <- basis) yield act(x, act(y, z)).zip(act(fr.multiply(x, y), z))).flatten
