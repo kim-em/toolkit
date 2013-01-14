@@ -10,6 +10,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials
 
+  // TODO make boundary compulsory, and don't return a list of unsolved equations (because we always case bash)
   def solve[V: Ordering](polynomials: GenTraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): (Iterable[Map[V, Int]], Iterable[Seq[MultivariablePolynomial[Int, V]]]) = {
 
     val mentioned: scala.collection.mutable.Set[MultivariablePolynomial[Int, V]] = scala.collection.mutable.Set()
