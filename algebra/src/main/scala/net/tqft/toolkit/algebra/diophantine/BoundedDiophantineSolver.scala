@@ -10,8 +10,8 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials
 
-  // TODO make boundary compulsory, and don't return a list of unsolved equations (because we always case bash)
-  def solve[V: Ordering](polynomials: GenTraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): (Iterable[Map[V, Int]], Iterable[Seq[MultivariablePolynomial[Int, V]]]) = {
+  // TODO make boundary compulsory
+  def solve[V: Ordering](polynomials: TraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): Iterable[Map[V, Int]] = {
 
     val mentioned: scala.collection.mutable.Set[MultivariablePolynomial[Int, V]] = scala.collection.mutable.Set()
 
@@ -58,12 +58,12 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           val newSubstitutions = substitutions.mapValues(q => polynomialAlgebra.substitute(Map(v -> p))(q))
           val (toReprocess, toKeep) = equations.partition(_.variables.contains(v))
 
-          Equations(newSubstitutions + (v -> p), toKeep, caseBashProgress).addEquations(toReprocess.par.map(polynomialAlgebra.substitute(Map(v -> p))))
+          Equations(newSubstitutions + (v -> p), toKeep, caseBashProgress).addEquations(toReprocess.map(polynomialAlgebra.substitute(Map(v -> p))))
         }
       }
       def recordCaseBashProgress(caseIndex: Int, totalCases: Int) = copy(caseBashProgress = caseBashProgress :+ (caseIndex, totalCases))
-      def addEquations(qs: GenTraversableOnce[P]): Option[Equations] = {
-        qs /*.seq.sortBy(p => (p.totalDegree, p.terms.size))*/ .foldLeft[Option[Equations]](Some(this))({ (o, e) => o.flatMap(_.addEquation(e)) })
+      def addEquations(qs: TraversableOnce[P]): Option[Equations] = {
+        qs.foldLeft[Option[Equations]](Some(this))({ (o, e) => o.flatMap(_.addEquation(e)) })
       }
       def addEquation(q: P): Option[Equations] = {
         val p = polynomialAlgebra.substitute(substitutions)(q).divideByCoefficientGCD
@@ -277,8 +277,8 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
 
       def caseBashOneStep(v: V): Seq[Equations] = {
         val c = cases(v)
-        (for (k <- c.par; r <- recordCaseBashProgress(k, c.size).addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield {
-          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
+        (for (k <- c/*.par*/; r <- recordCaseBashProgress(k, c.size).addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield {
+//          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
           r
         }).seq
       }
@@ -286,7 +286,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
         val remainingVariables = variables.filterNot(substitutions.keySet.contains)
         if (remainingVariables.nonEmpty) {
           val v = remainingVariables.minBy(v => cases(v).size)
-          (for (c1 <- caseBashOneStep(v).par; c2 <- c1.caseBash) yield c2).seq
+          (for (c1 <- caseBashOneStep(v)/*.par*/; c2 <- c1.caseBash) yield c2).seq
         } else {
           List(this)
         }
@@ -295,12 +295,11 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
 
     val iterable = Equations(Map.empty, Seq.empty, Seq.empty).addEquations(polynomials).flatMap(_.solveLinearEquations) match {
       case None => {
-        //        ???
         Iterable.empty
       }
       case Some(equations) => equations.caseBash
     }
 
-    (iterable.map(_.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm)), Nil)
+    iterable.map(_.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))
   }
 }

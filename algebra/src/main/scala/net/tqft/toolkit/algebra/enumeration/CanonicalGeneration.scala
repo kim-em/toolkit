@@ -32,6 +32,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G, B], G, B] { this: A =>
 
   // now the actual algorithm
   def children = {
+    println("Looking for children of " + this)
 //    info("computing children of " + this)
     val orbits = upperObjects.orbits
 //    info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))

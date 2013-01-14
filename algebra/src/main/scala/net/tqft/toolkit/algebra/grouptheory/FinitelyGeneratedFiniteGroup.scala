@@ -9,9 +9,9 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
   trait Action[B] extends super.Action[B] { action =>
     def elements: Set[B]
     def orbits: Set[Orbit[A, B]] = {
-//      val orbitMap = scala.collection.mutable.Map[B, Set[B]]()
-
-      
+//      for(a <- elements; g <- generators) {
+//        require(elements.contains(act(g, a)))
+//      }
       
       class O(val representative: B) extends Orbit[A, B] {
         override def stabilizer = ???
@@ -22,12 +22,13 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
           if (newestElements.isEmpty) {
             elements
           } else {
-            val allElements = elements ++ newestElements;
+            val allElements = (elements ++ newestElements).distinct;
             extendElements(allElements, (for (b <- newestElements; a <- generators) yield act(a, b)).distinct.filterNot(allElements.contains))
           }
         }
       }
 
+      @scala.annotation.tailrec
       def extractOrbits(objects: Set[B], orbits: Set[Orbit[A, B]]): Set[Orbit[A, B]] = {
         if (objects.isEmpty) {
           orbits

@@ -38,11 +38,7 @@ object FusionRings {
     // we don't use the identity constraints here, because we've taken care of that above
     val polynomials = (variableRing.generalDualityConstraints ++ variableRing.associativityConstraints).map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
     // TODO we should be passing a limit here --- we know the dimensions of all the objects
-    val (solutions, tooHard) = BoundedDiophantineSolver.solve(polynomials, variables, knownSolution = knownSolution)
-    for (th <- tooHard) {
-      for (e <- th) println(e)
-    }
-    require(tooHard.isEmpty)
+    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, knownSolution = knownSolution)
 
     for (solution <- solutions) yield {
       val structureCoefficients = variableStructureCoefficients.map(_.mapEntries({
@@ -107,9 +103,8 @@ object FusionRings {
 
     def limit(values: Map[V, Int]): Boolean = reconstituteRing(values).globalDimensionLowerBound < globalDimensionLimit
 
-    val (solutions, tooHard) = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit _))
-    require(tooHard.isEmpty)
-
+    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit _))
+    
     solutions.map(reconstituteRing)
   }
 

@@ -79,10 +79,8 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     val variables = (fusionModuleUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq) ++ fusionRingUnknowns.flatMap(_.entries).flatten.flatMap(_.variables.toSeq)).distinct
     require(variables.size == otherRank * otherRank * otherRank + leftModule.rank * otherRank * leftModule.rank)
 
-    val (solutions, tooHard) = BoundedDiophantineSolver.solve(
+    val solutions = BoundedDiophantineSolver.solve(
       polynomials, variables, boundary = Some(checkInequalities _), knownSolution = knownSolution)
-
-    require(tooHard.isEmpty)
 
     info("... finished finding commutants with total rank " + otherRank + " and " + otherNumberOfSelfDualObjects + " self-dual objects.")
 
@@ -196,8 +194,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
       FusionBimodule(substitute(leftMultiplication), substitute(leftAction), substitute(rightMultiplication), substitute(rightAction))
     }
 
-    val (solutions, tooHard) = BoundedDiophantineSolver.solve(polynomials, variables)
-    require(tooHard.isEmpty)
+    val solutions = BoundedDiophantineSolver.solve(polynomials, variables)
     for (s <- solutions) yield reconstituteBimodule(s)
   }
 

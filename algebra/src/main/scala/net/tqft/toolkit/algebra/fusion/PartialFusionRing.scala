@@ -5,6 +5,8 @@ import net.tqft.toolkit.algebra.matrices.Matrix
 
 case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int], Seq[Seq[Seq[Int]]]] { pfr =>
 
+  override lazy val hashCode = super.hashCode
+  
   val generator = {
     if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {
       ring.basis(1)
@@ -15,6 +17,7 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
   val depths = ring.depthWithRespectTo(generator)
 
   lazy val automorphisms = ring.automorphisms(depths)
+  
   override val ordering = {
     import net.tqft.toolkit.collections.LexicographicOrdering._
     implicitly[Ordering[Seq[Seq[Seq[Int]]]]]
