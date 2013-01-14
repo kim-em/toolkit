@@ -74,31 +74,33 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
     def inverse: result.Lower
   }
   case object IncreaseDepth extends Upper {
-    override val result = pfr.copy(depth = depth + 1)
+    override lazy val result = pfr.copy(depth = depth + 1)
     override def inverse = result.ReduceDepth
   }
-  case class AddSelfDualObject(m: Matrix[Int]) extends Upper {
-    override val result: PartialFusionRing = ???
+  case class AddSelfDualObject(newRing: FusionRing[Int]) extends Upper {
+    override lazy val result = pfr.copy(ring = newRing)
     override def inverse = result.DeleteSelfDualObject(ring.rank)
   }
-  case class AddDualPairOfObjects(m1: Matrix[Int], m2: Matrix[Int]) extends Upper {
-    override val result: PartialFusionRing = ???
+  case class AddDualPairOfObjects(newRing: FusionRing[Int]) extends Upper {
+    override lazy val result = pfr.copy(ring = newRing)
     override def inverse = result.DeleteDualPairOfObjects(ring.rank)
   }
 
   def upperObjects = new automorphisms.Action[Upper] {
     override def elements = {
-      (if (depth == depths.max) {
+      (if (depth == depths.max && ring.partialAssociativityConstraints(depth + 1, depths).forall(p => p._1 == p._2)) {
         Set(IncreaseDepth)
       } else {
         Set.empty
-      }) ++ ???
+      }) ++
+        FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).map(AddSelfDualObject) ++
+        /* FIXME dual pairs */ Set.empty
     }
     override def act(a: IndexedSeq[Int], b: Upper): Upper = {
       b match {
         case IncreaseDepth => IncreaseDepth
-        case AddSelfDualObject(m) => ???
-        case AddDualPairOfObjects(m1, m2) => ???
+        case AddSelfDualObject(newRing) => AddSelfDualObject(newRing.relabel(a :+ ring.rank))
+        case AddDualPairOfObjects(newRing) => ???
       }
     }
   }

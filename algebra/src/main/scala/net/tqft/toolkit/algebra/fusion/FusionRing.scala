@@ -34,8 +34,21 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   override val one = fromInt(1)
 
   def associativityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis; z <- basis) yield multiply(x, multiply(y, z)).zip(multiply(multiply(x, y), z))).flatten
+  def partialAssociativityConstraints(maxdepth: Int, depths: Seq[Int]) = {
+    val p = basis.zip(depths)
+    (for ((x, dx) <- p.iterator; (y, dy) <- p; (z, dz) <- p) yield {
+      val pairs = multiply(multiply(x, y), z).zip(multiply(x, multiply(y, z)))
+      if (dx + dy < maxdepth && dy + dz < maxdepth) {
+        pairs
+      } else {
+        for ((q, dw) <- pairs.zip(depths); if dw < maxdepth - dx && dw < maxdepth - dz) yield {
+          q
+        }
+      }
+    }).flatten
+  }
   def identityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator) yield Seq(x.zip(multiply(one, x)), x.zip(multiply(x, one)))).flatten.flatten
-  def dualityConstraints(duality: Permutation = duality): Iterator[(A, A)] = {
+  def dualityConstraints(duality: IndexedSeq[Int] = duality): Iterator[(A, A)] = {
     require(duality.size == rank)
     import net.tqft.toolkit.permutations.Permutations._
     (for (x <- basis.iterator; y <- basis) yield {
@@ -47,13 +60,23 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
           (innerProduct(multiply(x, y), z), innerProduct(y, multiply(duality.permute(x), z))))
       }).flatten
   }
-  lazy val duality: IndexedSeq[Int] = {
-    (for(x <- basis) yield basis.indexWhere(y => multiply(x, y).head == coefficients.one)).ensuring(!_.contains(-1))
+  def generalDualityConstraints: Iterator[(A, A)] = {
+    (for (x <- basis.iterator; y <- basis) yield (multiply(x, y).head, multiply(y, x).head)) ++
+      (for (x <- basis.iterator) yield (coefficients.sum(for (y <- basis) yield multiply(x, y).head), coefficients.one)) ++
+      (for (y <- basis.iterator; w <- basis; yw = multiply(y, w).head; if yw != coefficients.zero; x <- basis; z <- basis) yield {
+        (
+          coefficients.multiply(yw, innerProduct(multiply(x, y), z)),
+          coefficients.multiply(yw, innerProduct(x, multiply(z, w))))
+      })
   }
 
   def verifyAssociativity = associativityConstraints.forall(p => p._1 == p._2)
   def verifyIdentity = identityConstraints.forall(p => p._1 == p._2)
-  def verifyDuality(duality: Permutation = duality) = dualityConstraints(duality).forall(p => p._1 == p._2)
+  def verifyDuality(duality: IndexedSeq[Int] = duality) = dualityConstraints(duality).forall(p => p._1 == p._2)
+
+  lazy val duality: IndexedSeq[Int] = {
+    (for (x <- basis) yield basis.indexWhere(y => multiply(x, y).head == coefficients.one)).ensuring(!_.contains(-1))
+  }
 
   def structureCoefficients: Seq[Matrix[A]] = ??? // for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
 
@@ -68,7 +91,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   private def graphEncoding(colouring: Seq[Int]): ColouredGraph[String] = {
     new ColouredGraph[String] {
       override def numberOfVertices = 3 * rank + rank * rank * rank
-      def labels(t: String) = for(i <- colouring) yield t + i
+      def labels(t: String) = for (i <- colouring) yield t + i
       override val vertices = (labels("A") ++ labels("B") ++ labels("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map(_.toString)).toIndexedSeq
       override val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
         Set(Set(a, 3 * rank + a * rank * rank + b * rank + c), Set(b + rank, 3 * rank + a * rank * rank + b * rank + c), Set(c + 2 * rank, 3 * rank + a * rank * rank + b * rank + c))
@@ -80,24 +103,33 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
   def automorphisms(colouring: Seq[Int] = Seq.fill(rank)(0)) = {
     import net.tqft.toolkit.algebra.graphs.dreadnaut
-    dreadnaut.automorphismGroup(graphEncoding(colouring))
+    import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
+    val graphAutomorphisms = dreadnaut.automorphismGroup(graphEncoding(colouring))
+    val generators = graphAutomorphisms.generators.map(_.take(rank))
+
+    FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(generators)
   }
-  
-  def canonicalRelabelling(colouring: Seq[Int] = Seq.fill(rank)(0)): FusionRing[A] = {
-    import net.tqft.toolkit.algebra.graphs.dreadnaut
+
+  def relabel(labelling: IndexedSeq[Int]): FusionRing[A] = {
+    require(labelling.size == rank)
+
     import net.tqft.toolkit.permutations.Permutations._
-    val labelling = dreadnaut.canonicalLabelling(graphEncoding(colouring)).take(rank)
     val inverse = labelling.inverse
     FusionRing(inverse.permute(structureCoefficients.map(m => Matrix(rank, inverse.permute(m.entries.map(r => inverse.permute(r)))))))(coefficients)
   }
 
+  def canonicalRelabelling(colouring: Seq[Int] = Seq.fill(rank)(0)): FusionRing[A] = {
+    import net.tqft.toolkit.algebra.graphs.dreadnaut
+    relabel(dreadnaut.canonicalLabelling(graphEncoding(colouring)).take(rank))
+  }
+
   def depthWithRespectTo(x: Seq[A]): Seq[Int] = {
-    val objectsAtDepth = for(k <- (0 until rank).toStream) yield power(x, k).zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i})
-    for(i <- 0 until rank) yield {
+    val objectsAtDepth = for (k <- (0 until rank).toStream) yield power(x, k).zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i })
+    for (i <- 0 until rank) yield {
       objectsAtDepth.indexWhere(_.contains(i))
     }
   }
-  
+
   trait FusionModule extends FiniteDimensionalFreeModuleOverRig[A] { fm =>
     override def coefficients = fr.coefficients
 
@@ -251,7 +283,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 }
 
 object FusionRing {
-  def apply[A: Rig ](multiplicities: Seq[Matrix[A]]): FusionRing[A] = {
+  def apply[A: Rig](multiplicities: Seq[Matrix[A]]): FusionRing[A] = {
     val result = new StructureCoefficientFusionRing(multiplicities)
     result
   }
