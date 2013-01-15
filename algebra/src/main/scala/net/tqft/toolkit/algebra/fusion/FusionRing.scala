@@ -215,6 +215,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       val S = structureCoefficients.map(_.mapEntries(xi => xi: Int))
       import net.tqft.toolkit.permutations.Permutations._
       val A = matrices.sum(for ((v, vd) <- S.zip(duality.permute(S))) yield {
+      // TODO this bit is apparently slow! (slower than the estimation below!!)
         matrices.compose(v, vd)
       })
 
