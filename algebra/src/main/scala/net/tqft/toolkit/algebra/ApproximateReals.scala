@@ -24,6 +24,7 @@ object ApproximateReals {
     override def fromBigDecimal(x: BigDecimal) = x.doubleValue
     override def fromDouble(x: Double) = x
     override def epsilon = 1.0E-8
+    override def sqrt(x: Double) = scala.math.sqrt(x)
   }
 
   def BigDecimals(precision: Int = 128): ApproximateReals[BigDecimal] = BigDecimals(new java.math.MathContext(precision, java.math.RoundingMode.HALF_EVEN))
