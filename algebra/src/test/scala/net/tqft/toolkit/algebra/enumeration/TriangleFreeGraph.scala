@@ -9,8 +9,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, edges: Set[Set[Int]]) extend
   override lazy val automorphisms = dreadnaut.automorphismGroup(this)
   override val ordering: Ordering[Lower] = Ordering.by({ l: Lower => dreadnaut.canonicalize(
 //      l.result
-//      this.mark(Seq(l.k))
-      this
+      this.mark(Seq(l.k))
       ) })
 
   case class Upper(independentVertices: Set[Int]) {

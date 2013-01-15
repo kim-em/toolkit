@@ -18,6 +18,7 @@ class dreadnautTest extends FlatSpec with ShouldMatchers {
   "canonicalize" should "give the same answers for all relabellings of all graphs with 4 vertices" in {
     val n = 4
     for (g <- Graphs.onNVertices(n)) {
+//      val h = g.mark(Seq(0))
       import net.tqft.toolkit.permutations.Permutations
       Permutations.of(n).map(p => dreadnaut.canonicalize(g.relabel(p))).toSet should have size (1)
     }

@@ -41,13 +41,13 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
   override def fromInt(x: Int) = coefficients.fromInt(x) +: Seq.fill(rank - 1)(coefficients.zero)
   override val one = fromInt(1)
-  
+
   def multiplyBasisElements(i: Int, j: Int): Seq[A]
-  
+
   def associativityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis; z <- basis) yield multiply(x, multiply(y, z)).zip(multiply(multiply(x, y), z))).flatten
   def partialAssociativityConstraints(maxdepth: Int, depths: Seq[Int]) = {
     val p = depths.zipWithIndex
-    (for ((dx, xi) <- p.iterator; ( dy,yi) <- p; (dz,zi) <- p; if dx+dy+dz >= maxdepth) yield {
+    (for ((dx, xi) <- p.iterator; (dy, yi) <- p; (dz, zi) <- p; if dx + dy + dz >= maxdepth) yield {
       val pairs = multiply(multiplyBasisElements(xi, yi), basis(zi)).zip(multiply(basis(xi), multiplyBasisElements(yi, zi)))
       if (dx + dy < maxdepth && dy + dz < maxdepth) {
         pairs
@@ -66,10 +66,10 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       duality.permute(multiplyBasisElements(xi, yi)).zip(multiplyBasisElements(duality(yi), duality(xi)))
     }).flatten ++
       (for (xi <- (0 until rank).iterator; yi <- 0 until rank; zi <- 0 until rank) yield {
-          (multiplyBasisElements(xi, yi)(zi), multiplyBasisElements(zi, duality(yi))(xi))
+        (multiplyBasisElements(xi, yi)(zi), multiplyBasisElements(zi, duality(yi))(xi))
       })
   }
-  
+
   // TODO this could be considerably optimized
   def generalDualityConstraints: Iterator[(A, A)] = {
     (for (x <- basis.iterator; y <- basis) yield (multiply(x, y).head, multiply(y, x).head)) ++
@@ -100,16 +100,15 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   }
 
   private def graphEncoding(colouring: Seq[Int]): ColouredGraph[String] = {
-    new ColouredGraph[String] {
-      override def numberOfVertices = 3 * rank + rank * rank * rank
-      def labels(t: String) = for (i <- colouring) yield t + i
-      override val vertices = (labels("A") ++ labels("B") ++ labels("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map(_.toString)).toIndexedSeq
-      override val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
-        Set(Set(a, 3 * rank + a * rank * rank + b * rank + c), Set(b + rank, 3 * rank + a * rank * rank + b * rank + c), Set(c + 2 * rank, 3 * rank + a * rank * rank + b * rank + c))
-      }).flatten ++ (for (i <- 0 until rank) yield {
-        Set(Set(i, rank + i), Set(i, 2 * rank + i), Set(rank + i, 2 * rank + i))
-      }).flatten
-    }
+    def labels(t: String) = for (i <- colouring) yield t + i
+    val vertices = (labels("A") ++ labels("B") ++ labels("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map(_.toString)).toIndexedSeq
+    val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
+      Set(Set(a, 3 * rank + a * rank * rank + b * rank + c), Set(b + rank, 3 * rank + a * rank * rank + b * rank + c), Set(c + 2 * rank, 3 * rank + a * rank * rank + b * rank + c))
+    }).flatten ++ (for (i <- 0 until rank) yield {
+      Set(Set(i, rank + i), Set(i, 2 * rank + i), Set(rank + i, 2 * rank + i))
+    }).flatten
+
+    ColouredGraph(3 * rank + rank * rank * rank, edges, vertices)
   }
 
   def automorphisms(colouring: Seq[Int] = Seq.fill(rank)(0)) = {
@@ -215,7 +214,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       val S = structureCoefficients.map(_.mapEntries(xi => xi: Int))
       import net.tqft.toolkit.permutations.Permutations._
       val A = matrices.sum(for ((v, vd) <- S.zip(duality.permute(S))) yield {
-      // TODO this bit is apparently slow! (slower than the estimation below!!)
+        // TODO this bit is apparently slow! (slower than the estimation below!!)
         matrices.compose(v, vd)
       })
 
@@ -322,7 +321,7 @@ object FusionRing {
     override def multiplyBasisElements(x: Int, y: Int) = {
       multiplicities(x).entries(y)
     }
-    
+
     override def multiply(x: Seq[A], y: Seq[A]) = {
       val zero = coefficients.zero
       val terms = for (
