@@ -260,6 +260,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
         FixedPoint({ o: Option[Equations] => o.flatMap(_.solveALinearEquation) })(Some(this))
       }
 
+      
       def cases(v: V): Seq[Int] = {
         val remainingVariables = variables.filterNot(substitutions.keySet.contains).filterNot(_ == v)
         val limit = boundary.get
@@ -272,7 +273,13 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           minimalSubstitutionBase.mapValues(p => polynomialAlgebra.substituteConstants(Map(v -> k))(p).constantTerm) + (v -> k)
         }
 
-        Iterator.from(0).takeWhile({ k => limit(minimalSubstitution(k)) }).toSeq
+        val L = 100
+        val result = Iterator.from(0).take(L).takeWhile({ k => limit(minimalSubstitution(k)) }).toSeq
+        if(result.size == L) {
+          println(minimalSubstitution(L).toSeq.sorted)
+          require(false, "the limit passed to BoundedDiophantineSolver doesn't seem to really be a limit")
+        }
+        result
       }
 
       def caseBashOneStep(v: V): Seq[Equations] = {
@@ -282,10 +289,16 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           r
         }).seq
       }
+      
+      // TODO if there are no more equations, there's no point choosing the smallest fork
       def caseBash: Iterable[Equations] = {
         val remainingVariables = variables.filterNot(substitutions.keySet.contains)
         if (remainingVariables.nonEmpty) {
-          val v = remainingVariables.minBy(v => cases(v).size)
+          val v = if(equations.nonEmpty) {
+            remainingVariables.minBy(v => cases(v).size)
+          } else {
+            remainingVariables.head
+          }
           (for (c1 <- caseBashOneStep(v)/*.par*/; c2 <- c1.caseBash) yield c2).seq
         } else {
           List(this)

@@ -25,7 +25,7 @@ object Matrices extends net.tqft.toolkit.Logging {
 
   def over[A: Ring] = new MatrixCategoryOverRing[A]
 
-  val positiveSymmetricDecompositionsCached: Matrix[Int] => Seq[Matrix[Int]] = {
+  lazy val positiveSymmetricDecompositionsCached: Matrix[Int] => Seq[Matrix[Int]] = {
     val bucket = net.tqft.toolkit.amazon.S3("positive-symmetric-decompositions")
     
     def writeMatrix(m: Matrix[Int]): String = {

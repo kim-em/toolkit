@@ -32,8 +32,8 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G, B], G, B] { this: A =>
 
   // now the actual algorithm
   def children = {
-    println("Looking for children of " + this)
 //    info("computing children of " + this)
+//     info(" automorphism group: " + automorphisms.generators)
     val orbits = upperObjects.orbits
 //    info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
     val result = orbits.flatMap({ orbit =>

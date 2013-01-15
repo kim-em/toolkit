@@ -34,7 +34,7 @@ class Matrix[B](
   def mapRows[C](rowMapper: Seq[B] => Seq[C], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
   def mapEntries[C](entryMapper: B => C) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
 
-  override def toString = (entries.toList.map { r => r.mkString("(", ", ", ")") }).mkString("\n")
+  override def toString = "Matrix(" + numberOfColumns + ", " + entries + ")"
 
   import Matrix.pivotPosition2
 

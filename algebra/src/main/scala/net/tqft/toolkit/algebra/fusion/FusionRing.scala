@@ -19,7 +19,7 @@ trait FiniteDimensionalFreeModuleOverRig[A] extends ModuleOverRig[A, Seq[A]] {
 
   def innerProduct(x: Seq[A], y: Seq[A]) = coefficients.sum(x.zip(y).map(p => coefficients.multiply(p._1, p._2)))
 
-  def basis = for (i <- 0 until rank) yield for (j <- 0 until rank) yield if (i == j) coefficients.one else coefficients.zero
+  val basis = for (i <- 0 until rank) yield for (j <- 0 until rank) yield if (i == j) coefficients.one else coefficients.zero
 }
 
 trait FiniteDimensionalFreeModule[A] extends FiniteDimensionalFreeModuleOverRig[A] with Module[A, Seq[A]] {
@@ -37,16 +37,18 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       case _ => false
     }
   }
-  override def toString = "FusionRing(" + structureCoefficients.map(_.entries) + ")"
-  
+  override def toString = "FusionRing(" + structureCoefficients + ")"
+
   override def fromInt(x: Int) = coefficients.fromInt(x) +: Seq.fill(rank - 1)(coefficients.zero)
   override val one = fromInt(1)
-
+  
+  def multiplyBasisElements(i: Int, j: Int): Seq[A]
+  
   def associativityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis; z <- basis) yield multiply(x, multiply(y, z)).zip(multiply(multiply(x, y), z))).flatten
   def partialAssociativityConstraints(maxdepth: Int, depths: Seq[Int]) = {
-    val p = basis.zip(depths)
-    (for ((x, dx) <- p.iterator; (y, dy) <- p; (z, dz) <- p) yield {
-      val pairs = multiply(multiply(x, y), z).zip(multiply(x, multiply(y, z)))
+    val p = depths.zipWithIndex
+    (for ((dx, xi) <- p.iterator; ( dy,yi) <- p; (dz,zi) <- p; if dx+dy+dz >= maxdepth) yield {
+      val pairs = multiply(multiplyBasisElements(xi, yi), basis(zi)).zip(multiply(basis(xi), multiplyBasisElements(yi, zi)))
       if (dx + dy < maxdepth && dy + dz < maxdepth) {
         pairs
       } else {
@@ -60,15 +62,15 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   def dualityConstraints(duality: IndexedSeq[Int] = duality): Iterator[(A, A)] = {
     require(duality.size == rank)
     import net.tqft.toolkit.permutations.Permutations._
-    (for (x <- basis.iterator; y <- basis) yield {
-      duality.permute(multiply(x, y)).zip(multiply(duality.permute(y), duality.permute(x)))
+    (for (xi <- (0 until rank).iterator; yi <- 0 until rank) yield {
+      duality.permute(multiplyBasisElements(xi, yi)).zip(multiplyBasisElements(duality(yi), duality(xi)))
     }).flatten ++
-      (for (x <- basis.iterator; y <- basis; z <- basis) yield {
-        Seq(
-          (innerProduct(multiply(x, y), z), innerProduct(x, multiply(z, duality.permute(y)))),
-          (innerProduct(multiply(x, y), z), innerProduct(y, multiply(duality.permute(x), z))))
-      }).flatten
+      (for (xi <- (0 until rank).iterator; yi <- 0 until rank; zi <- 0 until rank) yield {
+          (multiplyBasisElements(xi, yi)(zi), multiplyBasisElements(zi, duality(yi))(xi))
+      })
   }
+  
+  // TODO this could be considerably optimized
   def generalDualityConstraints: Iterator[(A, A)] = {
     (for (x <- basis.iterator; y <- basis) yield (multiply(x, y).head, multiply(y, x).head)) ++
       (for (x <- basis.iterator) yield (coefficients.sum(for (y <- basis) yield multiply(x, y).head), coefficients.one)) ++
@@ -116,10 +118,10 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     val graphAutomorphisms = dreadnaut.automorphismGroup(graphEncoding(colouring))
     val generators = graphAutomorphisms.generators.map(_.take(rank))
 
-    for(g <- generators) {
+    for (g <- generators) {
       require(this == relabel(g))
     }
-    
+
     FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(generators)
   }
 
@@ -128,7 +130,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
     import net.tqft.toolkit.permutations.Permutations._
     val inverse = labelling.inverse
-    FusionRing(inverse.permute(structureCoefficients.map(m => Matrix(rank, inverse.permute(m.entries.map(r => inverse.permute(r)))))))(coefficients)
+    FusionRing(inverse.permute(structureCoefficients.map(m => m.permuteRows(inverse).permuteColumns(inverse))))(coefficients)
   }
 
   def canonicalRelabelling(colouring: Seq[Int] = Seq.fill(rank)(0)): FusionRing[A] = {
@@ -195,25 +197,28 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       } else {
         val matrices = Matrices.over[Int]
         val A = x.zip(structureCoefficients).map(p => matrices.scalarMultiply(p._1, p._2.mapEntries(xi => xi: Int))).reduce(matrices.add)
-//        require(A.entries.flatten.forall(_ >= 0))
-//        require(A.entries.flatten.exists(_ > 0))
+        println("copmuting FP eigenvalue for " + A)
+        //        require(A.entries.flatten.forall(_ >= 0))
+        //        require(A.entries.flatten.exists(_ > 0))
         val AAt = matrices.compose(A, A.transpose)
         val estimate = FrobeniusPerronEigenvalues.estimate(AAt)
-//        require(estimate > 0.999)
+        //        require(estimate > 0.999)
         val result = scala.math.sqrt(estimate - 0.0001)
         result
       }
     }
 
-    private lazy val `Sum VV*` = {
-      sum(for(i <- 0  until rank) yield {
-        multiply(basis(i), basis(duality(i)))
-      })
-    }
-    
+    // FIXME this is wrong for anything but the regular module!
     def globalDimensionLowerBound(implicit ev: A =:= Int): Double = {
-      // FIXME just use FrobeniusPerronEigenvalues.estimate here
-      dimensionLowerBounds(`Sum VV*`.map(xi => xi: Int))
+
+      val matrices = Matrices.over[Int]
+      val S = structureCoefficients.map(_.mapEntries(xi => xi: Int))
+      import net.tqft.toolkit.permutations.Permutations._
+      val A = matrices.sum(for ((v, vd) <- S.zip(duality.permute(S))) yield {
+        matrices.compose(v, vd)
+      })
+
+      FrobeniusPerronEigenvalues.estimate2(A) - 0.0001
     }
 
     def associativityConstraints = (for (x <- fr.basis.iterator; y <- fr.basis; z <- basis) yield act(x, act(y, z)).zip(act(fr.multiply(x, y), z))).flatten
@@ -313,6 +318,10 @@ object FusionRing {
     override lazy val coefficients = implicitly[Rig[A]]
     override lazy val rank = multiplicities.size
 
+    override def multiplyBasisElements(x: Int, y: Int) = {
+      multiplicities(x).entries(y)
+    }
+    
     override def multiply(x: Seq[A], y: Seq[A]) = {
       val zero = coefficients.zero
       val terms = for (

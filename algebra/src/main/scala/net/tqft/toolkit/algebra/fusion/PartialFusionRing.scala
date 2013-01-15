@@ -90,7 +90,7 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
   }
 
   def upperObjects = new automorphisms.Action[Upper] {
-    override def elements = {
+    override lazy val elements: Set[Upper] = {
       (if (depth == depths.max && ring.partialAssociativityConstraints(depth + 1, depths).forall(p => p._1 == p._2)) {
         Set(IncreaseDepth)
       } else {
