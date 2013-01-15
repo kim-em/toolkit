@@ -29,7 +29,7 @@ trait Graph {
     colour(for (i <- 0 until numberOfVertices) yield vertices.contains(i))
   }
 
-  def colour[V](colours: IndexedSeq[V]): ColouredGraph[V] = {
+  def colour[V:Ordering](colours: IndexedSeq[V]): ColouredGraph[V] = {
     ColouredGraph(numberOfVertices, edges, colours)
   }
 }
@@ -69,6 +69,8 @@ object Graphs {
 trait ColouredGraph[V] extends Graph {
   def vertices: IndexedSeq[V]
 
+  implicit val ordering: Ordering[V]
+  
   override def toString = "ColouredGraph(" + numberOfVertices + ", " + edges + ", " + vertices + ")"
   override def hashCode = (numberOfVertices, edges, vertices).hashCode
   override def equals(other: Any) = {
@@ -79,7 +81,7 @@ trait ColouredGraph[V] extends Graph {
   }
 
   override def toDreadnautString: String = {
-    super.toDreadnautString + " f=" + vertices.distinct.map(v => (for ((w, i) <- vertices.zipWithIndex; if v == w) yield i).mkString(",")).mkString("[", "|", "]")
+    super.toDreadnautString + " f=" + vertices.distinct.sorted.map(v => (for ((w, i) <- vertices.zipWithIndex; if v == w) yield i).mkString(",")).mkString("[", "|", "]")
   }
 
   override def relabel(labels: IndexedSeq[Int]): ColouredGraph[V] = {
@@ -89,7 +91,7 @@ trait ColouredGraph[V] extends Graph {
 }
 
 object ColouredGraph {
-  def apply[V](numberOfVertices: Int, edges: Traversable[Set[Int]], vertices: IndexedSeq[V]) = {
+  def apply[V:Ordering](numberOfVertices: Int, edges: Traversable[Set[Int]], vertices: IndexedSeq[V]) = {
     val _numberOfVertices = numberOfVertices
     val _edges = edges
     val _vertices = vertices
@@ -97,6 +99,7 @@ object ColouredGraph {
       override def numberOfVertices = _numberOfVertices
       override def edges = _edges
       override def vertices = _vertices
+      override val ordering = implicitly[Ordering[V]]
     }
   }
 }
