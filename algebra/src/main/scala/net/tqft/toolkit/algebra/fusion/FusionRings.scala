@@ -91,6 +91,7 @@ object FusionRings {
 
     val polynomials = (depthConditions ++ identityConditions ++ dualityConditions ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
 
+    // TODO this could be much faster; instead of substituting just build the structureCoefficients directly
     def reconstituteRing(m: Map[V, Int]): FusionRing[Int] = {
       require((variables diff m.keys.toSeq).isEmpty)
       

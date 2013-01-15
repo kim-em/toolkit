@@ -24,6 +24,14 @@ trait Graph {
     val p = labels.inverse
     Graph(numberOfVertices, edges.map(_.map(p)))
   }
+
+  def mark(vertices: Seq[Int]): ColouredGraph[Boolean] = {
+    colour(for (i <- 0 until numberOfVertices) yield vertices.contains(i))
+  }
+
+  def colour[V](colours: IndexedSeq[V]): ColouredGraph[V] = {
+    ColouredGraph(numberOfVertices, edges, colours)
+  }
 }
 
 object Graph {
@@ -35,6 +43,13 @@ object Graph {
       override def edges = _edges
     }
   }
+
+  implicit val ordering: Ordering[Graph] = {
+    import net.tqft.toolkit.collections.LexicographicOrdering._
+    import net.tqft.toolkit.collections.Orderings._
+    Ordering.by({ g: Graph => g.numberOfVertices }).refineBy({ g: Graph => g.edges.toSeq.map(_.toSeq.sorted).sorted })
+  }
+
 }
 
 object Graphs {

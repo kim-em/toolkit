@@ -3,15 +3,15 @@ package net.tqft.toolkit.algebra.enumeration
 import net.tqft.toolkit.algebra.graphs.Graph
 
 // An incomplete example, just to make sure the framework is usable. 
-case class TriangleFreeGraph(numberOfVertices: Int, edges: Set[Set[Int]]) extends Graph with CanonicalGeneration[TriangleFreeGraph, IndexedSeq[Int], Graph] {
+case class TriangleFreeGraph(numberOfVertices: Int, edges: Set[Set[Int]]) extends Graph with CanonicalGeneration[TriangleFreeGraph, IndexedSeq[Int]] { tfg =>
   import net.tqft.toolkit.permutations.Permutations._
   import net.tqft.toolkit.algebra.graphs._
   override lazy val automorphisms = dreadnaut.automorphismGroup(this)
-  override implicit val ordering: Ordering[Graph] = {
-    import net.tqft.toolkit.collections.LexicographicOrdering._
-    Ordering.by(_.edges.toList.map(_.toList.sorted).sorted)
-  }
-  override def invariant = dreadnaut.canonicalize(this)
+  override val ordering: Ordering[Lower] = Ordering.by({ l: Lower => dreadnaut.canonicalize(
+//      l.result
+//      this.mark(Seq(l.k))
+      this
+      ) })
 
   case class Upper(independentVertices: Set[Int]) {
     lazy val result = TriangleFreeGraph(numberOfVertices + 1, edges ++ independentVertices.map(Set(_, numberOfVertices)))
