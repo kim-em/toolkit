@@ -44,7 +44,7 @@ object BuildSettings {
   import Dependencies._
 
   val buildOrganization = "net.tqft"
-  val buildVersion = "0.1.10"
+  val buildVersion = "0.1.11"
   val buildScalaVersion = "2.9.3-RC1"
   val buildCrossScalaVersions = Seq("2.9.3-RC1", "2.10.0")
 
