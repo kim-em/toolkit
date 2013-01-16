@@ -4,11 +4,19 @@ import net.tqft.toolkit.Profiler
 
 object PartialFusionRingApp extends App {
 
+  val L = if(args.length > 0) {
+    args(0).toDouble
+  } else {
+    12.0
+  }
+  val R = if(args.length >1) {
+    args(1).toInt
+  } else {
+    3
+  }
+  
   //  while (true) {
   println("completed in " + Profiler.timing({
-    val L = 60.0
-    val R = 3
-
     val rank2s = Iterator.from(0).map(FusionRings.Examples.rank2).takeWhile(_.globalDimensionLowerBound < L).toStream
 
     println("warming up... preparing rank " + R + " fusion rings")

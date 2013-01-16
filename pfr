@@ -1,1 +1,1 @@
-sbt "toolkit-algebra/test:run-main net.tqft.toolkit.algebra.fusion.PartialFusionRingApp"
+sbt "toolkit-algebra/test:run-main net.tqft.toolkit.algebra.fusion.PartialFusionRingApp $@"
