@@ -21,6 +21,15 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
 
   val ordering: Ordering[Lower]
 
+  def genuineReduction = {
+    val elts = lowerObjects.elements
+    if (elts.isEmpty) {
+      None
+    } else {
+      Some(elts.min(ordering).result)
+    }
+  }
+
   type Upper <: {
     val result: A
     def inverse: result.Lower
@@ -33,33 +42,33 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   // now the actual algorithm
   def children = {
     info("computing children of " + this)
-//    info(" automorphism group: " + automorphisms.generators)
+    //    info(" automorphism group: " + automorphisms.generators)
     val orbits = upperObjects.orbits.toSeq
-//    info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+    //    info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
     val result = orbits.flatMap({ orbit =>
       val candidateUpperObject = orbit.representative;
-//      info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements + " with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
+      //      info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements + " with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
       val lowerOrbits = candidateUpperObject.result.lowerObjects.orbits
-//      info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
-//      info("   which sort as " + lowerOrbits.toSeq.sortBy({ _.representative })(candidateUpperObject.result.ordering).map(_.elements))
+      //      info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+      //      info("   which sort as " + lowerOrbits.toSeq.sortBy({ _.representative })(candidateUpperObject.result.ordering).map(_.elements))
       val canonicalReductionOrbit = lowerOrbits.minBy({ _.representative })(candidateUpperObject.result.ordering)
-//      info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
+      //      info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
       if (canonicalReductionOrbit.contains(candidateUpperObject.inverse)) {
-//        info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
+        //        info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
         Some(candidateUpperObject.result)
       } else {
-//        info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
+        //        info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
         None
       }
     })
-        info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
+    info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
     result
   }
 
   // and, for convenience, something to recursively find all children, filtering on a predicate
   def descendants(accept: A => Int = { _ => 1 }): Iterator[A] = descendantsTree(accept).map(_._1)
-  
-  def descendantsTree(accept: A => Int = { _ => 1}): Iterator[(A, Seq[A])] = {
+
+  def descendantsTree(accept: A => Int = { _ => 1 }): Iterator[(A, Seq[A])] = {
     accept(this) match {
       case a if a > 0 => {
         val c = children
@@ -69,13 +78,13 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
       case a if a < 0 => Iterator.empty
     }
   }
-  
-  def descendantsWithProgress(accept: A => Int = { _ => 1}): Iterator[(A, Seq[(Int, Int)])] = {
+
+  def descendantsWithProgress(accept: A => Int = { _ => 1 }): Iterator[(A, Seq[(Int, Int)])] = {
     val progress = scala.collection.mutable.Map[Int, Seq[(Int, Int)]](this.hashCode -> Seq((1, 1)))
     descendantsTree(accept).map({
       case (a, children) => {
-        for((c, i) <- children.zipWithIndex) {
-          progress.put(c.hashCode, progress(a.hashCode) :+ (i+1, children.size))
+        for ((c, i) <- children.zipWithIndex) {
+          progress.put(c.hashCode, progress(a.hashCode) :+ (i + 1, children.size))
         }
         (a, progress(a.hashCode))
       }

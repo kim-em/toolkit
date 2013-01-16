@@ -219,10 +219,11 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       import net.tqft.toolkit.permutations.Permutations._
       val A = matrices.sum(for ((v, vd) <- S.zip(duality.permute(S))) yield {
         // TODO this bit is apparently slow! (slower than the estimation below!!)
-        matrices.compose(v, vd)
+        val s = matrices.add(v, vd)
+        matrices.compose(s, s)
       })
 
-      FrobeniusPerronEigenvalues.estimate2(A) - 0.0001
+      FrobeniusPerronEigenvalues.estimate2(A) / 4 - 0.0001
     }
 
     def associativityConstraints = (for (x <- fr.basis.iterator; y <- fr.basis; z <- basis) yield act(x, act(y, z)).zip(act(fr.multiply(x, y), z))).flatten
