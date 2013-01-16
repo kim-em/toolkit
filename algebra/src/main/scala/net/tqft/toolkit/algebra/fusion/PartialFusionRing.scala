@@ -2,11 +2,56 @@ package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra.enumeration.CanonicalGeneration
 import net.tqft.toolkit.algebra.matrices.Matrix
+import net.tqft.toolkit.collections.MapTransformer
+import net.tqft.toolkit.amazon.S3
+import net.tqft.toolkit.SHA1
+
+private object C {
+  def m2s(m: Matrix[Int]): String = {
+    m.entries.map(_.mkString("{", ", ", "}")).mkString("{", ", ", "}")
+  }
+
+  def s2m(s: String): Matrix[Int] = {
+    require(s.startsWith("{{"))
+    require(s.endsWith("}}"))
+    s.stripPrefix("{{").stripSuffix("}}").split("\\}, \\{").map(_.split(", ").map(_.toInt ).toIndexedSeq).toIndexedSeq
+  }
+
+  def pfr2s(pfr: PartialFusionRing): String = {
+    pfr.depth + "\n" +
+      pfr.globalDimensionLimit + "\n" +
+      (for (m <- pfr.ring.structureCoefficients) yield {
+        m2s(m)
+      }).mkString("\n") + "\n"
+  }
+  def pfrseq2s(seq: Seq[PartialFusionRing]): String = {
+    seq.map(pfr2s).mkString("---\n", "---\n", "---\n")
+  }
+
+  def s2pfr(s: String) = {
+    val depthString :: dimensionString :: matricesStrings = s.split("\n").toList
+    PartialFusionRing(depthString.toInt, FusionRing(matricesStrings.map(s2m)), dimensionString.toDouble)
+  }
+  
+  def s2pfrseq(s: String) = {
+    s.split("---").map(_.trim).filter(_.nonEmpty).map(s2pfr).toIndexedSeq
+  }
+}
+
+object PartialFusionRingCache extends MapTransformer.KeyTransformer[PartialFusionRing, String, Seq[PartialFusionRing]](new MapTransformer.ValueTransformer[String, String, Seq[PartialFusionRing]](S3("partial-fusion-rings"),
+  C.s2pfrseq _,
+  C.pfrseq2s _),
+  { s: String => None },
+  { p => SHA1(C.pfr2s(p)) } )
 
 case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
 
-  override lazy val hashCode = super.hashCode
+  override lazy val hashCode = (depth, ring, globalDimensionLimit).hashCode
 
+  override def children = {
+    PartialFusionRingCache.getOrElseUpdate(this, super.children)
+  }
+  
   val generator = {
     if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {
       ring.basis(1)
@@ -17,7 +62,21 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
   val depths = ring.depthWithRespectTo(generator)
 
   lazy val automorphisms = ring.automorphisms(depths)
-  val ordering: Ordering[Lower] = ???
+  val ordering: Ordering[Lower] = {
+    import net.tqft.toolkit.collections.Orderings._
+    Ordering.by({ l: Lower =>
+      l match {
+        case ReduceDepth => 0
+        case DeleteSelfDualObject(_) => 1
+        case DeleteDualPairOfObjects(_) => 2
+      }
+    }).refineByPartialFunction({ l: Lower =>
+      l match {
+        case DeleteSelfDualObject(k) => ring.graphEncoding(depths.updated(k, -1))
+        case d @ DeleteDualPairOfObjects(_) => ring.graphEncoding(depths.updated(d.k1, -1).updated(d.k2, -1))
+      }
+    })
+  }
 
   sealed trait Lower {
     def result: PartialFusionRing

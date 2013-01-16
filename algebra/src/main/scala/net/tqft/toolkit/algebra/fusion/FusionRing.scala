@@ -42,13 +42,17 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   override def fromInt(x: Int) = coefficients.fromInt(x) +: Seq.fill(rank - 1)(coefficients.zero)
   override val one = fromInt(1)
 
-  def multiplyBasisElements(i: Int, j: Int): Seq[A]
+  def multiplyBasisElements(x: Int, y: Int): Seq[A] = {
+    structureCoefficients(x).entries(y)
+  }
+  def multiplyByBasisElement(x: Seq[A], j: Int): Seq[A] = multiply(x, basis(j))
+  def multiplyByBasisElementOnLeft(j: Int, x: Seq[A]): Seq[A] = multiply(basis(j), x)
 
   def associativityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis; z <- basis) yield multiply(x, multiply(y, z)).zip(multiply(multiply(x, y), z))).flatten
   def partialAssociativityConstraints(maxdepth: Int, depths: Seq[Int]) = {
     val p = depths.zipWithIndex
     (for ((dx, xi) <- p.iterator; (dy, yi) <- p; (dz, zi) <- p; if dx + dy + dz >= maxdepth) yield {
-      val pairs = multiply(multiplyBasisElements(xi, yi), basis(zi)).zip(multiply(basis(xi), multiplyBasisElements(yi, zi)))
+      val pairs = multiplyByBasisElement(multiplyBasisElements(xi, yi), zi).zip(multiplyByBasisElementOnLeft(xi, multiplyBasisElements(yi, zi)))
       if (dx + dy < maxdepth && dy + dz < maxdepth) {
         pairs
       } else {
@@ -86,7 +90,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   def verifyDuality(duality: IndexedSeq[Int] = duality) = dualityConstraints(duality).forall(p => p._1 == p._2)
 
   lazy val duality: IndexedSeq[Int] = {
-    (for (x <- basis) yield basis.indexWhere(y => multiply(x, y).head == coefficients.one)).ensuring(!_.contains(-1))
+    structureCoefficients.map(_.entries.indexWhere(_.head == coefficients.one)).toIndexedSeq.ensuring(!_.contains(-1))
   }
 
   def structureCoefficients: Seq[Matrix[A]] = ??? // for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
@@ -99,7 +103,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     regularModule.globalDimensionLowerBound
   }
 
-  private def graphEncoding(colouring: Seq[Int]): ColouredGraph[String] = {
+  def graphEncoding(colouring: Seq[Int]): ColouredGraph[String] = {
     def labels(t: String) = for (i <- colouring) yield t + i
     val vertices = (labels("A") ++ labels("B") ++ labels("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map(_.toString)).toIndexedSeq
     val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
@@ -309,18 +313,22 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
 object FusionRing {
   def apply[A: Rig](multiplicities: Seq[Matrix[A]]): FusionRing[A] = {
-    val result = new StructureCoefficientFusionRing(multiplicities)
-    result
+    new StructureCoefficientFusionRing(multiplicities)
+  }
+  def apply(multiplicities: Seq[Matrix[Int]]): FusionRing[Int] = {
+    def opt(x: Seq[Int]) = x match {
+      case x: IndexedSeq[Int] => x
+      case x => x.toArray: Seq[Int]
+    }
+    new IntegerStructureCoefficientFusionRing(multiplicities.map({ m =>
+      Matrix(multiplicities.size, m.entries.map(opt).toArray[Seq[Int]]: Seq[Seq[Int]])
+    }))
   }
   def apply(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, dimensions: Seq[Polynomial[Fraction[Int]]]): FusionRingWithDimensions = new StructureCoefficientFusionRingWithDimensions(multiplicities, fieldGenerator, fieldGeneratorApproximation, fieldGeneratorEpsilon, dimensions).ensuring(_.structureCoefficients == multiplicities)
 
   private class StructureCoefficientFusionRing[A: Rig](multiplicities: Seq[Matrix[A]]) extends FusionRing[A] {
     override lazy val coefficients = implicitly[Rig[A]]
     override lazy val rank = multiplicities.size
-
-    override def multiplyBasisElements(x: Int, y: Int) = {
-      multiplicities(x).entries(y)
-    }
 
     override def multiply(x: Seq[A], y: Seq[A]) = {
       val zero = coefficients.zero
@@ -331,14 +339,52 @@ object FusionRing {
         if (yj != zero)
       ) yield {
         for (k <- 0 until rank) yield {
-          coefficients.multiply(xi, yj, multiplicities(j).entries(i)(k))
+          coefficients.multiply(xi, yj, structureCoefficients(j).entries(i)(k))
         }
       }
       val result = sum(terms)
       result
     }
 
-    override val structureCoefficients = multiplicities
+    override val structureCoefficients: IndexedSeq[Matrix[A]] = multiplicities.toArray[Matrix[A]]
+  }
+  private class IntegerStructureCoefficientFusionRing(multiplicities: Seq[Matrix[Int]]) extends FusionRing[Int] {
+    override def coefficients = implicitly[Ring[Int]]
+    override def rank = multiplicities.size
+
+    override def multiplyByBasisElement(x: Seq[Int], j: Int) = {
+      val result = Array.fill(rank)(0)
+      for ((xm, xi) <- x.zipWithIndex) {
+        for (k <- 0 until rank) {
+          result(k) += xm * structureCoefficients(xi).entries(j)(k)
+        }
+      }
+      result
+    }
+    override def multiplyByBasisElementOnLeft(j: Int, x: Seq[Int]) = {
+      val result = Array.fill(rank)(0)
+      for ((z, r) <- x.zip(structureCoefficients(j).entries)) {
+        for (k <- 0 until rank) {
+          result(k) += z * r(k)
+        }
+      }
+      result
+    }
+    override def multiply(x: Seq[Int], y: Seq[Int]) = {
+      val result = Array.fill(rank)(0)
+      for (i <- 0 until rank; j <- 0 until rank) {
+        val xi = x(i)
+        val yj = y(j)
+        val r = structureCoefficients(i).entries(j)
+        for (k <- 0 until rank) {
+          result(k) += xi * yj * r(k)
+        }
+      }
+      result
+    }
+
+    override val structureCoefficients: IndexedSeq[Matrix[Int]] = multiplicities.toArray[Matrix[Int]]
+
   }
 
   private class StructureCoefficientFusionRingWithDimensions(multiplicities: Seq[Matrix[Int]], fieldGenerator: Polynomial[Int], fieldGeneratorApproximation: Double, fieldGeneratorEpsilon: Double, override val dimensions: Seq[Polynomial[Fraction[Int]]]) extends StructureCoefficientFusionRing[Int](multiplicities) with FusionRingWithDimensions {
