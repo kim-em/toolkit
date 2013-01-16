@@ -71,13 +71,13 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
   
   def descendantsWithProgress(accept: A => Int = { _ => 1}): Iterator[(A, Seq[(Int, Int)])] = {
-    val progress = scala.collection.mutable.Map[A, Seq[(Int, Int)]](this -> Seq((1, 1)))
+    val progress = scala.collection.mutable.Map[Int, Seq[(Int, Int)]](this.hashCode -> Seq((1, 1)))
     descendantsTree(accept).map({
       case (a, children) => {
         for((c, i) <- children.zipWithIndex) {
-          progress.put(c, progress(a) :+ (i+1, children.size))
+          progress.put(c.hashCode, progress(a.hashCode) :+ (i+1, children.size))
         }
-        (a, progress(a))
+        (a, progress(a.hashCode))
       }
     })
   }
