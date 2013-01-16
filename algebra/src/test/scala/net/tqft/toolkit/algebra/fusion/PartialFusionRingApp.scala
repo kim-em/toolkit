@@ -9,25 +9,19 @@ object PartialFusionRingApp extends App {
   } else {
     12.0
   }
-  val R = if(args.length >1) {
-    args(1).toInt
-  } else {
-    3
-  }
-  
   //  while (true) {
   println("completed in " + Profiler.timing({
-    val rank2s = Iterator.from(0).map(FusionRings.Examples.rank2).takeWhile(_.globalDimensionLowerBound < L).toStream
+    val generators = FusionRings.Examples.allGenerators(L).toStream
 
-    println("warming up... preparing rank " + R + " fusion rings")
-    val higherRanks = for (s <- rank2s.toSeq; (r, p) <- PartialFusionRing(1, s, L).descendantsWithProgress(R - _.ring.rank); if r.ring.rank == R) yield {
+    println("warming up... preparing a first layer")
+    val firstLayer = for (s <- generators.toSeq; (r, p) <- PartialFusionRing(2, s, L).descendantsWithProgress(4 - _.ring.rank); if r.genuineReduction.flatMap(_.genuineReduction).map(_.depth).getOrElse(0) == 1) yield {
       println(p)
       r
     }
 
-    println("parallelizing over " + higherRanks.size + " rank " + R + " fusion rings")
-    for ((s, i) <- higherRanks.zipWithIndex.par; (r, p) <- s.descendantsWithProgress()) {
-      println((i + 1, higherRanks.size) + " " + p)
+    println("parallelizing over " + firstLayer.size + " fusion rings")
+    for ((s, i) <- firstLayer.zipWithIndex.par; (r, p) <- s.descendantsWithProgress()) {
+      println((i + 1, firstLayer.size) + " " + p)
       if (r.depth == r.depths.max) {
         if (r.ring.associativityConstraints.forall(p => p._1 == p._2)) {
           println("Found a depth " + r.depth + " fusion ring: " + r.ring.structureCoefficients.map(_.entries))

@@ -6,44 +6,6 @@ import net.tqft.toolkit.collections.MapTransformer
 import net.tqft.toolkit.amazon.S3
 import net.tqft.toolkit.SHA1
 
-private object C {
-  def m2s(m: Matrix[Int]): String = {
-    m.entries.map(_.mkString("{", ", ", "}")).mkString("{", ", ", "}")
-  }
-
-  def s2m(s: String): Matrix[Int] = {
-    require(s.startsWith("{{"))
-    require(s.endsWith("}}"))
-    s.stripPrefix("{{").stripSuffix("}}").split("\\}, \\{").map(_.split(", ").map(_.toInt ).toIndexedSeq).toIndexedSeq
-  }
-
-  def pfr2s(pfr: PartialFusionRing): String = {
-    pfr.depth + "\n" +
-      pfr.globalDimensionLimit + "\n" +
-      (for (m <- pfr.ring.structureCoefficients) yield {
-        m2s(m)
-      }).mkString("\n") + "\n"
-  }
-  def pfrseq2s(seq: Seq[PartialFusionRing]): String = {
-    seq.map(pfr2s).mkString("---\n", "---\n", "---\n")
-  }
-
-  def s2pfr(s: String) = {
-    val depthString :: dimensionString :: matricesStrings = s.split("\n").toList
-    PartialFusionRing(depthString.toInt, FusionRing(matricesStrings.map(s2m)), dimensionString.toDouble)
-  }
-  
-  def s2pfrseq(s: String) = {
-    s.split("---").map(_.trim).filter(_.nonEmpty).map(s2pfr).toIndexedSeq
-  }
-}
-
-object PartialFusionRingCache extends MapTransformer.KeyTransformer[PartialFusionRing, String, Seq[PartialFusionRing]](new MapTransformer.ValueTransformer[String, String, Seq[PartialFusionRing]](S3("partial-fusion-rings"),
-  C.s2pfrseq _,
-  C.pfrseq2s _),
-  { s: String => None },
-  { p => SHA1(C.pfr2s(p)) } )
-
 case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
 
   override lazy val hashCode = (depth, ring, globalDimensionLimit).hashCode
@@ -51,7 +13,7 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
   override def children = {
     PartialFusionRingCache.getOrElseUpdate(this, super.children)
   }
-  
+
   val generator = {
     if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {
       ring.basis(1)
@@ -68,13 +30,11 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
       l match {
         case ReduceDepth => 0
         case DeleteSelfDualObject(_) => 1
-        case DeleteDualPairOfObjects(_) => 2
+        case DeleteDualPairOfObjects(_, _) => 2
       }
-    }).refineByPartialFunction({ l: Lower =>
-      l match {
-        case DeleteSelfDualObject(k) => ring.graphEncoding(depths.updated(k, -1))
-        case d @ DeleteDualPairOfObjects(_) => ring.graphEncoding(depths.updated(d.k1, -1).updated(d.k2, -1))
-      }
+    }).refineByPartialFunction({
+      case DeleteSelfDualObject(k) => ring.graphEncoding(depths.updated(k, -1))
+      case d @ DeleteDualPairOfObjects(_, _) => ring.graphEncoding(depths.updated(d.k1, -1).updated(d.k2, -1))
     })
   }
 
@@ -92,9 +52,9 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
     }
 
   }
-  case class DeleteDualPairOfObjects(k1: Int) extends Lower {
-    val k2 = k1 + 1
+  case class DeleteDualPairOfObjects(k1: Int, k2: Int) extends Lower {
     require(ring.duality(k1) == k2)
+    require(k1 != k2)
     override def result = {
       import net.tqft.toolkit.collections.Deleted._
       val newRing = FusionRing(ring.structureCoefficients.deleted(Seq(k1, k2)).map(_.dropRows(Seq(k1, k2)).dropColumns(Seq(k1, k2))))
@@ -104,13 +64,17 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
 
   def lowerObjects = new automorphisms.Action[Lower] {
     override def elements = {
-      if (depth == depths.max) {
-        depths.zipWithIndex.collect({
-          case (d, i) if d == depth && ring.duality(i) == i => DeleteSelfDualObject(i)
-          case (d, i) if d == depth && ring.duality(i) > i => DeleteDualPairOfObjects(i)
-        }).toSet
+      if (depth >= 2) {
+        if (depth == depths.max) {
+          depths.zipWithIndex.collect({
+            case (d, i) if d == depth && ring.duality(i) == i => DeleteSelfDualObject(i)
+            case (d, i) if d == depth && ring.duality(i) > i => DeleteDualPairOfObjects(i, ring.duality(i))
+          }).toSet
+        } else {
+          Set(ReduceDepth)
+        }
       } else {
-        Set(ReduceDepth)
+        Set.empty
       }
     }
     override def act(a: IndexedSeq[Int], b: Lower): Lower = {
@@ -121,7 +85,7 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
       b match {
         case ReduceDepth => ReduceDepth
         case DeleteSelfDualObject(k) => DeleteSelfDualObject(ai(k))
-        case DeleteDualPairOfObjects(k1) => DeleteDualPairOfObjects(ai(k1))
+        case DeleteDualPairOfObjects(k1, k2) => DeleteDualPairOfObjects(ai(k1), ai(k2))
       }
     }
   }
@@ -140,7 +104,7 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
   }
   case class AddDualPairOfObjects(newRing: FusionRing[Int]) extends Upper {
     override lazy val result = pfr.copy(ring = newRing)
-    override def inverse = result.DeleteDualPairOfObjects(ring.rank)
+    override def inverse = result.DeleteDualPairOfObjects(ring.rank, ring.rank + 1)
   }
 
   def upperObjects = new automorphisms.Action[Upper] {
@@ -151,14 +115,52 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
         Set.empty
       }) ++
         FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).map(AddSelfDualObject) ++
-        /* FIXME dual pairs */ Set.empty
+        FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).map(AddDualPairOfObjects)
     }
     override def act(a: IndexedSeq[Int], b: Upper): Upper = {
       b match {
         case IncreaseDepth => IncreaseDepth
         case AddSelfDualObject(newRing) => AddSelfDualObject(newRing.relabel(a :+ ring.rank))
-        case AddDualPairOfObjects(newRing) => ???
+        case AddDualPairOfObjects(newRing) => AddDualPairOfObjects(newRing.relabel(a :+ ring.rank :+ (ring.rank + 1)))
       }
     }
   }
 }
+
+private object C {
+  def m2s(m: Matrix[Int]): String = {
+    m.entries.map(_.mkString("{", ", ", "}")).mkString("{", ", ", "}")
+  }
+
+  def s2m(s: String): Matrix[Int] = {
+    require(s.startsWith("{{"))
+    require(s.endsWith("}}"))
+    s.stripPrefix("{{").stripSuffix("}}").split("\\}, \\{").map(_.split(", ").map(_.toInt).toIndexedSeq).toIndexedSeq
+  }
+
+  def pfr2s(pfr: PartialFusionRing): String = {
+    pfr.depth + "\n" +
+      pfr.globalDimensionLimit + "\n" +
+      (for (m <- pfr.ring.structureCoefficients) yield {
+        m2s(m)
+      }).mkString("\n") + "\n"
+  }
+  def pfrseq2s(seq: Seq[PartialFusionRing]): String = {
+    seq.map(pfr2s).mkString("---\n", "---\n", "---\n")
+  }
+
+  def s2pfr(s: String) = {
+    val depthString :: dimensionString :: matricesStrings = s.split("\n").toList
+    PartialFusionRing(depthString.toInt, FusionRing(matricesStrings.map(s2m)), dimensionString.toDouble)
+  }
+
+  def s2pfrseq(s: String) = {
+    s.split("---").map(_.trim).filter(_.nonEmpty).map(s2pfr).toIndexedSeq
+  }
+}
+
+object PartialFusionRingCache extends MapTransformer.KeyTransformer[PartialFusionRing, String, Seq[PartialFusionRing]](new MapTransformer.ValueTransformer[String, String, Seq[PartialFusionRing]](S3("partial-fusion-rings"),
+  C.s2pfrseq _,
+  C.pfrseq2s _),
+  { s: String => None },
+  { p => SHA1(C.pfr2s(p)) })
