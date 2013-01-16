@@ -4,7 +4,10 @@ import scala.collection.GenSeq
 import net.tqft.toolkit.algebra._
 
 object Matrix extends net.tqft.toolkit.Logging {
-  def apply[B](numberOfColumns: Int, entries: GenSeq[Seq[B]]): Matrix[B] = new Matrix(numberOfColumns, entries)
+  def apply[B](numberOfColumns: Int, entries: GenSeq[Seq[B]]): Matrix[B] = new Matrix(numberOfColumns, entries.map({
+    case r: IndexedSeq[B] => r
+    case r => r.toIndexedSeq[B]
+  }))
   implicit def from[B](entries: GenSeq[Seq[B]]): Matrix[B] = {
     require(entries.nonEmpty)
     apply(entries.head.size, entries)
@@ -16,9 +19,9 @@ object Matrix extends net.tqft.toolkit.Logging {
     case k => Some(k)
   }
 
-  def singleColumn[B](vector: Seq[B]) = new Matrix(1, vector map { x => List(x) })
+  def singleColumn[B](vector: Seq[B]) = new Matrix(1, vector map { x => IndexedSeq(x) })
 
-  def diagonalMatrix[B](vector: Seq[B])(implicit rig: Rig[B]) = new Matrix(vector.size, vector.zipWithIndex map { case (v, k) => List.fill(k)(rig.zero) ::: List(v) ::: List.fill(vector.size - k - 1)(rig.zero) })
+  def diagonalMatrix[B](vector: Seq[B])(implicit rig: Rig[B]) = new Matrix(vector.size, vector.zipWithIndex map { case (v, k) => (List.fill(k)(rig.zero) ::: List(v) ::: List.fill(vector.size - k - 1)(rig.zero)).toIndexedSeq })
 
   def identityMatrix[B](size: Int)(implicit rig: Rig[B]) = diagonalMatrix(List.fill(size)(rig.one))
 
@@ -29,21 +32,21 @@ object Matrix extends net.tqft.toolkit.Logging {
 
 class Matrix[B](
   override val numberOfColumns: Int,
-  override val entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
+  override val entries: GenSeq[IndexedSeq[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
 
-  def mapRows[C](rowMapper: Seq[B] => Seq[C], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
+  def mapRows[C](rowMapper: IndexedSeq[B] => IndexedSeq[C], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
   def mapEntries[C](entryMapper: B => C) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
 
   override def toString = "Matrix(" + numberOfColumns + ", " + entries + ")"
 
   import Matrix.pivotPosition2
 
-  def transpose = new Matrix(numberOfRows, entries.toList.transpose)
+  def transpose = new Matrix(numberOfRows, entries.toIndexedSeq.transpose)
 
   def takeColumn(column: Int) = entries map { row => row(column) }
 
-  def takeColumns(columns: Seq[Int]) = new Matrix(columns.size, entries map { row => columns map { i => row(i) } })
-  def dropColumns(columns: Seq[Int]) = takeColumns((0 until numberOfColumns).toList filterNot (columns contains _))
+  def takeColumns(columns: Seq[Int]) = new Matrix(columns.size, entries map { row => (columns map { i => row(i) }).toIndexedSeq })
+  def dropColumns(columns: Seq[Int]) = takeColumns((0 until numberOfColumns) filterNot (columns contains _))
   
   def takeRows(rows: Seq[Int]) = new Matrix(numberOfColumns, rows map { i => entries(i) })
   def dropRows(rows: Seq[Int]) = takeRows((0 until numberOfRows).toList filterNot (rows contains _))
@@ -82,6 +85,13 @@ class Matrix[B](
       rig.sum(for ((x, y) <- row zip vector) yield rig.multiply(x, y))
     }).seq
   }
+  def apply(vector: IndexedSeq[B])(implicit rig: Rig[B]) = {
+    (for (row <- entries) yield {
+      rig.sum(for (i <- 0 until row.size) yield rig.multiply(row(i), vector(i)))
+    }).seq
+    
+  }
+  
 
   def trace(implicit addition: AdditiveMonoid[B]): B = {
     require(numberOfRows == numberOfColumns)

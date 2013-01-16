@@ -1,7 +1,7 @@
 package net.tqft.toolkit.algebra.matrices
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.algebra.categories.{??? => _, _}
+import net.tqft.toolkit.algebra.categories.{ ??? => _, _ }
 import scala.collection.immutable.SortedMap
 import scala.collection.GenSeq
 
@@ -27,24 +27,24 @@ object Matrices extends net.tqft.toolkit.Logging {
 
   lazy val positiveSymmetricDecompositionsCached: Matrix[Int] => Seq[Matrix[Int]] = {
     val bucket = net.tqft.toolkit.amazon.S3("positive-symmetric-decompositions")
-    
+
     def writeMatrix(m: Matrix[Int]): String = {
       m.entries.map(_.mkString("x")).mkString("p")
     }
     def readMatrix(m: String): Matrix[Int] = {
       import net.tqft.toolkit.Extractors.Int
-      m.split("p").toSeq.map(_.split("x").toSeq.collect({case Int(n) => n}))
+      m.split("p").toSeq.map(_.split("x").toSeq.collect({ case Int(n) => n }))
     }
     def writeMatrices(ms: Seq[Matrix[Int]]): String = ms.map(writeMatrix).mkString("\n")
     def readMatrices(ms: String): Seq[Matrix[Int]] = ms.split("\n").toSeq.filter(_.nonEmpty).map(readMatrix)
-    
+
     import net.tqft.toolkit.collections.MapTransformer._
     val transformedBucket = bucket.transformKeys(readMatrix _, writeMatrix _).transformValues(readMatrices _, writeMatrices _)
-    
+
     import net.tqft.toolkit.functions.Memo._
     (positiveSymmetricDecompositions _).memoUsing(transformedBucket)
   }
-  
+
   // return all ways to write M=AA^t, up to permuting the columns of A
   def positiveSymmetricDecompositions(M: Matrix[Int]): Seq[Matrix[Int]] = {
     info("finding positiveSymmetricDecompositions of " + M.entries)
@@ -119,13 +119,13 @@ object Matrices extends net.tqft.toolkit.Logging {
     val result = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
 
     info("... finished, " + result.size + " decompositions")
-    
-    if(result.nonEmpty && !M.mapEntries(Conversions.integersAsDoubles).positiveSemidefinite_?) {
+
+    if (result.nonEmpty && !M.mapEntries(Conversions.integersAsDoubles).positiveSemidefinite_?) {
       println("positiveSemidefinite_? seems to fail on:")
       println(M)
       throw new IllegalArgumentException("positiveSemidefinite_? failed on " + M)
     }
-    
+
     result
 
   }
@@ -155,25 +155,30 @@ class MatrixCategoryOverRing[R: Ring] extends TensorCategory[Int, Matrix[R], R] 
   override def identityMorphism(o: Int) = inner.identityMorphism(List.fill(o)(()))
   override def zeroMorphism(o1: Int, o2: Int) = {
     val zero = implicitly[Ring[R]].zero
-    val zeroRow = Seq.fill(o2)(zero)
-    new Matrix(o1, Seq.fill(o1)(zeroRow))
+    val zeroRow = IndexedSeq.fill(o2)(zero)
+    Matrix(o1, Seq.fill(o1)(zeroRow))
   }
   override def negate(m: Matrix[R]) = inner.negate(m)
   override def add(x: Matrix[R], y: Matrix[R]) = inner.add(x, y)
   override def compose(x: Matrix[R], y: Matrix[R]) = {
-    val yt = y.transpose
-    new Matrix(y.numberOfColumns, for (rx <- x.entries) yield {
-      for (ry <- yt.entries.seq) yield {
-        ring.sum(rx.zip(ry).map(p => ring.multiply(p._1, p._2)))
-      }
+    IndexedSeq.tabulate(x.numberOfRows, y.numberOfColumns)({ (i, j) =>
+      ring.sum(for (k <- 0 until x.numberOfColumns) yield ring.multiply(x.entries(i)(k), y.entries(k)(j)))
     })
+
+    // TODO optimize this
+    //    val yt = y.transpose
+    //    Matrix(y.numberOfColumns, for (rx <- x.entries) yield {
+    //      for (ry <- yt.entries.seq) yield {
+    //        ring.sum(rx.zip(ry).map(p => ring.multiply(p._1, p._2)))
+    //      }
+    //    })
   }
   override def source(x: Matrix[R]) = x.numberOfColumns
   override def target(x: Matrix[R]) = x.numberOfRows
   override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => VectorOperations.scalarMultiply(a, r) })
   override def tensorObjects(o1: Int, o2: Int) = o1 * o2
   override def tensorMorphisms(m1: Matrix[R], m2: Matrix[R]) = {
-    new Matrix(m1.numberOfColumns * m2.numberOfColumns,
+    Matrix(m1.numberOfColumns * m2.numberOfColumns,
       for (row1 <- m1.entries; row2 <- m2.entries) yield VectorOperations.tensor(row1, row2))
   }
 

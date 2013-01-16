@@ -190,7 +190,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
         m.zipWithIndex.map({ case (r, i) => r.updated(i, (r(i) - lambda) mod preferredPrime) })
       }
 
-      def eigenvalues(m: Seq[Seq[Int]]) = new Matrix(m.size, m.par).eigenvalues
+      def eigenvalues(m: Seq[Seq[Int]]) = Matrix(m.size, m.par).eigenvalues
 
       case class PartialEigenspace(annihilators: GenSeq[Seq[Int]], eigenvalues: Seq[Int], eigenvectors: Option[Seq[Seq[Int]]]) {
         def splitAlong(m: => Seq[Seq[Int]], mEigenvalues: => Set[Int]): Set[PartialEigenspace] = {
@@ -201,7 +201,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
             }
             case _ => {
               for (lambda <- mEigenvalues) yield {
-                val newAnnihilators = new Matrix(conjugacyClasses.size, annihilators ++ subtractDiagonal(m, lambda)).rowEchelonForm(modP)
+                val newAnnihilators = Matrix(conjugacyClasses.size, annihilators ++ subtractDiagonal(m, lambda)).rowEchelonForm(modP)
                 PartialEigenspace(newAnnihilators.entries, eigenvalues :+ lambda, Some(newAnnihilators.nullSpace))
               }
             }
@@ -210,7 +210,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       }
 
       val cachedEigenvalues = {
-        def impl(n: Int) = new Matrix(k, classCoefficients(n).par).eigenvalues
+        def impl(n: Int) = Matrix(k, classCoefficients(n).par).eigenvalues
         import net.tqft.toolkit.functions.Memo._
         (impl _).memo
       }
