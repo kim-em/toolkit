@@ -32,9 +32,9 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
 
   // now the actual algorithm
   def children = {
-//    info("computing children of " + this)
+    info("computing children of " + this)
 //    info(" automorphism group: " + automorphisms.generators)
-    val orbits = upperObjects.orbits
+    val orbits = upperObjects.orbits.toSeq
 //    info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
     val result = orbits.flatMap({ orbit =>
       val candidateUpperObject = orbit.representative;
@@ -52,17 +52,34 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
         None
       }
     })
-    //    info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
+        info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
     result
   }
 
   // and, for convenience, something to recursively find all children, filtering on a predicate
-  def descendants(accept: A => Int = { _ => 1 }): Iterator[A] = {
+  def descendants(accept: A => Int = { _ => 1 }): Iterator[A] = descendantsTree(accept).map(_._1)
+  
+  def descendantsTree(accept: A => Int = { _ => 1}): Iterator[(A, Seq[A])] = {
     accept(this) match {
-      case a if a > 0 => Iterator(this) ++ children.toIterator.flatMap(_.descendants(accept))
-      case 0 => Iterator(this)
+      case a if a > 0 => {
+        val c = children
+        Iterator((this, c)) ++ c.par.map(_.descendantsTree(accept)).seq.iterator.flatMap(i => i)
+      }
+      case 0 => Iterator((this, Nil))
       case a if a < 0 => Iterator.empty
     }
+  }
+  
+  def descendantsWithProgress(accept: A => Int = { _ => 1}): Iterator[(A, Seq[(Int, Int)])] = {
+    val progress = scala.collection.mutable.Map[Int, Seq[(Int, Int)]](this.hashCode -> Seq((1, 1)))
+    descendantsTree(accept).map({
+      case (a, children) => {
+        for((c, i) <- children.zipWithIndex) {
+          progress.put(c.hashCode, progress(a.hashCode) :+ (i+1, children.size))
+        }
+        (a, progress(a.hashCode))
+      }
+    })
   }
 }
 

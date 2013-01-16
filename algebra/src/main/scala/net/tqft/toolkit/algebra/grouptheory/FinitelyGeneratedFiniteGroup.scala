@@ -17,6 +17,14 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
         override def stabilizer = ???
         override lazy val elements = extendElements(Seq.empty, Seq(representative).par).toSet
 
+        override def hashCode = elements.hashCode
+        override def equals(other: Any) = {
+          other match {
+            case other: Orbit[A, B] => other.elements == elements
+            case _ => false
+          }
+        }
+        
         @scala.annotation.tailrec
         private def extendElements(elements: Seq[B], newestElements: GenSeq[B]): Seq[B] = {
           if (newestElements.isEmpty) {

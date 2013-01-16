@@ -44,7 +44,7 @@ trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { represent
           Representation.info("Preparing projector to the " + chi.character + " isotypic component in conjugacy class " + p._1.representative)
           matrices.add(m, projectorConjugacyClass(p._1.elements, p._2))
         }
-    }).ensuring(_.entries.head.isInstanceOf[scala.collection.mutable.WrappedArray[_]]).mapRows(_.toList)
+    }).ensuring(_.entries.head.isInstanceOf[scala.collection.mutable.WrappedArray[_]]).mapRows(_.toList.toIndexedSeq)
     //    val chidegree = (chi.character.head.ensuring(_.denominator == 1)).numerator
     //    val eigenvalue = field.quotientByInt(field.fromInt(source.size), chidegree)
     //    projector.eigenspace(eigenvalue)

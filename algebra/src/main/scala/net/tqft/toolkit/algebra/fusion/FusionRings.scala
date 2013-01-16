@@ -359,9 +359,9 @@ object FusionRings {
     }
 
     def rank2(m: Int) = {
-      val identity: Matrix[Int] = Seq(Seq(1,0),Seq(0,1))
-      val other: Matrix[Int] = Seq(Seq(0, 1), Seq(1, m))
-      FusionRing(Seq(identity, other))
+      val identity: Matrix[Int] = IndexedSeq(IndexedSeq(1,0),IndexedSeq(0,1))
+      val other: Matrix[Int] = IndexedSeq(IndexedSeq(0, 1), IndexedSeq(1, m))
+      FusionRing(IndexedSeq(identity, other))
     }
   }
 }

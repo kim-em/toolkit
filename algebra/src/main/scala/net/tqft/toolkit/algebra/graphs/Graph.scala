@@ -29,7 +29,7 @@ trait Graph {
     colour(for (i <- 0 until numberOfVertices) yield vertices.contains(i))
   }
 
-  def colour[V:Ordering](colours: IndexedSeq[V]): ColouredGraph[V] = {
+  def colour[V: Ordering](colours: IndexedSeq[V]): ColouredGraph[V] = {
     ColouredGraph(numberOfVertices, edges, colours)
   }
 }
@@ -70,7 +70,7 @@ trait ColouredGraph[V] extends Graph {
   def vertices: IndexedSeq[V]
 
   implicit val ordering: Ordering[V]
-  
+
   override def toString = "ColouredGraph(" + numberOfVertices + ", " + edges + ", " + vertices + ")"
   override def hashCode = (numberOfVertices, edges, vertices).hashCode
   override def equals(other: Any) = {
@@ -91,7 +91,7 @@ trait ColouredGraph[V] extends Graph {
 }
 
 object ColouredGraph {
-  def apply[V:Ordering](numberOfVertices: Int, edges: Traversable[Set[Int]], vertices: IndexedSeq[V]) = {
+  def apply[V: Ordering](numberOfVertices: Int, edges: Traversable[Set[Int]], vertices: IndexedSeq[V]) = {
     val _numberOfVertices = numberOfVertices
     val _edges = edges
     val _vertices = vertices
@@ -102,4 +102,11 @@ object ColouredGraph {
       override val ordering = implicitly[Ordering[V]]
     }
   }
+
+  implicit def ordering[V: Ordering]: Ordering[ColouredGraph[V]] = {
+    import net.tqft.toolkit.collections.LexicographicOrdering._
+    import net.tqft.toolkit.collections.Orderings._
+    Ordering.by({ g: ColouredGraph[V] => g.vertices }).refineBy({ g: ColouredGraph[V] => g.edges.toSeq.map(_.toSeq.sorted).sorted })
+  }
+
 }
