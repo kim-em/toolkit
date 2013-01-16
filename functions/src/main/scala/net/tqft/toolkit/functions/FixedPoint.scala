@@ -11,13 +11,17 @@ object FixedPoint {
      * Finds the fixed point of f. (Of course, if there isn't a fixed point it simply doesn't terminate.)
      */
     def fixedPoint(a: A): A = {
-      val twoValues = scala.collection.mutable.IndexedSeq(a, f(a))
-      var i = 0
-      while (!equalityTest(twoValues(0), twoValues(1))) {
-        twoValues(i) = f(twoValues(1 - i))
-        i = (i + 1) % 2
+      var s = a
+      var t = f(a)
+      while(!equalityTest(s, t)) {
+        s = f(t)
+        if(equalityTest(s, t)) {
+          return s
+        } else {
+          t = f(s)
+        }
       }
-      twoValues(1 - i)
+      t
     }
 
     /**

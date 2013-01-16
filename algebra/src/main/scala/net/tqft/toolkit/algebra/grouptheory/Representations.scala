@@ -15,7 +15,7 @@ object Representations {
       override val source = _source
       override def apply(p: Permutation) = {
         import net.tqft.toolkit.collections.SparseSeq
-        new Matrix(degree, for (k <- p) yield {
+        Matrix(degree, for (k <- p) yield {
           SparseSeq.elementaryVector[F](degree, k, implicitly[Ring[F]].one, implicitly[Ring[F]].zero)
         })
       }
@@ -31,7 +31,7 @@ object Representations {
         import net.tqft.toolkit.collections.SparseSeq
         val ring = implicitly[Ring[F]]
         import net.tqft.toolkit.collections.Pairs._
-        new Matrix(degree, for ((s, k) <- p.transpose) yield {
+        Matrix(degree, for ((s, k) <- p.transpose) yield {
           SparseSeq.elementaryVector[F](degree, k, if (s == 0) ring.one else ring.fromInt(-1), ring.zero)
         })
       }
