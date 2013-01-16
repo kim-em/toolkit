@@ -45,7 +45,7 @@ object BuildSettings {
 
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.11"
-  val buildScalaVersion = "2.9.3-RC1"
+  val buildScalaVersion = "2.10.0"
   val buildCrossScalaVersions = Seq("2.9.3-RC1", "2.10.0")
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -57,9 +57,8 @@ object BuildSettings {
     resolvers := sonatypeResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += {
         val (scalatestVersion, scalatestScalaVersion) = buildScalaVersion match {
-                case sv if sv.startsWith("2.9") => ("2.0.M4", "2.9.2")
-                case sv if sv.startsWith("2.10") => ("1.9-2.10.0-M7-B1", "2.10.0-M7")
-                case sv if sv.startsWith("2.11") => ("1.9-2.10.0-M7-B1", "2.10.0-M7")
+                case sv if sv.startsWith("2.9") => ("1.9.1", "2.9.0")
+                case sv if sv.startsWith("2.10") => ("1.9.1", "2.10")
         }
         ("org.scalatest" % ("scalatest_" + scalatestScalaVersion) % scalatestVersion % "test" )
     },
