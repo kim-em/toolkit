@@ -2,7 +2,6 @@ package net.tqft.toolkit.algebra.enumeration
 
 import net.tqft.toolkit.algebra.graphs.Graph
 
-// An incomplete example, just to make sure the framework is usable. 
 case class TriangleFreeGraph(numberOfVertices: Int, edges: Set[Set[Int]]) extends Graph with CanonicalGeneration[TriangleFreeGraph, IndexedSeq[Int]] { tfg =>
   import net.tqft.toolkit.permutations.Permutations._
   import net.tqft.toolkit.algebra.graphs._

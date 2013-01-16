@@ -10,7 +10,7 @@ import net.tqft.toolkit.algebra.graphs.Graph
 class TriangleFreeGraphTest extends FlatSpec with ShouldMatchers {
 
   "descendants" should "enumerate all triangle free graphs with up to 8 vertices" in {
-    val n = 8
+    val n = 10
     
     val g0 = TriangleFreeGraph(1, Set.empty)
     val graphs = g0.descendants(n - _.numberOfVertices).toStream
