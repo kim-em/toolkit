@@ -19,8 +19,11 @@ object PartialFusionRingApp extends App {
       r
     }
 
+    var k = 0
+    
     println("parallelizing over " + firstLayer.size + " fusion rings")
     for ((s, i) <- firstLayer.zipWithIndex.par; (r, p) <- s.descendantsWithProgress()) {
+      k += 1
       println((i + 1, firstLayer.size) + " " + p)
       if (r.depth == r.depths.max) {
         if (r.ring.associativityConstraints.forall(p => p._1 == p._2)) {
@@ -30,6 +33,7 @@ object PartialFusionRingApp extends App {
         }
       }
     }
+    println("Considering " + k + " partial fusion rings")
   })._1)
   //  }
 

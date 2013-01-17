@@ -26,7 +26,7 @@ object FrobeniusPerronEigenvalues {
   private val matrices = Matrices.over[Double]
 
   def estimate2(m: Matrix[Int]): Double = {
-    //require(m == m.transpose)
+//    require(m == m.transpose)
 
     val reals = implicitly[ApproximateReals[Double]]
 

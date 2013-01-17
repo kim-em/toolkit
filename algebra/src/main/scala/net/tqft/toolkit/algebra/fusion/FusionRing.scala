@@ -217,16 +217,12 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       val matrices = Matrices.over[Int]
       val S = structureCoefficients.map(_.mapEntries(xi => xi: Int))
 
-      def symmetrizeByMaximum(m: Matrix[Int]): Matrix[Int] = {
-        for(i <- 0 until rank) yield {
-          for(j <- 0 until rank) yield {
-            scala.math.max(m.entries(i)(j), m.entries(j)(i))
-          }
-        }
-      }
-      
-      FrobeniusPerronEigenvalues.estimate2(matrices.sum(for(i <- 0 until rank; v= S(i); vd = S(duality(i))) yield symmetrizeByMaximum(matrices.compose(v, vd)))) - 0.0001
-      
+      FrobeniusPerronEigenvalues.estimate2(
+        matrices.sum(
+          for (i <- 0 until rank; v = S(i); vd = S(duality(i))) yield {
+            matrices.compose(v, vd)
+          })) - 0.0001
+
     }
 
     def associativityConstraints = (for (x <- fr.basis.iterator; y <- fr.basis; z <- basis) yield act(x, act(y, z)).zip(act(fr.multiply(x, y), z))).flatten
