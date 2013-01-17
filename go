@@ -1,3 +1,4 @@
+rm *.out
 ./pfr 6.0 > 6.out
 ./pfr 9.0 > 9.out
 ./pfr 10.0 > 10.out

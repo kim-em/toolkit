@@ -6,7 +6,7 @@ import net.tqft.toolkit.algebra._
 object Matrix extends net.tqft.toolkit.Logging {
   def apply[B](numberOfColumns: Int, entries: GenSeq[Seq[B]]): Matrix[B] = new Matrix(numberOfColumns, entries.map({
     case r: IndexedSeq[B] => r
-    case r => r.toIndexedSeq[B]
+    case r => r.toIndexedSeq
   }))
   implicit def from[B](entries: GenSeq[Seq[B]]): Matrix[B] = {
     require(entries.nonEmpty)
