@@ -5,13 +5,21 @@ import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.collections.MapTransformer
 import net.tqft.toolkit.amazon.S3
 import net.tqft.toolkit.SHA1
+import net.tqft.toolkit.Logging
 
 case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
 
   override lazy val hashCode = (depth, ring, globalDimensionLimit).hashCode
 
   override def children = {
+    try{
     PartialFusionRingCache.getOrElseUpdate(this, super.children)
+    } catch {
+      case e: java.lang.ExceptionInInitializerError => {
+        Logging.error("S3 not available: ", e)
+        super.children
+      }
+    }
   }
 
   val generator = {
@@ -159,7 +167,7 @@ private object C {
   }
 }
 
-object PartialFusionRingCache extends MapTransformer.KeyTransformer[PartialFusionRing, String, Seq[PartialFusionRing]](new MapTransformer.ValueTransformer[String, String, Seq[PartialFusionRing]](S3("partial-fusion-rings"),
+object PartialFusionRingCache extends MapTransformer.KeyTransformer[PartialFusionRing, String, Seq[PartialFusionRing]](new MapTransformer.ValueTransformer[String, String, Seq[PartialFusionRing]](S3.withAccount("AKIAIUHOCNVIDRMVRC2Q")("partial-fusion-ring"),
   C.s2pfrseq _,
   C.pfrseq2s _),
   { s: String => None },

@@ -23,22 +23,26 @@ object FrobeniusPerronEigenvalues {
     FixedPoint.withSameTest({ (p: (Seq[R], R), q: (Seq[R], R)) => reals.close(p._2, q._2) })(next)(initialVector, initialEstimate)._2
   }
 
+  private val matrices = Matrices.over[Double]
+
   def estimate2(m: Matrix[Int]): Double = {
+    //require(m == m.transpose)
 
     val reals = implicitly[ApproximateReals[Double]]
 
     val mR = m.mapEntries(_.toDouble)
-    val iv = mR.entries.map(v => v.sum + 1).seq
+    val mR2 = matrices.compose(mR, mR)
+    val iv = mR2.entries.map(v => v.sum + 1).seq
     val initialVector = reals.normalize(iv)
     val initialEstimate = reals.zero
 
     def next(p: (Seq[Double], Double)) = {
-      val w = mR(p._1)
+      val w = mR2(p._1)
       val n = reals.norm(w)
       val nw = w.map(x => reals.quotient(x, n))
       (nw, n)
     }
 
-    FixedPoint.withSameTest({ (p: (Seq[Double], Double), q: (Seq[Double], Double)) => (p._2 - q._2).abs < 0.0001 })(next)(initialVector, initialEstimate)._2
+    scala.math.sqrt(FixedPoint.withSameTest({ (p: (Seq[Double], Double), q: (Seq[Double], Double)) => (p._2 - q._2).abs < 0.0001 })(next)(initialVector, initialEstimate)._2)
   }
 }

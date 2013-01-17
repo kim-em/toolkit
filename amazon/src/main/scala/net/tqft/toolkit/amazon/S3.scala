@@ -243,7 +243,21 @@ private class S3BucketStreaming(val s3Service: StorageService, val bucket: Strin
 }
 
 object S3 extends S3 {
-  private val pair = scala.io.Source.fromFile(System.getProperty("user.home") + "/home/ec2-keys/access").getLines.filter(!_.startsWith("#")).next.split(",").toList
-  val AWSAccount = pair(0)
-  val AWSSecretKey = pair(1)
+  private val accessPath = System.getProperty("user.home") + "/.ec2/access"
+  private val accounts = scala.io.Source.fromFile(accessPath).getLines.filter(!_.startsWith("#")).toStream.map(_.split(",").map(_.trim).toList)
+  override lazy val AWSAccount = accounts(0)(0)
+  override lazy val AWSSecretKey = accounts(0)(1)
+  
+  def withAccount(accountName: String): S3 = {
+    accounts.find(_.head == accountName) match {
+      case None => throw new IllegalArgumentException("No AWS account named " + accountName + " found in " + accessPath)
+      case Some(accountName :: secretKey :: _) => {
+        new S3 {
+          override val AWSAccount = accountName
+          override val AWSSecretKey = secretKey
+        }
+      }
+      case _ => throw new IllegalArgumentException("Encountered a problem parsing " + accessPath)
+    }    
+  }
 }

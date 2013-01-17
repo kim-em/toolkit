@@ -48,6 +48,8 @@ object PartialFusionRingApp extends App {
   // 4400ms
   // 4750ms
   // 4500ms just can't seem to improve on this...
+  
+  // 128s non self dual stuff as well!
 
   // L = 10.0
   // 25500ms
