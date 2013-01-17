@@ -12,8 +12,8 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
   override lazy val hashCode = (depth, ring, globalDimensionLimit).hashCode
 
   override def children = {
-    try{
-    PartialFusionRingCache.getOrElseUpdate(this, super.children)
+    try {
+      PartialFusionRingCache.getOrElseUpdate(this, super.children)
     } catch {
       case e: java.lang.ExceptionInInitializerError => {
         Logging.error("S3 not available: ", e)

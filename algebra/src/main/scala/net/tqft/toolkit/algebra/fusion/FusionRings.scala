@@ -434,26 +434,22 @@ object FusionRings {
     def selfDualGenerators(globalDimensionUpperBound: Double) = {
       Iterator.from(0).map(rank2).takeWhile(_.globalDimensionLowerBound < globalDimensionUpperBound)
     }
-    
+
     def nonSelfDualGenerators(globalDimensionUpperBound: Double) = {
-      def R(a: Int, b: Int, c: Int, d: Int) = {
+      def R(a: Int, b: Int) = {
         val identity: Matrix[Int] = IndexedSeq(IndexedSeq(1, 0, 0), IndexedSeq(0, 1, 0), IndexedSeq(0, 0, 1))
-        val V: Matrix[Int] = IndexedSeq(IndexedSeq(0, 1, 0), IndexedSeq(0, a, b), IndexedSeq(1, c, c))
-        val Vd: Matrix[Int] = IndexedSeq(IndexedSeq(0, 0, 1), IndexedSeq(1, d, d), IndexedSeq(0, b, a))
+        val V: Matrix[Int] = IndexedSeq(IndexedSeq(0, 1, 0), IndexedSeq(0, a, b), IndexedSeq(1, a, a))
+        val Vd: Matrix[Int] = IndexedSeq(IndexedSeq(0, 0, 1), IndexedSeq(1, a, a), IndexedSeq(0, b, a))
         FusionRing(IndexedSeq(identity, V, Vd))
       }
-      Iterator.from(0).takeWhile(a => R(a, 0, 0, 0).globalDimensionLowerBound < globalDimensionUpperBound).flatMap({ a =>
-        Iterator.from(0).takeWhile(b => R(a, b, 0, 0).globalDimensionLowerBound < globalDimensionUpperBound).flatMap({ b =>
-          Iterator.from(0).takeWhile(c => R(a, b, c, 0).globalDimensionLowerBound < globalDimensionUpperBound).flatMap({ c =>
-            Iterator.from(0).takeWhile(d => R(a, b, c, d).globalDimensionLowerBound < globalDimensionUpperBound).map({ d =>
-              R(a, b, c, d)
-            })
-          })
+      Iterator.from(0).takeWhile(a => R(a, 0).globalDimensionLowerBound < globalDimensionUpperBound).flatMap({ a =>
+        Iterator.from(0).takeWhile(b => R(a, b).globalDimensionLowerBound < globalDimensionUpperBound).map({ b =>
+          R(a, b)
         })
       })
     }
-    
-      def allGenerators(globalDimensionUpperBound: Double) = selfDualGenerators(globalDimensionUpperBound) ++ nonSelfDualGenerators(globalDimensionUpperBound)
-  
+
+    def allGenerators(globalDimensionUpperBound: Double) = selfDualGenerators(globalDimensionUpperBound) ++ nonSelfDualGenerators(globalDimensionUpperBound)
+
   }
 }
