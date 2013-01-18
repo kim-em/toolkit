@@ -64,7 +64,7 @@ trait dreadnaut extends Logging {
 }
 
 object dreadnaut extends dreadnaut {
-  override val dreadnautPath = "whereis dreadnaut" !!;
+  override val dreadnautPath = "which dreadnaut" !!;
   require(dreadnautPath.nonEmpty, "There doesn't appear to be a copy of dreadnaut on the $PATH.")
   require(invoke("n=3 g 1;2;0; cx").head.startsWith("(1 2)"), "The copy of dreadnaut at " + dreadnautPath + " doesn't seem to be working.")
 
