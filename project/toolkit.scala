@@ -63,6 +63,7 @@ object BuildSettings {
         ("org.scalatest" % ("scalatest_" + scalatestScalaVersion) % scalatestVersion % "test" )
     },
 //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
+    scalacOptions ++= Seq("-optimise"),
     libraryDependencies ++= Seq(junit, slf4j))
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }

@@ -95,6 +95,14 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
   def structureCoefficients: Seq[Matrix[A]] = ??? // for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
 
+  def regularObjectStructureCoefficients(duality: IndexedSeq[Int] = duality): Matrix[A] = {
+    val matrices = Matrices.over[A](coefficients)
+    matrices.sum(
+      for (i <- 0 until rank; v = structureCoefficients(i); vd = structureCoefficients(duality(i))) yield {
+        matrices.compose(v, vd)
+      })
+  }
+
   def dimensionLowerBounds(x: Seq[Int])(implicit ev: A =:= Int): Double = {
     regularModule.dimensionLowerBounds(x)
   }

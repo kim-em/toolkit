@@ -13,11 +13,6 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
   // TODO make boundary compulsory
   def solve[V: Ordering](polynomials: TraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): Iterator[Map[V, Int]] = {
 
-    val mentioned: scala.collection.mutable.Set[MultivariablePolynomial[Int, V]] = scala.collection.mutable.Set()
-
-    // make sure all the hash codes are computed
-    //    polynomials.par.map(_.hashCode)
-
     type P = MultivariablePolynomial[Int, V]
     val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
 
@@ -304,7 +299,9 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
       case None => {
         Iterator.empty
       }
-      case Some(equations) => equations.caseBash
+      case Some(equations) => {
+        equations.caseBash
+      }
     }
 
     iterator.map(_.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))
