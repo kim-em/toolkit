@@ -8,7 +8,7 @@ import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 
 object FusionRings {
-  def withObject(m: Matrix[Int], knownRing: Option[FusionRing[Int]] = None): Iterable[FusionRing[Int]] = {
+  def withObject(m: Matrix[Int], knownRing: Option[FusionRing[Int]] = None): Iterator[FusionRing[Int]] = {
     val rank = m.numberOfColumns
     require(m.entries.head == 0 :: 1 :: List.fill(rank - 2)(0))
 
@@ -51,7 +51,7 @@ object FusionRings {
 
   //  (xn, y) = (x, yn) = (y^* x, n) = (n y^*, x^*)
 
-  def withAnotherSelfDualObject(ring: FusionRing[Int], maxdepth: Int, depths: Seq[Int], globalDimensionLimit: Double): Iterable[FusionRing[Int]] = {
+  def withAnotherSelfDualObject(ring: FusionRing[Int], maxdepth: Int, depths: Seq[Int], globalDimensionLimit: Double): Iterator[FusionRing[Int]] = {
     val rank = ring.rank
     type V = (Int, Int)
 
@@ -84,21 +84,43 @@ object FusionRings {
     }
     val variables = for (i <- 0 until rank + 1; j <- 0 until rank + 1) yield (i, j)
 
-    val depthConditions = for (i <- 0 until rank; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
+    val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
     val identityConditions = variableRing.identityConstraints
     val dualityConditions = variableRing.dualityConstraints(ring.duality :+ rank)
     val associativityConditions = variableRing.partialAssociativityConstraints(maxdepth, depths)
 
     val polynomials = (depthConditions ++ identityConditions ++ dualityConditions ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
 
-    // TODO this could be much faster; instead of substituting just build the structureCoefficients directly
     def reconstituteRing(m: Map[V, Int]): FusionRing[Int] = {
-      require((variables diff m.keys.toSeq).isEmpty)
+      val structureCoefficients = (IndexedSeq.tabulate(rank + 1, rank + 1, rank + 1) { (i, j, k) =>
+        if (i < rank) {
+          if (j < rank) {
+            if (k < rank) {
+              ring.structureCoefficients(i).entries(j)(k)
+            } else {
+              m((i, ring.duality(j)))
+            }
+          } else {
+            if (k < rank) {
+              m((ring.duality(k), ring.duality(i)))
+            } else {
+              m((rank, ring.duality(i)))
+            }
+          }
+        } else {
+          m((j, k))
+        }
+      }).map(m => m: Matrix[Int])
 
-      val structureCoefficients = variableRing.structureCoefficients.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
-        case p => p.constantTerm
-      }))
+//      require((variables diff m.keys.toSeq).isEmpty)
+//
+//      val structureCoefficients2 = variableRing.structureCoefficients.map(_.mapEntries({
+//        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
+//        case p => p.constantTerm
+//      }))
+//
+//      require(structureCoefficients == structureCoefficients2, structureCoefficients + "\n" + structureCoefficients2)
+
       FusionRing(structureCoefficients)
     }
 
@@ -108,7 +130,7 @@ object FusionRings {
 
     solutions.map(reconstituteRing)
   }
-  def withAnotherPairOfDualObjects(ring: FusionRing[Int], maxdepth: Int, depths: Seq[Int], globalDimensionLimit: Double): Iterable[FusionRing[Int]] = {
+  def withAnotherPairOfDualObjects(ring: FusionRing[Int], maxdepth: Int, depths: Seq[Int], globalDimensionLimit: Double): Iterator[FusionRing[Int]] = {
     val rank = ring.rank
     type V = (Int, Int, Int)
 
@@ -151,21 +173,43 @@ object FusionRings {
     }
     val variables = for (k <- 0 to 1; i <- 0 until rank + 2; j <- 0 until rank + 2) yield (k, i, j)
 
-    val depthConditions = for (i <- 0 until rank; j <- 0 until rank; if depths(i) + depths(j) < maxdepth; k <- 0 to 1) yield (polynomialAlgebra.monomial((k, i, j)), polynomialAlgebra.zero)
+    val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth; k <- 0 to 1) yield (polynomialAlgebra.monomial((k, i, j)), polynomialAlgebra.zero)
     val identityConditions = variableRing.identityConstraints
     val dualityConditions = variableRing.dualityConstraints(ring.duality :+ (rank + 1) :+ rank)
     val associativityConditions = variableRing.partialAssociativityConstraints(maxdepth, depths)
 
     val polynomials = (depthConditions ++ identityConditions ++ dualityConditions ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
 
-    // TODO this could be much faster; instead of substituting just build the structureCoefficients directly
     def reconstituteRing(m: Map[V, Int]): FusionRing[Int] = {
-      require((variables diff m.keys.toSeq).isEmpty)
+      val structureCoefficients= (IndexedSeq.tabulate(rank + 2, rank + 2, rank + 2) { (i, j, k) =>
+        if (i < rank) {
+          if (j < rank) {
+            if (k < rank) {
+              ring.structureCoefficients(i).entries(j)(k)
+            } else {
+              m((k - rank, i, ring.duality(j)))
+            }
+          } else {
+            if (k < rank) {
+              m((j - rank, ring.duality(k), ring.duality(i)))
+            } else {
+              m((j - rank, 2 * rank + 1 - k, ring.duality(i)))
+            }
+          }
+        } else {
+          m((i - rank, j, k))
+        }
+      }).map(m => m: Matrix[Int])
 
-      val structureCoefficients = variableRing.structureCoefficients.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
-        case p => p.constantTerm
-      }))
+//      require((variables diff m.keys.toSeq).isEmpty)
+//
+//      val structureCoefficients2 = variableRing.structureCoefficients.map(_.mapEntries({
+//        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
+//        case p => p.constantTerm
+//      }))
+//
+//      require(structureCoefficients == structureCoefficients2, structureCoefficients + "\n" + structureCoefficients2)
+
       FusionRing(structureCoefficients)
     }
 
@@ -424,6 +468,8 @@ object FusionRings {
       }
       FusionRing(AH3Multiplicities, AHFieldGenerator, AHFieldGeneratorApproximation, AHFieldGeneratorEpsilon, AH3Dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
     }
+
+    def rank1 = FusionRing(IndexedSeq(IndexedSeq(IndexedSeq(1)): Matrix[Int]))
 
     def rank2(m: Int) = {
       val identity: Matrix[Int] = IndexedSeq(IndexedSeq(1, 0), IndexedSeq(0, 1))

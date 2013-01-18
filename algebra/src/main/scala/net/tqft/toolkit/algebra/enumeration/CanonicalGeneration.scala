@@ -90,5 +90,32 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
       }
     })
   }
+  def randomLineage: Iterator[(A, Seq[A], Long)] = {
+    import net.tqft.toolkit.collections.Iterators._
+    val (t, nc) = net.tqft.toolkit.Profiler.timing(this.children)
+    Iterator.iterateUntilNone((this, nc, t))({
+      case (_, c, _) if c.nonEmpty => {
+        val n = c(scala.util.Random.nextInt(c.size))
+        val (t, nc) = net.tqft.toolkit.Profiler.timing(n.children)
+        Some((n, nc, t))
+      }
+      case _ => None
+    })
+  }
+  def numberOfDescendantsEstimators: Iterator[Int] = {
+    def estimate = randomLineage.map(_._2.size).filterNot(_ == 0).product
+    def estimates = Iterator.continually(estimate)
+    def partialSums = estimates.scanLeft(0)(_ + _)
+    def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
+    averages
+  }
+  def runtimeEstimators: Iterator[Long] = {
+    def estimate = randomLineage.foldLeft((1, 0L))({ (a, b) => (a._1 * b._2.size, a._2 + a._1 * b._3)})._2
+    def estimates = Iterator.continually(estimate)
+    def partialSums = estimates.scanLeft(0L)(_ + _)
+    def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
+    averages
+  }
+
 }
 

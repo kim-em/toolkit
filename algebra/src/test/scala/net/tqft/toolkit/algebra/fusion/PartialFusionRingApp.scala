@@ -11,13 +11,11 @@ object PartialFusionRingApp extends App {
   }
   //  while (true) {
   println("completed in " + Profiler.timing({
-    val generators = FusionRings.Examples.allGenerators(L).toStream
-
     println("warming up... preparing a first layer")
-    val firstLayer = for (s <- generators.toSeq; (r, p) <- PartialFusionRing(2, s, L).descendantsWithProgress(4 - _.ring.rank); if r.genuineReduction.flatMap(_.genuineReduction).map(_.depth).getOrElse(0) == 1) yield {
+    val firstLayer = (for ((r, p) <- PartialFusionRing(1, FusionRings.Examples.rank1, L).descendantsWithProgress(4 - _.ring.rank); if r.genuineReduction.flatMap(_.genuineReduction).map(_.depth).getOrElse(0) == 1) yield {
       println(p)
       r
-    }
+    }).toSeq
 
     var k = 0
     
@@ -60,4 +58,6 @@ object PartialFusionRingApp extends App {
 
   // L = 11.0 
   // 185s
+  
+
 }

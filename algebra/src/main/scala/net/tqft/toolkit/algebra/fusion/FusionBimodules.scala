@@ -6,7 +6,7 @@ import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.polynomials._
 
 object FusionBimodules extends net.tqft.toolkit.Logging {
-  def commutants(leftModule: FusionRingWithDimensions#FusionModule, rankBound: Option[Int] = None): Iterable[FusionBimodule[Int]] = {
+  def commutants(leftModule: FusionRingWithDimensions#FusionModule, rankBound: Option[Int] = None): Seq[FusionBimodule[Int]] = {
     val upperBoundFromGlobalDimension = leftModule.fusionRing.globalDimensionUpperBound.floor.toInt
     val upperBoundFromMatrixBlocks = 1 + implicitly[Ring[Int]].power(leftModule.fusionRing.rank - 1, 2) // this is probably just bogus
     val upperBound = (rankBound ++ List(upperBoundFromGlobalDimension, upperBoundFromMatrixBlocks)).min
@@ -14,11 +14,11 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     (for (otherRank <- (upperBound to 1 by -1).par; commutant <- commutantsWithRank(leftModule, otherRank)) yield commutant).seq
   }
 
-  def commutantsWithRank(leftModule: FusionRingWithDimensions#FusionModule, otherRank: Int): Iterable[FusionBimodule[Int]] = {
+  def commutantsWithRank(leftModule: FusionRingWithDimensions#FusionModule, otherRank: Int): Seq[FusionBimodule[Int]] = {
     (for (nsd <- (otherRank to 0 by -2).par; commutant <- commutantsWithRank(leftModule, otherRank, nsd)) yield commutant).seq
   }
 
-  def commutantsWithRank(leftModule: FusionRingWithDimensions#FusionModule, otherRank: Int, otherNumberOfSelfDualObjects: Int, knownBimodule: Option[FusionBimodule[Int]] = None): Iterable[FusionBimodule[Int]] = {
+  def commutantsWithRank(leftModule: FusionRingWithDimensions#FusionModule, otherRank: Int, otherNumberOfSelfDualObjects: Int, knownBimodule: Option[FusionBimodule[Int]] = None): Seq[FusionBimodule[Int]] = {
 
     info("Trying to find commutants with total rank " + otherRank + " and " + otherNumberOfSelfDualObjects + " self-dual objects.")
 
@@ -101,10 +101,10 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
 
     import net.tqft.toolkit.collections.GroupBy._
 
-    (for (solution <- solutions) yield reconstituteBimodule(solution)).chooseEquivalenceClassRepresentatives(equivalent_?)
+    (for (solution <- solutions) yield reconstituteBimodule(solution)).toSeq.chooseEquivalenceClassRepresentatives(equivalent_?)
   }
 
-  def withGenerator(left: String, right: String): Iterable[FusionBimodule[Int]] = {
+  def withGenerator(left: String, right: String): Iterator[FusionBimodule[Int]] = {
     def extract(s: String): (Matrix[Int], IndexedSeq[Int]) = {
       val graph :: duals :: Nil = s.stripPrefix("bwd").split("duals").toList
       val matrices = graph.split("v").toSeq.map(c => (c.split("p").toSeq.map(_.split("x").toSeq.map(_.toInt))): Matrix[Int])
@@ -139,7 +139,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     withGenerator(leftGenerator, rightGenerator, leftDuality, rightDuality)
   }
 
-  def withGenerator(leftGenerator: Matrix[Int], rightGenerator: Matrix[Int], leftDuality: IndexedSeq[Int], rightDuality: IndexedSeq[Int]): Iterable[FusionBimodule[Int]] = {
+  def withGenerator(leftGenerator: Matrix[Int], rightGenerator: Matrix[Int], leftDuality: IndexedSeq[Int], rightDuality: IndexedSeq[Int]): Iterator[FusionBimodule[Int]] = {
     val leftRank = leftGenerator.numberOfRows
     val rightRank = rightGenerator.numberOfRows
     val moduleRank = leftGenerator.numberOfColumns.ensuring(_ == rightGenerator.numberOfColumns)

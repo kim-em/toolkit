@@ -13,11 +13,5 @@ class AbstractDenseCategoricalMatrix[A, B, M <: AbstractDenseCategoricalMatrix[A
       case _ => false
     }
   }
-
-  def lookupEntry(row: Int)(column: Int) = entries(row)(column)
-  def pivotPosition(row: Int, ignoring: B) =
-    entries(row).indexWhere { b: B => b != ignoring } match {
-      case -1 => None
-      case k => Some(k)
-    }    
+  override def lookupEntry(row: Int)(column: Int) = entries(row)(column)
 }

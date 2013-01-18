@@ -11,7 +11,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
   // we try to find positive integer roots of the polynomials
 
   // TODO make boundary compulsory
-  def solve[V: Ordering](polynomials: TraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): Iterable[Map[V, Int]] = {
+  def solve[V: Ordering](polynomials: TraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): Iterator[Map[V, Int]] = {
 
     val mentioned: scala.collection.mutable.Set[MultivariablePolynomial[Int, V]] = scala.collection.mutable.Set()
 
@@ -273,25 +273,19 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           minimalSubstitutionBase.mapValues(p => polynomialAlgebra.substituteConstants(Map(v -> k))(p).constantTerm) + (v -> k)
         }
 
-        val L = 100
-        val result = Iterator.from(0).take(L).takeWhile({ k => limit(minimalSubstitution(k)) }).toSeq
-        if(result.size == L) {
-          println(minimalSubstitution(L).toSeq.sorted)
-          require(false, "the limit passed to BoundedDiophantineSolver doesn't seem to really be a limit")
-        }
-        result
+        Iterator.from(0).takeWhile({ k => limit(minimalSubstitution(k)) }).toSeq
       }
 
-      def caseBashOneStep(v: V): Seq[Equations] = {
+      def caseBashOneStep(v: V): Iterator[Equations] = {
         val c = cases(v)
-        (for (k <- c/*.par*/; r <- recordCaseBashProgress(k, c.size).addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield {
+        (for (k <- c.iterator; r <- recordCaseBashProgress(k, c.size).addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield {
 //          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
           r
-        }).seq
+        })
       }
       
       // TODO if there are no more equations, there's no point choosing the smallest fork
-      def caseBash: Iterable[Equations] = {
+      def caseBash: Iterator[Equations] = {
         val remainingVariables = variables.filterNot(substitutions.keySet.contains)
         if (remainingVariables.nonEmpty) {
           val v = if(equations.nonEmpty) {
@@ -299,20 +293,20 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           } else {
             remainingVariables.head
           }
-          (for (c1 <- caseBashOneStep(v)/*.par*/; c2 <- c1.caseBash) yield c2).seq
+          (for (c1 <- caseBashOneStep(v); c2 <- c1.caseBash) yield c2)
         } else {
-          List(this)
+          Iterator(this)
         }
       }
     }
 
-    val iterable = Equations(Map.empty, Seq.empty, Seq.empty).addEquations(polynomials).flatMap(_.solveLinearEquations) match {
+    val iterator = Equations(Map.empty, Seq.empty, Seq.empty).addEquations(polynomials).flatMap(_.solveLinearEquations) match {
       case None => {
-        Iterable.empty
+        Iterator.empty
       }
       case Some(equations) => equations.caseBash
     }
 
-    iterable.map(_.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))
+    iterator.map(_.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))
   }
 }
