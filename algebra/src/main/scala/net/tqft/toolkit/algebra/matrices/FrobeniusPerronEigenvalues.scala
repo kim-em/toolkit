@@ -45,4 +45,14 @@ object FrobeniusPerronEigenvalues {
 
     scala.math.sqrt(FixedPoint.withSameTest({ (p: (Seq[Double], Double), q: (Seq[Double], Double)) => (p._2 - q._2).abs < 0.0001 })(next)(initialVector, initialEstimate)._2)
   }
+  
+  def estimateWithEigenvector(m: Matrix[Int], hint: Option[Seq[Double]]): (Double, Seq[Double]) = {
+    val mR = m.entries.map(row => row.map(_.toDouble).toArray).toArray
+    var iv0 = hint.map(_.toArray).getOrElse(mR.map(_.sum + 1))
+//    var iv1 = Array.fill
+    
+    
+    
+    ???
+  }
 }
