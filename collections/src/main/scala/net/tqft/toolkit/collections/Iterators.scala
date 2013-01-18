@@ -11,9 +11,9 @@ object Iterators {
         val store = scala.collection.mutable.Set[A]()
         var nextOption: Option[A] = None
         def hasNext = {
-          while(iterator.hasNext && nextOption.isEmpty) {
+          while (iterator.hasNext && nextOption.isEmpty) {
             val n = iterator.next
-            if(!store.contains(n)) {
+            if (!store.contains(n)) {
               store += n
               nextOption = Some(n)
             }
@@ -27,49 +27,48 @@ object Iterators {
         }
       }
     }
-    
-    
+
     def mapWhileDefined[B](pf: PartialFunction[A, B]) = iterator.takeWhile(pf.isDefinedAt(_)).map(pf)
 
-//    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
-//      val si = this.synchronized
-//
-//      class Worker extends Actor { worker =>
-//        var done = false
-//        def act() {
-//          loop {
-//            react {
-//              case 'stop => exit
-//              case 'work if !done =>{
-//                synced.nextOption match {
-//                  case Some(n) => { f(n); worker ! 'work }
-//                  case None => { done = true }
-//                }
-//              }
-//              case 'finished_? if done => reply('done)
-////                if (si.hasNext) {            
-////                f(si.next)
-////                worker ! 'work
-////              }
-//            }
-//          }
-//        }
-//      }
-//
-//      for (i <- (1 to numberOfWorkers).toList) yield {
-//        val worker = new Worker
-//        worker.start
-//        worker ! 'work
-//        worker
-//      }
-//    }
+    //    def consume(f: A => Unit, numberOfWorkers: Int = 1): List[Actor] = {
+    //      val si = this.synchronized
+    //
+    //      class Worker extends Actor { worker =>
+    //        var done = false
+    //        def act() {
+    //          loop {
+    //            react {
+    //              case 'stop => exit
+    //              case 'work if !done =>{
+    //                synced.nextOption match {
+    //                  case Some(n) => { f(n); worker ! 'work }
+    //                  case None => { done = true }
+    //                }
+    //              }
+    //              case 'finished_? if done => reply('done)
+    ////                if (si.hasNext) {            
+    ////                f(si.next)
+    ////                worker ! 'work
+    ////              }
+    //            }
+    //          }
+    //        }
+    //      }
+    //
+    //      for (i <- (1 to numberOfWorkers).toList) yield {
+    //        val worker = new Worker
+    //        worker.start
+    //        worker ! 'work
+    //        worker
+    //      }
+    //    }
 
     object synced {
       def nextOption = synchronized {
-          if(iterator.hasNext) Some(iterator.next) else None
-       }
+        if (iterator.hasNext) Some(iterator.next) else None
+      }
     }
-    
+
     def synchronized: Iterator[A] = {
       new Iterator[A] {
         def hasNext = synchronized { iterator.hasNext }
@@ -102,4 +101,15 @@ object Iterators {
 
     }
   }
+
+  implicit def iterators2RichIterators(iterators: Iterator.type): RichIterator.type = RichIterator
+  object RichIterator {
+    def iterateUntilNone[A](a: => A)(f: A => Option[A]): Iterator[A] = {
+      Iterator.iterate[Option[A]](Some(a))({
+        case Some(a) => f(a)
+        case None => None
+      }).takeWhile({ case Some(_) => true; case None => false }).collect({ case Some(b) => b })
+    }
+  }
+
 }

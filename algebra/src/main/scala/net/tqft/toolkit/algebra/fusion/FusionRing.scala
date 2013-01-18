@@ -19,7 +19,7 @@ trait FiniteDimensionalFreeModuleOverRig[A] extends ModuleOverRig[A, Seq[A]] {
 
   def innerProduct(x: Seq[A], y: Seq[A]) = coefficients.sum(x.zip(y).map(p => coefficients.multiply(p._1, p._2)))
 
-  val basis = for (i <- 0 until rank) yield for (j <- 0 until rank) yield if (i == j) coefficients.one else coefficients.zero
+  lazy val basis = for (i <- 0 until rank) yield for (j <- 0 until rank) yield if (i == j) coefficients.one else coefficients.zero
 }
 
 trait FiniteDimensionalFreeModule[A] extends FiniteDimensionalFreeModuleOverRig[A] with Module[A, Seq[A]] {
@@ -105,7 +105,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
   def graphEncoding(colouring: Seq[Int]): ColouredGraph[String] = {
     def labels(t: String) = for (i <- colouring) yield t + i
-    val vertices = (labels("A") ++ labels("B") ++ labels("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map(_.toString)).toIndexedSeq
+    val vertices = (labels("A") ++ labels("B") ++ labels("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map("M" + _)).toIndexedSeq
     val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
       Set(Set(a, 3 * rank + a * rank * rank + b * rank + c), Set(b + rank, 3 * rank + a * rank * rank + b * rank + c), Set(c + 2 * rank, 3 * rank + a * rank * rank + b * rank + c))
     }).flatten ++ (for (i <- 0 until rank) yield {
@@ -122,7 +122,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     val generators = graphAutomorphisms.generators.map(_.take(rank))
 
     for (g <- generators) {
-      require(this == relabel(g))
+      require(this == relabel(g), "found an invalid automorphism of " + this + ": " + g)
     }
 
     FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(generators)
@@ -130,6 +130,8 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
   def relabel(labelling: IndexedSeq[Int]): FusionRing[A] = {
     require(labelling.size == rank)
+    require(labelling.distinct.size == rank)
+    require(labelling.max == rank - 1)
 
     import net.tqft.toolkit.permutations.Permutations._
     val inverse = labelling.inverse
@@ -215,7 +217,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     def globalDimensionLowerBound(implicit ev: A =:= Int): Double = {
 
       val matrices = Matrices.over[Int]
-      val S = structureCoefficients.map(_.mapEntries(xi => xi: Int))
+      val S = structureCoefficients.asInstanceOf[Seq[Matrix[Int]]]
 
       FrobeniusPerronEigenvalues.estimate2(
         matrices.sum(
@@ -320,7 +322,7 @@ object FusionRing {
       case x: IndexedSeq[Int] => x
       case x => x.toArray: Seq[Int]
     }
-    new IntegerStructureCoefficientFusionRing(multiplicities.map({ m =>
+    new IntegerStructureCoefficientFusionRing(multiplicities.toIndexedSeq.map({ m =>
       Matrix(multiplicities.size, m.entries.map(opt).toArray[Seq[Int]]: Seq[Seq[Int]])
     }))
   }
@@ -348,9 +350,9 @@ object FusionRing {
 
     override val structureCoefficients: IndexedSeq[Matrix[A]] = multiplicities.toArray[Matrix[A]]
   }
-  private class IntegerStructureCoefficientFusionRing(multiplicities: Seq[Matrix[Int]]) extends FusionRing[Int] {
+  private class IntegerStructureCoefficientFusionRing(override val structureCoefficients: IndexedSeq[Matrix[Int]]) extends FusionRing[Int] {
     override def coefficients = implicitly[Ring[Int]]
-    override def rank = multiplicities.size
+    override def rank = structureCoefficients.size
 
     override def multiplyByBasisElement(x: Seq[Int], j: Int) = {
       val result = Array.fill(rank)(0)
@@ -382,8 +384,6 @@ object FusionRing {
       }
       result
     }
-
-    override val structureCoefficients: IndexedSeq[Matrix[Int]] = multiplicities.toArray[Matrix[Int]]
 
   }
 

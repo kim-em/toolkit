@@ -22,14 +22,22 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
     }
   }
 
-  val generator = {
+  private def generator = {
     if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {
       ring.basis(1)
     } else {
       ring.add(ring.basis(1), ring.basis(2))
     }
   }
-  val depths = ring.depthWithRespectTo(generator)
+  val depths = {
+    if (ring.rank == 1) {
+      Seq(0)
+    } else if(ring.rank == 2){
+      Seq(0, 1)
+    } else {
+      ring.depthWithRespectTo(generator)
+    }
+  }
 
   lazy val automorphisms = ring.automorphisms(depths)
   val ordering: Ordering[Lower] = {
@@ -72,7 +80,7 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
 
   def lowerObjects = new automorphisms.Action[Lower] {
     override def elements = {
-      if (depth >= 2) {
+      if (ring.rank > 1) {
         if (depth == depths.max) {
           depths.zipWithIndex.collect({
             case (d, i) if d == depth && ring.duality(i) == i => DeleteSelfDualObject(i)
@@ -117,13 +125,16 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
 
   def upperObjects = new automorphisms.Action[Upper] {
     override lazy val elements: Set[Upper] = {
-      (if (depth == depths.max && ring.partialAssociativityConstraints(depth + 1, depths).forall(p => p._1 == p._2)) {
+      (if (depth <= depths.max && ring.partialAssociativityConstraints(depth + 1, depths).forall(p => p._1 == p._2)) {
         Set(IncreaseDepth)
       } else {
         Set.empty
-      }) ++
+      }) ++ (if(depths.max <= depth && (depth >= 2 || depth != depths.max)) {
         FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).map(AddSelfDualObject) ++
         FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).map(AddDualPairOfObjects)
+      } else {
+        Set.empty
+      })
     }
     override def act(a: IndexedSeq[Int], b: Upper): Upper = {
       b match {

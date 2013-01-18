@@ -26,18 +26,34 @@ object Matrix extends net.tqft.toolkit.Logging {
   def identityMatrix[B](size: Int)(implicit rig: Rig[B]) = diagonalMatrix(List.fill(size)(rig.one))
 
   def tabulate[B](numberOfRows: Int, numberOfColumns: Int)(entries: (Int, Int) => B): Matrix[B] = {
-    Matrix(numberOfColumns, Seq.tabulate(numberOfRows, numberOfColumns)(entries))
+    Matrix(numberOfColumns, IndexedSeq.tabulate(numberOfRows, numberOfColumns)(entries))
   }
 }
 
+//private class ConstantSeq[B](b: B, override val size: Int) extends IndexedSeq[B] {
+//  override def length = size
+//  override def apply(i: Int) = b
+//  override def iterator = Iterator.continually(b).take(size)
+//}
+//
+//private class ConstantUnitSeq(size: Int) extends ConstantSeq((), size)
+
 class Matrix[B](
-  override val numberOfColumns: Int,
-  override val entries: GenSeq[IndexedSeq[B]]) extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](List.fill(numberOfColumns)(()), List.fill(entries.size)(()), entries) {
+  val numberOfColumns: Int,
+  val entries: GenSeq[IndexedSeq[B]]) /* extends AbstractDenseCategoricalMatrix[Unit, B, Matrix[B]](new ConstantUnitSeq(numberOfColumns), new ConstantUnitSeq(entries.size), entries) */ {
+
+  def numberOfRows = entries.size
 
   def mapRows[C](rowMapper: IndexedSeq[B] => IndexedSeq[C], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
   def mapEntries[C](entryMapper: B => C) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
 
   override def toString = "Matrix(" + numberOfColumns + ", " + entries + ")"
+  override def equals(other: Any) = {
+    other match {
+      case other: Matrix[B] => numberOfColumns == other.numberOfColumns && entries == other.entries
+    }
+  }
+  override def hashCode = numberOfColumns + entries.hashCode
 
   import Matrix.pivotPosition2
 
@@ -47,7 +63,7 @@ class Matrix[B](
 
   def takeColumns(columns: Seq[Int]) = new Matrix(columns.size, entries map { row => (columns map { i => row(i) }).toIndexedSeq })
   def dropColumns(columns: Seq[Int]) = takeColumns((0 until numberOfColumns) filterNot (columns contains _))
-  
+
   def takeRows(rows: Seq[Int]) = new Matrix(numberOfColumns, rows map { i => entries(i) })
   def dropRows(rows: Seq[Int]) = takeRows((0 until numberOfRows).toList filterNot (rows contains _))
 
@@ -89,9 +105,8 @@ class Matrix[B](
     (for (row <- entries) yield {
       rig.sum(for (i <- 0 until row.size) yield rig.multiply(row(i), vector(i)))
     }).seq
-    
+
   }
-  
 
   def trace(implicit addition: AdditiveMonoid[B]): B = {
     require(numberOfRows == numberOfColumns)
@@ -273,7 +288,7 @@ class Matrix[B](
       } else {
         field.zero
       }
-//      println(i + " " + j + " " + result)
+      //      println(i + " " + j + " " + result)
       result
     })
 
@@ -286,7 +301,7 @@ class Matrix[B](
       } else {
         Some(field.sqrt(r))
       }
-//      println(i + " " + result)
+      //      println(i + " " + result)
       result
     })
 
@@ -346,6 +361,40 @@ class Matrix[B](
 
     entries.transpose
   }
+
+  def pivotPosition(row: Int, ignoring: B) = {
+    entries(row).indexWhere { b: B => b != ignoring } match {
+      case -1 => None
+      case k => Some(k)
+    }
+  }
+
+  def findBasisForRowSpace(rankBound: Option[Int] = None)(implicit field: Field[B]): List[Int] = {
+    case class Progress(rowsConsidered: Int, basis: List[Int], reducedRows: Option[Matrix[B]])
+
+    def considerAnotherRow(soFar: Progress, row: Seq[B]): Progress = {
+      if (rankBound == Some(soFar.basis.size)) {
+        // we've found enough, short circuit
+        soFar
+      } else {
+        val next = (soFar.reducedRows match {
+          case None => Matrix(row.size, List(row))
+          case Some(m) => m.appendRow(row)
+        }).rowEchelonForm
+
+        if (next.numberOfRows > 0 && next.pivotPosition(next.numberOfRows - 1, field.zero).nonEmpty) {
+          Progress(soFar.rowsConsidered + 1, soFar.rowsConsidered :: soFar.basis, Some(next))
+        } else {
+          Progress(soFar.rowsConsidered + 1, soFar.basis, soFar.reducedRows)
+        }
+      }
+    }
+
+    entries.foldLeft(Progress(0, List(), None))(considerAnotherRow _).basis.reverse
+
+  }
+
+  def rank(rankBound: Option[Int] = None)(implicit field: Field[B]): Int = findBasisForRowSpace(rankBound).size
 
   def findBasisForColumnSpace(rankBound: Option[Int] = None)(implicit field: Field[B]) = transpose.findBasisForRowSpace(rankBound)
 

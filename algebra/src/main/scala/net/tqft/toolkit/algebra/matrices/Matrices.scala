@@ -134,48 +134,41 @@ object Matrices extends net.tqft.toolkit.Logging {
 class DenseCategoricalMatrix[A, B](sources: Seq[A], targets: Seq[A], entries: GenSeq[Seq[B]]) extends AbstractDenseCategoricalMatrix[A, B, DenseCategoricalMatrix[A, B]](sources, targets, entries)
 
 class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix[A, B, M]](sources: List[A], targets: List[A], val sparseEntries: List[SortedMap[Int, B]], default: B) extends CategoricalMatrix[A, B, M](sources, targets) {
-  def entries = for (row <- sparseEntries) yield for (i <- (0 until numberOfColumns).toList) yield row.get(i).getOrElse(default)
-  def lookupEntry(row: Int)(column: Int) = sparseEntries(row).get(column).getOrElse(default)
-  def pivotPosition(row: Int, ignoring: B) = (sparseEntries(row).find { _._2 != ignoring }).map(_._1)
+  override def entries = for (row <- sparseEntries) yield for (i <- (0 until numberOfColumns).toList) yield row.get(i).getOrElse(default)
+  override def lookupEntry(row: Int)(column: Int) = sparseEntries(row).get(column).getOrElse(default)
 }
 
 class MatrixCategoryOverRing[R: Ring] extends TensorCategory[Int, Matrix[R], R] {
   private val ring = implicitly[Ring[R]]
-  val inner = new AbstractMatrixCategory(ring: LinearCategory[Unit, R, R])({ (sources: Seq[Unit], targets: Seq[Unit], entries: GenSeq[Seq[R]]) => Matrix(sources.size, entries) }) {
-    override def add(x: Matrix[R], y: Matrix[R]) = {
-      require(x.numberOfColumns == y.numberOfColumns)
-      require(x.numberOfRows == y.numberOfRows)
 
-      val entries = (x.entries zip y.entries) map { case (rx, ry) => VectorOperations.add(rx, ry) }
-      buildMatrix(x.sources, y.targets, entries)
-    }
-
-  }
-
-  override def identityMorphism(o: Int) = inner.identityMorphism(List.fill(o)(()))
+  override def identityMorphism(o: Int): Matrix[R] = Matrix.tabulate(o, o)({ (i, j) => 
+  	if(i == j) {
+  	  ring.one
+  	} else {
+  	  ring.zero
+  	}
+  } )
   override def zeroMorphism(o1: Int, o2: Int) = {
     val zero = implicitly[Ring[R]].zero
     val zeroRow = IndexedSeq.fill(o2)(zero)
     Matrix(o1, Seq.fill(o1)(zeroRow))
   }
-  override def negate(m: Matrix[R]) = inner.negate(m)
-  override def add(x: Matrix[R], y: Matrix[R]) = inner.add(x, y)
+  override def negate(m: Matrix[R]) = Matrix.tabulate(m.numberOfRows, m.numberOfColumns)({ (i,j) =>
+    ring.negate(m.entries(i)(j))    
+  })
+  override def add(x: Matrix[R], y: Matrix[R]) = Matrix.tabulate(x.numberOfRows, x.numberOfColumns)({ (i,j) =>
+    ring.add(x.entries(i)(j), y.entries(i)(j))    
+  })
   override def compose(x: Matrix[R], y: Matrix[R]) = {
-    IndexedSeq.tabulate(x.numberOfRows, y.numberOfColumns)({ (i, j) =>
+    Matrix.tabulate(x.numberOfRows, y.numberOfColumns)({ (i, j) =>
       ring.sum(for (k <- 0 until x.numberOfColumns) yield ring.multiply(x.entries(i)(k), y.entries(k)(j)))
     })
-
-    // TODO optimize this
-    //    val yt = y.transpose
-    //    Matrix(y.numberOfColumns, for (rx <- x.entries) yield {
-    //      for (ry <- yt.entries.seq) yield {
-    //        ring.sum(rx.zip(ry).map(p => ring.multiply(p._1, p._2)))
-    //      }
-    //    })
   }
   override def source(x: Matrix[R]) = x.numberOfColumns
   override def target(x: Matrix[R]) = x.numberOfRows
-  override def scalarMultiply(a: R, m: Matrix[R]) = inner.buildMatrix(m.sources, m.targets, m.entries map { r => VectorOperations.scalarMultiply(a, r) })
+  override def scalarMultiply(a: R, m: Matrix[R]) = Matrix.tabulate(m.numberOfRows, m.numberOfColumns)({ (i,j) =>
+    ring.multiply(a, m.entries(i)(j))    
+  })
   override def tensorObjects(o1: Int, o2: Int) = o1 * o2
   override def tensorMorphisms(m1: Matrix[R], m2: Matrix[R]) = {
     Matrix(m1.numberOfColumns * m2.numberOfColumns,
