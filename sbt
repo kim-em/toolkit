@@ -2,4 +2,4 @@
 if test -f ~/.sbtconfig; then
   . ~/.sbtconfig
 fi
-exec java -Xmx2000M -XX:+UseParallelGC -XX:+UseParallelOldGC -XX:MaxPermSize=512m ${SBT_OPTS} -jar sbt-launch-0.11.2.jar "$@"
+java -Xms512M -Xmx3072M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=384M -jar `dirname $0`/jars/sbt-launch-0.11.3.jar "$@"
