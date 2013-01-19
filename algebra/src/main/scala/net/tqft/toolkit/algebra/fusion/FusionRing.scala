@@ -9,6 +9,7 @@ import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.modules._
 import net.tqft.toolkit.algebra.graphs.Graph
 import net.tqft.toolkit.algebra.graphs.ColouredGraph
+import scala.collection.mutable.WrappedArray
 
 trait FiniteDimensionalFreeModuleOverRig[A] extends ModuleOverRig[A, Seq[A]] {
   def coefficients: Rig[A]
@@ -326,9 +327,11 @@ object FusionRing {
     new StructureCoefficientFusionRing(multiplicities)
   }
   def apply(multiplicities: Seq[Matrix[Int]]): FusionRing[Int] = {
-    def opt(x: Seq[Int]) = x match {
-      case x: IndexedSeq[Int] => x
-      case x => x.toArray: Seq[Int]
+    def opt(x: Seq[Int]) = {
+      x match {
+        case _: WrappedArray[_] => x
+        case _ => x.toArray[Int]: Seq[Int]
+      }
     }
     new IntegerStructureCoefficientFusionRing(multiplicities.toIndexedSeq.map({ m =>
       Matrix(multiplicities.size, m.entries.map(opt).toArray[Seq[Int]]: Seq[Seq[Int]])

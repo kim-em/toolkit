@@ -26,7 +26,7 @@ object FrobeniusPerronEigenvalues {
   private val matrices = Matrices.over[Double]
 
   def estimate2(m: Matrix[Int]): Double = {
-//    require(m == m.transpose)
+    //    require(m == m.transpose)
 
     val reals = implicitly[ApproximateReals[Double]]
 
@@ -45,14 +45,41 @@ object FrobeniusPerronEigenvalues {
 
     scala.math.sqrt(FixedPoint.withSameTest({ (p: (Seq[Double], Double), q: (Seq[Double], Double)) => (p._2 - q._2).abs < 0.0001 })(next)(initialVector, initialEstimate)._2)
   }
-  
-  def estimateWithEigenvector(m: Matrix[Int], hint: Option[Seq[Double]]): (Double, Seq[Double]) = {
+
+  def estimateWithEigenvector(m: Matrix[Int], hint: Option[Seq[Double]] = None): (Double, Seq[Double]) = {
     val mR = m.entries.map(row => row.map(_.toDouble).toArray).toArray
+    val rank = mR.length
     var iv0 = hint.map(_.toArray).getOrElse(mR.map(_.sum + 1))
-//    var iv1 = Array.fill
+    var est1 = scala.math.sqrt(iv0.map(x => x * x).sum)
+    for(i <- 0 until rank) {
+      iv0(i) = iv0(i) / est1
+    }
+    var iv1 = Array.fill(rank)(0.0)
+    var est0 = 0.0
+    var k = 0
+    var count = 0
+    while (scala.math.abs(est1 - est0) > 0.0001) {
+      est0 = est1
+      est1 = 0.0
+      k = 0
+      while (k < rank) {
+        var j = 0
+        iv1(k) = 0.0
+        while (j < rank) {
+          iv1(k) += mR(k)(j) * iv0(j)
+          j += 1
+        }
+        est1 += iv1(k) * iv1(k)
+        k += 1
+      }
+      est1 = scala.math.sqrt(est1)
+      k = 0
+      while (k < rank) {
+        iv0(k) = iv1(k) / est1
+        k += 1
+      }
+    }
     
-    
-    
-    ???
+    (est1, iv0)
   }
 }

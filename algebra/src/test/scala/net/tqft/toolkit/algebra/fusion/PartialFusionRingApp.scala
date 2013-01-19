@@ -9,7 +9,7 @@ object PartialFusionRingApp extends App {
   } else {
     12.0
   }
-  //  while (true) {
+    while (true) {
   println("completed in " + Profiler.timing({
     println("warming up... preparing a first layer")
     val firstLayer = (for ((r, p) <- PartialFusionRing(1, FusionRings.Examples.rank1, L).descendantsWithProgress(4 - _.ring.rank); if r.genuineReduction.flatMap(_.genuineReduction).map(_.depth).getOrElse(0) == 1) yield {
@@ -33,7 +33,7 @@ object PartialFusionRingApp extends App {
     }
     println("Considering " + k + " partial fusion rings")
   })._1)
-  //  }
+    }
 
   // 2013-01-15
   // PartialFusionRing(2, FusionRings.Examples.rank2(0), 9.0).descendants()
@@ -53,6 +53,13 @@ object PartialFusionRingApp extends App {
   
   // 128s non self dual stuff as well!
 
+  // L = 6  2013-01-19
+  // 15000
+  // 14000 optimizing FP eigenvalue estimation
+  // 15000 with (problematic) hints --- takes longer to come up with them than they save!
+    // 6000 with completelySubstituteConstants, and some other fixes.
+    // 5600 with fasterMinimalSubstitutions
+  
   // L = 10.0
   // 25500ms
 
