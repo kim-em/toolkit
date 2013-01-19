@@ -13,13 +13,30 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
   // TODO make boundary compulsory
   def solve[V: Ordering](polynomials: TraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): Iterator[Map[V, Int]] = {
 
-    val mentioned: scala.collection.mutable.Set[MultivariablePolynomial[Int, V]] = scala.collection.mutable.Set()
-
-    // make sure all the hash codes are computed
-    //    polynomials.par.map(_.hashCode)
-
     type P = MultivariablePolynomial[Int, V]
     val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
+
+    // this is a hack; caseBash could be designed differently so this isn't needed.
+    lazy val cachedLimit = {
+      val cacheKeys = Array.fill[Map[V, Int]](20)(null)
+      val cacheValues = Array.fill(20)(false)
+      var k = 0
+
+      { m: Map[V, Int] =>
+      	cacheKeys.indexOf(m) match {
+      	  case -1 => {
+      	    cacheKeys(k) = m
+      	    val result = boundary.get(m)
+      	    cacheValues(k) = result
+      	    k = (k + 1) % 20      	
+      	    result
+      	  }
+      	  case n => {
+      	    cacheValues(n)
+      	  }
+      	}
+      }
+    }
 
     case class Equations(substitutions: Map[V, P], equations: Seq[P], caseBashProgress: Seq[(Int, Int)]) {
       //      if ((equations.nonEmpty && equations.size % 1000 == 0) || (substitutions.nonEmpty && substitutions.size % 1000 == 0)) info(substitutions.size + " " + equations.size)
@@ -260,7 +277,6 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
         FixedPoint({ o: Option[Equations] => o.flatMap(_.solveALinearEquation) })(Some(this))
       }
 
-      
       def cases(v: V): Seq[Int] = {
         val remainingVariables = variables.filterNot(substitutions.keySet.contains).filterNot(_ == v)
         val limit = boundary.get
@@ -270,25 +286,29 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           substitutions.mapValues(p => polynomialAlgebra.substitute(newSubstitutions)(p)) ++ newSubstitutions
         }
         def minimalSubstitution(k: Int) = {
-          minimalSubstitutionBase.mapValues(p => polynomialAlgebra.substituteConstants(Map(v -> k))(p).constantTerm) + (v -> k)
+          minimalSubstitutionBase.mapValues(p => polynomialAlgebra.completelySubstituteConstants(Map(v -> k))(p)) + (v -> k)
+        }
+        def fasterMinimalSubstitution(k: Int) = {
+          val newSubstitutions = ((v -> k) +: remainingVariables.map(w => w -> 0)).toMap
+          substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(newSubstitutions)(p)) ++ newSubstitutions
         }
 
-        Iterator.from(0).takeWhile({ k => limit(minimalSubstitution(k)) }).toSeq
+        Iterator.from(0).takeWhile({ k => cachedLimit(fasterMinimalSubstitution(k)) }).toSeq
       }
 
       def caseBashOneStep(v: V): Iterator[Equations] = {
         val c = cases(v)
         (for (k <- c.iterator; r <- recordCaseBashProgress(k, c.size).addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield {
-//          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
+          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
           r
         })
       }
-      
+
       // TODO if there are no more equations, there's no point choosing the smallest fork
       def caseBash: Iterator[Equations] = {
         val remainingVariables = variables.filterNot(substitutions.keySet.contains)
         if (remainingVariables.nonEmpty) {
-          val v = if(equations.nonEmpty) {
+          val v = if (equations.nonEmpty) {
             remainingVariables.minBy(v => cases(v).size)
           } else {
             remainingVariables.head
@@ -304,7 +324,9 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
       case None => {
         Iterator.empty
       }
-      case Some(equations) => equations.caseBash
+      case Some(equations) => {
+        equations.caseBash
+      }
     }
 
     iterator.map(_.substitutions.mapValues(p => p.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))

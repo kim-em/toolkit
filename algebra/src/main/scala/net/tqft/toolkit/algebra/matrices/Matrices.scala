@@ -24,6 +24,7 @@ object Matrices extends net.tqft.toolkit.Logging {
   def tensor[B: Ring](m1: Matrix[B], m2: Matrix[B]) = new MatrixCategoryOverRing[B].tensorMorphisms(m1, m2)
 
   def over[A: Ring] = new MatrixCategoryOverRing[A]
+  def over[A: Rig] = new MatrixCategoryOverRig[A]
 
   lazy val positiveSymmetricDecompositionsCached: Matrix[Int] => Seq[Matrix[Int]] = {
     val bucket = net.tqft.toolkit.amazon.S3("positive-symmetric-decompositions")
@@ -138,26 +139,22 @@ class AbstractSparseCategoricalMatrix[A, B, M <: AbstractSparseCategoricalMatrix
   override def lookupEntry(row: Int)(column: Int) = sparseEntries(row).get(column).getOrElse(default)
 }
 
-class MatrixCategoryOverRing[R: Ring] extends TensorCategory[Int, Matrix[R], R] {
-  private val ring = implicitly[Ring[R]]
+class MatrixCategoryOverRig[R: Rig] extends NLinearCategory[Int, Matrix[R]] {
+  val ring = implicitly[Rig[R]]
 
-  override def identityMorphism(o: Int): Matrix[R] = Matrix.tabulate(o, o)({ (i, j) => 
-  	if(i == j) {
-  	  ring.one
-  	} else {
-  	  ring.zero
-  	}
-  } )
+  override def identityMorphism(o: Int): Matrix[R] = Matrix.tabulate(o, o)({ (i, j) =>
+    if (i == j) {
+      ring.one
+    } else {
+      ring.zero
+    }
+  })
   override def zeroMorphism(o1: Int, o2: Int) = {
-    val zero = implicitly[Ring[R]].zero
-    val zeroRow = IndexedSeq.fill(o2)(zero)
+    val zeroRow = IndexedSeq.fill(o2)(ring.zero)
     Matrix(o1, Seq.fill(o1)(zeroRow))
   }
-  override def negate(m: Matrix[R]) = Matrix.tabulate(m.numberOfRows, m.numberOfColumns)({ (i,j) =>
-    ring.negate(m.entries(i)(j))    
-  })
-  override def add(x: Matrix[R], y: Matrix[R]) = Matrix.tabulate(x.numberOfRows, x.numberOfColumns)({ (i,j) =>
-    ring.add(x.entries(i)(j), y.entries(i)(j))    
+  override def add(x: Matrix[R], y: Matrix[R]) = Matrix.tabulate(x.numberOfRows, x.numberOfColumns)({ (i, j) =>
+    ring.add(x.entries(i)(j), y.entries(i)(j))
   })
   override def compose(x: Matrix[R], y: Matrix[R]) = {
     Matrix.tabulate(x.numberOfRows, y.numberOfColumns)({ (i, j) =>
@@ -166,8 +163,20 @@ class MatrixCategoryOverRing[R: Ring] extends TensorCategory[Int, Matrix[R], R] 
   }
   override def source(x: Matrix[R]) = x.numberOfColumns
   override def target(x: Matrix[R]) = x.numberOfRows
-  override def scalarMultiply(a: R, m: Matrix[R]) = Matrix.tabulate(m.numberOfRows, m.numberOfColumns)({ (i,j) =>
-    ring.multiply(a, m.entries(i)(j))    
+
+  //  override def endomorphismRing(o: Int) = ???
+}
+
+class MatrixCategoryOverRing[R: Ring] extends MatrixCategoryOverRig[R] with TensorCategory[Int, Matrix[R], R]{
+  override val ring = implicitly[Ring[R]]
+  override def negate(m: Matrix[R]) = Matrix.tabulate(m.numberOfRows, m.numberOfColumns)({ (i, j) =>
+    ring.negate(m.entries(i)(j))
+  })
+
+  // there's no particular reasons these couldn't be higher up;
+  // TODO cleanup the hierarchy, and allow tensor categories without negatives!
+    override def scalarMultiply(a: R, m: Matrix[R]) = Matrix.tabulate(m.numberOfRows, m.numberOfColumns)({ (i, j) =>
+    ring.multiply(a, m.entries(i)(j))
   })
   override def tensorObjects(o1: Int, o2: Int) = o1 * o2
   override def tensorMorphisms(m1: Matrix[R], m2: Matrix[R]) = {
@@ -175,7 +184,6 @@ class MatrixCategoryOverRing[R: Ring] extends TensorCategory[Int, Matrix[R], R] 
       for (row1 <- m1.entries; row2 <- m2.entries) yield VectorOperations.tensor(row1, row2))
   }
 
-  //  override def endomorphismRing(o: Int) = ???
 }
 
 class MatrixCategoryOverField[F: Field] extends MatrixCategoryOverRing[F] with TensorCategory[Int, Matrix[F], F] {
