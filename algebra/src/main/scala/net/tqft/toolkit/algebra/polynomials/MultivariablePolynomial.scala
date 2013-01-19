@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.polynomials
 import net.tqft.toolkit.algebra.Ring
 import net.tqft.toolkit.algebra.EuclideanRing
 import net.tqft.toolkit.algebra.modules.LinearCombo
+import net.tqft.toolkit.algebra.Rig
 
 trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
   def totalDegree = {
@@ -10,7 +11,7 @@ trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
     terms.map(_._1.values.sum).maxOption
   }
   def termsOfDegree(k: Int) = terms.filter(_._1.values.sum == k)
-  def constantTerm(implicit ring: Ring[A]) = terms.find(_._1.isEmpty).map(_._2).getOrElse(ring.zero)
+  def constantTerm(implicit ring: Rig[A]) = terms.find(_._1.isEmpty).map(_._2).getOrElse(ring.zero)
 
   def nonZero = terms.nonEmpty
   lazy val variables = terms.flatMap(_._1.keySet).toSet

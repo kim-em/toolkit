@@ -45,7 +45,16 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
       })
     }
   }
-  def substituteConstants(values: Map[V, A])(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = substitute(values.mapValues(constant))(p)
+  def substituteConstants(values: Map[V, A])(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
+    substitute(values.mapValues(constant))(p)
+  }
+  def completelySubstituteConstants(values: Map[V, A])(p: MultivariablePolynomial[A, V]): A = {
+    ring.sum(for((m, a) <- p.terms) yield {
+      ring.multiply(a, ring.product(for((v, k) <- m) yield {
+        ring.power(values(v), k)
+      }))
+    })    
+  }
 
 }
 
