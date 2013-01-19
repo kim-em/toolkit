@@ -132,8 +132,8 @@ object FusionRings {
     val limit2: Map[V, Int] => Boolean = {
       val S = variableRing.regularObjectStructureCoefficients(newDuality);
       { values: Map[V, Int] =>
-        val mS = S.mapEntries(p => polynomialAlgebra.substituteConstants(values)(p).constantTerm)
-        FrobeniusPerronEigenvalues.estimate2(mS) - 0.0001 < globalDimensionLimit
+        val mS = S.mapEntries(p => polynomialAlgebra.completelySubstituteConstants(values)(p))
+        FrobeniusPerronEigenvalues.estimateWithEigenvector(mS)._1 - 0.0001 < globalDimensionLimit
       }
     }
 
@@ -239,10 +239,11 @@ object FusionRings {
     }
 
     val limit2: Map[V, Int] => Boolean = {
+      
       val S = variableRing.regularObjectStructureCoefficients(newDuality);
       { values: Map[V, Int] =>
-        val mS = S.mapEntries(p => polynomialAlgebra.substituteConstants(values)(p).constantTerm)
-        FrobeniusPerronEigenvalues.estimate2(mS) - 0.0001 < globalDimensionLimit
+        val mS = S.mapEntries(p => polynomialAlgebra.completelySubstituteConstants(values)(p))
+        FrobeniusPerronEigenvalues.estimateWithEigenvector(mS)._1 - 0.0001 < globalDimensionLimit
       }
     }
 
