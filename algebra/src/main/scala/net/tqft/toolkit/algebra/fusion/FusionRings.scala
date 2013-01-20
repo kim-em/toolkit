@@ -130,10 +130,13 @@ object FusionRings {
 
     // TODO evaluate whether this is actually faster!
     val limit2: Map[V, Int] => Boolean = {
-      val S = variableRing.regularObjectStructureCoefficients(newDuality);
+      val Ss = for(i <- 0 until rank +1; v = variableRing.structureCoefficients(i); vd = variableRing.structureCoefficients(newDuality(i))) yield {
+        Matrices.over(polynomialAlgebra).compose(v, vd)
+      }
+      
       { values: Map[V, Int] =>
-        val mS = S.mapEntries(p => polynomialAlgebra.completelySubstituteConstants(values)(p))
-        FrobeniusPerronEigenvalues.estimateWithEigenvector(mS)._1 - 0.0001 < globalDimensionLimit
+        val mSs = Ss.map(_.mapEntries(p => polynomialAlgebra.completelySubstituteConstants(values)(p)))
+        mSs.map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1).sum - 0.0001 < globalDimensionLimit
       }
     }
 
@@ -240,10 +243,13 @@ object FusionRings {
 
     val limit2: Map[V, Int] => Boolean = {
       
-      val S = variableRing.regularObjectStructureCoefficients(newDuality);
+      val Ss = for(i <- 0 until rank +2; v = variableRing.structureCoefficients(i); vd = variableRing.structureCoefficients(newDuality(i))) yield {
+        Matrices.over(polynomialAlgebra).compose(v, vd)
+      }
+      
       { values: Map[V, Int] =>
-        val mS = S.mapEntries(p => polynomialAlgebra.completelySubstituteConstants(values)(p))
-        FrobeniusPerronEigenvalues.estimateWithEigenvector(mS)._1 - 0.0001 < globalDimensionLimit
+        val mSs = Ss.map(_.mapEntries(p => polynomialAlgebra.completelySubstituteConstants(values)(p)))
+        mSs.map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1).sum - 0.0001 < globalDimensionLimit
       }
     }
 
