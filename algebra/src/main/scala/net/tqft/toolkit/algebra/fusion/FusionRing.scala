@@ -333,7 +333,7 @@ object FusionRing {
         case _ => x.toArray[Int]: Seq[Int]
       }
     }
-    new IntegerStructureCoefficientFusionRing(multiplicities.toIndexedSeq.map({ m =>
+    new IntegerStructureCoefficientFusionRing(multiplicities.toIndexedSeq.map({ m: Matrix[Int] =>
       Matrix(multiplicities.size, m.entries.map(opt).toArray[Seq[Int]]: Seq[Seq[Int]])
     }))
   }
