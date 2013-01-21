@@ -1,1 +1,2 @@
+hg fetch
 sbt "toolkit-algebra/test:run-main net.tqft.toolkit.algebra.fusion.PartialFusionRingEstimatorApp $@"
