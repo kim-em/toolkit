@@ -45,7 +45,7 @@ object BuildSettings {
 
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.12"
-  val buildScalaVersion = "2.10.0"
+  val buildScalaVersion = "2.9.3-RC1"
   val buildCrossScalaVersions = Seq("2.9.3-RC1", "2.10.0")
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -63,7 +63,7 @@ object BuildSettings {
         ("org.scalatest" % ("scalatest_" + scalatestScalaVersion) % scalatestVersion % "test" )
     },
 //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
-//    scalacOptions ++= Seq("-optimise","-Yinline-warnings"),
+    scalacOptions ++= Seq("-optimise"/*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j))
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
