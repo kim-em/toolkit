@@ -10,6 +10,7 @@ import net.tqft.toolkit.algebra.modules._
 import net.tqft.toolkit.algebra.graphs.Graph
 import net.tqft.toolkit.algebra.graphs.ColouredGraph
 import scala.collection.mutable.WrappedArray
+import scala.reflect.ClassTag
 
 trait FiniteDimensionalFreeModuleOverRig[A] extends ModuleOverRig[A, Seq[A]] {
   def coefficients: Rig[A]
@@ -46,8 +47,8 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   def multiplyBasisElements(x: Int, y: Int): Seq[A] = {
     structureCoefficients(x).entries(y)
   }
-  def multiplyByBasisElement(x: Seq[A], j: Int): Seq[A] = multiply(x, basis(j))
-  def multiplyByBasisElementOnLeft(j: Int, x: Seq[A]): Seq[A] = multiply(basis(j), x)
+  def multiplyByBasisElement(x: Seq[A], j: Int): Seq[A]
+  def multiplyByBasisElementOnLeft(j: Int, x: Seq[A]): Seq[A]
 
   def associativityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis; z <- basis) yield multiply(x, multiply(y, z)).zip(multiply(multiply(x, y), z))).flatten
   def partialAssociativityConstraints(maxdepth: Int, depths: Seq[Int]) = {
@@ -97,13 +98,13 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   def structureCoefficients: Seq[Matrix[A]] = ??? // for (y <- basis) yield Matrix(rank, for (x <- basis) yield multiply(x, y))
 
   // not actually useful!
-//  def regularObjectStructureCoefficients(duality: IndexedSeq[Int] = duality): Matrix[A] = {
-//    val matrices = Matrices.over[A](coefficients)
-//    matrices.sum(
-//      for (i <- 0 until rank; v = structureCoefficients(i); vd = structureCoefficients(duality(i))) yield {
-//        matrices.compose(v, vd)
-//      })
-//  }
+  //  def regularObjectStructureCoefficients(duality: IndexedSeq[Int] = duality): Matrix[A] = {
+  //    val matrices = Matrices.over[A](coefficients)
+  //    matrices.sum(
+  //      for (i <- 0 until rank; v = structureCoefficients(i); vd = structureCoefficients(duality(i))) yield {
+  //        matrices.compose(v, vd)
+  //      })
+  //  }
 
   def dimensionLowerBounds(x: Seq[Int])(implicit ev: A =:= Int): Double = {
     regularModule.dimensionLowerBounds(x)
@@ -116,13 +117,15 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   def graphEncoding(colouring: Seq[Int]): ColouredGraph[String] = {
     def labels(t: String) = for (i <- colouring) yield t + i
     val vertices = (labels("A") ++ labels("B") ++ labels("C") ++ structureCoefficients.map(_.entries.seq).flatten.flatten.map("M" + _)).toIndexedSeq
-    val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
-      Set(Set(a, 3 * rank + a * rank * rank + b * rank + c), Set(b + rank, 3 * rank + a * rank * rank + b * rank + c), Set(c + 2 * rank, 3 * rank + a * rank * rank + b * rank + c))
-    }).flatten ++ (for (i <- 0 until rank) yield {
-      Set(Set(i, rank + i), Set(i, 2 * rank + i), Set(rank + i, 2 * rank + i))
-    }).flatten
+    //    val edges = (for (a <- 0 until rank; b <- 0 until rank; c <- 0 until rank) yield {
+    //      Set(Set(a, 3 * rank + a * rank * rank + b * rank + c), Set(b + rank, 3 * rank + a * rank * rank + b * rank + c), Set(c + 2 * rank, 3 * rank + a * rank * rank + b * rank + c))
+    //    }).flatten ++ (for (i <- 0 until rank) yield {
+    //      Set(Set(i, rank + i), Set(i, 2 * rank + i), Set(rank + i, 2 * rank + i))
+    //    }).flatten
 
-    ColouredGraph(3 * rank + rank * rank * rank, edges, vertices)
+    val adjacencies = ???
+
+    ColouredGraph(3 * rank + rank * rank * rank, adjacencies, vertices)
   }
 
   def automorphisms(colouring: Seq[Int] = Seq.fill(rank)(0)) = {
@@ -342,6 +345,25 @@ object FusionRing {
   private class StructureCoefficientFusionRing[A: Rig](multiplicities: Seq[Matrix[A]]) extends FusionRing[A] {
     override lazy val coefficients = implicitly[Rig[A]]
     override lazy val rank = multiplicities.size
+
+    override def multiplyByBasisElement(x: Seq[A], j: Int) = {
+      val result = scala.collection.mutable.IndexedSeq.fill(rank)(coefficients.zero)
+      for ((xm, xi) <- x.zipWithIndex) {
+        for (k <- 0 until rank) {
+          result(k) = coefficients.add(result(k), coefficients.multiply(xm, structureCoefficients(xi).entries(j)(k)))
+        }
+      }
+      result
+    }
+    override def multiplyByBasisElementOnLeft(j: Int, x: Seq[A]) = {
+      val result = scala.collection.mutable.IndexedSeq.fill(rank)(coefficients.zero)
+      for ((z, r) <- x.zip(structureCoefficients(j).entries)) {
+        for (k <- 0 until rank) {
+          result(k) = coefficients.add(result(k), coefficients.multiply(z, r(k)))
+        }
+      }
+      result
+    }
 
     override def multiply(x: Seq[A], y: Seq[A]) = {
       val zero = coefficients.zero
