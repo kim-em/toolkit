@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra.enumeration
 
 import net.tqft.toolkit.algebra.graphs.Graph
 
-case class TriangleFreeGraph(numberOfVertices: Int, edges: Set[Set[Int]]) extends Graph with CanonicalGeneration[TriangleFreeGraph, IndexedSeq[Int]] { tfg =>
+case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[Int]]) extends Graph with CanonicalGeneration[TriangleFreeGraph, IndexedSeq[Int]] { tfg =>
   import net.tqft.toolkit.permutations.Permutations._
   import net.tqft.toolkit.algebra.graphs._
   override lazy val automorphisms = dreadnaut.automorphismGroup(this)
@@ -11,12 +11,12 @@ case class TriangleFreeGraph(numberOfVertices: Int, edges: Set[Set[Int]]) extend
       this.mark(Seq(l.k))
       ) })
 
-  case class Upper(independentVertices: Set[Int]) {
-    lazy val result = TriangleFreeGraph(numberOfVertices + 1, edges ++ independentVertices.map(Set(_, numberOfVertices)))
+  case class Upper(independentVertices: Seq[Int]) {
+    lazy val result = TriangleFreeGraph(numberOfVertices + 1, addVertex(independentVertices).adjacencies)
     def inverse = result.Lower(numberOfVertices)
   }
   case class Lower(k: Int) {
-    lazy val result = TriangleFreeGraph(numberOfVertices - 1, edges.collect({ case e if !e.contains(k) => e.map({ case v if v > k => v - 1; case v => v }) }))
+    lazy val result = TriangleFreeGraph(numberOfVertices - 1, deleteVertex(k).adjacencies)
   }
 
   override def upperObjects = new automorphisms.Action[Upper] {
@@ -25,13 +25,12 @@ case class TriangleFreeGraph(numberOfVertices: Int, edges: Set[Set[Int]]) extend
       def independentSubsetsOf(vertices: List[Int]): Iterator[List[Int]] = {
         vertices match {
           case Nil => Iterator(Nil)
-          case head :: tail => {
-            val connectedVertices = edges.filter(_.contains(head)).flatten
-            independentSubsetsOf(tail) ++ independentSubsetsOf(tail.filterNot(connectedVertices.contains)).map(head :: _)
+          case i :: t => {
+            independentSubsetsOf(t) ++ independentSubsetsOf(t.filterNot(adjacencies(i).contains)).map(i :: _)
           }
         }
       }
-      (for (s <- independentSubsetsOf(0 until numberOfVertices toList)) yield Upper(s.toSet)).toSet
+      (for (s <- independentSubsetsOf(0 until numberOfVertices toList)) yield Upper(s)).toSet
     }
     override def act(g: IndexedSeq[Int], upper: Upper) = {
       val h = g.inverse
