@@ -13,7 +13,7 @@ class dreadnautTest extends FlatSpec with ShouldMatchers {
     dreadnaut.automorphismGroup(C3).generators should equal(Set(List(0, 2, 1), List(1, 0, 2)))
   }
   "canonicalize" should "give the right answer for C_3" in {
-    dreadnaut.canonicalize(C3).edges.toList should equal(List(Set(0, 1), Set(1, 2), Set(2, 0)))
+    dreadnaut.canonicalize(C3).edges should equal(Set(Set(0, 1), Set(1, 2), Set(2, 0)))
   }
   "canonicalize" should "give the same answers for all relabellings of all graphs with 4 vertices" in {
     val n = 4

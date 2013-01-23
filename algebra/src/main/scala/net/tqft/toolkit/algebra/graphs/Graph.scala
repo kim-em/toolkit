@@ -18,21 +18,39 @@ trait Graph {
     }
   }
 
-  def edges = for((s, i) <- adjacencies.iterator.zipWithIndex; j <- s) yield Set(i,j)
+  def edges = (for((s, i) <- adjacencies.iterator.zipWithIndex; j <- s) yield Set(i,j)).toSet
   
   def toDreadnautString: String = {
     "n=" + numberOfVertices + " g " + (for (i <- 0 until numberOfVertices) yield adjacencies(i).mkString(" ")).mkString("", "; ", ". ")
   }
 
   def relabel(labels: IndexedSeq[Int]): Graph = {
+    require(labels.size == numberOfVertices)
     val p = labels.inverse
-    Graph(numberOfVertices, ???)
+    Graph(numberOfVertices, p.permute(adjacencies.map(a => a.map(labels))))
   }
 
   def mark(vertices: Seq[Int]): ColouredGraph[Boolean] = {
     colour(for (i <- 0 until numberOfVertices) yield vertices.contains(i))
   }
 
+  def addVertex(neighbours: Seq[Int]): Graph = {
+    Graph(numberOfVertices + 1, adjacencies.zipWithIndex.map({
+      case (a, i) if neighbours.contains(i) => a :+ (numberOfVertices + 1)
+      case (a, _) => a
+    }) :+ neighbours.sorted)
+  }
+  
+  def deleteVertex(k: Int): Graph = {
+    import net.tqft.toolkit.collections.Deleted._
+    Graph(numberOfVertices - 1, adjacencies.map({ a =>
+      a.collect({
+        case m if m < k => m
+        case m if m > k => m - 1
+      })
+    }).deleted(k).toIndexedSeq)
+  }
+  
   def colour[V: Ordering](colours: IndexedSeq[V]): ColouredGraph[V] = {
     ColouredGraph(numberOfVertices, adjacencies, colours)
   }
