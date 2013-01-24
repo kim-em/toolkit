@@ -18,14 +18,21 @@ class dreadnautTest extends FlatSpec with ShouldMatchers {
   "canonicalize" should "give the same answers for all relabellings of all graphs with 4 vertices" in {
     val n = 4
     for (g <- Graphs.onNVertices(n)) {
-//      val h = g.mark(Seq(0))
       import net.tqft.toolkit.permutations.Permutations
       Permutations.of(n).map(p => dreadnaut.canonicalize(g.relabel(p))).toSet should have size (1)
     }
   }
+  "canonicalize(g: ColouredGraph[])" should "give the same answers for all relabellings of all graphs with 4 vertices, 1 marked" in {
+    val n = 4
+    for (g <- Graphs.onNVertices(n)) {
+      import net.tqft.toolkit.permutations.Permutations
+      val h = g.mark(Seq(0))
+      Permutations.preserving(Seq(0,1,1,1)).map(p => dreadnaut.canonicalize(h.relabel(p))).toSet should have size (1)
+    }
+  }
   "canonicalize" should "identify isomorphic graphs" in {
-    val g1 = Graph(4, IndexedSeq(Seq(), Seq(3), Seq(2), Seq(1,2)))
-    val g2 = Graph(4, IndexedSeq(Seq(1), Seq(0,3), Seq(0), Seq(1)))
+    val g1 = Graph(4, IndexedSeq(Seq(), Seq(3), Seq(3), Seq(1,2)))
+    val g2 = Graph(4, IndexedSeq(Seq(1), Seq(0,3), Seq(), Seq(1)))
     dreadnaut.canonicalize(g1) should equal(dreadnaut.canonicalize(g2))
   }
 

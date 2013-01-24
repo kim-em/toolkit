@@ -56,7 +56,9 @@ trait dreadnaut extends Logging {
   }
   def canonicalLabelling(g: Graph): IndexedSeq[Int] = {
     val output = invoke(g.toDreadnautString + "cxb\n")
-    output.dropWhile(!_.startsWith("canupdates")).tail.takeWhile(!_.startsWith("  0 :")).mkString("").split(' ').filter(_.nonEmpty).map(_.toInt)
+    val result = output.dropWhile(!_.startsWith("canupdates")).tail.takeWhile(!_.startsWith("  0 :")).mkString("").split(' ').filter(_.nonEmpty).map(_.toInt)
+    require(result.length == g.numberOfVertices)
+    result
   }
   def canonicalize(g: Graph): Graph = {
     g.relabel(canonicalLabelling(g))
