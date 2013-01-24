@@ -38,8 +38,11 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
       ring.depthWithRespectTo(generator)
     }
   }
-
+ 
   lazy val automorphisms = ring.automorphisms(depths)
+  
+  override def findIsomorphismTo(other: PartialFusionRing) = ???
+  
   val ordering: Ordering[Lower] = {
     import net.tqft.toolkit.collections.Orderings._
     Ordering.by({ l: Lower =>
