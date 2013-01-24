@@ -12,7 +12,7 @@ object PartialFusionRingApp extends App {
 //    while (true) {
   println("completed in " + Profiler.timing({
     println("warming up... preparing a first layer")
-    val firstLayer = (for ((r, p) <- PartialFusionRing(1, FusionRings.Examples.rank1, L).descendantsWithProgress(4 - _.ring.rank); if r.genuineReduction.flatMap(_.genuineReduction).map(_.depth).getOrElse(0) == 1) yield {
+    val firstLayer = (for ((r, p) <- PartialFusionRing(1, FusionRings.Examples.rank1, L).descendantsWithProgress(4 - _.ring.rank); if r.parent.flatMap(_.parent).map(_.depth).getOrElse(0) == 1) yield {
       println(p)
       r
     }).toSeq

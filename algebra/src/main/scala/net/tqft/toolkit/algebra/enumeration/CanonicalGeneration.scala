@@ -12,7 +12,7 @@ import CanonicalGeneration.{ info }
 //   G represents elements of the automorphism group
 trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   val automorphisms: FinitelyGeneratedFiniteGroup[G]
-
+  
   // in each problem instance, we will specify what the upper and lower objects actually look like
   type Lower <: {
     def result: A
@@ -20,15 +20,6 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
 
   val ordering: Ordering[Lower]
-
-  def genuineReduction = {
-    val elts = lowerObjects.elements
-    if (elts.isEmpty) {
-      None
-    } else {
-      Some(elts.min(ordering).result)
-    }
-  }
 
   type Upper <: {
     val result: A
@@ -65,6 +56,25 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     result
   }
 
+  def parent = {
+    val elts = lowerObjects.elements
+    if (elts.isEmpty) {
+      None
+    } else {
+      Some(elts.min(ordering).result)
+    }
+  }
+
+  def ancestry = Iterator.iterate[Option[A]](Some(this))(o => o.flatMap(_.parent)).takeWhile(_.nonEmpty).map(_.get)
+  
+  // TODO isomorphismQ should be already built in, somehow.
+  def verifyAncestry(isomorphismQ: (A, A) => Boolean) = {
+    val a = ancestry.toStream
+    a.zip(a.tail).forall({
+      case (c, p) => p.children.exists(d => isomorphismQ(c, d))
+    })
+  }
+
   // and, for convenience, something to recursively find all children, filtering on a predicate
   def descendants(accept: A => Int = { _ => 1 }): Iterator[A] = descendantsTree(accept).map(_._1)
 
@@ -80,6 +90,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
 
   def descendantsWithProgress(accept: A => Int = { _ => 1 }): Iterator[(A, Seq[(Int, Int)])] = {
+    // TODO don't save progress forever
     val progress = scala.collection.mutable.Map[Int, Seq[(Int, Int)]](this.hashCode -> Seq((1, 1)))
     descendantsTree(accept).map({
       case (a, children) => {
@@ -110,7 +121,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     averages
   }
   def runtimeEstimators: Iterator[Long] = {
-    def estimate = randomLineage.foldLeft((1, 0L))({ (a, b) => (a._1 * b._2.size, a._2 + a._1 * b._3)})._2
+    def estimate = randomLineage.foldLeft((1, 0L))({ (a, b) => (a._1 * b._2.size, a._2 + a._1 * b._3) })._2
     def estimates = Iterator.continually(estimate)
     def partialSums = estimates.scanLeft(0L)(_ + _)
     def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })

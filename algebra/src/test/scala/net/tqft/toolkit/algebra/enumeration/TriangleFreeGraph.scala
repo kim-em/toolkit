@@ -5,11 +5,15 @@ import net.tqft.toolkit.algebra.graphs.Graph
 case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[Int]]) extends Graph with CanonicalGeneration[TriangleFreeGraph, IndexedSeq[Int]] { tfg =>
   import net.tqft.toolkit.permutations.Permutations._
   import net.tqft.toolkit.algebra.graphs._
+
+  override def toString = "TriangleFreeGraph(" + numberOfVertices + ", " + adjacencies + ")"
+
   override lazy val automorphisms = dreadnaut.automorphismGroup(this)
-  override val ordering: Ordering[Lower] = Ordering.by({ l: Lower => dreadnaut.canonicalize(
-//      l.result
-      this.mark(Seq(l.k))
-      ) })
+
+  override val ordering: Ordering[Lower] = Ordering.by({ l: Lower =>
+    dreadnaut.canonicalize(
+      this.mark(Seq(l.k)))
+  })
 
   case class Upper(independentVertices: Seq[Int]) {
     lazy val result = TriangleFreeGraph(numberOfVertices + 1, addVertex(independentVertices).adjacencies)
