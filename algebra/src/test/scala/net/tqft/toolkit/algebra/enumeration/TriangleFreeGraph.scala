@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra.enumeration
 
 import net.tqft.toolkit.algebra.graphs.Graph
+import net.tqft.toolkit.permutations.Permutations
 
 case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[Int]]) extends Graph with CanonicalGeneration[TriangleFreeGraph, IndexedSeq[Int]] { tfg =>
   import net.tqft.toolkit.permutations.Permutations._
@@ -10,6 +11,10 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
 
   override lazy val automorphisms = dreadnaut.automorphismGroup(this)
 
+  override def findIsomorphismTo(other: TriangleFreeGraph) = {
+    Permutations.of(numberOfVertices).find(p => relabel(p) == other)
+  }
+  
   override val ordering: Ordering[Lower] = Ordering.by({ l: Lower =>
     dreadnaut.canonicalize(
       this.mark(Seq(l.k)))
@@ -38,7 +43,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
     }
     override def act(g: IndexedSeq[Int], upper: Upper) = {
       val h = g.inverse
-      Upper(upper.independentVertices.map(h))
+      Upper(upper.independentVertices.map(h).sorted)
     }
   }
   override def lowerObjects = new automorphisms.Action[Lower] {

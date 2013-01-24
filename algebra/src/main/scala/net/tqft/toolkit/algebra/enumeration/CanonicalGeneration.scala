@@ -12,6 +12,7 @@ import CanonicalGeneration.{ info }
 //   G represents elements of the automorphism group
 trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   val automorphisms: FinitelyGeneratedFiniteGroup[G]
+  def findIsomorphismTo(other: A): Option[G]
   
   // in each problem instance, we will specify what the upper and lower objects actually look like
   type Lower <: {
@@ -33,28 +34,30 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   // now the actual algorithm
   def children = {
     info("computing children of " + this)
-    //    info(" automorphism group: " + automorphisms.generators)
+        info(" automorphism group: " + automorphisms.generators)
     val orbits = upperObjects.orbits.toSeq
-    //    info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+        info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
     val result = orbits.flatMap({ orbit =>
       val candidateUpperObject = orbit.representative;
-      //      info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements + " with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
+            info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements + " with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
       val lowerOrbits = candidateUpperObject.result.lowerObjects.orbits
-      //      info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
-      //      info("   which sort as " + lowerOrbits.toSeq.sortBy({ _.representative })(candidateUpperObject.result.ordering).map(_.elements))
+            info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+            info("   which sort as " + lowerOrbits.toSeq.sortBy({ _.representative })(candidateUpperObject.result.ordering).map(_.elements))
       val canonicalReductionOrbit = lowerOrbits.minBy({ _.representative })(candidateUpperObject.result.ordering)
-      //      info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
+            info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
       if (canonicalReductionOrbit.contains(candidateUpperObject.inverse)) {
-        //        info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
+                info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
         Some(candidateUpperObject.result)
       } else {
-        //        info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
+                info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
         None
       }
     })
     info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
     result
   }
+
+  def isomorphicTo_?(other: A) = findIsomorphismTo(other).nonEmpty
 
   def parent = {
     val elts = lowerObjects.elements
@@ -75,6 +78,15 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     })
   }
 
+  def verifyUpperOrbits = {
+    (for(o <- upperObjects.orbits.iterator; s <- o.elements.subsets(2); Seq(a, b) = s.toSeq) yield {
+        a.result.isomorphicTo_?(b.result)
+    }) ++ 
+    (for(s <- upperObjects.orbits.subsets(2); Seq(o1, o2) = s.toSeq; u1 = o1.representative; u2 = o2.representative) yield {
+      !u1.result.isomorphicTo_?(u2.result)
+    })
+  }
+  
   // and, for convenience, something to recursively find all children, filtering on a predicate
   def descendants(accept: A => Int = { _ => 1 }): Iterator[A] = descendantsTree(accept).map(_._1)
 
