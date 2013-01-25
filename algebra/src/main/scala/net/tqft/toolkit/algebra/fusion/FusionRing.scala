@@ -123,7 +123,13 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     //      Set(Set(i, rank + i), Set(i, 2 * rank + i), Set(rank + i, 2 * rank + i))
     //    }).flatten
 
-    val adjacencies = ???
+    val adjacencies = (for(i <- 0 until rank) yield {
+      IndexedSeq(i + rank, i + 2 * rank) ++ (for(j <- 0 until rank; k <- 0 until rank) yield (3 * rank + i * rank * rank + j * rank + k))
+    }) ++ (for(j <- 0 until rank) yield {
+      IndexedSeq(j, j + 2 * rank) ++ (for(i <- 0 until rank; k <- 0 until rank) yield (3 * rank + i * rank * rank + j * rank + k))
+    }) ++ (for(k <- 0 until rank) yield {
+      IndexedSeq(k, k + rank) ++ (for(i <- 0 until rank; j <- 0 until rank) yield (3 * rank + i * rank * rank + j * rank + k))
+    }) ++ (for(i <- 0 until rank; j <- 0 until rank; k <- 0 until rank) yield IndexedSeq(i, j + rank, k + 2 * rank))
 
     ColouredGraph(3 * rank + rank * rank * rank, adjacencies, vertices)
   }
