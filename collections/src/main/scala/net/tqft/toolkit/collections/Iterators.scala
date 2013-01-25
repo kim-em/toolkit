@@ -6,6 +6,19 @@ object Iterators {
   implicit def iterator2RichIterator[A](iterator: Iterator[A]) = new RichIterator(iterator)
 
   class RichIterator[A](iterator: Iterator[A]) {
+    def last: A = {
+      var a =
+        if (iterator.hasNext) {
+          iterator.next
+        } else {
+          throw new NoSuchElementException
+        }
+      while (iterator.hasNext) {
+        a = iterator.next
+      }
+      a
+    }
+
     def distinct: Iterator[A] = {
       new Iterator[A] {
         val store = scala.collection.mutable.Set[A]()

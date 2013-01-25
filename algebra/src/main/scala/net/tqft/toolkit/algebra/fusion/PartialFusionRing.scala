@@ -11,16 +11,16 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
 
   override lazy val hashCode = (depth, ring, globalDimensionLimit).hashCode
 
-//  override def children = {
-//    try {
-//      PartialFusionRingCache.getOrElseUpdate(this, super.children)
-//    } catch {
-//      case e: java.lang.ExceptionInInitializerError => {
-//        Logging.error("S3 not available: ", e)
-//        super.children
-//      }
-//    }
-//  }
+  //  override def children = {
+  //    try {
+  //      PartialFusionRingCache.getOrElseUpdate(this, super.children)
+  //    } catch {
+  //      case e: java.lang.ExceptionInInitializerError => {
+  //        Logging.error("S3 not available: ", e)
+  //        super.children
+  //      }
+  //    }
+  //  }
 
   private def generator = {
     if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {
@@ -32,17 +32,25 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
   val depths = {
     if (ring.rank == 1) {
       Seq(0)
-    } else if(ring.rank == 2){
+    } else if (ring.rank == 2) {
       Seq(0, 1)
     } else {
-      ring.depthWithRespectTo(generator)
+      ring.depthWithRespectTo(generator).ensuring(_.forall(_ != -1))
     }
   }
- 
+
   lazy val automorphisms = ring.automorphisms(depths)
-  
-  override def findIsomorphismTo(other: PartialFusionRing) = ???
-  
+
+  override def findIsomorphismTo(other: PartialFusionRing) = {
+    // FIXME implement via dreadnaut
+    if(depth == other.depth && globalDimensionLimit == other.globalDimensionLimit) {
+      import net.tqft.toolkit.permutations.Permutations
+      Permutations.preserving(depths).find(p => ring.relabel(p) == other.ring)
+    } else {
+      None
+    }
+  }
+
   val ordering: Ordering[Lower] = {
     import net.tqft.toolkit.collections.Orderings._
     Ordering.by({ l: Lower =>
@@ -132,9 +140,9 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
         Set(IncreaseDepth)
       } else {
         Set.empty
-      }) ++ (if(depths.max <= depth && (depth >= 2 || depth != depths.max)) {
+      }) ++ (if (depths.max <= depth && (depth >= 2 || depth != depths.max)) {
         FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).map(AddSelfDualObject) ++
-        FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).map(AddDualPairOfObjects)
+          FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).map(AddDualPairOfObjects)
       } else {
         Set.empty
       })

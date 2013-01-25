@@ -33,27 +33,28 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
 
   // now the actual algorithm
   def children = {
-//    info("computing children of " + this)
-//        info(" automorphism group: " + automorphisms.generators)
+    info("computing children of " + this)
+        info(" automorphism group: " + automorphisms.generators)
     val orbits = upperObjects.orbits.toSeq
-//        info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+        info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
     val result = orbits.flatMap({ orbit =>
       val candidateUpperObject = orbit.representative;
-//            info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements + " with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
+            info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements)
+            info("   with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
       val lowerOrbits = candidateUpperObject.result.lowerObjects.orbits
-//            info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
-//            info("   which sort as " + lowerOrbits.toSeq.sortBy({ _.representative })(candidateUpperObject.result.ordering).map(_.elements))
+            info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+            info("   which sort as " + lowerOrbits.toSeq.sortBy({ _.representative })(candidateUpperObject.result.ordering).map(_.elements))
       val canonicalReductionOrbit = lowerOrbits.minBy({ _.representative })(candidateUpperObject.result.ordering)
-//            info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
+            info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
       if (canonicalReductionOrbit.contains(candidateUpperObject.inverse)) {
-//                info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
+                info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
         Some(candidateUpperObject.result)
       } else {
-//                info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
+                info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
         None
       }
     })
-//    info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
+    info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
     result
   }
 
@@ -69,12 +70,15 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
 
   def ancestry = Iterator.iterate[Option[A]](Some(this))(o => o.flatMap(_.parent)).takeWhile(_.nonEmpty).map(_.get)
+  def progenitor = {
+    import net.tqft.toolkit.collections.Iterators._
+    ancestry.last
+  }
   
-  // TODO isomorphismQ should be already built in, somehow.
-  def verifyAncestry(isomorphismQ: (A, A) => Boolean) = {
+  def verifyAncestry = {
     val a = ancestry.toStream
     a.zip(a.tail).forall({
-      case (c, p) => p.children.exists(d => isomorphismQ(c, d))
+      case (c, p) => p.children.exists(isomorphicTo_?)
     })
   }
 
