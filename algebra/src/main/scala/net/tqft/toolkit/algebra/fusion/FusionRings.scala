@@ -131,10 +131,10 @@ object FusionRings {
 
     // TODO evaluate whether this is actually faster!
     val limit2: Map[V, Int] => Boolean = {
-      val Ss = for(i <- 0 until rank +1; v = variableRing.structureCoefficients(i); vd = variableRing.structureCoefficients(newDuality(i))) yield {
+      val Ss = for (i <- 0 until rank + 1; v = variableRing.structureCoefficients(i); vd = variableRing.structureCoefficients(newDuality(i))) yield {
         Matrices.over(polynomialAlgebra).compose(v, vd)
       }
-      
+
       { values: Map[V, Int] =>
         val mSs = Ss.map(_.mapEntries(p => polynomialAlgebra.completelySubstituteConstants(values)(p)))
         mSs.map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1).sum - 0.0001 < globalDimensionLimit
@@ -145,7 +145,13 @@ object FusionRings {
 
     val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit2))
 
-    solutions.map(reconstituteRing)
+    def connected_?(f: FusionRing[Int]) = {
+      val i = 1
+      val j = f.structureCoefficients.indexWhere(_.entries(i)(0) != 0)
+      f.structureCoefficients.last.entries(i).sum + f.structureCoefficients.last.entries(j).sum > 0
+    }
+
+    solutions.map(reconstituteRing).filter(connected_?)
   }
   def withAnotherPairOfDualObjects(ring: FusionRing[Int], maxdepth: Int, depths: Seq[Int], globalDimensionLimit: Double): Iterator[FusionRing[Int]] = {
     val rank = ring.rank
@@ -243,11 +249,11 @@ object FusionRings {
     }
 
     val limit2: Map[V, Int] => Boolean = {
-      
-      val Ss = for(i <- 0 until rank +2; v = variableRing.structureCoefficients(i); vd = variableRing.structureCoefficients(newDuality(i))) yield {
+
+      val Ss = for (i <- 0 until rank + 2; v = variableRing.structureCoefficients(i); vd = variableRing.structureCoefficients(newDuality(i))) yield {
         Matrices.over(polynomialAlgebra).compose(v, vd)
       }
-      
+
       { values: Map[V, Int] =>
         val mSs = Ss.map(_.mapEntries(p => polynomialAlgebra.completelySubstituteConstants(values)(p)))
         mSs.map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1).sum - 0.0001 < globalDimensionLimit
@@ -258,7 +264,13 @@ object FusionRings {
 
     val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit2))
 
-    solutions.map(reconstituteRing)
+    def connected_?(f: FusionRing[Int]) = {
+      val i = 1
+      val j = f.structureCoefficients.indexWhere(_.entries(i)(0) != 0)
+      f.structureCoefficients.last.entries(i).sum + f.structureCoefficients.last.entries(j).sum > 0
+    }
+
+    solutions.map(reconstituteRing).filter(connected_?)
   }
 
   object Examples {
@@ -518,27 +530,27 @@ object FusionRings {
       FusionRing(IndexedSeq(identity, other))
     }
 
-//    def selfDualGenerators(globalDimensionUpperBound: Double) = {
-//      Iterator.from(0).map(rank2).takeWhile(_.globalDimensionLowerBound < globalDimensionUpperBound)
-//    }
-//
-//    def nonSelfDualGenerators(globalDimensionUpperBound: Double) = {
-//      def R(a: Int, b: Int) = {
-//        val identity: Matrix[Int] = IndexedSeq(IndexedSeq(1, 0, 0), IndexedSeq(0, 1, 0), IndexedSeq(0, 0, 1))
-//        val V: Matrix[Int] = IndexedSeq(IndexedSeq(0, 1, 0), IndexedSeq(0, a, b), IndexedSeq(1, a, a))
-//        val Vd: Matrix[Int] = IndexedSeq(IndexedSeq(0, 0, 1), IndexedSeq(1, a, a), IndexedSeq(0, b, a))
-//        FusionRing(IndexedSeq(identity, V, Vd))
-//      }
-//      Iterator.from(0).takeWhile(a => R(a, 0).globalDimensionLowerBound < globalDimensionUpperBound).flatMap({ a =>
-//        Iterator.from(0).takeWhile(b => R(a, b).globalDimensionLowerBound < globalDimensionUpperBound).map({ b =>
-//          R(a, b)
-//        })
-//      })
-//    }
-//
-//    def allGenerators(globalDimensionUpperBound: Double) = selfDualGenerators(globalDimensionUpperBound) ++ nonSelfDualGenerators(globalDimensionUpperBound)
+    //    def selfDualGenerators(globalDimensionUpperBound: Double) = {
+    //      Iterator.from(0).map(rank2).takeWhile(_.globalDimensionLowerBound < globalDimensionUpperBound)
+    //    }
+    //
+    //    def nonSelfDualGenerators(globalDimensionUpperBound: Double) = {
+    //      def R(a: Int, b: Int) = {
+    //        val identity: Matrix[Int] = IndexedSeq(IndexedSeq(1, 0, 0), IndexedSeq(0, 1, 0), IndexedSeq(0, 0, 1))
+    //        val V: Matrix[Int] = IndexedSeq(IndexedSeq(0, 1, 0), IndexedSeq(0, a, b), IndexedSeq(1, a, a))
+    //        val Vd: Matrix[Int] = IndexedSeq(IndexedSeq(0, 0, 1), IndexedSeq(1, a, a), IndexedSeq(0, b, a))
+    //        FusionRing(IndexedSeq(identity, V, Vd))
+    //      }
+    //      Iterator.from(0).takeWhile(a => R(a, 0).globalDimensionLowerBound < globalDimensionUpperBound).flatMap({ a =>
+    //        Iterator.from(0).takeWhile(b => R(a, b).globalDimensionLowerBound < globalDimensionUpperBound).map({ b =>
+    //          R(a, b)
+    //        })
+    //      })
+    //    }
+    //
+    //    def allGenerators(globalDimensionUpperBound: Double) = selfDualGenerators(globalDimensionUpperBound) ++ nonSelfDualGenerators(globalDimensionUpperBound)
 
     def representationsOf[T](G: FiniteGroup[T]) = FusionRing(G.tensorProductMultiplicities.map(p => p: Matrix[Int]))
-    
+
   }
 }
