@@ -12,7 +12,7 @@ object Matrices extends net.tqft.toolkit.Logging {
     // TODO should use endomorphismAlgebra, so we can multiply by scalars from A
     override def apply[A](ring: Ring[A]): Algebra[A, Matrix[A]] = {
       implicit def r = ring
-      new MatrixCategoryOverRing[A].endomorphismAlgebra(size)
+      new MatrixCategoryOverRing[A].endomorphisms(size)
     }
     override def apply[A, B](hom: Homomorphism[Ring, A, B]): RingHomomorphism[Matrix[A], Matrix[B]] = new RingHomomorphism[Matrix[A], Matrix[B]] {
       def source = self.apply(hom.source)

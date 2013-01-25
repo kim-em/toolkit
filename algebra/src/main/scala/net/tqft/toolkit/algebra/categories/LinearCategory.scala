@@ -9,7 +9,7 @@ trait LinearCategory[O, M, R] extends AdditiveCategory[O, M] { lc =>
     override def scalarMultiply(a: R, b: M) = lc.scalarMultiply(a, b)
   }
 
-  def endomorphismAlgebra(o: O): Algebra[R, M] = new EndomorphismAlgebra(o)
+  override def endomorphisms(o: O): Algebra[R, M] = new EndomorphismAlgebra(o)
 }
 
 object LinearCategory {

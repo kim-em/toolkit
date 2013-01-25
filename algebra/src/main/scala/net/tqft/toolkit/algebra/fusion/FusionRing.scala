@@ -65,14 +65,14 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     }).flatten
   }
   def identityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator) yield Seq(x.zip(multiply(one, x)), x.zip(multiply(x, one)))).flatten.flatten
-  def dualityConstraints(duality: IndexedSeq[Int] = duality): Iterator[(A, A)] = {
-    require(duality.size == rank)
+  def dualityConstraints(d: IndexedSeq[Int] = duality): Iterator[(A, A)] = {
+    require(d.size == rank)
     import net.tqft.toolkit.permutations.Permutations._
     (for (xi <- (0 until rank).iterator; yi <- 0 until rank) yield {
-      duality.permute(multiplyBasisElements(xi, yi)).zip(multiplyBasisElements(duality(yi), duality(xi)))
+      d.permute(multiplyBasisElements(xi, yi)).zip(multiplyBasisElements(d(yi), d(xi)))
     }).flatten ++
       (for (xi <- (0 until rank).iterator; yi <- 0 until rank; zi <- 0 until rank) yield {
-        (multiplyBasisElements(xi, yi)(zi), multiplyBasisElements(zi, duality(yi))(xi))
+        (multiplyBasisElements(xi, yi)(zi), multiplyBasisElements(zi, d(yi))(xi))
       })
   }
 
@@ -162,6 +162,20 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     relabel(dreadnaut.canonicalLabelling(graphEncoding(colouring)).take(rank))
   }
 
+  def relabelForGenerator(i: Int = generators.head) = {
+    val j = duality(i)
+    val generator = add(basis(i), basis(j))
+    val depths = depthWithRespectTo(generator)
+    require(!depths.contains(-1))
+    val p = (0 +: (if(i == j) IndexedSeq(i) else IndexedSeq(i, j))) ++ (1 until rank).filterNot(x => x == i || x== j).sortBy(depths)
+    import net.tqft.toolkit.permutations.Permutations._
+    relabel(p.inverse)
+  }
+  
+  def generators = {
+    for(i <- 0 until rank; j = duality(i); g = add(basis(i), basis(j)); if !depthWithRespectTo(g).contains(-1)) yield i
+  }
+  
   def depthWithRespectTo(x: Seq[A]): Seq[Int] = {
     val objectsAtDepth = for (k <- (0 until rank).toStream) yield power(x, k).zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i })
     for (i <- 0 until rank) yield {
@@ -380,7 +394,7 @@ object FusionRing {
         if (yj != zero)
       ) yield {
         for (k <- 0 until rank) yield {
-          coefficients.multiply(xi, yj, structureCoefficients(j).entries(i)(k))
+          coefficients.multiply(xi, yj, structureCoefficients(i).entries(j)(k))
         }
       }
       val result = sum(terms)
