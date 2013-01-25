@@ -8,5 +8,5 @@ trait AdditiveCategory[O, M] extends NLinearCategory[O, M] with Subtractive[M] {
     override def negate(x: M) = ac.negate(x)
   }
 
-  def endomorphismRing(o: O): Ring[M] = new EndomorphismRing(o)
+  override def endomorphisms(o: O): Ring[M] = new EndomorphismRing(o)
 }

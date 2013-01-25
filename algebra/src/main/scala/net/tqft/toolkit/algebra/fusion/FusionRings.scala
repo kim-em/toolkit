@@ -147,8 +147,8 @@ object FusionRings {
 
     def connected_?(f: FusionRing[Int]) = {
       val i = 1
-      val j = f.structureCoefficients.indexWhere(_.entries(i)(0) != 0)
-      f.structureCoefficients.last.entries(i).sum + f.structureCoefficients.last.entries(j).sum > 0
+      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
+      f.structureCoefficients(rank).entries(i).take(rank).sum + f.structureCoefficients(rank).entries(j).take(rank).sum > 0
     }
 
     solutions.map(reconstituteRing).filter(connected_?)
@@ -165,12 +165,12 @@ object FusionRings {
       val augmentedMatrices = for ((m, i) <- ring.structureCoefficients.zipWithIndex) yield {
         val lift = m.mapEntries(polynomialAlgebra.constant)
         val newColumn0 = for (k <- 0 until rank) yield {
-          // (x_i x_k, n_0) = (x_i, n_0 x_k*) = (n_0 x_i, x_k*)
-          polynomialAlgebra.monomial((i, ring.duality(k)))
+          // (x_i x_k, n_0) = (x_i, n_0 x_k*) = (n_1 x_i, x_k*)
+          polynomialAlgebra.monomial((ring.duality(k), i))
         }
         val newColumn1 = for (k <- 0 until rank) yield {
-          // (x_i x_k, n_1) = (x_i, n_1 x_k*) = (n_1 x_i, x_k*)
-          polynomialAlgebra.monomial((ring.duality(k), i))
+          // (x_i x_k, n_1) = (x_i, n_1 x_k*) = (n_0 x_i, x_k*)
+          polynomialAlgebra.monomial((i, ring.duality(k)))
         }
         val newRow0 = (for (j <- 0 until rank) yield {
           // (x_i n_0, x_j) = (n_0, x_i* x_j) = (n_0 x_j*, x_i*)
@@ -180,7 +180,7 @@ object FusionRings {
           // (x_i n_1, x_j) = (n_1, x_i* x_j) = (n_1 x_j*, x_i*)
           polynomialAlgebra.monomial((ring.duality(i), ring.duality(j)))
         }) :+ polynomialAlgebra.monomial((ring.duality(i), rank + 1)) :+ polynomialAlgebra.monomial((ring.duality(i), rank))
-        lift.appendColumn(newColumn0).appendColumn(newColumn0).appendRow(newRow0).appendRow(newRow1)
+        lift.appendColumn(newColumn0).appendColumn(newColumn1).appendRow(newRow0).appendRow(newRow1)
       }
       val newMatrices = {
         for (k <- 0 to 1) yield {
@@ -204,10 +204,15 @@ object FusionRings {
 
     val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
     val identityConditions = variableRing.identityConstraints
-    val dualityConditions = variableRing.dualityConstraints(newDuality)
+    // TODO if we put in identityConditions by hand above, I think dualityConstraints would automatically be satisfied.
+    //    for(((p1,p2),t) <-variableRing.dualityConstraints(newDuality).zipWithIndex) {
+    //      println(t + ": " + p1 + " == " + p2)
+    //      require(p1 == p2)
+    //    }
+    val dualityConstraints = variableRing.dualityConstraints(newDuality)
     val associativityConditions = variableRing.partialAssociativityConstraints(maxdepth, depths)
 
-    val polynomials = (depthConditions ++ identityConditions ++ dualityConditions ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
+    val polynomials = (depthConditions ++ identityConditions ++ dualityConstraints ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
 
     def reconstituteRing(m: Map[V, Int]): FusionRing[Int] = {
       def lookup(a: Int, b: Int, c: Int) = {
@@ -222,7 +227,7 @@ object FusionRings {
             if (k < rank) {
               ring.structureCoefficients(i).entries(j)(k)
             } else {
-              lookup(k - rank, i, ring.duality(j))
+              lookup(k - rank, ring.duality(j), i)
             }
           } else {
             if (k < rank) {
@@ -266,8 +271,11 @@ object FusionRings {
 
     def connected_?(f: FusionRing[Int]) = {
       val i = 1
-      val j = f.structureCoefficients.indexWhere(_.entries(i)(0) != 0)
-      f.structureCoefficients.last.entries(i).sum + f.structureCoefficients.last.entries(j).sum > 0
+      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
+      (f.structureCoefficients(rank).entries(i).take(rank).sum +
+        f.structureCoefficients(rank).entries(j).take(rank).sum > 0) &&
+        (f.structureCoefficients(rank + 1).entries(i).take(rank).sum +
+          f.structureCoefficients(rank + 1).entries(j).take(rank).sum > 0)
     }
 
     solutions.map(reconstituteRing).filter(connected_?)

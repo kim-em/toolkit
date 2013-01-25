@@ -78,7 +78,9 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   def verifyAncestry = {
     val a = ancestry.toStream
     a.zip(a.tail).forall({
-      case (c, p) => p.children.exists(isomorphicTo_?)
+      case (c, p) => {
+        p.children.exists(c.isomorphicTo_?)
+      }
     })
   }
 

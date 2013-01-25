@@ -8,6 +8,8 @@ trait NLinearCategory[O, M] extends Category[O, M] { nlc =>
   def add(x: M, y: M): M
   def sum(xs: GenIterable[M]): M = xs.reduce(add _)
 
+  def endomorphisms(o: O): Rig[M] = new EndomorphismRig(o)
+  
   protected class EndomorphismRig(o: O) extends Rig[M] {
     override def zero = nlc.zeroMorphism(o, o)
     override def one = nlc.identityMorphism(o)

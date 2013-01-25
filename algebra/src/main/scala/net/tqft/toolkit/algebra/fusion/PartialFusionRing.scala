@@ -35,7 +35,12 @@ case class PartialFusionRing(depth: Int, ring: FusionRing[Int], globalDimensionL
     } else if (ring.rank == 2) {
       Seq(0, 1)
     } else {
-      ring.depthWithRespectTo(generator).ensuring(_.forall(_ != -1))
+      val result = ring.depthWithRespectTo(generator)
+      if(result.contains(-1)) {
+        println("depths invalid in PartialFusionRing(" + depth + ", " + ring + ", " + globalDimensionLimit + ")")
+        require(false)
+      }
+      result
     }
   }
 
