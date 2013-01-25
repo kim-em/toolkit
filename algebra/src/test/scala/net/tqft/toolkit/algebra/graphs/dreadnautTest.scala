@@ -27,7 +27,7 @@ class dreadnautTest extends FlatSpec with ShouldMatchers {
     for (g <- Graphs.onNVertices(n)) {
       import net.tqft.toolkit.permutations.Permutations
       val h = g.mark(Seq(0))
-      Permutations.preserving(Seq(0,1,1,1)).map(p => dreadnaut.canonicalize(h.relabel(p))).toSet should have size (1)
+      Permutations.preserving(0 +: Seq.fill(n-1)(1)).map(p => dreadnaut.canonicalize(h.relabel(p))).toSet should have size (1)
     }
   }
   "canonicalize" should "identify isomorphic graphs" in {
