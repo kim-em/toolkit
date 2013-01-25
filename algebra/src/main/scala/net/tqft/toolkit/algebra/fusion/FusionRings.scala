@@ -6,6 +6,7 @@ import net.tqft.toolkit.algebra.diophantine._
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
+import net.tqft.toolkit.algebra.grouptheory.FiniteGroup
 
 object FusionRings {
   def withObject(m: Matrix[Int], knownRing: Option[FusionRing[Int]] = None): Iterator[FusionRing[Int]] = {
@@ -517,25 +518,27 @@ object FusionRings {
       FusionRing(IndexedSeq(identity, other))
     }
 
-    def selfDualGenerators(globalDimensionUpperBound: Double) = {
-      Iterator.from(0).map(rank2).takeWhile(_.globalDimensionLowerBound < globalDimensionUpperBound)
-    }
+//    def selfDualGenerators(globalDimensionUpperBound: Double) = {
+//      Iterator.from(0).map(rank2).takeWhile(_.globalDimensionLowerBound < globalDimensionUpperBound)
+//    }
+//
+//    def nonSelfDualGenerators(globalDimensionUpperBound: Double) = {
+//      def R(a: Int, b: Int) = {
+//        val identity: Matrix[Int] = IndexedSeq(IndexedSeq(1, 0, 0), IndexedSeq(0, 1, 0), IndexedSeq(0, 0, 1))
+//        val V: Matrix[Int] = IndexedSeq(IndexedSeq(0, 1, 0), IndexedSeq(0, a, b), IndexedSeq(1, a, a))
+//        val Vd: Matrix[Int] = IndexedSeq(IndexedSeq(0, 0, 1), IndexedSeq(1, a, a), IndexedSeq(0, b, a))
+//        FusionRing(IndexedSeq(identity, V, Vd))
+//      }
+//      Iterator.from(0).takeWhile(a => R(a, 0).globalDimensionLowerBound < globalDimensionUpperBound).flatMap({ a =>
+//        Iterator.from(0).takeWhile(b => R(a, b).globalDimensionLowerBound < globalDimensionUpperBound).map({ b =>
+//          R(a, b)
+//        })
+//      })
+//    }
+//
+//    def allGenerators(globalDimensionUpperBound: Double) = selfDualGenerators(globalDimensionUpperBound) ++ nonSelfDualGenerators(globalDimensionUpperBound)
 
-    def nonSelfDualGenerators(globalDimensionUpperBound: Double) = {
-      def R(a: Int, b: Int) = {
-        val identity: Matrix[Int] = IndexedSeq(IndexedSeq(1, 0, 0), IndexedSeq(0, 1, 0), IndexedSeq(0, 0, 1))
-        val V: Matrix[Int] = IndexedSeq(IndexedSeq(0, 1, 0), IndexedSeq(0, a, b), IndexedSeq(1, a, a))
-        val Vd: Matrix[Int] = IndexedSeq(IndexedSeq(0, 0, 1), IndexedSeq(1, a, a), IndexedSeq(0, b, a))
-        FusionRing(IndexedSeq(identity, V, Vd))
-      }
-      Iterator.from(0).takeWhile(a => R(a, 0).globalDimensionLowerBound < globalDimensionUpperBound).flatMap({ a =>
-        Iterator.from(0).takeWhile(b => R(a, b).globalDimensionLowerBound < globalDimensionUpperBound).map({ b =>
-          R(a, b)
-        })
-      })
-    }
-
-    def allGenerators(globalDimensionUpperBound: Double) = selfDualGenerators(globalDimensionUpperBound) ++ nonSelfDualGenerators(globalDimensionUpperBound)
-
+    def representationsOf[T](G: FiniteGroup[T]) = FusionRing(G.tensorProductMultiplicities.map(p => p: Matrix[Int]))
+    
   }
 }

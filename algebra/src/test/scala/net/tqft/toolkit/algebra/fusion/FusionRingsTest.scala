@@ -5,6 +5,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import net.tqft.toolkit.algebra.matrices.Matrix
+import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
 
 @RunWith(classOf[JUnitRunner])
 class FusionRingsTest extends FlatSpec with ShouldMatchers {
@@ -14,4 +15,7 @@ class FusionRingsTest extends FlatSpec with ShouldMatchers {
   }
 
 	
+ "representationOf" should "generate fusion rings from finite groups" in {
+   FusionRings.Examples.representationsOf(FiniteGroups.cyclicGroup(6)).globalDimensionLowerBound < 6.0 should be (true)
+ }
 }
