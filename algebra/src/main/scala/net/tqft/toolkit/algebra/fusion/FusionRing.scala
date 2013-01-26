@@ -123,13 +123,13 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     //      Set(Set(i, rank + i), Set(i, 2 * rank + i), Set(rank + i, 2 * rank + i))
     //    }).flatten
 
-    val adjacencies = (for(i <- 0 until rank) yield {
-      IndexedSeq(i + rank, i + 2 * rank) ++ (for(j <- 0 until rank; k <- 0 until rank) yield (3 * rank + i * rank * rank + j * rank + k))
-    }) ++ (for(j <- 0 until rank) yield {
-      IndexedSeq(j, j + 2 * rank) ++ (for(i <- 0 until rank; k <- 0 until rank) yield (3 * rank + i * rank * rank + j * rank + k))
-    }) ++ (for(k <- 0 until rank) yield {
-      IndexedSeq(k, k + rank) ++ (for(i <- 0 until rank; j <- 0 until rank) yield (3 * rank + i * rank * rank + j * rank + k))
-    }) ++ (for(i <- 0 until rank; j <- 0 until rank; k <- 0 until rank) yield IndexedSeq(i, j + rank, k + 2 * rank))
+    val adjacencies = (for (i <- 0 until rank) yield {
+      IndexedSeq(i + rank, i + 2 * rank) ++ (for (j <- 0 until rank; k <- 0 until rank) yield (3 * rank + i * rank * rank + j * rank + k))
+    }) ++ (for (j <- 0 until rank) yield {
+      IndexedSeq(j, j + 2 * rank) ++ (for (i <- 0 until rank; k <- 0 until rank) yield (3 * rank + i * rank * rank + j * rank + k))
+    }) ++ (for (k <- 0 until rank) yield {
+      IndexedSeq(k, k + rank) ++ (for (i <- 0 until rank; j <- 0 until rank) yield (3 * rank + i * rank * rank + j * rank + k))
+    }) ++ (for (i <- 0 until rank; j <- 0 until rank; k <- 0 until rank) yield IndexedSeq(i, j + rank, k + 2 * rank))
 
     ColouredGraph(3 * rank + rank * rank * rank, adjacencies, vertices)
   }
@@ -162,20 +162,36 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     relabel(dreadnaut.canonicalLabelling(graphEncoding(colouring)).take(rank))
   }
 
-  def relabelForGenerator(i: Int = generators.head) = {
-    val j = duality(i)
-    val generator = add(basis(i), basis(j))
+  def relabelForGenerators(elements: Seq[Int]) = {
+    val generator = sum(elements.map(basis))
     val depths = depthWithRespectTo(generator)
     require(!depths.contains(-1))
-    val p = (0 +: (if(i == j) IndexedSeq(i) else IndexedSeq(i, j))) ++ (1 until rank).filterNot(x => x == i || x== j).sortBy(depths)
+    val p = ((0 +: elements) ++ (1 until rank).filterNot(elements.contains).sortBy(depths)).toIndexedSeq
     import net.tqft.toolkit.permutations.Permutations._
     relabel(p.inverse)
   }
-  
+
   def generators = {
-    for(i <- 0 until rank; j = duality(i); g = add(basis(i), basis(j)); if !depthWithRespectTo(g).contains(-1)) yield i
+    for (i <- 0 until rank; j = duality(i); g = add(basis(i), basis(j)); if !depthWithRespectTo(g).contains(-1)) yield i
   }
-  
+  def generators_?(elements: Seq[Int]) = {
+    val clumps = (for (i <- elements) yield (Set(i, duality(i)))).toSet
+    println("clumps -> " + clumps)
+    depthWithRespectTo(sum(clumps.flatten.map(basis))).forall(_ != -1)
+  }
+  def independent_?(elements: Seq[Int]) = {
+    val clumps = (for (i <- elements) yield (Set(i, duality(i)))).toSet
+    clumps.forall({ s =>
+      val depths = depthWithRespectTo(sum(s.map(basis)))
+      (clumps - s).flatten.forall(depths(_) == -1)
+    })
+  }
+  def minimalGeneratingSets: Iterator[Seq[Int]] = {
+    // TODO this is a terrible implementation
+    val clumps = (for (i <- (0 until rank)) yield (Set(i, duality(i)))).toSet
+    clumps.subsets.map(_.flatten.toSeq).filter(generators_?).filter(independent_?)
+  }
+
   def depthWithRespectTo(x: Seq[A]): Seq[Int] = {
     val objectsAtDepth = for (k <- (0 until rank).toStream) yield power(x, k).zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i })
     for (i <- 0 until rank) yield {

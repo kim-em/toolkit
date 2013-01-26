@@ -129,8 +129,7 @@ object FusionRings {
       FusionRing(structureCoefficients)
     }
 
-    // TODO evaluate whether this is actually faster!
-    val limit2: Map[V, Int] => Boolean = {
+    val limit: Map[V, Int] => Boolean = {
       val Ss = for (i <- 0 until rank + 1; v = variableRing.structureCoefficients(i); vd = variableRing.structureCoefficients(newDuality(i))) yield {
         Matrices.over(polynomialAlgebra).compose(v, vd)
       }
@@ -141,17 +140,16 @@ object FusionRings {
       }
     }
 
-    def limit(values: Map[V, Int]): Boolean = reconstituteRing(values).globalDimensionLowerBound < globalDimensionLimit
 
-    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit2))
+    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit))
 
-    def connected_?(f: FusionRing[Int]) = {
-      val i = 1
-      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
-      f.structureCoefficients(rank).entries(i).take(rank).sum + f.structureCoefficients(rank).entries(j).take(rank).sum > 0
-    }
-
-    solutions.map(reconstituteRing).filter(connected_?)
+//    def connected_?(f: FusionRing[Int]) = {
+//      val i = 1
+//      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
+//      f.structureCoefficients(rank).entries(i).take(rank).sum + f.structureCoefficients(rank).entries(j).take(rank).sum > 0
+//    }
+//
+    solutions.map(reconstituteRing)//.filter(connected_?)
   }
   def withAnotherPairOfDualObjects(ring: FusionRing[Int], maxdepth: Int, depths: Seq[Int], globalDimensionLimit: Double): Iterator[FusionRing[Int]] = {
     val rank = ring.rank
@@ -253,7 +251,7 @@ object FusionRings {
       FusionRing(structureCoefficients)
     }
 
-    val limit2: Map[V, Int] => Boolean = {
+    val limit: Map[V, Int] => Boolean = {
 
       val Ss = for (i <- 0 until rank + 2; v = variableRing.structureCoefficients(i); vd = variableRing.structureCoefficients(newDuality(i))) yield {
         Matrices.over(polynomialAlgebra).compose(v, vd)
@@ -265,20 +263,18 @@ object FusionRings {
       }
     }
 
-    def limit(values: Map[V, Int]): Boolean = reconstituteRing(values).globalDimensionLowerBound < globalDimensionLimit
+    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit))
 
-    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit2))
+//    def connected_?(f: FusionRing[Int]) = {
+//      val i = 1
+//      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
+//      (f.structureCoefficients(rank).entries(i).take(rank).sum +
+//        f.structureCoefficients(rank).entries(j).take(rank).sum > 0) &&
+//        (f.structureCoefficients(rank + 1).entries(i).take(rank).sum +
+//          f.structureCoefficients(rank + 1).entries(j).take(rank).sum > 0)
+//    }
 
-    def connected_?(f: FusionRing[Int]) = {
-      val i = 1
-      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
-      (f.structureCoefficients(rank).entries(i).take(rank).sum +
-        f.structureCoefficients(rank).entries(j).take(rank).sum > 0) &&
-        (f.structureCoefficients(rank + 1).entries(i).take(rank).sum +
-          f.structureCoefficients(rank + 1).entries(j).take(rank).sum > 0)
-    }
-
-    solutions.map(reconstituteRing).filter(connected_?)
+    solutions.map(reconstituteRing)//.filter(connected_?)
   }
 
   object Examples {
