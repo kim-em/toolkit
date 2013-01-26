@@ -111,14 +111,14 @@ object Resolvers {
 }
 
 object Dependencies {
-        val junit = "junit" % "junit" % "4.8" % "test"
+        val junit = "junit" % "junit" % "4.11" % "test"
         val slf4j = "org.slf4j" % "slf4j-log4j12" % "1.6.1"
 	val apfloat = "org.apfloat" % "apfloat" % "1.6.3"		// arbitrary precision integers and floats; much better than BigInt and BigDecimal
 	object commons {
 		val math = "org.apache.commons" % "commons-math" % "2.2"	// simplex algorithm
 		val logging = "commons-logging" % "commons-logging" % "1.1.1"
 	}
-        val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.8.1"
+        val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
         val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "12.0"
 }
