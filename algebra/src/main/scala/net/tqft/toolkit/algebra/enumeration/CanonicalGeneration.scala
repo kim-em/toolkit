@@ -75,14 +75,10 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     ancestry.last
   }
   
-  def verifyAncestry = {
-    val a = ancestry.toStream
-    a.zip(a.tail).forall({
-      case (c, p) => {
-        p.children.exists(c.isomorphicTo_?)
-      }
-    })
+  def verifyParent = {
+    parent.map(_.children.exists(isomorphicTo_?)).getOrElse(true)
   }
+  def verifyAncestry = ancestry.forall(_.verifyParent)
 
   def verifyUpperOrbits = {
     (for(o <- upperObjects.orbits.iterator; s <- o.elements.subsets(2); Seq(a, b) = s.toSeq) yield {

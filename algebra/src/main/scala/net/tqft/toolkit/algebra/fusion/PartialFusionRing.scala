@@ -13,7 +13,7 @@ object PartialFusionRing {
     val generator = ring.sum(generators.map(ring.basis))
     val depth = ring.depthWithRespectTo(generator).max
     val relabelledRing = ring.relabelForGenerators(generators)
-    PartialFusionRing(depth, (1 to generators.size), relabelledRing, ring.globalDimensionLowerBound + 1)
+    PartialFusionRing(depth, (1 to generators.size), relabelledRing, ring.globalDimensionLowerBound.ceil)
   }
 }
 
@@ -173,20 +173,17 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
       }) ++ (if (depth > 0) {
         // FIXME sometimes we're adding an object at one higher depth than intended here!
         
-        val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit)
-        val filteredExtraSelfDual = if (depth == 1) {
-          extraSelfDual.filter(r => r.independent_?(1 until r.rank))
-        } else {
-          extraSelfDual.filter(_.generators_?(generators)).filter(_.independent_?(generators))
-        }
-        val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit)
-        val filteredExtraPairs = if (depth == 1) {
-          extraPairs.filter(r => r.independent_?(1 until r.rank))
-        } else {
-          extraPairs.filter(_.generators_?(generators)).filter(_.independent_?(generators))
-        }
-        filteredExtraSelfDual.map(AddSelfDualObject) ++
-          filteredExtraPairs.map(AddDualPairOfObjects)
+        def independent_?(f: FusionRing[Int]) = {
+          f.independent_?(if(depth == 1) {
+            1 until f.rank
+          } else {
+            generators
+          })
+        }        
+        val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).filter(independent_?)
+        val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).filter(independent_?)
+        extraSelfDual.map(AddSelfDualObject) ++
+          extraPairs.map(AddDualPairOfObjects)
       } else {
         Set.empty
       })

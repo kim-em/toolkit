@@ -176,7 +176,6 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   }
   def generators_?(elements: Seq[Int]) = {
     val clumps = (for (i <- elements) yield (Set(i, duality(i)))).toSet
-    println("clumps -> " + clumps)
     depthWithRespectTo(sum(clumps.flatten.map(basis))).forall(_ != -1)
   }
   def independent_?(elements: Seq[Int]) = {

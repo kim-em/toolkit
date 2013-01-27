@@ -140,16 +140,18 @@ object FusionRings {
       }
     }
 
-
     val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit))
 
-//    def connected_?(f: FusionRing[Int]) = {
-//      val i = 1
-//      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
-//      f.structureCoefficients(rank).entries(i).take(rank).sum + f.structureCoefficients(rank).entries(j).take(rank).sum > 0
-//    }
-//
-    solutions.map(reconstituteRing)//.filter(connected_?)
+    def connected_?(f: FusionRing[Int]) = {
+      if (maxdepth == 1) {
+        true
+      } else {
+        val generator = f.sum(depths.zipWithIndex.collect({ case (1, i) => i }).map(f.basis))
+        f.multiplyByBasisElement(generator, rank).zip(depths).collect({ case (k, d) if d == maxdepth - 1 => k }).sum > 0
+      }
+    }
+
+    solutions.map(reconstituteRing).filter(connected_?)
   }
   def withAnotherPairOfDualObjects(ring: FusionRing[Int], maxdepth: Int, depths: Seq[Int], globalDimensionLimit: Double): Iterator[FusionRing[Int]] = {
     val rank = ring.rank
@@ -265,16 +267,26 @@ object FusionRings {
 
     val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit))
 
-//    def connected_?(f: FusionRing[Int]) = {
-//      val i = 1
-//      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
-//      (f.structureCoefficients(rank).entries(i).take(rank).sum +
-//        f.structureCoefficients(rank).entries(j).take(rank).sum > 0) &&
-//        (f.structureCoefficients(rank + 1).entries(i).take(rank).sum +
-//          f.structureCoefficients(rank + 1).entries(j).take(rank).sum > 0)
-//    }
+    //    def connected_?(f: FusionRing[Int]) = {
+    //      val i = 1
+    //      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
+    //      (f.structureCoefficients(rank).entries(i).take(rank).sum +
+    //        f.structureCoefficients(rank).entries(j).take(rank).sum > 0) &&
+    //        (f.structureCoefficients(rank + 1).entries(i).take(rank).sum +
+    //          f.structureCoefficients(rank + 1).entries(j).take(rank).sum > 0)
+    //    }
 
-    solutions.map(reconstituteRing)//.filter(connected_?)
+    def connected_?(f: FusionRing[Int]) = {
+      if (maxdepth == 1) {
+        true
+      } else {
+        val generator = f.sum(depths.zipWithIndex.collect({ case (1, i) => i }).map(f.basis))
+        f.multiplyByBasisElement(generator, rank).zip(depths).collect({ case (k, d) if d == maxdepth - 1 => k }).sum > 0 &&
+          f.multiplyByBasisElement(generator, rank + 1).zip(depths).collect({ case (k, d) if d == maxdepth - 1 => k }).sum > 0
+      }
+    }
+  
+    solutions.map(reconstituteRing).filter(connected_?)
   }
 
   object Examples {
