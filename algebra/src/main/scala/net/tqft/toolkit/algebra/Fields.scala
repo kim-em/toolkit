@@ -8,7 +8,6 @@ object Fields extends HomomorphismCategory[Field] {
   val embeddingInFieldOfFractions = new NaturalTransformation[EuclideanRing, EuclideanRing, Functors.Identity, Fraction] {
     def source = Functors.Identity(EuclideanRings)
 
-    // TODO why aren't types inferred here?
     def target = fieldOfFractions.andThen[EuclideanRing, EuclideanRings.Homomorphism, Functors.Identity](Functors.Forget(Fields, EuclideanRings))
 
     def apply[A](o: EuclideanRing[A]): Homomorphism[EuclideanRing, A, Fraction[A]] = new Homomorphism[EuclideanRing, A, Fraction[A]] {
