@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-import scala.collection.GenIterable
+import scala.collection.GenTraversableOnce
 
 // TODO should have
 //		@specialized(Int, Long, Float, Double) 
@@ -20,7 +20,7 @@ trait Zero[A] {
 }
 
 trait AdditiveMonoid[@specialized(Int, Long, Float, Double) A] extends AdditiveSemigroup[A] with Zero[A] {
-  def sum(xs: GenIterable[A]): A = xs.fold(zero)(add _)
+  def sum(xs: GenTraversableOnce[A]): A = xs.fold(zero)(add _)
 }
 
 object AdditiveMonoid {
