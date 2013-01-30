@@ -1,14 +1,15 @@
 package net.tqft.toolkit.algebra.modules
 
 import net.tqft.toolkit.algebra._
-import scala.collection.GenIterable
+import scala.collection.GenTraversableOnce
 
 object FreeModule {
-  implicit def orderingToLinearComboOrdering[A, B](implicit o: Ordering[B]) = new Ordering[Map[B, A]] {
-    def compare(x: Map[B, A], y: Map[B, A]) = {
-      o.compare(x.map(_._1).max, y.map(_._1).max)
-    }
-  }
+  // FIXME this isn't much of an ordering...
+//  implicit def orderingToLinearComboOrdering[A, B](implicit o: Ordering[B]) = new Ordering[Map[B, A]] {
+//    def compare(x: Map[B, A], y: Map[B, A]) = {
+//      o.compare(x.map(_._1).max, y.map(_._1).max)
+//    }
+//  }
 }
 
 trait LinearCombo[A, B] {
@@ -50,7 +51,7 @@ trait GeneralFreeModuleOverRig[A, B, LC <: LinearCombo[A, B]] extends ModuleOver
   override def add(x: LC, y: LC) = {
     simplify(x.terms ++ y.terms)
   }
-  override def sum(xs: GenIterable[LC]) = simplify(xs.toSeq.flatMap(_.terms).seq)
+  override def sum(xs: GenTraversableOnce[LC]) = simplify(xs.toSeq.flatMap(_.terms).seq)
 
   def zero = wrap(Nil)
 }
