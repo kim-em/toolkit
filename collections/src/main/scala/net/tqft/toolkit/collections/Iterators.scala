@@ -18,6 +18,14 @@ object Iterators {
       }
       a
     }
+    
+    def headOption: Option[A] = {
+      if(iterator.hasNext) {
+        Some(iterator.next)
+      } else {
+        None
+      }
+    }
 
     def distinct: Iterator[A] = {
       new Iterator[A] {
