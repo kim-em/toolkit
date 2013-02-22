@@ -87,7 +87,7 @@ object FusionRings {
 
     val newDuality = ring.duality :+ rank
 
-    // we could do these 'by hand', by BoundedDiophantineSolver is good enough at it
+    // we could do these 'by hand', but BoundedDiophantineSolver is good enough at it
     val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
     val identityConditions = variableRing.identityConstraints
     val dualityConditions = variableRing.dualityConstraints(newDuality)
@@ -266,15 +266,6 @@ object FusionRings {
     }
 
     val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit))
-
-    //    def connected_?(f: FusionRing[Int]) = {
-    //      val i = 1
-    //      val j = f.structureCoefficients(i).entries.indexWhere(_.head == 1)
-    //      (f.structureCoefficients(rank).entries(i).take(rank).sum +
-    //        f.structureCoefficients(rank).entries(j).take(rank).sum > 0) &&
-    //        (f.structureCoefficients(rank + 1).entries(i).take(rank).sum +
-    //          f.structureCoefficients(rank + 1).entries(j).take(rank).sum > 0)
-    //    }
 
     def connected_?(f: FusionRing[Int]) = {
       if (maxdepth == 1) {
