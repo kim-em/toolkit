@@ -10,8 +10,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials
 
-  // TODO make boundary compulsory
-  def solve[V: Ordering](polynomials: TraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Option[Map[V, Int] => Boolean] = None, knownSolution: Option[Map[V, Int]] = None): Iterator[Map[V, Int]] = {
+  def solve[V: Ordering](polynomials: TraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Map[V, Int] => Boolean, knownSolution: Option[Map[V, Int]] = None): Iterator[Map[V, Int]] = {
 
     type P = MultivariablePolynomial[Int, V]
     val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
@@ -26,7 +25,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
       	cacheKeys.indexOf(m) match {
       	  case -1 => {
       	    cacheKeys(k) = m
-      	    val result = boundary.get(m)
+      	    val result = boundary(m)
       	    cacheValues(k) = result
       	    k = (k + 1) % 20      	
       	    result
@@ -279,7 +278,6 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
 
       def cases(v: V): Seq[Int] = {
         val remainingVariables = variables.filterNot(substitutions.keySet.contains).filterNot(_ == v)
-        val limit = boundary.get
 
         val minimalSubstitutionBase = {
           val newSubstitutions = remainingVariables.map(w => w -> polynomialAlgebra.constant(0)).toMap
