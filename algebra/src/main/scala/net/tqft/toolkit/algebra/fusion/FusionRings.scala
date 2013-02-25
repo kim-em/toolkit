@@ -39,7 +39,7 @@ object FusionRings {
     // we don't use the identity constraints here, because we've taken care of that above
     val polynomials = (variableRing.generalDualityConstraints ++ variableRing.associativityConstraints).map(p => polynomialAlgebra.subtract(p._1, p._2)).toSeq
     // TODO we should be passing a limit here --- we know the dimensions of all the objects
-    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, knownSolution = knownSolution)
+    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, { m: Map[V, Int] => ??? }, knownSolution = knownSolution)
 
     for (solution <- solutions) yield {
       val structureCoefficients = variableStructureCoefficients.map(_.mapEntries({
@@ -140,7 +140,7 @@ object FusionRings {
       }
     }
 
-    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit))
+    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, limit)
 
     def connected_?(f: FusionRing[Int]) = {
       if (maxdepth == 1) {
@@ -161,25 +161,47 @@ object FusionRings {
 
     // V(j,k) = (n_0 x_j, x_k) = (n_1 x_k, x_j)
 
+    def v(j: Int, k: Int) = {
+      if(j < rank && k < rank && depths(j) + depths(k) < maxdepth) {
+        polynomialAlgebra.zero
+      } else {
+        if(j == 0) {
+          if(k == rank) {
+            polynomialAlgebra.one
+          } else {
+            polynomialAlgebra.zero
+          }
+        } else if(k == 0) {
+          if(j == rank + 1) {
+            polynomialAlgebra.one
+          } else {
+            polynomialAlgebra.zero
+          }
+        } else {
+          polynomialAlgebra.monomial((j, k))
+        }
+      }
+    }
+    
     val variableRing = {
       val augmentedMatrices = for ((m, i) <- ring.structureCoefficients.zipWithIndex) yield {
         val lift = m.mapEntries(polynomialAlgebra.constant)
         val newColumn0 = for (k <- 0 until rank) yield {
           // (x_i x_k, n_0) = (x_i, n_0 x_k*) = (n_1 x_i, x_k*)
-          polynomialAlgebra.monomial((ring.duality(k), i))
+          v(ring.duality(k), i)
         }
         val newColumn1 = for (k <- 0 until rank) yield {
           // (x_i x_k, n_1) = (x_i, n_1 x_k*) = (n_0 x_i, x_k*)
-          polynomialAlgebra.monomial((i, ring.duality(k)))
+          v(i, ring.duality(k))
         }
         val newRow0 = (for (j <- 0 until rank) yield {
           // (x_i n_0, x_j) = (n_0, x_i* x_j) = (n_0 x_j*, x_i*)
-          polynomialAlgebra.monomial((ring.duality(j), ring.duality(i)))
-        }) :+ polynomialAlgebra.monomial((rank + 1, ring.duality(i))) :+ polynomialAlgebra.monomial((rank, ring.duality(i)))
+          v(ring.duality(j), ring.duality(i))
+        }) :+ v(rank + 1, ring.duality(i)) :+ v(rank, ring.duality(i))
         val newRow1 = (for (j <- 0 until rank) yield {
           // (x_i n_1, x_j) = (n_1, x_i* x_j) = (n_1 x_j*, x_i*)
-          polynomialAlgebra.monomial((ring.duality(i), ring.duality(j)))
-        }) :+ polynomialAlgebra.monomial((ring.duality(i), rank + 1)) :+ polynomialAlgebra.monomial((ring.duality(i), rank))
+          v(ring.duality(i), ring.duality(j))
+        }) :+ v(ring.duality(i), rank + 1) :+ v(ring.duality(i), rank)
         lift.appendColumn(newColumn0).appendColumn(newColumn1).appendRow(newRow0).appendRow(newRow1)
       }
       val newMatrices = {
@@ -187,9 +209,9 @@ object FusionRings {
           (for (i <- 0 until rank + 2) yield {
             for (j <- 0 until rank + 2) yield {
               if (k == 0) {
-                polynomialAlgebra.monomial((i, j))
+                v(i, j)
               } else {
-                polynomialAlgebra.monomial((j, i))
+                v(j, i)
               }
             }
           }): Matrix[MultivariablePolynomial[Int, V]]
@@ -198,27 +220,34 @@ object FusionRings {
 
       FusionRing(augmentedMatrices ++ newMatrices)
     }
-    val variables = for (i <- 0 until rank + 2; j <- 0 until rank + 2) yield (i, j)
+    val variables = for (i <- 0 until rank + 2; j <- 0 until rank + 2; x <- v(i, j).variables) yield x 
 
     val newDuality = ring.duality :+ (rank + 1) :+ rank
 
-    val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
-    val identityConditions = variableRing.identityConstraints
+//    val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
+//    val identityConditions = variableRing.identityConstraints
     // TODO if we put in identityConditions by hand above, I think dualityConstraints would automatically be satisfied.
-    //    for(((p1,p2),t) <-variableRing.dualityConstraints(newDuality).zipWithIndex) {
-    //      println(t + ": " + p1 + " == " + p2)
-    //      require(p1 == p2)
-    //    }
+    // hmm, seems not
+//        for(((p1,p2),t) <-variableRing.dualityConstraints(newDuality).zipWithIndex) {
+//          println(t + ": " + p1 + " == " + p2)
+//          require(p1 == p2)
+//        }
     val dualityConstraints = variableRing.dualityConstraints(newDuality)
     val associativityConditions = variableRing.partialAssociativityConstraints(maxdepth, depths)
 
-    val polynomials = (depthConditions ++ identityConditions ++ dualityConstraints ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
+    val polynomials = (/*depthConditions ++ identityConditions ++ */dualityConstraints ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
 
     def reconstituteRing(m: Map[V, Int]): FusionRing[Int] = {
+      val m0 = m.orElse[(Int,Int), Int]({
+        case (0, k) if k == rank => 1
+        case (j, 0) if j == rank + 1 => 1
+        case _ => 0
+      })
+      
       def lookup(a: Int, b: Int, c: Int) = {
         a match {
-          case 0 => m((b, c))
-          case 1 => m((c, b))
+          case 0 => m0((b, c))
+          case 1 => m0((c, b))
         }
       }
       val structureCoefficients = (IndexedSeq.tabulate(rank + 2, rank + 2, rank + 2) { (i, j, k) =>
@@ -265,7 +294,7 @@ object FusionRings {
       }
     }
 
-    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, Some(limit))
+    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, limit)
 
     def connected_?(f: FusionRing[Int]) = {
       if (maxdepth == 1) {
@@ -276,8 +305,12 @@ object FusionRings {
           f.multiplyByBasisElement(generator, rank + 1).zip(depths).collect({ case (k, d) if d == maxdepth - 1 => k }).sum > 0
       }
     }
+    def ordered_?(f: FusionRing[Int]) = {
+      import net.tqft.toolkit.collections.LexicographicOrdering._
+      implicitly[Ordering[Seq[IndexedSeq[Int]]]].compare(f.structureCoefficients(rank).entries.seq, f.structureCoefficients(rank + 1).entries.seq) <= 0
+    }
   
-    solutions.map(reconstituteRing).filter(connected_?)
+    solutions.map(reconstituteRing).filter(connected_?)//.filter(ordered_?)
   }
 
   object Examples {

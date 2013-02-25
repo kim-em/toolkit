@@ -80,7 +80,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     require(variables.size == otherRank * otherRank * otherRank + leftModule.rank * otherRank * leftModule.rank)
 
     val solutions = BoundedDiophantineSolver.solve(
-      polynomials, variables, boundary = Some(checkInequalities _), knownSolution = knownSolution)
+      polynomials, variables, boundary = checkInequalities, knownSolution = knownSolution)
 
     info("... finished finding commutants with total rank " + otherRank + " and " + otherNumberOfSelfDualObjects + " self-dual objects.")
 
@@ -194,7 +194,8 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
       FusionBimodule(substitute(leftMultiplication), substitute(leftAction), substitute(rightMultiplication), substitute(rightAction))
     }
 
-    val solutions = BoundedDiophantineSolver.solve(polynomials, variables)
+    // TODO can we calculate the dimensions of all the other objects, and use those as bounds?
+    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, { m: Map[V, Int] => ??? })
     for (s <- solutions) yield reconstituteBimodule(s)
   }
 

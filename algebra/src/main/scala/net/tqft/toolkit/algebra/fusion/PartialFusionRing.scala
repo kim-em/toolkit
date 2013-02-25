@@ -65,9 +65,15 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
     }
   }
 
+  override def isomorphs: Iterator[PartialFusionRing] = {
+    import net.tqft.toolkit.permutations.Permutations
+    for (p <- Permutations.preserving(depths).iterator) yield copy(ring = ring.relabel(p))
+  }
+
   // TODO refine this via easier invariants
   val ordering: Ordering[Lower] = {
     import net.tqft.toolkit.collections.Orderings._
+      import net.tqft.toolkit.algebra.graphs.dreadnaut
     Ordering.by({ l: Lower =>
       l match {
         case ReduceDepth => 0
@@ -75,8 +81,8 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
         case DeleteDualPairOfObjects(_, _) => 2
       }
     }).refineByPartialFunction({
-      case DeleteSelfDualObject(k) => ring.graphEncoding(depths.updated(k, -1))
-      case d @ DeleteDualPairOfObjects(_, _) => ring.graphEncoding(depths.updated(d.k1, -1).updated(d.k2, -1))
+        case DeleteSelfDualObject(k) => dreadnaut.canonicalize(ring.graphEncoding(depths.updated(k, -1)))
+        case d @ DeleteDualPairOfObjects(_, _) => dreadnaut.canonicalize(ring.graphEncoding(depths.updated(d.k1, -1).updated(d.k2, -1)))
     })
   }
 
@@ -171,19 +177,21 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
       } else {
         Set.empty
       }) ++ (if (depth > 0) {
-        // FIXME sometimes we're adding an object at one higher depth than intended here!
-        
         def independent_?(f: FusionRing[Int]) = {
-          f.independent_?(if(depth == 1) {
+          f.independent_?(if (depth == 1) {
             1 until f.rank
           } else {
             generators
           })
-        }        
+        }
+
+        import net.tqft.toolkit.collections.GroupBy._
+        def isomorphic_?(a: Upper, b: Upper) = a.result.isomorphicTo_?(b.result)
+
         val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).filter(independent_?)
         val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).filter(independent_?)
-        extraSelfDual.map(AddSelfDualObject) ++
-          extraPairs.map(AddDualPairOfObjects)
+        extraSelfDual.map(AddSelfDualObject).toSeq.chooseEquivalenceClassRepresentatives(isomorphic_?) ++
+          extraPairs.map(AddDualPairOfObjects).toSeq.chooseEquivalenceClassRepresentatives(isomorphic_?)
       } else {
         Set.empty
       })
