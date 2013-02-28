@@ -6,8 +6,8 @@ object Split {
   implicit def splittable[A](x: Iterable[A]) = new Splittable(x)
   class Splittable[A](x: Iterable[A]) {
     // TODO should return an Iterable
-    def splitBy[B](f: A => B): List[List[A]] = {
-      def chunk(l: List[(A, B)]): List[List[A]] = {
+    def splitBy[B](f: A => B): List[Seq[A]] = {
+      def chunk(l: Seq[(A, B)]): List[Seq[A]] = {
         if (l.nonEmpty) {
           val (c, rest) = l.span(_._2 == l.head._2)
           c.map(_._1) :: chunk(rest)
@@ -16,7 +16,7 @@ object Split {
         }
       }
 
-      chunk(x.toList map (a => (a, f(a))))
+      chunk(x.toSeq map (a => (a, f(a))))
     }
     
     def splitByOrdering(o: Ordering[A]): List[List[A]] = {

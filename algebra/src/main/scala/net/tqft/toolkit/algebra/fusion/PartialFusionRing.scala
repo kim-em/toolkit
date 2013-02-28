@@ -21,16 +21,16 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
 
   override lazy val hashCode = (depth, generators, ring, globalDimensionLimit).hashCode
 
-    override def children = {
-      try {
-        PartialFusionRingCache.getOrElseUpdate(this, super.children)
-      } catch {
-        case e: java.lang.ExceptionInInitializerError => {
-          Logging.error("S3 not available: ", e)
-          super.children
-        }
-      }
-    }
+//    override def children = {
+//      try {
+//        PartialFusionRingCache.getOrElseUpdate(this, super.children)
+//      } catch {
+//        case e: java.lang.ExceptionInInitializerError => {
+//          Logging.error("S3 not available: ", e)
+//          super.children
+//        }
+//      }
+//    }
 
   private def generator = {
     //    if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {

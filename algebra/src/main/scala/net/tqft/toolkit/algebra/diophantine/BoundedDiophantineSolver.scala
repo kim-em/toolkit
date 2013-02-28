@@ -297,7 +297,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
       def caseBashOneStep(v: V): Iterator[Equations] = {
         val c = cases(v)
         (for (k <- c.iterator; r <- recordCaseBashProgress(k, c.size).addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield {
-//          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
+          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
           r
         })
       }
