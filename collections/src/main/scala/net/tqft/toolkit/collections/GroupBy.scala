@@ -8,7 +8,7 @@ import scala.collection.parallel.ParSeq
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConversions
 import net.tqft.toolkit.Logging
-object GroupBy {
+object GroupBy extends Logging {
 
   implicit def groupable[A](x: GenIterable[A]) = new Groupable(x)
   class Groupable[A](x: GenIterable[A]) {
@@ -16,16 +16,17 @@ object GroupBy {
     def equivalenceClasses(equivalence: (A, A) => Boolean): List[List[A]] = equivalenceClasses[Unit](equivalence, { x => () })
 
     def equivalenceClasses[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[List[A]] = {
-      def _equivalenceClasses(y: List[A]) = {
-        def acc(classes: ParSeq[List[A]])(z: List[A]): List[List[A]] = z match {
-          case Nil => classes.toList
-          case a :: r => classes.indexWhere(c => equivalence(c.head, a)) match {
+      def _equivalenceClasses(y: Seq[A]) = {
+        @scala.annotation.tailrec
+        def acc(classes: ParSeq[List[A]])(z: Seq[A]): Seq[List[A]] = z match {
+          case Seq() => classes.seq
+          case a +: r => classes.indexWhere(c => equivalence(c.head, a)) match {
             case -1 => acc(List(a) +: classes)(r)
             case k => acc(classes.updated(k, a :: classes(k)))(r)
           }
         }
 
-        acc(Nil.par)(y)
+        acc(ParSeq())(y)
       }
 
       import Split._
@@ -33,21 +34,25 @@ object GroupBy {
     }
 
     def chooseEquivalenceClassRepresentatives(equivalence: (A, A) => Boolean): List[A] = chooseEquivalenceClassRepresentatives[Unit](equivalence, { x => () })
-    def chooseEquivalenceClassRepresentatives[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[A] = {
-      def _chooseEquivalenceClassRepresentatives(y: List[A]) = {
-        def acc(representatives: ParSeq[A])(z: List[A]): List[A] = z match {
-          case Nil => representatives.toList
-          case a :: r => representatives.indexWhere(c => equivalence(c, a)) match {
+    def chooseEquivalenceClassRepresentatives[B <% Ordered[B]](equivalence: (A, A) => Boolean, invariant: A => B): List[A] = {      
+      def _chooseEquivalenceClassRepresentatives(y: Seq[A]) = {
+        @scala.annotation.tailrec
+        def acc(representatives: ParSeq[A])(z: Seq[A]): Seq[A] = z match {
+          case Seq() => representatives.seq
+          case a +: r => representatives.indexWhere(c => equivalence(c, a)) match {
             case -1 => acc(a +: representatives)(r)
             case k => acc(representatives)(r)
           }
         }
 
-        acc(Nil.par)(y)
+        acc(ParSeq())(y)
       }
 
       import Split._
-      ((x.toList sortBy { invariant } splitBy { invariant }).par.map { _chooseEquivalenceClassRepresentatives }).toList.flatten
+      
+      val xSeq = x.toIndexedSeq
+      info("running chooseEquivalenceClassRepresentatives on " + xSeq.size + " elements")
+      ((xSeq sortBy { invariant } splitBy { invariant }).par.map { _chooseEquivalenceClassRepresentatives }).toList.flatten
     }
 
     def lazilyGroupBy[B](f: A => B): Iterable[(B, Iterator[A])] = {
