@@ -21,16 +21,21 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
 
   override lazy val hashCode = (depth, generators, ring, globalDimensionLimit).hashCode
 
-//    override def children = {
-//      try {
-//        PartialFusionRingCache.getOrElseUpdate(this, super.children)
-//      } catch {
-//        case e: java.lang.ExceptionInInitializerError => {
-//          Logging.error("S3 not available: ", e)
-//          super.children
-//        }
-//      }
-//    }
+  lazy val completeInvariant = {
+    import net.tqft.toolkit.algebra.graphs.dreadnaut
+    dreadnaut.canonicalize(ring.graphEncoding(depths))
+  }
+
+      override def children = {
+        try {
+          PartialFusionRingCache.getOrElseUpdate(this, super.children)
+        } catch {
+          case e: java.lang.ExceptionInInitializerError => {
+            Logging.error("S3 not available: ", e)
+            super.children
+          }
+        }
+      }
 
   private def generator = {
     //    if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {
@@ -73,7 +78,7 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
   // TODO refine this via easier invariants
   val ordering: Ordering[Lower] = {
     import net.tqft.toolkit.collections.Orderings._
-      import net.tqft.toolkit.algebra.graphs.dreadnaut
+    import net.tqft.toolkit.algebra.graphs.dreadnaut
     Ordering.by({ l: Lower =>
       l match {
         case ReduceDepth => 0
@@ -81,8 +86,8 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
         case DeleteDualPairOfObjects(_, _) => 2
       }
     }).refineByPartialFunction({
-        case DeleteSelfDualObject(k) => dreadnaut.canonicalize(ring.graphEncoding(depths.updated(k, -1)))
-        case d @ DeleteDualPairOfObjects(_, _) => dreadnaut.canonicalize(ring.graphEncoding(depths.updated(d.k1, -1).updated(d.k2, -1)))
+      case DeleteSelfDualObject(k) => dreadnaut.canonicalize(ring.graphEncoding(depths.updated(k, -1)))
+      case d @ DeleteDualPairOfObjects(_, _) => dreadnaut.canonicalize(ring.graphEncoding(depths.updated(d.k1, -1).updated(d.k2, -1)))
     })
   }
 
@@ -185,13 +190,22 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
           })
         }
 
-        import net.tqft.toolkit.collections.GroupBy._
-        def isomorphic_?(a: Upper, b: Upper) = a.result.isomorphicTo_?(b.result)
+//        import net.tqft.toolkit.collections.GroupBy._
+//        def isomorphic_?(a: Upper, b: Upper) = a.result.isomorphicTo_?(b.result)
+        def chooseRepresentatives(uppers: Seq[Upper]) = {
+//          import net.tqft.toolkit.Profiler
+//          val (t1, r1) = Profiler.timing(uppers.chooseEquivalenceClassRepresentatives(isomorphic_?))
+//          val (t2, r2) = Profiler.timing(uppers.groupBy(_.result.completeInvariant).mapValues(_.head).values)
+//          require(r1.size == r2.size)
+//          println("chooseRepresentatives: "+ t1 + " vs " + t2)
+//          r1
+          uppers.map(u => u.result.completeInvariant -> u).toMap.values
+        }
 
         val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).filter(independent_?)
         val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).filter(independent_?)
-        extraSelfDual.map(AddSelfDualObject).toSeq.chooseEquivalenceClassRepresentatives(isomorphic_?) ++
-          extraPairs.map(AddDualPairOfObjects).toSeq.chooseEquivalenceClassRepresentatives(isomorphic_?)
+        chooseRepresentatives(extraSelfDual.map(AddSelfDualObject).toSeq) ++
+          chooseRepresentatives(extraPairs.map(AddDualPairOfObjects).toSeq)
       } else {
         Set.empty
       })

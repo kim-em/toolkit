@@ -9,9 +9,10 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
 
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials
+  
+ 
 
   def solve[V: Ordering](polynomials: TraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Map[V, Int] => Boolean, knownSolution: Option[Map[V, Int]] = None): Iterator[Map[V, Int]] = {
-
     type P = MultivariablePolynomial[Int, V]
     val polynomialAlgebra: MultivariablePolynomialAlgebra[Int, V] = implicitly
 
@@ -22,18 +23,18 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
       var k = 0
 
       { m: Map[V, Int] =>
-      	cacheKeys.indexOf(m) match {
-      	  case -1 => {
-      	    cacheKeys(k) = m
-      	    val result = boundary(m)
-      	    cacheValues(k) = result
-      	    k = (k + 1) % 20      	
-      	    result
-      	  }
-      	  case n => {
-      	    cacheValues(n)
-      	  }
-      	}
+        cacheKeys.indexOf(m) match {
+          case -1 => {
+            cacheKeys(k) = m
+            val result = boundary(m)
+            cacheValues(k) = result
+            k = (k + 1) % 20
+            result
+          }
+          case n => {
+            cacheValues(n)
+          }
+        }
       }
     }
 
@@ -297,7 +298,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
       def caseBashOneStep(v: V): Iterator[Equations] = {
         val c = cases(v)
         (for (k <- c.iterator; r <- recordCaseBashProgress(k, c.size).addSubstitution(v, k).flatMap(_.solveLinearEquations)) yield {
-          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
+          //          info("case bashing " + v + " via " + r.caseBashProgress.map(p => (p._1 + 1) + "/" + p._2).mkString(", ") + " cases, " + r.equations.size + " remaining equations")
           r
         })
       }
