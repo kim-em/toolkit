@@ -57,7 +57,7 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
 
   override def findIsomorphismTo(other: PartialFusionRing) = {
     // FIXME implement via dreadnaut
-    if (depth == other.depth && globalDimensionLimit == other.globalDimensionLimit) {
+    if (depth == other.depth && globalDimensionLimit == other.globalDimensionLimit && (ring.globalDimensionLowerBound - other.ring.globalDimensionLowerBound).abs < 0.0001) {
       import net.tqft.toolkit.permutations.Permutations
       Permutations.preserving(depths).find(p => ring.relabel(p) == other.ring)
     } else {

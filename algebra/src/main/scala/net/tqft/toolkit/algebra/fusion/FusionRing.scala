@@ -110,8 +110,14 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     regularModule.dimensionLowerBounds(x)
   }
 
+  private var globalDimensionLowerBoundCached: Option[Double] = None
+  
   def globalDimensionLowerBound(implicit ev: A =:= Int): Double = {
-    regularModule.globalDimensionLowerBound
+    while(globalDimensionLowerBoundCached.isEmpty) {
+      globalDimensionLowerBoundCached = Some(regularModule.globalDimensionLowerBound)
+    }
+    
+    globalDimensionLowerBoundCached.get    
   }
 
   def graphEncoding(colouring: Seq[Int]): ColouredGraph[String] = {
