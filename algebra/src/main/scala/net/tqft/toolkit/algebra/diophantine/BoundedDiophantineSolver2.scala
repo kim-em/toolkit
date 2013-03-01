@@ -228,10 +228,10 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
       FixedPoint({ o: Option[PolynomialProblem] => o.flatMap(_.solveALinearEquation) })(Some(this))
     }
 
-    def caseBashCompletely(variables: Seq[V], boundary: Map[V, Int] => Boolean): Iterator[Map[V, Int]] = {
+    def caseBashCompletely(variables: Seq[V], boundary: (V =>? Int) => Boolean): Iterator[Map[V, Int]] = {
       caseBash(variables, boundary).map(p => p.substitutions.mapValues(_.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))
     }
-    def caseBash(variables: Seq[V], boundary: Map[V, Int] => Boolean): Iterator[PolynomialProblem] = {
+    def caseBash(variables: Seq[V], boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
       variables.filterNot(substitutions.keySet) match {
         case v +: remainingVariables => {
           caseBashOnce(v, remainingVariables, boundary).flatMap(_.caseBash(remainingVariables, boundary))
@@ -239,10 +239,16 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
         case _ => Iterator(this)
       }
     }
-    def caseBashOnce(v: V, remainingVariables: Seq[V], boundary: Map[V, Int] => Boolean): Iterator[PolynomialProblem] = {
+    def caseBashOnce(v: V, remainingVariables: Seq[V], boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
+      require(!substitutions.keySet(v))
+      
       def minimalSubstitution(k: Int) = {
-        val newSubstitutions = ((v -> k) +: remainingVariables.map(w => w -> 0)).toMap
-        substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(newSubstitutions)(p)) ++ newSubstitutions
+//        val newSubstitutions = ((v -> k) +: remainingVariables.map(w => w -> 0)).toMap
+//        def newSubstitutions(w: V) = {
+//          if(v == w) k else 0
+//        }
+        
+        substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(Map(v -> k))(p)) ++ Map(v -> k)
       }
 
       Iterator.from(0).takeWhile({ k => boundary(minimalSubstitution(k)) }).flatMap(i => addSubstitution(v, i).flatMap(_.solveLinearEquations))
