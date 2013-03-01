@@ -65,6 +65,34 @@ object Odometer extends Object with Logging {
   }
 }
 
+object ArrayOdometer {
+  implicit def odometerInt(l: Array[Int]): Odometer[Array[Int]] = new o(l)
+
+  private class o(l: Array[Int]) extends Odometer[Array[Int]] {
+    require(l.nonEmpty)
+
+    override def increment(): Array[Int] = {
+      val m = l.clone
+      m(0) = m(0) + 1
+      m
+    }
+    override def carry(): Option[Array[Int]] = {
+      // set the first nonzero entry to zero, increment the next entry
+      l.indexWhere(_ > 0) match {
+        case k if k == l.length - 1 => None
+        case k => {
+          val m = l.clone
+          m(k) = 0
+          m(k + 1) = m(k + 1) + 1
+          Some(m)
+        }
+      }
+    }
+    override def reset = Array.fill(l.size)(0)
+  }
+
+}
+
 object ListOdometer {
   implicit def odometerInt(l: List[Int]): Odometer[List[Int]] = new o(l)
 
