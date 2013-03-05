@@ -5,11 +5,11 @@ import scala.collection.GenTraversableOnce
 
 object FreeModule {
   // FIXME this isn't much of an ordering...
-//  implicit def orderingToLinearComboOrdering[A, B](implicit o: Ordering[B]) = new Ordering[Map[B, A]] {
-//    def compare(x: Map[B, A], y: Map[B, A]) = {
-//      o.compare(x.map(_._1).max, y.map(_._1).max)
-//    }
-//  }
+  //  implicit def orderingToLinearComboOrdering[A, B](implicit o: Ordering[B]) = new Ordering[Map[B, A]] {
+  //    def compare(x: Map[B, A], y: Map[B, A]) = {
+  //      o.compare(x.map(_._1).max, y.map(_._1).max)
+  //    }
+  //  }
 }
 
 trait LinearCombo[A, B] {
@@ -46,7 +46,13 @@ trait GeneralFreeModuleOverRig[A, B, LC <: LinearCombo[A, B]] extends ModuleOver
 
   override def scalarMultiply(a: A, x: LC) = {
     import AlgebraicNotation._
-    simplify(x.terms map (t => (t._1, a * t._2)))
+    if (a == ring.one) {
+      x
+    } else if (a == ring.zero) {
+      zero
+    } else {
+      simplify(x.terms map (t => (t._1, a * t._2)))
+    }
   }
   override def add(x: LC, y: LC) = {
     simplify(x.terms ++ y.terms)

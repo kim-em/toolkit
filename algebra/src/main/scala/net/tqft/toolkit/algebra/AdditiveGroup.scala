@@ -20,7 +20,7 @@ trait Zero[A] {
 }
 
 trait AdditiveMonoid[@specialized(Int, Long, Float, Double) A] extends AdditiveSemigroup[A] with Zero[A] {
-  def sum(xs: GenTraversableOnce[A]): A = xs.fold(zero)(add _)
+  def sum(xs: GenTraversableOnce[A]): A = xs.reduceOption(add _).getOrElse(zero)
 }
 
 object AdditiveMonoid {
