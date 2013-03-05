@@ -13,7 +13,8 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
   // we try to find positive integer roots of the polynomials
 
   case class PolynomialProblem(equations: Seq[P], substitutions: Map[V, P]) {
-
+	equations.foreach(e => require((e.variables intersect substitutions.keySet).isEmpty, "Equation " + e + " contains already substituted variables!\n" + this))
+    
     def addSubstitution(v: V, k: Int): Option[PolynomialProblem] = {
       addSubstitution(v, polynomialAlgebra.constant(k))
     }
@@ -229,19 +230,27 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
     }
 
     def caseBashCompletely(variables: Seq[V], boundary: (V =>? Int) => Boolean): Iterator[Map[V, Int]] = {
-      caseBash(variables, boundary).map(p => p.substitutions.mapValues(_.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))
+      caseBashVariables(variables, boundary).map(p => p.substitutions.mapValues(_.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))
     }
-    def caseBash(variables: Seq[V], boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
+    def caseBashEquations(boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
+      if (equations.isEmpty) {
+        Iterator(this)
+      } else {
+        caseBashOnce(equations.head.variables.head, boundary).flatMap(_.caseBashEquations(boundary))
+      }
+    }
+    def caseBashVariables(variables: Seq[V], boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
       variables.filterNot(substitutions.keySet) match {
         case v +: remainingVariables => {
-          caseBashOnce(v, boundary).flatMap(_.caseBash(remainingVariables, boundary))
+          caseBashOnce(v, boundary).flatMap(_.caseBashVariables(remainingVariables, boundary))
         }
         case _ => Iterator(this)
       }
     }
-    def caseBashOnce(v: V, boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
+    private def caseBashOnce(v: V, boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
+      // FIXME this has failed in the wild, having arrived from caseBashEquations.
       require(!substitutions.keySet(v))
-      
+
       def minimalSubstitution(k: Int) = {
         substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(Map(v -> k))(p)) ++ Map(v -> k)
       }
@@ -250,24 +259,24 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
     }
   }
 
-//  trait Boundary extends (Map[V, Int] => Boolean) {
-//    def addSubstitution(v: V, p: P): Boundary
-//  }
-//  object Boundary {
-//    implicit def lift(f: Map[V, Int] => Boolean): Boundary = {
-//      case class CachingBoundary(constantSubstitutions: Map[V, Int], polynomialSubstitutions: Map[V, P]) extends Boundary {
-//        def apply(m: Map[V, Int]) = {
-//          f(m ++ constantSubstitutions ++ polynomialSubstitutions.mapValues(polynomialAlgebra.completelySubstituteConstants(m)(_)))
-//        }
-//        override def addSubstitution(v: V, p: P): Boundary = {
-//          val (newConstants, newPolynomials) = (polynomialSubstitutions.mapValues(polynomialAlgebra.substitute(Map(v -> p))(_)) + ( v-> p)).partition(_._2.totalDegree.getOrElse(0) == 0)
-//          CachingBoundary(constantSubstitutions ++ newConstants.mapValues(_.constantTerm), newPolynomials)
-//        }
-//      }
-//      CachingBoundary(Map(), Map())
-//    }
-//  }
-  
+  //  trait Boundary extends (Map[V, Int] => Boolean) {
+  //    def addSubstitution(v: V, p: P): Boundary
+  //  }
+  //  object Boundary {
+  //    implicit def lift(f: Map[V, Int] => Boolean): Boundary = {
+  //      case class CachingBoundary(constantSubstitutions: Map[V, Int], polynomialSubstitutions: Map[V, P]) extends Boundary {
+  //        def apply(m: Map[V, Int]) = {
+  //          f(m ++ constantSubstitutions ++ polynomialSubstitutions.mapValues(polynomialAlgebra.completelySubstituteConstants(m)(_)))
+  //        }
+  //        override def addSubstitution(v: V, p: P): Boundary = {
+  //          val (newConstants, newPolynomials) = (polynomialSubstitutions.mapValues(polynomialAlgebra.substitute(Map(v -> p))(_)) + ( v-> p)).partition(_._2.totalDegree.getOrElse(0) == 0)
+  //          CachingBoundary(constantSubstitutions ++ newConstants.mapValues(_.constantTerm), newPolynomials)
+  //        }
+  //      }
+  //      CachingBoundary(Map(), Map())
+  //    }
+  //  }
+
   def solve(polynomials: TraversableOnce[MultivariablePolynomial[Int, V]]): Option[PolynomialProblem] = {
     PolynomialProblem(Seq.empty, Map.empty).addEquations(polynomials).flatMap(_.solveLinearEquations)
   }

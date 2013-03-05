@@ -32,16 +32,29 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
     }
   }
 
-  def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
+  def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]) = substituteCache_(values, p)
+  private val substituteCache_ = {
+    import net.tqft.toolkit.functions.Memo
+    Memo.softly(substitute_ _)
+  }
+  private def substitute_(values: Map[V, MultivariablePolynomial[A, V]], p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
     val relevantValues = values.filterKeys(p.variables.contains)
     if (relevantValues.isEmpty) {
       p
     } else {
       sum(for ((m, a) <- p.terms) yield {
         val (toReplace, toKeep) = m.keySet.partition(v => relevantValues.contains(v))
-        val newFactors = for (v <- toReplace.toSeq) yield power(relevantValues(v), m(v))
-        val oldFactor = monomial(toKeep.map(v => v -> m(v)).toMap, a)
-        multiply(oldFactor, newFactors: _*)
+        if (toReplace.isEmpty) {
+          monomial(m, a)
+        } else {
+          val newFactors = for (v <- toReplace.toSeq) yield power(relevantValues(v), m(v))
+          if (toKeep.isEmpty) {
+            scalarMultiply(a, product(newFactors))
+          } else {
+            val oldFactor = monomial(toKeep.map(v => v -> m(v)).toMap, a)
+            multiply(oldFactor, newFactors: _*)
+          }
+        }
       })
     }
   }
@@ -50,12 +63,12 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
   }
   def completelySubstituteConstants(values: V =>? A)(p: MultivariablePolynomial[A, V]): A = {
     val valuesWithZero = values.lift.andThen(_.getOrElse(ring.zero))
-    
-    ring.sum(for((m, a) <- p.terms) yield {
-      ring.multiply(a, ring.product(for((v, k) <- m) yield {
+
+    ring.sum(for ((m, a) <- p.terms) yield {
+      ring.multiply(a, ring.product(for ((v, k) <- m) yield {
         ring.power(valuesWithZero(v), k)
       }))
-    })    
+    })
   }
 
 }
