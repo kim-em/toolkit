@@ -26,16 +26,16 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
     dreadnaut.canonicalize(ring.graphEncoding(depths))
   }
 
-      override def children = {
-        try {
-          PartialFusionRingCache.getOrElseUpdate(this, super.children)
-        } catch {
-          case e: java.lang.ExceptionInInitializerError => {
-            Logging.error("S3 not available: ", e)
-            super.children
-          }
-        }
+  override def children = {
+    try {
+      PartialFusionRingCache.getOrElseUpdate(this, super.children)
+    } catch {
+      case e: java.lang.ExceptionInInitializerError => {
+        Logging.error("S3 not available: ", e)
+        super.children
       }
+    }
+  }
 
   private def generator = {
     //    if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {
@@ -190,17 +190,17 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
           })
         }
 
-//        import net.tqft.toolkit.collections.GroupBy._
-//        def isomorphic_?(a: Upper, b: Upper) = a.result.isomorphicTo_?(b.result)
+        //        import net.tqft.toolkit.collections.GroupBy._
+        //        def isomorphic_?(a: Upper, b: Upper) = a.result.isomorphicTo_?(b.result)
         def chooseRepresentatives(uppers: Seq[Upper]) = {
           import net.tqft.toolkit.Profiler
-//          val (t1, r1) = Profiler.timing(uppers.chooseEquivalenceClassRepresentatives(isomorphic_?))
-//          val (t2, r2) = Profiler.timing(uppers.groupBy(_.result.completeInvariant).mapValues(_.head).values)
-//          require(r1.size == r2.size)
-//          println("chooseRepresentatives: "+ t1 + " vs " + t2)
-//          r1
+          //          val (t1, r1) = Profiler.timing(uppers.chooseEquivalenceClassRepresentatives(isomorphic_?))
+          //          val (t2, r2) = Profiler.timing(uppers.groupBy(_.result.completeInvariant).mapValues(_.head).values)
+          //          require(r1.size == r2.size)
+          //          println("chooseRepresentatives: "+ t1 + " vs " + t2)
+          //          r1
           val (t0, result) = Profiler.timing(uppers.map(u => u.result.completeInvariant -> u).toMap.values)
-//          println("t0 -> " + t0)
+          //          println("t0 -> " + t0)
           result
         }
 

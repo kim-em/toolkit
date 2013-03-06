@@ -44,7 +44,7 @@ object FusionRings {
 
     for (solution <- solutions) yield {
       val structureCoefficients = variableStructureCoefficients.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => solution(p.terms.head._1.keySet.iterator.next)
+        case p if p.totalDegree == Some(1) => solution(p.head._1.keySet.iterator.next)
         case p => p.constantTerm
       }))
       FusionRing(structureCoefficients).ensuring(_.structureCoefficients(1) == m)
