@@ -4,22 +4,35 @@ import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.modules._
 
 trait MultivariablePolynomialAlgebraOverRig[A, V]
-  extends FreeModuleOnMonoidOverRig[A, Map[V, Int], MultivariablePolynomial[A, V]] {
+  extends MapFreeModuleOnMonoidOverRig[A, Map[V, Int], MultivariablePolynomial[A, V]] {
 
   val monomialOrdering: Ordering[Map[V, Int]]
 
-  override def wrap(terms: Seq[(Map[V, Int], A)]): MultivariablePolynomial[A, V] = {
-    MultivariablePolynomialImpl(terms.sortBy(_._1)(monomialOrdering))
+  override def wrap(m: Map[Map[V, Int], A]): MultivariablePolynomial[A, V] = {
+    m match {
+      case m: MultivariablePolynomial[A, V] => m
+      case m => MultivariablePolynomialImpl(m)
+    }
   }
-  private case class MultivariablePolynomialImpl(terms: Seq[(Map[V, Int], A)]) extends MultivariablePolynomial[A, V]
+  private case class MultivariablePolynomialImpl(m: Map[Map[V, Int], A]) extends MultivariablePolynomial[A, V] {
+    override def iterator = m.iterator
+    override def get(k: Map[V, Int]) = m.get(k)
+    override def keySet = m.keySet
+    override def keys = m.keys
+    override def values = m.values
+    override def mapValues[B](f: A => B): Map[Map[V, Int], B] = m.mapValues[B](f)
+    
+    def +[B1 >: A](kv: (Map[V,Int], B1)): scala.collection.immutable.Map[Map[V,Int],B1] = ???
+    def -(key: Map[V,Int]): scala.collection.immutable.Map[Map[V,Int],A] = ???
+  }
 
-  def monomial(v: V): MultivariablePolynomial[A, V] = MultivariablePolynomialImpl(Seq((Map(v -> 1), ring.one)))
-  override def monomial(m: Map[V, Int]): MultivariablePolynomial[A, V] = MultivariablePolynomialImpl(Seq((m, ring.one)))
+  def monomial(v: V): MultivariablePolynomial[A, V] = MultivariablePolynomialImpl(Map(Map(v -> 1) -> ring.one))
+  override def monomial(m: Map[V, Int]): MultivariablePolynomial[A, V] = MultivariablePolynomialImpl(Map(m -> ring.one))
   override def monomial(m: Map[V, Int], a: A): MultivariablePolynomial[A, V] = {
     if (a == ring.zero) {
-      MultivariablePolynomialImpl(Seq())
+      MultivariablePolynomialImpl(Map.empty)
     } else {
-      MultivariablePolynomialImpl(Seq((m, a)))
+      MultivariablePolynomialImpl(Map(m -> a))
     }
   }
 
@@ -42,7 +55,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
     if (relevantValues.isEmpty) {
       p
     } else {
-      sum(for ((m, a) <- p.terms) yield {
+      sum(for ((m, a) <- p.iterator) yield {
         val (toReplace, toKeep) = m.keySet.partition(v => relevantValues.contains(v))
         if (toReplace.isEmpty) {
           monomial(m, a)
@@ -64,7 +77,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
   def completelySubstituteConstants(values: V =>? A)(p: MultivariablePolynomial[A, V]): A = {
     val valuesWithZero = values.lift.andThen(_.getOrElse(ring.zero))
 
-    ring.sum(for ((m, a) <- p.terms) yield {
+    ring.sum(for ((m, a) <- p.iterator) yield {
       ring.multiply(a, ring.product(for ((v, k) <- m) yield {
         ring.power(valuesWithZero(v), k)
       }))
@@ -75,8 +88,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
 
 trait MultivariablePolynomialAlgebra[A, V]
   extends MultivariablePolynomialAlgebraOverRig[A, V]
-  with FreeModuleOnMonoid[A, Map[V, Int], MultivariablePolynomial[A, V]]
-  with AssociativeAlgebra[A, MultivariablePolynomial[A, V]]
+  with MapFreeModuleOnMonoid[A, Map[V, Int], MultivariablePolynomial[A, V]]
 
 object MultivariablePolynomialAlgebra {
   private abstract class WithLexicographicOrdering[A: Rig, V: Ordering] extends MultivariablePolynomialAlgebraOverRig[A, V] {
