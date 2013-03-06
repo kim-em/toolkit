@@ -44,7 +44,7 @@ object FusionRings {
 
     for (solution <- solutions) yield {
       val structureCoefficients = variableStructureCoefficients.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => solution(p.head._1.keySet.iterator.next)
+        case p if p.totalDegree == Some(1) => solution(p.toMap.head._1.keySet.iterator.next)
         case p => p.constantTerm
       }))
       FusionRing(structureCoefficients).ensuring(_.structureCoefficients(1) == m)
@@ -149,27 +149,27 @@ object FusionRings {
 
     val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit).toList)
 
-//    val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList)
+    //    val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList)
 
     val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
     }).toList)
 
-//    if (t2 > 2 * (t1 + 1)) {
-//      println("too slow, looping for profiling...")
-//      while (true) {
-//        (for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
-//          e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
-//        }).toList
-//      }
-//      //      require(caseBashRemainingEquations.forall(ps => variables.filterNot(ps.substitutions.keySet).size <= 2), (t00, t0, t1, t2, variables, caseBashRemainingEquations, caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList.size))
-//      //
-//      //      caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList
-//    }
+    //    if (t2 > 2 * (t1 + 1)) {
+    //      println("too slow, looping for profiling...")
+    //      while (true) {
+    //        (for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
+    //          e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
+    //        }).toList
+    //      }
+    //      //      require(caseBashRemainingEquations.forall(ps => variables.filterNot(ps.substitutions.keySet).size <= 2), (t00, t0, t1, t2, variables, caseBashRemainingEquations, caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList.size))
+    //      //
+    //      //      caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList
+    //    }
 
-//    println("t00 -> " + t00 + " t0 -> " + t0 + /*" t1 -> " + t1 + */" t2 -> " + t2)
+    //    println("t00 -> " + t00 + " t0 -> " + t0 + /*" t1 -> " + t1 + */" t2 -> " + t2)
 
-//    require(solutions1.toSet == solutions2.toSet, "\nsolutions -> " + solutions1.toSet + "\nsolutions2 -> " + solutions2.toSet)
+    //    require(solutions1.toSet == solutions2.toSet, "\nsolutions -> " + solutions1.toSet + "\nsolutions2 -> " + solutions2.toSet)
 
     //    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, limit)
 
@@ -227,13 +227,15 @@ object FusionRings {
 
     def substitute(substitution: Array[Int]): Array[Array[Array[Int]]] = {
       if (substitution != lastSubstitution) {
-        val dirtyVariables = for (i <- (0 until s).toList; if substitution(i) != lastSubstitution(i)) yield i
-        lastSubstitution = substitution
-        val dirtyEntries = (for (i <- dirtyVariables) yield variablesAppearances(i)).foldLeft(Set[(Int, Int, Int)]())(_ ++ _)
+        val dirtyEntries = scala.collection.mutable.Set[(Int, Int, Int)]()
+        for (i <-  0 until s; if substitution(i) != lastSubstitution(i)) {
+          dirtyEntries ++= variablesAppearances(i)
+        }
 
         for ((i, j, k) <- dirtyEntries) {
           lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
         }
+        lastSubstitution = substitution
       }
       lastMatrices
     }
@@ -393,15 +395,15 @@ object FusionRings {
 
     val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit).toList)
 
-//    val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList)
+    //    val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList)
 
     val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
     }).toList)
 
-//    println("t00 -> " + t00 + " t0 -> " + t0 + /*" t1 -> " + t1 + */" t2 -> " + t2)
+    //    println("t00 -> " + t00 + " t0 -> " + t0 + /*" t1 -> " + t1 + */" t2 -> " + t2)
 
-//    require(solutions1.toSet == solutions2.toSet, "\nsolutions -> " + solutions1.toSet + "\nsolutions2 -> " + solutions2.toSet)
+    //    require(solutions1.toSet == solutions2.toSet, "\nsolutions -> " + solutions1.toSet + "\nsolutions2 -> " + solutions2.toSet)
 
     //    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, limit)
 

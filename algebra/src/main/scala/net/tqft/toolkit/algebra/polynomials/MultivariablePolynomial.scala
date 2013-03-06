@@ -2,34 +2,35 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra.Ring
 import net.tqft.toolkit.algebra.EuclideanRing
+import net.tqft.toolkit.algebra.modules.MapLinearCombo
 import net.tqft.toolkit.algebra.modules.LinearCombo
 import net.tqft.toolkit.algebra.Rig
 
-trait MultivariablePolynomial[A, V] extends Map[Map[V, Int], A] {
+trait MultivariablePolynomial[A, V] extends MapLinearCombo[A, Map[V, Int]] {
   def totalDegree = {
     import net.tqft.toolkit.arithmetic.MinMax._
-    keys.map(_.values.sum).maxOption
+    toMap.keys.map(_.values.sum).maxOption
   }
-  def termsOfDegree(k: Int) = filterKeys(_.values.sum == k)
-  def constantTerm(implicit ring: Rig[A]) = getOrElse(Map.empty, ring.zero)
+  def termsOfDegree(k: Int) = toMap.filterKeys(_.values.sum == k)
+  def constantTerm(implicit ring: Rig[A]) = toMap.getOrElse(Map.empty, ring.zero)
 
-  def nonZero = nonEmpty
-  lazy val variables = keySet.flatMap(_.keySet)
+  def nonZero = toMap.nonEmpty
+  lazy val variables = toMap.keySet.flatMap(_.keySet)
 
   def divideByCoefficientGCD(implicit euclideanDomain: EuclideanRing[A], ordering: Ordering[V]) = {
-    val gcd = euclideanDomain.gcd(values.toSeq:_*)
+    val gcd = euclideanDomain.gcd(toMap.values.toSeq:_*)
     if (gcd == euclideanDomain.one) {
       this
     } else {
-      MultivariablePolynomial(mapValues(v => euclideanDomain.quotient(v, gcd)))
+      MultivariablePolynomial(toMap.mapValues(v => euclideanDomain.quotient(v, gcd)))
     }
   }
 
   override lazy val toString = {
-    if(isEmpty) {
+    if(toMap.isEmpty) {
       "0"
     } else {
-      toList.map({
+      toSeq.map({
         case (m, a) => {
           val showCoefficient = m.isEmpty || a.toString != "1"
           val showMonomial = m.nonEmpty
