@@ -11,20 +11,10 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
   override def wrap(m: Map[Map[V, Int], A]): MultivariablePolynomial[A, V] = {
     m match {
       case m: MultivariablePolynomial[A, V] => m
-      case m => MultivariablePolynomialImpl(m)
+      case m => MultivariablePolynomialImpl(m.filterNot(_._2 == ring.zero))
     }
   }
-  private case class MultivariablePolynomialImpl(m: Map[Map[V, Int], A]) extends MultivariablePolynomial[A, V] {
-    override def iterator = m.iterator
-    override def get(k: Map[V, Int]) = m.get(k)
-    override def keySet = m.keySet
-    override def keys = m.keys
-    override def values = m.values
-    override def mapValues[B](f: A => B): Map[Map[V, Int], B] = m.mapValues[B](f)
-    
-    def +[B1 >: A](kv: (Map[V,Int], B1)): scala.collection.immutable.Map[Map[V,Int],B1] = ???
-    def -(key: Map[V,Int]): scala.collection.immutable.Map[Map[V,Int],A] = ???
-  }
+  private case class MultivariablePolynomialImpl(toMap: Map[Map[V, Int], A]) extends MultivariablePolynomial[A, V]
 
   def monomial(v: V): MultivariablePolynomial[A, V] = MultivariablePolynomialImpl(Map(Map(v -> 1) -> ring.one))
   override def monomial(m: Map[V, Int]): MultivariablePolynomial[A, V] = MultivariablePolynomialImpl(Map(m -> ring.one))
@@ -55,7 +45,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
     if (relevantValues.isEmpty) {
       p
     } else {
-      sum(for ((m, a) <- p.iterator) yield {
+      sum(for ((m, a) <- p.toMap.iterator) yield {
         val (toReplace, toKeep) = m.keySet.partition(v => relevantValues.contains(v))
         if (toReplace.isEmpty) {
           monomial(m, a)
@@ -77,7 +67,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
   def completelySubstituteConstants(values: V =>? A)(p: MultivariablePolynomial[A, V]): A = {
     val valuesWithZero = values.lift.andThen(_.getOrElse(ring.zero))
 
-    ring.sum(for ((m, a) <- p.iterator) yield {
+    ring.sum(for ((m, a) <- p.toMap.iterator) yield {
       ring.multiply(a, ring.product(for ((v, k) <- m) yield {
         ring.power(valuesWithZero(v), k)
       }))
