@@ -22,11 +22,12 @@ object Split {
     def splitByOrdering(o: Ordering[A]): List[List[A]] = {
       val sorted = x.toList.sorted(o)
       def chunk(l: List[A]): List[List[A]] = {
-        if(l.nonEmpty) {
-          val (c, rest) = l.span(o.compare(_, l.head) == 0)
-          c :: chunk(rest)
-        } else {
-          Nil
+        l match {
+          case h :: t => {
+            val (c, rest) = t.span(o.compare(_, h) == 0)
+            (h :: c) :: chunk(rest)
+          }
+          case Nil => Nil
         }
       }
       chunk(sorted)

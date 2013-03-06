@@ -48,9 +48,8 @@ object FrobeniusPerronEigenvalues {
 
 //  def estimateWithEigenvector(m: Matrix[Int], hint: Option[Seq[Double]] = None): (Double, Seq[Double]) = estimateWithEigenvector(m.entries.map(_.toArray).toArray, hint)
   def estimateWithEigenvector(m: Array[Array[Int]], hint: Option[Seq[Double]] = None): (Double, Seq[Double]) = {
-    val mR = m.map(_.map(_.toDouble))
-    val rank = mR.length
-    var iv0 = hint.map(_.toArray).getOrElse(mR.map(_.sum + 1))
+    val rank = m.length
+    var iv0 = hint.map(_.toArray).getOrElse(m.map(_.sum + 1.0))
     var est1 = scala.math.sqrt(iv0.map(x => x * x).sum)
     for(i <- 0 until rank) {
       iv0(i) = iv0(i) / est1
@@ -67,7 +66,7 @@ object FrobeniusPerronEigenvalues {
         var j = 0
         iv1(k) = 0.0
         while (j < rank) {
-          iv1(k) += mR(k)(j) * iv0(j)
+          iv1(k) += m(k)(j) * iv0(j)
           j += 1
         }
         est1 += iv1(k) * iv1(k)

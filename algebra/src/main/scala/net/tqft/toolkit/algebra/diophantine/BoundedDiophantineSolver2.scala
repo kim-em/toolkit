@@ -19,6 +19,8 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
       addSubstitution(v, polynomialAlgebra.constant(k))
     }
     def addSubstitution(v: V, p: P): Option[PolynomialProblem] = {
+      require(!p.variables.contains(v), "illegal addSubstitution(" + v + ", " + p + ")")
+      
       if (substitutions.keySet.contains(v)) {
         val updated = if (p.totalDegree.getOrElse(0) < substitutions(v).totalDegree.getOrElse(0)) {
           copy(substitutions = substitutions + (v -> p))

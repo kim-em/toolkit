@@ -222,19 +222,37 @@ object FusionRings {
     })
 
     var lastSubstitution = Array.fill(s)(0)
-    //      var lastMatrices = quadraticForms.map(_.map(_.map(_.constant)))
-    var lastMatrices = matrices.map(m => m.mapEntries(_.constantTerm).entries.map(_.toArray).toArray).toArray
+    val lastMatrices = matrices.map(m => m.mapEntries(_.constantTerm).entries.map(_.toArray).toArray).toArray
+    val dirtyMap = Array.fill(s, s, s)(0)
 
+    val multivariableAppearances = {
+      import net.tqft.toolkit.functions.Memo._
+      { s: Seq[Int] => s.flatMap(i => variablesAppearances(i)).distinct }.memo
+    }
+    
     def substitute(substitution: Array[Int]): Array[Array[Array[Int]]] = {
       if (substitution != lastSubstitution) {
-        val dirtyEntries = scala.collection.mutable.Set[(Int, Int, Int)]()
-        for (i <-  0 until s; if substitution(i) != lastSubstitution(i)) {
-          dirtyEntries ++= variablesAppearances(i)
-        }
+        //        val dirtyEntries = scala.collection.mutable.TreeSet.empty[(Int, Int, Int)]
+        //        for (i <- 0 until s; if substitution(i) != lastSubstitution(i)) {
+        //          dirtyEntries ++= variablesAppearances(i)
+        //        }
+        //        for ((i, j, k) <- dirtyEntries) {
+        //          lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
+        //        }
 
-        for ((i, j, k) <- dirtyEntries) {
-          lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
-        }
+                for ((i, j, k) <- multivariableAppearances((0 until s).filter(i => substitution(i) != lastSubstitution(i)))) {
+                  lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
+                }
+        
+        
+//        for (i <- 0 until s; if substitution(i) != lastSubstitution(i); d <- variablesAppearances(i)) {
+//          dirtyMap(d._1)(d._2)(d._3) = 1
+//        }
+//        for (i <- 0 until s; j <- 0 until s; k <- 0 until s; if dirtyMap(i)(j)(k) == 1) {
+//          lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
+//          dirtyMap(i)(j)(k) = 0
+//        }
+
         lastSubstitution = substitution
       }
       lastMatrices
