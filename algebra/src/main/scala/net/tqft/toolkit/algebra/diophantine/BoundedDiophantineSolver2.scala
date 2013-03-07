@@ -33,7 +33,7 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
         val newSubstitutions = substitutions.mapValues(q => polynomialAlgebra.substitute(Map(v -> p))(q))
         val (toReprocess, toKeep) = equations.partition(_.variables.contains(v))
 
-        PolynomialProblem(equations: Seq[P], newSubstitutions + (v -> p)).addEquations(toReprocess.map(polynomialAlgebra.substitute(Map(v -> p))))
+        PolynomialProblem(toKeep, newSubstitutions + (v -> p)).addEquations(toReprocess.map(polynomialAlgebra.substitute(Map(v -> p))))
       }
     }
     def addEquations(qs: TraversableOnce[P]): Option[PolynomialProblem] = {

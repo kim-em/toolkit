@@ -197,6 +197,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     clumps.subsets.map(_.flatten.toSeq).filter(generators_?).filter(independent_?)
   }
 
+  // FIXME this is slow
   def depthWithRespectTo(x: Seq[A]): Seq[Int] = {
     val objectsAtDepth = for (k <- (0 until rank).toStream) yield power(x, k).zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i })
     for (i <- 0 until rank) yield {
