@@ -70,6 +70,7 @@ trait MapLinearCombo[A, B] extends (B => A) {
 trait MapFreeModuleOverRig[A, B, M <: MapLinearCombo[A, B]] extends ModuleOverRig[A, M] {
   implicit def ring: Rig[A]
   def wrap(m: Map[B, A]): M
+  def unsafeWrap(m: Map[B, A]): M
 
   override def scalarMultiply(a: A, m: M): M = {
     if (a == ring.one) {
@@ -100,30 +101,45 @@ trait MapFreeModuleOverRig[A, B, M <: MapLinearCombo[A, B]] extends ModuleOverRi
     }
   }
 
-//  override def sum(xs: GenTraversableOnce[M]) = {
-//    ???
-//  }
+  //  override def sum(xs: GenTraversableOnce[M]) = {
+  //    ???
+  //  }
 
-  override def zero = wrap(Map.empty)
+  override def zero = unsafeWrap(Map.empty)
 }
 
-trait MapFreeModule[A, B, M <:  MapLinearCombo[A, B]] extends MapFreeModuleOverRig[A, B, M] with Module[A, M] {
+trait MapFreeModule[A, B, M <: MapLinearCombo[A, B]] extends MapFreeModuleOverRig[A, B, M] with Module[A, M] {
   override implicit def ring: Ring[A]
 
   override def negate(x: M) = {
-    wrap(x.toMap.mapValues(ring.negate))
-  }  
+    unsafeWrap(x.toMap.mapValues(ring.negate))
+  }
 }
 
-trait MapFreeModuleOnMonoidOverRig[A, B, M <:  MapLinearCombo[A, B]] extends MapFreeModuleOverRig[A, B, M] with Rig[M] {
+trait MapFreeModuleOnMonoidOverRig[A, B, M <: MapLinearCombo[A, B]] extends MapFreeModuleOverRig[A, B, M] with Rig[M] {
   def monoid: AdditiveMonoid[B]
 
   def multiply(x: M, y: M) = {
-    wrap((for ((bx, ax) <- x.toSeq; (by, ay) <- y.toSeq) yield (monoid.add(bx, by) -> ring.multiply(ax, ay))).groupBy(_._1).mapValues(s => ring.sum(s.map(_._2))))
+    if (x.toMap.size == 1) {
+      val (bx, ax) = x.toMap.head
+      if (y.toMap.size == 1) {
+        val (by, ay) = y.toMap.head
+        val product = ring.multiply(ax, ay)
+        if (product == ring.zero) {
+          zero
+        } else {
+          unsafeWrap(Map(monoid.add(by, by) -> product))
+        }
+      } else {
+        unsafeWrap((for ((by, ay) <- y.toSeq; product = ring.multiply(ax, ay); if product != ring.zero) yield (monoid.add(bx, by) -> product)).toMap)
+      }
+    } else {
+      wrap((for ((bx, ax) <- x.toSeq; (by, ay) <- y.toSeq) yield (monoid.add(bx, by) -> ring.multiply(ax, ay))).groupBy(_._1).mapValues(s => ring.sum(s.map(_._2))))
+    }
   }
-  def one = wrap(Map(monoid.zero -> ring.one))
+  def one = unsafeWrap(Map(monoid.zero -> ring.one))
 
-  def monomial(b: B): M = wrap(Map(b -> ring.one))
+  def monomial(b: B): M = unsafeWrap(Map(b -> ring.one))
   def monomial(b: B, a: A): M = wrap(Map(b -> a))
 
   def constant(a: A): M = monomial(monoid.zero, a)
@@ -131,7 +147,6 @@ trait MapFreeModuleOnMonoidOverRig[A, B, M <:  MapLinearCombo[A, B]] extends Map
 }
 trait MapFreeModuleOnMonoid[A, B, M <: MapLinearCombo[A, B]] extends MapFreeModuleOnMonoidOverRig[A, B, M] with MapFreeModule[A, B, M] with AssociativeAlgebra[A, M] {
 }
-
 
 trait GeneralFreeModule[A, B, LC <: LinearCombo[A, B]] extends GeneralFreeModuleOverRig[A, B, LC] with Module[A, LC] {
   override implicit def ring: Ring[A]
