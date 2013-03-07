@@ -89,6 +89,7 @@ object FusionRings {
     val newDuality = ring.duality :+ rank
 
     // we could do these 'by hand', but BoundedDiophantineSolver is good enough at it
+    // TODO actually, get rid of depth and identity conditions by solving them by hand
     val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
     val identityConditions = variableRing.identityConstraints
     val dualityConditions = variableRing.dualityConstraints(newDuality)
@@ -118,15 +119,6 @@ object FusionRings {
         }
       }).map(m => m: Matrix[Int])
 
-      //      require((variables diff m.keys.toSeq).isEmpty)
-      //
-      //      val structureCoefficients2 = variableRing.structureCoefficients.map(_.mapEntries({
-      //        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
-      //        case p => p.constantTerm
-      //      }))
-      //
-      //      require(structureCoefficients == structureCoefficients2, structureCoefficients + "\n" + structureCoefficients2)
-
       FusionRing(structureCoefficients)
     }
 
@@ -154,24 +146,6 @@ object FusionRings {
     val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
     }).toList)
-
-    //    if (t2 > 2 * (t1 + 1)) {
-    //      println("too slow, looping for profiling...")
-    //      while (true) {
-    //        (for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
-    //          e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
-    //        }).toList
-    //      }
-    //      //      require(caseBashRemainingEquations.forall(ps => variables.filterNot(ps.substitutions.keySet).size <= 2), (t00, t0, t1, t2, variables, caseBashRemainingEquations, caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList.size))
-    //      //
-    //      //      caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList
-    //    }
-
-    //    println("t00 -> " + t00 + " t0 -> " + t0 + /*" t1 -> " + t1 + */" t2 -> " + t2)
-
-    //    require(solutions1.toSet == solutions2.toSet, "\nsolutions -> " + solutions1.toSet + "\nsolutions2 -> " + solutions2.toSet)
-
-    //    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, limit)
 
     def connected_?(f: FusionRing[Int]) = {
       if (maxdepth == 1) {
@@ -216,7 +190,6 @@ object FusionRings {
         }))
     }
 
-    // maybe could even make individual entries lazy
     lazy val quadraticForms = Array.tabulate(n, n, n)({ (i, j, k) =>
       polynomial2QuadraticForm(matrices(i).entries(j)(k))
     })
@@ -229,29 +202,12 @@ object FusionRings {
       import net.tqft.toolkit.functions.Memo._
       { s: Seq[Int] => s.flatMap(i => variablesAppearances(i)).distinct }.memo
     }
-    
+
     def substitute(substitution: Array[Int]): Array[Array[Array[Int]]] = {
       if (substitution != lastSubstitution) {
-        //        val dirtyEntries = scala.collection.mutable.TreeSet.empty[(Int, Int, Int)]
-        //        for (i <- 0 until s; if substitution(i) != lastSubstitution(i)) {
-        //          dirtyEntries ++= variablesAppearances(i)
-        //        }
-        //        for ((i, j, k) <- dirtyEntries) {
-        //          lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
-        //        }
-
-                for ((i, j, k) <- multivariableAppearances((0 until s).filter(i => substitution(i) != lastSubstitution(i)))) {
-                  lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
-                }
-        
-        
-//        for (i <- 0 until s; if substitution(i) != lastSubstitution(i); d <- variablesAppearances(i)) {
-//          dirtyMap(d._1)(d._2)(d._3) = 1
-//        }
-//        for (i <- 0 until s; j <- 0 until s; k <- 0 until s; if dirtyMap(i)(j)(k) == 1) {
-//          lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
-//          dirtyMap(i)(j)(k) = 0
-//        }
+        for ((i, j, k) <- multivariableAppearances((0 until s).filter(i => substitution(i) != lastSubstitution(i)))) {
+          lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
+        }
 
         lastSubstitution = substitution
       }
@@ -337,18 +293,10 @@ object FusionRings {
 
     val newDuality = ring.duality :+ (rank + 1) :+ rank
 
-    //    val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
-    //    val identityConditions = variableRing.identityConstraints
-    // TODO if we put in identityConditions by hand above, I think dualityConstraints would automatically be satisfied.
-    // hmm, seems not
-    //        for(((p1,p2),t) <-variableRing.dualityConstraints(newDuality).zipWithIndex) {
-    //          println(t + ": " + p1 + " == " + p2)
-    //          require(p1 == p2)
-    //        }
     val dualityConstraints = variableRing.dualityConstraints(newDuality)
     val associativityConditions = variableRing.partialAssociativityConstraints(maxdepth, depths)
 
-    val polynomials = ( /*depthConditions ++ identityConditions ++ */ dualityConstraints ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
+    val polynomials = (dualityConstraints ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
 
     def reconstituteRing(m: Map[V, Int]): FusionRing[Int] = {
       val m0 = m.orElse[(Int, Int), Int]({
@@ -383,15 +331,6 @@ object FusionRings {
         }
       }).map(m => m: Matrix[Int])
 
-      //      require((variables diff m.keys.toSeq).isEmpty)
-      //
-      //      val structureCoefficients2 = variableRing.structureCoefficients.map(_.mapEntries({
-      //        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
-      //        case p => p.constantTerm
-      //      }))
-      //
-      //      require(structureCoefficients == structureCoefficients2, structureCoefficients + "\n" + structureCoefficients2)
-
       FusionRing(structureCoefficients)
     }
 
@@ -413,17 +352,9 @@ object FusionRings {
 
     val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit).toList)
 
-    //    val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList)
-
     val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
     }).toList)
-
-    //    println("t00 -> " + t00 + " t0 -> " + t0 + /*" t1 -> " + t1 + */" t2 -> " + t2)
-
-    //    require(solutions1.toSet == solutions2.toSet, "\nsolutions -> " + solutions1.toSet + "\nsolutions2 -> " + solutions2.toSet)
-
-    //    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, limit)
 
     def connected_?(f: FusionRing[Int]) = {
       if (maxdepth == 1) {
