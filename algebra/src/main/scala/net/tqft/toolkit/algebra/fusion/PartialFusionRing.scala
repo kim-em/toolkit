@@ -6,6 +6,8 @@ import net.tqft.toolkit.collections.MapTransformer
 import net.tqft.toolkit.amazon.S3
 import net.tqft.toolkit.SHA1
 import net.tqft.toolkit.Logging
+import net.tqft.toolkit.algebra.Longs
+import net.tqft.toolkit.algebra.Integers
 
 object PartialFusionRing {
   implicit def fromFusionRing(ring: FusionRing[Int]): PartialFusionRing = {
@@ -29,31 +31,78 @@ object LazyPair {
   }
 }
 
+object PartialFusionRingMeasurement {
+  private val completeInvariantCases = 3
+  private val completeInvariantCounts = Array.fill(completeInvariantCases)(0)
+  private val completeInvariantTimings = Array.fill(completeInvariantCases)(0L)
+
+  def reportTiming[A](k: Int, f: => A): A = {
+    import net.tqft.toolkit.Profiler._
+    val (t, r) = timing(f)
+    completeInvariantTimings(k) = completeInvariantTimings(k) + t
+    completeInvariantCounts(k) = completeInvariantCounts(k) + 1
+    if (completeInvariantCounts(k) % 100 == 0) {
+      println("completeInvariant summary: " + completeInvariantCounts.toList + " " + completeInvariantTimings.toList)
+    }
+    r
+  }
+
+}
+
 case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
-	require(ring.independent_?(generators))
-  
+  require(ring.independent_?(generators))
+
   override lazy val hashCode = (depth, generators, ring, globalDimensionLimit).hashCode
 
   lazy val completeInvariant = {
     import net.tqft.toolkit.collections.Tally._
     import net.tqft.toolkit.collections.LexicographicOrdering._
-    def rowSums = ring.structureCoefficients.map(m => m.entries.map(_.sum).seq.tally.sorted).tally.sorted
-    def columnSums = ring.structureCoefficients.map(m => m.entries.seq.transpose.map(_.sum).tally.sorted).tally.sorted
 
-    import net.tqft.toolkit.algebra.graphs.dreadnaut
-    LazyPair(rowSums, LazyPair(columnSums, dreadnaut.canonicalize(ring.graphEncoding(depths))))
-  }
+    import PartialFusionRingMeasurement.reportTiming
 
-  override def children = {
-    try {
-      PartialFusionRingCache.getOrElseUpdate(this, super.children)
-    } catch {
-      case e: java.lang.ExceptionInInitializerError => {
-        Logging.error("S3 not available: ", e)
-        super.children
-      }
+    def rowSums = ring.structureCoefficients.map(m => m.entries.map(_.sum).seq.tally.sorted)
+    // it seems from profiling that columnSums is completely redundant with rowSums
+
+    def rowSumsBy[A: Ordering](data: Seq[A]): Seq[Int] = {
+      ring.structureCoefficients.map({ m =>
+        m.entries.map({ r =>
+          r.zip(data).map({
+            case (rx, d) => rx * d.hashCode
+          }).sum
+        }).seq.zip(data).map(_.hashCode).tally.sorted
+      }).zip(data).map(_.hashCode)
     }
+
+    def rowSumsIterator = Iterator.iterate(depths.map(Integers.power(10, _)))(rowSumsBy)
+    def rowSumsWithTalliesIterator = rowSumsIterator.map(_.tally.map(_.swap).sorted)
+    def fixedPointLabels = rowSumsWithTalliesIterator.sliding(2, 1).find({ case Seq(p1, p2) => p1.map(_._1) == p2.map(_._1) }).get.head.map(_._2)
+
+    def canonicalize = {
+      import net.tqft.toolkit.algebra.graphs.dreadnaut
+      dreadnaut.canonicalize(ring.graphEncoding(depths))
+    }
+
+    // about a third of cases are still going through to canonicalize
+    
+    LazyPair(
+      reportTiming(0, rowSums.tally.sorted),
+      LazyPair(
+        reportTiming(1, fixedPointLabels),
+        reportTiming(2, canonicalize)))
+        
+        
   }
+
+//  override def children = {
+//    try {
+//      PartialFusionRingCache.getOrElseUpdate(this, super.children)
+//    } catch {
+//      case e: java.lang.ExceptionInInitializerError => {
+//        Logging.error("S3 not available: ", e)
+//        super.children
+//      }
+//    }
+//  }
 
   private def generator = {
     ring.sum(for (i <- generators) yield ring.basis(i))
@@ -208,7 +257,7 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
       } else {
         Set.empty
       }) ++ (if (depth > 0) {
-        
+
         // FIXME independence should really be done as equations in withAnother...
         def independent_?(f: FusionRing[Int]) = {
           f.independent_?(if (depth == 1) {
@@ -219,7 +268,7 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
         }
 
         def chooseRepresentatives(uppers: Seq[Upper]) = {
-          if(uppers.size > 10) println("choosing representatives from " + uppers.size + " elements")
+          if (uppers.size > 10) println("choosing representatives from " + uppers.size + " elements")
 
           import net.tqft.toolkit.collections.LexicographicOrdering._
           import net.tqft.toolkit.collections.Tally._
@@ -227,15 +276,15 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
           val ordering = Ordering.by({ u: Upper => u.result.completeInvariant })
           import net.tqft.toolkit.collections.Split._
           val result = uppers.splitByOrdering(ordering)
-          if(uppers.size > 10) println("  chunks of sizes " + result.map(_.size).tally)          
-//          result.find(_.size == 2).map(c => println("  example chunk: \n" + c.mkString("\n") + "\n derived from " + pfr))
+          if (uppers.size > 10) println("  chunks of sizes " + result.map(_.size).tally)
+          //          result.find(_.size == 2).map(c => println("  example chunk: \n" + c.mkString("\n") + "\n derived from " + pfr))
           result.map(_.head)
         }
 
         val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).filter(independent_?)
         val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).filter(independent_?)
         (chooseRepresentatives(extraSelfDual.toSeq.map(AddSelfDualObject)) ++
-          chooseRepresentatives(extraPairs.toSeq.map(AddDualPairOfObjects)))//.filter(p => independent_?(p.newRing))
+          chooseRepresentatives(extraPairs.toSeq.map(AddDualPairOfObjects))) //.filter(p => independent_?(p.newRing))
       } else {
         Set.empty
       })

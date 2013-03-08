@@ -190,6 +190,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       val depths = depthWithRespectTo(sum(elements.filterNot(s).map(basis)))
       s.forall(depths(_) == -1)
     })
+    true
   }
   def minimalGeneratingSets: Iterator[Seq[Int]] = {
     // TODO this is a terrible implementation

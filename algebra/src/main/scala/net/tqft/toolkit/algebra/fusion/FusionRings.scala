@@ -141,7 +141,7 @@ object FusionRings {
 
     val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit).toList)
 
-    //    val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList)
+        val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList)
 
     val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
@@ -156,7 +156,7 @@ object FusionRings {
       }
     }
 
-    solutions2.iterator.map(reconstituteRing).filter(connected_?)
+    solutions1.iterator.map(reconstituteRing).filter(connected_?)
   }
 
   def fastCaseBash[V](matrices: Seq[Matrix[MultivariablePolynomial[Int, V]]], L: Double): Iterator[Map[V, Int]] = {
@@ -196,7 +196,6 @@ object FusionRings {
 
     var lastSubstitution = Array.fill(s)(0)
     val lastMatrices = matrices.map(m => m.mapEntries(_.constantTerm).entries.map(_.toArray).toArray).toArray
-    val dirtyMap = Array.fill(s, s, s)(0)
 
     val multivariableAppearances = {
       import net.tqft.toolkit.functions.Memo._
@@ -215,6 +214,8 @@ object FusionRings {
     }
 
     def limit(substitution: Array[Int]): Boolean = {
+      // TODO only redo matrices which have changed since last time!
+      // TODO cache previous estimates for individual matrices? do some permutations first?
       substitute(substitution).map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1).sum - 0.0001 < L
     }
 
@@ -352,6 +353,8 @@ object FusionRings {
 
     val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit).toList)
 
+    val solutions1 = caseBashRemainingEquations.flatMap(_.caseBashCompletely(variables, limit))
+    
     val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
     }).toList)
@@ -370,7 +373,7 @@ object FusionRings {
       implicitly[Ordering[Seq[IndexedSeq[Int]]]].compare(f.structureCoefficients(rank).entries.seq, f.structureCoefficients(rank + 1).entries.seq) <= 0
     }
 
-    solutions2.iterator.map(reconstituteRing).filter(connected_?) //.filter(ordered_?)
+    solutions1.iterator.map(reconstituteRing).filter(connected_?) //.filter(ordered_?)
   }
 
   object Examples {
