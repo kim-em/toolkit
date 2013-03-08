@@ -370,10 +370,10 @@ object FusionRings {
     }
     def ordered_?(f: FusionRing[Int]) = {
       import net.tqft.toolkit.collections.LexicographicOrdering._
-      implicitly[Ordering[Seq[IndexedSeq[Int]]]].compare(f.structureCoefficients(rank).entries.seq, f.structureCoefficients(rank + 1).entries.seq) <= 0
+      implicitly[Ordering[Seq[Seq[IndexedSeq[Int]]]]].compare(f.structureCoefficients.map(_.entries.seq), f.relabel((0 until rank) :+ (rank + 1) :+ rank).structureCoefficients.map(_.entries.seq)) <= 0
     }
 
-    solutions1.iterator.map(reconstituteRing).filter(connected_?) //.filter(ordered_?)
+    solutions1.iterator.map(reconstituteRing).filter(connected_?) .filter(ordered_?)
   }
 
   object Examples {
