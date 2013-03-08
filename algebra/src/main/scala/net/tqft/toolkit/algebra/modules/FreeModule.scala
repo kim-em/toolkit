@@ -128,7 +128,7 @@ trait MapFreeModuleOnMonoidOverRig[A, B, M <: MapLinearCombo[A, B]] extends MapF
         if (product == ring.zero) {
           zero
         } else {
-          unsafeWrap(Map(monoid.add(by, by) -> product))
+          unsafeWrap(Map(monoid.add(bx, by) -> product))
         }
       } else {
         unsafeWrap((for ((by, ay) <- y.toSeq; product = ring.multiply(ax, ay); if product != ring.zero) yield (monoid.add(bx, by) -> product)).toMap)
