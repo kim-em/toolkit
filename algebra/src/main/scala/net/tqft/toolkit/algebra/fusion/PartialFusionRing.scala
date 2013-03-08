@@ -30,7 +30,8 @@ object LazyPair {
 }
 
 case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
-
+	require(ring.independent_?(generators))
+  
   override lazy val hashCode = (depth, generators, ring, globalDimensionLimit).hashCode
 
   lazy val completeInvariant = {
@@ -55,11 +56,6 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
 //  }
 
   private def generator = {
-    //    if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {
-    //      ring.basis(1)
-    //    } else {
-    //      ring.add(ring.basis(1), ring.basis(2))
-    //    }
     ring.sum(for (i <- generators) yield ring.basis(i))
   }
   val depths = {
@@ -105,6 +101,7 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
         case DeleteDualPairOfObjects(_, _) => 2
       }
     }).refineByPartialFunction({
+      // TODO would it help to do the DeleteDualPairOfObjects case??
       case DeleteSelfDualObject(k) => {
         (ring.structureCoefficients(k).entries(k)(k),
           ring.structureCoefficients(k).entries(k).tally.sorted,
@@ -211,6 +208,8 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
       } else {
         Set.empty
       }) ++ (if (depth > 0) {
+        
+        // FIXME independence should really be done as equations in withAnother...
         def independent_?(f: FusionRing[Int]) = {
           f.independent_?(if (depth == 1) {
             1 until f.rank
@@ -219,29 +218,24 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
           })
         }
 
-        def chooseRepresentatives(uppers: Seq[NewRingUpper]) = {
-          println("choosing representatives from " + uppers.size + " elements")
+        def chooseRepresentatives(uppers: Seq[Upper]) = {
+          if(uppers.size > 10) println("choosing representatives from " + uppers.size + " elements")
 
           import net.tqft.toolkit.collections.LexicographicOrdering._
           import net.tqft.toolkit.collections.Tally._
 
-          val ordering = Ordering.by({ u: NewRingUpper => u.result.completeInvariant })
+          val ordering = Ordering.by({ u: Upper => u.result.completeInvariant })
           import net.tqft.toolkit.collections.Split._
           val result = uppers.splitByOrdering(ordering)
-          println("  chunks of sizes " + result.map(_.size).tally)
-          result.find(_.size == 2).map(c => println("  example chunk: " + c + " derived from " + pfr))
+          if(uppers.size > 10) println("  chunks of sizes " + result.map(_.size).tally)          
+//          result.find(_.size == 2).map(c => println("  example chunk: \n" + c.mkString("\n") + "\n derived from " + pfr))
           result.map(_.head)
-
-          //          import net.tqft.toolkit.Profiler
-          //          val (t0, result) = Profiler.timing(uppers.map(u => u.result.completeInvariant -> u).toMap.values)
-          //          //          println("t0 -> " + t0)
-          //          result
         }
 
-        val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit)
-        val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit)
+        val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).filter(independent_?)
+        val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).filter(independent_?)
         (chooseRepresentatives(extraSelfDual.toSeq.map(AddSelfDualObject)) ++
-          chooseRepresentatives(extraPairs.toSeq.map(AddDualPairOfObjects))).filter(p => independent_?(p.newRing))
+          chooseRepresentatives(extraPairs.toSeq.map(AddDualPairOfObjects)))//.filter(p => independent_?(p.newRing))
       } else {
         Set.empty
       })

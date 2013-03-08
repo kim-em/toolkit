@@ -8,6 +8,12 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
 
   val monomialOrdering: Ordering[Map[V, Int]]
 
+  override def unsafeWrap(m: Map[Map[V, Int], A]): MultivariablePolynomial[A, V] = {
+    m match {
+      case m: MultivariablePolynomial[A, V] => m
+      case m => MultivariablePolynomialImpl(m)
+    }
+  }
   override def wrap(m: Map[Map[V, Int], A]): MultivariablePolynomial[A, V] = {
     m match {
       case m: MultivariablePolynomial[A, V] => m
@@ -29,17 +35,44 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
   override object monoid extends AdditiveMonoid[Map[V, Int]] {
     override val zero = Map.empty[V, Int]
     override def add(x: Map[V, Int], y: Map[V, Int]): Map[V, Int] = {
-      (for (k <- x.keySet ++ y.keySet) yield {
-        k -> Integers.add(x.getOrElse(k, 0), y.getOrElse(k, 0))
-      }).toMap
+      if (x.size == 0) {
+        y
+      } else if (y.size == 0) {
+        x
+      } else if (x.size == 1) {
+        x.head match {
+          case (v, k) => {
+            if (y.contains(v)) {
+              y + (v -> (y(v) + k))
+            } else {
+              y + (v -> k)
+            }
+          }
+        }
+      } else if (y.size == 1) {
+        y.head match {
+          case (v, k) => {
+            if (x.contains(v)) {
+              x + (v -> (x(v) + k))
+            } else {
+              x + (v -> k)
+            }
+          }
+        }
+      } else {
+        (for (k <- x.keySet ++ y.keySet) yield {
+          k -> (x.getOrElse(k, 0) + y.getOrElse(k, 0))
+        }).toMap
+      }
     }
   }
 
-  def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]) = substituteCache_(values, p)
-  private val substituteCache_ = {
-    import net.tqft.toolkit.functions.Memo
-    Memo.softly(substitute_ _)
-  }
+  def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]) = substitute_(values, p)
+  //  def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]) = substituteCache_(values, p)
+  //  private val substituteCache_ = {
+  //    import net.tqft.toolkit.functions.Memo
+  //    Memo.softly(substitute_ _)
+  //  }
   private def substitute_(values: Map[V, MultivariablePolynomial[A, V]], p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
     val relevantValues = values.filterKeys(p.variables.contains)
     if (relevantValues.isEmpty) {

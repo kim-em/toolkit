@@ -47,7 +47,7 @@ class Matrix[B](
   def mapRows[C](rowMapper: IndexedSeq[B] => IndexedSeq[C], newColumnSize: Int = numberOfColumns) = new Matrix(newColumnSize, entries.map(rowMapper))
   def mapEntries[C](entryMapper: B => C) = new Matrix(numberOfColumns, entries.map(row => row.map(entryMapper)))
 
-  override def toString = "Matrix(" + numberOfColumns + ", " + entries + ")"
+  override def toString = "Matrix(" + numberOfColumns + ", Seq(\n" + entries.map(_.toList).mkString(", \n") + "\n))"
   override def equals(other: Any) = {
     other match {
       case other: Matrix[B] => numberOfColumns == other.numberOfColumns && entries == other.entries
