@@ -44,16 +44,16 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
     LazyPair(rowSums, LazyPair(columnSums, dreadnaut.canonicalize(ring.graphEncoding(depths))))
   }
 
-  override def children = {
-    try {
-      PartialFusionRingCache.getOrElseUpdate(this, super.children)
-    } catch {
-      case e: java.lang.ExceptionInInitializerError => {
-        Logging.error("S3 not available: ", e)
-        super.children
-      }
-    }
-  }
+//  override def children = {
+//    try {
+//      PartialFusionRingCache.getOrElseUpdate(this, super.children)
+//    } catch {
+//      case e: java.lang.ExceptionInInitializerError => {
+//        Logging.error("S3 not available: ", e)
+//        super.children
+//      }
+//    }
+//  }
 
   private def generator = {
     ring.sum(for (i <- generators) yield ring.basis(i))
