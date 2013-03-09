@@ -218,7 +218,7 @@ object FusionRings {
 
         lastSubstitution = substitution
       }
-      for (i <- 0 until s; if dirtyMatrices(i)) {
+      for (i <- 0 until n; if dirtyMatrices(i)) {
         lastEstimates(i) = FrobeniusPerronEigenvalues.estimateWithEigenvector(lastMatrices(i))._1
       }
       lastEstimates
