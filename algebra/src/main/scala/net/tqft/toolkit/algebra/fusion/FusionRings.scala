@@ -196,28 +196,29 @@ object FusionRings {
 
     var lastSubstitution = Array.fill(s)(0)
     val lastMatrices = matrices.map(m => m.mapEntries(_.constantTerm).entries.map(_.toArray).toArray).toArray
-    var lastEstimates = lastMatrices.map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1)
+    val lastEstimates = lastMatrices.map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1)
 
+    // TODO take as argument a bitset, instead?
     val multivariableAppearances = {
       import net.tqft.toolkit.functions.Memo._
-      { s: Seq[Int] => s.flatMap(i => variablesAppearances(i)).distinct }.memoSoftly
+      { s: Seq[Int] => s.flatMap(i => variablesAppearances(i)).distinct }.memo
     }
 
     def estimates(substitution: Array[Int]): Array[Double] = {
-      val dirtyMatrices = Array.fill(s)(false)
+      val dirtyMatrices = Array.fill(n)(false)
 
       if (substitution != lastSubstitution) {
         for ((i, j, k) <- multivariableAppearances((0 until s).filter(i => substitution(i) != lastSubstitution(i)))) {
           val newValue = quadraticForms(i)(j)(k).substitute(substitution)
           if (lastMatrices(i)(j)(k) != newValue) {
-            lastMatrices(i)(j)(k) != newValue
+            lastMatrices(i)(j)(k) = newValue
             dirtyMatrices(i) = true
           }
         }
 
         lastSubstitution = substitution
       }
-      for(i <- 0 until s; if dirtyMatrices(i)) {
+      for (i <- 0 until s; if dirtyMatrices(i)) {
         lastEstimates(i) = FrobeniusPerronEigenvalues.estimateWithEigenvector(lastMatrices(i))._1
       }
       lastEstimates

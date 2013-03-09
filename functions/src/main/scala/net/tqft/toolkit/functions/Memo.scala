@@ -15,7 +15,7 @@ trait Memo {
     var hits = 0
     var misses = 0
     def apply(a: A) = {
-      if(hits + misses % 100 == 0) println("Memo.withSoftKeys(...) hits: " + hits + " misses: " + misses)
+      if(hits + misses % 1 == 0) println("Memo.withSoftKeys(...) hits: " + hits + " misses: " + misses)
       val h = a.hashCode
       if (cache.containsKey(h)) {
         cache.get(h) match {
