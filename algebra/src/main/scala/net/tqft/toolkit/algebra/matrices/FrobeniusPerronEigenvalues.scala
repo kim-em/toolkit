@@ -46,10 +46,14 @@ object FrobeniusPerronEigenvalues {
     scala.math.sqrt(FixedPoint.withSameTest({ (p: (Seq[Double], Double), q: (Seq[Double], Double)) => (p._2 - q._2).abs < 0.0001 })(next)(initialVector, initialEstimate)._2)
   }
 
-//  def estimateWithEigenvector(m: Matrix[Int], hint: Option[Seq[Double]] = None): (Double, Seq[Double]) = estimateWithEigenvector(m.entries.map(_.toArray).toArray, hint)
-  def estimateWithEigenvector(m: Array[Array[Int]], hint: Option[Array[Double]] = None): (Double, Seq[Double]) = {
+  val estimateWithEigenvectorCache = {
+		  
+  }
+  
+  def estimateWithEigenvector(m: Array[Array[Int]]/*, hint: Option[Array[Double]] = None*/): (Double, Seq[Double]) = {
     val rank = m.length
-    var iv0 = hint.getOrElse(m.map(_.sum + 1.0))
+//    var iv0 = hint.getOrElse(m.map(_.sum + 1.0))
+    var iv0 = m.map(_.sum + 1.0)
     var est1 = scala.math.sqrt(iv0.map(x => x * x).sum)
     for(i <- 0 until rank) {
       iv0(i) = iv0(i) / est1
