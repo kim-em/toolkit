@@ -12,26 +12,26 @@ trait Memo {
 
   def withSoftKeys[A, B](f: A => B): A => B = new (A => B) {
     val cache = new com.google.common.collect.MapMaker().softValues().makeMap[Int, (A, B)]()
-    var hits = 0
-    var misses = 0
+//    var hits = 0
+//    var misses = 0
     def apply(a: A) = {
-      if(hits + misses % 1 == 0) println("Memo.withSoftKeys(...) hits: " + hits + " misses: " + misses)
+//      if(hits + misses % 1 == 0) println("Memo.withSoftKeys(...) hits: " + hits + " misses: " + misses)
       val h = a.hashCode
       if (cache.containsKey(h)) {
         cache.get(h) match {
-          case (aa, b) if a == aa => {
-            hits += 1
+          case (aa, b) if aa == a => {
+//            hits += 1
            b 
           }
           case _ => {
-            misses += 1
+//            misses += 1
             val r = f(a)
             cache.putIfAbsent(h, (a, r))
             r
           }
         }
       } else {
-        misses += 1
+//        misses += 1
         val r = f(a)
         cache.putIfAbsent(h, (a, r))
         r
@@ -45,10 +45,15 @@ trait Memo {
     }
   }
   def apply[A, B](f: A => B, cache: java.util.concurrent.ConcurrentMap[A, B]): A => B = new (A => B) {
+//    var hits = 0
+//    var misses = 0
     def apply(a: A) = {
+//      if(hits + misses % 100 == 0) println("hits: " + hits + " misses: " + misses)
       if (cache.containsKey(a)) {
+//        hits += 1
         cache.get(a)
       } else {
+//        misses += 1
         val result = f(a)
         cache.putIfAbsent(a, result)
         result
