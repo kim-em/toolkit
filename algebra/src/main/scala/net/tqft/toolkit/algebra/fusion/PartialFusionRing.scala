@@ -83,26 +83,23 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
     }
 
     // about a third of cases are still going through to canonicalize
-    
     LazyPair(
       reportTiming(0, rowSums.tally.sorted),
       LazyPair(
         reportTiming(1, fixedPointLabels),
-        reportTiming(2, canonicalize)))
-        
-        
+        reportTiming(2, canonicalize)))        
   }
 
-//  override def children = {
-//    try {
-//      PartialFusionRingCache.getOrElseUpdate(this, super.children)
-//    } catch {
-//      case e: java.lang.ExceptionInInitializerError => {
-//        Logging.error("S3 not available: ", e)
-//        super.children
-//      }
-//    }
-//  }
+  override def children = {
+    try {
+      PartialFusionRingCache.getOrElseUpdate(this, super.children)
+    } catch {
+      case e: java.lang.ExceptionInInitializerError => {
+        Logging.error("S3 not available: ", e)
+        super.children
+      }
+    }
+  }
 
   private def generator = {
     ring.sum(for (i <- generators) yield ring.basis(i))

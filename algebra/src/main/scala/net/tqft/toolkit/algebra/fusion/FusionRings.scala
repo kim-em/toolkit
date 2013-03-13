@@ -139,13 +139,13 @@ object FusionRings {
 
     val (t00, linearSolve) = Profiler.timing(solver.solve(polynomials).get)
 
-    val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit).toList)
+    val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit))
 
     //        val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList)
 
     val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
-    }).toList)
+    }))
 
     def connected_?(f: FusionRing[Int]) = {
       if (maxdepth == 1) {
@@ -156,7 +156,7 @@ object FusionRings {
       }
     }
 
-    solutions2.iterator.map(reconstituteRing).filter(connected_?)
+    solutions2.map(reconstituteRing).filter(connected_?)
   }
 
   def fastCaseBash[V](matrices: Seq[Matrix[MultivariablePolynomial[Int, V]]], L: Double): Iterator[Map[V, Int]] = {
@@ -360,13 +360,13 @@ object FusionRings {
     import net.tqft.toolkit.Profiler
     val (t00, linearSolve) = Profiler.timing(solver.solve(polynomials).get)
 
-    val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit).toList)
+    val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit))
 
     //    val solutions1 = caseBashRemainingEquations.flatMap(_.caseBashCompletely(variables, limit))
 
     val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
-    }).toList)
+    }))
 
     def connected_?(f: FusionRing[Int]) = {
       if (maxdepth == 1) {
@@ -382,7 +382,7 @@ object FusionRings {
       implicitly[Ordering[Seq[Seq[IndexedSeq[Int]]]]].compare(f.structureCoefficients.map(_.entries.seq), f.relabel((0 until rank) :+ (rank + 1) :+ rank).structureCoefficients.map(_.entries.seq)) <= 0
     }
 
-    solutions2.iterator.map(reconstituteRing).filter(connected_?).filter(ordered_?)
+    solutions2.map(reconstituteRing).filter(connected_?).filter(ordered_?)
   }
 
   object Examples {

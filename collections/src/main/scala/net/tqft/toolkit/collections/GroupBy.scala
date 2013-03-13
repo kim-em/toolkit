@@ -8,7 +8,7 @@ import scala.collection.parallel.ParSeq
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConversions
 import net.tqft.toolkit.Logging
-object GroupBy extends Logging {
+object GroupBy {
 
   implicit def groupable[A](x: GenIterable[A]) = new Groupable(x)
   class Groupable[A](x: GenIterable[A]) {
@@ -51,7 +51,7 @@ object GroupBy extends Logging {
       import Split._
       
       val xSeq = x.toIndexedSeq
-      info("running chooseEquivalenceClassRepresentatives on " + xSeq.size + " elements")
+//      Logging.info("running chooseEquivalenceClassRepresentatives on " + xSeq.size + " elements")
       ((xSeq sortBy { invariant } splitBy { invariant }).par.map { _chooseEquivalenceClassRepresentatives }).toList.flatten
     }
 
