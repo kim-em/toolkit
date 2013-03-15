@@ -54,6 +54,7 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
 
   override lazy val hashCode = (depth, generators, ring, globalDimensionLimit).hashCode
 
+  // TODO this is taking up too much memory! How about a list of functions, and whoever is sorting and splitting can take care of saving values as needed.
   lazy val completeInvariant = {
     import net.tqft.toolkit.collections.Tally._
     import net.tqft.toolkit.collections.LexicographicOrdering._
@@ -90,6 +91,8 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
         reportTiming(2, canonicalize)))        
   }
 
+  
+  
   override def children = {
     try {
       PartialFusionRingCache.getOrElseUpdate(this, super.children)
