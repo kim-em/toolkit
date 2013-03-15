@@ -8,6 +8,7 @@ import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroup
 import net.tqft.toolkit.algebra.enumeration._
+import scala.collection.BitSet
 
 object FusionRings {
   def withObject(m: Matrix[Int], knownRing: Option[FusionRing[Int]] = None): Iterator[FusionRing[Int]] = {
@@ -199,6 +200,7 @@ object FusionRings {
     val lastEstimates = lastMatrices.map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1)
 
     // TODO take as argument a bitset, instead?
+    // http://stackoverflow.com/questions/15421678/constructing-bitsets-in-scala-from-a-predicate
     val multivariableAppearances = {
       import net.tqft.toolkit.functions.Memo._
       { s: Seq[Int] => s.flatMap(i => variablesAppearances(i)).distinct }.memo
