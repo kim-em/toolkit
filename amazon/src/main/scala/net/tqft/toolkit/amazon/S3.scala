@@ -15,6 +15,7 @@ import org.jets3t.service.model.S3Object
 import net.tqft.toolkit.collections.MapTransformer
 import net.tqft.toolkit.collections.NonStrictIterable
 import net.tqft.toolkit.Logging
+import org.apache.commons.io.IOUtils
 
 trait S3 {
   def AWSAccount: String
@@ -27,6 +28,7 @@ trait S3 {
   def GZIP(bucket: String): S3Bucket[String] = GZIPkeys(new S3BucketGZIP(s3Service, bucket))
   def source(bucket: String): S3Bucket[Source] = new S3BucketSource(s3Service, bucket)
   def sourceGZIP(bucket: String): S3Bucket[Source] = GZIPkeys(new S3BucketSourceGZIP(s3Service, bucket))
+  def bytes(bucket: String): S3Bucket[Array[Byte]] = new S3BucketBytes(s3Service, bucket)
 
   private def GZIPkeys[V](s3Bucket: S3Bucket[V]): S3Bucket[V] = {
     import MapTransformer._
@@ -81,6 +83,9 @@ private class S3BucketGZIP(val s3Service: StorageService, val bucket: String) ex
 private class S3BucketSource(val s3Service: StorageService, val bucket: String) extends S3BucketSourceWrapper(new S3BucketStreaming(s3Service, bucket)) with S3Bucket[Source]
 private class S3BucketSourceGZIP(val s3Service: StorageService, val bucket: String) extends S3BucketSourceWrapper(new S3BucketStreamingGZIP(s3Service, bucket)) with S3Bucket[Source]
 
+private class S3BucketBytes(val s3Service: StorageService, val bucket: String) extends S3BucketBytesWrapper(new S3BucketStreaming(s3Service, bucket)) with S3Bucket[Array[Byte]]
+
+
 private class S3BucketWrapper(map: scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]]) extends MapTransformer.ValueTransformer[String, Either[InputStream, Array[Byte]], String](
   map,
   { e: Either[InputStream, Array[Byte]] =>
@@ -120,6 +125,22 @@ private class S3BucketSourceWrapper(map: scala.collection.mutable.Map[String, Ei
   { s: Source =>
     {
       Right(s.toArray map { _.toByte })
+    }
+  })
+
+  private class S3BucketBytesWrapper(map: scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]]) extends MapTransformer.ValueTransformer[String, Either[InputStream, Array[Byte]], Array[Byte]](
+  map,
+  { e: Either[InputStream, Array[Byte]] =>
+    {
+      e match {
+        case Left(stream) => IOUtils.toByteArray(stream);
+        case Right(bytes) => bytes
+      }
+    }
+  },
+  { bytes: Array[Byte] =>
+    {
+      Right(bytes)
     }
   })
 

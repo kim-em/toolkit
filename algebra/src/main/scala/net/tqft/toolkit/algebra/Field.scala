@@ -3,7 +3,12 @@ package net.tqft.toolkit.algebra
 trait DivisionRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRing[A] with Group[A] {
   override def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
   override def remainder(x: A, y: A) = zero
-  def quotientByInt(x: A, y: Int): A = quotient(x, fromInt(y))
+  def quotientByInt(x: A, y: Int): A = {
+    quotientRemainder(x, fromInt(y)) match {
+      case (q, r) if r == zero => q
+      case _ => throw new ArithmeticException("In the division ring " + this + ", " + x + " is not divisible by " + y)
+    }
+  }
   def fromRational(x: Fraction[Int]) = quotient(fromInt(x.numerator), fromInt(x.denominator))
 }
 
