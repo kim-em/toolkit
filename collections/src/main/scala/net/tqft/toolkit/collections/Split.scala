@@ -18,7 +18,7 @@ object Split {
 
       chunk(x.toSeq map (a => (a, f(a))))
     }
-    
+
     def splitByOrdering(o: Ordering[A]): List[List[A]] = {
       val sorted = x.toList.sorted(o)
       def chunk(l: List[A]): List[List[A]] = {
@@ -32,7 +32,7 @@ object Split {
       }
       chunk(sorted)
     }
-    
+
     def split = splitBy(x => x)
     def rle = split.map(l => (l.head, l.size))
 
@@ -48,9 +48,24 @@ object Split {
         }
       }
     }
-    
-    def splitOn(p: A => Boolean) = splitAfter(p).map(s => if(p(s.last)) s.init else s)
+
+    def splitOn(p: A => Boolean) = splitAfter(p).map(s => if (p(s.last)) s.init else s)
   }
 
+  implicit def splittableIterator[A](x: Iterator[A]) = new SplittableIterator(x)
+  class SplittableIterator[A](x: Iterator[A]) {
+    def splitAfter(p: A => Boolean): Iterator[List[A]] = {
+      new Iterator[List[A]] {
+        def hasNext = x.hasNext
+        def next = {
+          import TakeToFirst._
+          x.takeToFirst(p)
+        }
+      }
+    }
+
+    def splitOn(p: A => Boolean) = splitAfter(p).map(s => if (p(s.last)) s.init else s)
+
+  }
 }
 

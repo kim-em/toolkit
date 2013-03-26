@@ -148,7 +148,8 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
   lazy val exponent = Integers.lcm((elements map { orderOfElement _ }).toSeq: _*)
 
   lazy val preferredPrime = {
-    var p = exponent + 1
+    // This used to be exponent + 1, but this seems to cause a problem with (S_3 x S_3)_b \subset S_6
+    var p = size + 1
     while (!BigInt(p).isProbablePrime(60)) p = p + exponent
     p
   }
@@ -244,6 +245,9 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     val cyclotomicNumbers = NumberField.cyclotomic[Fraction[Int]](exponent)
     val zeta = Polynomial.identity[Fraction[Int]]
     val chi = characterTableModPreferredPrime
+    println("preferredPrime -> " + preferredPrime)
+    println("chi -> " + chi)
+
     val z = (1 until preferredPrime).find({ n => modP.orderOfElement(n) == exponent }).get
 
     val zpower = IndexedSeq.tabulate(exponent)({ k: Int => modP.power(z, k) })
@@ -312,6 +316,11 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     val rationalResult = result.constantTerm
     require(rationalResult.denominator == 1)
     rationalResult.numerator
+  }
+
+  def verifyOrthogonalityOfCharacters = {
+    reducedCharacters.forall(c => characterPairing(c, c) == 1) &&
+      (for (i <- (0 until conjugacyClasses.size).iterator; c1 = reducedCharacters(i); j <- 0 until i; c2 = reducedCharacters(j)) yield characterPairing(c1, c2) == 0).forall(_ == true)
   }
 
   // TODO rewrite this in terms of other stuff!
