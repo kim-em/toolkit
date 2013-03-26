@@ -97,8 +97,8 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
   }
   def subgroupsUpToConjugacy: Set[FiniteGroup[A]] = {
     val action = new GroupAction[A, Subgroup] {
-      def act(a: A, g: Subgroup) = new Subgroup {
-        override val elements = g.elements.map(g => finiteGroup.multiply(finiteGroup.inverse(a), g, a))
+      def act(a: A, G: Subgroup) = new Subgroup {
+        override val elements = G.elements.map(g => finiteGroup.multiply(finiteGroup.inverse(a), g, a))
       }
     }
     action.orbits(elements, subgroups.asInstanceOf[Set[Subgroup]]).map(_.representative.asInstanceOf[FiniteGroup[A]])
