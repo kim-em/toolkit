@@ -38,11 +38,6 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
 //      }
 
   private def generator = {
-    //    if (ring.multiply(ring.basis(1), ring.basis(1)).head == 1) {
-    //      ring.basis(1)
-    //    } else {
-    //      ring.add(ring.basis(1), ring.basis(2))
-    //    }
     ring.sum(for (i <- generators) yield ring.basis(i))
   }
   val depths = {
