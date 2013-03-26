@@ -149,7 +149,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
   lazy val preferredPrime = {
     var p = exponent + 1
-    while (!BigInt(p).isProbablePrime(60)) p = p + exponent
+    while ((p * p <= 4 * size) || !BigInt(p).isProbablePrime(60)) p = p + exponent
     p
   }
 
@@ -178,6 +178,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     override def degree = character.head.ensuring(_.maximumDegree.getOrElse(0) == 0).constantTerm.ensuring(_.denominator == 1).numerator
   }
 
+  // This implementation of the Burnside-Dixon algorithm follows the description at http://www.maths.qmul.ac.uk/~rtb/mathpage/Richard%20Bayley's%20Homepage_files/Dixon.pdf
   lazy val characters: Seq[Seq[Polynomial[Fraction[Int]]]] = {
     val k = conjugacyClasses.size
 
@@ -187,7 +188,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       val zeroVector = Seq.fill(k)(0)
 
       def subtractDiagonal(m: Seq[Seq[Int]], lambda: Int) = {
-        m.zipWithIndex.map({ case (r, i) => r.updated(i, (r(i) - lambda) mod preferredPrime) })
+        m.zipWithIndex.map({ case (r, i) => r.updated(i, modP.subtract(r(i), lambda)) })
       }
 
       def eigenvalues(m: Seq[Seq[Int]]) = Matrix(m.size, m.par).eigenvalues
@@ -232,10 +233,16 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
       }
 
       val omega = classCoefficientSimultaneousEigenvectorsModPrime
+      
+      println("omega -> " + omega)
+      
       val degrees = for (omega_i <- omega) yield {
         sqrt(modP.quotient(finiteGroup.size, (for (j <- 0 until k) yield modP.quotient(omega_i(j) * omega_i(inverseOnConjugacyClasses(j)), conjugacyClasses(j).size)).sum))
       }
 
+      println("degrees -> " + degrees)
+      require(degrees.map(n => n * n).sum == size)
+          
       for (i <- 0 until k) yield for (j <- 0 until k) yield modP.quotient(omega(i)(j) * degrees(i), conjugacyClasses(j).size)
     }
 
@@ -244,6 +251,9 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     val cyclotomicNumbers = NumberField.cyclotomic[Fraction[Int]](exponent)
     val zeta = Polynomial.identity[Fraction[Int]]
     val chi = characterTableModPreferredPrime
+    println("preferredPrime -> " + preferredPrime)
+    println("chi -> " + chi)
+
     val z = (1 until preferredPrime).find({ n => modP.orderOfElement(n) == exponent }).get
 
     val zpower = IndexedSeq.tabulate(exponent)({ k: Int => modP.power(z, k) })
@@ -312,6 +322,11 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
     val rationalResult = result.constantTerm
     require(rationalResult.denominator == 1)
     rationalResult.numerator
+  }
+
+  def verifyOrthogonalityOfCharacters = {
+    reducedCharacters.forall(c => characterPairing(c, c) == 1) &&
+      (for (i <- (0 until conjugacyClasses.size).iterator; c1 = reducedCharacters(i); j <- 0 until i; c2 = reducedCharacters(j)) yield characterPairing(c1, c2) == 0).forall(_ == true)
   }
 
   // TODO rewrite this in terms of other stuff!

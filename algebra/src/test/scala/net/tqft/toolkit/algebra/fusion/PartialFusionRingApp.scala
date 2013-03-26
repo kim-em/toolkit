@@ -20,7 +20,7 @@ object PartialFusionRingApp extends App {
     var k = 0
     
     println("parallelizing over " + firstLayer.size + " fusion rings")
-    for ((s, i) <- firstLayer.zipWithIndex/*.par*/; (r, p) <- s.descendantsWithProgress()) {
+    for ((s, i) <- firstLayer.zipWithIndex.par; (r, p) <- s.descendantsWithProgress()) {
       k += 1
       println((i + 1, firstLayer.size) + " " + p)
       if (r.depth == r.depths.max) {

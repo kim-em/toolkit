@@ -7,16 +7,15 @@ import net.tqft.toolkit.permutations.Permutations._
 trait Graph {
   def numberOfVertices: Int
   def adjacencies: IndexedSeq[Seq[Int]]
-//  def edges: Traversable[Set[Int]]
 
-  for(i <- 0 until numberOfVertices; j <- adjacencies(i)) {
-    require(adjacencies(j).contains(i))
-  }
-  
-  for(r <- adjacencies; i <- r) {
-    require(i < numberOfVertices)
-  }
-  
+  //  for(i <- 0 until numberOfVertices; j <- adjacencies(i)) {
+//    require(adjacencies(j).contains(i))
+//  }
+//  
+//  for(r <- adjacencies; i <- r) {
+//    require(i < numberOfVertices)
+//  }
+
   override def toString = "Graph(" + numberOfVertices + ", " + adjacencies + ")"
   override def hashCode = (numberOfVertices, adjacencies).hashCode
   
@@ -34,7 +33,7 @@ trait Graph {
   }
 
   def relabel(labels: IndexedSeq[Int]): Graph = {
-    require(labels.size == numberOfVertices)
+//    require(labels.size == numberOfVertices)
     val p = labels.inverse
     Graph(numberOfVertices, labels.permute(adjacencies.map(a => a.map(p).sorted)))
   }

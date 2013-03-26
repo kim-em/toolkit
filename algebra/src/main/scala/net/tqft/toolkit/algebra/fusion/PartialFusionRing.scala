@@ -6,6 +6,8 @@ import net.tqft.toolkit.collections.MapTransformer
 import net.tqft.toolkit.amazon.S3
 import net.tqft.toolkit.SHA1
 import net.tqft.toolkit.Logging
+import net.tqft.toolkit.algebra.Longs
+import net.tqft.toolkit.algebra.Integers
 
 object PartialFusionRing {
   implicit def fromFusionRing(ring: FusionRing[Int]): PartialFusionRing = {
@@ -17,25 +19,90 @@ object PartialFusionRing {
   }
 }
 
+object LazyPair {
+  def apply[A, B](a: => A, b: => B): Product2[A, B] = {
+    new Product2[A, B] {
+      override lazy val _1 = a
+      override lazy val _2 = b
+      override def hashCode = (_1, _2).hashCode
+      override def equals(other: Any) = (_1, _2).equals(other)
+      override def canEqual(other: Any) = other.isInstanceOf[Product2[A, B]]
+    }
+  }
+}
+
+object PartialFusionRingMeasurement {
+  private val completeInvariantCases = 3
+  private val completeInvariantCounts = Array.fill(completeInvariantCases)(0)
+  private val completeInvariantTimings = Array.fill(completeInvariantCases)(0L)
+
+  def reportTiming[A](k: Int, f: => A): A = {
+    import net.tqft.toolkit.Profiler._
+    val (t, r) = timing(f)
+    completeInvariantTimings(k) = completeInvariantTimings(k) + t
+    completeInvariantCounts(k) = completeInvariantCounts(k) + 1
+    if (completeInvariantCounts(k) % 100 == 0) {
+      println("completeInvariant summary: " + completeInvariantCounts.toList + " " + completeInvariantTimings.toList)
+    }
+    r
+  }
+
+}
+
 case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
+  require(ring.independent_?(generators))
 
   override lazy val hashCode = (depth, generators, ring, globalDimensionLimit).hashCode
 
+  // TODO this is taking up too much memory! How about a list of functions, and whoever is sorting and splitting can take care of saving values as needed.
   lazy val completeInvariant = {
-    import net.tqft.toolkit.algebra.graphs.dreadnaut
-    dreadnaut.canonicalize(ring.graphEncoding(depths))
+    import net.tqft.toolkit.collections.Tally._
+    import net.tqft.toolkit.collections.LexicographicOrdering._
+
+    import PartialFusionRingMeasurement.reportTiming
+
+    def rowSums = ring.structureCoefficients.map(m => m.entries.map(_.sum).seq.tally.sorted)
+    // it seems from profiling that columnSums is completely redundant with rowSums
+
+    def rowSumsBy[A: Ordering](data: Seq[A]): Seq[Int] = {
+      ring.structureCoefficients.map({ m =>
+        m.entries.map({ r =>
+          r.zip(data).map({
+            case (rx, d) => rx * d.hashCode
+          }).sum
+        }).seq.zip(data).map(_.hashCode).tally.sorted
+      }).zip(data).map(_.hashCode)
+    }
+
+    def rowSumsIterator = Iterator.iterate(depths.map(Integers.power(10, _)))(rowSumsBy)
+    def rowSumsWithTalliesIterator = rowSumsIterator.map(_.tally.map(_.swap).sorted)
+    def fixedPointLabels = rowSumsWithTalliesIterator.sliding(2, 1).find({ case Seq(p1, p2) => p1.map(_._1) == p2.map(_._1) }).get.head.map(_._2)
+
+    def canonicalize = {
+      import net.tqft.toolkit.algebra.graphs.dreadnaut
+      dreadnaut.canonicalize(ring.graphEncoding(depths))
+    }
+
+    // about a third of cases are still going through to canonicalize
+    LazyPair(
+      reportTiming(0, rowSums.tally.sorted),
+      LazyPair(
+        reportTiming(1, fixedPointLabels),
+        reportTiming(2, canonicalize)))        
   }
 
-//      override def children = {
-//        try {
-//          PartialFusionRingCache.getOrElseUpdate(this, super.children)
-//        } catch {
-//          case e: java.lang.ExceptionInInitializerError => {
-//            Logging.error("S3 not available: ", e)
-//            super.children
-//          }
-//        }
-//      }
+  
+  
+  override def children = {
+    try {
+      PartialFusionRingCache.getOrElseUpdate(this, super.children)
+    } catch {
+      case e: java.lang.ExceptionInInitializerError => {
+        Logging.error("S3 not available: ", e)
+        super.children
+      }
+    }
+  }
 
   private def generator = {
     ring.sum(for (i <- generators) yield ring.basis(i))
@@ -73,12 +140,22 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
   // TODO refine this via easier invariants
   val ordering: Ordering[Lower] = {
     import net.tqft.toolkit.collections.Orderings._
+    import net.tqft.toolkit.collections.LexicographicOrdering._
+    import net.tqft.toolkit.collections.Tally._
     import net.tqft.toolkit.algebra.graphs.dreadnaut
     Ordering.by({ l: Lower =>
       l match {
         case ReduceDepth => 0
         case DeleteSelfDualObject(_) => 1
         case DeleteDualPairOfObjects(_, _) => 2
+      }
+    }).refineByPartialFunction({
+      // TODO would it help to do the DeleteDualPairOfObjects case??
+      case DeleteSelfDualObject(k) => {
+        (ring.structureCoefficients(k).entries(k)(k),
+          ring.structureCoefficients(k).entries(k).tally.sorted,
+          ring.structureCoefficients(k).entries.map(_(k)).seq.tally.sorted,
+          ring.structureCoefficients(k).entries.flatten.seq.tally.sorted)
       }
     }).refineByPartialFunction({
       case DeleteSelfDualObject(k) => dreadnaut.canonicalize(ring.graphEncoding(depths.updated(k, -1)))
@@ -155,14 +232,17 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
     override lazy val result = pfr.copy(depth = depth + 1)
     override def inverse = result.ReduceDepth
   }
-  case class AddSelfDualObject(newRing: FusionRing[Int]) extends Upper {
+  trait NewRingUpper extends Upper {
+    def newRing: FusionRing[Int]
+  }
+  case class AddSelfDualObject(newRing: FusionRing[Int]) extends NewRingUpper {
     private def newGenerators = {
       if (depth == 1) (1 until newRing.rank) else generators
     }
     override lazy val result = pfr.copy(ring = newRing, generators = newGenerators)
     override def inverse = result.DeleteSelfDualObject(ring.rank)
   }
-  case class AddDualPairOfObjects(newRing: FusionRing[Int]) extends Upper {
+  case class AddDualPairOfObjects(newRing: FusionRing[Int]) extends NewRingUpper {
     private def newGenerators = {
       if (depth == 1) (1 until newRing.rank) else generators
     }
@@ -177,6 +257,8 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
       } else {
         Set.empty
       }) ++ (if (depth > 0) {
+
+        // FIXME independence should really be done as equations in withAnother...
         def independent_?(f: FusionRing[Int]) = {
           f.independent_?(if (depth == 1) {
             1 until f.rank
@@ -185,22 +267,24 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
           })
         }
 
-//        import net.tqft.toolkit.collections.GroupBy._
-//        def isomorphic_?(a: Upper, b: Upper) = a.result.isomorphicTo_?(b.result)
         def chooseRepresentatives(uppers: Seq[Upper]) = {
-//          import net.tqft.toolkit.Profiler
-//          val (t1, r1) = Profiler.timing(uppers.chooseEquivalenceClassRepresentatives(isomorphic_?))
-//          val (t2, r2) = Profiler.timing(uppers.groupBy(_.result.completeInvariant).mapValues(_.head).values)
-//          require(r1.size == r2.size)
-//          println("chooseRepresentatives: "+ t1 + " vs " + t2)
-//          r1
-          uppers.map(u => u.result.completeInvariant -> u).toMap.values
+          if (uppers.size > 10) println("choosing representatives from " + uppers.size + " elements")
+
+          import net.tqft.toolkit.collections.LexicographicOrdering._
+          import net.tqft.toolkit.collections.Tally._
+
+          val ordering = Ordering.by({ u: Upper => u.result.completeInvariant })
+          import net.tqft.toolkit.collections.Split._
+          val result = uppers.splitByOrdering(ordering)
+          if (uppers.size > 10) println("  chunks of sizes " + result.map(_.size).tally)
+          //          result.find(_.size == 2).map(c => println("  example chunk: \n" + c.mkString("\n") + "\n derived from " + pfr))
+          result.map(_.head)
         }
 
         val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).filter(independent_?)
         val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).filter(independent_?)
-        chooseRepresentatives(extraSelfDual.map(AddSelfDualObject).toSeq) ++
-          chooseRepresentatives(extraPairs.map(AddDualPairOfObjects).toSeq)
+        (chooseRepresentatives(extraSelfDual.toSeq.map(AddSelfDualObject)) ++
+          chooseRepresentatives(extraPairs.toSeq.map(AddDualPairOfObjects))) //.filter(p => independent_?(p.newRing))
       } else {
         Set.empty
       })

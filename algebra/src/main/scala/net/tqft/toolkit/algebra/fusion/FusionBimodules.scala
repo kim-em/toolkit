@@ -60,11 +60,11 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
 
     def reconstituteBimodule(m: Map[V, Int]): FusionBimoduleWithLeftDimensions = {
       val rightRingStructureCoefficients = fusionRingUnknowns.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
+        case p if p.totalDegree == Some(1) => m(p.toMap.head._1.keySet.iterator.next)
         case p => p.constantTerm
       }))
       val rightModuleStructureCoefficients = fusionModuleUnknowns.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
+        case p if p.totalDegree == Some(1) => m(p.toMap.head._1.keySet.iterator.next)
         case p => p.constantTerm
       }))
       FusionBimoduleWithLeftDimensions(leftModule, rightRingStructureCoefficients, rightModuleStructureCoefficients)
@@ -186,7 +186,7 @@ object FusionBimodules extends net.tqft.toolkit.Logging {
     def reconstituteBimodule(m: Map[V, Int]): FusionBimodule[Int] = {
       def substitute(matrices: Seq[Matrix[MultivariablePolynomial[Int, V]]]): Seq[Matrix[Int]] = {
         matrices.map(_.mapEntries({
-          case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
+          case p if p.totalDegree == Some(1) => m(p.toMap.head._1.keySet.iterator.next)
           case p => p.constantTerm
         }))
       }

@@ -86,16 +86,16 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
         val p = polynomialAlgebra.substitute(substitutions)(q).divideByCoefficientGCD
 
         def splitIfPositiveOrOtherwiseAdd: Option[Equations] = {
-          if (p.terms.size > 1 && (p.terms.forall(_._2 > 0) || p.terms.forall(_._2 < 0))) {
-            addEquations(p.terms.map(t => polynomialAlgebra.monomial(t._1)))
+          if (p.toMap.size > 1 && (p.toMap.forall(_._2 > 0) || p.toMap.forall(_._2 < 0))) {
+            addEquations(p.toMap.iterator.map(t => polynomialAlgebra.monomial(t._1)))
           } else {
             add
           }
         }
 
         def add: Some[Equations] = {
-          if (p.terms.size > 1) {
-            require(p.terms.exists(_._2 > 0) && p.terms.exists(_._2 < 0))
+          if (p.toMap.size > 1) {
+            require(p.toMap.exists(_._2 > 0) && p.toMap.exists(_._2 < 0))
           }
           if (equations.contains(p)) {
             Some(this)
@@ -112,12 +112,12 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
             None
           }
           case Some(1) => {
-            if (p.terms.size == 1) {
-              val t = p.terms.head
+            if (p.toMap.size == 1) {
+              val t = p.toMap.head
               require(t._2 != 0)
               val v = t._1.keysIterator.next
               addSubstitution(v, 0)
-            } else if (p.terms.size == 2) {
+            } else if (p.toMap.size == 2) {
               if (p.constantTerm != 0) {
                 // a+bV == 0
                 val a = p.constantTerm
@@ -131,7 +131,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
                 }
               } else {
                 // a_1 v_1 + a_2 v_2 == 0
-                val List(t1, t2) = p.terms.toList
+                val Seq(t1, t2) = p.toSeq
                 val a1 = t1._2
                 val a2 = t2._2
                 val v1 = t1._1.keysIterator.next
@@ -160,9 +160,9 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
             }
           }
           case Some(2) => {
-            p.terms.size match {
+            p.toMap.size match {
               case 1 => {
-                val h = p.terms(0)
+                val h = p.toMap.head
                 // just one term
                 require(h._2 != 0)
                 val keys = h._1.keys.toSeq
@@ -174,7 +174,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
                 }
               }
               case 2 => {
-                val List(t1, t2) = p.terms.toList.sortBy(_._1.values.sum)
+                val Seq(t1, t2) = p.toSeq.sortBy(_._1.values.sum)
                 require(t1._1.values.sum <= t2._1.values.sum)
                 if (t1._1.values.sum == 0) {
                   if (t2._1.keys.size == 1) {
@@ -229,7 +229,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
                 }
               }
               case 3 => {
-                val List(t1, t2, t3) = p.terms.toList.sortBy(t => (t._1.values.sum, t._2))
+                val Seq(t1, t2, t3) = p.toSeq.sortBy(t => (t._1.values.sum, t._2))
                 if (t1._1.values.sum == 0 && t2._1.values.sum == 2 && t3._1.values.sum == 2 && t2._1.keys.size == 1 && t3._1.keys.size == 1) {
                   val x = t2._1.keys.head
                   val y = t3._1.keys.head
@@ -262,10 +262,10 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
           addSubstitution(v, polynomialAlgebra.subtract(polynomialAlgebra.monomial(v), p))
         }
 
-        equations.find(p => p.totalDegree == Some(1) && p.termsOfDegree(1).exists(_._2 == 1) && p.terms.count(_._2 > 0) == 1) match {
+        equations.find(p => p.totalDegree == Some(1) && p.termsOfDegree(1).exists(_._2 == 1) && p.toMap.count(_._2 > 0) == 1) match {
           case Some(p) => solve(p)
           case None => {
-            equations.find(p => p.totalDegree == Some(1) && p.termsOfDegree(1).exists(_._2 == -1) && p.terms.count(_._2 < 0) == 1) match {
+            equations.find(p => p.totalDegree == Some(1) && p.termsOfDegree(1).exists(_._2 == -1) && p.toMap.count(_._2 < 0) == 1) match {
               case Some(p) => solve(polynomialAlgebra.negate(p))
               case None => Some(this)
             }

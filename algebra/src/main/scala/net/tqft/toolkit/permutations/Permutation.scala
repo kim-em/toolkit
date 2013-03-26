@@ -11,7 +11,12 @@ object Permutations {
       for (n <- p) yield { s(n) }
     }
     def inverse(): Permutation = {
-      ((0 to p.size - 1) map { k => p.indexWhere(_ == k) })
+      val result = Array.fill(p.size)(0)
+      for((n,i) <- p.zipWithIndex) {
+        result(n) = i
+      }
+      result
+//      ((0 to p.size - 1) map { k => p.indexWhere(_ == k) })
     }
   }
 

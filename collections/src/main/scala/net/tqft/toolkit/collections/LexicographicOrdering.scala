@@ -96,4 +96,16 @@ object LexicographicOrdering {
   implicit def LexicographicListListOrdering[A:Ordering]: Ordering[List[List[A]]] = new Ordering[List[List[A]]] {
     def compare(seq1: List[List[A]], seq2: List[List[A]]) = seq1.compare(seq2)
   }
+  
+  implicit def LexicographicProduct2Ordering[A:Ordering,B:Ordering]: Ordering[Product2[A, B]] = new Ordering[Product2[A, B]] {
+    def compare(p1: Product2[A, B], p2: Product2[A,B]) = {
+      implicitly[Ordering[A]].compare(p1._1, p2._1) match {
+        case 0 => {
+          implicitly[Ordering[B]].compare(p1._2, p2._2)
+        }
+        case k => k 
+      }
+    }
+  }
+  
 }
