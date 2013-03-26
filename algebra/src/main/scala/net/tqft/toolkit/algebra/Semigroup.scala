@@ -5,7 +5,9 @@ package net.tqft.toolkit.algebra
 // but this crashes the compiler.
 trait Semigroup[A] {
   def multiply(x: A, y: A): A
-  def multiply(x0: A, x1: A*): A = x1.fold(x0)(multiply _)
+  def multiply(x0: A, x1: A, x2: A*): A = {
+    x2.fold(multiply(x0, x1))(multiply)
+  }
   def power(x: A, k: Int): A = {
     // modified from https://github.com/dlwh/breeze/blob/master/math/src/main/scala/breeze/numerics/IntMath.scala
     // under http://www.apache.org/licenses/LICENSE-2.0

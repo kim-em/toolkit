@@ -11,7 +11,7 @@ trait OrderedEuclideanRing[A] extends EuclideanRing[A] with Ordering[A] {
 
   override def gcd(x: A, y: A) = {
     val gcd = super.gcd(x, y)
-    multiply(gcd, multiply(fromInt(signum(gcd) * signum(y))))
+    multiplyByInt(gcd, signum(gcd) * signum(y))
   }
 }
 

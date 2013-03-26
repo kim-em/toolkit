@@ -88,7 +88,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V]
             scalarMultiply(a, product(newFactors))
           } else {
             val oldFactor = monomial(toKeep.map(v => v -> m(v)).toMap, a)
-            multiply(oldFactor, newFactors: _*)
+            multiply(oldFactor, product(newFactors))
           }
         }
       })
