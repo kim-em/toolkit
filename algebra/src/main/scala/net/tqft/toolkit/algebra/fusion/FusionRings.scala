@@ -8,6 +8,7 @@ import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroup
 import net.tqft.toolkit.algebra.enumeration._
+import scala.collection.BitSet
 
 object FusionRings {
   def withObject(m: Matrix[Int], knownRing: Option[FusionRing[Int]] = None): Iterator[FusionRing[Int]] = {
@@ -44,7 +45,7 @@ object FusionRings {
 
     for (solution <- solutions) yield {
       val structureCoefficients = variableStructureCoefficients.map(_.mapEntries({
-        case p if p.totalDegree == Some(1) => solution(p.terms.head._1.keySet.iterator.next)
+        case p if p.totalDegree == Some(1) => solution(p.toMap.head._1.keySet.iterator.next)
         case p => p.constantTerm
       }))
       FusionRing(structureCoefficients).ensuring(_.structureCoefficients(1) == m)
@@ -89,6 +90,7 @@ object FusionRings {
     val newDuality = ring.duality :+ rank
 
     // we could do these 'by hand', but BoundedDiophantineSolver is good enough at it
+    // TODO actually, get rid of depth and identity conditions by solving them by hand
     val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
     val identityConditions = variableRing.identityConstraints
     val dualityConditions = variableRing.dualityConstraints(newDuality)
@@ -118,15 +120,6 @@ object FusionRings {
         }
       }).map(m => m: Matrix[Int])
 
-      //      require((variables diff m.keys.toSeq).isEmpty)
-      //
-      //      val structureCoefficients2 = variableRing.structureCoefficients.map(_.mapEntries({
-      //        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
-      //        case p => p.constantTerm
-      //      }))
-      //
-      //      require(structureCoefficients == structureCoefficients2, structureCoefficients + "\n" + structureCoefficients2)
-
       FusionRing(structureCoefficients)
     }
 
@@ -143,33 +136,17 @@ object FusionRings {
     }
 
     val solver = new BoundedDiophantineSolver2[V]
-    val linearSolve = solver.solve(polynomials).get
-
-    val caseBashRemainingEquations = linearSolve.caseBash(linearSolve.equations.flatMap(_.variables).distinct, limit).toSeq
-
-    if (linearSolve.equations.nonEmpty) {
-      println("caseBashRemainingEquations.size -> " + caseBashRemainingEquations.size)
-    }
-
-    for (e <- caseBashRemainingEquations) {
-      println(e.substitutions + "\n" + Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))))
-    }
-
     import net.tqft.toolkit.Profiler
-    
-    val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toSeq)
 
-    val (t2, solutions2) = Profiler.timing(for(e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
+    val (t00, linearSolve) = Profiler.timing(solver.solve(polynomials).get)
+
+    val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit))
+
+    //        val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toList)
+
+    val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
-    })
-    
-    println(t1 + " vs " + t2)
-    
-    require(solutions1.forall(limit), "sol")
-    require(solutions2.forall(limit), "sol2")
-    require(solutions1.toSet == solutions2.toSet, "\nsolutions -> " + solutions1.toSet + "\nsolutions2 -> " +solutions2.toSet)
-    
-    //    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, limit)
+    }))
 
     def connected_?(f: FusionRing[Int]) = {
       if (maxdepth == 1) {
@@ -180,15 +157,16 @@ object FusionRings {
       }
     }
 
-    solutions1.iterator.map(reconstituteRing).filter(connected_?)
+    solutions2.map(reconstituteRing).filter(connected_?)
   }
 
   def fastCaseBash[V](matrices: Seq[Matrix[MultivariablePolynomial[Int, V]]], L: Double): Iterator[Map[V, Int]] = {
     val n = matrices.size
 
-    val variables = matrices.flatMap(_.entries.flatten).flatMap(_.variables).distinct.toList
+    val variables = matrices.flatMap(_.entries.flatten).flatMap(_.variables).distinct.toIndexedSeq
     val s = variables.size
-    val variablesAppearances = for (v <- variables) yield {
+
+    lazy val variablesAppearances = for (v <- variables) yield {
       (for ((m, i) <- matrices.zipWithIndex; (r, j) <- m.entries.zipWithIndex; (x, k) <- r.zipWithIndex; if x.variables.contains(v)) yield (i, j, k))
     }
 
@@ -212,29 +190,48 @@ object FusionRings {
           (coefficient, variables.indexOf(v1), variables.indexOf(v2))
         }))
     }
-    val quadraticForms = Array.tabulate(n, n, n)({ (i, j, k) =>
+
+    lazy val quadraticForms = Array.tabulate(n, n, n)({ (i, j, k) =>
       polynomial2QuadraticForm(matrices(i).entries(j)(k))
     })
 
     var lastSubstitution = Array.fill(s)(0)
-    var lastMatrices = quadraticForms.map(_.map(_.map(_.constant)))
+    val lastMatrices = matrices.map(m => m.mapEntries(_.constantTerm).entries.map(_.toArray).toArray).toArray
+    val lastEstimates = lastMatrices.map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1)
 
-    def substitute(substitution: Array[Int]): Array[Array[Array[Int]]] = {
-      val dirtyVariables = for (i <- (0 until s).toList; if substitution(i) != lastSubstitution(i)) yield i
-      lastSubstitution = substitution
-      val dirtyEntries = (for (i <- dirtyVariables) yield variablesAppearances(i)).foldLeft(Set[(Int, Int, Int)]())(_ ++ _)
+    // TODO take as argument a bitset, instead?
+    // http://stackoverflow.com/questions/15421678/constructing-bitsets-in-scala-from-a-predicate
+    val multivariableAppearances = {
+      import net.tqft.toolkit.functions.Memo._
+      { s: Seq[Int] => s.flatMap(i => variablesAppearances(i)).distinct }.memo
+    }
 
-      for ((i, j, k) <- dirtyEntries) {
-        lastMatrices(i)(j)(k) = quadraticForms(i)(j)(k).substitute(substitution)
+    def estimates(substitution: Array[Int]): Array[Double] = {
+      val dirtyMatrices = Array.fill(n)(false)
+
+      if (substitution != lastSubstitution) {
+        for ((i, j, k) <- multivariableAppearances((0 until s).filter(i => substitution(i) != lastSubstitution(i)))) {
+          val newValue = quadraticForms(i)(j)(k).substitute(substitution)
+          if (lastMatrices(i)(j)(k) != newValue) {
+            lastMatrices(i)(j)(k) = newValue
+            dirtyMatrices(i) = true
+          }
+        }
+
+        lastSubstitution = substitution
       }
-      lastMatrices
+      for (i <- 0 until n; if dirtyMatrices(i)) {
+        lastEstimates(i) = FrobeniusPerronEigenvalues.estimateWithEigenvector(lastMatrices(i))._1
+      }
+      lastEstimates
     }
 
     def limit(substitution: Array[Int]): Boolean = {
-      substitute(substitution).map(m => FrobeniusPerronEigenvalues.estimateWithEigenvector(m)._1).sum - 0.0001 < L
+      estimates(substitution).sum - 0.0001 < L
     }
 
     Odometer(Array.fill(s)(0))(ArrayOdometer.odometerInt, limit).iterator.map(variables.zip(_).toMap)
+
   }
 
   def withAnotherPairOfDualObjects(ring: FusionRing[Int], maxdepth: Int, depths: Seq[Int], globalDimensionLimit: Double): Iterator[FusionRing[Int]] = {
@@ -308,18 +305,10 @@ object FusionRings {
 
     val newDuality = ring.duality :+ (rank + 1) :+ rank
 
-    //    val depthConditions = for (i <- (0 until rank).iterator; j <- 0 until rank; if depths(i) + depths(j) < maxdepth) yield (polynomialAlgebra.monomial((i, j)), polynomialAlgebra.zero)
-    //    val identityConditions = variableRing.identityConstraints
-    // TODO if we put in identityConditions by hand above, I think dualityConstraints would automatically be satisfied.
-    // hmm, seems not
-    //        for(((p1,p2),t) <-variableRing.dualityConstraints(newDuality).zipWithIndex) {
-    //          println(t + ": " + p1 + " == " + p2)
-    //          require(p1 == p2)
-    //        }
     val dualityConstraints = variableRing.dualityConstraints(newDuality)
     val associativityConditions = variableRing.partialAssociativityConstraints(maxdepth, depths)
 
-    val polynomials = ( /*depthConditions ++ identityConditions ++ */ dualityConstraints ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
+    val polynomials = (dualityConstraints ++ associativityConditions).map(p => polynomialAlgebra.subtract(p._1, p._2))
 
     def reconstituteRing(m: Map[V, Int]): FusionRing[Int] = {
       val m0 = m.orElse[(Int, Int), Int]({
@@ -354,15 +343,6 @@ object FusionRings {
         }
       }).map(m => m: Matrix[Int])
 
-      //      require((variables diff m.keys.toSeq).isEmpty)
-      //
-      //      val structureCoefficients2 = variableRing.structureCoefficients.map(_.mapEntries({
-      //        case p if p.totalDegree == Some(1) => m(p.terms.head._1.keySet.iterator.next)
-      //        case p => p.constantTerm
-      //      }))
-      //
-      //      require(structureCoefficients == structureCoefficients2, structureCoefficients + "\n" + structureCoefficients2)
-
       FusionRing(structureCoefficients)
     }
 
@@ -379,33 +359,16 @@ object FusionRings {
     }
 
     val solver = new BoundedDiophantineSolver2[V]
-    val linearSolve = solver.solve(polynomials).get
-
-    val caseBashRemainingEquations = linearSolve.caseBash(linearSolve.equations.flatMap(_.variables).distinct, limit).toStream
-
-    if (linearSolve.equations.nonEmpty) {
-      println("caseBashRemainingEquations.size -> " + caseBashRemainingEquations.size)
-    }
-
-    for (e <- caseBashRemainingEquations) {
-      println(e.substitutions + "\n" + Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))))
-    }
-
     import net.tqft.toolkit.Profiler
-    
-  val (t1, solutions1) = Profiler.timing(caseBashRemainingEquations.iterator.flatMap(_.caseBashCompletely(variables, limit)).toSeq)
+    val (t00, linearSolve) = Profiler.timing(solver.solve(polynomials).get)
 
-    val (t2, solutions2) = Profiler.timing(for(e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
+    val (t0, caseBashRemainingEquations) = Profiler.timing(linearSolve.caseBashEquations(limit))
+
+    //    val solutions1 = caseBashRemainingEquations.flatMap(_.caseBashCompletely(variables, limit))
+
+    val (t2, solutions2) = Profiler.timing((for (e <- caseBashRemainingEquations; f <- fastCaseBash(Ss.map(_.mapEntries(p => polynomialAlgebra.substitute(e.substitutions)(p))), globalDimensionLimit)) yield {
       e.substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(f)(p)) ++ f
-    })
-    
-    println(t1 + " vs " + t2)
-    
-    require(solutions1.forall(limit), "sol")
-    require(solutions2.forall(limit), "sol2")
-    require(solutions1.toSet == solutions2.toSet, "\nsolutions -> " + solutions1.toSet + "\nsolutions2 -> " +solutions2.toSet)
-   
-    //    val solutions = BoundedDiophantineSolver.solve(polynomials, variables, limit)
+    }))
 
     def connected_?(f: FusionRing[Int]) = {
       if (maxdepth == 1) {
@@ -418,10 +381,10 @@ object FusionRings {
     }
     def ordered_?(f: FusionRing[Int]) = {
       import net.tqft.toolkit.collections.LexicographicOrdering._
-      implicitly[Ordering[Seq[IndexedSeq[Int]]]].compare(f.structureCoefficients(rank).entries.seq, f.structureCoefficients(rank + 1).entries.seq) <= 0
+      implicitly[Ordering[Seq[Seq[IndexedSeq[Int]]]]].compare(f.structureCoefficients.map(_.entries.seq), f.relabel((0 until rank) :+ (rank + 1) :+ rank).structureCoefficients.map(_.entries.seq)) <= 0
     }
 
-    solutions1.iterator.map(reconstituteRing).filter(connected_?) //.filter(ordered_?)
+    solutions2.map(reconstituteRing).filter(connected_?).filter(ordered_?)
   }
 
   object Examples {

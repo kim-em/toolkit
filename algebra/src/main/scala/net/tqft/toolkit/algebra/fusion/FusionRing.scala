@@ -39,7 +39,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       case _ => false
     }
   }
-  override def toString = "FusionRing(" + structureCoefficients + ")"
+  override def toString = "FusionRing(Seq(\n" + structureCoefficients.mkString(",\n") + "\n))"
 
   override def fromInt(x: Int) = coefficients.fromInt(x) +: Seq.fill(rank - 1)(coefficients.zero)
   override val one = fromInt(1)
@@ -52,7 +52,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
   def associativityConstraints: Iterator[(A, A)] = (for (x <- basis.iterator; y <- basis; z <- basis) yield multiply(x, multiply(y, z)).zip(multiply(multiply(x, y), z))).flatten
   def partialAssociativityConstraints(maxdepth: Int, depths: Seq[Int]) = {
-    val p = depths.zipWithIndex
+    val p = depths.zipWithIndex.tail /* no need for identities */
     (for ((dx, xi) <- p.iterator; (dy, yi) <- p; (dz, zi) <- p; if dx + dy + dz >= maxdepth) yield {
       val pairs = multiplyByBasisElement(multiplyBasisElements(xi, yi), zi).zip(multiplyByBasisElementOnLeft(xi, multiplyBasisElements(yi, zi)))
       if (dx + dy < maxdepth && dy + dz < maxdepth) {
@@ -187,8 +187,8 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   def independent_?(elements: Seq[Int]) = {
     val clumps = (for (i <- elements) yield (Set(i, duality(i)))).toSet
     clumps.forall({ s =>
-      val depths = depthWithRespectTo(sum(s.map(basis)))
-      (clumps - s).flatten.forall(depths(_) == -1)
+      val depths = depthWithRespectTo(sum(elements.filterNot(s).map(basis)))
+      s.forall(depths(_) == -1)
     })
   }
   def minimalGeneratingSets: Iterator[Seq[Int]] = {
@@ -197,6 +197,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     clumps.subsets.map(_.flatten.toSeq).filter(generators_?).filter(independent_?)
   }
 
+  // FIXME this is slow
   def depthWithRespectTo(x: Seq[A]): Seq[Int] = {
     val objectsAtDepth = for (k <- (0 until rank).toStream) yield power(x, k).zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i })
     for (i <- 0 until rank) yield {

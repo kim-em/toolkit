@@ -2,33 +2,35 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra.Ring
 import net.tqft.toolkit.algebra.EuclideanRing
+import net.tqft.toolkit.algebra.modules.MapLinearCombo
 import net.tqft.toolkit.algebra.modules.LinearCombo
 import net.tqft.toolkit.algebra.Rig
 
-trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
+trait MultivariablePolynomial[A, V] extends MapLinearCombo[A, Map[V, Int]] {
   def totalDegree = {
     import net.tqft.toolkit.arithmetic.MinMax._
-    terms.map(_._1.values.sum).maxOption
+    toMap.keys.map(_.values.sum).maxOption
   }
-  def termsOfDegree(k: Int) = terms.filter(_._1.values.sum == k)
-  def constantTerm(implicit ring: Rig[A]) = terms.find(_._1.isEmpty).map(_._2).getOrElse(ring.zero)
+  def termsOfDegree(k: Int) = toMap.filterKeys(_.values.sum == k)
+  def constantTerm(implicit ring: Rig[A]) = toMap.getOrElse(Map.empty, ring.zero)
 
-  def nonZero = terms.nonEmpty
-  lazy val variables = terms.flatMap(_._1.keySet).toSet
+  def nonZero = toMap.nonEmpty
+  lazy val variables = toMap.keySet.flatMap(_.keySet)
 
   def divideByCoefficientGCD(implicit euclideanDomain: EuclideanRing[A], ordering: Ordering[V]) = {
-    val gcd = euclideanDomain.gcd(terms.map(_._2): _*)
+    val gcd = euclideanDomain.gcd(toMap.values.toSeq:_*)
     if (gcd == euclideanDomain.one) {
       this
     } else {
-      MultivariablePolynomial(terms.map(p => p.copy(_2 = euclideanDomain.quotient(p._2, gcd))): _*)
+      MultivariablePolynomial(toMap.mapValues(v => euclideanDomain.quotient(v, gcd)))
     }
   }
 
   override lazy val toString = {
-    terms match {
-      case Nil => "0"
-      case _ => terms.map({
+    if(toMap.isEmpty) {
+      "0"
+    } else {
+      toSeq.map({
         case (m, a) => {
           val showCoefficient = m.isEmpty || a.toString != "1"
           val showMonomial = m.nonEmpty
@@ -39,15 +41,16 @@ trait MultivariablePolynomial[A, V] extends LinearCombo[A, Map[V, Int]] {
   }
   override def equals(other: Any) = {
     other match {
-      case other: MultivariablePolynomial[_, _] => hashCode == other.hashCode && terms == other.terms
+      case other: MultivariablePolynomial[_, _] => hashCode == other.hashCode && super.equals(other)
       case _ => false
     }
   }
-  override lazy val hashCode: Int = terms.hashCode + 13
+  override lazy val hashCode: Int = super.hashCode
 
 }
 
 object MultivariablePolynomial {
-  def apply[A: Ring, V: Ordering](terms: (Map[V, Int], A)*) = MultivariablePolynomialAlgebra.over.wrap(terms.toList)
-  def unapplySeq[A, V](p: MultivariablePolynomial[A, V]) = Some(p.terms)
+//  def apply[A: Ring, V: Ordering](terms: (Map[V, Int], A)*) = MultivariablePolynomialAlgebra.over.wrap(terms.toList)
+  def apply[A: Ring, V: Ordering](m: Map[Map[V, Int], A]) = MultivariablePolynomialAlgebra.over.wrap(m)
+//  def unapplySeq[A, V](p: MultivariablePolynomial[A, V]) = Some(p.terms)
 }

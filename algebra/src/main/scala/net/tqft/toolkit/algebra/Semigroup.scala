@@ -10,17 +10,21 @@ trait Semigroup[A] {
     // modified from https://github.com/dlwh/breeze/blob/master/math/src/main/scala/breeze/numerics/IntMath.scala
     // under http://www.apache.org/licenses/LICENSE-2.0
     require(k >= 1)
-    var b = x
-    var e = k
-    var result: Option[A] = None
-    while (e != 0) {
-      if ((e & 1) != 0) {
-        result = result.map(multiply(_, b)).orElse(Some(b))
+    if (k == 1) {
+      x
+    } else {
+      var b = x
+      var e = k
+      var result: Option[A] = None
+      while (e != 0) {
+        if ((e & 1) != 0) {
+          result = result.map(multiply(_, b)).orElse(Some(b))
+        }
+        e >>= 1
+        b = multiply(b, b)
       }
-      e >>= 1
-      b = multiply(b, b)
-    }
 
-    result.get
+      result.get
+    }
   }
 }

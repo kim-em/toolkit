@@ -13,11 +13,14 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
   // we try to find positive integer roots of the polynomials
 
   case class PolynomialProblem(equations: Seq[P], substitutions: Map[V, P]) {
-
+	equations.foreach(e => require((e.variables intersect substitutions.keySet).isEmpty, "Equation " + e + " contains already substituted variables!\n" + this))
+    
     def addSubstitution(v: V, k: Int): Option[PolynomialProblem] = {
       addSubstitution(v, polynomialAlgebra.constant(k))
     }
     def addSubstitution(v: V, p: P): Option[PolynomialProblem] = {
+      require(!p.variables.contains(v), "illegal addSubstitution(" + v + ", " + p + ")")
+      
       if (substitutions.keySet.contains(v)) {
         val updated = if (p.totalDegree.getOrElse(0) < substitutions(v).totalDegree.getOrElse(0)) {
           copy(substitutions = substitutions + (v -> p))
@@ -30,7 +33,7 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
         val newSubstitutions = substitutions.mapValues(q => polynomialAlgebra.substitute(Map(v -> p))(q))
         val (toReprocess, toKeep) = equations.partition(_.variables.contains(v))
 
-        PolynomialProblem(equations: Seq[P], newSubstitutions + (v -> p)).addEquations(toReprocess.map(polynomialAlgebra.substitute(Map(v -> p))))
+        PolynomialProblem(toKeep, newSubstitutions + (v -> p)).addEquations(toReprocess.map(polynomialAlgebra.substitute(Map(v -> p))))
       }
     }
     def addEquations(qs: TraversableOnce[P]): Option[PolynomialProblem] = {
@@ -40,8 +43,8 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
       val p = polynomialAlgebra.substitute(substitutions)(q).divideByCoefficientGCD
 
       def splitIfPositiveOrOtherwiseAdd: Option[PolynomialProblem] = {
-        if (p.terms.size > 1 && (p.terms.forall(_._2 > 0) || p.terms.forall(_._2 < 0))) {
-          addEquations(p.terms.map(t => polynomialAlgebra.monomial(t._1)))
+        if (p.toMap.size > 1 && (p.toMap.forall(_._2 > 0) || p.toMap.forall(_._2 < 0))) {
+          addEquations(p.toMap.iterator.map(t => polynomialAlgebra.monomial(t._1)))
         } else {
           add
         }
@@ -63,12 +66,12 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
           None
         }
         case Some(1) => {
-          if (p.terms.size == 1) {
-            val t = p.terms.head
+          if (p.toMap.size == 1) {
+            val t = p.toMap.head
             require(t._2 != 0)
             val v = t._1.keysIterator.next
             addSubstitution(v, 0)
-          } else if (p.terms.size == 2) {
+          } else if (p.toMap.size == 2) {
             if (p.constantTerm != 0) {
               // a+bV == 0
               val a = p.constantTerm
@@ -82,7 +85,7 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
               }
             } else {
               // a_1 v_1 + a_2 v_2 == 0
-              val List(t1, t2) = p.terms.toList
+              val Seq(t1, t2) = p.toSeq
               val a1 = t1._2
               val a2 = t2._2
               val v1 = t1._1.keysIterator.next
@@ -111,9 +114,9 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
           }
         }
         case Some(2) => {
-          p.terms.size match {
+          p.toMap.size match {
             case 1 => {
-              val h = p.terms(0)
+              val h = p.toMap.head
               // just one term
               require(h._2 != 0)
               val keys = h._1.keys.toSeq
@@ -125,7 +128,7 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
               }
             }
             case 2 => {
-              val List(t1, t2) = p.terms.toList.sortBy(_._1.values.sum)
+              val Seq(t1, t2) = p.toSeq.sortBy(_._1.values.sum)
               require(t1._1.values.sum <= t2._1.values.sum)
               if (t1._1.values.sum == 0) {
                 if (t2._1.keys.size == 1) {
@@ -180,7 +183,7 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
               }
             }
             case 3 => {
-              val List(t1, t2, t3) = p.terms.toList.sortBy(t => (t._1.values.sum, t._2))
+              val Seq(t1, t2, t3) = p.toSeq.sortBy(t => (t._1.values.sum, t._2))
               if (t1._1.values.sum == 0 && t2._1.values.sum == 2 && t3._1.values.sum == 2 && t2._1.keys.size == 1 && t3._1.keys.size == 1) {
                 val x = t2._1.keys.head
                 val y = t3._1.keys.head
@@ -213,10 +216,10 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
         addSubstitution(v, polynomialAlgebra.subtract(polynomialAlgebra.monomial(v), p))
       }
 
-      equations.find(p => p.totalDegree == Some(1) && p.termsOfDegree(1).exists(_._2 == 1) && p.terms.count(_._2 > 0) == 1) match {
+      equations.find(p => p.totalDegree == Some(1) && p.termsOfDegree(1).exists(_._2 == 1) && p.toMap.count(_._2 > 0) == 1) match {
         case Some(p) => solve(p)
         case None => {
-          equations.find(p => p.totalDegree == Some(1) && p.termsOfDegree(1).exists(_._2 == -1) && p.terms.count(_._2 < 0) == 1) match {
+          equations.find(p => p.totalDegree == Some(1) && p.termsOfDegree(1).exists(_._2 == -1) && p.toMap.count(_._2 < 0) == 1) match {
             case Some(p) => solve(polynomialAlgebra.negate(p))
             case None => Some(this)
           }
@@ -229,19 +232,27 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
     }
 
     def caseBashCompletely(variables: Seq[V], boundary: (V =>? Int) => Boolean): Iterator[Map[V, Int]] = {
-      caseBash(variables, boundary).map(p => p.substitutions.mapValues(_.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))
+      caseBashVariables(variables, boundary).map(p => p.substitutions.mapValues(_.ensuring(_.totalDegree.getOrElse(0) == 0).constantTerm))
     }
-    def caseBash(variables: Seq[V], boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
+    def caseBashEquations(boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
+      if (equations.isEmpty) {
+        Iterator(this)
+      } else {
+        caseBashOnce(equations.head.variables.head, boundary).flatMap(_.caseBashEquations(boundary))
+      }
+    }
+    def caseBashVariables(variables: Seq[V], boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
       variables.filterNot(substitutions.keySet) match {
         case v +: remainingVariables => {
-          caseBashOnce(v, boundary).flatMap(_.caseBash(remainingVariables, boundary))
+          caseBashOnce(v, boundary).flatMap(_.caseBashVariables(remainingVariables, boundary))
         }
         case _ => Iterator(this)
       }
     }
-    def caseBashOnce(v: V, boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
+    private def caseBashOnce(v: V, boundary: (V =>? Int) => Boolean): Iterator[PolynomialProblem] = {
+      // FIXME this has failed in the wild, having arrived from caseBashEquations.
       require(!substitutions.keySet(v))
-      
+
       def minimalSubstitution(k: Int) = {
         substitutions.mapValues(p => polynomialAlgebra.completelySubstituteConstants(Map(v -> k))(p)) ++ Map(v -> k)
       }
@@ -250,24 +261,24 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
     }
   }
 
-//  trait Boundary extends (Map[V, Int] => Boolean) {
-//    def addSubstitution(v: V, p: P): Boundary
-//  }
-//  object Boundary {
-//    implicit def lift(f: Map[V, Int] => Boolean): Boundary = {
-//      case class CachingBoundary(constantSubstitutions: Map[V, Int], polynomialSubstitutions: Map[V, P]) extends Boundary {
-//        def apply(m: Map[V, Int]) = {
-//          f(m ++ constantSubstitutions ++ polynomialSubstitutions.mapValues(polynomialAlgebra.completelySubstituteConstants(m)(_)))
-//        }
-//        override def addSubstitution(v: V, p: P): Boundary = {
-//          val (newConstants, newPolynomials) = (polynomialSubstitutions.mapValues(polynomialAlgebra.substitute(Map(v -> p))(_)) + ( v-> p)).partition(_._2.totalDegree.getOrElse(0) == 0)
-//          CachingBoundary(constantSubstitutions ++ newConstants.mapValues(_.constantTerm), newPolynomials)
-//        }
-//      }
-//      CachingBoundary(Map(), Map())
-//    }
-//  }
-  
+  //  trait Boundary extends (Map[V, Int] => Boolean) {
+  //    def addSubstitution(v: V, p: P): Boundary
+  //  }
+  //  object Boundary {
+  //    implicit def lift(f: Map[V, Int] => Boolean): Boundary = {
+  //      case class CachingBoundary(constantSubstitutions: Map[V, Int], polynomialSubstitutions: Map[V, P]) extends Boundary {
+  //        def apply(m: Map[V, Int]) = {
+  //          f(m ++ constantSubstitutions ++ polynomialSubstitutions.mapValues(polynomialAlgebra.completelySubstituteConstants(m)(_)))
+  //        }
+  //        override def addSubstitution(v: V, p: P): Boundary = {
+  //          val (newConstants, newPolynomials) = (polynomialSubstitutions.mapValues(polynomialAlgebra.substitute(Map(v -> p))(_)) + ( v-> p)).partition(_._2.totalDegree.getOrElse(0) == 0)
+  //          CachingBoundary(constantSubstitutions ++ newConstants.mapValues(_.constantTerm), newPolynomials)
+  //        }
+  //      }
+  //      CachingBoundary(Map(), Map())
+  //    }
+  //  }
+
   def solve(polynomials: TraversableOnce[MultivariablePolynomial[Int, V]]): Option[PolynomialProblem] = {
     PolynomialProblem(Seq.empty, Map.empty).addEquations(polynomials).flatMap(_.solveLinearEquations)
   }
