@@ -1,5 +1,7 @@
 package net.tqft.toolkit.collections
 
+import scala.collection.mutable.ListBuffer
+
 object Split {
 
   // TODO replace Iterable with a generic CC
@@ -38,14 +40,7 @@ object Split {
 
     def splitAfter(p: A => Boolean): Iterable[List[A]] = {
       new NonStrictIterable[List[A]] {
-        val i = x.iterator
-        def iterator: Iterator[List[A]] = new Iterator[List[A]] {
-          def hasNext = i.hasNext
-          def next = {
-            import TakeToFirst._
-            i.takeToFirst(p)
-          }
-        }
+        def iterator: Iterator[List[A]] = new SplittableIterator(x.iterator).splitAfter(p)
       }
     }
 
@@ -54,6 +49,32 @@ object Split {
 
   implicit def splittableIterator[A](x: Iterator[A]) = new SplittableIterator(x)
   class SplittableIterator[A](x: Iterator[A]) {
+    def splitBefore(p: A => Boolean): Iterator[List[A]] = {
+      new Iterator[List[A]] {
+        var box: Option[A] = None
+        def hasNext = box.nonEmpty || x.hasNext
+        def next = {
+          val lb = ListBuffer[A]()
+          for (b <- box) lb += b
+          box = None
+          if (!x.hasNext) {
+            lb.toList
+          } else {
+            box = Some(x.next)
+          }
+          while (box.nonEmpty && !p(box.get)) {
+            lb += box.get
+            if (x.hasNext) {
+              box = Some(x.next)
+            } else {
+              box = None
+            }
+          }
+          lb.toList
+        }
+      }
+    }
+
     def splitAfter(p: A => Boolean): Iterator[List[A]] = {
       new Iterator[List[A]] {
         def hasNext = x.hasNext

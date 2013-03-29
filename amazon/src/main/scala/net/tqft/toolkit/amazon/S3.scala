@@ -29,6 +29,7 @@ trait S3 {
   def source(bucket: String): S3Bucket[Source] = new S3BucketSource(s3Service, bucket)
   def sourceGZIP(bucket: String): S3Bucket[Source] = GZIPkeys(new S3BucketSourceGZIP(s3Service, bucket))
   def bytes(bucket: String): S3Bucket[Array[Byte]] = new S3BucketBytes(s3Service, bucket)
+  def bytesGZIP(bucket: String): S3Bucket[Array[Byte]] = new S3BucketBytesGZIP(s3Service, bucket)
 
   private def GZIPkeys[V](s3Bucket: S3Bucket[V]): S3Bucket[V] = {
     import MapTransformer._
@@ -51,6 +52,15 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
     case _ => false
   }
 
+  def putIfAbsent(key: String, value: A): Boolean = {
+    if(!contains(key)) {
+      put(key, value)
+      true
+    } else {
+      false
+    }
+  }
+  
   override def contains(key: String) = {
     try {
       s3Service.isObjectInBucket(bucket, key)
@@ -145,6 +155,7 @@ private class S3BucketSource(val s3Service: StorageService, val bucket: String) 
 private class S3BucketSourceGZIP(val s3Service: StorageService, val bucket: String) extends S3BucketSourceWrapper(new S3BucketStreamingGZIP(s3Service, bucket)) with S3Bucket[Source]
 
 private class S3BucketBytes(val s3Service: StorageService, val bucket: String) extends S3BucketBytesWrapper(new S3BucketStreaming(s3Service, bucket)) with S3Bucket[Array[Byte]]
+private class S3BucketBytesGZIP(val s3Service: StorageService, val bucket: String) extends S3BucketBytesWrapper(new S3BucketStreamingGZIP(s3Service, bucket)) with S3Bucket[Array[Byte]]
 
 private class S3BucketWrapper(map: scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]]) extends MapTransformer.ValueTransformer[String, Either[InputStream, Array[Byte]], String](
   map,
@@ -234,7 +245,6 @@ private class S3BucketStreamingGZIP(s3Service: StorageService, val bucket: Strin
   })
 
 private class S3BucketStreaming(val s3Service: StorageService, val bucket: String) extends S3Bucket[Either[InputStream, Array[Byte]]] {
-  val s3bucket = s3Service.getOrCreateBucket(bucket)
 
   override def get(key: String): Option[Left[InputStream, Array[Byte]]] = {
     try {
@@ -286,4 +296,10 @@ object S3 extends S3 {
       case _ => throw new IllegalArgumentException("Encountered a problem parsing " + accessPath)
     }
   }
+}
+
+object AnonymousS3 extends S3 {
+    override def AWSAccount = null
+    override def AWSSecretKey = null
+    override lazy val credentials = null
 }
