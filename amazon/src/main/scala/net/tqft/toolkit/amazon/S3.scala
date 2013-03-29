@@ -51,6 +51,67 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
     case _ => false
   }
 
+  override def contains(key: String) = {
+    try {
+      s3Service.isObjectInBucket(bucket, key)
+    } catch {
+      case e: Exception =>
+        Logging.error("exception while looking for an object in S3.", e)
+        false
+    }
+
+  }
+
+  def contentLength(key: String): Option[Long] = {
+    if (contains(key)) {
+      try {
+        Some(s3Service.getObject(bucket, key).getContentLength)
+      } catch {
+        case e: Exception =>
+          Logging.error("exception while checking ContentLength on an object in S3.", e)
+          None
+      }
+    } else {
+      None
+    }
+  }
+
+  override def keys: Iterable[String] = {
+    keysWithPrefix("")
+  }
+
+  override def size = {
+    //    s3Service.listObjects(bucket).length
+    keys.size
+  }
+
+  override def clear = {
+    for (so <- s3Service.listObjects(bucket).par) {
+      s3Service.deleteObject(bucket, so.getKey())
+    }
+  }
+
+  override def iterator: Iterator[(String, A)] = {
+    //    val keys = try {
+    //      s3Service.listObjects(bucket).iterator.map({ _.getKey() })
+    //    } catch {
+    //      case e: Exception =>
+    //        Logging.error("exception while listing objects in S3.", e)
+    //        Iterator.empty
+    //    }
+    keys.iterator.map({ k: String => (k, get(k).get) })
+  }
+
+  override def -=(key: String) = {
+    try {
+      s3Service.deleteObject(bucket, key)
+    } catch {
+      case e: Exception =>
+        Logging.error("exception while deleting an object from S3.", e)
+    }
+    this
+  }
+
   def keysWithPrefix(prefix: String, queryChunkSize: Int = 1000) = {
     val chunks = try {
       def initial = s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, null)
@@ -84,7 +145,6 @@ private class S3BucketSource(val s3Service: StorageService, val bucket: String) 
 private class S3BucketSourceGZIP(val s3Service: StorageService, val bucket: String) extends S3BucketSourceWrapper(new S3BucketStreamingGZIP(s3Service, bucket)) with S3Bucket[Source]
 
 private class S3BucketBytes(val s3Service: StorageService, val bucket: String) extends S3BucketBytesWrapper(new S3BucketStreaming(s3Service, bucket)) with S3Bucket[Array[Byte]]
-
 
 private class S3BucketWrapper(map: scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]]) extends MapTransformer.ValueTransformer[String, Either[InputStream, Array[Byte]], String](
   map,
@@ -128,7 +188,7 @@ private class S3BucketSourceWrapper(map: scala.collection.mutable.Map[String, Ei
     }
   })
 
-  private class S3BucketBytesWrapper(map: scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]]) extends MapTransformer.ValueTransformer[String, Either[InputStream, Array[Byte]], Array[Byte]](
+private class S3BucketBytesWrapper(map: scala.collection.mutable.Map[String, Either[InputStream, Array[Byte]]]) extends MapTransformer.ValueTransformer[String, Either[InputStream, Array[Byte]], Array[Byte]](
   map,
   { e: Either[InputStream, Array[Byte]] =>
     {
@@ -176,31 +236,6 @@ private class S3BucketStreamingGZIP(s3Service: StorageService, val bucket: Strin
 private class S3BucketStreaming(val s3Service: StorageService, val bucket: String) extends S3Bucket[Either[InputStream, Array[Byte]]] {
   val s3bucket = s3Service.getOrCreateBucket(bucket)
 
-  override def contains(key: String) = {
-    try {
-      s3Service.isObjectInBucket(bucket, key)
-    } catch {
-      case e: Exception =>
-        Logging.error("exception while looking for an object in S3.", e)
-        false
-    }
-
-  }
-
-  def contentLength(key: String): Option[Long] = {
-    if (contains(key)) {
-      try {
-        Some(s3Service.getObject(bucket, key).getContentLength)
-      } catch {
-        case e: Exception =>
-          Logging.error("exception while checking ContentLength on an object in S3.", e)
-          None
-      }
-    } else {
-      None
-    }
-  }
-
   override def get(key: String): Option[Left[InputStream, Array[Byte]]] = {
     try {
       if (s3Service.isObjectInBucket(bucket, key)) {
@@ -215,31 +250,6 @@ private class S3BucketStreaming(val s3Service: StorageService, val bucket: Strin
     }
   }
 
-  override def keys: Iterable[String] = {
-    keysWithPrefix("")
-  }
-
-  override def size = {
-    s3Service.listObjects(bucket).length
-  }
-
-  override def clear = {
-    for (so <- s3Service.listObjects(bucket).par) {
-      s3Service.deleteObject(bucket, so.getKey())
-    }
-  }
-
-  override def iterator: Iterator[(String, Left[InputStream, Array[Byte]])] = {
-    val keys = try {
-      (s3Service.listObjects(bucket) map { _.getKey() }).iterator
-    } catch {
-      case e: Exception =>
-        Logging.error("exception while listing objects in S3.", e)
-        Iterator.empty
-    }
-    keys map { k: String => (k, get(k).get) }
-  }
-
   override def +=(kv: (String, Either[InputStream, Array[Byte]])) = {
     kv match {
       case (key, Right(bytes)) => try {
@@ -252,14 +262,9 @@ private class S3BucketStreaming(val s3Service: StorageService, val bucket: Strin
     }
     this
   }
-  override def -=(key: String) = {
-    try {
-      s3Service.deleteObject(bucket, key)
-    } catch {
-      case e: Exception =>
-        Logging.error("exception while deleting an object from S3.", e)
-    }
-    this
+
+  override def iterator: Iterator[(String, Left[InputStream, Array[Byte]])] = {
+    keys.iterator.map({ k: String => (k, get(k).get) })
   }
 }
 
@@ -268,7 +273,7 @@ object S3 extends S3 {
   private val accounts = scala.io.Source.fromFile(accessPath).getLines.filter(!_.startsWith("#")).toStream.map(_.split(",").map(_.trim).toList)
   override lazy val AWSAccount = accounts(0)(0)
   override lazy val AWSSecretKey = accounts(0)(1)
-  
+
   def withAccount(accountName: String): S3 = {
     accounts.find(_.head == accountName) match {
       case None => throw new IllegalArgumentException("No AWS account named " + accountName + " found in " + accessPath)
@@ -279,6 +284,6 @@ object S3 extends S3 {
         }
       }
       case _ => throw new IllegalArgumentException("Encountered a problem parsing " + accessPath)
-    }    
+    }
   }
 }
