@@ -18,9 +18,9 @@ object Iterators {
       }
       a
     }
-    
+
     def headOption: Option[A] = {
-      if(iterator.hasNext) {
+      if (iterator.hasNext) {
         Some(iterator.next)
       } else {
         None
@@ -120,6 +120,31 @@ object Iterators {
         throw new NoSuchElementException
       }
 
+    }
+
+    def takeWhileThenConsume(p: A => Boolean): Iterator[A] = {
+      new Iterator[A] {
+        private var box: Option[A] = None
+        private def fillBox = {
+          if (box.isEmpty && iterator.hasNext) {
+            val a = iterator.next
+            if (p(a)) {
+              box = Some(a)
+            } else {
+              while (iterator.hasNext) iterator.next
+            }
+          }
+        }
+        def hasNext = {
+          fillBox
+          box.nonEmpty
+        }
+        def next = {
+          val result = box.get
+          box = None
+          result
+        }
+      }
     }
   }
 
