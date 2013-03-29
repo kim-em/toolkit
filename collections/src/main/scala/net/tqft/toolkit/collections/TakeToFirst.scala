@@ -13,5 +13,5 @@ object TakeToFirst {
       }
       lb.toList
     }
-  }
+  }  
 }
