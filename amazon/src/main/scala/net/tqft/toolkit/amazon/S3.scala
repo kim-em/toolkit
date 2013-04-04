@@ -89,6 +89,8 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
   override def keys: Iterable[String] = {
     keysWithPrefix("")
   }
+  
+  override def keysIterator: Iterator[String] = keys.iterator
 
   override def size = {
     //    s3Service.listObjects(bucket).length
@@ -124,14 +126,14 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
 
   def keysWithPrefix(prefix: String, queryChunkSize: Int = 1000) = {
     val chunks = try {
-      def initial = s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, null)
+      def initial = s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, null).getObjects().map(_.getKey)
       NonStrictIterable.iterateUntilNone(initial)({ chunk =>
         {
-          if (chunk.getObjects().size < queryChunkSize) {
+          if (chunk.length < queryChunkSize) {
             None
           } else {
             try {
-              Some(s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, chunk.getObjects().last.getKey()))
+              Some(s3Service.listObjectsChunked(bucket, prefix, null, queryChunkSize, chunk.last).getObjects().map(_.getKey))
             } catch {
               case e: Exception =>
                 Logging.error("Exception while listing objects in S3 bucket.", e)
@@ -145,7 +147,7 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
         Logging.error("Exception while listing objects in S3 bucket.", e)
         NonStrictIterable()
     }
-    chunks.map(_.getObjects().map(_.getKey)).flatten
+    chunks.flatMap({ x => x })
   }
 }
 
