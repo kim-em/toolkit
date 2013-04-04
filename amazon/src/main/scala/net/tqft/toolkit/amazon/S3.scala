@@ -92,6 +92,10 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
   
   override def keysIterator: Iterator[String] = keys.iterator
 
+  override def keysIterator: Iterator[String] = {
+    keys.iterator
+  }
+  
   override def size = {
     //    s3Service.listObjects(bucket).length
     keys.size
