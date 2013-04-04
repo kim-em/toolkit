@@ -53,14 +53,14 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
   }
 
   def putIfAbsent(key: String, value: A): Boolean = {
-    if(!contains(key)) {
+    if (!contains(key)) {
       put(key, value)
       true
     } else {
       false
     }
   }
-  
+
   override def contains(key: String) = {
     try {
       s3Service.isObjectInBucket(bucket, key)
@@ -89,17 +89,10 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
   override def keys: Iterable[String] = {
     keysWithPrefix("")
   }
-  
+
   override def keysIterator: Iterator[String] = keys.iterator
 
-  override def keysIterator: Iterator[String] = {
-    keys.iterator
-  }
-  
-  override def size = {
-    //    s3Service.listObjects(bucket).length
-    keys.size
-  }
+  override def size = keys.size
 
   override def clear = {
     for (so <- s3Service.listObjects(bucket).par) {
@@ -305,7 +298,7 @@ object S3 extends S3 {
 }
 
 object AnonymousS3 extends S3 {
-    override def AWSAccount = null
-    override def AWSSecretKey = null
-    override lazy val credentials = null
+  override def AWSAccount = null
+  override def AWSSecretKey = null
+  override lazy val credentials = null
 }
