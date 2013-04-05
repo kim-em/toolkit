@@ -75,7 +75,10 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
   def contentLength(key: String): Option[Long] = {
     if (contains(key)) {
       try {
-        Some(s3Service.getObject(bucket, key).getContentLength)
+        val obj = s3Service.getObject(bucket, key)
+        val length = obj.getContentLength
+        obj.closeDataInputStream()
+        Some(length)
       } catch {
         case e: Exception =>
           Logging.error("exception while checking ContentLength on an object in S3.", e)
@@ -101,13 +104,6 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
   }
 
   override def iterator: Iterator[(String, A)] = {
-    //    val keys = try {
-    //      s3Service.listObjects(bucket).iterator.map({ _.getKey() })
-    //    } catch {
-    //      case e: Exception =>
-    //        Logging.error("exception while listing objects in S3.", e)
-    //        Iterator.empty
-    //    }
     keys.iterator.map({ k: String => (k, get(k).get) })
   }
 
@@ -163,7 +159,7 @@ private class S3BucketWrapper(map: scala.collection.mutable.Map[String, Either[I
       e match {
         case Left(stream) => {
           try {
-            val result = Source.fromInputStream(stream).getLines.mkString("\n")
+            val result = Source.fromInputStream(stream)(scala.io.Codec.UTF8).getLines.mkString("\n")
             stream.close
             result
           } catch {
@@ -187,7 +183,10 @@ private class S3BucketSourceWrapper(map: scala.collection.mutable.Map[String, Ei
   { e: Either[InputStream, Array[Byte]] =>
     {
       e match {
-        case Left(stream) => Source.fromInputStream(stream)
+        case Left(stream) => {
+          // a bit scary --- hopefully someone will consume the entire source!
+          Source.fromInputStream(stream)
+        }
         case Right(_) => throw new UnsupportedOperationException
       }
     }
@@ -203,7 +202,11 @@ private class S3BucketBytesWrapper(map: scala.collection.mutable.Map[String, Eit
   { e: Either[InputStream, Array[Byte]] =>
     {
       e match {
-        case Left(stream) => IOUtils.toByteArray(stream);
+        case Left(stream) => {
+          val result = IOUtils.toByteArray(stream)
+          stream.close
+          result
+        }
         case Right(bytes) => bytes
       }
     }
@@ -272,9 +275,6 @@ private class S3BucketStreaming(val s3Service: StorageService, val bucket: Strin
     this
   }
 
-  override def iterator: Iterator[(String, Left[InputStream, Array[Byte]])] = {
-    keys.iterator.map({ k: String => (k, get(k).get) })
-  }
 }
 
 object S3 extends S3 {
