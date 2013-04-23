@@ -44,7 +44,7 @@ object NotTheSimplexAlgorithm extends LinearProgrammingHelper {
     field.negate(field.sum(solution filter { x => field.compare(x, field.zero) < 0 }))
   }
 
-  def apply[B:OrderedField](m: Matrix[B], c: List[B]) = {
+  def apply[B:OrderedField](m: Matrix[B], c: List[B]): (List[Int], B, Seq[B]) = {
 
     val simplex0 = m.findBasisForColumnSpace()
 

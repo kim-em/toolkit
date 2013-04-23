@@ -14,7 +14,7 @@ trait ApproximateReals[A] extends ApproximateField[A] {
   def fromDouble(x: Double): A
   def fromBigDecimal(x: BigDecimal): A
   def setPrecision(x: A): A
-  def bigDecimalValue(x: A): BigDecimal
+  def bigDecimalValue(x: A): BigDecimal  
 }
 
 object ApproximateReals {
