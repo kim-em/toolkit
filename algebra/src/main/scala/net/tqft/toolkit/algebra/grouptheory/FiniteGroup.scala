@@ -47,6 +47,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
   trait Action[B] {
     def act(a: A, b: B): B
+    def orbit(b: B): Set[B] = ???
   }
 
   private trait Subgroup extends FiniteGroup[A] {

@@ -24,12 +24,32 @@ trait S3 {
   lazy val credentials = new AWSCredentials(AWSAccount, AWSSecretKey)
   lazy val s3Service: StorageService = new RestS3Service(credentials)
 
-  def apply(bucket: String): S3Bucket[String] = new S3BucketPlain(s3Service, bucket)
-  def GZIP(bucket: String): S3Bucket[String] = GZIPkeys(new S3BucketGZIP(s3Service, bucket))
-  def source(bucket: String): S3Bucket[Source] = new S3BucketSource(s3Service, bucket)
-  def sourceGZIP(bucket: String): S3Bucket[Source] = GZIPkeys(new S3BucketSourceGZIP(s3Service, bucket))
-  def bytes(bucket: String): S3Bucket[Array[Byte]] = new S3BucketBytes(s3Service, bucket)
-  def bytesGZIP(bucket: String): S3Bucket[Array[Byte]] = new S3BucketBytesGZIP(s3Service, bucket)
+  def getOrCreateBucket(bucket: String) { s3Service.getOrCreateBucket(bucket) }
+  
+  def apply(bucket: String): S3Bucket[String] = {
+    getOrCreateBucket(bucket)
+    new S3BucketPlain(s3Service, bucket)
+  }
+  def GZIP(bucket: String): S3Bucket[String] = {
+    getOrCreateBucket(bucket)
+    GZIPkeys(new S3BucketGZIP(s3Service, bucket))
+  }
+  def source(bucket: String): S3Bucket[Source] = {
+    getOrCreateBucket(bucket)
+    new S3BucketSource(s3Service, bucket)
+  }
+  def sourceGZIP(bucket: String): S3Bucket[Source] = {
+    getOrCreateBucket(bucket)
+    GZIPkeys(new S3BucketSourceGZIP(s3Service, bucket))
+  }
+  def bytes(bucket: String): S3Bucket[Array[Byte]] = {
+    getOrCreateBucket(bucket)
+    new S3BucketBytes(s3Service, bucket)
+  }
+  def bytesGZIP(bucket: String): S3Bucket[Array[Byte]] = {
+    getOrCreateBucket(bucket)
+    new S3BucketBytesGZIP(s3Service, bucket)
+  }
 
   private def GZIPkeys[V](s3Bucket: S3Bucket[V]): S3Bucket[V] = {
     import MapTransformer._
@@ -301,4 +321,5 @@ object AnonymousS3 extends S3 {
   override def AWSAccount = null
   override def AWSSecretKey = null
   override lazy val credentials = null
+  override def getOrCreateBucket(bucket: String) { }
 }

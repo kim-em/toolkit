@@ -8,10 +8,22 @@ trait OrderedEuclideanRing[A] extends EuclideanRing[A] with Ordering[A] {
       case s if s < 0 => negate(x)
     }
   }
+  def nonnegative_?(x: A) = compare(x, zero) >= 0
+  def positive_?(x: A) = compare(x, zero) > 0
 
   override def gcd(x: A, y: A) = {
     val gcd = super.gcd(x, y)
     multiplyByInt(gcd, signum(gcd) * signum(y))
+  }
+  
+  def log(x: A, b: Int) = {
+    var k = -1;
+    var p = one
+    while(compare(x, p) > 0) {
+      p = multiplyByInt(p, b)
+      k += 1
+    }
+    k
   }
 }
 

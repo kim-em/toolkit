@@ -29,6 +29,25 @@ trait FiniteDimensionalFreeModule[A] extends FiniteDimensionalFreeModuleOverRig[
   override def negate(x: Seq[A]) = x.map(coefficients.negate)
 }
 
+trait VectorSpace[F, V] extends Module[F, V] {
+  def rank: Int
+  def coefficients: Field[F]
+}
+
+trait FiniteDimensionalVectorSpace[A] extends FiniteDimensionalFreeModule[A] {
+  override def coefficients: Field[A]
+}
+
+object FiniteDimensionalVectorSpace {
+  def ofDimension[F:Field](dimension: Int) = {
+    new VectorSpace[F, Seq[F]] with FiniteDimensionalFreeModule[F] {
+      override def coefficients = implicitly[Field[F]]
+      override def rank = dimension
+    }
+  }
+}
+
+
 // Usually A = Int, for a concrete fusion ring. We allow other possibilities so we can write fusion solvers, etc.
 trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A]] { fr =>
 

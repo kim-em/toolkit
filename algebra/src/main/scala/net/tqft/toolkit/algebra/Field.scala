@@ -13,8 +13,8 @@ trait DivisionRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRi
 }
 
 // there's not much to say here; the only additional requirement to be a field is commutativity, but the type system doesn't see that.
-trait Field[@specialized(Int, Long, Float, Double) A] extends DivisionRing[A] with Algebra[A, A] {
-  override def scalarMultiply(a1: A, a2: A) = multiply(a1, a2)
+trait Field[@specialized(Int, Long, Float, Double) A] extends DivisionRing[A] /*with Algebra[A, A]*/ {
+//  def scalarMultiply(a1: A, a2: A) = multiply(a1, a2)
 }
 
 object Field {
