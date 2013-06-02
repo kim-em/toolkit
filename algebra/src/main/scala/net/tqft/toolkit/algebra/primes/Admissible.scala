@@ -4,20 +4,26 @@ import scala.collection.mutable.ListBuffer
 import scala.io.Source
 import java.util.Date
 
+import scala.collection.mutable
+
+
 object Admissible {
   val k0 = 3500000
   val k1 = 2947442
   val k2 = 2618607
+  val k3 = 866805
   val m0 = 250150
+  val m3 = 69000
 
-  val primes = Source.fromFile("/Users/scott/scratch/primes/primes.m").getLines.map(_.toInt).toVector
+  val primes = Source.fromFile("/Users/scott/scratch/primes/primes.m").getLines.map(_.toInt).toArray
+  val primesView = primes.view
   require(primes(k0 + m0 - 1) == 63374611)
   println("Finished loading primes...")
 
   var lastFailure = 2
 
-  def apply(set: IndexedSeq[Int]): Boolean = {
-    var counter = m0
+  def apply(set: Iterable[Int]): Boolean = {
+    var counter = m3
 
     var result = true
 
@@ -25,18 +31,19 @@ object Admissible {
       result && (if (apply(set, p)) true else { lastFailure = p; result = false; false })
     }
 
-    val chunks = Seq(Seq(lastFailure), primes.take(m0).filter(_ > lastFailure).take(1000), primes.take(m0).filter(_ > lastFailure).drop(1000), primes.take(m0).filter(_ < lastFailure))
-    
-    chunks.forall({ chunk => chunk.par.forall({ p =>
-      counter -= 1
-      if (counter % 1000 == 0) println(counter + " steps remaining; considering p=" + p)
-      check(p)
-    })})
-        
+    val chunks = Seq(Seq(lastFailure), primesView.take(m3).filter(_ > lastFailure).take(1000), primesView.take(m3).filter(_ > lastFailure).drop(1000), primesView.take(m3).filter(_ < lastFailure))
+
+    chunks.forall({ chunk =>
+      chunk.par.forall({ p =>
+        counter -= 1
+        if (counter % 1000 == 0) println(counter + " steps remaining; considering p=" + p)
+        check(p)
+      })
+    })
 
   }
 
-  def apply(set: IndexedSeq[Int], p: Int): Boolean = {
+  def apply(set: Iterable[Int], p: Int): Boolean = {
     val bs = new scala.collection.mutable.BitSet(p)
     import net.tqft.toolkit.arithmetic.Mod._
     set.foreach(t => bs += t mod p)
@@ -48,12 +55,14 @@ object Admissible {
   }
 
   def check(m: Int): Boolean = {
-    apply(primes.drop(m).take(k2))
+    apply(primes.drop(m).take(k3))
   }
 
   def check2(m: Int): Boolean = {
-    val h0 = 1 +: primes.drop(m).take((k2+1) / 2 - 1)
-    apply(h0 ++ h0.map(-_))
+    val h0 = primesView.drop(m).take((k3 + 1) / 2 - 1)
+    val h1 = primesView.drop(m).take((k3) / 2 - 1).map(-_)
+    val h2 = Seq(1, -1).view
+    apply(h0 ++ h1 ++ h2)
   }
 }
 
@@ -62,12 +71,11 @@ object AdmissibleApp extends App {
   // 36716 is the first that works for check2 with k_0
 
   // 30798 is the first that works for check2 with k_1
-  
+
   Admissible.lastFailure = 2
-  println((25000 to Admissible.m0).find({ m =>
+  println((10000 to Admissible.m0).find({ m =>
     println(new Date() + " trying m=" + m)
     Admissible.check2(m)
   }))
 
-  
 }
