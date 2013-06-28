@@ -9,8 +9,8 @@ trait CyclotomicNumberField[A] extends NumberField[A] with ComplexConjugation[Po
   val order: Int
   override lazy val generator = Polynomial.cyclotomic(order)(coefficients) // has to be lazy so coefficentField is available
 
-  override val galoisGroup = ???
-  override val galoisGroupAction = ???
+  override lazy val galoisGroup = ???
+  override lazy val galoisGroupAction = ???
 
   private def zeta = Polynomial.identity(coefficients)
   private val zetaInversePowers = {
