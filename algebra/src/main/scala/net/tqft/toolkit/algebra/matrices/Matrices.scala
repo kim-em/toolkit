@@ -43,11 +43,11 @@ object Matrices extends net.tqft.toolkit.Logging {
     val transformedBucket = bucket.transformKeys(readMatrix _, writeMatrix _).transformValues(readMatrices _, writeMatrices _)
 
     import net.tqft.toolkit.functions.Memo._
-    (positiveSymmetricDecompositions _).memoUsing(transformedBucket)
+    ({ x: Matrix[Int] => positiveSymmetricDecompositions(x).toSeq }).memoUsing(transformedBucket)
   }
 
   // return all ways to write M=AA^t, up to permuting the columns of A
-  def positiveSymmetricDecompositions(M: Matrix[Int]): Seq[Matrix[Int]] = {
+  def positiveSymmetricDecompositions(M: Matrix[Int]): Iterator[Matrix[Int]] = {
     info("finding positiveSymmetricDecompositions of " + M.entries)
 
     require(M.numberOfColumns == M.numberOfRows)
@@ -57,59 +57,74 @@ object Matrices extends net.tqft.toolkit.Logging {
       Permutations.mapping(A.transpose.entries.seq, B.transpose.entries.seq).nonEmpty
     }
 
-    def partialDecompositions(m: Int): Seq[Matrix[Int]] = {
-      def newRows(d: Seq[(Int, Int)], P: Matrix[Int]): Seq[Seq[Int]] = {
+    def partialDecompositions(m: Int): Iterator[Matrix[Int]] = {
+      def newRows(d: Seq[(Int, Int)], P: Matrix[Int]): Iterator[Seq[Int]] = {
         //        println("investigating new rows for " + d + " " + P.entries)
 
-        def candidates(j: Int, remaining: Seq[Int], gaps: Seq[Int]): Seq[Seq[Int]] = {
-          //          println(List.fill(m-j)(" ").mkString("") + "running candidates(j = " + j + ", remaining = " + remaining + ", gaps = " + gaps + ")")
-          require(gaps.size == m - 1)
+        // TODO (minor) don't need to recompute these all the time
+        val columnHashes = for(i <- 0 until P.numberOfColumns) yield P.takeColumn(i).hashCode
+        val rowLengths = P.entries.map(row => row.length - row.reverse.takeWhile(_ == 0).length)
 
-          j match {
-            case 0 => {
-              if (gaps.forall(_ == 0)) {
-                Seq(Seq.empty)
-              } else {
-                Seq.empty
+        case class PartialRow(j: Int /* == entries.size */ , reversedEntries: List[Int], gaps: Seq[Int], remaining: Map[Int, Int]) {
+          //          println("entries: " + entries)
+          //          println("gaps: " + gaps)
+          //          println("remaining: " + remaining)
+          def children: Iterator[PartialRow] = {
+            for (
+              next <- remaining.keysIterator;
+              if ((m > 0 || next > 0) && (j == 0 || columnHashes(j) != columnHashes(j - 1) || next <= reversedEntries.head));
+              newGaps = for (l <- 0 until m - 1) yield gaps(l) - next * P.entries(l)(j);
+              // earlier rows end with lots of zeroes; once we reach the zeroes we should be checking that the gap is zero!
+              if (for (l <- (0 until m - 1).iterator) yield if(rowLengths(l) == j + 1) { newGaps(l) == 0 }  else { newGaps(l) >= 0}).forall(_ == true);
+              newRemaining = {
+                if (next > 0) {
+                  if (remaining(next) > 1) {
+                    remaining + (next -> (remaining(next) - 1))
+                  } else {
+                    remaining - next
+                  }
+                } else {
+                  remaining
+                }
               }
+            ) yield {
+              PartialRow(j + 1, next :: reversedEntries, newGaps, newRemaining)
             }
-            case j => {
-              for (
-                next <- (0 +: remaining.distinct);
-                newGaps = {
-                  for (l <- 0 until m - 1) yield gaps(l) - next * P.entries(l)(j - 1)
-                };
-                if (newGaps.forall(_ >= 0));
-                newRemaining = {
-                  import net.tqft.toolkit.collections.DeleteOne._;
-                  remaining.deleteAtMostOne(next)
-                };
-                c <- candidates(j - 1, newRemaining, newGaps)
-              ) yield c :+ next
+          }
+          def completions: Iterator[Seq[Int]] = {
+            if (j == P.numberOfColumns) {
+              // time to finish up
+              if (gaps.forall(_ == 0)) {
+                // TODO cleanup
+                val r = reversedEntries.reverse ++ remaining.toSeq.filterNot(_._1 == 0).sortBy(_._1).flatMap(p => Seq.fill(p._2)(p._1))
+                //                println("finishing up: " + r)
+                Iterator(r)
+              } else {
+                //                println("gaps remained at the end: " + gaps)
+                Iterator.empty
+              }
+            } else {
+              children.flatMap(_.completions)
             }
           }
         }
 
-        val d_expanded = d.flatMap(p => Seq.fill(p._2)(p._1))
-        for (candidate <- candidates(P.numberOfColumns, d_expanded, M.entries(m - 1).take(m - 1))) yield {
-          //          println(candidate)
-          candidate ++ (d_expanded diff candidate)
-        }
+        PartialRow(0, Nil, M.entries(m - 1).take(m - 1), d.filterNot(_._2 == 0).toMap + (0 -> 1)).completions
       }
 
       m match {
-        case 0 => Seq(Matrix[Int](0, Seq.empty))
+        case 0 => Iterator(Matrix[Int](0, Seq.empty))
         case m => {
           import net.tqft.toolkit.collections.RemoveDuplicates._
           (for (
             P <- partialDecompositions(m - 1);
-            d <- Integers.sumOfSquaresDecomposition(M.entries(m - 1)(m - 1));
+            d <- Integers.sumOfSquaresDecomposition(M.entries(m - 1)(m - 1)).iterator;
             v <- newRows(d, P)
           ) yield {
             val extraColumns = v.size - P.numberOfColumns;
             val zeroBlock = Matrix(extraColumns, Seq.fill(P.numberOfRows)(Seq.fill(extraColumns)(0)));
             P.joinRows(zeroBlock).appendRow(v)
-          }).removeDuplicates(columnPermutation _)
+          }) //.removeDuplicates(columnPermutation _)
         }
       }
     }
@@ -119,13 +134,11 @@ object Matrices extends net.tqft.toolkit.Logging {
     // we need to filter the results; if M wasn't positive definite there are spurious answers.
     val result = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
 
-    info("... finished, " + result.size + " decompositions")
-
-    if (result.nonEmpty && !M.mapEntries(Conversions.integersAsDoubles).positiveSemidefinite_?) {
-      println("positiveSemidefinite_? seems to fail on:")
-      println(M)
-      throw new IllegalArgumentException("positiveSemidefinite_? failed on " + M)
-    }
+    //    if (result.nonEmpty && !M.mapEntries(Conversions.integersAsDoubles).positiveSemidefinite_?) {
+    //      println("positiveSemidefinite_? seems to fail on:")
+    //      println(M)
+    //      throw new IllegalArgumentException("positiveSemidefinite_? failed on " + M)
+    //    }
 
     result
 
@@ -167,7 +180,7 @@ class MatrixCategoryOverRig[R: Rig] extends NLinearCategory[Int, Matrix[R]] {
   //  override def endomorphismRing(o: Int) = ???
 }
 
-class MatrixCategoryOverRing[R: Ring] extends MatrixCategoryOverRig[R] with TensorCategory[Int, Matrix[R], R]{
+class MatrixCategoryOverRing[R: Ring] extends MatrixCategoryOverRig[R] with TensorCategory[Int, Matrix[R], R] {
   override val ring = implicitly[Ring[R]]
   override def negate(m: Matrix[R]) = Matrix.tabulate(m.numberOfRows, m.numberOfColumns)({ (i, j) =>
     ring.negate(m.entries(i)(j))
@@ -175,7 +188,7 @@ class MatrixCategoryOverRing[R: Ring] extends MatrixCategoryOverRig[R] with Tens
 
   // there's no particular reasons these couldn't be higher up;
   // TODO cleanup the hierarchy, and allow tensor categories without negatives!
-    override def scalarMultiply(a: R, m: Matrix[R]) = Matrix.tabulate(m.numberOfRows, m.numberOfColumns)({ (i, j) =>
+  override def scalarMultiply(a: R, m: Matrix[R]) = Matrix.tabulate(m.numberOfRows, m.numberOfColumns)({ (i, j) =>
     ring.multiply(a, m.entries(i)(j))
   })
   override def tensorObjects(o1: Int, o2: Int) = o1 * o2
