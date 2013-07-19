@@ -43,17 +43,17 @@ object Permutations {
 
   // TODO we only use this for relatively short lists; otherwise it should be tail-recursive
   def findOneMappingWithSameTest[A](list1: GenSeq[A], list2: GenSeq[A])(implicit sameTest: (A, A) => Boolean): Option[Permutation] = {
-    list2 match {
-      case list2Head :: list2Tail =>
-        list1.indexWhere(sameTest(_, list2Head)) match {
+    if(list2.isEmpty) {
+      if(list1.isEmpty) {
+        Some(IndexedSeq())
+      } else {
+        None
+      }
+    } else {
+        list1.indexWhere(sameTest(_, list2.head)) match {
           case -1 => None
-          case k => findOneMappingWithSameTest(list1.take(k) ++ list1.drop(k + 1), list2Tail) map { p => k +: (p map { x => if (x >= k) x + 1 else x }) }
-        }
-      case Nil =>
-        list1 match {
-          case Nil => Some(IndexedSeq())
-          case _ => None
-        }
+          case k => findOneMappingWithSameTest(list1.take(k) ++ list1.drop(k + 1), list2.tail) map { p => k +: (p map { x => if (x >= k) x + 1 else x }) }
+        }      
     }
   }
 
