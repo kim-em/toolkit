@@ -12,6 +12,10 @@ object Matrix extends net.tqft.toolkit.Logging {
     require(entries.nonEmpty)
     apply(entries.head.size, entries)
   }
+  def fromArray[B](entries: Array[Array[B]]): Matrix[B] = {
+    require(entries.nonEmpty)
+    apply(entries(0).length, entries.map(_.toSeq).toSeq)
+  }
 
   // FIXME deprecate this in favour of the pivotPosition defined on CategoricalMatrix
   private def pivotPosition2[B](row: Seq[B])(implicit field: Field[B]): Option[Int] = row.indexWhere { b: B => b != field.zero } match {
