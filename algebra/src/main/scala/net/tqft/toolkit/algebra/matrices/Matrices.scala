@@ -45,7 +45,7 @@ object Matrices extends net.tqft.toolkit.Logging {
     import net.tqft.toolkit.functions.Memo._
     ({ x: Matrix[Int] => positiveSymmetricDecompositions(x).toSeq }).memoUsing(transformedBucket)
   }
-
+  
   // return all ways to write M=AA^t, up to permuting the columns of A
   def positiveSymmetricDecompositions(M: Matrix[Int]): Iterator[Matrix[Int]] = {
     info("finding positiveSymmetricDecompositions of " + M.entries)
@@ -131,17 +131,19 @@ object Matrices extends net.tqft.toolkit.Logging {
 
     val integerMatrices = new MatrixCategoryOverRing[Int]
 
-    // we need to filter the results; if M wasn't positive definite there are spurious answers.
-    val result = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
+//    // we need to filter the results; if M wasn't positive definite there are spurious answers.
+//    val result = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
+//
+//    //    if (result.nonEmpty && !M.mapEntries(Conversions.integersAsDoubles).positiveSemidefinite_?) {
+//    //      println("positiveSemidefinite_? seems to fail on:")
+//    //      println(M)
+//    //      throw new IllegalArgumentException("positiveSemidefinite_? failed on " + M)
+//    //    }
+//
+//    result
 
-    //    if (result.nonEmpty && !M.mapEntries(Conversions.integersAsDoubles).positiveSemidefinite_?) {
-    //      println("positiveSemidefinite_? seems to fail on:")
-    //      println(M)
-    //      throw new IllegalArgumentException("positiveSemidefinite_? failed on " + M)
-    //    }
-
-    result
-
+    
+    PositiveSymmetricDecomposition(M.entries.toArray.map(_.toArray)).decompositions.map(Matrix.fromArray)
   }
 }
 
