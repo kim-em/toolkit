@@ -53,13 +53,20 @@ List(10, 11, 10, 41, 43, 43, 41, 40, 53, 64, 96, 93, 92, 108, 139)
 )
     
   def M(k: Int) = Matrix(k, M4.take(k).map(_.take(k)))
-  def Ma(k: Int) = M_AH.take(k).map(_.take(k).toArray).toArray
+  def Ma(k: Int) = M4.take(k).map(_.take(k).toArray).toArray
 
 //  for(t <- Profiler.movingTimingAverages(3)(Matrices.positiveSymmetricDecompositions(M(6)).size)) {
 //    println(t)
 //  }
 //  for(k <- 1 to 10) { println(PositiveSymmetricDecomposition(Ma(k)).decompositions.size) }
-  for(t <- PositiveSymmetricDecomposition(Ma(15)).runtimeEstimators) println(t)
+//  for(t <- PositiveSymmetricDecomposition(Ma(15)).runtimeEstimators) println(t)
+//  for(t <- PositiveSymmetricDecomposition(Ma(14)).numberOfDescendantsEstimators) println(t)
+//  for(p <- Iterator.continually(PositiveSymmetricDecomposition(Ma(14)).randomPartialSolution)) println(p.length)
+  
+  for(p <- Iterator.continually(PositiveSymmetricDecomposition(Ma(14)).randomPartialSolution); if p.length == 14) {
+    println
+    for(r <- p) println(r.toList)
+  }
 //  for(k <- 1 to 14; t <- PositiveSymmetricDecomposition(Ma(k)).runtimeEstimators.take(50)) println(k + " " + t)
-//  for(m <- Matrices.positiveSymmetricDecompositions(M(10))) { println(m) }
+  for(m <- PositiveSymmetricDecomposition(Ma(14)).decompositions) { println(m) }
 }
