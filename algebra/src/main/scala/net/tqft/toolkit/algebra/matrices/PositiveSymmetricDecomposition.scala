@@ -30,7 +30,10 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
   }
 
   def runtimeEstimators = PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).runtimeEstimators
-
+  def numberOfDescendantsEstimators: Iterator[Long] = PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).numberOfDescendantsEstimators
+  def randomPartialSolution = 
+    PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).randomLineage.toSeq.last._1.P.reverse.toArray
+  
   def decompositions: Iterator[Array[Array[Int]]] = {
     PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).completions.filter({ A =>
       //      println("verifying: " + A.toList.map(_.toList))
@@ -140,10 +143,10 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
         case _ => None
       })
     }
-    def numberOfDescendantsEstimators: Iterator[Int] = {
+    def numberOfDescendantsEstimators: Iterator[Long] = {
       def estimate = randomLineage.map(_._2.size).filterNot(_ == 0).product
       def estimates = Iterator.continually(estimate)
-      def partialSums = estimates.scanLeft(0)(_ + _)
+      def partialSums = estimates.scanLeft(0L)(_ + _)
       def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
       averages
     }
