@@ -31,9 +31,11 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
 
   def runtimeEstimators = PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).runtimeEstimators
   def numberOfDescendantsEstimators: Iterator[Long] = PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).numberOfDescendantsEstimators
-  def randomPartialSolution = 
+  def randomPartialSolution =
     PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).randomLineage.toSeq.last._1.P.reverse.toArray
-  
+
+  def randomDecomposition = Iterator.continually(randomPartialSolution).filter(_.length == m.length).next
+
   def decompositions: Iterator[Array[Array[Int]]] = {
     PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).completions.filter({ A =>
       //      println("verifying: " + A.toList.map(_.toList))
@@ -54,21 +56,38 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
         //        println(this)
         def children: Iterator[PartialRow] = {
           val column = P.map(_(size))
-          val ratios = column.zip(innerProductGaps).collect({ case (c, g) if c != 0 => g / c })
 
           val lower = {
             // (g - x * c) <= sqrt(normGap * rowTailNorm)
             // x >= 1/c (g - sqrt(normGap * rowTailNorm)
 
-            (0 :: innerProductGaps.zip(column).zip(rowTailNorms.map(_(size))).collect({
-              case ((g, c), r) if c != 0 => {
+            var lower0 = 0
+            val gapIter = innerProductGaps.iterator
+            val columnIter = column.iterator
+            val normIter = rowTailNorms.iterator
+            while (gapIter.hasNext) {
+              val g = gapIter.next
+              val c = columnIter.next
+              if (c != 0) {
+                val r = (normIter.next).apply(size)
                 val n = g - sqrtCeil(normGap * r)
-                n / c + (if (n % c == 0) 0 else 1)
+                val d = n / c + (if (n % c == 0) 0 else 1)
+                if(d > lower0) {
+                  lower0 = d
+                }
               }
-            })).max
+            }
+
+            lower0
           }
           val upper = {
-            val upper0 = (sqrtFloor(normGap) :: ratios).min
+
+            var upper0 = sqrtFloor(normGap)
+
+            {
+              val iter = innerProductGaps.iterator
+              for (c <- column; g = iter.next; if c != 0; r = g / c; if r < upper0) upper0 = r
+            }
 
             // but now, checking if we're in the same column group, and if so ensure we don't increase.
             if (size > 0 && columnHashes(size) == columnHashes(size - 1)) {
@@ -151,9 +170,9 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
       averages
     }
     def runtimeEstimators: Iterator[Long] = {
-      def estimate = randomLineage.foldLeft((1, 0L))({ (a, b) => (a._1 * b._2.size, a._2 + a._1 * b._3/1000) })._2
+      def estimate = randomLineage.foldLeft((1, 0L))({ (a, b) => (a._1 * b._2.size, a._2 + a._1 * b._3 / 1000) })._2
       def estimates = Iterator.continually(estimate)
-      def partialSums = estimates.scanLeft(0L)(_ + _/86400)
+      def partialSums = estimates.scanLeft(0L)(_ + _ / 86400)
       def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
       averages
     }
