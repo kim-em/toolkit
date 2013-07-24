@@ -72,7 +72,7 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
                 val r = (normIter.next).apply(size)
                 val n = g - sqrtCeil(normGap * r)
                 val d = n / c + (if (n % c == 0) 0 else 1)
-                if(d > lower0) {
+                if (d > lower0) {
                   lower0 = d
                 }
               }
@@ -164,6 +164,21 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
     }
     def numberOfDescendantsEstimators: Iterator[Long] = {
       def estimate = randomLineage.map(_._2.size).filterNot(_ == 0).product
+      def estimates = Iterator.continually(estimate)
+      def partialSums = estimates.scanLeft(0L)(_ + _)
+      def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
+      averages
+    }
+    // this might be completely bogus:
+    def numberOfDecompositionsEstimators: Iterator[Long] = {
+      def estimate = {
+        val l = randomLineage.toStream
+        if (l.last._1.rows == m.length) {
+          l.map(_._2.size).filterNot(_ == 0).product
+        } else {
+          0
+        }
+      }
       def estimates = Iterator.continually(estimate)
       def partialSums = estimates.scanLeft(0L)(_ + _)
       def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
