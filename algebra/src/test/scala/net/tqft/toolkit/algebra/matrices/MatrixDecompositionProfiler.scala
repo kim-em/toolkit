@@ -33,6 +33,15 @@ List(6, 6, 4, 3, 9, 14, 14, 14, 13, 20)
     List(13, 11, 48, 48, 45, 43, 93, 95, 116, 162, 162, 181, 183, 210),
     List(15, 16, 60, 60, 51, 52, 111, 110, 138, 199, 199, 211, 210, 259))
 
+    val M4red = Array(
+ Array(6, 6, 3, 5, 9, 13),
+ Array(6, 8, 3, 5, 8, 13),
+ Array(3, 3, 15, 11, 30, 48),
+ Array(5, 5, 11, 17, 29, 45),
+ Array(9, 8, 30, 29, 79, 115),
+ Array(13, 13, 48, 45, 115, 181))
+
+    
 // a day or two?
 val M_AH = Seq(
 List(5, 2, 1, 5, 3, 3, 5, 4, 8, 6, 7, 8, 7, 10, 10), 
@@ -59,14 +68,14 @@ List(10, 11, 10, 41, 43, 43, 41, 40, 53, 64, 96, 93, 92, 108, 139)
 //    println(t)
 //  }
 //  for(k <- 1 to 10) { println(PositiveSymmetricDecomposition(Ma(k)).decompositions.size) }
-//  for(t <- PositiveSymmetricDecomposition(Ma(15)).runtimeEstimators) println(t)
+  for(t <- PositiveSymmetricDecomposition(M4red).runtimeEstimators) println(t)
 //  for(t <- PositiveSymmetricDecomposition(Ma(14)).numberOfDescendantsEstimators) println(t)
 //  for(p <- Iterator.continually(PositiveSymmetricDecomposition(Ma(14)).randomPartialSolution)) println(p.length)
   
-  for(p <- Iterator.continually(PositiveSymmetricDecomposition(Ma(14)).randomPartialSolution); if p.length == 14) {
-    println
-    for(r <- p) println(r.toList)
-  }
+//  for(p <- Iterator.continually(PositiveSymmetricDecomposition(Ma(14)).randomPartialSolution); if p.length == 14) {
+//    println
+//    for(r <- p) println(r.toList)
+//  }
 //  for(k <- 1 to 14; t <- PositiveSymmetricDecomposition(Ma(k)).runtimeEstimators.take(50)) println(k + " " + t)
   for(m <- PositiveSymmetricDecomposition(Ma(14)).decompositions) { println(m) }
 }
