@@ -31,6 +31,7 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
 
   def runtimeEstimators = PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).runtimeEstimators
   def numberOfDescendantsEstimators: Iterator[Long] = PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).numberOfDescendantsEstimators
+  def numberOfDecompositionsEstimators: Iterator[Long] = PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).numberOfDecompositionsEstimators
   def randomPartialSolution =
     PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).randomLineage.toSeq.last._1.P.reverse.toArray
 
@@ -184,10 +185,11 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
       def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
       averages
     }
-    def runtimeEstimators: Iterator[Long] = {
-      def estimate = randomLineage.foldLeft((1, 0L))({ (a, b) => (a._1 * b._2.size, a._2 + a._1 * b._3 / 1000) })._2
+    // measured in days!
+    def runtimeEstimators: Iterator[Double] = {
+      def estimate = randomLineage.foldLeft((1.0, 0.0))({ (a, b) => (a._1 * b._2.size, a._2 + a._1 * b._3 / 1000.0) })._2
       def estimates = Iterator.continually(estimate)
-      def partialSums = estimates.scanLeft(0L)(_ + _ / 86400)
+      def partialSums = estimates.scanLeft(0.0)(_ + _ / 86400)
       def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
       averages
     }
