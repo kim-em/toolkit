@@ -59,9 +59,13 @@ List(10, 11, 10, 41, 43, 43, 41, 40, 53, 64, 96, 93, 92, 108, 139)
 //    println(t)
 //  }
 //  for(k <- 1 to 10) { println(PositiveSymmetricDecomposition(Ma(k)).decompositions.size) }
-//  for(t <- PositiveSymmetricDecomposition(Ma(15)).runtimeEstimators) println(t)
+  for(t <- PositiveSymmetricDecomposition(Ma(14)).runtimeEstimators) println(t)
 //  for(t <- PositiveSymmetricDecomposition(Ma(14)).numberOfDescendantsEstimators) println(t)
 //  for(p <- Iterator.continually(PositiveSymmetricDecomposition(Ma(14)).randomPartialSolution)) println(p.length)
+  
+//  println(PositiveSymmetricDecomposition(Ma(14)).numberOfDecompositionsEstimators.toStream.apply(20))
+  
+//  for(n <- PositiveSymmetricDecomposition(Ma(14)).numberOfDecompositionsEstimators) println(n)
   
   for(p <- Iterator.continually(PositiveSymmetricDecomposition(Ma(14)).randomPartialSolution); if p.length == 14) {
     println
