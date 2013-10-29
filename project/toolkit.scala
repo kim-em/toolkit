@@ -19,7 +19,7 @@ object Toolkit extends Build {
 
   lazy val amazon = Project(id = "toolkit-amazon",
     base = file("amazon"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(jets3t, typica, commons.io))) dependsOn (base, collections)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(httpclient, jets3t, typica, commons.io))) dependsOn (base, collections)
 
   lazy val collections = Project(id = "toolkit-collections",
     base = file("collections"),
@@ -119,6 +119,7 @@ object Dependencies {
 		val logging = "commons-logging" % "commons-logging" % "1.1.1"
 		val io = "commons-io" % "commons-io" % "2.4"
 	}
+	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0.1"
         val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
         val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "14.0"
