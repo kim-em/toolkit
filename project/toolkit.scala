@@ -129,7 +129,7 @@ object Dependencies {
 	val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "14.0"
 	object selenium {
-		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.31.0"
+		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.39.0"
 	}
 	object lift {
 		val util = "net.liftweb" %% "lift-util" % "2.6-M2"
