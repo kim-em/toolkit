@@ -7,7 +7,7 @@ object Toolkit extends Build {
 
   lazy val root = Project(id = "toolkit",
     base = file("."),
-    settings = buildSettings) aggregate (base, arithmetic, amazon, collections, algebra, functions, eval)
+    settings = buildSettings) aggregate (base, arithmetic, amazon, collections, algebra, functions, eval, wiki)
 
   lazy val base: Project = Project(id = "toolkit-base",
     base = file("base"),
@@ -37,6 +37,10 @@ object Toolkit extends Build {
     base = file("eval"),
     settings = buildSettings ++ Seq(dependsOnCompiler))
 
+  lazy val wiki = Project(id = "toolkit-wiki",
+    base = file("wiki"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(selenium.firefox))) dependsOn (base)
+
 }
 
 object BuildSettings {
@@ -45,8 +49,8 @@ object BuildSettings {
 
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.16-SNAPSHOT"
-  val buildScalaVersion = "2.10.2"
-  val buildCrossScalaVersions = Seq("2.9.3", "2.10.2")
+  val buildScalaVersion = "2.10.3"
+  val buildCrossScalaVersions = Seq("2.9.3", "2.10.3")
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -121,8 +125,14 @@ object Dependencies {
 		val io = "commons-io" % "commons-io" % "2.4"
 	}
 	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1.1"
-  val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
-  val typica = "com.google.code.typica" % "typica" % "1.7.2"
+	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
+	val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "14.0"
+	object selenium {
+		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.31.0"
+	}
+	object lift {
+		val util = "net.liftweb" %% "lift-util" % "2.6-M2"
+	}
 }
 
