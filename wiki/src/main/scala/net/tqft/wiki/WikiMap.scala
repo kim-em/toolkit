@@ -28,6 +28,7 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
   override def get(key: String): Option[String] = try {
     Some(Source.fromURL(actionURL(key, "raw")).getLines().mkString("\n"))
   } catch {
+    case e: java.io.FileNotFoundException => None
     case e: Exception =>
       Logging.error("Exception while loading wiki page " + key, e)
       None
