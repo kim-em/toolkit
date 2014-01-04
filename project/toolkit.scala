@@ -127,7 +127,7 @@ object Dependencies {
 	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1.1"
 	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
 	val typica = "com.google.code.typica" % "typica" % "1.7.2"
-	val guava = "com.google.guava" % "guava" % "14.0"
+	val guava = "com.google.guava" % "guava" % "15.0"
 	object selenium {
 		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.39.0"
 	}
