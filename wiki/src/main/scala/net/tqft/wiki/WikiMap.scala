@@ -8,7 +8,13 @@ import org.openqa.selenium.JavascriptExecutor
 
 trait WikiMap extends scala.collection.mutable.Map[String, String] {
   def wikiScriptURL: String
+
+  var _username: String = null
+  var _password: String = null
+
   def login(username: String, password: String) {
+    _username = username
+    _password = password
     driver.get(wikiScriptURL + "?title=Special:UserLogin")
     val name = driver.findElement(By.id("wpName1"))
     name.clear()
@@ -23,7 +29,7 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
   private def actionURL(title: String, action: String) = {
     wikiScriptURL + "?title=" + java.net.URLEncoder.encode(title, "UTF-8") + "&action=" + action
   }
-  
+
   // Members declared in scala.collection.MapLike 
   override def get(key: String): Option[String] = try {
     Some(Source.fromURL(actionURL(key, "raw")).getLines().mkString("\n"))
@@ -42,9 +48,23 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
     this
   }
   override def +=(kv: (String, String)) = {
-    driver.get(actionURL(kv._1, "edit"))
-    driver.asInstanceOf[JavascriptExecutor].executeScript("document.getElementById('" + "wpTextbox1" + "').value = \"" + kv._2.replaceAllLiterally("\n", "\\n").replaceAllLiterally("\"", "\\\"") + "\";");
-    driver.findElement(By.id("wpSave")).click
+    if (get(kv._1) != Some(kv._2)) {
+      try {
+        driver.get(actionURL(kv._1, "edit"))
+        driver.asInstanceOf[JavascriptExecutor].executeScript("document.getElementById('" + "wpTextbox1" + "').value = \"" + kv._2.replaceAllLiterally("\n", "\\n").replaceAllLiterally("\"", "\\\"") + "\";");
+        driver.findElement(By.id("wpSave")).click
+      } catch {
+        case e: Exception => {
+          Logging.warn("Exception while editing wiki page: ", e)
+          driver.quit()
+          if (_username != null) {
+            login(_username, _password)
+          }
+
+          +=(kv)
+        }
+      }
+    }
     this
   }
 }
