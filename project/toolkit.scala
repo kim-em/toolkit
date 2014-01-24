@@ -39,7 +39,7 @@ object Toolkit extends Build {
 
   lazy val wiki = Project(id = "toolkit-wiki",
     base = file("wiki"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(selenium.firefox))) dependsOn (base)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(selenium.firefox, mysql, slick))) dependsOn (base)
 
 }
 
@@ -134,5 +134,7 @@ object Dependencies {
 	object lift {
 		val util = "net.liftweb" %% "lift-util" % "2.6-M2"
 	}
+	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
+	val slick = "com.typesafe.slick" %% "slick" % "2.0.0-RC1"
 }
 

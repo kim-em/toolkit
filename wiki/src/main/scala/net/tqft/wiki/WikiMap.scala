@@ -5,6 +5,7 @@ import net.tqft.toolkit.Logging
 import scala.io.Source
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
+import net.tqft.toolkit.Throttle
 
 trait WikiMap extends scala.collection.mutable.Map[String, String] {
   def wikiScriptURL: String
@@ -12,7 +13,11 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
   var _username: String = null
   var _password: String = null
 
+  private var throttle: Throttle = Throttle.none
+  
   def login(username: String, password: String) {
+    // TODO error handling?
+    
     _username = username
     _password = password
     driver.get(wikiScriptURL + "?title=Special:UserLogin")
@@ -24,7 +29,11 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
     pass.sendKeys(password)
     driver.findElement(By.id("wpLoginAttempt")).click
   }
-
+  
+  def setThrottle(millis: Int) = {
+    throttle = Throttle.rateLimited(millis)
+  }
+  
   private def driver = FirefoxDriver.driverInstance
   private def actionURL(title: String, action: String) = {
     wikiScriptURL + "?title=" + java.net.URLEncoder.encode(title, "UTF-8") + "&action=" + action
@@ -50,13 +59,14 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
   override def +=(kv: (String, String)) = {
     if (get(kv._1) != Some(kv._2)) {
       try {
+        throttle(false)
         driver.get(actionURL(kv._1, "edit"))
         driver.asInstanceOf[JavascriptExecutor].executeScript("document.getElementById('" + "wpTextbox1" + "').value = \"" + kv._2.replaceAllLiterally("\n", "\\n").replaceAllLiterally("\"", "\\\"") + "\";");
         driver.findElement(By.id("wpSave")).click
       } catch {
         case e: Exception => {
           Logging.warn("Exception while editing wiki page: ", e)
-          driver.quit()
+          FirefoxDriver.quit
           if (_username != null) {
             login(_username, _password)
           }
