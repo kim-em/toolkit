@@ -13,21 +13,30 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
   var _username: String = null
   var _password: String = null
 
-  private var throttle: Throttle = Throttle.none
-  
+  var throttle = Throttle.linearBackoff(10000)
+
   def login(username: String, password: String) {
     // TODO error handling?
     
     _username = username
     _password = password
-    driver.get(wikiScriptURL + "?title=Special:UserLogin")
-    val name = driver.findElement(By.id("wpName1"))
-    name.clear()
-    name.sendKeys(username)
-    val pass = driver.findElement(By.id("wpPassword1"))
-    pass.clear()
-    pass.sendKeys(password)
-    driver.findElement(By.id("wpLoginAttempt")).click
+    try {
+      driver.get(wikiScriptURL + "?title=Special:UserLogin")
+      val name = driver.findElement(By.id("wpName1"))
+      name.clear()
+      name.sendKeys(username)
+      val pass = driver.findElement(By.id("wpPassword1"))
+      pass.clear()
+      pass.sendKeys(password)
+      driver.findElement(By.id("wpLoginAttempt")).click
+      throttle(true)
+    } catch {
+      case e: Exception => {
+        Logging.warn("Exception while trying to log in: ", e)
+        throttle(false)
+        login(username, password)
+      }
+    }
   }
   
   def setThrottle(millis: Int) = {
@@ -63,14 +72,15 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
         driver.get(actionURL(kv._1, "edit"))
         driver.asInstanceOf[JavascriptExecutor].executeScript("document.getElementById('" + "wpTextbox1" + "').value = \"" + kv._2.replaceAllLiterally("\n", "\\n").replaceAllLiterally("\"", "\\\"") + "\";");
         driver.findElement(By.id("wpSave")).click
+        throttle(true)
       } catch {
         case e: Exception => {
           Logging.warn("Exception while editing wiki page: ", e)
-          FirefoxDriver.quit
+          throttle(false)
+          driver.quit()
           if (_username != null) {
             login(_username, _password)
           }
-
           +=(kv)
         }
       }
