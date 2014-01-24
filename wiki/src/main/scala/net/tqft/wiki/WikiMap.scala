@@ -8,10 +8,11 @@ import org.openqa.selenium.JavascriptExecutor
 import net.tqft.toolkit.Throttle
 
 trait WikiMap extends scala.collection.mutable.Map[String, String] {
-  def wikiScriptURL: String
+  private[this] def wikiScriptURL: String
 
-  var _username: String = null
-  var _password: String = null
+  private[this] var _username: String = null
+  private[this] var _password: String = null
+  private[this] var _jdbc: String = null
 
   var throttle = Throttle.linearBackoff(10000)
 
@@ -37,19 +38,32 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
     }
   }
 
+  def enableSQLReads(jdbcConnectionString: String) = {
+    // TODO verify the connection works; if it does set _jdbc
+  }
+
   private def driver = FirefoxDriver.driverInstance
   private def actionURL(title: String, action: String) = {
     wikiScriptURL + "?title=" + java.net.URLEncoder.encode(title, "UTF-8") + "&action=" + action
   }
 
   // Members declared in scala.collection.MapLike 
-  override def get(key: String): Option[String] = try {
-    Some(Source.fromURL(actionURL(key, "raw")).getLines().mkString("\n"))
-  } catch {
-    case e: java.io.FileNotFoundException => None
-    case e: Exception =>
-      Logging.error("Exception while loading wiki page " + key, e)
-      None
+  override def get(key: String): Option[String] = {
+    if (_jdbc != null) {
+      import scala.slick.driver.MySQLDriver.simple._
+      Database.forURL(jdbc, driver = "com.mysql.jdbc.Driver") withSession {
+    	  ???
+      }
+    } else {
+      try {
+        Some(Source.fromURL(actionURL(key, "raw")).getLines().mkString("\n"))
+      } catch {
+        case e: java.io.FileNotFoundException => None
+        case e: Exception =>
+          Logging.error("Exception while loading wiki page " + key, e)
+          None
+      }
+    }
   }
   override def iterator: Iterator[(String, String)] = ???
 
