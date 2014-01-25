@@ -6,19 +6,40 @@ import scala.io.Source
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
 import net.tqft.toolkit.Throttle
+import scala.slick.driver.MySQLDriver.simple._
 
 trait WikiMap extends scala.collection.mutable.Map[String, String] {
-  private[this] def wikiScriptURL: String
+  private class Revision(tag: Tag, tablePrefix: String) extends Table[(Int, Int)](tag, tablePrefix + "revision") {
+    def rev_id = column[Int]("rev_id", O.PrimaryKey)
+    def rev_text_id = column[Int]("rev_text_id")
+    def * = (rev_id, rev_text_id)
+  }
+  private class Text(tag: Tag, tablePrefix: String) extends Table[(Int, String)](tag, tablePrefix + "text") {
+    def old_id = column[Int]("old_id", O.PrimaryKey)
+    def old_text = column[String]("old_text")
+    def * = (old_id, old_text)
+  }
+  private class Page(tag: Tag, tablePrefix: String) extends Table[(Int, String, Int)](tag, tablePrefix + "page") {
+    def page_id = column[Int]("page_id", O.PrimaryKey)
+    def page_title = column[String]("page_title")
+    def page_latest = column[Int]("page_latest")
+    def * = (page_id, page_title, page_latest)
+  }
+
+  private def Revisions = TableQuery(tag => new Revision(tag, _tablePrefix))
+  private def Texts = TableQuery(tag => new Text(tag, _tablePrefix))
+  private def Pages = TableQuery(tag => new Page(tag, _tablePrefix))
+
+  def wikiScriptURL: String
 
   private[this] var _username: String = null
   private[this] var _password: String = null
   private[this] var _jdbc: String = null
+  private[this] var _tablePrefix = ""
 
-  var throttle = Throttle.linearBackoff(10000)
+  var throttle: Throttle = Throttle.linearBackoff(10000)
 
   def login(username: String, password: String) {
-    // TODO error handling?
-    
     _username = username
     _password = password
     try {
@@ -39,13 +60,21 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
       }
     }
   }
-  
+
   def setThrottle(millis: Int) = {
     throttle = Throttle.rateLimited(millis)
   }
-  
-  def enableSQLReads(jdbcConnectionString: String) = {
-    // TODO verify the connection works; if it does set _jdbc
+
+  def enableSQLReads(jdbcConnectionString: String, tablePrefix: String = "") = {
+    val r1 = get("Main Page")
+    Logging.info("Verifying jdbc connection string...")
+    _jdbc = jdbcConnectionString
+    _tablePrefix = tablePrefix
+    if (get("Main Page") != r1) {
+      Logging.warn("... could not read 'Main Page' via jdbc")
+      _jdbc = null
+      _tablePrefix = ""
+    }
   }
 
   private def driver = FirefoxDriver.driverInstance
@@ -57,8 +86,15 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
   override def get(key: String): Option[String] = {
     if (_jdbc != null) {
       import scala.slick.driver.MySQLDriver.simple._
-      Database.forURL(jdbc, driver = "com.mysql.jdbc.Driver") withSession {
-    	  ???
+      Database.forURL(_jdbc, driver = "com.mysql.jdbc.Driver") withSession { implicit session =>
+        (for (
+          p <- Pages;
+          if p.page_title === key;
+          r <- Revisions;
+          if r.rev_id === p.page_latest;
+          t <- Texts;
+          if t.old_id === r.rev_text_id
+        ) yield t.old_text).firstOption
       }
     } else {
       try {
