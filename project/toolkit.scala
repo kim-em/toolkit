@@ -68,7 +68,7 @@ object BuildSettings {
     },
 //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
     scalacOptions ++= Seq("-optimise"/*,"-Yinline-warnings"*/),
-    dependencyOverrides += "org.apache.httpcomponents" % "httpclient" % "4.1.1", // typica can't cope with 4.2
+//    dependencyOverrides += "org.apache.httpcomponents" % "httpclient" % "4.1.1", // typica can't cope with 4.2
     libraryDependencies ++= Seq(junit, slf4j))
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
@@ -124,7 +124,7 @@ object Dependencies {
 		val logging = "commons-logging" % "commons-logging" % "1.1.1"
 		val io = "commons-io" % "commons-io" % "2.4"
 	}
-	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.1.1"
+	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.3.2"
 	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
 	val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "15.0"

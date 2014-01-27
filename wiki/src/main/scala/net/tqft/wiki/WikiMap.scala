@@ -55,6 +55,7 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
     } catch {
       case e: Exception => {
         Logging.warn("Exception while trying to log in: ", e)
+        FirefoxDriver.quit
         throttle(false)
         login(username, password)
       }
