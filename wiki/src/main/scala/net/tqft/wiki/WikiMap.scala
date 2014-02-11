@@ -119,7 +119,6 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
   override def +=(kv: (String, String)) = {
     if (get(kv._1) != Some(kv._2)) {
       try {
-        throttle(false)
         driver.get(actionURL(kv._1, "edit"))
         driver.asInstanceOf[JavascriptExecutor].executeScript("document.getElementById('" + "wpTextbox1" + "').value = \"" + kv._2.replaceAllLiterally("\n", "\\n").replaceAllLiterally("\"", "\\\"") + "\";");
         driver.findElement(By.id("wpSave")).click
