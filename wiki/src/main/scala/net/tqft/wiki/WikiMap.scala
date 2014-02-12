@@ -69,8 +69,14 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
   def enableSQLReads(jdbcConnectionString: String, tablePrefix: String = "") = {
     val r1 = get("Main Page")
     Logging.info("Verifying jdbc connection string...")
+    
     _jdbc = jdbcConnectionString
     _tablePrefix = tablePrefix
+    
+    if(!_jdbc.contains("useUnicode")) {
+      _jdbc = _jdbc + "&useUnicode=true&characterEncoding=utf-8"
+    }
+    
     if (get("Main Page") != r1) {
       Logging.warn("... could not read 'Main Page' via jdbc")
       _jdbc = null
@@ -85,12 +91,12 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
 
   // Members declared in scala.collection.MapLike 
   override def get(key: String): Option[String] = {
-    if (_jdbc != null) {
+    val result = if (_jdbc != null) {
       import scala.slick.driver.MySQLDriver.simple._
       Database.forURL(_jdbc, driver = "com.mysql.jdbc.Driver") withSession { implicit session =>
         (for (
           p <- Pages;
-          if p.page_title === key;
+          if p.page_title === key.replaceAll(" ", "_").stripPrefix("Data:");
           r <- Revisions;
           if r.rev_id === p.page_latest;
           t <- Texts;
@@ -107,6 +113,8 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
           None
       }
     }
+    Logging.info(key + " ---> " + result)
+    result
   }
   override def iterator: Iterator[(String, String)] = ???
 
@@ -120,7 +128,7 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
     if (get(kv._1) != Some(kv._2)) {
       try {
         driver.get(actionURL(kv._1, "edit"))
-        driver.asInstanceOf[JavascriptExecutor].executeScript("document.getElementById('" + "wpTextbox1" + "').value = \"" + kv._2.replaceAllLiterally("\n", "\\n").replaceAllLiterally("\"", "\\\"") + "\";");
+        driver.asInstanceOf[JavascriptExecutor].executeScript("document.getElementById('" + "wpTextbox1" + "').value = \"" + kv._2.replaceAllLiterally("\\", "\\\\").replaceAllLiterally("\n", "\\n").replaceAllLiterally("\"", "\\\"") + "\";");
         driver.findElement(By.id("wpSave")).click
         throttle(true)
       } catch {
