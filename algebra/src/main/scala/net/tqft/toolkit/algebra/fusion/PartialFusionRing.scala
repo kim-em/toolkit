@@ -276,15 +276,15 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
           val ordering = Ordering.by({ u: Upper => u.result.completeInvariant })
           import net.tqft.toolkit.collections.Split._
           val result = uppers.splitByOrdering(ordering)
-          if (uppers.size > 10) println("  chunks of sizes " + result.map(_.size).tally)
+//          if (uppers.size > 10) println("  chunks of sizes " + result.map(_.size).tally)
           //          result.find(_.size == 2).map(c => println("  example chunk: \n" + c.mkString("\n") + "\n derived from " + pfr))
-          result.map(_.head)
+          result.map(_.head).toSet
         }
 
         val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).filter(independent_?)
         val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).filter(independent_?)
         (chooseRepresentatives(extraSelfDual.toSeq.map(AddSelfDualObject)) ++
-          chooseRepresentatives(extraPairs.toSeq.map(AddDualPairOfObjects))) //.filter(p => independent_?(p.newRing))
+          chooseRepresentatives(extraPairs.toSeq.map(AddDualPairOfObjects)))
       } else {
         Set.empty
       })
