@@ -1,10 +1,11 @@
 package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.Profiler
+import scala.collection.parallel.ForkJoinTaskSupport
 
 object PartialFusionRingApp extends App {
 
-  val L = 18.0
+  val L = 36.0
   
 // A1
 //  val seed = FusionRings.Examples.rank1
@@ -23,8 +24,11 @@ object PartialFusionRingApp extends App {
 
     var k = 0
     
+      val pool = new ForkJoinTaskSupport(new scala.concurrent.forkjoin.ForkJoinPool(24))
+
+    
     println("parallelizing over " + firstLayer.size + " fusion rings")
-    for ((s, i) <- firstLayer.zipWithIndex.par; (r, p) <- s.descendantsWithProgress()) {
+    for ((s, i) <- { val p = firstLayer.zipWithIndex.par; p.tasksupport = pool; p }; (r, p) <- s.descendantsWithProgress()) {
       k += 1
       println((i + 1, firstLayer.size) + " " + p)
       if (r.depth == r.depths.max) {
