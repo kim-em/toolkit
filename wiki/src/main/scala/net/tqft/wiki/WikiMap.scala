@@ -128,7 +128,7 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
         case e: Exception => {
           Logging.warn("Exception while editing wiki page: ", e)
           throttle(false)
-          FirefoxDriver.quit()
+          FirefoxDriver.quit
           if (_username != null) {
             login(_username, _password)
           }
