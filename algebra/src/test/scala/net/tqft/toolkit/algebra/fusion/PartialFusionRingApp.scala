@@ -4,15 +4,19 @@ import net.tqft.toolkit.Profiler
 
 object PartialFusionRingApp extends App {
 
-  val L = if(args.length > 0) {
-    args(0).toDouble
-  } else {
-    12.0
-  }
+  val L = 18.0
+  
+// A1
+//  val seed = FusionRings.Examples.rank1
+//  val generators = Seq.empty[Int]
+// T2
+  val seed = FusionRings.Examples.rank2(1)
+  val generators = Seq(1)
+  
 //    while (true) {
   println("completed in " + Profiler.timing({
     println("warming up... preparing a first layer")
-    val firstLayer = (for ((r, p) <- PartialFusionRing(1, Seq.empty, FusionRings.Examples.rank1, L).descendantsWithProgress(4 - _.ring.rank); if r.parent.flatMap(_.parent).map(_.depth).getOrElse(0) == 1) yield {
+    val firstLayer = (for ((r, p) <- PartialFusionRing(seed.depthWithRespectTo(generators).max + 1, generators, seed, L).descendantsWithProgress(3 + seed.rank - _.ring.rank); if r.parent.flatMap(_.parent).map(_.depth).getOrElse(0) == 1) yield {
       println(p)
       r
     }).toSeq
