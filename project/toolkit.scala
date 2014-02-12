@@ -50,7 +50,7 @@ object BuildSettings {
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.16-SNAPSHOT"
   val buildScalaVersion = "2.10.3"
-  val buildCrossScalaVersions = Seq("2.9.3", "2.10.3")
+  val buildCrossScalaVersions = Seq("2.10.3")
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -59,16 +59,9 @@ object BuildSettings {
     crossScalaVersions := buildCrossScalaVersions,
     publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
     resolvers := sonatypeResolvers /* ++ SonatypeSettings.publishing */,
-    libraryDependencies += {
-        val (scalatestVersion, scalatestScalaVersion) = buildScalaVersion match {
-                case sv if sv.startsWith("2.9") => ("1.9.1", "2.9.0")
-                case sv if sv.startsWith("2.10") => ("1.9.1", "2.10")
-        }
-        ("org.scalatest" % ("scalatest_" + scalatestScalaVersion) % scalatestVersion % "test" )
-    },
+    libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
 //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
-    scalacOptions ++= Seq("-optimise"/*,"-Yinline-warnings"*/),
-//    dependencyOverrides += "org.apache.httpcomponents" % "httpclient" % "4.1.1", // typica can't cope with 4.2
+    scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j))
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
@@ -127,7 +120,7 @@ object Dependencies {
 	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.3.2"
 	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
 	val typica = "com.google.code.typica" % "typica" % "1.7.2"
-	val guava = "com.google.guava" % "guava" % "15.0"
+	val guava = "com.google.guava" % "guava" % "16.0.1"
 	object selenium {
 		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.39.0"
 	}
