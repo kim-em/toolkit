@@ -17,13 +17,13 @@ class WikiMapTest extends FlatSpec with ShouldMatchers {
     wm("Main Page") should not be ('empty)
   }
 
-  "+=" should "write content to a page" in {
-    wm.login("testbot", "zytopex")
-    wm("Sandbox") = "testbot here 1/2"
-    wm("Sandbox") should equal("testbot here 1/2")
-    wm("Sandbox") = "testbot here\n 2/2"
-    wm("Sandbox") should equal("testbot here\n 2/2")
-  }
+//  "+=" should "write content to a page" in {
+//    wm.login("testbot", "zytopex")
+//    wm("Sandbox") = "testbot here 1/2"
+//    wm("Sandbox") should equal("testbot here 1/2")
+//    wm("Sandbox") = "testbot here\n 2/2"
+//    wm("Sandbox") should equal("testbot here\n 2/2")
+//  }
 
   "get" should "load a page via SQL if a jdbc string has been specified" in {
     wm.enableSQLReads("jdbc:mysql://mysql.tqft.net/tqft_net?user=readonly1&password=foobar1", "mlp_")
@@ -36,6 +36,7 @@ class WikiMapTest extends FlatSpec with ShouldMatchers {
 //    wm -= "User:Testbot/Sandbox"
 //    wm("User:Testbot/Sandbox") should equal("")
 //  }
-
+  
+  FirefoxDriver.quit
 }
 
