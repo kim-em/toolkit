@@ -1,26 +1,34 @@
 package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.Profiler
+import scala.collection.parallel.ForkJoinTaskSupport
 
 object PartialFusionRingApp extends App {
 
-  val L = if(args.length > 0) {
-    args(0).toDouble
-  } else {
-    12.0
-  }
+  val L = 36.0
+  
+// A1
+//  val seed = FusionRings.Examples.rank1
+//  val generators = Seq.empty[Int]
+// T2
+  val seed = FusionRings.Examples.rank2(1)
+  val generators = Seq(1)
+  
 //    while (true) {
   println("completed in " + Profiler.timing({
     println("warming up... preparing a first layer")
-    val firstLayer = (for ((r, p) <- PartialFusionRing(1, Seq.empty, FusionRings.Examples.rank1, L).descendantsWithProgress(4 - _.ring.rank); if r.parent.flatMap(_.parent).map(_.depth).getOrElse(0) == 1) yield {
+    val firstLayer = (for ((r, p) <- PartialFusionRing(seed.depthWithRespectTo(generators).max + 1, generators, seed, L).descendantsWithProgress(3 + seed.rank - _.ring.rank); if r.parent.flatMap(_.parent).map(_.depth).getOrElse(0) == 1) yield {
       println(p)
       r
     }).toSeq
 
     var k = 0
     
+      val pool = new ForkJoinTaskSupport(new scala.concurrent.forkjoin.ForkJoinPool(24))
+
+    
     println("parallelizing over " + firstLayer.size + " fusion rings")
-    for ((s, i) <- firstLayer.zipWithIndex.par; (r, p) <- s.descendantsWithProgress()) {
+    for ((s, i) <- { val p = firstLayer.zipWithIndex.par; p.tasksupport = pool; p }; (r, p) <- s.descendantsWithProgress()) {
       k += 1
       println((i + 1, firstLayer.size) + " " + p)
       if (r.depth == r.depths.max) {
