@@ -81,6 +81,10 @@ trait S3Bucket[A] extends scala.collection.mutable.Map[String, A] {
     }
   }
 
+  def lastModifiedDate(key:String ) {
+    s3Service.getObjectDetails(bucket, key).getLastModifiedDate()
+  }
+  
   override def contains(key: String) = {
     try {
       s3Service.isObjectInBucket(bucket, key)
