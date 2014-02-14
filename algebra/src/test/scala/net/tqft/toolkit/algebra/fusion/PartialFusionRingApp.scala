@@ -5,7 +5,8 @@ import scala.collection.parallel.ForkJoinTaskSupport
 
 object PartialFusionRingApp extends App {
 
-  val L = 18.0
+  
+  val L = args(0).toDouble
   
 // A1
 //  val seed = FusionRings.Examples.rank1
