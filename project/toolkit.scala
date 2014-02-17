@@ -27,7 +27,7 @@ object Toolkit extends Build {
 
   lazy val algebra = Project(id = "toolkit-algebra",
     base = file("algebra"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat))) dependsOn (base, arithmetic, amazon, functions, collections)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (base, arithmetic, amazon, functions, collections)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),
@@ -121,6 +121,7 @@ object Dependencies {
 	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
 	val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "16.0.1"
+	val findbugs = "com.google.code.findbugs" % "jsr305" % "1.3.+"
 	object selenium {
 		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.39.0"
 	}
