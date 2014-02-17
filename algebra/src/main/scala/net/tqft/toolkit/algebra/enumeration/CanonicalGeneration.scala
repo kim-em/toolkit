@@ -99,7 +99,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     accept(this) match {
       case a if a > 0 => {
         val c = children
-        Iterator((this, c)) ++ c.par.map(_.descendantsTree(accept)).seq.iterator.flatMap(i => i)
+        Iterator((this, c)) ++ c/*.par /* this .par seems to make mathematica sick */ */.map(_.descendantsTree(accept)).seq.iterator.flatMap(i => i)
       }
       case 0 => Iterator((this, Nil))
       case a if a < 0 => Iterator.empty

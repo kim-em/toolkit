@@ -48,9 +48,8 @@ object BuildSettings {
   import Dependencies._
 
   val buildOrganization = "net.tqft"
-  val buildVersion = "0.1.16-SNAPSHOT"
+  val buildVersion = "0.1.16"
   val buildScalaVersion = "2.10.3"
-  val buildCrossScalaVersions = Seq("2.10.3")
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -60,7 +59,7 @@ object BuildSettings {
     publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
     resolvers := sonatypeResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
-//    scalacOptions ++= Seq("-uniqid","-explaintypes"),
+    //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
     scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j))
 

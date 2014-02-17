@@ -8,6 +8,7 @@ import scala.collection.parallel.ParSeq
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConversions
 import net.tqft.toolkit.Logging
+
 object GroupBy {
 
   implicit def groupable[A](x: GenIterable[A]) = new Groupable(x)
