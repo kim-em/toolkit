@@ -1,5 +1,7 @@
 # rm *.out
+while true; do
 ./pfr 6.0 > 6.out && ./pfr 9.0 > 9.out && ./pfr 12.0 > 12.out && ./pfr 15.0 > 15.out && ./pfr 18.0 > 18.out
+done
 #./pfr 21.0 > 21.out
 #./pfr 24.0 > 24.out
 #./pfr 30.0 > 30.out

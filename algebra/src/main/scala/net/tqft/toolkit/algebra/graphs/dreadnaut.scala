@@ -7,6 +7,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import scala.io.Source
 import java.io.PrintWriter
+import java.io.File
 
 trait dreadnaut extends Logging {
   val dreadnautPath: String
@@ -66,7 +67,18 @@ trait dreadnaut extends Logging {
 }
 
 object dreadnaut extends dreadnaut {
-  override val dreadnautPath = "which dreadnaut" !!;
+  override val dreadnautPath = try {
+    "which dreadnaut" !!
+  } catch {
+    case e: RuntimeException => {
+      val file = new File(System.getProperty("user.home") + "/bin/dreadnaut")
+      if (!file.exists) {
+        println("dreadnaut not found!")
+        ???
+      }
+      file.getAbsolutePath()
+    }
+  }
   require(dreadnautPath.nonEmpty, "There doesn't appear to be a copy of dreadnaut on the $PATH.")
   require(invoke("n=3 g 1;2;0; cx").head.startsWith("(1 2)"), "The copy of dreadnaut at " + dreadnautPath + " doesn't seem to be working.")
 
