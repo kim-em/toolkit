@@ -3,6 +3,9 @@ package net.tqft.toolkit.algebra.matrices
 import net.tqft.toolkit.algebra.ApproximateReals
 import net.tqft.toolkit.algebra.IntegerModel
 import net.tqft.toolkit.functions.FixedPoint
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.CacheBuilder
+import java.util.concurrent.TimeUnit
 
 object FrobeniusPerronEigenvalues {
   def estimate[I: IntegerModel, R: ApproximateReals](m: Matrix[I]): R = {
@@ -66,6 +69,22 @@ object FrobeniusPerronEigenvalues {
   //  }
 
   val estimateWithEigenvector = {
+    val loader =
+      new CacheLoader[Array[Array[Int]], (Double, Seq[Double])]() {
+        override def load(key: Array[Array[Int]]) = {
+          estimateWithEigenvector_(key)
+        }
+      }
+
+    val cache = CacheBuilder.newBuilder().maximumSize(200000)
+//          .expireAfterAccess(5, TimeUnit.MINUTES)
+          .build(loader)
+
+          {  m: Array[Array[Int]] => cache(m) }
+  }
+
+  val estimateWithEigenvector2 = {
+    // FIXME replace this with a proper cache; limit the size directly, rather than using softValues.
     val cache = new com.google.common.collect.MapMaker().softValues().makeMap[Int, (Array[Array[Int]], (Double, Seq[Double]))]()
     def hash(m: Array[Array[Int]]): Int = {
       def hash(v: Array[Int]): Int = {
