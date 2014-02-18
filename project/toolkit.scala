@@ -48,14 +48,13 @@ object BuildSettings {
   import Dependencies._
 
   val buildOrganization = "net.tqft"
-  val buildVersion = "0.1.16"
+  val buildVersion = "0.1.17-SNAPSHOT"
   val buildScalaVersion = "2.10.3"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    crossScalaVersions := buildCrossScalaVersions,
     publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
     resolvers := sonatypeResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
@@ -128,6 +127,6 @@ object Dependencies {
 		val util = "net.liftweb" %% "lift-util" % "2.6-M2"
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
-	val slick = "com.typesafe.slick" %% "slick" % "2.0.0-RC1"
+	val slick = "com.typesafe.slick" %% "slick" % "2.0.0"
 }
 

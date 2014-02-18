@@ -64,7 +64,7 @@ object Split {
     }
 
     def splitByOrdering(o: Ordering[A]): Iterator[List[A]] = {
-      val sorted = x.toSeq.sorted(o)
+      val sorted = x.toVector.sorted(o)
       if (sorted.size == 0) {
         Iterator.empty
       } else if (sorted.size == 1) {
