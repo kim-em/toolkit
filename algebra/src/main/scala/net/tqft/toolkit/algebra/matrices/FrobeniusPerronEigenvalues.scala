@@ -68,10 +68,7 @@ object FrobeniusPerronEigenvalues {
   //    })
   //  }
 
-  val estimateWithEigenvector = estimateWithEigenvector_ _
-  
-  // FIXME this is broken
-  val estimateWithEigenvector1 = {
+  val estimateWithEigenvector = {
     val loader =
       new CacheLoader[Array[Array[Int]], (Double, Seq[Double])]() {
         override def load(key: Array[Array[Int]]) = {
@@ -79,11 +76,11 @@ object FrobeniusPerronEigenvalues {
         }
       }
 
-    val cache = CacheBuilder.newBuilder().maximumSize(200000)
+    val cache = CacheBuilder.newBuilder().maximumSize(20000)
 //          .expireAfterAccess(5, TimeUnit.MINUTES)
           .build(loader)
 
-          {  m: Array[Array[Int]] => cache(m) }
+          {  m: Array[Array[Int]] => cache.getUnchecked(m) }
     
   }
 
