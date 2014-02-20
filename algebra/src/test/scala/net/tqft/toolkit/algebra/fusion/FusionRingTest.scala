@@ -72,6 +72,6 @@ class FusionRingTest extends FlatSpec with ShouldMatchers {
         List(0, 0, 0, 0, 0, 0),
         List(1, 0, 0, 0, 0, 0)))))
         
-        ring.independent_?(Seq(1,2,3,4,5)) should equal(false)
+        ring.independent_?(Set(1,2,3,4,5)) should equal(false)
   }
 }

@@ -10,10 +10,10 @@ object PartialFusionRingApp extends App {
   
 // A1
   val seed = FusionRings.Examples.rank1
-  val generators = Seq.empty[Int]
+  val generators = Set.empty[Int]
 // T2
 //  val seed = FusionRings.Examples.rank2(0)
-//  val generators = Seq(1)
+//  val generators = Set(1)
   
 //  println(PartialFusionRing(seed.depthWithRespectTo(generators).max + 1, generators, seed, L).descendantsTree().map({ u => u._1.depth; u._1.depths; u }).filter(_._1.ring.verifyAssociativity).size)
   

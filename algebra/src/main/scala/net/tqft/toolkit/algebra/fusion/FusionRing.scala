@@ -187,11 +187,10 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     relabel(dreadnaut.canonicalLabelling(graphEncoding(colouring)).take(rank))
   }
 
-  def relabelForGenerators(elements: Seq[Int]) = {
-    val generator = sum(elements.map(basis))
-    val depths = depthWithRespectTo(generator)
+  def relabelForGenerators(elements: Set[Int]) = {
+    val depths = depthWithRespectTo(elements)
     require(!depths.contains(-1))
-    val p = ((0 +: elements) ++ (1 until rank).filterNot(elements.contains).sortBy(depths)).toIndexedSeq
+    val p = ((0 +: elements.toSeq) ++ (1 until rank).filterNot(elements.contains).sortBy(depths)).toIndexedSeq
     import net.tqft.toolkit.permutations.Permutations._
     relabel(p.inverse)
   }
@@ -199,29 +198,45 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 //  def generators = {
 //    for (i <- 0 until rank; j = duality(i); g = add(basis(i), basis(j)); if !depthWithRespectTo(g).contains(-1)) yield i
 //  }
-  def generators_?(elements: Seq[Int]) = {
-    val clumps = (for (i <- elements) yield (Set(i, duality(i)))).toSet
-    depthWithRespectTo(sum(clumps.flatten.map(basis))).forall(_ != -1)
+  def generators_?(elements: Set[Int]) = {
+    val withDuals = for (i <- elements; j <- Set(i, duality(i))) yield j
+    depthWithRespectTo(withDuals).forall(_ != -1)
   }
-  def independent_?(elements: Seq[Int]) = {
+  def independent_?(elements: Set[Int]) = {
     val clumps = (for (i <- elements) yield (Set(i, duality(i)))).toSet
     clumps.forall({ s =>
-      val depths = depthWithRespectTo(sum(elements.filterNot(s).map(basis)))
+      val depths = depthWithRespectTo(elements.filterNot(s).toSet)
       s.forall(depths(_) == -1)
     })
   }
-  def minimalGeneratingSets: Iterator[Seq[Int]] = {
+  def minimalGeneratingSets: Iterator[Set[Int]] = {
     // TODO this is a terrible implementation
-    val clumps = (for (i <- (0 until rank)) yield (Set(i, duality(i)))).toSet
-    clumps.subsets.map(_.flatten.toSeq).filter(generators_?).filter(independent_?)
+    val clumps = (for (i <- (1 until rank)) yield (Set(i, duality(i)))).toSet
+    clumps.subsets.map(_.flatten).filter(generators_?).filter(independent_?)
   }
 
-  // FIXME this is slow
-  def depthWithRespectTo(x: Seq[A]): Seq[Int] = {
-    val objectsAtDepth = for (k <- (0 until rank).toStream) yield power(x, k).zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i })
-    for (i <- 0 until rank) yield {
-      objectsAtDepth.indexWhere(_.contains(i))
+  def depthWithRespectTo(xs: Set[Int]): Seq[Int] = {
+//    val xs = x.zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i })
+    val depths = Array.fill(rank)(-1)
+    depths(0) = 0
+    var d = 0
+    var latest = 0 :: Nil
+    while(latest.nonEmpty) {
+      d += 1
+      latest = for(j <- latest; i <- xs; k <- 0 until rank; if structureCoefficients(i).entries(j)(k) != coefficients.zero; if depths(k) == -1) yield {
+        depths(k) = d
+        k
+      }
     }
+    
+    // this is an old, slow implementation
+//    val objectsAtDepth = for (k <- (0 until rank).toStream) yield power(x, k).zipWithIndex.collect({ case (a, i) if a != coefficients.zero => i })
+//    val result = for (i <- 0 until rank) yield {
+//      objectsAtDepth.indexWhere(_.contains(i))
+//    }
+//    
+//    require(result == depths.toSeq, result + " != " + depths.toSeq)
+    depths
   }
 
   trait FusionModule extends FiniteDimensionalFreeModuleOverRig[A] { fm =>
