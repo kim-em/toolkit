@@ -14,10 +14,10 @@ import net.tqft.toolkit.permutations.Permutation
 object PartialFusionRing {
   implicit def fromFusionRing(ring: FusionRing[Int]): PartialFusionRing = {
     val generators = ring.minimalGeneratingSets.toSeq.sortBy(_.size).head
-    val generator = ring.sum(generators.map(ring.basis))
-    val depth = ring.depthWithRespectTo(generator).max
+//    val generator = ring.sum(generators.map(ring.basis))
+    val depth = ring.depthWithRespectTo(generators).max
     val relabelledRing = ring.relabelForGenerators(generators)
-    PartialFusionRing(depth, (1 to generators.size), relabelledRing, ring.globalDimensionLowerBound.ceil)
+    PartialFusionRing(depth, (1 to generators.size).toSet, relabelledRing, ring.globalDimensionLowerBound.ceil)
   }
 }
 
@@ -51,7 +51,7 @@ object PartialFusionRingMeasurement {
 
 }
 
-case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
+case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
   require(ring.independent_?(generators))
 
   override lazy val hashCode = (depth, generators, ring, globalDimensionLimit).hashCode
@@ -111,7 +111,7 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
     if (ring.rank == 1) {
       Seq(0)
     } else {
-      val result = ring.depthWithRespectTo(generator)
+      val result = ring.depthWithRespectTo(generators)
       if (result.contains(-1) || result.max < depth - 1 || result.max > depth) {
         println("depths " + result + " invalid in PartialFusionRing(" + depth + ", " + generators + ", " + ring + ", " + globalDimensionLimit + ")")
         require(false)
@@ -237,14 +237,14 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
   }
   case class AddSelfDualObject(newRing: FusionRing[Int]) extends NewRingUpper {
     private def newGenerators = {
-      if (depth == 1) (1 until newRing.rank) else generators
+      if (depth == 1) (1 until newRing.rank).toSet else generators
     }
     override lazy val result = pfr.copy(ring = newRing, generators = newGenerators)
     override def inverse = result.DeleteSelfDualObject(ring.rank)
   }
   case class AddDualPairOfObjects(newRing: FusionRing[Int]) extends NewRingUpper {
     private def newGenerators = {
-      if (depth == 1) (1 until newRing.rank) else generators
+      if (depth == 1) (1 until newRing.rank).toSet else generators
     }
     override lazy val result = pfr.copy(ring = newRing, generators = newGenerators)
     override def inverse = result.DeleteDualPairOfObjects(ring.rank, ring.rank + 1)
@@ -268,7 +268,7 @@ case class PartialFusionRing(depth: Int, generators: Seq[Int], ring: FusionRing[
         // FIXME independence should really be done as equations in withAnother...
         def independent_?(f: FusionRing[Int]) = {
           f.independent_?(if (depth == 1) {
-            1 until f.rank
+            (1 until f.rank).toSet
           } else {
             generators
           })
@@ -342,7 +342,7 @@ private object C {
   def s2pfr(s: String) = {
     val depthString :: generatorsString :: dimensionString :: matricesStrings = s.split("\n").toList
     val generators = generatorsString.stripPrefix("generators = Seq(").stripSuffix(")").split(",").map(_.trim.toInt)
-    PartialFusionRing(depthString.stripPrefix("depth = ").toInt, generators, FusionRing(matricesStrings.map(s2m)), dimensionString.stripPrefix("globalDimensionLimit = ").toDouble)
+    PartialFusionRing(depthString.stripPrefix("depth = ").toInt, generators.toSet, FusionRing(matricesStrings.map(s2m)), dimensionString.stripPrefix("globalDimensionLimit = ").toDouble)
   }
 
   def s2pfrseq(s: String) = {
