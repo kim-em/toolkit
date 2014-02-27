@@ -207,6 +207,13 @@ object FusionRings {
     }
 
     def estimates(substitution: Array[Int]): Array[Double] = {
+      if(substitution(0) > 100) {
+        println(lastEstimates.mkString(" "))
+        println(lastMatrices.map(_.map(_.mkString(",")).mkString("\n")).mkString("\n"))
+        println(lastEstimates.mkString("  "))
+        ???
+      }
+      
       val dirtyMatrices = Array.fill(n)(false)
 
       if (substitution != lastSubstitution) {

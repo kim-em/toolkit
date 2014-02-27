@@ -295,21 +295,25 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
         }
 
         val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).filter(independent_?).toSeq
-        println("self-dual: " + extraSelfDual.size)
+//        println("self-dual: " + extraSelfDual.size)
         val extraSelfDual2 = extraSelfDual.filter({ r => 
         	val dims = for(x <- r.basis) yield r.dimensionLowerBounds(x)
         	dims.forall(_ <= dims.last)
-        })
-        println("self-dual2: " + extraSelfDual2.size)
-        
+        })        
         
         val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).filter(independent_?).toSeq
-        println("pairs: " + extraPairs.size)
+//        println("pairs: " + extraPairs.size)
 
+        val extraPairs2 = extraPairs.filter({ r => 
+        	val dims = for(x <- r.basis) yield r.dimensionLowerBounds(x)
+        	val m = scala.math.max(dims(dims.size - 1), dims(dims.size - 2))
+        	dims.forall(_ <= m)
+        })  
+        
         val extraSelfDualReps = chooseRepresentatives(extraSelfDual.map(AddSelfDualObject))
-        println("self-dual: " + extraSelfDual.size + " ---> " + extraSelfDualReps.size)
+        println("self-dual: " + extraSelfDual.size + " ---> " + extraSelfDual2.size + " ---> " + extraSelfDualReps.size)
         val extraPairsReps = chooseRepresentatives(extraPairs.map(AddDualPairOfObjects))
-        println("pairs: " + extraPairs.size + " ---> " + extraPairsReps.size)
+        println("pairs: " + extraPairs.size + " ---> " + extraPairs2.size + " ---> " + extraPairsReps.size)
         extraSelfDualReps ++ extraPairsReps
       } else {
         Set.empty
