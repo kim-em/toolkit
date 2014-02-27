@@ -93,16 +93,16 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
         reportTiming(2, canonicalize)))
   }
 
-  override def children = {
-    try {
-      PartialFusionRingCache.getOrElseUpdate(this, super.children)
-    } catch {
-      case e: java.lang.ExceptionInInitializerError => {
-        Logging.error("S3 not available: ", e)
-        super.children
-      }
-    }
-  }
+//  override def children = {
+//    try {
+//      PartialFusionRingCache.getOrElseUpdate(this, super.children)
+//    } catch {
+//      case e: java.lang.ExceptionInInitializerError => {
+//        Logging.error("S3 not available: ", e)
+//        super.children
+//      }
+//    }
+//  }
 
   private def generator = {
     ring.sum(for (i <- generators) yield ring.basis(i))
@@ -149,6 +149,9 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
         case DeleteSelfDualObject(_) => 1
         case DeleteDualPairOfObjects(_, _) => 2
       }
+    }).refineBy({
+      case DeleteSelfDualObject(k) => - ring.dimensionLowerBounds(ring.basis(k))
+      case DeleteDualPairOfObjects(k1, k2) => - scala.math.max(ring.dimensionLowerBounds(ring.basis(k1)), ring.dimensionLowerBounds(ring.basis(k2)))
     }).refineByPartialFunction({
       // TODO would it help to do the DeleteDualPairOfObjects case??
       case DeleteSelfDualObject(k) => {
@@ -293,6 +296,12 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
 
         val extraSelfDual = FusionRings.withAnotherSelfDualObject(ring, depth, depths, globalDimensionLimit).filter(independent_?).toSeq
         println("self-dual: " + extraSelfDual.size)
+        val extraSelfDual2 = extraSelfDual.filter({ r => 
+        	val dims = for(x <- r.basis) yield r.dimensionLowerBounds(x)
+        	dims.forall(_ <= dims.last)
+        })
+        println("self-dual2: " + extraSelfDual2.size)
+        
         
         val extraPairs = FusionRings.withAnotherPairOfDualObjects(ring, depth, depths, globalDimensionLimit).filter(independent_?).toSeq
         println("pairs: " + extraPairs.size)
