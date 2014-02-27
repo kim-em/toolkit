@@ -14,8 +14,8 @@ class FusionRingsTest extends FlatSpec with ShouldMatchers {
     FusionRings.withObject(FusionRings.Examples.AH1.structureCoefficients(1) /*, Some(FusionRings.Examples.AH1)*/ ).toSeq should have size (1)
   }
 
-	
- "representationOf" should "generate fusion rings from finite groups" in {
-   FusionRings.Examples.representationsOf(FiniteGroups.cyclicGroup(6)).globalDimensionLowerBound < 6.0 should be (true)
- }
+  "representationOf" should "generate fusion rings from finite groups" in {
+    FusionRings.Examples.representationsOf(FiniteGroups.cyclicGroup(6)).globalDimensionLowerBound < 6.0 should be(true)
+    FusionRings.Examples.representationsOf(FiniteGroups.Mathieu11).globalDimensionLowerBound < FiniteGroups.Mathieu11.size should be(true)
+  }
 }

@@ -70,14 +70,7 @@ object dreadnaut extends dreadnaut {
   override val dreadnautPath = try {
     "which dreadnaut" !!
   } catch {
-    case e: RuntimeException => {
-      val file = new File(System.getProperty("user.home") + "/bin/dreadnaut")
-      if (!file.exists) {
-        println("dreadnaut not found!")
-        ???
-      }
-      file.getAbsolutePath()
-    }
+    case e: Exception => System.getProperty("user.home") + "/bin/dreadnaut"
   }
   
   require(dreadnautPath.nonEmpty, "There doesn't appear to be a copy of dreadnaut on the $PATH.")
