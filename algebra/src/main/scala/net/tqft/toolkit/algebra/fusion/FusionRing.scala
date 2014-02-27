@@ -291,7 +291,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
       } else {
         val matrices = Matrices.over[Int]
         val A = x.zip(structureCoefficients).map(p => matrices.scalarMultiply(p._1, p._2.mapEntries(xi => xi: Int))).reduce(matrices.add)
-        println("copmuting FP eigenvalue for " + A)
+//        println("computing FP eigenvalue for " + A)
         //        require(A.entries.flatten.forall(_ >= 0))
         //        require(A.entries.flatten.exists(_ > 0))
         val AAt = matrices.compose(A, A.transpose)
