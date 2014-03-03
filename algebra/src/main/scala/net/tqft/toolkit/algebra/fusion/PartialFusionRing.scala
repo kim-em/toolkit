@@ -363,7 +363,7 @@ private object C {
   }
 }
 
-object PartialFusionRingCache extends MapTransformer.KeyTransformer[PartialFusionRing, String, Seq[PartialFusionRing]](new MapTransformer.ValueTransformer[String, String, Seq[PartialFusionRing]](S3.withAccount("AKIAIUHOCNVIDRMVRC2Q")("partial-fusion-ring"),
+object PartialFusionRingCache extends MapTransformer.KeyTransformer[PartialFusionRing, String, Seq[PartialFusionRing]](new MapTransformer.ValueTransformer[String, String, Seq[PartialFusionRing]](S3/*.withAccount("AKIAIUHOCNVIDRMVRC2Q")*/("partial-fusion-ring"),
   C.s2pfrseq _,
   C.pfrseq2s _),
   { s: String => None },
