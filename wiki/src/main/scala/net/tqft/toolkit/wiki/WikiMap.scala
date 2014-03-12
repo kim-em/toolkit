@@ -7,9 +7,6 @@ import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
 import net.tqft.toolkit.Throttle
 import scala.slick.driver.MySQLDriver.simple._
-import org.openqa.selenium.htmlunit.HtmlUnitDriver
-import scala.slick.lifted.ProvenShape.proveShapeOf
-import scala.slick.profile.RelationalProfile.SimpleQL.Table
 
 trait WikiMap extends scala.collection.mutable.Map[String, String] {
   private class Revision(tag: Tag, tablePrefix: String) extends Table[(Int, Int)](tag, tablePrefix + "revision") {
@@ -200,7 +197,7 @@ trait Driver {
 }
 
 object HtmlUnitDriver extends Driver {
-  override def createDriver = new HtmlUnitDriver()
+  override def createDriver = new org.openqa.selenium.htmlunit.HtmlUnitDriver()
 }
 
 object FirefoxDriver extends Driver {
