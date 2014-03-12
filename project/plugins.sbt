@@ -9,3 +9,5 @@ resolvers += Resolver.url("scalasbt",
 
 
 addSbtPlugin("com.github.retronym" % "sbt-onejar" % "0.8")
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-proguard" % "0.2.2")

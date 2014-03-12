@@ -1,5 +1,6 @@
 import sbt._
 import Keys._
+import com.typesafe.sbt.SbtProguard._
 
 object Toolkit extends Build {
   import BuildSettings._
@@ -39,7 +40,15 @@ object Toolkit extends Build {
 
   lazy val wiki = Project(id = "toolkit-wiki",
     base = file("wiki"),
-    settings = buildSettings ++ OneJar.settings ++ Seq(libraryDependencies ++= Seq(selenium.firefox, selenium.htmlunit, mysql, slick))) dependsOn (base)
+    settings = buildSettings ++ 
+      proguardSettings ++ 
+      Seq(
+        javaOptions in (Proguard, ProguardKeys.proguard) := Seq("-Xmx2G"), 
+        ProguardKeys.options in Proguard ++= Seq("-dontnote", "-dontwarn", "-ignorewarnings"),
+        ProguardKeys.options in Proguard += ProguardOptions.keepMain("net.tqft.toolkit.wiki.Wiki$")
+      ) ++ 
+      OneJar.settings ++ 
+      Seq(libraryDependencies ++= Seq(selenium.firefox, selenium.htmlunit, mysql, slick))) dependsOn (base)
 
 }
 
@@ -61,7 +70,8 @@ object BuildSettings {
     //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
     scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j),
-    exportJars := true)
+    exportJars := true
+  )
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
 }
