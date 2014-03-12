@@ -1,4 +1,4 @@
-package net.tqft.wiki
+package net.tqft.toolkit.wiki
 
 import org.openqa.selenium.WebDriver
 import net.tqft.toolkit.Logging
@@ -7,6 +7,9 @@ import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
 import net.tqft.toolkit.Throttle
 import scala.slick.driver.MySQLDriver.simple._
+import org.openqa.selenium.htmlunit.HtmlUnitDriver
+import scala.slick.lifted.ProvenShape.proveShapeOf
+import scala.slick.profile.RelationalProfile.SimpleQL.Table
 
 trait WikiMap extends scala.collection.mutable.Map[String, String] {
   private class Revision(tag: Tag, tablePrefix: String) extends Table[(Int, Int)](tag, tablePrefix + "revision") {
@@ -84,7 +87,16 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
     }
   }
 
-  private def driver = FirefoxDriver.driverInstance
+  private var driverFactory: Driver = HtmlUnitDriver
+  
+  def useHtmlUnit {
+    driverFactory = HtmlUnitDriver
+  }
+  def useFirefox {
+    driverFactory = FirefoxDriver
+  }
+  
+  private def driver = driverFactory.driverInstance
   private def actionURL(title: String, action: String) = {
     wikiScriptURL + "?title=" + java.net.URLEncoder.encode(title, "UTF-8") + "&action=" + action
   }
@@ -163,29 +175,41 @@ object WikiMap {
   }
 }
 
-object FirefoxDriver {
+trait Driver {
   private var driverOption: Option[WebDriver] = None
 
   def driverInstance = {
     if (driverOption.isEmpty) {
-      Logging.info("Starting Firefox/webdriver")
-      //      val profile = new FirefoxProfile();
-      //      profile.setPreference("network.proxy.socks", "localhost");
-      //      profile.setPreference("network.proxy.socks_port", "1081");
-      //      profile.setPreference("network.proxy.type", 1)
-      driverOption = Some(new org.openqa.selenium.firefox.FirefoxDriver( /*profile*/ ))
-      Logging.info("   ... finished starting Firefox")
+      Logging.info("Starting browser")
+      driverOption = Some(createDriver)
+      Logging.info("   ... finished starting browser")
     }
     driverOption.get
   }
+
+  protected def createDriver: WebDriver
 
   def quit = {
     try {
       driverOption.map(_.quit)
     } catch {
-      case e: Exception => Logging.warn("Exception while closing Firefox.", e)
+      case e: Exception => Logging.warn("Exception while closing browser.", e)
     }
     driverOption = None
   }
+}
 
+object HtmlUnitDriver extends Driver {
+  override def createDriver = new HtmlUnitDriver()
+}
+
+object FirefoxDriver extends Driver {
+  override def createDriver = {
+    //      val profile = new FirefoxProfile();
+    //      profile.setPreference("network.proxy.socks", "localhost");
+    //      profile.setPreference("network.proxy.socks_port", "1081");
+    //      profile.setPreference("network.proxy.type", 1)
+    new org.openqa.selenium.firefox.FirefoxDriver( /*profile*/ )
+
+  }
 }

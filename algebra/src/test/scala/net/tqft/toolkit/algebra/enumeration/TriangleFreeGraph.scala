@@ -7,7 +7,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
   import net.tqft.toolkit.permutations.Permutations._
   import net.tqft.toolkit.algebra.graphs._
 
-  override def toString = "TriangleFreeGraph(" + numberOfVertices + ", " + adjacencies + ")"
+//  override def toString = "TriangleFreeGraph(" + numberOfVertices + ", " + adjacencies + ")"
 
   override lazy val automorphisms = dreadnaut.automorphismGroup(this)
   

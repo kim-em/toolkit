@@ -39,7 +39,7 @@ object Toolkit extends Build {
 
   lazy val wiki = Project(id = "toolkit-wiki",
     base = file("wiki"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(selenium.firefox, mysql, slick))) dependsOn (base)
+    settings = buildSettings ++ OneJar.settings ++ Seq(libraryDependencies ++= Seq(selenium.firefox, selenium.htmlunit, mysql, slick))) dependsOn (base)
 
 }
 
@@ -60,10 +60,17 @@ object BuildSettings {
     libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
     //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
     scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
-    libraryDependencies ++= Seq(junit, slf4j))
+    libraryDependencies ++= Seq(junit, slf4j),
+    exportJars := true)
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
 }
+
+object OneJar {
+    import com.github.retronym.SbtOneJar._
+    val settings = oneJarSettings ++ Seq(exportJars := true, mainClass in oneJar := Some("org.omath.ui.repl.omath"))
+}
+
 
 object SonatypeSettings {
 /*
@@ -121,7 +128,8 @@ object Dependencies {
 	val guava = "com.google.guava" % "guava" % "16.0.1"
 	val findbugs = "com.google.code.findbugs" % "jsr305" % "1.3.+"
 	object selenium {
-		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.39.0"
+		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.40.0"
+		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.40.0"
 	}
 	object lift {
 		val util = "net.liftweb" %% "lift-util" % "2.6-M2"
