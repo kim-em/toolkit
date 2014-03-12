@@ -13,7 +13,6 @@ import CanonicalGeneration.{ info }
 trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   val automorphisms: FinitelyGeneratedFiniteGroup[G]
   def findIsomorphismTo(other: A): Option[G]
-  def isomorphs: Iterator[A]
   
   // in each problem instance, we will specify what the upper and lower objects actually look like
   type Lower <: {
@@ -81,6 +80,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
   def verifyAncestry = ancestry.forall(_.verifyParent)
   
+  def isomorphs: Iterator[A]
   def verifyAncestryForSomeIsomorph = isomorphs.exists(_.verifyAncestry)
 
   def verifyUpperOrbits = {
