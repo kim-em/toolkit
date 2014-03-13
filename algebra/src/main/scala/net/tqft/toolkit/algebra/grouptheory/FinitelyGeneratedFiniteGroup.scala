@@ -8,19 +8,22 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
 
   trait Action[B] extends super.Action[B] { action =>
     def elements: Set[B]
-    def orbits: Set[Orbit[A, B]] = {
+    
+    trait Orbit extends net.tqft.toolkit.algebra.grouptheory.Orbit[A, B]
+    
+    def orbits: Set[Orbit] = {
 //      for(a <- elements; g <- generators) {
 //        require(elements.contains(act(g, a)))
 //      }
       
-      class O(val representative: B) extends Orbit[A, B] {
+      class O(val representative: B) extends Orbit {
         override def stabilizer = ???
         override lazy val elements = extendElements(Seq.empty, Seq(representative).par).toSet
 
         override def hashCode = elements.hashCode
         override def equals(other: Any) = {
           other match {
-            case other: Orbit[A, B] => other.elements == elements
+            case other: Orbit => other.elements == elements
             case _ => false
           }
         }
@@ -37,7 +40,7 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
       }
 
       @scala.annotation.tailrec
-      def extractOrbits(objects: Set[B], orbits: Set[Orbit[A, B]]): Set[Orbit[A, B]] = {
+      def extractOrbits(objects: Set[B], orbits: Set[Orbit]): Set[Orbit] = {
         if (objects.isEmpty) {
           orbits
         } else {
