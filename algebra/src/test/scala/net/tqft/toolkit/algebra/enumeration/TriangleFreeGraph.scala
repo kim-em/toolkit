@@ -19,9 +19,9 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
     Permutations.of(numberOfVertices).find(p => relabel(p) == other)
   }
   
-  override val ordering: Ordering[Lower] = Ordering.by({ l: Lower =>
+  override val ordering: Ordering[lowerObjects.Orbit] = Ordering.by({ o: lowerObjects.Orbit =>
     dreadnaut.canonicalize(
-      this.mark(Seq(l.k)))
+      this.mark(Seq(o.representative.k)))
   })
 
   case class Upper(independentVertices: Seq[Int]) {
@@ -50,7 +50,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
       Upper(upper.independentVertices.map(h).sorted)
     }
   }
-  override def lowerObjects = new automorphisms.Action[Lower] {
+  override lazy val lowerObjects = new automorphisms.Action[Lower] {
     override def elements = (for (k <- 0 until numberOfVertices) yield Lower(k)).toSet
     override def act(g: IndexedSeq[Int], lower: Lower) = {
       val h = g.inverse

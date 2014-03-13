@@ -20,7 +20,8 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     //    def invariant: B
   }
 
-  val ordering: Ordering[Lower]
+  // BE CAREFUL: this ordering must be invariant under the automorphism action on Lowers
+  val ordering: Ordering[lowerObjects.Orbit]
 
   type Upper <: {
     val result: A
@@ -29,7 +30,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
 
   // and generate them, along with an action of automorphisms
   def upperObjects: automorphisms.Action[Upper]
-  def lowerObjects: automorphisms.Action[Lower]
+  val lowerObjects: automorphisms.Action[Lower]
 
   // now the actual algorithm
   def children = {
@@ -44,7 +45,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
       val lowerOrbits = candidateUpperObject.result.lowerObjects.orbits
 //            info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
 //            info("   which sort as " + lowerOrbits.toSeq.sortBy({ _.representative })(candidateUpperObject.result.ordering).map(_.elements))
-      val canonicalReductionOrbit = lowerOrbits.minBy({ _.representative })(candidateUpperObject.result.ordering)
+      val canonicalReductionOrbit = lowerOrbits.min(candidateUpperObject.result.ordering)
 //            info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
       if (canonicalReductionOrbit.contains(candidateUpperObject.inverse)) {
 //                info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
@@ -61,11 +62,11 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   def isomorphicTo_?(other: A) = findIsomorphismTo(other).nonEmpty
 
   def parent = {
-    val elts = lowerObjects.elements
+    val elts = lowerObjects.orbits
     if (elts.isEmpty) {
       None
     } else {
-      Some(elts.min(ordering).result)
+      Some(elts.min(ordering).representative.result)
     }
   }
 

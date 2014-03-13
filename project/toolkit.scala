@@ -28,7 +28,7 @@ object Toolkit extends Build {
 
   lazy val algebra = Project(id = "toolkit-algebra",
     base = file("algebra"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (base, arithmetic, amazon, functions, collections)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs, scalaz))) dependsOn (base, arithmetic, amazon, functions, collections)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),
@@ -146,5 +146,6 @@ object Dependencies {
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
 	val slick = "com.typesafe.slick" %% "slick" % "2.0.0"
+	val scalaz = "org.scalaz" %% "scalaz-core" % "7.0.5"
 }
 
