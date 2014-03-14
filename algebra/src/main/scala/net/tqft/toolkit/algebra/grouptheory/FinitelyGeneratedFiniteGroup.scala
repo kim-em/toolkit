@@ -7,7 +7,7 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
   override def unsortedConjugacyClasses = GroupActions.conjugationAction(fgFiniteGroup).orbits(generators, elements).toSeq
 
   trait Action[B] extends super.Action[B] { action =>
-    def elements: Set[B]
+    def elements: Iterable[B]
     
     trait Orbit extends net.tqft.toolkit.algebra.grouptheory.Orbit[A, B]
     
@@ -49,7 +49,7 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
         }
       }
 
-      extractOrbits(action.elements, Set())
+      extractOrbits(action.elements.toSet, Set())
     }
 
   }
