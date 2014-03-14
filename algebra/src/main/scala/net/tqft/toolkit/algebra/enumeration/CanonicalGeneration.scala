@@ -21,7 +21,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
 
   // BE CAREFUL: this ordering must be invariant under the automorphism action on Lowers
-  val ordering: Ordering[lowerObjects.Orbit]
+  def ordering: Ordering[lowerObjects.Orbit]
 
   type Upper <: {
     val result: A
