@@ -196,6 +196,15 @@ object FiniteGroups {
 
   def product[A, B](group1: FiniteGroup[A], group2: FiniteGroup[B]) = semidirectProduct(group1, group2, GroupActions.trivialAction)
 
+  def indexedProduct[A](groups: Seq[FiniteGroup[A]]): FiniteGroup[Seq[A]] = {
+    new FiniteGroup[Seq[A]] {
+      override def elements = ???
+      override def one = groups.map(_.one)
+      override def inverse(x: Seq[A]) = groups.zip(x).map(p => p._1.inverse(p._2))
+      override def multiply(x: Seq[A], y: Seq[A]) = groups.zip(x.zip(y)).map(p => p._1.multiply(p._2._1, p._2._2))
+    }
+  }
+  
   def power[A](group: FiniteGroup[A], k: Int): FiniteGroup[Seq[A]] = {
     new FiniteGroup[Seq[A]] {
       override def elements = {
