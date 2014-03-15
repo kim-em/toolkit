@@ -4,8 +4,7 @@ import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.collections.SparseSeq
-import net.tqft.toolkit.permutations.Permutation
-import net.tqft.toolkit.permutations.Permutations
+import net.tqft.toolkit.permutations.Permutations.Permutation
 import scala.collection.GenSeq
 import scala.collection.GenSet
 import net.tqft.toolkit.algebra.categories.Homomorphism
@@ -129,7 +128,7 @@ object FiniteGroups {
 
     override val elements = (0 until n).toSet
   }
-  import net.tqft.toolkit.permutations.Permutation
+  import net.tqft.toolkit.permutations.Permutations.Permutation
   private class PermutationGroup(n: Int) extends FiniteGroup[IndexedSeq[Int]] {
     import net.tqft.toolkit.permutations.Permutations
     import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation

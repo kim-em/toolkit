@@ -5,6 +5,7 @@ import net.tqft.toolkit.functions.Memo
 import scala.collection.GenSeq
 
 object Permutations {
+ type Permutation = IndexedSeq[Int]
 
   class RichPermutation(p: Permutation) {
     def permute[A](s: GenSeq[A]): IndexedSeq[A] = {
