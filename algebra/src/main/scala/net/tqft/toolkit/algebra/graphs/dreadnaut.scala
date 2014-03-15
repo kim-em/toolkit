@@ -9,13 +9,13 @@ import scala.io.Source
 import java.io.PrintWriter
 import java.io.File
 
-trait dreadnaut extends Logging {
+trait Dreadnaut extends Logging {
   def dreadnautPath: String
 
   private var in: PrintWriter = null
   private var out: Iterator[String] = null
 
-  private lazy val initialize = {
+  protected lazy val initializeDreadnaut = {
     dreadnautPath.run(new ProcessIO(os => in = new PrintWriter(os), is => out = Source.fromInputStream(is).getLines, _.close()))
     while (in == null || out == null) {
       Thread.sleep(10)
@@ -24,9 +24,9 @@ trait dreadnaut extends Logging {
   }
 
   // TODO make it possible to access dreadnaut in parallel?
-  private def invoke(cmd: String): Seq[String] = {
+  protected def invokeDreadnaut(cmd: String): Seq[String] = {
     synchronized {
-      initialize
+      initializeDreadnaut
 
       in.println(cmd)
       in.println("\"done... \"z")
@@ -42,7 +42,7 @@ trait dreadnaut extends Logging {
   //  }
 
   def automorphismGroup(g: Graph): FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
-    val output = invoke(g.toDreadnautString + "cx\n")
+    val output = invokeDreadnaut(g.toDreadnautString + "cx\n")
     val generatorsString = output.filter(_.startsWith("("))
     def permutationFromCycles(cycles: Array[Array[Int]]): IndexedSeq[Int] = {
       for (i <- 0 until g.numberOfVertices) yield {
@@ -56,7 +56,7 @@ trait dreadnaut extends Logging {
     FiniteGroups.symmetricGroup(g.numberOfVertices).subgroupGeneratedBy(generators)
   }
   def canonicalLabelling(g: Graph): IndexedSeq[Int] = {
-    val output = invoke(g.toDreadnautString + "cxb\n")
+    val output = invokeDreadnaut(g.toDreadnautString + "cxb\n")
     val result = output.dropWhile(!_.startsWith("canupdates")).tail.takeWhile(!_.startsWith("  0 :")).mkString("").split(' ').filter(_.nonEmpty).map(_.toInt)
     require(result.length == g.numberOfVertices)
     result
@@ -66,7 +66,7 @@ trait dreadnaut extends Logging {
   }
 }
 
-object dreadnaut extends dreadnaut {
+object Dreadnaut extends Dreadnaut {
   override val dreadnautPath = try {
     "which dreadnaut" !!
   } catch {
@@ -74,7 +74,7 @@ object dreadnaut extends dreadnaut {
   }
   
   require(dreadnautPath.nonEmpty, "There doesn't appear to be a copy of dreadnaut on the $PATH.")
-  require(invoke("n=3 g 1;2;0; cx").head.startsWith("(1 2)"), "The copy of dreadnaut at " + dreadnautPath + " doesn't seem to be working.")
+  require(invokeDreadnaut("n=3 g 1;2;0; cx").head.startsWith("(1 2)"), "The copy of dreadnaut at " + dreadnautPath + " doesn't seem to be working.")
 
-  initialize
+  initializeDreadnaut
 }

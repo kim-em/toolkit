@@ -5,7 +5,7 @@ import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.fusion.VectorSpace
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroup
 import net.tqft.toolkit.algebra.grouptheory.Representation
-import net.tqft.toolkit.permutations.Permutation
+import net.tqft.toolkit.permutations.Permutations.Permutation
 
 trait NumberField[A] extends Field[Polynomial[A]] with VectorSpace[A, Polynomial[A]] {
   override def coefficients: Field[A]

@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra.grouptheory
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
-import net.tqft.toolkit.permutations._
+import net.tqft.toolkit.permutations.Permutations.Permutation
 
 object Representations {
   private def elementaryVector[A](entry: A, zero: A, n: Int, k: Int) = Seq.fill(k)(zero) ++ (entry +: Seq.fill(n - k - 1)(zero))

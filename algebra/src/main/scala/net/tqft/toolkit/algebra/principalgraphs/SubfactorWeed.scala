@@ -1,12 +1,10 @@
 package net.tqft.toolkit.algebra.principalgraphs
 
 import net.tqft.toolkit.algebra.enumeration.CanonicalGeneration
-import net.tqft.toolkit.permutations.Permutation
+import net.tqft.toolkit.permutations.Permutations._
 import net.tqft.toolkit.permutations.Involutions
 import net.tqft.toolkit.permutations.Involutions._
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
-import scalaz._
-import Scalaz._
 import net.tqft.toolkit.algebra.enumeration.Odometer
 
 trait Memo[+T] {
@@ -47,8 +45,8 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
       case k if k > 0 => inclusions(k - 1).size
     }
   }
-  lazy val totalRank = (for (k <- 0 to depth) yield rankAtDepth(k)).sum
-  lazy val totalEvenRank = (for (k <- 0 to depth by 2) yield rankAtDepth(k)).sum
+  lazy val totalRank: Int = (for (k <- 0 to depth) yield rankAtDepth(k)).sum
+  lazy val totalEvenRank: Int = (for (k <- 0 to depth by 2) yield rankAtDepth(k)).sum
   def depth: Int = inclusions.size
 
   def truncate: Bigraph = Bigraph(rankAtDepthZero, inclusions.most, Memo.fail)
@@ -63,11 +61,11 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
       }
     }))
 
-  private lazy val evenRanks = Array.tabulate(depth / 2 + 1)({ d =>
+  private lazy val evenRanks: Array[Int] = Array.tabulate(depth / 2 + 1)({ d =>
       rankAtDepth(2 * d)
   })
 
-  private def initialApproximateEigenvector = {
+  private def initialApproximateEigenvector: Array[Array[Double]] = {
     val z = scala.math.sqrt(1.0 / (totalEvenRank + (if(depth % 2 == 0) 1 else 0)))
     Array.tabulate(depth / 2 + 1)({ d =>
       Array.fill(evenRanks(d) + (if(depth % 2 == 0 && d == depth / 2) 1 else 0))(z)
@@ -97,7 +95,6 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
     val x = approximateEigenvectors(0)
     val y = approximateEigenvectors(1)
     
-    // FIXME this overwrites x too quickly!
     val n = evenDepthTwoStepNeighbours.value
     var squaredNorm = 0.0
     for (i <- 0 to depth / 2) {
@@ -113,9 +110,9 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
     if (depth % 2 == 0) {
       val nx = x(depth / 2 - 1)
       val ny = y(depth / 2 - 1)
-      my(rankAtMaximalDepth + 1) = ???
-      for (j <- 0 until rankAtMaximalDepth) my(j) = mx(j) + { ???; 0.0 }
-      for (j <- 0 until rankAtDepth(-1)) ny(j) = nx(j) + { ???; 0.0 }
+      my(rankAtMaximalDepth + 1) = 0.0 // FIXME
+      for (j <- 0 until rankAtMaximalDepth) my(j) = my(j) + 0.0 // FIXME
+      for (j <- 0 until rankAtDepth(-1)) ny(j) = ny(j) + 0.0 // FIXME
     } else {
       for (j <- 0 until evenRanks(depth / 2)) {
         for (k <- 0 until evenRanks(depth / 2)) {
@@ -130,7 +127,7 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
       }
     }
     squaredNorm
-
+    ???
   }
 
 }
@@ -387,7 +384,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
   override lazy val lowerObjects = {
     new automorphisms.Action[Lower] {
-      val elements: Set[Lower] =
+      override val elements: Iterable[Lower] =
         decreaseDepthSet.getOrElse(
           (for (i <- 0 to 1; k <- 0 until pair(i).bigraph.rankAtMaximalDepth; if pair(i).dualData.last(k) != k - 1) yield {
             if (pair(i).dualData.last(k) == k) {
@@ -395,16 +392,16 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
             } else {
               DeleteDualPairAtEvenDepth(i, k)
             }
-          }).toSet[Lower])
+          }))
 
-      def act(g: Seq[(Permutation, Permutation)], x: Lower): Lower = x match {
+      override def act(g: Seq[(Permutation, Permutation)], x: Lower): Lower = x match {
         case DecreaseDepth => x
         case DeleteSelfDualVertex(graph, index) => ???
         case DeleteDualPairAtEvenDepth(graph, index) => ???
       }
     }
   }
-  override def ordering = ???
+  override def ordering: Ordering[lowerObjects.Orbit] = ???
 
   override def upperObjects = {
     new automorphisms.Action[Upper] {
@@ -463,7 +460,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
     }
   }
 
-  trait AddVertexUpper extends Upper {
+  sealed trait AddVertexUpper extends Upper {
     def pairOption: Option[EvenDepthPairOfBigraphsWithDuals]
     def associative_? = pairOption.nonEmpty
     override lazy val result = weed.copy(pair = pairOption.get)
@@ -490,7 +487,7 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
 
   override lazy val lowerObjects = {
     new automorphisms.Action[Lower] {
-      val elements: Set[Lower] =
+      val elements: Iterable[Lower] =
         decreaseDepthSet.getOrElse(
           (for (k <- 0 until pair.g0.bigraph.rankAtMaximalDepth) yield DeleteDualPairAtOddDepth(k)).toSet)
 
@@ -500,12 +497,12 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
       }
     }
   }
-  override def ordering = ???
+  override def ordering: Ordering[lowerObjects.Orbit] = ???
 
   override def upperObjects = {
     new automorphisms.Action[Upper] {
       override val elements: Iterable[Upper] = {
-        def uppersAddingVerticesToGraph = {
+        def uppersAddingVerticesToGraph: Iterable[Upper] = {
           val limit = {
             // TODO: surely we can be more efficient here; at least saving some answers
             row: List[List[Int]] => pair(0).bigraph.isEigenValueWithRowBelow_?(indexLimit)(row(0)) && pair(0).bigraph.isEigenValueWithRowBelow_?(indexLimit)(row(1))
@@ -525,7 +522,7 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
     }
   }
 
-  trait AddVertexUpper extends Upper {
+  sealed trait AddVertexUpper extends Upper {
     def pairOption: Option[OddDepthPairOfBigraphsWithDuals]
     def associative_? = pairOption.nonEmpty
     override lazy val result = weed.copy(pair = pairOption.get)

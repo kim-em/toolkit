@@ -10,7 +10,7 @@ trait Odometer[O] {
 }
 
 object Odometer extends Object with Logging {
-  var counter = 0;
+  //  var counter = 0;
 
   def apply[O: Odometer](limit: O => Boolean)(initial: O): Iterable[O] = {
     implicit val odometer = implicitly[Odometer[O]]
@@ -45,8 +45,8 @@ object Odometer extends Object with Logging {
           successor(initial)
         }
 
-        def next = {
-          counter = counter + 1
+        def next: O = {
+          //          counter = counter + 1
           n match {
             case Some(o) => {
               n = successor(o)
@@ -56,7 +56,7 @@ object Odometer extends Object with Logging {
           }
         }
 
-        def hasNext = {
+        def hasNext: Boolean = {
           n match {
             case Some(o) => true
             case None => false
@@ -85,7 +85,7 @@ object Odometer extends Object with Logging {
         }
       }
     }
-        override def reset(l: Array[Int]) = Array.fill(l.size)(0)
+    override def reset(l: Array[Int]) = Array.fill(l.size)(0)
 
   }
 
@@ -101,15 +101,15 @@ object Odometer extends Object with Logging {
         case _ => None
       }
     }
-        override def reset(l: List[Int]) = List.fill(l.size)(0)
+    override def reset(l: List[Int]) = List.fill(l.size)(0)
 
   }
 
   implicit def ListOdometer[A: Odometer] = new ListOdometer[A]
-  
+
   class ListOdometer[A: Odometer] extends Odometer[List[A]] {
     val aOdometer = implicitly[Odometer[A]]
-    
+
     override def increment(l: List[A]): List[A] = {
       (aOdometer.increment(l.head)) :: l.tail
     }

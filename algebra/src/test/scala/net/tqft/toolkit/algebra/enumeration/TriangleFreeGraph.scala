@@ -9,7 +9,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
 
 //  override def toString = "TriangleFreeGraph(" + numberOfVertices + ", " + adjacencies + ")"
 
-  override lazy val automorphisms = dreadnaut.automorphismGroup(this)
+  override lazy val automorphisms = Dreadnaut.automorphismGroup(this)
   
   override def isomorphs: Iterator[TriangleFreeGraph] = {
     for(p <- Permutations.of(numberOfVertices).iterator) yield copy(adjacencies = relabel(p).adjacencies)
@@ -20,7 +20,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
   }
   
   override val ordering: Ordering[lowerObjects.Orbit] = Ordering.by({ o: lowerObjects.Orbit =>
-    dreadnaut.canonicalize(
+    Dreadnaut.canonicalize(
       this.mark(Seq(o.representative.k)))
   })
 
