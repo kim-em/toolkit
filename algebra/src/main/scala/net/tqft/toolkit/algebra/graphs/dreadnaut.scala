@@ -29,13 +29,11 @@ trait Dreadnaut extends Logging {
     synchronized {
       initializeDreadnaut
 
-      println("cmd: " + cmd)
       in.println(cmd)
       in.println("\"done... \"z")
       for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
       in.flush()
       val result = out.takeWhile(!_.startsWith("done... [")).toList
-      println("result: " + result)
       result
     }
   }
@@ -59,7 +57,6 @@ trait Dreadnaut extends Logging {
     FiniteGroups.symmetricGroup(g.numberOfVertices).subgroupGeneratedBy(generators)
   }
   def canonicalLabelling(g: Graph): IndexedSeq[Int] = {
-    println("g.toDreadnautString: " + g.toDreadnautString)
     val output = invokeDreadnaut(g.toDreadnautString + "cxb\n")
     val result = output.dropWhile(!_.startsWith("canupdates")).tail.takeWhile(!_.startsWith("  0 :")).mkString("").split(' ').filter(_.nonEmpty).map(_.toInt)
     require(result.length == g.numberOfVertices)
