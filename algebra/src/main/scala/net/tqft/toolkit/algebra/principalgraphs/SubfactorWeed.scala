@@ -84,7 +84,6 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
   def deleteRow(index: Int) = Bigraph(
     rankAtDepthZero,
     inclusions = inclusions.most :+ (inclusions.last.removed(index)))
-    
 
   def rankAtMaximalDepth: Int = rankAtDepth(depth)
   def rankAtDepth(k: Int): Int = {
@@ -94,13 +93,22 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
       case k if k > 0 => inclusions(k - 1).size
     }
   }
+  def valence(k: Int, index: Int) = {
+    if (k == 0) {
+      inclusions.head.map(_(index)).sum
+    } else if (k == depth) {
+      inclusions.last(index).sum
+    } else {
+      inclusions(k - 1).map(_(index)).sum + inclusions(k)(index).sum
+    }
+  }
   lazy val totalRank: Int = (for (k <- 0 to depth) yield rankAtDepth(k)).sum
   lazy val totalEvenRank: Int = (for (k <- 0 to depth by 2) yield rankAtDepth(k)).sum
   def depth: Int = inclusions.size
   lazy val supertransitivity = inclusions.indexWhere(_ != Seq(Seq(1))) match {
     case -1 => depth
     case k => k
-  } 
+  }
 
   def truncate: Bigraph = Bigraph(rankAtDepthZero, inclusions.most)
   def increaseDepth: Bigraph = Bigraph(
@@ -230,8 +238,10 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
 }
 
 object Bigraph {
+  def empty(rankAtDepthZero: Int) = Bigraph(rankAtDepthZero, Seq.empty, Memo(IndexedSeq(IndexedSeq.fill(rankAtDepthZero)(Nil))))
+
   def apply(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]]): Bigraph = {
-    inclusions.foldLeft(Bigraph(rankAtDepthZero, Seq.empty, Memo(IndexedSeq(IndexedSeq.fill(rankAtDepthZero)(Nil)))))({ (b, i) => i.foldLeft(b.increaseDepth)({ (b, r) => b.addRow(r) }) })
+    inclusions.foldLeft(empty(rankAtDepthZero))({ (b, i) => i.foldLeft(b.increaseDepth)({ (b, r) => b.addRow(r) }) })
   }
 }
 
@@ -240,7 +250,7 @@ trait BigraphWithDuals {
   def dualData: Seq[Involution]
 
   override def toString = "bwd" + bigraph.toString.stripPrefix("gbg") + "duals" + dualData.map(_.map(_ + 1).mkString("x")).mkString("v")
-  
+
   def truncate: BigraphWithDuals
   def increaseDepth: BigraphWithDuals
 }
@@ -303,14 +313,30 @@ case class OddDepthBigraphWithDuals(bigraph: Bigraph, dualData: Seq[Involution])
   override def increaseDepth = EvenDepthBigraphWithDuals(bigraph.increaseDepth, dualData :+ IndexedSeq.empty)
 }
 
+case class Vertex(graph: Int, depth: Int, index: Int)
+case class TriplePointConfiguration(depth: Int, index0: Int, index1: Int, bijection: Seq[(Vertex, Vertex)])
+
 trait PairOfBigraphsWithDuals {
   def g0: BigraphWithDuals
   def g1: BigraphWithDuals
   def associativityDefects: Memo[Seq[Seq[Int]]]
-  
-  
+  def verticesByDimension: Memo[Seq[Seq[Seq[Int]]]]
+
+  def triplePointConfigurations: Memo[Seq[TriplePointConfiguration]]
+
+  def passesTriplePointObstruction_? = triplePointConfigurations.value.exists({ conf =>
+    val vertexClumps = verticesByDimension.value
+    conf.bijection.forall({
+      case (v1, v2) =>
+        vertexClumps(v1.graph)(v1.depth)(v1.index) == vertexClumps(v2.graph)(v2.depth)(v2.index)
+    })
+  })
+
+  protected def updateVerticesByDimensions(vertexClumps: Seq[Seq[Seq[Int]]]): Seq[Seq[Seq[Int]]] = ???
+
   override def toString = s"{ $g0, $g1 }"
 
+  def depth = g0.bigraph.depth
   def totalRank = g0.bigraph.totalRank + g1.bigraph.totalRank
 
   override def hashCode() = (g0, g1).hashCode
@@ -328,222 +354,26 @@ trait PairOfBigraphsWithDuals {
   def increaseDepth: PairOfBigraphsWithDuals
 
   protected def defectsZero_?(defects: Seq[Seq[Int]]) = defects.forall(_.forall(_ == 0))
-}
 
-case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: EvenDepthBigraphWithDuals, associativityDefects: Memo[Seq[Seq[Int]]]) extends PairOfBigraphsWithDuals {
-  require(associativityDefects.value.size == g0.bigraph.rankAtDepth(-2))
-  require(associativityDefects.value.head.size == g1.bigraph.rankAtDepth(-2))
-
-  override def apply(i: Int): EvenDepthBigraphWithDuals = i match {
-    case 0 => g0
-    case 1 => g1
-  }
-
-  override def associativeAtPenultimateDepth_? = {
-    defectsZero_?(associativityDefects.value)
-  }
-
-  override def truncate = OddDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
-  override def increaseDepth = OddDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth)
-
-  private def checkDefect(graph: Int, defect: Seq[Seq[Int]]) = {
-    (graph == 0 || defect.forall(_.forall(_ >= 0)))
-    // TODO if a defect is large, we still need to attach lots of edges, which might be enough to push the eigenvalue up too high.
-    // TODO actually, this should be part of the odometer limit function
-  }
-
-  def addSelfDualVertex(graph: Int, row: Seq[Int]): Option[EvenDepthPairOfBigraphsWithDuals] = {
-    val defects = associativityDefects.map({ defects =>
-      val sign = if (graph == 0) 1 else -1
-      for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
-        for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
-          defects(i)(j) + sign * row(i) * row(j)
-        }
-      }
-    })
-    (apply(1 - graph).rowAllowed_?(row) && checkDefect(graph, defects.value)) option {
-      graph match {
-        case 0 => copy(g0 = g0.addSelfDualVertex(row), associativityDefects = defects)
-        case 1 => copy(g1 = g1.addSelfDualVertex(row), associativityDefects = defects)
-      }
-    }
-  }
-  def addDualPairAtEvenDepth(graph: Int, row0: Seq[Int], row1: Seq[Int]): Option[EvenDepthPairOfBigraphsWithDuals] = {
-    val defects = associativityDefects.map({ defects =>
-      val sign = if (graph == 0) 1 else -1
-      for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
-        for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
-          defects(i)(j) + sign * (row0(i) * row1(j) + row1(i) * row0(j))
-        }
-      }
-    })
-    (apply(1 - graph).rowsAllowed_?(row0, row1) && checkDefect(graph, defects.value)) option {
-      graph match {
-        case 0 => copy(g0 = g0.addDualPairOfVertices(row0, row1), associativityDefects = defects)
-        case 1 => copy(g1 = g1.addDualPairOfVertices(row0, row1), associativityDefects = defects)
-      }
-    }
-  }
-
-  def deleteSelfDualVertex(graph: Int, index: Int): EvenDepthPairOfBigraphsWithDuals = graph match {
-    case 0 => copy(g0 = g0.deleteSelfDualVertex(index))
-    case 1 => copy(g1 = g1.deleteSelfDualVertex(index))
-  }
-  def deleteDualPairAtEvenDepth(graph: Int, index: Int): EvenDepthPairOfBigraphsWithDuals = graph match {
-    case 0 => copy(g0 = g0.deleteDualPairOfVertices(index))
-    case 1 => copy(g1 = g1.deleteDualPairOfVertices(index))
-  }
-}
-
-case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: OddDepthBigraphWithDuals, associativityDefects: Memo[Seq[Seq[Int]]]) extends PairOfBigraphsWithDuals {
-  override def apply(i: Int): OddDepthBigraphWithDuals = i match {
-    case 0 => g0
-    case 1 => g1
-  }
-
-  override def truncate = EvenDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
-  override def increaseDepth = EvenDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth)
-
-  def addDualPairAtOddDepth(row0: Seq[Int], row1: Seq[Int]): Option[OddDepthPairOfBigraphsWithDuals] = {
-    val allowed = {
-      g0.bigraph.depth == 1 ||
-        (for (i <- (0 until g0.bigraph.rankAtDepth(-3)).iterator) yield {
-          (for ((r0, r1) <- g0.bigraph.inclusions.secondLast.zip(g0.bigraph.inclusions.secondLast)) yield r1(i) * row0(g1.dualData.last(i)) - r0(i) * row1(g0.dualData.last(i))).sum
-        }).forall(_ == 0)
-    }
-    def defects = associativityDefects.map({ oldDefects =>
-      def row(i: Int) = i match {
-        case 0 => row0
-        case 1 => row1
-      }
-      for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
-        for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
-          oldDefects(i)(j) + row0(i) * row1(j) - row1(i) * row0(j)
-        }
-      }
-    })
-    allowed option
-      OddDepthPairOfBigraphsWithDuals(g0.addOddVertex(row0), g1.addOddVertex(row1), associativityDefects = defects)
-  }
-  def deleteDualPairAtOddDepth(index: Int) = OddDepthPairOfBigraphsWithDuals(g0.deleteOddVertex(index), g1.deleteOddVertex(index))
-}
-
-object EvenDepthPairOfBigraphsWithDuals {
-  def apply(g0: EvenDepthBigraphWithDuals, g1: EvenDepthBigraphWithDuals): EvenDepthPairOfBigraphsWithDuals = {
-    def defects = for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
-      for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
-        val `m*m*`: Int = {
-          val updown: Int = {
-            val inclusion = g0.bigraph.inclusions.last
-            val duals = g0.dualData.last
-            (for (k <- 0 until g0.bigraph.rankAtMaximalDepth) yield inclusion(k)(i) * inclusion(duals(k))(j)).sum
-          }
-          val downup: Int = {
-            val inclusion = g0.bigraph.inclusions.secondLast
-            val duals = g0.dualData.secondLast
-            (for (k <- 0 until g0.bigraph.rankAtDepth(-3)) yield inclusion(i)(k) * inclusion(j)(duals(k))).sum
-          }
-          updown + downup
-        }
-        val `*m*m`: Int = {
-          val updown: Int = {
-            val inclusion = g1.bigraph.inclusions.last
-            val duals = g1.dualData.last
-            (for (k <- 0 until g1.bigraph.rankAtMaximalDepth) yield inclusion(k)(i) * inclusion(duals(k))(j)).sum
-          }
-          val downup: Int = {
-            val inclusion = g1.bigraph.inclusions.secondLast
-            val duals = g1.dualData.secondLast
-            (for (k <- 0 until g1.bigraph.rankAtDepth(-3)) yield inclusion(i)(k) * inclusion(j)(duals(k))).sum
-          }
-          updown + downup
-        }
-        `m*m*` - `*m*m`
-      }
-    }
-    EvenDepthPairOfBigraphsWithDuals(g0, g1, Memo(defects))
-  }
-}
-object OddDepthPairOfBigraphsWithDuals {
-  def apply(g0: OddDepthBigraphWithDuals, g1: OddDepthBigraphWithDuals): OddDepthPairOfBigraphsWithDuals = {
-    def defects = {
-      if (g0.bigraph.depth == 1 && g1.bigraph.depth == 1 && g0.bigraph.rankAtDepth(1) == 0 && g1.bigraph.rankAtDepth(1) == 0) {
-        Seq.fill(g0.bigraph.rankAtDepth(0))(Seq.fill(g1.bigraph.rankAtDepth(0))(0))
-      } else {
-        for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
-          for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
-            val `m*m*`: Int = {
-              val updown: Int = {
-                val inclusion0 = g0.bigraph.inclusions.last
-                val inclusion1 = g1.bigraph.inclusions.last
-                val duals = g1.dualData.last
-                (for (k <- 0 until g0.bigraph.rankAtMaximalDepth) yield inclusion0(k)(i) * inclusion1(k)(duals(j))).sum
-              }
-              val downup: Int = {
-                val inclusion0 = g0.bigraph.inclusions.secondLast
-                val inclusion1 = g1.bigraph.inclusions.secondLast
-                val duals = g1.dualData.last
-                (for (k <- 0 until g0.bigraph.rankAtDepth(-3)) yield inclusion0(i)(k) * inclusion1(duals(j))(k)).sum
-              }
-              updown + downup
-            }
-            val `*m*m`: Int = {
-              val updown: Int = {
-                val inclusion0 = g0.bigraph.inclusions.last
-                val inclusion1 = g1.bigraph.inclusions.last
-                val duals = g0.dualData.last
-                (for (k <- 0 until g1.bigraph.rankAtMaximalDepth) yield inclusion0(k)(duals(i)) * inclusion1(k)(j)).sum
-              }
-              val downup: Int = {
-                val inclusion0 = g0.bigraph.inclusions.secondLast
-                val inclusion1 = g1.bigraph.inclusions.secondLast
-                val duals = g0.dualData.last
-                (for (k <- 0 until g1.bigraph.rankAtDepth(-3)) yield inclusion0(duals(i))(k) * inclusion1(j)(k)).sum
-              }
-              updown + downup
-            }
-            `m*m*` - `*m*m`
-          }
-        }
-      }
-    }
-    OddDepthPairOfBigraphsWithDuals(g0, g1, Memo(defects))
-  }
-}
-
-sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permutation, Permutation)]] { weed =>
-  def indexLimit: Double
-  def pair: PairOfBigraphsWithDuals
-
-  override def toString = s"weed[$indexLimit, $pair]" 
-  
-  def supertransitivity = pair(0).bigraph.supertransitivity
-  
-  def descendantsWithSupertransitivityAtMost(k: Int) = descendants(w => if(k >= w.supertransitivity) 1 else -1)
-  
-  override def findIsomorphismTo(other: SubfactorWeed) = ???
-  def isomorphs = ???
-
-  protected def depth = pair(0).bigraph.depth
-
-  private lazy val rankPartialSums = (for (graph <- 0 to 1; d <- 0 to pair(graph).bigraph.depth) yield pair(graph).bigraph.rankAtDepth(d)).scanLeft(0)(_ + _)
-  protected def graphLabel(graph: Int, depth: Int, index: Int): Int = {
+  lazy val rankPartialSums = (for (graph <- 0 to 1; d <- 0 to apply(graph).bigraph.depth) yield apply(graph).bigraph.rankAtDepth(d)).scanLeft(0)(_ + _)
+  def graphLabel(graph: Int, depth: Int, index: Int): Int = {
     //    require(index < pair(graph).bigraph.rankAtDepth(depth))
-    val result = rankPartialSums(graph * (pair(0).bigraph.depth + 1) + depth) + index
+    val result = rankPartialSums(graph * (g0.bigraph.depth + 1) + depth) + index
     //    println(s"graphLabel($graph, $depth, $index) = $result")
     result
   }
 
-  protected lazy val nautyGraph: ColouredGraph[(Int, Int)] = {
+  lazy val nautyGraph: ColouredGraph[(Int, Int)] = {
     // FIXME this ignores edge multiplicities!
     val adjacencies = (
       for (
         graph <- 0 to 1;
+        g = apply(graph);
         d <- 0 to depth;
-        i <- 0 until pair(graph).bigraph.rankAtDepth(d)
+        i <- 0 until g.bigraph.rankAtDepth(d)
       ) yield {
         (if (d % 2 == 0) {
-          val j = pair(graph).dualData(d / 2)(i)
+          val j = g.dualData(d / 2)(i)
           if (i == j) {
             Seq.empty
           } else {
@@ -552,28 +382,340 @@ sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permu
         } else {
           Seq(graphLabel(1 - graph, d, i))
         }) ++
-          (if (d == pair(graph).bigraph.depth) {
+          (if (d == g.bigraph.depth) {
             Seq.empty
           } else {
             (for (
-              j <- 0 until pair(graph).bigraph.rankAtDepth(d + 1);
-              if pair(graph).bigraph.inclusions(d)(j)(i) > 0
+              j <- 0 until g.bigraph.rankAtDepth(d + 1);
+              if g.bigraph.inclusions(d)(j)(i) > 0
             ) yield {
               graphLabel(graph, d + 1, j)
             })
           })
       }).toIndexedSeq
-    require(adjacencies.forall(_.forall(_ < pair.totalRank)))
+    require(adjacencies.forall(_.forall(_ < totalRank)))
     val colours = for (
       graph <- 0 to 1;
       d <- 0 to depth;
-      i <- 0 until pair(graph).bigraph.rankAtDepth(d)
+      i <- 0 until apply(graph).bigraph.rankAtDepth(d)
     ) yield (graph, d)
-    Graph(pair.totalRank, adjacencies).colour(colours)
+    Graph(totalRank, adjacencies).colour(colours)
   }
 
+}
+
+object PairOfBigraphsWithDuals {
+  private def empty(duals0: Involution, duals1: Involution) = {
+    val clumps: Seq[Seq[Seq[Int]]] = ???
+
+    EvenDepthPairOfBigraphsWithDuals(
+      EvenDepthBigraphWithDuals(Bigraph.empty(duals0.size), Seq(duals0)),
+      EvenDepthBigraphWithDuals(Bigraph.empty(duals1.size), Seq(duals1)),
+      associativityDefects = Memo(Seq.empty[Seq[Int]]),
+      verticesByDimension = Memo(clumps),
+      triplePointConfigurations = Memo(Seq.empty[TriplePointConfiguration]))
+  }
+
+  def apply(g0: BigraphWithDuals, g1: BigraphWithDuals): PairOfBigraphsWithDuals = {
+    val graphs = List(g0, g1)
+
+    var evenDepthScratch: EvenDepthPairOfBigraphsWithDuals = PairOfBigraphsWithDuals.empty(g0.dualData(0), g1.dualData(0))
+    var oddDepthScratch: OddDepthPairOfBigraphsWithDuals = null
+    for (workingDepth <- 1 to g0.bigraph.depth) {
+      if (workingDepth % 2 == 1) {
+        oddDepthScratch = evenDepthScratch.increaseDepth
+        for (i <- 0 until g0.bigraph.rankAtDepth(workingDepth)) {
+          oddDepthScratch = oddDepthScratch.addDualPairAtOddDepth(g0.bigraph.inclusions(workingDepth - 1)(i), g1.bigraph.inclusions(workingDepth - 1)(i)).get
+        }
+      } else {
+        evenDepthScratch = oddDepthScratch.increaseDepth
+        for (graph <- 0 to 1; i <- 0 until graphs(graph).bigraph.rankAtDepth(workingDepth)) {
+          val j = graphs(graph).dualData(workingDepth / 2)(i)
+          if (i == j) {
+            evenDepthScratch = evenDepthScratch.addSelfDualVertex(graph, graphs(graph).bigraph.inclusions(workingDepth - 1)(i)).get
+          } else if (j == i + 1) {
+            evenDepthScratch = evenDepthScratch.addDualPairAtEvenDepth(graph, graphs(graph).bigraph.inclusions(workingDepth - 1)(i), graphs(graph).bigraph.inclusions(workingDepth - 1)(i + 1)).get
+          } else if (j == i - 1) {
+            // do nothing, the previous case has already added this row
+          } else {
+            ???
+          }
+        }
+      }
+    }
+    if (g0.bigraph.depth % 2 == 0) {
+      evenDepthScratch
+    } else {
+      oddDepthScratch
+    }
+
+    //  def computeVerticesByDimensions(g0: BigraphWithDuals, g1: BigraphWithDuals) = {
+    //    val depth = g0.bigraph.depth
+    //    val graphs = List(g0, g1)
+    //    val dualClumps = {
+    //      var m = 0
+    //      for (graph <- 0 to 1) yield {
+    //        for (d <- 0 to depth) yield {
+    //          for (k <- 0 until graphs(graph).bigraph.rankAtDepth(d)) yield {
+    //            ???
+    //          }
+    //        }
+    //      }
+    //    }
+    //    updateVerticesByDimensions(g0, g1, dualClumps)
+    //  }
+    //
+    //  def updateVerticesByDimensions(g0: BigraphWithDuals, g1: BigraphWithDuals, clumps: Seq[Seq[Seq[Int]]]) = {
+    //    ???
+    //  }
+    //
+    //  def computeTriplePoints(g0: BigraphWithDuals, g1: BigraphWithDuals): Seq[TriplePointConfiguration] = {
+    //    def pathsBetween(depth: Int, index0: Int, index1: Int): Int = {
+    //      ???
+    //    }
+    //
+    //    for (
+    //      d <- 0 until g0.bigraph.depth - 3;
+    //      i <- 0 until g0.bigraph.rankAtDepth(d);
+    //      j <- 0 until g1.bigraph.rankAtDepth(d);
+    //      if g0.bigraph.valence(d, i) == 3;
+    //      if g1.bigraph.valence(d, j) == 3;
+    //      if false
+    //    ) yield {
+    //      ???
+    //    }
+    //  }
+
+  }
+}
+  case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: EvenDepthBigraphWithDuals, associativityDefects: Memo[Seq[Seq[Int]]], verticesByDimension: Memo[Seq[Seq[Seq[Int]]]], triplePointConfigurations: Memo[Seq[TriplePointConfiguration]]) extends PairOfBigraphsWithDuals {
+    require(associativityDefects.value.size == g0.bigraph.rankAtDepth(-2))
+    require(associativityDefects.value.head.size == g1.bigraph.rankAtDepth(-2))
+
+    override def apply(i: Int): EvenDepthBigraphWithDuals = i match {
+      case 0 => g0
+      case 1 => g1
+    }
+
+    override def associativeAtPenultimateDepth_? = {
+      defectsZero_?(associativityDefects.value)
+    }
+
+    override def truncate = OddDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
+    override def increaseDepth = OddDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth)
+
+    private def checkDefect(graph: Int, defect: Seq[Seq[Int]]) = {
+      (graph == 0 || defect.forall(_.forall(_ >= 0)))
+      // TODO if a defect is large, we still need to attach lots of edges, which might be enough to push the eigenvalue up too high.
+      // TODO actually, this should be part of the odometer limit function
+    }
+
+    def addSelfDualVertex(graph: Int, row: Seq[Int]): Option[EvenDepthPairOfBigraphsWithDuals] = {
+      val defects = associativityDefects.map({ defects =>
+        val sign = if (graph == 0) 1 else -1
+        for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
+          for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
+            defects(i)(j) + sign * row(i) * row(j)
+          }
+        }
+      })
+      def vertexClumps = verticesByDimension.map({ oldClumps =>
+        updateVerticesByDimensions({
+          ???
+        })
+      })
+      (apply(1 - graph).rowAllowed_?(row) && checkDefect(graph, defects.value)) option {
+        graph match {
+          case 0 => EvenDepthPairOfBigraphsWithDuals(g0.addSelfDualVertex(row), g1, defects, vertexClumps, triplePointConfigurations)
+          case 1 => EvenDepthPairOfBigraphsWithDuals(g0, g1.addSelfDualVertex(row), defects, vertexClumps, triplePointConfigurations)
+        }
+      }
+    }
+    def addDualPairAtEvenDepth(graph: Int, row0: Seq[Int], row1: Seq[Int]): Option[EvenDepthPairOfBigraphsWithDuals] = {
+      val defects = associativityDefects.map({ defects =>
+        val sign = if (graph == 0) 1 else -1
+        for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
+          for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
+            defects(i)(j) + sign * (row0(i) * row1(j) + row1(i) * row0(j))
+          }
+        }
+      })
+      def vertexClumps = verticesByDimension.map({ oldClumps =>
+        updateVerticesByDimensions({
+          val z = ???
+          oldClumps.updated(graph, oldClumps(graph).updated(depth, oldClumps(graph)(depth) ++ Seq(z, z)))
+        })
+      })
+      (apply(1 - graph).rowsAllowed_?(row0, row1) && checkDefect(graph, defects.value)) option {
+        graph match {
+          case 0 => EvenDepthPairOfBigraphsWithDuals(g0.addDualPairOfVertices(row0, row1), g1, defects, vertexClumps, triplePointConfigurations)
+          case 1 => EvenDepthPairOfBigraphsWithDuals(g0, g1.addDualPairOfVertices(row0, row1), defects, vertexClumps, triplePointConfigurations)
+        }
+      }
+    }
+
+    def deleteSelfDualVertex(graph: Int, index: Int): EvenDepthPairOfBigraphsWithDuals = graph match {
+      case 0 => EvenDepthPairOfBigraphsWithDuals(g0.deleteSelfDualVertex(index), g1)
+      case 1 => EvenDepthPairOfBigraphsWithDuals(g0, g1.deleteSelfDualVertex(index))
+    }
+    def deleteDualPairAtEvenDepth(graph: Int, index: Int): EvenDepthPairOfBigraphsWithDuals = graph match {
+      case 0 => EvenDepthPairOfBigraphsWithDuals(g0.deleteDualPairOfVertices(index), g1)
+      case 1 => EvenDepthPairOfBigraphsWithDuals(g0, g1.deleteDualPairOfVertices(index))
+    }
+  }
+
+  case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: OddDepthBigraphWithDuals, associativityDefects: Memo[Seq[Seq[Int]]], verticesByDimension: Memo[Seq[Seq[Seq[Int]]]], triplePointConfigurations: Memo[Seq[TriplePointConfiguration]]) extends PairOfBigraphsWithDuals {
+    override def apply(i: Int): OddDepthBigraphWithDuals = i match {
+      case 0 => g0
+      case 1 => g1
+    }
+
+    override def truncate = EvenDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
+    override def increaseDepth = EvenDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth)
+
+    def addDualPairAtOddDepth(row0: Seq[Int], row1: Seq[Int]): Option[OddDepthPairOfBigraphsWithDuals] = {
+      val allowed = {
+        g0.bigraph.depth == 1 ||
+          (for (i <- (0 until g0.bigraph.rankAtDepth(-3)).iterator) yield {
+            (for ((r0, r1) <- g0.bigraph.inclusions.secondLast.zip(g0.bigraph.inclusions.secondLast)) yield r1(i) * row0(g1.dualData.last(i)) - r0(i) * row1(g0.dualData.last(i))).sum
+          }).forall(_ == 0)
+      }
+      def defects = associativityDefects.map({ oldDefects =>
+        def row(i: Int) = i match {
+          case 0 => row0
+          case 1 => row1
+        }
+        for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
+          for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
+            oldDefects(i)(j) + row0(i) * row1(j) - row1(i) * row0(j)
+          }
+        }
+      })
+      def vertexClumps = verticesByDimension.map({ oldClumps =>
+        updateVerticesByDimensions({
+          ???
+        })
+      })
+      allowed option
+        OddDepthPairOfBigraphsWithDuals(g0.addOddVertex(row0), g1.addOddVertex(row1), associativityDefects = defects, verticesByDimension = vertexClumps, triplePointConfigurations)
+    }
+    def deleteDualPairAtOddDepth(index: Int) = OddDepthPairOfBigraphsWithDuals(g0.deleteOddVertex(index), g1.deleteOddVertex(index))
+  }
+
+  object EvenDepthPairOfBigraphsWithDuals {
+    def apply(g0: EvenDepthBigraphWithDuals, g1: EvenDepthBigraphWithDuals): EvenDepthPairOfBigraphsWithDuals = {
+      PairOfBigraphsWithDuals(g0, g1) match {
+        case r: EvenDepthPairOfBigraphsWithDuals => r
+      }
+    }
+
+    //    def defects = for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
+    //      for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
+    //        val `m*m*`: Int = {
+    //          val updown: Int = {
+    //            val inclusion = g0.bigraph.inclusions.last
+    //            val duals = g0.dualData.last
+    //            (for (k <- 0 until g0.bigraph.rankAtMaximalDepth) yield inclusion(k)(i) * inclusion(duals(k))(j)).sum
+    //          }
+    //          val downup: Int = {
+    //            val inclusion = g0.bigraph.inclusions.secondLast
+    //            val duals = g0.dualData.secondLast
+    //            (for (k <- 0 until g0.bigraph.rankAtDepth(-3)) yield inclusion(i)(k) * inclusion(j)(duals(k))).sum
+    //          }
+    //          updown + downup
+    //        }
+    //        val `*m*m`: Int = {
+    //          val updown: Int = {
+    //            val inclusion = g1.bigraph.inclusions.last
+    //            val duals = g1.dualData.last
+    //            (for (k <- 0 until g1.bigraph.rankAtMaximalDepth) yield inclusion(k)(i) * inclusion(duals(k))(j)).sum
+    //          }
+    //          val downup: Int = {
+    //            val inclusion = g1.bigraph.inclusions.secondLast
+    //            val duals = g1.dualData.secondLast
+    //            (for (k <- 0 until g1.bigraph.rankAtDepth(-3)) yield inclusion(i)(k) * inclusion(j)(duals(k))).sum
+    //          }
+    //          updown + downup
+    //        }
+    //        `m*m*` - `*m*m`
+    //      }
+    //    }
+    //    EvenDepthPairOfBigraphsWithDuals(g0, g1,
+    //      Memo(defects),
+    //      Memo(PairOfBigraphsWithDuals.computeVerticesByDimensions(g0, g1)),
+    //      Memo(PairOfBigraphsWithDuals.computeTriplePoints(g0, g1)))
+  }
+
+object OddDepthPairOfBigraphsWithDuals {
+  def apply(g0: OddDepthBigraphWithDuals, g1: OddDepthBigraphWithDuals): OddDepthPairOfBigraphsWithDuals = {
+    PairOfBigraphsWithDuals(g0, g1) match {
+      case r: OddDepthPairOfBigraphsWithDuals => r
+    }
+  }
+
+  //  def apply(g0: OddDepthBigraphWithDuals, g1: OddDepthBigraphWithDuals): OddDepthPairOfBigraphsWithDuals = {
+  //    def defects = {
+  //      if (g0.bigraph.depth == 1 && g1.bigraph.depth == 1 && g0.bigraph.rankAtDepth(1) == 0 && g1.bigraph.rankAtDepth(1) == 0) {
+  //        Seq.fill(g0.bigraph.rankAtDepth(0))(Seq.fill(g1.bigraph.rankAtDepth(0))(0))
+  //      } else {
+  //        for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
+  //          for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
+  //            val `m*m*`: Int = {
+  //              val updown: Int = {
+  //                val inclusion0 = g0.bigraph.inclusions.last
+  //                val inclusion1 = g1.bigraph.inclusions.last
+  //                val duals = g1.dualData.last
+  //                (for (k <- 0 until g0.bigraph.rankAtMaximalDepth) yield inclusion0(k)(i) * inclusion1(k)(duals(j))).sum
+  //              }
+  //              val downup: Int = {
+  //                val inclusion0 = g0.bigraph.inclusions.secondLast
+  //                val inclusion1 = g1.bigraph.inclusions.secondLast
+  //                val duals = g1.dualData.last
+  //                (for (k <- 0 until g0.bigraph.rankAtDepth(-3)) yield inclusion0(i)(k) * inclusion1(duals(j))(k)).sum
+  //              }
+  //              updown + downup
+  //            }
+  //            val `*m*m`: Int = {
+  //              val updown: Int = {
+  //                val inclusion0 = g0.bigraph.inclusions.last
+  //                val inclusion1 = g1.bigraph.inclusions.last
+  //                val duals = g0.dualData.last
+  //                (for (k <- 0 until g1.bigraph.rankAtMaximalDepth) yield inclusion0(k)(duals(i)) * inclusion1(k)(j)).sum
+  //              }
+  //              val downup: Int = {
+  //                val inclusion0 = g0.bigraph.inclusions.secondLast
+  //                val inclusion1 = g1.bigraph.inclusions.secondLast
+  //                val duals = g0.dualData.last
+  //                (for (k <- 0 until g1.bigraph.rankAtDepth(-3)) yield inclusion0(duals(i))(k) * inclusion1(j)(k)).sum
+  //              }
+  //              updown + downup
+  //            }
+  //            `m*m*` - `*m*m`
+  //          }
+  //        }
+  //      }
+  //    }
+  //    OddDepthPairOfBigraphsWithDuals(g0, g1, Memo(defects), Memo(???), Memo(???))
+  //  }
+}
+
+sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permutation, Permutation)]] { weed =>
+  def indexLimit: Double
+  def pair: PairOfBigraphsWithDuals
+
+  override def toString = s"weed[$indexLimit, $pair]"
+
+  def supertransitivity = pair(0).bigraph.supertransitivity
+
+  def descendantsWithSupertransitivityAtMost(k: Int) = descendants(w => if (k >= w.supertransitivity) 1 else -1)
+
+  override def findIsomorphismTo(other: SubfactorWeed) = ???
+  def isomorphs = ???
+
+  protected def depth = pair(0).bigraph.depth
+
   override lazy val automorphisms: FinitelyGeneratedFiniteGroup[Seq[(Permutation, Permutation)]] = {
-    val group = Dreadnaut.automorphismGroup(nautyGraph)
+    val group = Dreadnaut.automorphismGroup(pair.nautyGraph)
 
     def splitPermutation(p: Permutation): Seq[(Permutation, Permutation)] = {
       require(p(0) == 0)
@@ -585,7 +727,7 @@ sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permu
           x.map(_ - m)
         }
       }
-      val chunks = rankPartialSums.sliding(2).map(t => p.slice(t(0), t(1))).map(shift).toIndexedSeq
+      val chunks = pair.rankPartialSums.sliding(2).map(t => p.slice(t(0), t(1))).map(shift).toIndexedSeq
       val result = for (i <- 0 to depth) yield {
         (chunks(i), chunks(i + depth + 1))
       }
@@ -677,8 +819,8 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
         case DeleteSelfDualVertex(0, _) => 4
       }
     }).refineByPartialFunction({
-      case DeleteSelfDualVertex(graph, index) => Dreadnaut.canonicalize(nautyGraph.additionalMarking(Seq(graphLabel(graph, pair(graph).bigraph.depth, index))))
-      case DeleteDualPairAtEvenDepth(graph, index) => Dreadnaut.canonicalize(nautyGraph.additionalMarking(Seq(graphLabel(graph, pair(graph).bigraph.depth, index), graphLabel(graph, pair(graph).bigraph.depth, index + 1))))
+      case DeleteSelfDualVertex(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index))))
+      case DeleteDualPairAtEvenDepth(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index), pair.graphLabel(graph, pair(graph).bigraph.depth, index + 1))))
     })
     Ordering.by({ o: lowerObjects.Orbit => o.representative })
   }
@@ -747,7 +889,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
             uppersAddingVerticesToGraph(1)
         }
 
-        allUppers.filter(_.associative_?)
+        allUppers.filter(_.associative_?).filter(_.result.pair.passesTriplePointObstruction_?)
       }
       override def act(g: Seq[(Permutation, Permutation)], x: Upper): Upper = x match {
         case IncreaseDepth => x
@@ -763,7 +905,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
   sealed trait AddVertexUpper extends Upper {
     def pairOption: Option[EvenDepthPairOfBigraphsWithDuals]
     def associative_? = pairOption.nonEmpty
-    override lazy val result = weed.copy(pair = pairOption.get)
+    override lazy val result = EvenDepthSubfactorWeed(indexLimit, pairOption.get)
   }
 
   case class AddSelfDualVertex(graph: Int, row: Seq[Int]) extends AddVertexUpper {
@@ -776,11 +918,11 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
   }
 
   case class DeleteSelfDualVertex(graph: Int, index: Int) extends Lower {
-    override def result = weed.copy(pair = pair.deleteSelfDualVertex(graph, index))
+    override def result = EvenDepthSubfactorWeed(indexLimit, pair.deleteSelfDualVertex(graph, index))
   }
   case class DeleteDualPairAtEvenDepth(graph: Int, index: Int) extends Lower {
     require(index < pair(graph).bigraph.rankAtMaximalDepth - 1)
-    override def result = weed.copy(pair = pair.deleteDualPairAtEvenDepth(graph, index))
+    override def result = EvenDepthSubfactorWeed(indexLimit, pair.deleteDualPairAtEvenDepth(graph, index))
   }
 }
 
@@ -806,7 +948,7 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
       }
     }).refineByPartialFunction({
       case l @ DeleteDualPairAtOddDepth(index) => {
-        Dreadnaut.canonicalize(nautyGraph.additionalMarking(Seq(graphLabel(0, pair(0).bigraph.depth, index), graphLabel(1, pair(1).bigraph.depth, index))))
+        Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(0, pair(0).bigraph.depth, index), pair.graphLabel(1, pair(1).bigraph.depth, index))))
       }
     })
     Ordering.by({ o: lowerObjects.Orbit => o.representative })
@@ -828,7 +970,7 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
 
         val allUppers: Iterable[Upper] = ((pair.g0.bigraph.rankAtMaximalDepth > 0) option IncreaseDepth) ++ uppersAddingVerticesToGraph
 
-        allUppers.filter(_.associative_?)
+        allUppers.filter(_.associative_?).filter(_.result.pair.passesTriplePointObstruction_?)
       }
       override def act(g: Seq[(Permutation, Permutation)], x: Upper): Upper = x match {
         case IncreaseDepth => x
@@ -842,7 +984,7 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
   sealed trait AddVertexUpper extends Upper {
     def pairOption: Option[OddDepthPairOfBigraphsWithDuals]
     def associative_? = pairOption.nonEmpty
-    override lazy val result = weed.copy(pair = pairOption.get)
+    override lazy val result = OddDepthSubfactorWeed(indexLimit, pairOption.get)
   }
 
   case class AddDualPairAtOddDepth(row0: Seq[Int], row1: Seq[Int]) extends AddVertexUpper {
@@ -850,7 +992,7 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
     override def inverse = result.DeleteDualPairAtOddDepth(pair.g0.bigraph.rankAtMaximalDepth)
   }
   case class DeleteDualPairAtOddDepth(index: Int) extends Lower {
-    override def result = weed.copy(pair = pair.deleteDualPairAtOddDepth(index))
+    override def result = OddDepthSubfactorWeed(indexLimit, pair.deleteDualPairAtOddDepth(index))
   }
 
 }
