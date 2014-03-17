@@ -13,6 +13,7 @@ import net.tqft.toolkit.collections.LexicographicOrdering._
 import net.tqft.toolkit.collections.Tally._
 import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import scala.collection.mutable.ListBuffer
+import net.tqft.toolkit.permutations.Permutations
 
 trait Memo[+T] {
   def value: T
@@ -89,7 +90,7 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
   def rankAtDepth(k: Int): Int = {
     k match {
       case 0 => rankAtDepthZero
-      case k if k < 0 => inclusions(depth + k).size
+      case k if k < 0 => rankAtDepth(depth + 1 + k)
       case k if k > 0 => inclusions(k - 1).size
     }
   }
@@ -102,6 +103,7 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
       inclusions(k - 1).map(_(index)).sum + inclusions(k)(index).sum
     }
   }
+  lazy val neighbours: Map[(Int, Int), Seq[(Int, Int)]] = ??? // FIXME pass along?
   lazy val totalRank: Int = (for (k <- 0 to depth) yield rankAtDepth(k)).sum
   lazy val totalEvenRank: Int = (for (k <- 0 to depth by 2) yield rankAtDepth(k)).sum
   def depth: Int = inclusions.size
@@ -332,6 +334,31 @@ trait PairOfBigraphsWithDuals {
     })
   })
 
+  protected def newTriplePointConfigurations = {
+    val d = depth - 2
+
+    if (d < 0) {
+      Seq.empty
+    } else {
+      for (
+        i <- 0 until g0.bigraph.rankAtDepth(d);
+        j <- 0 until g1.bigraph.rankAtDepth(d);
+        if g0.bigraph.valence(d, i) == 3;
+        if g1.bigraph.valence(d, j) == 3;
+        if connectionsBetween((d, i), (d, j)) == 3;
+        ni = g0.bigraph.neighbours(d, i);
+        nj = g1.bigraph.neighbours(d, j);
+        p <- Permutations.of(3);
+        pnj = p.permute(nj) if Seq((0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)).forall(q => connectionsBetween(ni(q._1), pnj(q._2)) == 1)
+      ) yield {
+        TriplePointConfiguration(d, i, j, ni.map(n => Vertex(0, n._1, n._2)).zip(pnj.map(n => Vertex(1, n._1, n._2))))
+      }
+    }
+  }
+  private def connectionsBetween(vertex0: (Int, Int), vertex1: (Int, Int)): Int = {
+    ???
+  }
+
   protected def updateVerticesByDimensions(vertexClumps: Seq[Seq[Seq[Int]]]): Seq[Seq[Seq[Int]]] = ???
 
   override def toString = s"{ $g0, $g1 }"
@@ -451,43 +478,6 @@ object PairOfBigraphsWithDuals {
       oddDepthScratch
     }
 
-    //  def computeVerticesByDimensions(g0: BigraphWithDuals, g1: BigraphWithDuals) = {
-    //    val depth = g0.bigraph.depth
-    //    val graphs = List(g0, g1)
-    //    val dualClumps = {
-    //      var m = 0
-    //      for (graph <- 0 to 1) yield {
-    //        for (d <- 0 to depth) yield {
-    //          for (k <- 0 until graphs(graph).bigraph.rankAtDepth(d)) yield {
-    //            ???
-    //          }
-    //        }
-    //      }
-    //    }
-    //    updateVerticesByDimensions(g0, g1, dualClumps)
-    //  }
-    //
-    //  def updateVerticesByDimensions(g0: BigraphWithDuals, g1: BigraphWithDuals, clumps: Seq[Seq[Seq[Int]]]) = {
-    //    ???
-    //  }
-    //
-    //  def computeTriplePoints(g0: BigraphWithDuals, g1: BigraphWithDuals): Seq[TriplePointConfiguration] = {
-    //    def pathsBetween(depth: Int, index0: Int, index1: Int): Int = {
-    //      ???
-    //    }
-    //
-    //    for (
-    //      d <- 0 until g0.bigraph.depth - 3;
-    //      i <- 0 until g0.bigraph.rankAtDepth(d);
-    //      j <- 0 until g1.bigraph.rankAtDepth(d);
-    //      if g0.bigraph.valence(d, i) == 3;
-    //      if g1.bigraph.valence(d, j) == 3;
-    //      if false
-    //    ) yield {
-    //      ???
-    //    }
-    //  }
-
   }
 }
 case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: EvenDepthBigraphWithDuals, associativityDefects: Memo[Seq[Seq[Int]]], verticesByDimension: Memo[Seq[Seq[Seq[Int]]]], triplePointConfigurations: Memo[Seq[TriplePointConfiguration]]) extends PairOfBigraphsWithDuals {
@@ -504,7 +494,11 @@ case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: E
   }
 
   override def truncate = OddDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
-  override def increaseDepth = OddDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth, ???, ???, ???)
+  override def increaseDepth = {
+    def defects = ???
+    def vertexClumps = ???
+    OddDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth, Memo(defects), Memo(vertexClumps), triplePointConfigurations.map(_ ++ newTriplePointConfigurations))
+  }
 
   private def checkDefect(graph: Int, defect: Seq[Seq[Int]]) = {
     (graph == 0 || defect.forall(_.forall(_ >= 0)))
@@ -573,7 +567,31 @@ case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: Odd
   }
 
   override def truncate = EvenDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
-  override def increaseDepth = EvenDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth, ???, ???, ???)
+  override def increaseDepth = {
+    def defects = {
+      for (i <- 0 until g0.bigraph.rankAtMaximalDepth) yield {
+        for (j <- 0 until g1.bigraph.rankAtMaximalDepth) yield {
+          if (depth == 0) {
+            0
+          } else {
+            val `m*m*`: Int = {
+              val inclusion = g0.bigraph.inclusions.last
+              val duals = g0.dualData.last
+              (for (k <- 0 until g0.bigraph.rankAtDepth(-2)) yield inclusion(i)(k) * inclusion(j)(duals(k))).sum
+            }
+            val `*m*m`: Int = {
+              val inclusion = g1.bigraph.inclusions.last
+              val duals = g1.dualData.last
+              (for (k <- 0 until g1.bigraph.rankAtDepth(-2)) yield inclusion(i)(k) * inclusion(j)(duals(k))).sum
+            }
+            `m*m*` - `*m*m`
+          }
+        }
+      }
+    }
+    def vertexClumps = ???
+    EvenDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth, Memo(defects), Memo(vertexClumps), triplePointConfigurations.map(_ ++ newTriplePointConfigurations))
+  }
 
   def addDualPairAtOddDepth(row0: Seq[Int], row1: Seq[Int]): Option[OddDepthPairOfBigraphsWithDuals] = {
     val allowed = {
@@ -761,7 +779,7 @@ sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permu
     override def associative_? = pair.associativeAtPenultimateDepth_?
   }
 
-  def decreaseDepthSet: Option[Set[Lower]] = (pair.g0.bigraph.rankAtMaximalDepth == 0 && pair.g1.bigraph.rankAtMaximalDepth == 0) option Set(DecreaseDepth)
+  def decreaseDepthSet: Option[Iterator[Lower]] = (pair.g0.bigraph.rankAtMaximalDepth == 0 && pair.g1.bigraph.rankAtMaximalDepth == 0) option Iterator(DecreaseDepth)
 
   sealed trait Lower {
     def result: SubfactorWeed
@@ -784,9 +802,9 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
   override lazy val lowerObjects = {
     new automorphisms.Action[Lower] {
-      override val elements: Iterable[Lower] =
+      override val elements: Iterator[Lower] =
         decreaseDepthSet.getOrElse(
-          (for (i <- 0 to 1; k <- 0 until pair(i).bigraph.rankAtMaximalDepth; if pair(i).dualData.last(k) != k - 1) yield {
+          (for (i <- (0 to 1).iterator; k <- 0 until pair(i).bigraph.rankAtMaximalDepth; if pair(i).dualData.last(k) != k - 1) yield {
             if (pair(i).dualData.last(k) == k) {
               DeleteSelfDualVertex(i, k)
             } else {
@@ -829,21 +847,21 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
   override def upperObjects = {
     new automorphisms.Action[Upper] {
-      override val elements: Iterable[Upper] = {
-        val allUppers: Iterable[Upper] = {
-          def uppersAddingVerticesToGraph(graph: Int) = {
+      override val elements: Iterator[Upper] = {
+        val allUppers: Iterator[Upper] = {
+          def uppersAddingVerticesToGraph(graph: Int): Iterator[Upper] = {
             if (graph == 0 && pair.g1.bigraph.rankAtMaximalDepth > 0) {
-              Seq.empty
+              Iterator.empty
             } else {
               uppersAddingSelfDualVerticesToGraph(graph) ++
                 uppersAddingDualPairVerticesToGraph(graph)
             }
           }
 
-          def uppersAddingSelfDualVerticesToGraph(graph: Int) = {
+          def uppersAddingSelfDualVerticesToGraph(graph: Int): Iterator[Upper] = {
             val duals = pair(graph).dualData.last
             if (duals.nonEmpty && duals.last == duals.size - 2 /* graph has dual pairs already */ ) {
-              Seq.empty
+              Iterator.empty
             } else {
               // Now we have to run an odometer to produce all values of the row.
               // We certainly give this odometer the index limit.
@@ -868,7 +886,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
             }
           }
 
-          def uppersAddingDualPairVerticesToGraph(graph: Int) = {
+          def uppersAddingDualPairVerticesToGraph(graph: Int): Iterator[Upper] = {
             def limit(bigraph: Bigraph) = { row: List[Int] =>
               // FIXME we're only doing the simply laced case for now
               row.forall(_ <= 1) &&
@@ -880,13 +898,14 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
             val initial = List.fill(pair(graph).bigraph.rankAtDepth(-2))(0)
 
-            Odometer(limit(pair(graph).bigraph))(initial).filter(r => r.exists(_ > 0))
+            Odometer(limit(pair(graph).bigraph))(initial)
+              .filter(r => r.exists(_ > 0))
               .map(row => (row, pair(graph).bigraph.addRow(row)))
               .flatMap(p => Odometer(secondLimit(p._1, p._2))(initial).filter(r => r.exists(_ > 0)).map(r => (p._1, r)))
               .map(p => AddDualPairAtEvenDepth(graph, p._1, p._2))
           }
 
-          ((pair.g0.bigraph.rankAtMaximalDepth > 0 && pair.g1.bigraph.rankAtMaximalDepth > 0) option IncreaseDepth) ++
+          ((pair.g0.bigraph.rankAtMaximalDepth > 0 && pair.g1.bigraph.rankAtMaximalDepth > 0) option IncreaseDepth).iterator ++
             uppersAddingVerticesToGraph(0) ++
             uppersAddingVerticesToGraph(1)
         }
@@ -932,9 +951,9 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
 
   override lazy val lowerObjects = {
     new automorphisms.Action[Lower] {
-      val elements: Iterable[Lower] =
+      val elements: Iterator[Lower] =
         decreaseDepthSet.getOrElse(
-          (for (k <- 0 until pair.g0.bigraph.rankAtMaximalDepth) yield DeleteDualPairAtOddDepth(k)).toSet)
+          for (k <- (0 until pair.g0.bigraph.rankAtMaximalDepth).iterator) yield DeleteDualPairAtOddDepth(k))
 
       def act(g: Seq[(Permutation, Permutation)], x: Lower): Lower = x match {
         case DecreaseDepth => x
@@ -958,19 +977,23 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
 
   override def upperObjects = {
     new automorphisms.Action[Upper] {
-      override val elements: Iterable[Upper] = {
-        def uppersAddingVerticesToGraph: Iterable[Upper] = {
+      override val elements: Iterator[Upper] = {
+        def uppersAddingVerticesToGraph: Iterator[Upper] = {
 
           val limit = { rows: List[List[Int]] =>
             // TODO: surely we can be more efficient here; at least saving some answers
             rows.forall(_.forall(_ <= 1)) &&
-              pair(0).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(rows(0)) && pair(0).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(rows(1))
+              (0 to 1).forall({ i =>
+                pair(i).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(rows(i))
+              })
           }
           val initial = for (i <- (0 to 1).toList) yield List.fill(pair(i).bigraph.rankAtDepth(-2))(0)
-          Odometer(limit)(initial).filter(_.forall(_.exists(_ > 0))).map({ rows => AddDualPairAtOddDepth(rows(0), rows(1)) })
+          Odometer(limit)(initial)
+            .filter(_.forall(_.exists(_ > 0)))
+            .map({ rows => AddDualPairAtOddDepth(rows(0), rows(1)) })
         }
 
-        val allUppers: Iterable[Upper] = ((pair.g0.bigraph.rankAtMaximalDepth > 0) option IncreaseDepth) ++ uppersAddingVerticesToGraph
+        val allUppers: Iterator[Upper] = ((pair.g0.bigraph.rankAtMaximalDepth > 0) option IncreaseDepth).iterator ++ uppersAddingVerticesToGraph
 
         allUppers.filter(_.associative_?).filter(_.result.pair.passesTriplePointObstruction_?)
       }

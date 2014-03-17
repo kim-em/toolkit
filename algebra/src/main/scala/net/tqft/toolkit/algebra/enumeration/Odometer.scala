@@ -12,7 +12,7 @@ trait Odometer[O] {
 object Odometer extends Object with Logging {
   //  var counter = 0;
 
-  def apply[O: Odometer](limit: O => Boolean)(initial: O): Iterable[O] = {
+  def apply[O: Odometer](limit: O => Boolean)(initial: O): Iterator[O] = {
     implicit val odometer = implicitly[Odometer[O]]
     import odometer._
 
@@ -36,31 +36,29 @@ object Odometer extends Object with Logging {
       }
     }
 
-    new NonStrictIterable[O] {
-      def iterator = new Iterator[O] {
+    new Iterator[O] {
 
-        var n: Option[O] = if (limit(initial)) {
-          Some(initial)
-        } else {
-          successor(initial)
-        }
+      var n: Option[O] = if (limit(initial)) {
+        Some(initial)
+      } else {
+        successor(initial)
+      }
 
-        def next: O = {
-          //          counter = counter + 1
-          n match {
-            case Some(o) => {
-              n = successor(o)
-              o
-            }
-            case None => throw new NoSuchElementException
+      def next: O = {
+        //          counter = counter + 1
+        n match {
+          case Some(o) => {
+            n = successor(o)
+            o
           }
+          case None => throw new NoSuchElementException
         }
+      }
 
-        def hasNext: Boolean = {
-          n match {
-            case Some(o) => true
-            case None => false
-          }
+      def hasNext: Boolean = {
+        n match {
+          case Some(o) => true
+          case None => false
         }
       }
     }

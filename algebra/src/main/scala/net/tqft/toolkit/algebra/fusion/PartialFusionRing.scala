@@ -206,15 +206,15 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
     override def elements = {
       if (ring.rank > 1) {
         if (depth == depths.max) {
-          depths.zipWithIndex.collect({
+          depths.zipWithIndex.iterator.collect({
             case (d, i) if d == depth && ring.duality(i) == i => DeleteSelfDualObject(i)
             case (d, i) if d == depth && ring.duality(i) > i => DeleteDualPairOfObjects(i, ring.duality(i))
-          }).toSet
+          })
         } else {
-          Set(ReduceDepth)
+          Iterator(ReduceDepth)
         }
       } else {
-        Set.empty
+        Iterator.empty
       }
     }
     override def act(a: IndexedSeq[Int], b: Lower): Lower = {
@@ -264,11 +264,11 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
       super.orbits
     }
 
-    override lazy val elements: Set[Upper] = {
+    override lazy val elements: Iterator[Upper] = {
       (if (depth == depths.max && ring.partialAssociativityConstraints(depth + 1, depths).forall(p => p._1 == p._2)) {
-        Set(IncreaseDepth)
+        Iterator(IncreaseDepth)
       } else {
-        Set.empty
+        Iterator.empty
       }) ++ (if (depth > 0) {
 
         // FIXME independence should really be done as equations in withAnother...
@@ -317,9 +317,9 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
         println("self-dual: " + extraSelfDual.size + " ---> " + extraSelfDual2.size + " ---> " + extraSelfDualReps.size)
         val extraPairsReps = chooseRepresentatives(extraPairs.map(AddDualPairOfObjects))
         println("pairs: " + extraPairs.size + " ---> " + extraPairs2.size + " ---> " + extraPairsReps.size)
-        extraSelfDualReps ++ extraPairsReps
+        (extraSelfDualReps ++ extraPairsReps).iterator
       } else {
-        Set.empty
+        Iterator.empty
       })
     }
     override def act(a: IndexedSeq[Int], b: Upper): Upper = {
