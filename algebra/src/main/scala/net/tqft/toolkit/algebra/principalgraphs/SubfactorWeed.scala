@@ -14,6 +14,7 @@ import net.tqft.toolkit.collections.Tally._
 import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import scala.collection.mutable.ListBuffer
 import net.tqft.toolkit.permutations.Permutations
+import net.tqft.toolkit.Logging
 
 trait Memo[+T] {
   def value: T
@@ -326,20 +327,25 @@ trait PairOfBigraphsWithDuals {
 
   def triplePointConfigurations: Memo[Seq[TriplePointConfiguration]]
 
-  def passesTriplePointObstruction_? = triplePointConfigurations.value.exists({ conf =>
-    val vertexClumps = verticesByDimension.value
-    conf.bijection.forall({
-      case (v1, v2) =>
-        vertexClumps(v1.graph)(v1.depth)(v1.index) == vertexClumps(v2.graph)(v2.depth)(v2.index)
+  def passesTriplePointObstruction_? = {
+    val obstructedTriplePointOption = triplePointConfigurations.value.find({ conf =>
+      val vertexClumps = verticesByDimension.value
+      conf.bijection.forall({
+        case (v1, v2) =>
+          vertexClumps(v1.graph)(v1.depth)(v1.index) == vertexClumps(v2.graph)(v2.depth)(v2.index)
+      })
     })
-  })
+    for (c <- obstructedTriplePointOption) {
+      Logging.info(s"   the triple point obstruction applies at depth ${c.depth}, vertices ${c.index0} and ${c.index1}")
+    }
+    obstructedTriplePointOption.isEmpty
+  }
 
   protected def newTriplePointConfigurations = {
-    val d = depth - 2
-
-    if (d < 0) {
+    if (depth < 2) {
       Seq.empty
     } else {
+      val d = depth - 2
       for (
         i <- 0 until g0.bigraph.rankAtDepth(d);
         j <- 0 until g1.bigraph.rankAtDepth(d);
@@ -356,6 +362,9 @@ trait PairOfBigraphsWithDuals {
     }
   }
   private def connectionsBetween(vertex0: (Int, Int), vertex1: (Int, Int)): Int = {
+    def rightNeighbours(v: Vertex) = {
+      ???
+    }
     ???
   }
 
@@ -380,7 +389,13 @@ trait PairOfBigraphsWithDuals {
   def truncate: PairOfBigraphsWithDuals
   def increaseDepth: PairOfBigraphsWithDuals
 
-  protected def defectsZero_?(defects: Seq[Seq[Int]]) = defects.forall(_.forall(_ == 0))
+  protected def defectsZero_?(defects: Seq[Seq[Int]]) = {
+    val result = defects.forall(_.forall(_ == 0))
+    if (!result) {
+      Logging.info("   fails associativity test")
+    }
+    result
+  }
 
   lazy val rankPartialSums = (for (graph <- 0 to 1; d <- 0 to apply(graph).bigraph.depth) yield apply(graph).bigraph.rankAtDepth(d)).scanLeft(0)(_ + _)
   def graphLabel(graph: Int, depth: Int, index: Int): Int = {
@@ -495,7 +510,29 @@ case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: E
 
   override def truncate = OddDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
   override def increaseDepth = {
-    def defects = ???
+    def defects = {
+      if (depth == 0) {
+        Seq.fill(g0.bigraph.rankAtDepth(0))(Seq.fill(g1.bigraph.rankAtDepth(0))(0))
+      } else {
+        for (i <- 0 until g0.bigraph.rankAtMaximalDepth) yield {
+          for (j <- 0 until g1.bigraph.rankAtMaximalDepth) yield {
+            val `m*m*`: Int = {
+              val inclusion0 = g0.bigraph.inclusions.last
+              val inclusion1 = g1.bigraph.inclusions.last
+              val duals = g1.dualData.last
+              (for (k <- 0 until g0.bigraph.rankAtDepth(-2)) yield inclusion0(i)(k) * inclusion1(duals(j))(k)).sum
+            }
+            val `*m*m`: Int = {
+              val inclusion0 = g0.bigraph.inclusions.last
+              val inclusion1 = g1.bigraph.inclusions.last
+              val duals = g0.dualData.last
+              (for (k <- 0 until g1.bigraph.rankAtDepth(-2)) yield inclusion0(duals(i))(k) * inclusion1(j)(k)).sum
+            }
+            `m*m*` - `*m*m`
+          }
+        }
+      }
+    }
     def vertexClumps = ???
     OddDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth, Memo(defects), Memo(vertexClumps), triplePointConfigurations.map(_ ++ newTriplePointConfigurations))
   }
@@ -876,8 +913,14 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
               val limit = { row: List[Int] =>
                 // FIXME we're only doing the simply laced case for now
-                row.forall(_ <= 1) &&
+                val result = row.forall(_ <= 1) &&
                   pair(graph).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
+                if (result) {
+                  Logging.info(s"  considering new row (on graph $graph): " + row.mkString("x"))
+                } else {
+                  Logging.info(s"  rejecting   new row on $graph: " + row.mkString("x"))
+                }
+                result
               }
 
               val initial = List.fill(pair(graph).bigraph.rankAtDepth(-2))(0)
@@ -892,13 +935,29 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
               row.forall(_ <= 1) &&
                 bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
             }
+            val firstLimit = { row0: List[Int] =>
+              val result = limit(pair(graph).bigraph)(row0)
+              if (result) {
+                Logging.info(s"  considering new row 0 (on graph $graph): " + row0.mkString("x"))
+              } else {
+                Logging.info(s"  rejecting   new row 0 (on graph $graph): " + row0.mkString("x"))
+              }
+              result
+            }
             def secondLimit(row0: List[Int], bigraph: Bigraph) = { row1: List[Int] =>
-              row1 <= row0 && limit(bigraph)(row1)
+              /* be careful; the odometer is working in backwards lexicographic order!!! */
+              val result = row1 <= row0 && limit(bigraph)(row1)
+              if (result) {
+                Logging.info(s"  considering new row 1 (on graph $graph): " + row1.mkString("x") + " (with row 0: " + row0.mkString("x") + ")")
+              } else {
+                Logging.info(s"  rejecting   new row 1 (on graph $graph): " + row1.mkString("x") + " (with row 0: " + row0.mkString("x") + ")")
+              }
+              result
             }
 
             val initial = List.fill(pair(graph).bigraph.rankAtDepth(-2))(0)
 
-            Odometer(limit(pair(graph).bigraph))(initial)
+            Odometer(firstLimit)(initial)
               .filter(r => r.exists(_ > 0))
               .map(row => (row, pair(graph).bigraph.addRow(row)))
               .flatMap(p => Odometer(secondLimit(p._1, p._2))(initial).filter(r => r.exists(_ > 0)).map(r => (p._1, r)))
@@ -980,17 +1039,22 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
       override val elements: Iterator[Upper] = {
         def uppersAddingVerticesToGraph: Iterator[Upper] = {
 
-          val limit = { rows: List[List[Int]] =>
-            // TODO: surely we can be more efficient here; at least saving some answers
-            rows.forall(_.forall(_ <= 1)) &&
-              (0 to 1).forall({ i =>
-                pair(i).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(rows(i))
-              })
+          def limit(graph: Int) = { row: List[Int] =>
+            row.forall(_ <= 1) && {
+              val result = pair(graph).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
+              if (result) {
+                Logging.info(s"  considering new row $graph: " + row.mkString("x"))
+              } else {
+                Logging.info(s"  rejecting   new row $graph: " + row.mkString("x"))
+              }
+              result
+            }
           }
-          val initial = for (i <- (0 to 1).toList) yield List.fill(pair(i).bigraph.rankAtDepth(-2))(0)
-          Odometer(limit)(initial)
-            .filter(_.forall(_.exists(_ > 0)))
-            .map({ rows => AddDualPairAtOddDepth(rows(0), rows(1)) })
+          def initial(graph: Int) = List.fill(pair(graph).bigraph.rankAtDepth(-2))(0)
+          Odometer(limit(0))(initial(0))
+            .filter(_.exists(_ > 0))
+            .flatMap(row0 => Odometer(limit(1))(initial(1)).map(row1 => (row0, row1)))
+            .map({ rows => AddDualPairAtOddDepth(rows._1, rows._2) })
         }
 
         val allUppers: Iterator[Upper] = ((pair.g0.bigraph.rankAtMaximalDepth > 0) option IncreaseDepth).iterator ++ uppersAddingVerticesToGraph

@@ -21,7 +21,10 @@ object Odometer extends Object with Logging {
       if (limit(i)) {
         Some(i)
       } else {
-        carryRepeatedly(i)
+        carry(i) match {
+          case Some(c) => carryRepeatedly(c)
+          case None => None
+        }
       }
     }
 
