@@ -9,7 +9,7 @@ import net.tqft.toolkit.Logging
 import net.tqft.toolkit.algebra.Longs
 import net.tqft.toolkit.algebra.Integers
 import net.tqft.toolkit.algebra.grouptheory.Orbit
-import net.tqft.toolkit.permutations.Permutation
+import net.tqft.toolkit.permutations.Permutations.Permutation
 
 object PartialFusionRing {
   implicit def fromFusionRing(ring: FusionRing[Int]): PartialFusionRing = {
@@ -81,8 +81,8 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
     def fixedPointLabels = rowSumsWithTalliesIterator.sliding(2, 1).find({ case Seq(p1, p2) => p1.map(_._1) == p2.map(_._1) }).get.head.map(_._2)
 
     def canonicalize = {
-      import net.tqft.toolkit.algebra.graphs.dreadnaut
-      dreadnaut.canonicalize(ring.graphEncoding(depths))
+      import net.tqft.toolkit.algebra.graphs.Dreadnaut
+      Dreadnaut.canonicalize(ring.graphEncoding(depths))
     }
 
     // about a third of cases are still going through to canonicalize
@@ -142,7 +142,7 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
     import net.tqft.toolkit.collections.Orderings._
     import net.tqft.toolkit.collections.LexicographicOrdering._
     import net.tqft.toolkit.collections.Tally._
-    import net.tqft.toolkit.algebra.graphs.dreadnaut
+    import net.tqft.toolkit.algebra.graphs.Dreadnaut
     
     // We work via a representative --- but have to be careful this doesn't rely on choices!
     implicit val lowerOrdering = Ordering.by({ l: Lower =>
@@ -163,8 +163,8 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
           ring.structureCoefficients(k).entries.flatten.seq.tally.sorted)
       }
     }).refineByPartialFunction({
-      case DeleteSelfDualObject(k) => dreadnaut.canonicalize(ring.graphEncoding(depths.updated(k, -1)))
-      case d @ DeleteDualPairOfObjects(_, _) => dreadnaut.canonicalize(ring.graphEncoding(depths.updated(d.k1, -1).updated(d.k2, -1)))
+      case DeleteSelfDualObject(k) => Dreadnaut.canonicalize(ring.graphEncoding(depths.updated(k, -1)))
+      case d @ DeleteDualPairOfObjects(_, _) => Dreadnaut.canonicalize(ring.graphEncoding(depths.updated(d.k1, -1).updated(d.k2, -1)))
     })
     Ordering.by({ o: lowerObjects.Orbit => o.representative })
   }
@@ -206,15 +206,15 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
     override def elements = {
       if (ring.rank > 1) {
         if (depth == depths.max) {
-          depths.zipWithIndex.collect({
+          depths.zipWithIndex.iterator.collect({
             case (d, i) if d == depth && ring.duality(i) == i => DeleteSelfDualObject(i)
             case (d, i) if d == depth && ring.duality(i) > i => DeleteDualPairOfObjects(i, ring.duality(i))
-          }).toSet
+          })
         } else {
-          Set(ReduceDepth)
+          Iterator(ReduceDepth)
         }
       } else {
-        Set.empty
+        Iterator.empty
       }
     }
     override def act(a: IndexedSeq[Int], b: Lower): Lower = {
@@ -264,11 +264,11 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
       super.orbits
     }
 
-    override lazy val elements: Set[Upper] = {
+    override lazy val elements: Iterator[Upper] = {
       (if (depth == depths.max && ring.partialAssociativityConstraints(depth + 1, depths).forall(p => p._1 == p._2)) {
-        Set(IncreaseDepth)
+        Iterator(IncreaseDepth)
       } else {
-        Set.empty
+        Iterator.empty
       }) ++ (if (depth > 0) {
 
         // FIXME independence should really be done as equations in withAnother...
@@ -317,9 +317,9 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
         println("self-dual: " + extraSelfDual.size + " ---> " + extraSelfDual2.size + " ---> " + extraSelfDualReps.size)
         val extraPairsReps = chooseRepresentatives(extraPairs.map(AddDualPairOfObjects))
         println("pairs: " + extraPairs.size + " ---> " + extraPairs2.size + " ---> " + extraPairsReps.size)
-        extraSelfDualReps ++ extraPairsReps
+        (extraSelfDualReps ++ extraPairsReps).iterator
       } else {
-        Set.empty
+        Iterator.empty
       })
     }
     override def act(a: IndexedSeq[Int], b: Upper): Upper = {

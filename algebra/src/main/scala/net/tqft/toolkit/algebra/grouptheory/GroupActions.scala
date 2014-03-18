@@ -1,7 +1,7 @@
 package net.tqft.toolkit.algebra.grouptheory
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.permutations._
+import net.tqft.toolkit.permutations.Permutations.Permutation
 
 object GroupActions {
   def trivialAction[A, B]: GroupAction[A, B] = new GroupAction[A, B] {

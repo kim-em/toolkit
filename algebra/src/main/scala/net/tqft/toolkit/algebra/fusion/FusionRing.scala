@@ -3,7 +3,7 @@ package net.tqft.toolkit.algebra.fusion
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.numberfields.RealNumberField
-import net.tqft.toolkit.permutations.Permutation
+import net.tqft.toolkit.permutations.Permutations.Permutation
 import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.modules._
@@ -160,9 +160,9 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   }
 
   def automorphisms(colouring: Seq[Int] = Seq.fill(rank)(0)) = {
-    import net.tqft.toolkit.algebra.graphs.dreadnaut
+    import net.tqft.toolkit.algebra.graphs.Dreadnaut
     import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
-    val graphAutomorphisms = dreadnaut.automorphismGroup(graphEncoding(colouring))
+    val graphAutomorphisms = Dreadnaut.automorphismGroup(graphEncoding(colouring))
     val generators = graphAutomorphisms.generators.map(_.take(rank))
 
     for (g <- generators) {
@@ -183,8 +183,8 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   }
 
   def canonicalRelabelling(colouring: Seq[Int] = Seq.fill(rank)(0)): FusionRing[A] = {
-    import net.tqft.toolkit.algebra.graphs.dreadnaut
-    relabel(dreadnaut.canonicalLabelling(graphEncoding(colouring)).take(rank))
+    import net.tqft.toolkit.algebra.graphs.Dreadnaut
+    relabel(Dreadnaut.canonicalLabelling(graphEncoding(colouring)).take(rank))
   }
 
   def relabelForGenerators(elements: Set[Int]) = {

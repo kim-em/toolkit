@@ -7,16 +7,16 @@ trait Graph {
   def adjacencies: IndexedSeq[Seq[Int]]
 
   //  for(i <- 0 until numberOfVertices; j <- adjacencies(i)) {
-//    require(adjacencies(j).contains(i))
-//  }
-//  
-//  for(r <- adjacencies; i <- r) {
-//    require(i < numberOfVertices)
-//  }
+  //    require(adjacencies(j).contains(i))
+  //  }
+  //  
+  //  for(r <- adjacencies; i <- r) {
+  //    require(i < numberOfVertices)
+  //  }
 
   override def toString = "Graph(" + numberOfVertices + ", " + adjacencies + ")"
   override def hashCode = (numberOfVertices, adjacencies).hashCode
-  
+
   override def equals(other: Any) = {
     other match {
       case other: Graph => numberOfVertices == other.numberOfVertices && adjacencies == other.adjacencies
@@ -24,14 +24,14 @@ trait Graph {
     }
   }
 
-  def edges = (for((s, i) <- adjacencies.iterator.zipWithIndex; j <- s) yield Set(i,j)).toSet
-  
+  def edges = (for ((s, i) <- adjacencies.iterator.zipWithIndex; j <- s) yield Set(i, j)).toSet
+
   def toDreadnautString: String = {
     "n=" + numberOfVertices + " g " + (for (i <- 0 until numberOfVertices) yield adjacencies(i).mkString(" ")).mkString("", "; ", ". ")
   }
 
   def relabel(labels: IndexedSeq[Int]): Graph = {
-//    require(labels.size == numberOfVertices)
+    //    require(labels.size == numberOfVertices)
     val p = labels.inverse
     Graph(numberOfVertices, labels.permute(adjacencies.map(a => a.map(p).sorted)))
   }
@@ -46,7 +46,7 @@ trait Graph {
       case (a, _) => a
     }) :+ neighbours.sorted)
   }
-  
+
   def deleteVertex(k: Int): Graph = {
     import net.tqft.toolkit.collections.Deleted._
     Graph(numberOfVertices - 1, adjacencies.map({ a =>
@@ -56,7 +56,7 @@ trait Graph {
       })
     }).deleted(k).toIndexedSeq)
   }
-  
+
   def colour[V: Ordering](colours: IndexedSeq[V]): ColouredGraph[V] = {
     ColouredGraph(numberOfVertices, adjacencies, colours)
   }
@@ -73,12 +73,12 @@ object Graph {
   }
 
   def fromEdges(numberOfVertices: Int, edges: Set[Set[Int]]): Graph = {
-    val adjacencies = for(i <- 0 until numberOfVertices) yield {
+    val adjacencies = for (i <- 0 until numberOfVertices) yield {
       (edges.filter(_.contains(i)).flatten - i).toSeq.sorted
     }
     Graph(numberOfVertices, adjacencies)
   }
-  
+
   implicit val ordering: Ordering[Graph] = {
     import net.tqft.toolkit.collections.LexicographicOrdering._
     import net.tqft.toolkit.collections.Orderings._
@@ -96,9 +96,9 @@ object Graphs {
     Graph(n, for (i <- 0 until n) yield (0 until i) ++ (i + 1 until n))
   }
   def onNVertices(n: Int): Iterator[Graph] = {
-	for(edges <- complete(n).edges.subsets) yield {
-	  Graph.fromEdges(n, edges)
-	}
+    for (edges <- complete(n).edges.subsets) yield {
+      Graph.fromEdges(n, edges)
+    }
   }
 }
 
@@ -125,6 +125,15 @@ trait ColouredGraph[V] extends Graph {
     import net.tqft.toolkit.permutations.Permutations._
     ColouredGraph(numberOfVertices, super.relabel(labels).adjacencies, labels.permute(vertices))
   }
+
+  def combineColours[W: Ordering](colours: IndexedSeq[W]): ColouredGraph[(V, W)] = {
+    ColouredGraph(numberOfVertices, adjacencies, vertices.zip(colours))
+  }
+
+  def additionalMarking(vertices: Seq[Int]): ColouredGraph[(V, Boolean)] = {
+    combineColours(for (i <- 0 until numberOfVertices) yield vertices.contains(i))
+  }
+
 }
 
 object ColouredGraph {

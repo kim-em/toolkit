@@ -237,7 +237,7 @@ object FusionRings {
       estimates(substitution).sum - 0.0001 < L
     }
 
-    Odometer(Array.fill(s)(0))(ArrayOdometer.odometerInt, limit).iterator.map(variables.zip(_).toMap)
+    Odometer(limit)(Array.fill(s)(0)).map(variables.zip(_).toMap)
 
   }
 
