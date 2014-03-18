@@ -2,8 +2,6 @@ package net.tqft.toolkit.algebra.graphs
 
 import net.tqft.toolkit.permutations.Permutations._
 
-// TODO storing the list of edges like this is pretty inefficient
-// especially as we need something else for dreadnaut anyway
 trait Graph {
   def numberOfVertices: Int
   def adjacencies: IndexedSeq[Seq[Int]]
