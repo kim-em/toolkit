@@ -9,7 +9,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
 
 //  override def toString = "TriangleFreeGraph(" + numberOfVertices + ", " + adjacencies + ")"
 
-  override lazy val automorphisms = dreadnaut.automorphismGroup(this)
+  override lazy val automorphisms = Dreadnaut.automorphismGroup(this)
   
   override def isomorphs: Iterator[TriangleFreeGraph] = {
     for(p <- Permutations.of(numberOfVertices).iterator) yield copy(adjacencies = relabel(p).adjacencies)
@@ -20,7 +20,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
   }
   
   override val ordering: Ordering[lowerObjects.Orbit] = Ordering.by({ o: lowerObjects.Orbit =>
-    dreadnaut.canonicalize(
+    Dreadnaut.canonicalize(
       this.mark(Seq(o.representative.k)))
   })
 
@@ -43,7 +43,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
           }
         }
       }
-      (for (s <- independentSubsetsOf(0 until numberOfVertices toList)) yield Upper(s)).toSet
+      for (s <- independentSubsetsOf(0 until numberOfVertices toList)) yield Upper(s)
     }
     override def act(g: IndexedSeq[Int], upper: Upper) = {
       val h = g.inverse
@@ -51,7 +51,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
     }
   }
   override lazy val lowerObjects = new automorphisms.Action[Lower] {
-    override def elements = (for (k <- 0 until numberOfVertices) yield Lower(k)).toSet
+    override def elements = for (k <- (0 until numberOfVertices).iterator) yield Lower(k)
     override def act(g: IndexedSeq[Int], lower: Lower) = {
       val h = g.inverse
       Lower(h(lower.k))

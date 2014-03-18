@@ -5,6 +5,7 @@ import net.tqft.toolkit.functions.Memo
 import scala.collection.GenSeq
 
 object Permutations {
+ type Permutation = IndexedSeq[Int]
 
   class RichPermutation(p: Permutation) {
     def permute[A](s: GenSeq[A]): IndexedSeq[A] = {
@@ -107,9 +108,8 @@ object Permutations {
   
   def preserving[A](list: Seq[A]): Iterable[Permutation] = {
     val listWithIndices = list.zipWithIndex
-//    val positions = list.distinct.toIndexedSeq.map({ x: A => listWithIndices collect { case (`x`, n) => n } })
     val positions = list.zipWithIndex.groupBy(_._1).mapValues(_.map(_._2)).values.toIndexedSeq
-    val factors = positions map { l => of(l.size) }
+    val factors = positions map { l: Seq[Int] => of(l.size) }
     val product = factors.reverse.foldLeft(NonStrictIterable(List[Permutation]()))((s0, s1) => s0.flatMap { a => s1.map(_ :: a) })
 
     def assemblePermutations(positions: IndexedSeq[Seq[Int]], permutations: List[Permutation]): Permutation = {

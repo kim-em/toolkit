@@ -4,8 +4,7 @@ import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.collections.SparseSeq
-import net.tqft.toolkit.permutations.Permutation
-import net.tqft.toolkit.permutations.Permutations
+import net.tqft.toolkit.permutations.Permutations.Permutation
 import scala.collection.GenSeq
 import scala.collection.GenSet
 import net.tqft.toolkit.algebra.categories.Homomorphism
@@ -129,7 +128,7 @@ object FiniteGroups {
 
     override val elements = (0 until n).toSet
   }
-  import net.tqft.toolkit.permutations.Permutation
+  import net.tqft.toolkit.permutations.Permutations.Permutation
   private class PermutationGroup(n: Int) extends FiniteGroup[IndexedSeq[Int]] {
     import net.tqft.toolkit.permutations.Permutations
     import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
@@ -197,6 +196,15 @@ object FiniteGroups {
 
   def product[A, B](group1: FiniteGroup[A], group2: FiniteGroup[B]) = semidirectProduct(group1, group2, GroupActions.trivialAction)
 
+  def indexedProduct[A](groups: Seq[FiniteGroup[A]]): FiniteGroup[Seq[A]] = {
+    new FiniteGroup[Seq[A]] {
+      override def elements = ???
+      override def one = groups.map(_.one)
+      override def inverse(x: Seq[A]) = groups.zip(x).map(p => p._1.inverse(p._2))
+      override def multiply(x: Seq[A], y: Seq[A]) = groups.zip(x.zip(y)).map(p => p._1.multiply(p._2._1, p._2._2))
+    }
+  }
+  
   def power[A](group: FiniteGroup[A], k: Int): FiniteGroup[Seq[A]] = {
     new FiniteGroup[Seq[A]] {
       override def elements = {

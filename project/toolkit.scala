@@ -1,6 +1,7 @@
 import sbt._
 import Keys._
 import com.typesafe.sbt.SbtProguard._
+import com.typesafe.sbteclipse.plugin.EclipsePlugin.EclipseKeys
 
 object Toolkit extends Build {
   import BuildSettings._
@@ -28,7 +29,7 @@ object Toolkit extends Build {
 
   lazy val algebra = Project(id = "toolkit-algebra",
     base = file("algebra"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs, scalaz))) dependsOn (base, arithmetic, amazon, functions, collections)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (base, arithmetic, amazon, functions, collections)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),
@@ -59,6 +60,7 @@ object BuildSettings {
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.17-SNAPSHOT"
   val buildScalaVersion = "2.10.3"
+//  val buildScalaVersion = "2.11.0-RC1"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -68,9 +70,10 @@ object BuildSettings {
     resolvers := sonatypeResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
     //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
-    scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
+//    scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j),
-    exportJars := true
+    exportJars := true,
+    EclipseKeys.withSource := true
   )
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
@@ -146,6 +149,6 @@ object Dependencies {
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
 	val slick = "com.typesafe.slick" %% "slick" % "2.0.0"
-	val scalaz = "org.scalaz" %% "scalaz-core" % "7.0.5"
+	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0-M6"
 }
 

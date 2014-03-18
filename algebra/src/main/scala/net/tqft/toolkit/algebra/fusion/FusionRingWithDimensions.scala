@@ -1,8 +1,7 @@
 package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.permutations.Permutation
-import net.tqft.toolkit.permutations.Permutations
+import net.tqft.toolkit.permutations.Permutations.Permutation
 import net.tqft.toolkit.algebra.polynomials.Polynomials
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.matrices._
@@ -199,7 +198,6 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
       println("processing " + n_tuples.size + " " + n + "-tuples:")
       (for (t <- n_tuples) yield {
         println(t)
-        import net.tqft.toolkit.permutations.Permutation
         import net.tqft.toolkit.permutations.Permutations
         import net.tqft.toolkit.permutations.Permutations._
         val permutations = Permutations.preserving(t.head.dimensionsSquared).toSeq.par

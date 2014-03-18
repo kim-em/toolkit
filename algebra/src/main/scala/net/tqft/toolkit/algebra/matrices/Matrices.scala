@@ -1,7 +1,7 @@
 package net.tqft.toolkit.algebra.matrices
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.algebra.categories.{ ??? => _, _ }
+import net.tqft.toolkit.algebra.categories._
 import scala.collection.immutable.SortedMap
 import scala.collection.GenSeq
 

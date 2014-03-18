@@ -1,7 +1,7 @@
 package net.tqft.toolkit.algebra.principalgraphs
 
 import net.tqft.toolkit.algebra.enumeration.CanonicalGeneration
-import net.tqft.toolkit.permutations.Permutation
+import net.tqft.toolkit.permutations.Permutations._
 import net.tqft.toolkit.permutations.Involutions
 import net.tqft.toolkit.permutations.Involutions._
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup

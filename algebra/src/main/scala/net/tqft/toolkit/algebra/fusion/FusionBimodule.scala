@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
-import net.tqft.toolkit.permutations.Permutation
+import net.tqft.toolkit.permutations.Permutations.Permutation
 
 trait FusionBimodule[A] extends FiniteDimensionalFreeModuleOverRig[A] {
   def coefficients = leftRing.coefficients.ensuring(_ == rightRing.coefficients)
