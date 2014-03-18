@@ -65,6 +65,9 @@ trait Dreadnaut extends Logging {
   def canonicalize(g: Graph): Graph = {
     g.relabel(canonicalLabelling(g))
   }
+  def canonicalizeColouredGraph[W](g: ColouredGraph[W]): ColouredGraph[W] = {
+    g.relabel(canonicalLabelling(g))
+  }
 }
 
 object Dreadnaut extends Dreadnaut {
