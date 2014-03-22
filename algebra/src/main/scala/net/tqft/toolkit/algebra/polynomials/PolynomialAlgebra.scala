@@ -23,7 +23,3 @@ trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] wit
     Polynomial((p.terms map { case (0, _) => (0, ring.zero); case (k, a) => (k - 1, ring.multiplyByInt(a, k)) }): _*)
   }
 }
-
-object PolynomialAlgebra {
-  implicit def over[A:Ring] = Polynomials.over(implicitly[Ring[A]])
-}

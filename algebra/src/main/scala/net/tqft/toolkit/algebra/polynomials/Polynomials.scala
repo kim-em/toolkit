@@ -18,7 +18,7 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   def degree = maximumDegree.get
   def leadingCoefficient = maximumDegree map { coefficientOf(_).get }
   def constantTerm(implicit ring: Ring[A]) = coefficientOf(0).getOrElse(ring.zero)
- 
+
   def roots(implicit ring: Ring[A] with Elements[A]) = {
     for (x <- ring.elements; if Polynomials.evaluationAt(x).apply(polynomial) == ring.zero) yield x
   }
@@ -41,6 +41,9 @@ object Polynomial {
     val divisors = for (d <- 1 until n; if n % d == 0) yield cyclotomic(d)
     polynomials.quotient(apply((0, field.negate(field.one)), (n, field.one)), polynomials.product(divisors))
   }
+
+  implicit def over[A: Ring]: PolynomialAlgebra[A] = Polynomials.over(implicitly[Ring[A]])
+  implicit def over2[F: Field]: PolynomialAlgebraOverField[F] = Polynomials.over(implicitly[Field[F]])
 }
 
 object Polynomials extends HomomorphismCategory[PolynomialAlgebra] {
