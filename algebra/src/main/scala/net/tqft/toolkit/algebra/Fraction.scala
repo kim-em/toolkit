@@ -16,6 +16,8 @@ sealed trait Fraction[@specialized(Int, Long) A] extends Serializable {
 
 object Fraction {
   
+  implicit def over[A: EuclideanRing]: Field[Fraction[A]] = Fields.fieldOfFractions(implicitly[EuclideanRing[A]])
+  
   implicit def whole[@specialized(Int, Long) A: EuclideanRing](x: A): Fraction[A] = alreadyReduced(x, implicitly[EuclideanRing[A]].one)
   def apply[@specialized(Int, Long) A:EuclideanRing](numerator: A, denominator: A): Fraction[A] = {
     val _numerator = numerator

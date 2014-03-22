@@ -19,7 +19,6 @@ trait Field[@specialized(Int, Long, Float, Double) A] extends DivisionRing[A] /*
 
 object Field {
   implicit def forget[A: OrderedField]: Field[A] = implicitly[OrderedField[A]]
-  implicit def fieldOfFractions[A: EuclideanRing]: Field[Fraction[A]] = Fields.fieldOfFractions(implicitly[EuclideanRing[A]])
 }
 
 trait ComplexConjugation[A] { self: Field[A] =>

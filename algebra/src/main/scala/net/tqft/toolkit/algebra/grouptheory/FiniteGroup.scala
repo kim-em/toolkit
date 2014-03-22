@@ -300,7 +300,7 @@ trait FiniteGroup[A] extends Group[A] with Elements[A] { finiteGroup =>
 
   def characterPairing[M, N](m: Character[M], n: Character[N]): Int = {
     def liftCharacterToCyclotomicFieldOfExponent(c: Character[_]) = {
-      val polynomials = PolynomialAlgebra.over[Fraction[Int]]
+      val polynomials = Polynomial.over[Fraction[Int]]
       new CyclotomicCharacter {
         override val order = exponent
         override val character = c match {

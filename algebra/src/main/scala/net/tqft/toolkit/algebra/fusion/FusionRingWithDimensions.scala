@@ -76,7 +76,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
         private val sorted = {
           val unsortedDimensionsSquared = {
             val dxi = fr.dimensionOf(algebraObject)
-            val polynomials = PolynomialAlgebra.over[Fraction[Int]]
+            val polynomials = Polynomial.over[Fraction[Int]]
             val Atd = unsortedMatrix.transpose.mapEntries(polynomials.constant(_)).apply(fr.dimensions)
             Atd.map(p => dimensionField.quotient(dimensionField.power(p, 2), dxi))
           }
