@@ -8,94 +8,96 @@ import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.RationalFunction
 
-sealed trait Label[L]
-case class BoundaryPoint[L](index: Int) extends Label[L]
-case class InternalVertex[L](label: L) extends Label[L]
+//sealed trait Label[L]
+//case class BoundaryPoint[L](index: Int) extends Label[L]
+//case class InternalVertex[L](label: L) extends Label[L]
+//
+//object Label {
+//  implicit def labelOrdering[L: Ordering] = new Ordering[Label[L]] {
+//    override def compare(a: Label[L], b: Label[L]) = (a, b) match {
+//      case (BoundaryPoint(ai), BoundaryPoint(bi)) => ai - bi
+//      case (BoundaryPoint(_), InternalVertex(_)) => -1
+//      case (InternalVertex(_), BoundaryPoint(_)) => 1
+//      case (InternalVertex(al), InternalVertex(bl)) => implicitly[Ordering[L]].compare(al, bl)
+//    }
+//  }
+//}
 
-object Label {
-  implicit def labelOrdering[L: Ordering] = new Ordering[Label[L]] {
-    override def compare(a: Label[L], b: Label[L]) = (a, b) match {
-      case (BoundaryPoint(ai), BoundaryPoint(bi)) => ai - bi
-      case (BoundaryPoint(_), InternalVertex(_)) => -1
-      case (InternalVertex(_), BoundaryPoint(_)) => 1
-      case (InternalVertex(al), InternalVertex(bl)) => implicitly[Ordering[L]].compare(al, bl)
-    }
-  }
-}
-case class PlanarGraph[L: Ordering](
+case class PlanarGraph(
   numberOfBoundaryPoints: Int,
-  vertexLabels: IndexedSeq[Label[L]],
-  vertexFlags: IndexedSeq[IndexedSeq[(Int, Int)]]) {
+  vertexLabels: IndexedSeq[Int],
+  vertexFlags: IndexedSeq[Seq[(Int, Int)]],
+  loops: Int = 0) {
 
-  val numberOfVertices = vertexLabels.size
+  val numberOfVertices = vertexFlags.size
   def vertices = 0 until numberOfVertices
 
-  def edgesAdjacentTo(vertex: Int): IndexedSeq[Int] = vertexFlags(vertex).map(_._1)
+  def edgesAdjacentTo(vertex: Int): Seq[Int] = vertexFlags(vertex).map(_._1)
 
-  lazy val edges = {
+  lazy val edgeIncidences: Map[Int, List[Int]] = {
     val map = scala.collection.mutable.Map[Int, ListBuffer[Int]]()
     for (v <- vertices; e <- edgesAdjacentTo(v)) {
       map.getOrElseUpdate(e, ListBuffer[Int]()) += v
     }
     Map() ++ map.mapValues(_.toList)
   }
-  lazy val maxEdgeLabel = edges.keysIterator.max
-
+  lazy val maxEdgeLabel = edgeIncidences.keysIterator.max
   lazy val maxFaceLabel = vertexFlags.iterator.flatMap(_.map(_._2)).max
 
-  def target(source: Int, edge: Int): Int = edges(edge).find(_ != source).get
+  def target(source: Int, edge: Int): Int = edgeIncidences(edge).find(_ != source).get
   def faceOnRight(source: Int, edge: Int): Int = vertexFlags(target(source, edge)).find(_._1 == edge).get._2
-  
-  lazy val boundaryVertices = {
-    val a = Array[Int](numberOfBoundaryPoints)
-    for ((BoundaryPoint(i), j) <- vertexLabels.zipWithIndex) {
-      a(i) = j
-    }
-    a.toSeq    
-  }
-  lazy val boundaryEdges = {
-    val a = Array[Int](numberOfBoundaryPoints)
-    for ((BoundaryPoint(i), j) <- vertexLabels.zipWithIndex) {
-      a(i) = vertexFlags(j).find(_._2 == 0).get._1
-    }
-    a.toSeq
-  }
-  lazy val boundaryFaces = {
-    val a = Array[Int](numberOfBoundaryPoints)
-    for ((BoundaryPoint(i), j) <- vertexLabels.zipWithIndex) {
-      a(i) = vertexFlags(j).find(p => faceOnRight(j, p._1) == 0).get._2
-    }
-    a.toSeq
-  }
 
-  lazy val nautyGraph: ColouredGraph[Label[L]] = {
+  val outerFace = vertexFlags(0).last._2
+
+  //  lazy val boundaryVertices = {
+  //    val a = Array[Int](numberOfBoundaryPoints)
+  //    for ((BoundaryPoint(i), j) <- vertexLabels.zipWithIndex) {
+  //      a(i) = j
+  //    }
+  //    a.toSeq    
+  //  }
+  //  lazy val boundaryEdges = {
+  //    val a = Array[Int](numberOfBoundaryPoints)
+  //    for ((BoundaryPoint(i), j) <- vertexLabels.zipWithIndex) {
+  //      a(i) = vertexFlags(j).find(_._2 == 0).get._1
+  //    }
+  //    a.toSeq
+  //  }
+  //  lazy val boundaryFaces = {
+  //    val a = Array[Int](numberOfBoundaryPoints)
+  //    for ((BoundaryPoint(i), j) <- vertexLabels.zipWithIndex) {
+  //      a(i) = vertexFlags(j).find(p => faceOnRight(j, p._1) == 0).get._2
+  //    }
+  //    a.toSeq
+  //  }
+
+  def boundaryFaces = vertexFlags(0).map(_._2)
+
+  lazy val nautyGraph: ColouredGraph[Int] = {
     val adjacencies = for (v <- vertices) yield {
       for (e <- edgesAdjacentTo(v)) yield {
         target(v, e)
       }
     }
-    ColouredGraph(vertexLabels.size, adjacencies, vertexLabels)
+    ColouredGraph(numberOfVertices, adjacencies, vertexLabels)
   }
 }
 
 object PlanarGraph {
-  def build[L: Ordering] = Builder[L]
+  private def spider = implicitly[Spider[PlanarGraph]]
 
-  case class Builder[L: Ordering] {
-    def spider = implicitly[Spider[PlanarGraph[L]]]
+  def star(k: Int, label: Int) = {
+    import net.tqft.toolkit.arithmetic.Mod._
 
-    def star(k: Int, label: L) = {
-      import net.tqft.toolkit.arithmetic.Mod._
-
-      val labels: IndexedSeq[Label[L]] = IndexedSeq.tabulate(k)(i => BoundaryPoint[L](i)) :+ InternalVertex(label)
-      val flags = (for (i <- 0 until k) yield {
-        IndexedSeq((i, 0), (i - 1 mod k, i - 1 mod k), (k, i))
-      }) :+ IndexedSeq.tabulate(k)(i => (i, i - 1 mod k))
-      PlanarGraph(k, labels, flags)
-    }
-
-    def I(labelTop: L, labelBottom: L) = spider.multiply(star(3, labelTop), star(3, labelBottom), 1)
+    val labels: IndexedSeq[Int] = IndexedSeq(-1, label)
+    val flags = IndexedSeq(
+    	Seq.tabulate(k)(i => (i, i + 1 mod k)),
+    	Seq.tabulate(k)(i => (i, i))
+    )
+    PlanarGraph(k, labels, flags)
   }
+
+  def I(labelTop: Int, labelBottom: Int) = spider.multiply(star(3, labelTop), star(3, labelBottom), 1)
 }
 
 trait Spider[A] {
@@ -121,52 +123,45 @@ case class Disk[C](circumference: Int, contents: C)
 
 object Spider {
 
-  implicit def graphSpider[L: Ordering]: Spider[PlanarGraph[L]] = {
-    new Spider[PlanarGraph[L]] {
-      override def circumference(graph: PlanarGraph[L]) = graph.numberOfBoundaryPoints
-      override def rotate(graph: PlanarGraph[L], k: Int) = {
-        import net.tqft.toolkit.arithmetic.Mod._
-
-        graph.copy(vertexLabels = graph.vertexLabels.map({
-          case BoundaryPoint(i) => BoundaryPoint[L](i + k mod graph.numberOfBoundaryPoints)
-          case label: InternalVertex[L] => label
-        }))
+  implicit def graphSpider: Spider[PlanarGraph] = {
+    new Spider[PlanarGraph] {
+      override def circumference(graph: PlanarGraph) = graph.numberOfBoundaryPoints
+      override def rotate(graph: PlanarGraph, k: Int) = {
+        import net.tqft.toolkit.collections.Rotate._
+        graph.copy(vertexFlags = graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)))
       }
-      override def tensor(graph1: PlanarGraph[L], graph2: PlanarGraph[L]) = {
-        def labels = graph1.vertexLabels ++ graph2.vertexLabels.map({
-          case BoundaryPoint(i) => BoundaryPoint[L](i + graph1.numberOfBoundaryPoints)
-          case label: InternalVertex[L] => label
-        })
-        def newFlags1 = {
-          graph1.vertexFlags.map({ edges1 =>
-            val B = graph1.boundaryEdges.last
-            edges1.map({
-              case (B, 0) => (graph2.boundaryEdges.head, 0)
-              case x => x
-            })
-          })
+      override def tensor(graph1: PlanarGraph, graph2: PlanarGraph) = {
+        def labels = graph1.vertexLabels ++ graph2.vertexLabels.tail
+        def flags = {
+          val F = graph2.outerFace
+          val ne = graph1.maxEdgeLabel
+          val nf = graph1.maxFaceLabel
+          val relabelFlag: ((Int, Int)) => (Int, Int) = {
+            case (e, F) => (e + 1 + ne, graph1.outerFace)
+            case (e, f) => (e + 1 + ne, f + 1 + nf)
+          }
+          val externalFlag = {
+            graph1.vertexFlags.head ++ graph2.vertexFlags.head.map(relabelFlag)
+          }
+          (externalFlag +: graph1.vertexFlags.tail) ++ graph2.vertexFlags.tail.map(_.map(relabelFlag))
         }
-        def newFlags2 = {
-          graph2.vertexFlags.map({ edges1 =>
-            val B = graph2.boundaryEdges.last
-            val F = graph2.boundaryFaces.last
-            edges1.map({
-              case (B, 0) => (graph1.boundaryEdges.head, 0)
-              case (e, 0) => (graph1.maxEdgeLabel + 1 + e, 0)
-              case (e, F) => (graph1.maxEdgeLabel + 1 + e, graph1.boundaryFaces.last)
-              case (e, f) => (graph1.maxEdgeLabel + 1 + e, graph1.maxFaceLabel + 1 + f)
-            })
-          })
-        }
-        def flags = newFlags1 ++ newFlags2
-        PlanarGraph[L](graph1.numberOfBoundaryPoints + graph2.numberOfBoundaryPoints, labels, flags)
+        PlanarGraph(graph1.numberOfBoundaryPoints + graph2.numberOfBoundaryPoints, labels, flags)
       }
-      override def stitch(graph: PlanarGraph[L]) = {
-        def labels = ???
+      override def stitch(graph: PlanarGraph) = {
+        val f0 = graph.outerFace
+        val f1 = graph.vertexFlags(0)(1)._2
+        val nf = if(f0 < f1) f0 else f1
+        def relabelFace(f: Int) = {
+          if(f == f0 || f == f1) {
+            nf
+          } else {
+            f
+          }
+        }
         def flags = ???
-        PlanarGraph[L](graph.numberOfBoundaryPoints - 2, labels, flags)
+        PlanarGraph(graph.numberOfBoundaryPoints - 2, graph.vertexLabels, flags)
       }
-      override def canonicalForm(graph: PlanarGraph[L]) = {
+      override def canonicalForm(graph: PlanarGraph) = {
         ???
       }
     }
@@ -185,7 +180,7 @@ object Spider {
 trait LinearSpider[R, M] extends Spider[M] with Module[R, M]
 
 object LinearSpider {
-  def rationalSpider = implicitly[LinearSpider[RationalFunction[Int], Disk[Map[PlanarGraph[Int], RationalFunction[Int]]]]]
+  def rationalSpider = implicitly[LinearSpider[RationalFunction[Int], Disk[Map[PlanarGraph, RationalFunction[Int]]]]]
 
   implicit def lift[A: Spider, R: Ring]: LinearSpider[R, Map[A, R]] = {
     val spider = implicitly[Spider[A]]

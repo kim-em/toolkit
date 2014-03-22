@@ -1,9 +1,7 @@
 package net.tqft.toolkit.collections
 
 object Rotate {
-  implicit def rotatable[A](i: Seq[A]) = new Rotatable(i)
-
-  class Rotatable[A](i: Seq[A]) {
+  implicit class Rotatable[A](i: Seq[A]) {
     def rotateLeft(k: Int) = {
       if (i.size == 0) {
         i
