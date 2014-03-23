@@ -8,12 +8,12 @@ import net.tqft.toolkit.algebra.RationalFunction
 import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.Field
 
-case class RotationDefects[A](contents: A, totalRotations: Map[Int, Int])
-
 case class PlanarGraph(
   numberOfBoundaryPoints: Int,
   vertexLabels: IndexedSeq[Int],
   vertexFlags: IndexedSeq[Seq[(Int, Int)]]) {
+
+  require(vertexFlags(0).lastOption.map(_._2 == 0).getOrElse(true))
 
   val numberOfVertices = vertexFlags.size
   def vertices = 0 until numberOfVertices
@@ -33,8 +33,6 @@ case class PlanarGraph(
   def target(source: Int, edge: Int): Int = edgeIncidences(edge).find(_ != source).get
   def faceOnRight(source: Int, edge: Int): Int = vertexFlags(target(source, edge)).find(_._1 == edge).get._2
 
-  val outerFace = vertexFlags(0).last._2
-
   def boundaryFaces = vertexFlags(0).map(_._2)
 
   lazy val nautyGraph: ColouredGraph[Int] = {
@@ -47,7 +45,7 @@ case class PlanarGraph(
   }
 
   case class Subgraphs(shape: PlanarGraph) {
-    case class Excision(cut: PlanarGraph, depth: Int, totalRotations: Map[Int, Int]) {
+    case class Excision(cut: PlanarGraph, depth: Int, rotations: Map[Int, Map[Int, Int]]) {
       def replace(other: PlanarGraph): PlanarGraph = ???
     }
 
@@ -57,6 +55,23 @@ case class PlanarGraph(
 
 object PlanarGraph {
   private def spider = implicitly[Spider[PlanarGraph]]
+
+  def empty = polygon(0, { x => ??? })
+
+  def loop(label: Int) = {
+    PlanarGraph(0, IndexedSeq(-1, label), IndexedSeq(IndexedSeq.empty, IndexedSeq((0, 0), (0, 1))))
+  }
+
+  def strand = {
+    PlanarGraph(2, IndexedSeq(-1), IndexedSeq(IndexedSeq((0, 0), (0, 1))))
+  }
+
+  def polygon(k: Int, labelFunction: Int => Int) = {
+    val labels = -1 +: IndexedSeq.tabulate(k)(labelFunction)
+    val flags = IndexedSeq.tabulate(k)(i => (i, i)) +:
+      IndexedSeq.tabulate(k)(i => IndexedSeq(???, ???, ???))
+    PlanarGraph(k, labels, flags)
+  }
 
   def star(k: Int, label: Int) = {
     import net.tqft.toolkit.arithmetic.Mod._
@@ -103,11 +118,10 @@ object Spider {
       override def tensor(graph1: PlanarGraph, graph2: PlanarGraph) = {
         def labels = graph1.vertexLabels ++ graph2.vertexLabels.tail
         def flags = {
-          val F = graph2.outerFace
           val ne = graph1.maxEdgeLabel
           val nf = graph1.maxFaceLabel
           val relabelFlag: ((Int, Int)) => (Int, Int) = {
-            case (e, F) => (e + 1 + ne, graph1.outerFace)
+            case (e, 0) => (e + 1 + ne, 0)
             case (e, f) => (e + 1 + ne, f + 1 + nf)
           }
           val externalFlag = {
@@ -118,12 +132,10 @@ object Spider {
         PlanarGraph(graph1.numberOfBoundaryPoints + graph2.numberOfBoundaryPoints, labels, flags)
       }
       override def stitch(graph: PlanarGraph) = {
-        val f0 = graph.outerFace
         val f1 = graph.vertexFlags(0)(1)._2
-        val nf = if (f0 < f1) f0 else f1
         def relabelFace(f: Int) = {
-          if (f == f0 || f == f1) {
-            nf
+          if (f == f1) {
+            0
           } else {
             f
           }
@@ -133,7 +145,9 @@ object Spider {
       }
 
       override def canonicalForm(graph: PlanarGraph) = {
-        ???
+        val labelling = Dreadnaut.canonicalLabelling(graph.nautyGraph)
+        import net.tqft.toolkit.permutations.Permutations._
+        PlanarGraph(graph.numberOfBoundaryPoints, labelling.permute(graph.vertexLabels), labelling.permute(graph.vertexFlags))
       }
     }
   }
@@ -202,7 +216,11 @@ object LinearSpider {
 case class Reduction[A, R](big: A, small: Map[A, R])
 
 trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
-  def eigenvalue: Int => R
+  def eigenvalue(label: Int): R
+  def rotationAllowed_?(label: Int, rotation: Int): Boolean
+  def rotationsAllowed_?(rotations: Map[Int, Map[Int, Int]]) = {
+    rotations.forall({ case (label, rotations) => rotations.keySet.forall(rotation => rotationAllowed_?(label, rotation)) })
+  }
 
   def allReplacements(reduction: Reduction[A, R])(diagram: A): Iterator[Map[A, R]]
   def replace(reduction: Reduction[A, R])(element: Map[A, R]): Map[A, R] = {
@@ -229,11 +247,16 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
 
 object SubstitutionSpider {
   abstract class PlanarGraphMapSubstitutionSpider[R: Ring] extends LinearSpider.MapLinearSpider[PlanarGraph, R] with SubstitutionSpider[PlanarGraph, R] {
-    def eigenvalue: Int => R
     override def allReplacements(reduction: Reduction[PlanarGraph, R])(diagram: PlanarGraph) = {
-      for (excision <- diagram.Subgraphs(reduction.big).excisions) yield {
-        val eigenvalueFactor = ring.product(excision.totalRotations.map({
-          case (label, p) => ring.power(eigenvalue(label), p)
+      for (
+        excision <- diagram.Subgraphs(reduction.big).excisions;
+        if rotationsAllowed_?(excision.rotations)
+      ) yield {
+        val eigenvalueFactor = ring.product(excision.rotations.map({
+          case (label, rotations) => {
+            val totalRotation = rotations.map(p => p._1 * p._2).sum
+            ring.power(eigenvalue(label), totalRotation)
+          }
         }))
         val newMap = scala.collection.mutable.Map[PlanarGraph, R]()
         for ((a, r) <- reduction.small) {
@@ -243,13 +266,6 @@ object SubstitutionSpider {
         }
         Map() ++ newMap.filter(_._2 != ring.zero)
       }
-    }
-  }
-
-  def withEigenvalues[R: Ring](eigenvalue: Int => R): SubstitutionSpider[PlanarGraph, R] = {
-    def eigenvalue_ = eigenvalue
-    new PlanarGraphMapSubstitutionSpider {
-      override val eigenvalue = eigenvalue_
     }
   }
 }
@@ -266,19 +282,48 @@ abstract class TrivalentSpider[R: Ring] extends PlanarGraphReductionSpider[R] {
   def b: R
   def t: R
   def omega: R
-  override val eigenvalue = { x: Int => omega }
-  override val reductions = ???
+  override def eigenvalue(label: Int) = {
+    label match {
+      case -1 => ???
+      case 2 => ring.one
+      case 3 => omega
+    }
+  }
+  override def rotationAllowed_?(label: Int, rotation: Int) = true
+
+  private val loopReduction = Reduction(PlanarGraph.loop(2), Map(PlanarGraph.empty -> d))
+  private val bigonReduction = Reduction(PlanarGraph.polygon(2, _ => 3), Map(PlanarGraph.strand -> b))
+  private val triangleReduction = ???
+  override val reductions = Seq(loopReduction, bigonReduction, triangleReduction)
 }
 
+abstract class CubicSpider[R: Ring] extends TrivalentSpider[R] {
+  override val omega = ring.one
 
-object `SO(3)_q` extends TrivalentSpider[RationalFunction[Int]] {
+  private val squareReduction = ???
+  override val reductions = super.reductions :+ squareReduction
+}
+
+object `SO(3)_q` extends CubicSpider[RationalFunction[Int]] {
   override val ring = implicitly[Field[RationalFunction[Int]]]
-  
+
   val q: RationalFunction[Int] = Polynomial(1 -> Fraction(1, 1))
-  override val omega = (1: RationalFunction[Int])
   override val d = ring.add(q, ring.inverse(q))
   override val b = ???
   override val t = ???
-  
-  override val reductions = ???
+
+  private val pentagonReduction = ???
+  override val reductions = super.reductions :+ pentagonReduction
+}
+
+object `(G_2)_q` extends CubicSpider[RationalFunction[Int]] {
+  override val ring = implicitly[Field[RationalFunction[Int]]]
+
+  val q: RationalFunction[Int] = Polynomial(1 -> Fraction(1, 1))
+  override val d = ???
+  override val b = ???
+  override val t = ???
+
+  private val pentagonReduction = ???
+  override val reductions = super.reductions :+ pentagonReduction
 }

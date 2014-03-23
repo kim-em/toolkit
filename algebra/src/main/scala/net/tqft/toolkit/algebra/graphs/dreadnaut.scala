@@ -38,10 +38,6 @@ trait Dreadnaut extends Logging {
     }
   }
 
-  //  private def invoke(cmd: String): Stream[String] = {
-  //    ("echo " + cmd).#|(dreadnautPath).lines
-  //  }
-
   def automorphismGroup(g: Graph): FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
     val output = invokeDreadnaut(g.toDreadnautString + "cx\n")
     val generatorsString = output.filter(_.startsWith("("))
