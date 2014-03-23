@@ -19,14 +19,14 @@ object Fields extends HomomorphismCategory[Field] {
 
   class FieldOfFractions[A](ring: EuclideanRing[A]) extends Field[Fraction[A]] {
     implicit val _ring = ring
-    override val one = Fraction.alreadyReduced(ring.one, ring.one)
-    override val zero = Fraction.alreadyReduced(ring.zero, ring.one)
+    override val one = Fraction.whole(ring.one)
+    override val zero = Fraction.whole(ring.zero)
     override def multiply(x: Fraction[A], y: Fraction[A]) = Fraction(ring.multiply(x.numerator, y.numerator), ring.multiply(x.denominator, y.denominator))
     override def add(x: Fraction[A], y: Fraction[A]) = {
       val denominatorGCD = ring.gcd(x.denominator, y.denominator)
       Fraction(ring.add(ring.multiply(x.numerator, ring.quotient(y.denominator, denominatorGCD)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.numerator)), ring.multiply(ring.quotient(x.denominator, denominatorGCD), y.denominator))
     }
-    override def fromInt(x: Int) = Fraction.alreadyReduced(ring.fromInt(x), ring.one)
+    override def fromInt(x: Int) = Fraction.whole(ring.fromInt(x))
     override def negate(x: Fraction[A]) = Fraction.alreadyReduced(ring.negate(x.numerator), x.denominator)
     override def inverse(x: Fraction[A]) = Fraction.alreadyReduced(x.denominator, x.numerator)
   }

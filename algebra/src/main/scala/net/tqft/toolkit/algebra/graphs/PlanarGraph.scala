@@ -4,9 +4,9 @@ import scala.collection.mutable.ListBuffer
 import net.tqft.toolkit.algebra.Ring
 import net.tqft.toolkit.algebra.modules.Module
 import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.RationalFunction
 import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.Field
-import net.tqft.toolkit.algebra.RationalFunction
 
 case class RotationDefects[A](contents: A, totalRotations: Map[Int, Int])
 
@@ -202,7 +202,7 @@ object LinearSpider {
 case class Reduction[A, R](big: A, small: Map[A, R])
 
 trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
-  val eigenvalue: Int => R
+  def eigenvalue: Int => R
 
   def allReplacements(reduction: Reduction[A, R])(diagram: A): Iterator[Map[A, R]]
   def replace(reduction: Reduction[A, R])(element: Map[A, R]): Map[A, R] = {
@@ -228,7 +228,8 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
 }
 
 object SubstitutionSpider {
-  class PlanarGraphMapSubstitutionSpider[R: Ring](override val eigenvalue: Int => R) extends LinearSpider.MapLinearSpider[PlanarGraph, R] with SubstitutionSpider[PlanarGraph, R] {
+  abstract class PlanarGraphMapSubstitutionSpider[R: Ring] extends LinearSpider.MapLinearSpider[PlanarGraph, R] with SubstitutionSpider[PlanarGraph, R] {
+    def eigenvalue: Int => R
     override def allReplacements(reduction: Reduction[PlanarGraph, R])(diagram: PlanarGraph) = {
       for (excision <- diagram.Subgraphs(reduction.big).excisions) yield {
         val eigenvalueFactor = ring.product(excision.totalRotations.map({
@@ -245,7 +246,12 @@ object SubstitutionSpider {
     }
   }
 
-  def withEigenvalues[R: Ring](eigenvalue: Int => R): SubstitutionSpider[PlanarGraph, R] = new PlanarGraphMapSubstitutionSpider(eigenvalue)
+  def withEigenvalues[R: Ring](eigenvalue: Int => R): SubstitutionSpider[PlanarGraph, R] = {
+    def eigenvalue_ = eigenvalue
+    new PlanarGraphMapSubstitutionSpider {
+      override val eigenvalue = eigenvalue_
+    }
+  }
 }
 
 trait ReductionSpider[A, R] extends SubstitutionSpider[A, R] {
@@ -253,4 +259,26 @@ trait ReductionSpider[A, R] extends SubstitutionSpider[A, R] {
   override def canonicalForm(m: Map[A, R]) = super.canonicalForm(replaceRepeatedly(reductions)(m))
 }
 
-class PlanarGraphReductionSpider[R: Ring](eigenvalue: Int => R, override val reductions: Seq[Reduction[PlanarGraph, R]]) extends SubstitutionSpider.PlanarGraphMapSubstitutionSpider[R](eigenvalue) with ReductionSpider[PlanarGraph, R]
+abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.PlanarGraphMapSubstitutionSpider[R] with ReductionSpider[PlanarGraph, R]
+
+abstract class TrivalentSpider[R: Ring] extends PlanarGraphReductionSpider[R] {
+  def d: R
+  def b: R
+  def t: R
+  def omega: R
+  override val eigenvalue = { x: Int => omega }
+  override val reductions = ???
+}
+
+
+object `SO(3)_q` extends TrivalentSpider[RationalFunction[Int]] {
+  override val ring = implicitly[Field[RationalFunction[Int]]]
+  
+  val q: RationalFunction[Int] = Polynomial(1 -> Fraction(1, 1))
+  override val omega = (1: RationalFunction[Int])
+  override val d = ring.add(q, ring.inverse(q))
+  override val b = ???
+  override val t = ???
+  
+  override val reductions = ???
+}

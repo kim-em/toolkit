@@ -5,9 +5,14 @@ import net.tqft.toolkit.algebra.FieldHomomorphism
 import net.tqft.toolkit.algebra.Fields
 import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.categories._
+import net.tqft.toolkit.algebra.EuclideanRing
+
 
 object RationalFunction {
-  def identity[A](implicit ring: Field[A]) = Fraction(Polynomial.identity, Polynomials.over(ring).one)(Polynomials.over(ring))
+  def identity[A: Field] = {
+    val ring = implicitly[Field[A]]
+    Fraction(Polynomial.identity, Polynomials.over(ring).one)(Polynomials.over(ring))
+  }
 }
 
 object RationalFunctions {

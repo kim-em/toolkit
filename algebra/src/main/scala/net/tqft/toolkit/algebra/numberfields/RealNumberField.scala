@@ -11,7 +11,7 @@ import net.tqft.toolkit.algebra.ApproximateReals
 object RealNumberField {
   def apply[I: IntegerModel, D: ApproximateReals](_generator: Polynomial[I], approximation: D, epsilon: D): RealNumberField[I, D] = {
     new RealNumberField[I, D] {
-      override val generator = _generator.coefficientsAsFractions
+      override val generator: Polynomial[Fraction[I]] = _generator
       override val goodEnoughApproximation = approximation
 
       override var bestApproximation = approximation

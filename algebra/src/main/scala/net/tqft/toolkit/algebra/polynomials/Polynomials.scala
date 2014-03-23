@@ -23,16 +23,13 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
     for (x <- ring.elements; if Polynomials.evaluationAt(x).apply(polynomial) == ring.zero) yield x
   }
 
-  def coefficientsAsFractions(implicit domain: EuclideanRing[A]): Polynomial[Fraction[A]] = {
-    implicit val fractions = Fields.fieldOfFractions(domain)
-    Polynomial(terms.map({ case (i, a) => (i, Fraction.alreadyReduced(a, domain.one)) }): _*)
-  }
 }
 
 object Polynomial {
   def apply[A: Ring](terms: (Int, A)*) = implicitly[PolynomialAlgebra[A]].wrap(terms.toList)
   def apply[A: Ring](terms: Map[Int, A]) = implicitly[PolynomialAlgebra[A]].wrap(terms)
-  def constant[A: Ring](x: A) = apply((0, x))
+  implicit def constant[A: Ring](x: A) = apply((0, x))
+  implicit def constantFraction[A: EuclideanRing](x: A) = apply((0, Fraction.whole(x)))
   def identity[A: Ring] = apply((1, implicitly[Ring[A]].one))
 
   def cyclotomic[F: Field](n: Int): Polynomial[F] = {
@@ -42,8 +39,12 @@ object Polynomial {
     polynomials.quotient(apply((0, field.negate(field.one)), (n, field.one)), polynomials.product(divisors))
   }
 
+  implicit def coefficientsAsFractions[A: EuclideanRing](polynomial: Polynomial[A]): Polynomial[Fraction[A]] = {
+    Polynomial(polynomial.terms.map({ case (i, a) => (i, Fraction.whole(a)) }): _*)
+  }
+
   implicit def over[A: Ring]: PolynomialAlgebra[A] = Polynomials.over(implicitly[Ring[A]])
-  implicit def over2[F: Field]: PolynomialAlgebraOverField[F] = Polynomials.over(implicitly[Field[F]])
+  implicit def overField[F: Field]: PolynomialAlgebraOverField[F] = Polynomials.over(implicitly[Field[F]])
 }
 
 object Polynomials extends HomomorphismCategory[PolynomialAlgebra] {
