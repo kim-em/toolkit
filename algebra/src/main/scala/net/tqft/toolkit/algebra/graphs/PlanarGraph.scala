@@ -8,21 +8,6 @@ import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.RationalFunction
 
-//sealed trait Label[L]
-//case class BoundaryPoint[L](index: Int) extends Label[L]
-//case class InternalVertex[L](label: L) extends Label[L]
-//
-//object Label {
-//  implicit def labelOrdering[L: Ordering] = new Ordering[Label[L]] {
-//    override def compare(a: Label[L], b: Label[L]) = (a, b) match {
-//      case (BoundaryPoint(ai), BoundaryPoint(bi)) => ai - bi
-//      case (BoundaryPoint(_), InternalVertex(_)) => -1
-//      case (InternalVertex(_), BoundaryPoint(_)) => 1
-//      case (InternalVertex(al), InternalVertex(bl)) => implicitly[Ordering[L]].compare(al, bl)
-//    }
-//  }
-//}
-
 case class RotationDefects[A](contents: A, totalRotations: Map[Int, Int])
 
 case class PlanarGraph(
@@ -50,28 +35,6 @@ case class PlanarGraph(
 
   val outerFace = vertexFlags(0).last._2
 
-  //  lazy val boundaryVertices = {
-  //    val a = Array[Int](numberOfBoundaryPoints)
-  //    for ((BoundaryPoint(i), j) <- vertexLabels.zipWithIndex) {
-  //      a(i) = j
-  //    }
-  //    a.toSeq    
-  //  }
-  //  lazy val boundaryEdges = {
-  //    val a = Array[Int](numberOfBoundaryPoints)
-  //    for ((BoundaryPoint(i), j) <- vertexLabels.zipWithIndex) {
-  //      a(i) = vertexFlags(j).find(_._2 == 0).get._1
-  //    }
-  //    a.toSeq
-  //  }
-  //  lazy val boundaryFaces = {
-  //    val a = Array[Int](numberOfBoundaryPoints)
-  //    for ((BoundaryPoint(i), j) <- vertexLabels.zipWithIndex) {
-  //      a(i) = vertexFlags(j).find(p => faceOnRight(j, p._1) == 0).get._2
-  //    }
-  //    a.toSeq
-  //  }
-
   def boundaryFaces = vertexFlags(0).map(_._2)
 
   lazy val nautyGraph: ColouredGraph[Int] = {
@@ -89,7 +52,6 @@ case class PlanarGraph(
     }
 
     def excisions: Iterator[Excision] = ???
-    //    def replacements(other: PlanarGraph) = excisions.map(e => RotationDefects(e.replace(other), e.totalRotations))
   }
 }
 
