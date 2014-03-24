@@ -10,10 +10,12 @@ import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.polynomials.RationalFunction
 import net.tqft.toolkit.algebra.Module
 
+// flags veer to the left
+// edges are ordered clockwise around each vertex
 case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) {
 
   def numberOfBoundaryPoints = vertexFlags(0).size
-  def outerFace = vertexFlags(0).last._2
+  def outerFace = vertexFlags(0)(0)._2
 
   val numberOfVertices = vertexFlags.size
   def vertices = 0 until numberOfVertices
@@ -54,20 +56,22 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) {
 
   def nautyGraph: ColouredGraph[Int] = {
     require(edgeSet == (numberOfVertices until numberOfVertices + edgeSet.size))
-    require(faceSet == (numberOfVertices + edgeSet.size  until numberOfVertices + edgeSet.size + faceSet.size))
-    
+    require(faceSet == (numberOfVertices + edgeSet.size until numberOfVertices + edgeSet.size + faceSet.size))
+
     val edgeToFaceAdjacencies = IndexedSeq.fill(edgeSet.size)(ListBuffer[Int]())
 
     val vertexToEdgeAdjacencies = for (flags <- vertexFlags) yield {
       flags.map(flag => {
         edgeToFaceAdjacencies(flag._1 - numberOfVertices) += flag._2
         flag._1
-      }) ++ flags.headOption.map(_._2) // We add an extra edge from each vertex to each starred face
+      }) ++ flags.headOption.map(_._2) // We add an extra edge from each vertex to its face
     }
-        
-    ColouredGraph(numberOfVertices + edgeSet.size + faceSet.size,
-      vertexToEdgeAdjacencies ++ edgeToFaceAdjacencies,
-      (0 +: IndexedSeq.fill(numberOfVertices - 1)(1)) ++ IndexedSeq.fill(edgeSet.size)(2) ++ IndexedSeq.fill(faceSet.size)(3))
+
+    val flagSet = for((flags, v) <- vertexFlags.zipWithIndex; (e, f) <- flags) yield Seq(v,e,f)
+    
+    ColouredGraph(numberOfVertices + edgeSet.size + faceSet.size + flagSet.size,
+      vertexToEdgeAdjacencies ++ edgeToFaceAdjacencies ++ IndexedSeq.fill(faceSet.size)(Seq.empty) ++ flagSet,
+      (0 +: IndexedSeq.fill(numberOfVertices - 1)(1)) ++ IndexedSeq.fill(edgeSet.size)(2) ++ IndexedSeq.fill(faceSet.size)(3) ++ IndexedSeq.fill(flagSet.size)(4))
   }
 
   case class Subgraphs(shape: PlanarGraph) {
@@ -89,21 +93,26 @@ object PlanarGraph {
   }
 
   def strand = {
-    PlanarGraph(IndexedSeq(IndexedSeq((0, 1), (0, 0))), 0)
+    PlanarGraph(IndexedSeq(IndexedSeq((0, 0), (0, 1))), 0)
   }
 
   def polygon(k: Int) = {
-    val flags = IndexedSeq.tabulate(k)(i => (i, i)) +:
-      IndexedSeq.tabulate(k)(i => IndexedSeq(???, ???, ???))
-    PlanarGraph(flags, 0)
+    if (k == 0) {
+      loop
+    } else {
+      import net.tqft.toolkit.arithmetic.Mod._
+      val flags = IndexedSeq.tabulate(k)(i => (i + k + 1, i + 3 * k + 1)) +:
+        IndexedSeq.tabulate(k)(i => IndexedSeq((i + 2 * k + 1, 4 * k + 1), (i + k + 1, (i - 1 mod k) + 3 * k + 1), ((i - 1 mod k) + 2 * k + 1, i + 3 * k + 1)))
+      PlanarGraph(flags, 0)
+    }
   }
 
   def star(k: Int) = {
     import net.tqft.toolkit.arithmetic.Mod._
 
     val flags = IndexedSeq(
-      Seq.tabulate(k)(i => (i, i + 1 mod k)),
-      Seq.tabulate(k)(i => (i, i)))
+      Seq.tabulate(k)(i => (i + 2, i + k + 2)),
+      Seq.tabulate(k)(i => (i + 2, (i + 1 mod k) + k + 2)).reverse)
     PlanarGraph(flags, 0)
   }
 
@@ -146,12 +155,12 @@ object Spider {
         def flags = {
           val ne = graph1.maxEdgeLabel
           val nf = graph1.maxFaceLabel
-          val relabelFlag: ((Int, Int)) => (Int, Int) = {
+          def relabelFlag: ((Int, Int)) => (Int, Int) = {
             case (e, f) if f == graph2.outerFace => (e + 1 + ne, graph1.outerFace)
             case (e, f) => (e + 1 + ne, f + 1 + nf)
           }
           val externalFlag = {
-            graph1.vertexFlags.head ++ graph2.vertexFlags.head.map(relabelFlag)
+            graph2.vertexFlags.head.map(relabelFlag) ++ graph1.vertexFlags.head 
           }
           (externalFlag +: graph1.vertexFlags.tail) ++ graph2.vertexFlags.tail.map(_.map(relabelFlag))
         }
@@ -160,7 +169,7 @@ object Spider {
       override def stitch(graph: PlanarGraph) = {
         require(graph.numberOfBoundaryPoints >= 2)
 
-        val f1 = graph.vertexFlags(0)(1)._2
+        val f1 = graph.vertexFlags(0).secondLast._2
         def relabelFace(f: Int) = {
           if (f == f1) {
             graph.outerFace
@@ -168,15 +177,15 @@ object Spider {
             f
           }
         }
-        val e0 = graph.vertexFlags(0)(0)._1
-        val e1 = graph.vertexFlags(0)(1)._1
+        val e0 = graph.vertexFlags(0).last._1
+        val e1 = graph.vertexFlags(0).secondLast._1
 
         if (e0 == e1) {
-          PlanarGraph(graph.vertexFlags.head.drop(2) +: graph.vertexFlags.tail, graph.loops + 1)
+          PlanarGraph(graph.vertexFlags.head.dropRight(2) +: graph.vertexFlags.tail, graph.loops + 1)
         } else {
           val emin = if (e0 < e1) e0 else e1
-          
-          def flags = (graph.vertexFlags.head.drop(2) +: graph.vertexFlags.tail).map(_.map({
+
+          def flags = (graph.vertexFlags.head.dropRight(2) +: graph.vertexFlags.tail).map(_.map({
             case (e, f) if e == e0 || e == e1 => (emin, f)
             case (e, f) => (e, relabelFace(f))
           }))
@@ -186,22 +195,22 @@ object Spider {
       }
 
       override def canonicalForm(graph: PlanarGraph) = {
-//        println("graph: " + graph)
-        
+        //        println("graph: " + graph)
+
         val packed = graph.relabelEdgesAndFaces
 
-//        println("packed: " + packed)
-        
+        //        println("packed: " + packed)
+
         val nautyGraph = packed.nautyGraph
-        
-//        println("nauty: " + nautyGraph)
+
+        //        println("nauty: " + nautyGraph)
         val labelling = Dreadnaut.canonicalLabelling(nautyGraph)
-        
-//        println("labelling: " + labelling)
+
+        //        println("labelling: " + labelling)
         import net.tqft.toolkit.permutations.Permutations._
         val inv = labelling.inverse
         val result = PlanarGraph(labelling.take(packed.numberOfVertices).permute(packed.vertexFlags.map(_.map(p => (inv(p._1), inv(p._2))))), graph.loops)
-//        println("result: " + result)
+        //        println("result: " + result)
         result
       }
     }

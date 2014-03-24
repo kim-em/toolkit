@@ -36,6 +36,24 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
   "a 2pi srotated trivalent vertex" should "be a trivalent vertex" in {
     star(3) should be_isomorphic_to(spider.rotate(star(3), 3))
   }
+  
+  "multiplying by a strand" should "do nothing" in {
+    spider.multiply(strand, star(3), 1) should be_isomorphic_to(star(3)) 
+  }
+  
+  "a pentagon" should "be rotationally invariant" in {
+    polygon(5) should be_isomorphic_to(spider.rotate(polygon(5),1))
+  }
+  
+//  println(star(3))
+//  println(Seq.fill(2)(star(3)).fold(strand)(spider.multiply(_, _, 1)))
+  
+  "a polygon" should "be built out of trivalent vertices" in {
+    val k =  5
+    def p(m: Int) = spider.stitch(spider.rotate(Seq.fill(m)(star(3)).fold(strand)(spider.multiply(_, _, 1)), 1))
+    
+    p(k) should be_isomorphic_to(polygon(k))
+  }
 }
 
 trait IsomorphismMatchers {
