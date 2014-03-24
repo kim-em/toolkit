@@ -30,3 +30,7 @@ trait Semigroup[A] {
     }
   }
 }
+
+object Semigroup {
+  implicit def forget[A: Monoid]: Semigroup[A] = implicitly[Semigroup[A]]
+}

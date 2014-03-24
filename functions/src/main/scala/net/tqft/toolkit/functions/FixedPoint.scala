@@ -1,5 +1,7 @@
 package net.tqft.toolkit.functions
 
+import scala.language.implicitConversions
+
 object FixedPoint {
 
   implicit def fixedPointForFunction[A](f: A => A) = new FunctionFixedPoint(f)

@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-import net.tqft.toolkit.algebra.polynomials.Polynomial
+import scala.language.implicitConversions
 
 sealed trait Fraction[@specialized(Int, Long) A] extends Serializable {
   def denominator: A
@@ -17,8 +17,6 @@ sealed trait Fraction[@specialized(Int, Long) A] extends Serializable {
 }
 
 object Fraction {
-
-  implicit def over[A: EuclideanRing]: Field[Fraction[A]] = Fields.fieldOfFractions(implicitly[EuclideanRing[A]])
 
   implicit def whole[@specialized(Int, Long) A: EuclideanRing](x: A): Fraction[A] = FractionWhole(x)
   
@@ -41,9 +39,9 @@ object Fraction {
   }
   private case class FractionRatio[A](numerator: A, denominator: A) extends Fraction[A]
 
-  implicit def constant[A: EuclideanRing](x: A): RationalFunction[A] = Fraction.whole(Polynomial.constant(Fraction.whole(x)))
+//  implicit def constant[A: EuclideanRing](x: A): RationalFunction[A] = Fraction.whole(Polynomial.constant(Fraction.whole(x)))
 
-  implicit def toMathematicaExpression[A <% net.tqft.toolkit.mathematica.MathematicaExpression](f: Fraction[A]) = new net.tqft.toolkit.mathematica.ShortMathematicaExpression {
-    def toMathematicaInputString = "(" + f.numerator.toMathematicaInputString + ")/(" + f.denominator.toMathematicaInputString + ")"
-  }
+//  implicit def toMathematicaExpression[A <% net.tqft.toolkit.mathematica.MathematicaExpression](f: Fraction[A]) = new net.tqft.toolkit.mathematica.ShortMathematicaExpression {
+//    def toMathematicaInputString = "(" + f.numerator.toMathematicaInputString + ")/(" + f.denominator.toMathematicaInputString + ")"
+//  }
 }

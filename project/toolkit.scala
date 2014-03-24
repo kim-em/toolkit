@@ -9,7 +9,7 @@ object Toolkit extends Build {
 
   lazy val root = Project(id = "toolkit",
     base = file("."),
-    settings = buildSettings) aggregate (base, arithmetic, amazon, collections, algebra, functions, eval, wiki)
+    settings = buildSettings) aggregate (base, arithmetic, amazon, collections, algebra, `algebra-experimental`, functions, eval, wiki)
 
   lazy val base: Project = Project(id = "toolkit-base",
     base = file("base"),
@@ -29,11 +29,23 @@ object Toolkit extends Build {
 
   lazy val algebra = Project(id = "toolkit-algebra",
     base = file("algebra"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (base, arithmetic, amazon, functions, collections)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (base, arithmetic)
+
+  lazy val `algebra-polynomials` = Project(id = "toolkit-algebra-polynomials",
+    base = file("algebra-polynomials"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, `algebra-categories`, collections)
+
+  lazy val `algebra-categories` = Project(id = "toolkit-algebra-categories",
+    base = file("algebra-categories"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra)
+
+  lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
+    base = file("algebra-experimental"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(guava)))
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(guava, findbugs)))
 
   lazy val eval = Project(id = "toolkit-eval",
     base = file("eval"),

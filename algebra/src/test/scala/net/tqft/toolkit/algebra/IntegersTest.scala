@@ -9,8 +9,6 @@ import org.scalatest.junit.JUnitRunner
 class IntegersTest extends FlatSpec with ShouldMatchers {
   
   "Integer arithmetic" should "be correct" in {	  
-      import AlgebraicNotation._
-	  
 	  Integers.gcd(15, 27) should equal(3)
       
       Integers.gcd(-26268, 5) should equal(1)
@@ -25,7 +23,4 @@ class IntegersTest extends FlatSpec with ShouldMatchers {
       BigIntegers.gcd(5, -1) should equal(-1)
   }
   
-  "sumOfSquareDecomposition" should "find all ways to write a positive integer as a sum of squares" in {
-    Integers.sumOfSquaresDecomposition(5).size should equal (2)
-  }
 }

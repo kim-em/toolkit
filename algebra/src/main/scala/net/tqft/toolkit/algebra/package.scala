@@ -1,8 +1,10 @@
 package net.tqft.toolkit
 
-import net.tqft.toolkit.algebra.polynomials.Polynomial
+//import net.tqft.toolkit.algebra.polynomials.Polynomial
+//import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 
 package object algebra {
-  type RationalFunction[A] = Fraction[Polynomial[Fraction[A]]]
+  
+    def Rationals = implicitly[OrderedField[Fraction[Int]]]
 
 }

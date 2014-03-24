@@ -1,5 +1,9 @@
 package net.tqft.toolkit.functions
 
+import scala.language.implicitConversions
+import com.google.common.cache.CacheLoader
+import com.google.common.cache.CacheBuilder
+
 trait Memo {
 
   def apply[A, B](f: A => B): A => B = {
@@ -7,36 +11,17 @@ trait Memo {
   }
 
   def softly[A, B](f: A => B): A => B = {
-    apply(f, new com.google.common.collect.MapMaker().softValues().makeMap[A, B]())
-  }
-
-  def withSoftKeys[A, B](f: A => B): A => B = new (A => B) {
-    val cache = new com.google.common.collect.MapMaker().softValues().makeMap[Int, (A, B)]()
-//    var hits = 0
-//    var misses = 0
-    def apply(a: A) = {
-//      if(hits + misses % 1 == 0) println("Memo.withSoftKeys(...) hits: " + hits + " misses: " + misses)
-      val h = a.hashCode
-      if (cache.containsKey(h)) {
-        cache.get(h) match {
-          case (aa, b) if aa == a => {
-//            hits += 1
-           b 
-          }
-          case _ => {
-//            misses += 1
-            val r = f(a)
-            cache.putIfAbsent(h, (a, r))
-            r
-          }
+    val loader =
+      new CacheLoader[A with Object, B with Object]() {
+        override def load(a: A with Object) = {
+          f(a).asInstanceOf[B with Object]
         }
-      } else {
-//        misses += 1
-        val r = f(a)
-        cache.putIfAbsent(h, (a, r))
-        r
       }
-    }
+
+    val cache = CacheBuilder.newBuilder().softValues()
+      .build[A with Object, B with Object](loader)
+
+    { a: A => cache.getUnchecked(a.asInstanceOf[A with Object]) }
   }
 
   def apply[A, B](f: A => B, cache: scala.collection.mutable.Map[A, B]): A => B = new (A => B) {
@@ -45,15 +30,15 @@ trait Memo {
     }
   }
   def apply[A, B](f: A => B, cache: java.util.concurrent.ConcurrentMap[A, B]): A => B = new (A => B) {
-//    var hits = 0
-//    var misses = 0
+    //    var hits = 0
+    //    var misses = 0
     def apply(a: A) = {
-//      if(hits + misses % 100 == 0) println("hits: " + hits + " misses: " + misses)
+      //      if(hits + misses % 100 == 0) println("hits: " + hits + " misses: " + misses)
       if (cache.containsKey(a)) {
-//        hits += 1
+        //        hits += 1
         cache.get(a)
       } else {
-//        misses += 1
+        //        misses += 1
         val result = f(a)
         cache.putIfAbsent(a, result)
         result
@@ -84,11 +69,13 @@ trait Memo {
   }
 
   def apply[A1, A2, B](f: (A1, A2) => B): (A1, A2) => B = {
-    apply(f, new com.google.common.collect.MapMaker().makeMap[(A1, A2), B]())
+    val m: ((A1, A2)) => B = apply({ p: (A1, A2) => f(p._1, p._2) });
+    { (a1: A1, a2: A2) => m((a1, a2)) }
   }
 
-  def softly[A1, A2, B](f: (A1, A2) => B): (A1, A2) => B = {
-    apply(f, new com.google.common.collect.MapMaker().softValues().makeMap[(A1, A2), B]())
+  def softly[A1, A2, B <: Object](f: (A1, A2) => B): (A1, A2) => B = {
+    val m: ((A1, A2)) => B = softly({ p: (A1, A2) => f(p._1, p._2) });
+    { (a1: A1, a2: A2) => m((a1, a2)) }
   }
 
   def apply[A1, A2, B](f: (A1, A2) => B, cache: scala.collection.mutable.Map[(A1, A2), B]): (A1, A2) => B = new ((A1, A2) => B) {
@@ -111,9 +98,7 @@ trait Memo {
 }
 
 object Memo extends Memo {
-  implicit def function2Memoable[A, B](f: A => B): Memoable[A, B] = new Memoable(f)
-
-  class Memoable[A, B](f: A => B) {
+  implicit class Memoable[A, B](f: A => B) {
     def memo = Memo(f)
     def memoSoftly = Memo.softly(f)
     def memoUsing(cache: scala.collection.mutable.Map[A, B]) = Memo(f, cache)
