@@ -56,16 +56,17 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) {
     require(edgeSet == (numberOfVertices until numberOfVertices + edgeSet.size))
     require(faceSet == (numberOfVertices + edgeSet.size  until numberOfVertices + edgeSet.size + faceSet.size))
     
-    val edgeToVertexAdjacencies = IndexedSeq.fill(edgeSet.size)(ListBuffer[Int]())
+    val edgeToFaceAdjacencies = IndexedSeq.fill(edgeSet.size)(ListBuffer[Int]())
 
     val vertexToEdgeAdjacencies = for (flags <- vertexFlags) yield {
       flags.map(flag => {
-        edgeToVertexAdjacencies(flag._1 - numberOfVertices) += flag._2
+        edgeToFaceAdjacencies(flag._1 - numberOfVertices) += flag._2
         flag._1
-      })
+      }) ++ flags.headOption.map(_._2) // We add an extra edge from each vertex to each starred face
     }
+        
     ColouredGraph(numberOfVertices + edgeSet.size + faceSet.size,
-      vertexToEdgeAdjacencies ++ edgeToVertexAdjacencies,
+      vertexToEdgeAdjacencies ++ edgeToFaceAdjacencies,
       (0 +: IndexedSeq.fill(numberOfVertices - 1)(1)) ++ IndexedSeq.fill(edgeSet.size)(2) ++ IndexedSeq.fill(faceSet.size)(3))
   }
 
@@ -139,7 +140,7 @@ object Spider {
       override def circumference(graph: PlanarGraph) = graph.numberOfBoundaryPoints
       override def rotate(graph: PlanarGraph, k: Int) = {
         import net.tqft.toolkit.collections.Rotate._
-        graph.copy(vertexFlags = graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)))
+        PlanarGraph(graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)), graph.loops)
       }
       override def tensor(graph1: PlanarGraph, graph2: PlanarGraph) = {
         def flags = {
@@ -174,32 +175,33 @@ object Spider {
           PlanarGraph(graph.vertexFlags.head.drop(2) +: graph.vertexFlags.tail, graph.loops + 1)
         } else {
           val emin = if (e0 < e1) e0 else e1
-          def flags = graph.vertexFlags.head.drop(2) +: (graph.vertexFlags.tail.map(_.map({
+          
+          def flags = (graph.vertexFlags.head.drop(2) +: graph.vertexFlags.tail).map(_.map({
             case (e, f) if e == e0 || e == e1 => (emin, f)
             case (e, f) => (e, relabelFace(f))
-          })))
+          }))
 
           PlanarGraph(flags, graph.loops)
         }
       }
 
       override def canonicalForm(graph: PlanarGraph) = {
-        println("graph: " + graph)
+//        println("graph: " + graph)
         
         val packed = graph.relabelEdgesAndFaces
 
-        println("packed: " + packed)
+//        println("packed: " + packed)
         
         val nautyGraph = packed.nautyGraph
         
-        println("nauty: " + nautyGraph)
+//        println("nauty: " + nautyGraph)
         val labelling = Dreadnaut.canonicalLabelling(nautyGraph)
         
-        println("labelling: " + labelling)
+//        println("labelling: " + labelling)
         import net.tqft.toolkit.permutations.Permutations._
         val inv = labelling.inverse
         val result = PlanarGraph(labelling.take(packed.numberOfVertices).permute(packed.vertexFlags.map(_.map(p => (inv(p._1), inv(p._2))))), graph.loops)
-        println("result: " + result)
+//        println("result: " + result)
         result
       }
     }
