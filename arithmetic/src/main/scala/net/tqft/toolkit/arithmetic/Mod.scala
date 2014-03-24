@@ -5,7 +5,7 @@ import scala.language.implicitConversions
 object Mod {
 	implicit class ModdableInt(x: Int) {
 	  def mod(k: Int) = {
-	    require(k != 0)
+//	    require(k != 0)
 	    if(x < 0) {
 	      -((-x-1) % k) + k - 1
 	    } else {
@@ -15,7 +15,7 @@ object Mod {
 	}
 	implicit class ModdableLong(x: Long) {
 	  def mod(k: Long) = {
-	    require(k != 0)
+//	    require(k != 0)
 	    if(x < 0) {
 	      -((-x-1) % k) + k - 1
 	    } else {
