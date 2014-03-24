@@ -12,7 +12,6 @@ import net.tqft.toolkit.algebra.Module
 
 case class PlanarGraph(
   numberOfBoundaryPoints: Int,
-  vertexLabels: IndexedSeq[Int],
   vertexFlags: IndexedSeq[Seq[(Int, Int)]]) {
 
   require(vertexFlags(0).lastOption.map(_._2 == 0).getOrElse(true))
@@ -43,7 +42,7 @@ case class PlanarGraph(
         target(v, e)
       }
     }
-    ColouredGraph(numberOfVertices, adjacencies, vertexLabels)
+    ColouredGraph(numberOfVertices, adjacencies, 1 +: IndexedSeq.fill(numberOfVertices - 1)(0))
   }
 
   case class Subgraphs(shape: PlanarGraph) {
@@ -58,34 +57,32 @@ case class PlanarGraph(
 object PlanarGraph {
   private def spider = implicitly[Spider[PlanarGraph]]
 
-  def empty = polygon(0, { x => ??? })
+  def empty = polygon(0)
 
-  def loop(label: Int) = {
-    PlanarGraph(0, IndexedSeq(-1, label), IndexedSeq(IndexedSeq.empty, IndexedSeq((0, 0), (0, 1))))
+  def loop = {
+    PlanarGraph(0, IndexedSeq(IndexedSeq.empty, IndexedSeq((0, 0), (0, 1))))
   }
 
   def strand = {
-    PlanarGraph(2, IndexedSeq(-1), IndexedSeq(IndexedSeq((0, 0), (0, 1))))
+    PlanarGraph(2, IndexedSeq(IndexedSeq((0, 0), (0, 1))))
   }
 
-  def polygon(k: Int, labelFunction: Int => Int) = {
-    val labels = -1 +: IndexedSeq.tabulate(k)(labelFunction)
+  def polygon(k: Int) = {
     val flags = IndexedSeq.tabulate(k)(i => (i, i)) +:
       IndexedSeq.tabulate(k)(i => IndexedSeq(???, ???, ???))
-    PlanarGraph(k, labels, flags)
+    PlanarGraph(k,  flags)
   }
 
-  def star(k: Int, label: Int) = {
+  def star(k: Int) = {
     import net.tqft.toolkit.arithmetic.Mod._
 
-    val labels: IndexedSeq[Int] = IndexedSeq(-1, label)
     val flags = IndexedSeq(
       Seq.tabulate(k)(i => (i, i + 1 mod k)),
       Seq.tabulate(k)(i => (i, i)))
-    PlanarGraph(k, labels, flags)
+    PlanarGraph(k, flags)
   }
 
-  def I(labelTop: Int, labelBottom: Int) = spider.multiply(star(3, labelTop), star(3, labelBottom), 1)
+  def I = spider.multiply(star(3), star(3), 1)
 }
 
 trait Spider[A] {
@@ -118,7 +115,6 @@ object Spider {
         graph.copy(vertexFlags = graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)))
       }
       override def tensor(graph1: PlanarGraph, graph2: PlanarGraph) = {
-        def labels = graph1.vertexLabels ++ graph2.vertexLabels.tail
         def flags = {
           val ne = graph1.maxEdgeLabel
           val nf = graph1.maxFaceLabel
@@ -131,7 +127,7 @@ object Spider {
           }
           (externalFlag +: graph1.vertexFlags.tail) ++ graph2.vertexFlags.tail.map(_.map(relabelFlag))
         }
-        PlanarGraph(graph1.numberOfBoundaryPoints + graph2.numberOfBoundaryPoints, labels, flags)
+        PlanarGraph(graph1.numberOfBoundaryPoints + graph2.numberOfBoundaryPoints, flags)
       }
       override def stitch(graph: PlanarGraph) = {
         val f1 = graph.vertexFlags(0)(1)._2
@@ -143,13 +139,13 @@ object Spider {
           }
         }
         def flags = ???
-        PlanarGraph(graph.numberOfBoundaryPoints - 2, graph.vertexLabels, flags)
+        PlanarGraph(graph.numberOfBoundaryPoints - 2, flags)
       }
 
       override def canonicalForm(graph: PlanarGraph) = {
         val labelling = Dreadnaut.canonicalLabelling(graph.nautyGraph)
         import net.tqft.toolkit.permutations.Permutations._
-        PlanarGraph(graph.numberOfBoundaryPoints, labelling.permute(graph.vertexLabels), labelling.permute(graph.vertexFlags))
+        PlanarGraph(graph.numberOfBoundaryPoints, labelling.permute(graph.vertexFlags))
       }
     }
   }
@@ -293,9 +289,9 @@ abstract class TrivalentSpider[R: Ring] extends PlanarGraphReductionSpider[R] {
   }
   override def rotationAllowed_?(label: Int, rotation: Int) = true
 
-  private val loopReduction = Reduction(PlanarGraph.loop(2), Map(PlanarGraph.empty -> d))
-  private val bigonReduction = Reduction(PlanarGraph.polygon(2, _ => 3), Map(PlanarGraph.strand -> b))
-  private val triangleReduction = ???
+  private val loopReduction = Reduction(PlanarGraph.loop, Map(PlanarGraph.empty -> d))
+  private val bigonReduction = Reduction(PlanarGraph.polygon(2), Map(PlanarGraph.strand -> b))
+  private val triangleReduction = Reduction(PlanarGraph.polygon(3), Map(PlanarGraph.star(3) -> t))
   override def reductions = Seq(loopReduction, bigonReduction, triangleReduction)
 }
 
@@ -333,3 +329,19 @@ object `(G_2)_q` extends CubicSpider[RationalFunction[Int]] {
 sealed trait QuantumExceptionalVariable
 case object v extends QuantumExceptionalVariable
 case object w extends QuantumExceptionalVariable
+object QuantumExceptionalVariable {
+  implicit val ordering: Ordering[QuantumExceptionalVariable] = Ordering.by({
+    case `v` => 1
+    case `w` => 2
+  })
+}
+
+object QuantumExceptional extends TrivalentSpider[MultivariableRationalFunction[Int, QuantumExceptionalVariable]] {
+  override val ring = implicitly[Field[MultivariableRationalFunction[Int, QuantumExceptionalVariable]]]
+  
+  override val omega = ring.one
+  override val d = ???
+  override val b = ???
+  override val t = ???
+  override def reductions = super.reductions
+}
