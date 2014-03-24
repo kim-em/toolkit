@@ -10,12 +10,11 @@ import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.polynomials.RationalFunction
 import net.tqft.toolkit.algebra.Module
 
-case class PlanarGraph(
-  numberOfBoundaryPoints: Int,
-  vertexFlags: IndexedSeq[Seq[(Int, Int)]]) {
+case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) {
 
-  require(vertexFlags(0).lastOption.map(_._2 == 0).getOrElse(true))
-
+  def numberOfBoundaryPoints = vertexFlags(0).size
+  def outerFace = vertexFlags(0).last._2
+    
   val numberOfVertices = vertexFlags.size
   def vertices = 0 until numberOfVertices
 
@@ -31,7 +30,14 @@ case class PlanarGraph(
   lazy val maxEdgeLabel = edgeIncidences.keysIterator.max
   lazy val maxFaceLabel = vertexFlags.iterator.flatMap(_.map(_._2)).max
 
-  def target(source: Int, edge: Int): Int = edgeIncidences(edge).find(_ != source).get
+  def target(source: Int, edge: Int): Int = {
+    val ends = edgeIncidences(edge)
+    if (ends.head == source) {
+      ends(1)
+    } else {
+      ends.head
+    }
+  }
   def faceOnRight(source: Int, edge: Int): Int = vertexFlags(target(source, edge)).find(_._1 == edge).get._2
 
   def boundaryFaces = vertexFlags(0).map(_._2)
@@ -42,7 +48,7 @@ case class PlanarGraph(
         target(v, e)
       }
     }
-    ColouredGraph(numberOfVertices, adjacencies, 1 +: IndexedSeq.fill(numberOfVertices - 1)(0))
+    ColouredGraph(numberOfVertices, adjacencies, 0 +: IndexedSeq.fill(numberOfVertices - 1)(1))
   }
 
   case class Subgraphs(shape: PlanarGraph) {
@@ -60,17 +66,17 @@ object PlanarGraph {
   def empty = polygon(0)
 
   def loop = {
-    PlanarGraph(0, IndexedSeq(IndexedSeq.empty, IndexedSeq((0, 0), (0, 1))))
+    PlanarGraph(IndexedSeq(IndexedSeq.empty), 1)
   }
 
   def strand = {
-    PlanarGraph(2, IndexedSeq(IndexedSeq((0, 0), (0, 1))))
+    PlanarGraph(IndexedSeq(IndexedSeq((0, 1), (0, 0))), 0)
   }
 
   def polygon(k: Int) = {
     val flags = IndexedSeq.tabulate(k)(i => (i, i)) +:
       IndexedSeq.tabulate(k)(i => IndexedSeq(???, ???, ???))
-    PlanarGraph(k,  flags)
+    PlanarGraph(flags, 0)
   }
 
   def star(k: Int) = {
@@ -79,7 +85,7 @@ object PlanarGraph {
     val flags = IndexedSeq(
       Seq.tabulate(k)(i => (i, i + 1 mod k)),
       Seq.tabulate(k)(i => (i, i)))
-    PlanarGraph(k, flags)
+    PlanarGraph(flags, 0)
   }
 
   def I = spider.multiply(star(3), star(3), 1)
@@ -102,6 +108,9 @@ trait Spider[A] {
   def innerProduct(a1: A, a2: A): A = {
     multiply(a1, a2, circumference(a1))
   }
+  def normSquared(a: A): A = {
+    innerProduct(a, a)
+  }
 }
 
 case class Disk[C](circumference: Int, contents: C)
@@ -119,7 +128,7 @@ object Spider {
           val ne = graph1.maxEdgeLabel
           val nf = graph1.maxFaceLabel
           val relabelFlag: ((Int, Int)) => (Int, Int) = {
-            case (e, 0) => (e + 1 + ne, 0)
+            case (e, f) if f == graph2.outerFace => (e + 1 + ne, graph1.outerFace)
             case (e, f) => (e + 1 + ne, f + 1 + nf)
           }
           val externalFlag = {
@@ -127,25 +136,39 @@ object Spider {
           }
           (externalFlag +: graph1.vertexFlags.tail) ++ graph2.vertexFlags.tail.map(_.map(relabelFlag))
         }
-        PlanarGraph(graph1.numberOfBoundaryPoints + graph2.numberOfBoundaryPoints, flags)
+        PlanarGraph(flags, graph1.loops + graph2.loops)
       }
       override def stitch(graph: PlanarGraph) = {
+        require(graph.numberOfBoundaryPoints >= 2)
+
         val f1 = graph.vertexFlags(0)(1)._2
         def relabelFace(f: Int) = {
           if (f == f1) {
-            0
+            graph.outerFace
           } else {
             f
           }
         }
-        def flags = ???
-        PlanarGraph(graph.numberOfBoundaryPoints - 2, flags)
+        val e0 = graph.vertexFlags(0)(0)._1
+        val e1 = graph.vertexFlags(0)(1)._1
+
+        if (e0 == e1) {
+          PlanarGraph(graph.vertexFlags.head.drop(2) +: graph.vertexFlags.tail, graph.loops + 1)
+        } else {
+          val emin = if (e0 < e1) e0 else e1
+          def flags = graph.vertexFlags.head.drop(2) +: (graph.vertexFlags.tail.map(_.map({
+            case (e, f) if e == e0 || e == e1 => (emin, f)
+            case (e, f) => (e, relabelFace(f))
+          })))
+
+          PlanarGraph(flags, graph.loops)
+        }
       }
 
       override def canonicalForm(graph: PlanarGraph) = {
         val labelling = Dreadnaut.canonicalLabelling(graph.nautyGraph)
         import net.tqft.toolkit.permutations.Permutations._
-        PlanarGraph(graph.numberOfBoundaryPoints, labelling.permute(graph.vertexFlags))
+        PlanarGraph(labelling.permute(graph.vertexFlags), graph.loops)
       }
     }
   }
@@ -338,7 +361,7 @@ object QuantumExceptionalVariable {
 
 object QuantumExceptional extends TrivalentSpider[MultivariableRationalFunction[Int, QuantumExceptionalVariable]] {
   override val ring = implicitly[Field[MultivariableRationalFunction[Int, QuantumExceptionalVariable]]]
-  
+
   override val omega = ring.one
   override val d = ???
   override val b = ???
