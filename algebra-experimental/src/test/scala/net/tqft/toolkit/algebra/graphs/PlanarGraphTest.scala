@@ -10,6 +10,6 @@ class PlanarGraphTest extends FlatSpec with Matchers {
 
     val spider = implicitly[Spider[PlanarGraph]]
     
-    spider.canonicalForm(PlanarGraph.loop(2)) should equal(spider.canonicalForm(spider.stitch(PlanarGraph.strand)))
+    spider.canonicalForm(PlanarGraph.loop) should equal(spider.canonicalForm(spider.stitch(PlanarGraph.strand)))
   }
 }
