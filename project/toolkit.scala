@@ -29,7 +29,7 @@ object Toolkit extends Build {
 
   lazy val algebra = Project(id = "toolkit-algebra",
     base = file("algebra"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (base, arithmetic)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(spire))) dependsOn (base, arithmetic)
 
   lazy val `algebra-polynomials` = Project(id = "toolkit-algebra-polynomials",
     base = file("algebra-polynomials"),
@@ -162,5 +162,6 @@ object Dependencies {
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
 	val slick = "com.typesafe.slick" %% "slick" % "2.0.0"
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0-M6"
+	val spire = "org.spire-math" %% "spire" % "0.7.1"
 }
 

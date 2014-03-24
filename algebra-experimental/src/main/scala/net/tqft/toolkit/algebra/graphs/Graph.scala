@@ -27,7 +27,7 @@ trait Graph {
   def edges = (for ((s, i) <- adjacencies.iterator.zipWithIndex; j <- s) yield Set(i, j)).toSet
 
   def toDreadnautString: String = {
-    "n=" + numberOfVertices + " g " + (for (i <- 0 until numberOfVertices) yield adjacencies(i).mkString(" ")).mkString("", "; ", ". ")
+    "n=" + numberOfVertices + " g " + (for (a <- adjacencies) yield a.mkString(" ")).mkString("", "; ", ". ")
   }
 
   def relabel(labels: IndexedSeq[Int]): Graph = {
