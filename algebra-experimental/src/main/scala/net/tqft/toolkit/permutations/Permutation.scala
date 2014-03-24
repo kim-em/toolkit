@@ -18,7 +18,6 @@ object Permutations {
         result(n) = i
       }
       result
-//      ((0 to p.size - 1) map { k => p.indexWhere(_ == k) })
     }
   }
 

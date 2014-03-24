@@ -14,9 +14,11 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) {
 
   def numberOfBoundaryPoints = vertexFlags(0).size
   def outerFace = vertexFlags(0).last._2
-    
+
   val numberOfVertices = vertexFlags.size
   def vertices = 0 until numberOfVertices
+  lazy val edgeSet = vertexFlags.flatMap(_.map(_._1)).sorted.distinct
+  lazy val faceSet = vertexFlags.flatMap(_.map(_._2)).sorted.distinct
 
   def edgesAdjacentTo(vertex: Int): Seq[Int] = vertexFlags(vertex).map(_._1)
 
@@ -38,17 +40,33 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) {
       ends.head
     }
   }
+  def faceOnLeft(source: Int, edge: Int): Int = vertexFlags(source).find(_._1 == edge).get._2
   def faceOnRight(source: Int, edge: Int): Int = vertexFlags(target(source, edge)).find(_._1 == edge).get._2
 
   def boundaryFaces = vertexFlags(0).map(_._2)
 
-  lazy val nautyGraph: ColouredGraph[Int] = {
-    val adjacencies = for (v <- vertices) yield {
-      for (e <- edgesAdjacentTo(v)) yield {
-        target(v, e)
-      }
+  def relabelEdgesAndFaces: PlanarGraph = {
+    val edgeMap = (for ((e, ei) <- edgeSet.zipWithIndex) yield (e, numberOfVertices + ei)).toMap
+    val faceMap = (for ((f, fi) <- faceSet.zipWithIndex) yield (f, numberOfVertices + edgeMap.size + fi)).toMap
+
+    PlanarGraph(vertexFlags.map(_.map(p => (edgeMap(p._1), faceMap(p._2)))), loops)
+  }
+
+  def nautyGraph: ColouredGraph[Int] = {
+    require(edgeSet == (numberOfVertices until numberOfVertices + edgeSet.size))
+    require(faceSet == (numberOfVertices + edgeSet.size  until numberOfVertices + edgeSet.size + faceSet.size))
+    
+    val edgeToVertexAdjacencies = IndexedSeq.fill(edgeSet.size)(ListBuffer[Int]())
+
+    val vertexToEdgeAdjacencies = for (flags <- vertexFlags) yield {
+      flags.map(flag => {
+        edgeToVertexAdjacencies(flag._1 - numberOfVertices) += flag._2
+        flag._1
+      })
     }
-    ColouredGraph(numberOfVertices, adjacencies, 0 +: IndexedSeq.fill(numberOfVertices - 1)(1))
+    ColouredGraph(numberOfVertices + edgeSet.size + faceSet.size,
+      vertexToEdgeAdjacencies ++ edgeToVertexAdjacencies,
+      (0 +: IndexedSeq.fill(numberOfVertices - 1)(1)) ++ IndexedSeq.fill(edgeSet.size)(2) ++ IndexedSeq.fill(faceSet.size)(3))
   }
 
   case class Subgraphs(shape: PlanarGraph) {
@@ -166,9 +184,23 @@ object Spider {
       }
 
       override def canonicalForm(graph: PlanarGraph) = {
-        val labelling = Dreadnaut.canonicalLabelling(graph.nautyGraph)
+        println("graph: " + graph)
+        
+        val packed = graph.relabelEdgesAndFaces
+
+        println("packed: " + packed)
+        
+        val nautyGraph = packed.nautyGraph
+        
+        println("nauty: " + nautyGraph)
+        val labelling = Dreadnaut.canonicalLabelling(nautyGraph)
+        
+        println("labelling: " + labelling)
         import net.tqft.toolkit.permutations.Permutations._
-        PlanarGraph(labelling.permute(graph.vertexFlags), graph.loops)
+        val inv = labelling.inverse
+        val result = PlanarGraph(labelling.take(packed.numberOfVertices).permute(packed.vertexFlags.map(_.map(p => (inv(p._1), inv(p._2))))), graph.loops)
+        println("result: " + result)
+        result
       }
     }
   }
