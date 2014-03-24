@@ -70,7 +70,7 @@ object BuildSettings {
   import Dependencies._
 
   val buildOrganization = "net.tqft"
-  val buildVersion = "0.1.17-SNAPSHOT"
+  val buildVersion = "0.1.18-SNAPSHOT"
   val buildScalaVersion = "2.10.3"
 //  val buildScalaVersion = "2.11.0-RC1"
 
