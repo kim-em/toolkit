@@ -1,5 +1,8 @@
 package net.tqft.toolkit
 
+import scala.language.higherKinds
+
+
 object Throttle extends Logging {
   object none extends Throttle { def apply(success: Boolean) {} }
   def linearBackoff(stepInMilliseconds: Int) = new Throttle {

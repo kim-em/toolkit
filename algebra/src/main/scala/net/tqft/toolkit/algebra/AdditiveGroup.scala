@@ -33,3 +33,7 @@ trait Subtractive[@specialized(Int, Long, Float, Double) A] extends AdditiveSemi
 }
 
 trait AdditiveGroup[@specialized(Int, Long, Float, Double) A] extends AdditiveMonoid[A] with Subtractive[A]
+
+object AdditiveGroup {
+  implicit def forget[A:Ring]: AdditiveGroup[A] = implicitly[AdditiveGroup[A]]  
+}

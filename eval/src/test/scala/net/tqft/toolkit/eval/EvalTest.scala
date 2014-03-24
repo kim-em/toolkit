@@ -1,14 +1,13 @@
 package net.tqft.toolkit.eval
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import scala.math._
 
 @RunWith(classOf[JUnitRunner])
-class EvalTest extends FlatSpec with ShouldMatchers {
+class EvalTest extends FlatSpec with Matchers {
   
   "Eval" should "work correctly" in {
 	  Eval("def plusOne(x: Int) = x + 1")

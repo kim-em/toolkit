@@ -3,6 +3,9 @@ import java.math.BigInteger
 import java.io.Writer
 import java.io.StringWriter
 
+import scala.language.implicitConversions
+
+
 trait MathematicaExpression {
   def toMathematicaInputString: String
   def writeMathematicaInputString(writer: Writer)

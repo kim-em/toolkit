@@ -1,7 +1,5 @@
 package net.tqft.toolkit.algebra
 
-import net.tqft.toolkit.algebra.modules.Module
-
 object AlgebraicNotation {
   implicit class AdditiveMonoidElement[A: AdditiveMonoid](a: A) {
     def +(b: A) = implicitly[AdditiveMonoid[A]].add(a, b)

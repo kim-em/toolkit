@@ -1,12 +1,11 @@
 package net.tqft.toolkit.arithmetic
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class FactorTest extends FlatSpec with ShouldMatchers {
+class FactorTest extends FlatSpec with Matchers {
 
   "factor" should "factor 60" in {
     Factor(0) should equal(List(0))

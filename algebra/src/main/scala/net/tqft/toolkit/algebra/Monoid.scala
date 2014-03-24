@@ -33,3 +33,7 @@ trait Monoid[@specialized(Int, Long, Float, Double) A] extends Semigroup[A] with
   }
   def orderOfElement(a: A): Int = Iterator.iterate(a)(multiply(_, a)).indexOf(one) + 1
 }
+
+object Monoid {
+  def forget[A: Group]: Monoid[A] = implicitly[Group[A]]
+}

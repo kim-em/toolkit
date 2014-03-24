@@ -1,10 +1,11 @@
 package net.tqft.toolkit.arithmetic
 
+import scala.language.implicitConversions
+
+
 object MinMax {
 
-  implicit def toMinMaxIterable[A](iterable: Iterable[A]) = new MinMaxIterable(iterable)
-  
-  class MinMaxIterable[A](iterable: Iterable[A]) {
+  implicit class MinMaxIterable[A](iterable: Iterable[A]) {
     def minOption(implicit cmp: Ordering[A]): Option[A] = if(iterable.isEmpty) {
       None
     } else {

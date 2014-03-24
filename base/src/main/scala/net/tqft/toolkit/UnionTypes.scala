@@ -1,5 +1,8 @@
 package net.tqft.toolkit
 
+import scala.language.implicitConversions
+
+
 // from http://cleverlytitled.blogspot.com.au/2009/03/disjoint-bounded-views-redux.html
 
 object UnionTypes {

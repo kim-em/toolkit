@@ -1,12 +1,11 @@
 package net.tqft.toolkit.collections
 import net.tqft.toolkit.Throttle
 
+import scala.language.implicitConversions
+
 object BreadthFirst {
 
-  implicit def iterable2ToBreadthFirst[A](iterables: Iterable[Iterable[A]]) = new BreadthFirst2(iterables)
-  implicit def iterable3ToBreadthFirst[A](iterables: Iterable[Iterable[Iterable[A]]]) = new BreadthFirst3(iterables)
-
-  class BreadthFirst2[A](iterables: Iterable[Iterable[A]]) {
+  implicit class BreadthFirst2[A](iterables: Iterable[Iterable[A]]) {
     import FlexibleTranspose._
 
     /** breadthFirstFlatten does a breadth-first flatten */
@@ -26,7 +25,7 @@ object BreadthFirst {
     }
   }
 
-  class BreadthFirst3[A](iterables: Iterable[Iterable[Iterable[A]]]) {
+  implicit class BreadthFirst3[A](iterables: Iterable[Iterable[Iterable[A]]]) {
     def breathFirstSearchNonEmpty = iterables.breadthFirstSearch(_.nonEmpty).flatMap({ x => x })
     def breathFirstSearchNonEmptyThrottled(throttle: Throttle) = iterables.breadthFirstSearch(_.nonEmpty) flatMap { o => { throttle(o.nonEmpty); o } }
   }

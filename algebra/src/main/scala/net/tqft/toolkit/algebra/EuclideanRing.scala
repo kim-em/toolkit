@@ -49,7 +49,7 @@ trait EuclideanRing[A] extends EuclideanRig[A] with CommutativeRing[A] {
    * @param y
    * @return (a,b,g) such that a*x + b*y == g, and g is the gcd of x and y
    */
-  // TODO tail recursive
+  // FIXME tail recursive
   final def extendedEuclideanAlgorithm(x: A, y: A): (A, A, A) = {
     if (y == zero) {
       (one, zero, x)
@@ -61,13 +61,14 @@ trait EuclideanRing[A] extends EuclideanRig[A] with CommutativeRing[A] {
 }
 
 object EuclideanRig {
-  implicit def forgetRing[A: EuclideanRing]: EuclideanRig[A] = implicitly[EuclideanRing[A]]  
+  implicit def forgetRing[A: EuclideanRing]: EuclideanRig[A] = implicitly[EuclideanRing[A]]
 }
 
 object EuclideanRing {
-  implicit def forgetField[A: Field]: EuclideanRing[A] = implicitly[Field[A]]
-  // we can't forget from OrderedEuclideanRings, because Field[Fraction[Int]] could then be found two different ways.
-  implicit def forgetIntegerModel[A: IntegerModel]: OrderedEuclideanRing[A] = implicitly[IntegerModel[A]]
-  implicit def polynomialAlgebra[A: polynomials.PolynomialAlgebraOverField]: EuclideanRing[polynomials.Polynomial[A]] = implicitly[polynomials.PolynomialAlgebraOverField[A]]
+  implicit def forgetField[A: Field]: EuclideanRing[A] = implicitly[EuclideanRing[A]]
+  // We don't make this conversion implicit, to avoid the ambiguity forgetting from OrderedField to EuclideanRing, via either Field or OrderedEuclideanRing
+  def forgetOrderedEuclideanRing[A: OrderedEuclideanRing]: EuclideanRing[A] = implicitly[EuclideanRing[A]]
+  def forgetOrderedField[A: OrderedField]: EuclideanRing[A] = implicitly[EuclideanRing[A]]
+  implicit def forgetIntegerModel[A: IntegerModel]: EuclideanRing[A] = implicitly[EuclideanRing[A]]
 }
 

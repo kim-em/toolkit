@@ -1,12 +1,11 @@
 package net.tqft.toolkit.mathematica
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
  
 @RunWith(classOf[JUnitRunner])
-class MathematicaSyntaxTest extends FlatSpec with ShouldMatchers {
+class MathematicaSyntaxTest extends FlatSpec with Matchers {
 
   import MathematicaSyntax._
 	
