@@ -29,19 +29,31 @@ object Toolkit extends Build {
 
   lazy val algebra = Project(id = "toolkit-algebra",
     base = file("algebra"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(spire))) dependsOn (base, arithmetic)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (base, arithmetic)
 
   lazy val `algebra-polynomials` = Project(id = "toolkit-algebra-polynomials",
     base = file("algebra-polynomials"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, `algebra-categories`, collections)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, collections)
 
   lazy val `algebra-categories` = Project(id = "toolkit-algebra-categories",
     base = file("algebra-categories"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra)
 
+  lazy val `algebra-groups` = Project(id = "toolkit-algebra-groups",
+    base = file("algebra-groups"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (functions, algebra, `algebra-polynomials`, `algebra-categories`)
+
+  lazy val `algebra-graphs` = Project(id = "toolkit-algebra-graphs",
+    base = file("algebra-graphs"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (base, `algebra-groups`)
+
+  lazy val `algebra-spiders` = Project(id = "toolkit-algebra-spiders",
+    base = file("algebra-spiders"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (collections, algebra, `algebra-polynomials`, `algebra-graphs`)
+
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),

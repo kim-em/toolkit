@@ -64,11 +64,14 @@ object EuclideanRig {
   implicit def forgetRing[A: EuclideanRing]: EuclideanRig[A] = implicitly[EuclideanRing[A]]
 }
 
-object EuclideanRing {
+trait EuclideanRingLowPriorityImplicits {
+  // implicits inherited from a supertype are given lower priority
+  // this lets us forget from OrderedField to EuclideanRing, preferring the route via Field over the route via OrderedEuclideanRing
+  implicit def forgetOrderedEuclideanRing[A: OrderedEuclideanRing]: EuclideanRing[A] = implicitly[EuclideanRing[A]]  
+}
+
+object EuclideanRing extends EuclideanRingLowPriorityImplicits {
   implicit def forgetField[A: Field]: EuclideanRing[A] = implicitly[EuclideanRing[A]]
-  // We don't make this conversion implicit, to avoid the ambiguity forgetting from OrderedField to EuclideanRing, via either Field or OrderedEuclideanRing
-  def forgetOrderedEuclideanRing[A: OrderedEuclideanRing]: EuclideanRing[A] = implicitly[EuclideanRing[A]]
-  def forgetOrderedField[A: OrderedField]: EuclideanRing[A] = implicitly[EuclideanRing[A]]
   implicit def forgetIntegerModel[A: IntegerModel]: EuclideanRing[A] = implicitly[EuclideanRing[A]]
 }
 

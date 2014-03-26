@@ -1,8 +1,7 @@
 package net.tqft.toolkit.collections
 
 object SubList {
-	implicit def subseqable[A](x: Seq[A]) = new SubSeqable(x)
-	class SubSeqable[A](x: Seq[A]) {
+	implicit class SubSeqable[A](x: Seq[A]) {
 	  def isSubSeqOf(y: Seq[A]): Boolean = {
 		 x match {
 		   case Seq() => true

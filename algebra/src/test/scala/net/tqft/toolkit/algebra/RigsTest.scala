@@ -1,12 +1,11 @@
 package net.tqft.toolkit.algebra
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class RigsTest extends FlatSpec with ShouldMatchers {
+class RigsTest extends FlatSpec with Matchers {
   
   "adjoinUnknown" should "give something sensible" in {	  
 	 val N_? = Rigs.adjoinUnknown(Integers)
