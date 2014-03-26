@@ -8,7 +8,7 @@ import scala.language.implicitConversions
 object Permutations {
  type Permutation = IndexedSeq[Int]
 
-  class RichPermutation(p: Permutation) {
+  implicit class RichPermutation(p: Permutation) {
     def permute[A](s: GenSeq[A]): IndexedSeq[A] = {
       for (n <- p) yield { s(n) }
     }
@@ -20,8 +20,6 @@ object Permutations {
       result
     }
   }
-
-  implicit def Permutation2RichPermutation(p: Permutation) = new RichPermutation(p)
 
   def identity(n: Int): Permutation = (0 to n - 1)
   def inverse(x: Permutation): Permutation = x.zipWithIndex.sorted.map(_._2)

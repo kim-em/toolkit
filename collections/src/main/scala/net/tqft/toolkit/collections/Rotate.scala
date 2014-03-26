@@ -28,6 +28,14 @@ object Rotate {
         i.takeRight(m) ++ i.dropRight(m)
       }
     }
+
+    def leastRotation(implicit ordering: Ordering[Seq[A]]) = {
+      if (i.isEmpty) {
+        i
+      } else {
+        (for (k <- 0 until i.size) yield rotateLeft(k)).min
+      }
+    }
   }
 
 }

@@ -2,9 +2,7 @@ package net.tqft.toolkit.collections
 import net.tqft.toolkit.Logging
 
 object RemoveDuplicates {
-  implicit def iterator2RemoveDuplicates[A](xs: Iterator[A]) = new IteratorRemoveDuplicatesable(xs)
-
-  class IteratorRemoveDuplicatesable[A](xs: Iterator[A]) {
+  implicit class IteratorRemoveDuplicatesable[A](xs: Iterator[A]) {
      def removeDuplicates(f: (A, A) => Boolean = { (p: A, q: A) => p == q }): Iterator[A] = {
       (xs.filter {
         var set = scala.collection.mutable.Set[A]()
@@ -20,9 +18,7 @@ object RemoveDuplicates {
     }   
   }
   
-  implicit def seq2RemoveDuplicates[A](xs: Seq[A]) = new RemoveDuplicatesable(xs)
-
-  class RemoveDuplicatesable[A](xs: Seq[A]) {
+  implicit class RemoveDuplicatesable[A](xs: Seq[A]) {
 //    def removeDuplicates(f: (A, A) => Boolean = { (p: A, q: A) => p == q }): List[A] = {
 //      def addToListIfNew(list: List[A], x: A) = {
 //        if (list.contains({ y: A => f(x, y) })) list else x :: list

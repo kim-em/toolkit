@@ -1,13 +1,11 @@
 package net.tqft.toolkit.algebra
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import java.math.BigInteger
 
 @RunWith(classOf[JUnitRunner])
-class RationalsTest extends FlatSpec with ShouldMatchers {
+class RationalsTest extends FlatSpec with Matchers {
   
   "Rational arithmetic" should "be correct" in {	  
 	  import AlgebraicNotation._

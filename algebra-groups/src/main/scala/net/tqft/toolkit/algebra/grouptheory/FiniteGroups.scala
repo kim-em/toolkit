@@ -3,10 +3,7 @@ package net.tqft.toolkit.algebra.grouptheory
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.polynomials._
-import net.tqft.toolkit.collections.SparseSeq
 import net.tqft.toolkit.permutations.Permutations.Permutation
-import scala.collection.GenSeq
-import scala.collection.GenSet
 import net.tqft.toolkit.algebra.categories.Homomorphism
 
 

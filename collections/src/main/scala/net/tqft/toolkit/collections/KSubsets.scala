@@ -6,9 +6,7 @@ object KSubsets extends Logging {
     new KSubsetable(0 until n) kSubsets (k)
   }
 
-  implicit def kSubsets[A](list: Seq[A]) = new KSubsetable(list)
-
-  class KSubsetable[A](list: Seq[A]) {
+  implicit class KSubsetable[A](list: Seq[A]) {
     def kSubsets(k: Int): Iterable[Seq[A]] = new NonStrictIterable[Seq[A]] {
       def iterator = {
 //        info("Generating ksubsets(" + k + ") iterator for " + list)
