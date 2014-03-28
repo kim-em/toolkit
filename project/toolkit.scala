@@ -112,8 +112,8 @@ object BuildSettings {
 
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.18-SNAPSHOT"
-  val buildScalaVersion = "2.10.3"
-//  val buildScalaVersion = "2.11.0-RC1"
+  val buildScalaVersion = "2.10.4"
+ // val buildScalaVersion = "2.11.0-RC3"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
