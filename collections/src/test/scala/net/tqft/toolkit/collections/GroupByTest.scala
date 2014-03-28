@@ -1,14 +1,13 @@
 package net.tqft.toolkit.collections
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import scala.math._
 
 @RunWith(classOf[JUnitRunner])
-class GroupByTest extends FlatSpec with ShouldMatchers {
+class GroupByTest extends FlatSpec with Matchers {
 
   "GroupBy" should "work correctly" in {
     import GroupBy._

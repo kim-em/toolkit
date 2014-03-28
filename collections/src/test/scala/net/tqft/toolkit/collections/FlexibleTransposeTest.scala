@@ -1,14 +1,13 @@
 package net.tqft.toolkit.collections
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import scala.math._
 
 @RunWith(classOf[JUnitRunner])
-class FlexibleTransposeTest extends FlatSpec with ShouldMatchers {
+class FlexibleTransposeTest extends FlatSpec with Matchers {
 
   "FlexibleTranspose" should "work correctly" in {
     import FlexibleTranspose._

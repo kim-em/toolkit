@@ -114,13 +114,15 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
       def extendPartialExcision(map: Array[Int]): Iterator[Excision] = {
 
         def mapVertex(sourceVertex: Int, targetVertex: Int, rotation: Int): Option[Array[Int]] = {
-          (map(sourceVertex) == -1 || map(sourceVertex) == targetVertex) &&
-            (packedShape.degree(sourceVertex) == graph.degree(targetVertex)) option {
-              val newMap = map.clone
-              newMap(sourceVertex) = targetVertex
-              ???
-            }
-
+          if (map(sourceVertex) != -1 && map(sourceVertex) != targetVertex) {
+            None
+          } else if (packedShape.degree(sourceVertex) != graph.degree(targetVertex)) {
+            None
+          } else {
+            val newMap = map.clone
+            newMap(sourceVertex) = targetVertex
+            ???
+          }
         }
 
         val i = map.indexOf(-1)

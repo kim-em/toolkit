@@ -12,7 +12,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
   override lazy val automorphisms = Dreadnaut.automorphismGroup(this)
   
   override def isomorphs: Iterator[TriangleFreeGraph] = {
-    for(p <- Permutations.of(numberOfVertices).iterator) yield copy(adjacencies = relabel(p).adjacencies)
+    for(p <- Permutations.of(numberOfVertices)) yield copy(adjacencies = relabel(p).adjacencies)
   }
 
   override def findIsomorphismTo(other: TriangleFreeGraph) = {

@@ -1,11 +1,9 @@
 package net.tqft.toolkit.collections
-//import scala.actors.Actor
-//import scala.actors.IScheduler
+
+import scala.language.implicitConversions
 
 object Iterators {
-  implicit def iterator2RichIterator[A](iterator: Iterator[A]) = new RichIterator(iterator)
-
-  class RichIterator[A](iterator: Iterator[A]) {
+  implicit class RichIterator[A](iterator: Iterator[A]) {
     def last: A = {
       var a =
         if (iterator.hasNext) {

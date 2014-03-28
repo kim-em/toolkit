@@ -2,9 +2,7 @@ package net.tqft.toolkit.collections
 
 object DeleteOne {
 
-  implicit def deleteOneable[A](x: Seq[A]) = new DeleteOne(x)
-
-  class DeleteOne[A](x: Seq[A]) {
+  implicit class DeleteOne[A](x: Seq[A]) {
     def deleteOne(y: A) = {
       x.indexOf(y) match {
         case -1 => throw new NoSuchElementException

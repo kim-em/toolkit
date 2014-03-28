@@ -73,7 +73,7 @@ object DiagramSpider {
         println(labelling)
         import net.tqft.toolkit.permutations.Permutations._
         import net.tqft.toolkit.collections.Rotate._
-        import net.tqft.toolkit.collections.LexicographicOrdering._
+        import Ordering.Implicits._
         val inv = labelling.inverse
         val result = PlanarGraph(labelling.take(packed.numberOfVertices).permute(packed.vertexFlags.map(_.map(p => (inv(p._1), inv(p._2))).leastRotation)), graph.loops)
 

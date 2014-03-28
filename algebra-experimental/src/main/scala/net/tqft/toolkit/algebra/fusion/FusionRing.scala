@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra.fusion
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices._
-import net.tqft.toolkit.algebra.numberfields.RealNumberField
+import net.tqft.toolkit.algebra.RealNumberField
 import net.tqft.toolkit.permutations.Permutations.Permutation
 import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.algebra.polynomials.Polynomial
@@ -29,10 +29,6 @@ trait FiniteDimensionalFreeModule[A] extends FiniteDimensionalFreeModuleOverRig[
   override def negate(x: Seq[A]) = x.map(coefficients.negate)
 }
 
-trait VectorSpace[F, V] extends Module[F, V] {
-  def rank: Int
-  def coefficients: Field[F]
-}
 
 trait FiniteDimensionalVectorSpace[A] extends FiniteDimensionalFreeModule[A] {
   override def coefficients: Field[A]
@@ -295,7 +291,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
         //        require(A.entries.flatten.forall(_ >= 0))
         //        require(A.entries.flatten.exists(_ > 0))
         val AAt = matrices.compose(A, A.transpose)
-        val estimate = FrobeniusPerronEigenvalues.estimate(AAt)
+        val estimate = FrobeniusPerronEigenvalues.estimate(AAt.entries.map(_.toArray).toArray)
         //        require(estimate > 0.999)
         val result = scala.math.sqrt(estimate - 0.0001)
         result
@@ -310,7 +306,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
 
       (
         for (i <- 0 until rank; v = S(i); vd = S(duality(i))) yield {
-          FrobeniusPerronEigenvalues.estimate2(matrices.compose(v, vd))
+          FrobeniusPerronEigenvalues.estimate(matrices.compose(v, vd).entries.map(_.toArray).toArray)
         }).sum - 0.0001
 
     }

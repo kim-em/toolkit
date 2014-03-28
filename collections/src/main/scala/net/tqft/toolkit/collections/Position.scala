@@ -1,10 +1,10 @@
 package net.tqft.toolkit.collections
 
+import scala.language.implicitConversions
+
 object Position {
 
-  implicit def anyToPositionable(a: Any) = new Positionable(a)
-  
-  class Positionable(a: Any) {
+  implicit class Positionable(a: Any) {
     def position(pf: PartialFunction[Any, Boolean]): Iterator[Seq[Int]] = {
       
       val matchesEntire = if(pf.isDefinedAt(a) && pf(a)) {

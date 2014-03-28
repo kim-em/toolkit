@@ -63,7 +63,7 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
   // TODO this is taking up too much memory! How about a list of functions, and whoever is sorting and splitting can take care of saving values as needed.
   lazy val completeInvariant = {
     import net.tqft.toolkit.collections.Tally._
-    import net.tqft.toolkit.collections.LexicographicOrdering._
+    import Ordering.Implicits._
 
     import PartialFusionRingMeasurement.reportTiming
 
@@ -138,13 +138,13 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
 
   override def isomorphs: Iterator[PartialFusionRing] = {
     import net.tqft.toolkit.permutations.Permutations
-    for (p <- Permutations.preserving(depths).iterator) yield copy(ring = ring.relabel(p))
+    for (p <- Permutations.preserving(depths)) yield copy(ring = ring.relabel(p))
   }
 
   // TODO refine this via easier invariants
   val ordering: Ordering[lowerObjects.Orbit] = {
-    import net.tqft.toolkit.collections.Orderings._
-    import net.tqft.toolkit.collections.LexicographicOrdering._
+    import Ordering.Implicits._
+    import net.tqft.toolkit.orderings.Orderings._
     import net.tqft.toolkit.collections.Tally._
     import net.tqft.toolkit.algebra.graphs.Dreadnaut
     
@@ -288,7 +288,7 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
 
           println("Choosing representatives amongst " + uppers.size + " objects")
 
-          import net.tqft.toolkit.collections.LexicographicOrdering._
+          import net.tqft.toolkit.orderings.LexicographicOrdering._
           import net.tqft.toolkit.collections.Tally._
 
           //          val ordering = Ordering.by({ u: Upper => u.result.completeInvariant })

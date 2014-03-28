@@ -1,14 +1,13 @@
 package net.tqft.toolkit.collections
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 import scala.math._
 
 @RunWith(classOf[JUnitRunner])
-class SparseSeqTest extends FlatSpec with ShouldMatchers {
+class SparseSeqTest extends FlatSpec with Matchers {
   
   "toSeq" should "the original Seq" in {
     import SparseSeq._

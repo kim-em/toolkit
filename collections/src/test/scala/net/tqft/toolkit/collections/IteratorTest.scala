@@ -1,13 +1,11 @@
 package net.tqft.toolkit.collections
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import net.tqft.toolkit.Throttle
 
 @RunWith(classOf[JUnitRunner])
-class IteratorTest extends FlatSpec with ShouldMatchers {
+class IteratorTest extends FlatSpec with Matchers {
 
   "RichIterator" should "work correctly" in {
     import Iterators._

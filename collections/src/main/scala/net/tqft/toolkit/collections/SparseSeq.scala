@@ -1,5 +1,7 @@
 package net.tqft.toolkit.collections
 
+import scala.language.implicitConversions
+
 import scala.collection.SeqLike
 import scala.collection.mutable.Builder
 import scala.collection.mutable.ListBuffer
@@ -33,7 +35,7 @@ trait SparseSeq[A] extends Seq[A] with SeqLike[A, SparseSeq[A]] { sparseSeq =>
 object SparseSeq {
   implicit def numericSeq2SparseSeq[T: Numeric](s: Seq[T]): SparseSeq[T] = {
     val zero = implicitly[Numeric[T]].zero
-      new SparseSeqSeqImpl(s, zero)
+    new SparseSeqSeqImpl(s, zero)
   }
 
   def from[T](s: Seq[T], zero: T): SparseSeq[T] = {
@@ -44,8 +46,8 @@ object SparseSeq {
     }
   }
 
-  def withEntries[T](size: Int, entries: Seq[(T, Int)], zero: T): SparseSeq[T] = new SparseSeqSeqImpl(size,entries.sortBy(_._2),zero)
-  
+  def withEntries[T](size: Int, entries: Seq[(T, Int)], zero: T): SparseSeq[T] = new SparseSeqSeqImpl(size, entries.sortBy(_._2), zero)
+
   def unitVector[T: Numeric](n: Int, k: Int): SparseSeq[T] = elementaryVector(n, k, implicitly[Numeric[T]].one)
 
   def elementaryVector[T](n: Int, k: Int, value: T, zero: T): SparseSeq[T] = new SparseSeqSeqImpl(n, List((value, k)), zero)

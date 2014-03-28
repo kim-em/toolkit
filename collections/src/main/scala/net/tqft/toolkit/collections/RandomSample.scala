@@ -2,9 +2,7 @@ package net.tqft.toolkit.collections
 import scala.util.Random
 
 object RandomSample {
-  implicit def iterable2RandomSampleable[A](i: Iterable[A]) = new RandomSampleable(i)
-
-  class RandomSampleable[A](i: Iterable[A]) {
+  implicit class RandomSampleable[A](i: Iterable[A]) {
     def randomSample(d: Double): Iterable[A] = {
       require(0 <= d && d <= 1)
       new Iterable[A] {

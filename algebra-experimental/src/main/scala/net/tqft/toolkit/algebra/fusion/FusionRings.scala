@@ -387,7 +387,7 @@ object FusionRings {
       }
     }
     def ordered_?(f: FusionRing[Int]) = {
-      import net.tqft.toolkit.collections.LexicographicOrdering._
+      import Ordering.Implicits._
       implicitly[Ordering[Seq[Seq[IndexedSeq[Int]]]]].compare(f.structureCoefficients.map(_.entries.seq), f.relabel((0 until rank) :+ (rank + 1) :+ rank).structureCoefficients.map(_.entries.seq)) <= 0
     }
 

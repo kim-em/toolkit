@@ -2,9 +2,8 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.modules._
-import net.tqft.toolkit.algebra.categories._
-
 import scala.language.implicitConversions
+import net.tqft.toolkit.algebra.modules.LinearCombo
 
 trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   import net.tqft.toolkit.arithmetic.MinMax._
@@ -21,9 +20,10 @@ trait Polynomial[A] extends LinearCombo[A, Int] { polynomial =>
   def leadingCoefficient = maximumDegree map { coefficientOf(_).get }
   def coefficient(i: Int)(implicit ring: Ring[A]) = coefficientOf(i).getOrElse(ring.zero)
   def constantTerm(implicit ring: Ring[A]) = coefficient(0)
-
+  def evaluateAt(x: A)(implicit ring: Ring[A]) = ring.sum(terms map { case (e, a) => ring.multiply(a, ring.power(x, e)) })
+  
   def roots(implicit ring: Ring[A] with Finite[A]) = {
-    for (x <- ring.elements; if Polynomials.evaluationAt(x).apply(polynomial) == ring.zero) yield x
+    for (x <- ring.elements; if evaluateAt(x) == ring.zero) yield x
   }
 
 }

@@ -1,13 +1,11 @@
 package net.tqft.toolkit.collections
 
-import net.tqft.toolkit.collections.RandomSample.iterable2RandomSampleable
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FlatSpec
+import org.scalatest._
  
 @RunWith(classOf[JUnitRunner])
-class RandomSampleTest extends FlatSpec with ShouldMatchers {
+class RandomSampleTest extends FlatSpec with Matchers {
 
   "randomSample" should "not crash horribly" in {
     import RandomSample._

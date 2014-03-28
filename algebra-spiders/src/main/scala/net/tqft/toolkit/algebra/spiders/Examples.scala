@@ -34,10 +34,10 @@ abstract class CubicSpider[R: Ring] extends TrivalentSpider[R] {
   override def reductions = super.reductions :+ squareReduction
 }
 
-object `SO(3)_q` extends CubicSpider[RationalFunction[Int]] {
-  override val ring = implicitly[Field[RationalFunction[Int]]]
+object `SO(3)_q` extends CubicSpider[RationalFunction[Fraction[Int]]] {
+  override val ring = implicitly[Field[RationalFunction[Fraction[Int]]]]
 
-  val q: RationalFunction[Int] = Polynomial(1 -> Fraction(1, 1))
+  val q: RationalFunction[Fraction[Int]] = Polynomial(1 -> Fraction(1, 1))
   override val d = ring.add(q, ring.inverse(q))
   override val b = ???
   override val t = ???
@@ -46,10 +46,10 @@ object `SO(3)_q` extends CubicSpider[RationalFunction[Int]] {
   override def reductions = super.reductions :+ pentagonReduction
 }
 
-object `(G_2)_q` extends CubicSpider[RationalFunction[Int]] {
-  override val ring = implicitly[Field[RationalFunction[Int]]]
+object `(G_2)_q` extends CubicSpider[RationalFunction[Fraction[Int]]] {
+  override val ring = implicitly[Field[RationalFunction[Fraction[Int]]]]
 
-  val q: RationalFunction[Int] = Polynomial(1 -> Fraction(1, 1))
+  val q: RationalFunction[Fraction[Int]] = Polynomial(1 -> Fraction(1, 1))
   override val d = ???
   override val b = ???
   override val t = ???
@@ -68,8 +68,8 @@ object QuantumExceptionalVariable {
   })
 }
 
-object QuantumExceptional extends TrivalentSpider[MultivariableRationalFunction[Int, QuantumExceptionalVariable]] {
-  override val ring = implicitly[Field[MultivariableRationalFunction[Int, QuantumExceptionalVariable]]]
+object QuantumExceptional extends TrivalentSpider[MultivariableRationalFunction[Fraction[Int], QuantumExceptionalVariable]] {
+  override val ring = implicitly[Field[MultivariableRationalFunction[Fraction[Int], QuantumExceptionalVariable]]]
 
   override val omega = ring.one
   override val d = ???

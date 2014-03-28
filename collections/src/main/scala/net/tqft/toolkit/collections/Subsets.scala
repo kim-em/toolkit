@@ -2,9 +2,7 @@ package net.tqft.toolkit.collections
 
 object Subsets {
 
-  implicit def subsets[A](list: Seq[A]) = new Subsetable(list)
-
-  class Subsetable[A](list: Seq[A]) {
+  implicit class Subsetable[A](list: Seq[A]) {
     def subsets: Iterator[Set[A]] = {
       if (list.size == 0) {
         Iterator(list.toSet)
