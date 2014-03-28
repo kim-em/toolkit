@@ -4,8 +4,7 @@ import scala.collection.mutable.ListBuffer
 
 object Split {
 
-  implicit def splittableIterator[A](x: Iterator[A]) = new SplittableIterator(x)
-  class SplittableIterator[A](x: Iterator[A]) {
+  implicit class SplittableIterator[A](x: Iterator[A]) {
     def splitBefore(p: A => Boolean): Iterator[List[A]] = {
       new Iterator[List[A]] {
         var box: Option[A] = None
@@ -47,8 +46,7 @@ object Split {
   }
 
   // TODO replace Iterable with a generic CC
-  implicit def splittable[A](x: Iterable[A]) = new Splittable(x)
-  class Splittable[A](x: Iterable[A]) {
+  implicit class Splittable[A](x: Iterable[A]) {
     // TODO should return an Iterable
     def splitBy[B](f: A => B): List[Seq[A]] = {
       def chunk(l: Seq[(A, B)]): List[Seq[A]] = {

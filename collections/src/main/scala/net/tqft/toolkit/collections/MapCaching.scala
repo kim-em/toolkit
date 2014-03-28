@@ -4,9 +4,7 @@ import scala.concurrent.future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object MapCaching {
-  implicit def map2CachableMap[A, B](map: scala.collection.mutable.Map[A, B]) = new CachableMap(map)
-
-  class CachableMap[A, B](other: scala.collection.mutable.Map[A, B]) {
+  implicit class CachableMap[A, B](other: scala.collection.mutable.Map[A, B]) {
     def caching(cache: scala.collection.mutable.Map[A, B] = scala.collection.mutable.Map[A, B]()) = new scala.collection.mutable.Map[A, B] {
       override def -=(key: A): this.type = {
         future {

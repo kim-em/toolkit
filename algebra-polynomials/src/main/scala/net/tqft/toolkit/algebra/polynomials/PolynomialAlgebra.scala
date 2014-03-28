@@ -25,5 +25,7 @@ trait PolynomialAlgebra[A] extends FreeModuleOnMonoid[A, Int, Polynomial[A]] wit
 }
 
 object PolynomialAlgebra {
-  implicit def over[A: Ring]: PolynomialAlgebra[A] = Polynomials.over(implicitly[Ring[A]])
+  implicit def over[A: Ring]: PolynomialAlgebra[A] = new PolynomialAlgebra[A] {
+    override val ring = implicitly[Ring[A]]
+  }
 }

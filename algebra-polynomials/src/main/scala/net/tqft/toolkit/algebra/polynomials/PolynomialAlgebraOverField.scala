@@ -42,7 +42,9 @@ trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanR
 }
 
 object PolynomialAlgebraOverField {
-  implicit def overField[F: Field]: PolynomialAlgebraOverField[F] = Polynomials.over(implicitly[Field[F]])
+  implicit def overField[F: Field]: PolynomialAlgebraOverField[F] = new PolynomialAlgebraOverField[F] {
+      override val ring = implicitly[Field[F]]
+    }
 }
 
 trait PolynomialAlgebraOverOrderedField[A] extends PolynomialAlgebraOverField[A] with OrderedEuclideanRing[Polynomial[A]] {
@@ -69,6 +71,8 @@ trait PolynomialAlgebraOverOrderedField[A] extends PolynomialAlgebraOverField[A]
 }
 
 object PolynomialAlgebraOverOrderedField {
-  implicit def overOrderedField[F: OrderedField]: PolynomialAlgebraOverOrderedField[F] = Polynomials.over(implicitly[OrderedField[F]])
+  implicit def overOrderedField[F: OrderedField]: PolynomialAlgebraOverOrderedField[F] = new PolynomialAlgebraOverOrderedField[F] {
+      override val ring = implicitly[OrderedField[F]]
+    }
 }
 

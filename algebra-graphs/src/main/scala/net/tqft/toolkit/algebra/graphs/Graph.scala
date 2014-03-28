@@ -80,8 +80,8 @@ object Graph {
   }
 
   implicit val ordering: Ordering[Graph] = {
-    import net.tqft.toolkit.collections.LexicographicOrdering._
-    import net.tqft.toolkit.collections.Orderings._
+    import Ordering.Implicits._
+    import net.tqft.toolkit.orderings.Orderings._
     Ordering.by({ g: Graph => g.numberOfVertices }).refineBy({ g: Graph => g.adjacencies })
   }
 
@@ -150,8 +150,8 @@ object ColouredGraph {
   }
 
   implicit def ordering[V: Ordering]: Ordering[ColouredGraph[V]] = {
-    import net.tqft.toolkit.collections.LexicographicOrdering._
-    import net.tqft.toolkit.collections.Orderings._
+    import Ordering.Implicits._
+    import net.tqft.toolkit.orderings.Orderings._
     Ordering.by({ g: ColouredGraph[V] => g.vertices }).refineBy({ g: ColouredGraph[V] => g.adjacencies })
   }
 

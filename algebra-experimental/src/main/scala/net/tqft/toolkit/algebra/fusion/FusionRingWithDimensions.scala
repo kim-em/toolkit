@@ -5,12 +5,13 @@ import net.tqft.toolkit.permutations.Permutations.Permutation
 import net.tqft.toolkit.algebra.polynomials.Polynomials
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.matrices._
-import net.tqft.toolkit.algebra.numberfields.RealNumberField
+import net.tqft.toolkit.algebra.RealNumberField
 import net.tqft.toolkit.algebra.polynomials.PolynomialAlgebra
 import net.tqft.toolkit.algebra.categories.Groupoid
 import scala.collection.parallel.ParSeq
 import scala.collection.GenSeq
 import net.tqft.toolkit.SHA1
+import net.tqft.toolkit.algebra.combinatorics.PositiveSymmetricDecompositions
 
 trait DimensionFunction {
   def dimensionField: RealNumberField[Int, Double]
@@ -47,6 +48,8 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
   }
 
   def smallObjectsWithPositiveSemidefiniteMultiplication: ParSeq[Seq[Int]] = {
+    import net.tqft.toolkit.algebra.matrices.CholeskyDecomposition._
+
     for (
       o <- objectsSmallEnoughToBeAlgebras;
       m = regularModule.asMatrix(o);
@@ -97,7 +100,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
       o <- smallObjectsWithPositiveSemidefiniteMultiplication.par;
       //        o <- objectsSmallEnoughToBeAlgebras.par;
       a = regularModule.asMatrix(o);
-      m <- Matrices.positiveSymmetricDecompositionsCached(a)
+      m <- PositiveSymmetricDecompositions.cached(a)
     ) yield {
       FusionMatrix(o, m)
     }).seq
@@ -204,7 +207,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
 
         println(permutations.size + " possible permutations to consider, for each element of the tuple")
         println("there are " + Permutations.preserving(t).size + " symmetries of the tuple")
-        
+
         val permutedMatrices = t.foldLeft(Iterator(Seq.empty[Matrix[Int]]))({
           case (i: Iterator[Seq[Matrix[Int]]], m0: FusionMatrix) =>
             def permuteColumns(p: Permutation) = new Matrix(m0.matrix.numberOfColumns, p.permute(m0.matrix.entries.seq.transpose).transpose)

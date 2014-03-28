@@ -128,10 +128,10 @@ object FiniteGroups {
   import net.tqft.toolkit.permutations.Permutations.Permutation
   private class PermutationGroup(n: Int) extends FiniteGroup[IndexedSeq[Int]] {
     import net.tqft.toolkit.permutations.Permutations
-    import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
+    import net.tqft.toolkit.permutations.Permutations._
     override def elements = Permutations.of(n).toSet
     override def inverse(x: IndexedSeq[Int]) = Permutations.inverse(x)
-    override def multiply(x: IndexedSeq[Int], y: IndexedSeq[Int]) = x permute y
+    override def multiply(x: IndexedSeq[Int], y: IndexedSeq[Int]) = x.permute(y)
     override def one = 0 until n
   }
 

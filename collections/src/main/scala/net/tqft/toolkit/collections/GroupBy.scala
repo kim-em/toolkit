@@ -11,8 +11,7 @@ import net.tqft.toolkit.Logging
 
 object GroupBy {
 
-  implicit def groupable[A](x: GenIterable[A]) = new Groupable(x)
-  class Groupable[A](x: GenIterable[A]) {
+  implicit class Groupable[A](x: GenIterable[A]) {
 
     def equivalenceClasses(equivalence: (A, A) => Boolean): List[List[A]] = equivalenceClasses[Unit](equivalence, { x => () })
 
@@ -245,9 +244,7 @@ object GroupBy {
     }
   }
 
-  implicit def customGroupBy[A](collection: Traversable[A]) = new CustomGroupBy(collection)
-
-  class CustomGroupBy[A](collection: Traversable[A]) {
+  implicit class CustomGroupBy[A](collection: Traversable[A]) {
     def groupByWithCustomBuilder[K, CC](f: A => K)(implicit newBuilder: () => scala.collection.mutable.Builder[A, CC]): scala.collection.immutable.Map[K, CC] = {
       val m = scala.collection.mutable.Map.empty[K, scala.collection.mutable.Builder[A, CC]]
       for (elem <- collection) {

@@ -1,8 +1,7 @@
 package net.tqft.toolkit.collections
 
 object TakeToFirst {
-  implicit def takeToFirst[A](x: Iterator[A]) = new TakeToFirstable(x)
-  class TakeToFirstable[A](x: Iterator[A]) {
+  implicit class TakeToFirstable[A](x: Iterator[A]) {
     def takeToFirst(condition: A => Boolean): List[A] = {
       var found = false
       val lb = new scala.collection.mutable.ListBuffer[A]

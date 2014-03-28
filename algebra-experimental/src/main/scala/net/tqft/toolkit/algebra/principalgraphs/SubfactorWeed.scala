@@ -8,9 +8,6 @@ import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.enumeration.Odometer
 import net.tqft.toolkit.algebra.graphs._
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
-import net.tqft.toolkit.collections.Orderings._
-import net.tqft.toolkit.collections.LexicographicOrdering._
-import net.tqft.toolkit.collections.Tally._
 import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import scala.collection.mutable.ListBuffer
 import net.tqft.toolkit.permutations.Permutations
@@ -867,6 +864,8 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
     }
   }
   override def ordering: Ordering[lowerObjects.Orbit] = {
+    import net.tqft.toolkit.orderings.Orderings._
+
     implicit val lowerOrdering: Ordering[Lower] = Ordering.by({ l: Lower =>
       l match {
         case DecreaseDepth => 0
@@ -945,7 +944,9 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
               result
             }
             def secondLimit(row0: List[Int], bigraph: Bigraph) = { row1: List[Int] =>
-              /* be careful; the odometer is working in backwards lexicographic order!!! */
+              /* FIXME be careful; the odometer is working in backwards lexicographic order!!! */
+              import Ordering.Implicits._
+              
               val result = row1 <= row0 && limit(bigraph)(row1)
               if (result) {
                 Logging.info(s"  considering new row 1 (on graph $graph): " + row1.mkString("x") + " (with row 0: " + row0.mkString("x") + ")")
@@ -1021,6 +1022,8 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
     }
   }
   override def ordering: Ordering[lowerObjects.Orbit] = {
+    import net.tqft.toolkit.orderings.Orderings._
+    
     implicit val lowerOrdering: Ordering[Lower] = Ordering.by({ l: Lower =>
       l match {
         case DecreaseDepth => 0

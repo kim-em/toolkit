@@ -12,15 +12,16 @@ object Gadgets {
 
   def ringOfPolynomials = implicitly[Ring[Polynomial[Int]]]
   def ringOfDoublePolynomials = implicitly[Ring[Polynomial[Double]]]
-  //  def doublePolynomialAlgebra = implicitly[Algebra[Double, Polynomial[Double]]]
   
-  def rationalFunctions = implicitly[Ring[RationalFunction[Int]]]
+  def rationalFunctions = implicitly[Ring[RationalFunction[Fraction[Int]]]]
+  
+  def rationalFunctionsOver[B: Field] = implicitly[Ring[RationalFunction[B]]]
   
   def one_0 = 1
   def one_1: Fraction[Int] = 1
   def one_2: Polynomial[Fraction[Int]] = 1
   def one_3: Fraction[Polynomial[Fraction[Int]]] = 1
-  def one_4: RationalFunction[Int] = 1
+  def one_4: RationalFunction[Fraction[Int]] = 1
 
   def multivariablePolynomials = implicitly[MultivariablePolynomialAlgebra[Int, String]]
   def rigOfMultivariablePolynomials = implicitly[Rig[MultivariablePolynomial[Int, String]]]
@@ -28,6 +29,6 @@ object Gadgets {
   
   def euclideanRingOfMultivariablePolynomials = implicitly[EuclideanRing[MultivariablePolynomial[Fraction[Int], String]]]
   
-  def multivariableRationalFunctions = implicitly[Field[MultivariableRationalFunction[Int, String]]]
+  def multivariableRationalFunctions = implicitly[Field[MultivariableRationalFunction[Fraction[Int], String]]]
 
 }

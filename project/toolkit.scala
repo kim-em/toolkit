@@ -9,7 +9,24 @@ object Toolkit extends Build {
 
   lazy val root = Project(id = "toolkit",
     base = file("."),
-    settings = buildSettings) aggregate (base, arithmetic, amazon, collections, algebra, `algebra-experimental`, functions, eval, wiki)
+    settings = buildSettings) aggregate (
+        base, 
+        arithmetic, 
+        amazon, 
+        collections, 
+        permutations, 
+        orderings, 
+        algebra, 
+        `algebra-polynomials`,
+        `algebra-categories`,
+        `algebra-matrices`,
+        `algebra-groups`,
+        `algebra-graphs`,
+        `algebra-spiders`,
+        `algebra-experimental`, 
+        functions, 
+        eval, 
+        wiki)
 
   lazy val base: Project = Project(id = "toolkit-base",
     base = file("base"),
@@ -19,29 +36,41 @@ object Toolkit extends Build {
     base = file("arithmetic"),
     settings = buildSettings) dependsOn ()
 
-  lazy val amazon = Project(id = "toolkit-amazon",
-    base = file("amazon"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(httpclient, jets3t, typica, commons.io))) dependsOn (base, collections)
-
   lazy val collections = Project(id = "toolkit-collections",
     base = file("collections"),
     settings = buildSettings) dependsOn (base, functions)
 
+  lazy val amazon = Project(id = "toolkit-amazon",
+    base = file("amazon"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(httpclient, jets3t, typica, commons.io))) dependsOn (base, collections)
+
+  lazy val orderings = Project(id = "toolkit-orderings",
+    base = file("orderings"),
+    settings = buildSettings) dependsOn ()   
+
+  lazy val permutations = Project(id = "toolkit-permutations",
+    base = file("permutations"),
+    settings = buildSettings) dependsOn (orderings)   
+
   lazy val algebra = Project(id = "toolkit-algebra",
     base = file("algebra"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (base, arithmetic)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (arithmetic /* for 'mod' */)
 
   lazy val `algebra-polynomials` = Project(id = "toolkit-algebra-polynomials",
     base = file("algebra-polynomials"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, collections)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (orderings, algebra, collections)
 
   lazy val `algebra-categories` = Project(id = "toolkit-algebra-categories",
     base = file("algebra-categories"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, `algebra-polynomials`)
+
+  lazy val `algebra-matrices` = Project(id = "toolkit-algebra-matrices",
+    base = file("algebra-matrices"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (collections, permutations, algebra, `algebra-polynomials`, `algebra-categories`)
 
   lazy val `algebra-groups` = Project(id = "toolkit-algebra-groups",
     base = file("algebra-groups"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (functions, algebra, `algebra-polynomials`, `algebra-categories`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (functions, permutations, algebra, `algebra-polynomials`, `algebra-matrices`)
 
   lazy val `algebra-graphs` = Project(id = "toolkit-algebra-graphs",
     base = file("algebra-graphs"),
@@ -53,7 +82,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),
@@ -163,7 +192,7 @@ object Dependencies {
 	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
 	val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "16.0.1"
-	val findbugs = "com.google.code.findbugs" % "jsr305" % "1.3.+"
+	val findbugs = "com.google.code.findbugs" % "jsr305" % "1.3.9"
 	object selenium {
 		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.40.0"
 		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.40.0"

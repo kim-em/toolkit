@@ -1,9 +1,9 @@
 package net.tqft.toolkit.algebra.cones
 
 import net.tqft.toolkit.algebra.Field
+import net.tqft.toolkit.algebra.VectorSpace
 import net.tqft.toolkit.algebra.OrderedField
 import net.tqft.toolkit.algebra.fusion.FiniteDimensionalVectorSpace
-import net.tqft.toolkit.algebra.fusion.VectorSpace
 import net.tqft.toolkit.algebra.Integers
 import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.algebra.ApproximateReals
@@ -26,7 +26,7 @@ case class CubicalCone[F, V](rank: Int, generators: Map[Seq[Int], V]) extends Po
       List.fill(rank)(List(0, 1)).cartesianProduct
     }
     import net.tqft.toolkit.permutations.Permutations._
-    for (p <- Permutations.of(rank).iterator) yield {
+    for (p <- Permutations.of(rank)) yield {
       SimplicialCone[F, V]((for (k <- keys; pk = p.permute(k); if pk == pk.sorted) yield {
     	  generators(k)
       }).toSeq)

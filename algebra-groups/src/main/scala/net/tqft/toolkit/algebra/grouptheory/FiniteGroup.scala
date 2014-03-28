@@ -121,7 +121,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
         IndexedSeq.fill(conjugacyClasses.size)(0)
       } else {
         import net.tqft.toolkit.arithmetic.Factor
-        import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
+        import net.tqft.toolkit.permutations.Permutations._
         Factor(k).map(primeExponentiationOnConjugacyClasses(_)).fold(0 until conjugacyClasses.size)({ (p: IndexedSeq[Int], q: IndexedSeq[Int]) => p permute q })
       }
     }
@@ -129,14 +129,15 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
   }
   lazy val inverseOnConjugacyClasses = exponentationOnConjugacyClassesImpl(-1)
   lazy val inverseConjugacyClasses = {
-    import net.tqft.toolkit.permutations.Permutations.Permutation2RichPermutation
+    import net.tqft.toolkit.permutations.Permutations._
     inverseOnConjugacyClasses permute conjugacyClasses
   }
 
   val classCoefficients: Int => Seq[Seq[Int]] = {
     def impl(ix: Int) = {
       val cx = inverseConjugacyClasses(ix)
-      (for ((cy, iy) <- conjugacyClasses.zipWithIndex.par) yield {
+      (for (p <- conjugacyClasses.zipWithIndex.par) yield {
+        val (cy, iy) = p
         FiniteGroup.info("Computing class coefficient " + (ix, iy))
         for (cz <- conjugacyClasses; z = cz.representative) yield {
           cx.elements.count({ x => cy.elements.contains(multiply(x, z)) })

@@ -1,8 +1,7 @@
 package net.tqft.toolkit.collections
 
 object TakeUntilFirst {
-  implicit def takeUntilFirst[A](x: Iterable[A]) = new TakeUntilFirstable(x)
-  class TakeUntilFirstable[A](x: Iterable[A]) {
+  implicit class TakeUntilFirstable[A](x: Iterable[A]) {
     def takeUntilFirst(condition: A => Boolean): Iterable[A] = {
       new Iterable[A] {
         def iterator = new Iterator[A] {
@@ -21,8 +20,7 @@ object TakeUntilFirst {
     }
   }
   
-  implicit def takeUntilFirstIterator[A](x: Iterator[A]) = new TakeUntilFirstableIterator(x)
-  class TakeUntilFirstableIterator[A](x: Iterator[A]) {
+  implicit class TakeUntilFirstableIterator[A](x: Iterator[A]) {
     def takeUntilFirst(condition: A => Boolean): Iterator[A] = {
       new Iterator[A] {
           var found = false

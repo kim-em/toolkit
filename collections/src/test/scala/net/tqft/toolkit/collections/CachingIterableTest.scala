@@ -1,12 +1,11 @@
 package net.tqft.toolkit.collections
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class CachingIterableTest extends FlatSpec with ShouldMatchers {
+class CachingIterableTest extends FlatSpec with Matchers {
 
   val counting = NonStrictIterable.iterate(0)({ i => { Thread.sleep(10); i + 1 } })
 

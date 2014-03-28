@@ -1,9 +1,7 @@
 package net.tqft.toolkit.collections
 
 object CartesianProduct {
-  implicit def toProductable[A](sets: Seq[Traversable[A]]) = new productable(sets)
-
-  class productable[A](sets: Seq[Traversable[A]]) {
+  implicit class productable[A](sets: Seq[Traversable[A]]) {
     def cartesianProduct: Iterator[List[A]] = sets.reverse.foldLeft(Iterator[List[A]](Nil))((x, y) => for (a <- x; b <- y) yield b +: a)
 
     def blockCartesianProduct: Iterator[IndexedSeq[A]] = {

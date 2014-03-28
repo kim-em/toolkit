@@ -2,6 +2,8 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.modules._
+import net.tqft.toolkit.algebra.modules.MapFreeModuleOnMonoidOverRig
+import net.tqft.toolkit.algebra.modules.MapFreeModuleOnMonoid
 
 trait MultivariablePolynomialAlgebraOverRig[A, V]
   extends MapFreeModuleOnMonoidOverRig[A, Map[V, Int], MultivariablePolynomial[A, V]] {
@@ -116,8 +118,7 @@ trait MultivariablePolynomialAlgebra[A, V]
 object MultivariablePolynomialAlgebraOverRig {
   abstract class WithLexicographicOrdering[A: Rig, V: Ordering] extends MultivariablePolynomialAlgebraOverRig[A, V] {
     override val monomialOrdering = {
-      // TODO do we really need to pull in the whole toolkit-collections library?
-      import net.tqft.toolkit.collections.LexicographicOrdering._
+      import net.tqft.toolkit.orderings.LexicographicOrdering._
       implicitly[Ordering[Map[V, Int]]]
     }
   }

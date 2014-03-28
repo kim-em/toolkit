@@ -1,14 +1,11 @@
 package net.tqft.toolkit.collections
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
-import scala.math._
-
 @RunWith(classOf[JUnitRunner])
-class TakeDistinctTest extends FlatSpec with ShouldMatchers {
+class TakeDistinctTest extends FlatSpec with Matchers {
   
   "TakeDistinct" should "work correctly" in {
     import TakeDistinct._
