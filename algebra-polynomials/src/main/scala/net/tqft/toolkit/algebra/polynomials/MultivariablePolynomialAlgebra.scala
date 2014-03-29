@@ -5,7 +5,11 @@ import net.tqft.toolkit.algebra._
 trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolynomial[A, V]] with ModuleOverRig[A, MultivariablePolynomial[A, V]] {
   implicit def ring: Rig[A]
 
-  protected val implementation = new Rig.RigMap[Map[V, Int], A]
+  protected val implementation = new Rig.RigMap[Map[V, Int], A] {
+    override def keys = ??? // implicitly[AdditiveMonoid[Map[V, Int]]]
+    override def coefficients = implicitly[ModuleOverRig[A, A]]
+    override def multiplicativeCoefficients = implicitly[Rig[A]]
+  }
 
   override def one = implementation.one
   override def zero = implementation.zero
@@ -69,7 +73,11 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
 trait MultivariablePolynomialAlgebra[A, V] extends Ring[MultivariablePolynomial[A, V]] with MultivariablePolynomialAlgebraOverRig[A, V] {
   implicit override def ring: Ring[A]
 
-  override protected val implementation = new Ring.RingMap[Map[V, Int], A]
+  override protected val implementation = new Ring.RingMap[Map[V, Int], A] {
+    override def keys = ??? // implicitly[AdditiveMonoid[Map[V, Int]]]
+    override def coefficients = implicitly[Module[A, A]]
+    override def multiplicativeCoefficients = implicitly[Ring[A]]
+  }
   override def negate(p: MultivariablePolynomial[A, V]) = implementation.negate(p.coefficients)
 }
 
@@ -98,7 +106,7 @@ object MultivariablePolynomialAlgebra {
 
 trait MultivariablePolynomialAlgebraOverEuclideanRing[A, V] extends MultivariablePolynomialAlgebra[A, V] {
   override def ring: EuclideanRing[A]
-  
+
   def divideByCoefficientGCD(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
     val gcd = ring.gcd(p.coefficients.values.toSeq: _*)
     if (gcd == ring.one) {

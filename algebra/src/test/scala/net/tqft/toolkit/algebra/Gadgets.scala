@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra
 
 object Gadgets {
+  
   def additiveMonoidOfIntegers = implicitly[AdditiveMonoid[Int]]
   def additiveGroupOfIntegers = implicitly[AdditiveGroup[Int]]
   def rigOfIntegers = implicitly[Rig[Int]]
