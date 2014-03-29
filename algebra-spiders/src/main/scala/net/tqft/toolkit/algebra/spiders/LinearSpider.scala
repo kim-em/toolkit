@@ -1,12 +1,10 @@
 package net.tqft.toolkit.algebra.spiders
 
-import net.tqft.toolkit.algebra.Ring
-import net.tqft.toolkit.algebra.Module
+import net.tqft.toolkit.algebra._
 
 trait CanonicalLabelling[A] {
   def canonicalForm(a: A): A
 }
-
 
 trait LinearSpider[R, M] extends Spider[M] with CanonicalLabelling[M] with Module[R, M] {
   def eigenvalue(valence: Int): R
@@ -17,9 +15,9 @@ trait LinearSpider[R, M] extends Spider[M] with CanonicalLabelling[M] with Modul
 }
 
 object LinearSpider {
-  abstract class MapLinearSpider[A: DiagramSpider, R: Ring] extends LinearSpider[R, Map[A, R]] {
+  abstract class MapLinearSpider[A: DiagramSpider, R: Ring] extends Module.ModuleMap[R, A, R] with LinearSpider[R, Map[A, R]] {
     val diagramSpider = implicitly[DiagramSpider[A]]
-    override val ring = implicitly[Ring[R]]
+    override val coefficients = implicitly[Module[R, R]]
 
     private def mapKeys(f: A => A)(map: TraversableOnce[(A, R)]) = {
       val newMap = scala.collection.mutable.Map[A, R]()
@@ -45,7 +43,6 @@ object LinearSpider {
       val newMap = scala.collection.mutable.Map[A, R]()
       for ((a, r) <- map) {
         val (b, rotations) = diagramSpider.canonicalFormWithDefect(a)
-//        val br = diagramSpider.rotate(b, - rotations.boundaryRotation)
         val p = ring.multiply(r, eigenvalue(rotations))
         newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)
       }
@@ -53,11 +50,6 @@ object LinearSpider {
     }
 
     override def circumference(map: Map[A, R]) = diagramSpider.circumference(map.head._1)
-
-    override def zero = Map.empty
-    override def add(map1: Map[A, R], map2: Map[A, R]) = mapKeys(x => x)(map1.iterator ++ map2.iterator)
-    override def scalarMultiply(r: R, map: Map[A, R]) = map.mapValues(v => ring.multiply(r, v)).filter(_._2 != ring.zero)
-    override def negate(map: Map[A, R]) = map.mapValues(v => ring.negate(v))
   }
 
   implicit def diskLinearSpider[A, R, M](implicit spider: LinearSpider[R, M]): LinearSpider[R, Disk[M]] = new Spider.DiskSpider(spider) with LinearSpider[R, Disk[M]] {

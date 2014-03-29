@@ -11,18 +11,13 @@ trait RingLowPriorityImplicits {
 object Ring extends RingLowPriorityImplicits {
   implicit def forget[A: EuclideanRing]: Ring[A] = implicitly[EuclideanRing[A]]
 
-  protected trait RingMapLike[A, B] extends Ring[Map[A, B]] with Module[B, Map[A, B]] {
-    def coefficients: Ring[B]
-
-    override def negate(m: Map[A, B]) = m.mapValues(coefficients.negate)
+  trait RingMap[A, B] extends Module.ModuleMap[B, A, B] with Rig.RigMap[A, B]  with Ring[Map[A, B]] {
+    override def coefficients: Module[B, B]
   }
 
-  class RingMap[A: AdditiveMonoid, B: Ring] extends Rig.RigMap[A, B] with RingMapLike[A, B] {
-    override def coefficients = implicitly[Ring[B]]
-  }
-
-  class PointwiseRingMap[A, B: Ring] extends Rig.PointwiseRigMap[A, B] with RingMapLike[A, B] {
-    override def coefficients = implicitly[Ring[B]]
+  class PointwiseRingMap[A, B: Ring] extends Rig.PointwiseRigMap[A, B] with Module.ModuleMap[B, A, B] with Ring[Map[A, B]] {
+    override def coefficients = Module.moduleOverItself(multiplicativeCoefficients)
+    override def multiplicativeCoefficients = implicitly[Ring[B]]
   }
 
   class RingSeq[B: Ring] extends Rig.RigSeq[B] with Ring[Seq[B]] with Module[B, Seq[B]] {
@@ -32,7 +27,11 @@ object Ring extends RingLowPriorityImplicits {
     override def negate(s: Seq[B]) = s.map(coefficients.negate)
   }
 
-  implicit def ringMap[A: AdditiveMonoid, B: Ring]: Ring[Map[A, B]] = new RingMap[A, B]
+  implicit def ringMap[A: AdditiveMonoid, B: Ring]: Ring[Map[A, B]] = new RingMap[A, B] {
+    override def keys = implicitly[AdditiveMonoid[A]]
+    override def multiplicativeCoefficients = implicitly[Ring[B]]
+    override def coefficients = Module.moduleOverItself(multiplicativeCoefficients)
+  }
   implicit def ringSeq[B: Ring]: Ring[Seq[B]] = new RingSeq[B]
 
 }

@@ -30,8 +30,10 @@ trait PolynomialAlgebra[A, P] extends Module[A, P] with AssociativeAlgebra[A, P]
 
 object PolynomialAlgebra {
   abstract class PolynomialAlgebraForMaps[A: Ring] extends Ring.RingMap[Int, A] with PolynomialAlgebra[A, Map[Int, A]] {
-    def ring: Ring[A]
-
+    override def keys = implicitly[AdditiveMonoid[Int]]
+    override def multiplicativeCoefficients = implicitly[Ring[A]]
+    override def coefficients = implicitly[Module[A, A]]
+    
     override def toMap(p: Map[Int, A]) = p
     override def toIndexedSeq[Z: Zero](p: Map[Int, A]) = {
       maximumDegree(p) match {
