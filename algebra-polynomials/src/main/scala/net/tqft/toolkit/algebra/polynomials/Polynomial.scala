@@ -33,7 +33,12 @@ object Polynomial {
   def apply[A: Ring](terms: Map[Int, A]) = implicitly[PolynomialAlgebra[A]].wrap(terms)
   implicit def constant[A: Ring](x: A): Polynomial[A] = apply((0, x))
   implicit def constantFraction[A: EuclideanRing](x: A): Polynomial[Fraction[A]] = apply((0, Fraction.whole(x)))
-  implicit def constantFractionAsRationalFunction[A: EuclideanRing](x: A): Fraction[Polynomial[Fraction[A]]] = apply((0, Fraction.whole(x)))
+  implicit def constantFractionAsRationalFunction[A: EuclideanRing](x: A): Fraction[Polynomial[Fraction[A]]] = {
+    val whole_x = Fraction.whole(x)
+    val polynomial = apply((0, whole_x))
+    
+    Fraction.whole(polynomial)(implicitly[PolynomialAlgebraOverField[Fraction[A]]])
+  }
   def identity[A: Ring] = apply((1, implicitly[Ring[A]].one))
 
   def cyclotomic[F: Field](n: Int): Polynomial[F] = {
@@ -51,5 +56,4 @@ object Polynomial {
   implicit def polynomialAlgebraOverFieldAsEuclideanRing[A: Field]: EuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverField[A]]
   implicit def polynomialAlgebraOverOrderedFieldAsOrderedEuclideanRing[A: OrderedField]: OrderedEuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverOrderedField[A]]
 
-//  implicit def polynomialAlgebraAsAlgebra[A: PolynomialAlgebra]: AssociativeAlgebra[A, Polynomial[A]] = implicitly[AssociativeAlgebra[A, Polynomial[A]]]  
 }
