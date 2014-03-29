@@ -302,11 +302,11 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
 
   def characterPairing[M, N](m: Character[M], n: Character[N]): Int = {
     def liftCharacterToCyclotomicFieldOfExponent(c: Character[_]) = {
-      val polynomials = PolynomialAlgebra.over[Fraction[Int]]
+      val polynomials = implicitly[Polynomials[Fraction[Int]]]
       new CyclotomicCharacter {
         override val order = exponent
         override val character = c match {
-          case c: RationalCharacter => c.character.map({ x => polynomials.constant(x) })
+          case c: RationalCharacter => c.character.map({ x => Polynomial.constant(x) })
           case c: CyclotomicCharacter => {
             val power = exponent / c.order
             c.character.map({ p => field.normalize(polynomials.composeAsFunctions(p, polynomials.monomial(power))) })

@@ -4,7 +4,6 @@ import scala.collection.GenSeq
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials._
 
-
 import scala.language.implicitConversions
 
 object Matrix extends net.tqft.toolkit.Logging {
@@ -138,12 +137,12 @@ class Matrix[B](
     }
   }
 
-//  private def fieldElementManifest(implicit field: Field[B]): Manifest[B] = ClassManifest.singleType(field.zero.asInstanceOf[B with AnyRef]).asInstanceOf[Manifest[B]]
+  //  private def fieldElementManifest(implicit field: Field[B]): Manifest[B] = ClassManifest.singleType(field.zero.asInstanceOf[B with AnyRef]).asInstanceOf[Manifest[B]]
 
   private def _rowReduce(rows: GenSeq[Seq[B]], forward: Boolean)(implicit field: Field[B]): GenSeq[Seq[B]] = {
     // we carry around the row indexes separately, because remainingRows might be living off in Hadoop or something...
 
-//    implicit val bManifest = fieldElementManifest
+    //    implicit val bManifest = fieldElementManifest
     //    import net.tqft.toolkit.hadoop.WiredCollections._
 
     @scala.annotation.tailrec
@@ -271,22 +270,30 @@ class Matrix[B](
     field.product(rowEchelonForm.diagonals)
   }
 
-
   def characteristicPolynomial(implicit field: Field[B]): Polynomial[B] = {
     require(numberOfRows == numberOfColumns)
 
     import net.tqft.toolkit.algebra.polynomials._
 
-    implicit val rationalFunctions = implicitly[Field[Fraction[Polynomial[B]]]]
+    val polynomials = implicitly[Polynomials[B]]
+    val rationalFunctions = implicitly[Field[Fraction[Polynomial[B]]]]
+
     val functionMatrices = Matrices.matricesOver(numberOfRows)(rationalFunctions)
-    val lift = Matrices.matricesOver(numberOfRows)(RationalFunctions.embeddingAsConstants(field))(this)
-    val lambda = functionMatrices.scalarMultiply(Polynomial.identity[B], functionMatrices.one)
+
+    val lift = this.mapEntries[RationalFunction[B]](x => x)
+    val lambda = functionMatrices.scalarMultiply(polynomials.identity, functionMatrices.one)
     val determinant = functionMatrices.add(functionMatrices.negate(lift), lambda).determinant // it's important that lift is the first argument of add, to preserve its underlying implementation
-    require(determinant.denominator == polynomials.Polynomials.embeddingAsConstants(field)(field.one))
+    require(determinant.denominator == (field.one: Polynomial[B]))
     determinant.numerator
   }
 
-  def eigenvalues(implicit field: Field[B] with Finite[B]): Set[B] = characteristicPolynomial.roots
+  def eigenvalues(implicit field: Field[B] with Finite[B]): Set[B] = {
+    import net.tqft.toolkit.algebra.polynomials._
+
+    val solver = FiniteFieldPolynomialSolver[B]()
+    import solver._
+    characteristicPolynomial.roots.keySet
+  }
 
   def eigenspace(lambda: B)(implicit field: Field[B]): Seq[Seq[B]] = {
     val matrices = Matrices.matricesOver(numberOfRows)(field)

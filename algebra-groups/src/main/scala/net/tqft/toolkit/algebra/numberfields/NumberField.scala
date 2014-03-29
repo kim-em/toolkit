@@ -8,11 +8,11 @@ import net.tqft.toolkit.algebra.grouptheory.Representation
 import net.tqft.toolkit.permutations.Permutations.Permutation
 
 trait NumberField[A] extends Field[Polynomial[A]] with VectorSpace[A, Polynomial[A]] {
-  override def coefficients: Field[A]
+  override implicit def coefficients: Field[A]
   val generator: Polynomial[A]
   lazy val rank = generator.maximumDegree.get
 
-  protected lazy val polynomials = Polynomials.over(coefficients) // has to be lazy so coefficientField is available
+  protected lazy val polynomials = implicitly[PolynomialsOverField[A]] // has to be lazy so coefficientField is available
 
   private val powers = {
     import net.tqft.toolkit.functions.Memo._
@@ -24,10 +24,10 @@ trait NumberField[A] extends Field[Polynomial[A]] with VectorSpace[A, Polynomial
       case None => zero
       case Some(k) if k < rank => q
       case Some(k) if k < 2 * rank => {
-        Polynomial((q.terms.flatMap {
+        Polynomial[A]((q.toMap.toSeq.flatMap {
           case (n, a) if n < rank => List((n, a))
-          case (n, a) => powers(n).terms.map { case (m, b) => (m, coefficients.multiply(a, b)) }
-        }): _*)(coefficients)
+          case (n, a) => powers(n).toMap.map { case (m, b) => (m, coefficients.multiply(a, b)) }
+        }): _*)
       }
       case _ => polynomials.remainder(q, generator)
     }
@@ -38,7 +38,7 @@ trait NumberField[A] extends Field[Polynomial[A]] with VectorSpace[A, Polynomial
     if (q == zero) throw new ArithmeticException("/ by zero")
     val (_, b, u) = (polynomials.extendedEuclideanAlgorithm(generator, q))
     require(u.maximumDegree == Some(0))
-    scalarMultiply(coefficients.inverse(u.constantTerm(coefficients)), b)
+    scalarMultiply(coefficients.inverse(u.constantTerm), b)
   }
   override def negate(q: Polynomial[A]) = polynomials.negate(q)
   override lazy val zero = polynomials.zero

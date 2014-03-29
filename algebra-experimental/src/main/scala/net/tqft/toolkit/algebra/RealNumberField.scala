@@ -2,7 +2,6 @@ package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.numberfields.NumberField
-import net.tqft.toolkit.algebra.polynomials.Polynomial.coefficientsAsFractions
 
 // needs lots of work!
 object RealNumberField {
@@ -39,12 +38,12 @@ trait RealNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[P
 
   def improveErrorBound = ???
 
-  def evaluateAt(d: D)(p: Polynomial[Fraction[I]]): D = approximateReals.sum(for ((i, c) <- p.terms) yield approximateReals.multiply(evaluateFraction(c), approximateReals.power(d, i)))
+  def evaluateAt(d: D)(p: Polynomial[Fraction[I]]): D = approximateReals.sum(for ((i, c) <- p.toMap.toSeq) yield approximateReals.multiply(evaluateFraction(c), approximateReals.power(d, i)))
   def evaluateFraction(x: Fraction[I]) = approximateReals.quotient(approximateReals.fromInteger(x.numerator), approximateReals.fromInteger(x.denominator))
 
   def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = {
     for (i <- 0 until rank) {
-      while (approximateReals.compare(approximateReals.multiply(errorBoundForPower(i), evaluateFraction(generator.coefficientOf(i).getOrElse(rationals.zero))), approximateReals.quotientByInt(epsilon, rank)) > 0) {
+      while (approximateReals.compare(approximateReals.multiply(errorBoundForPower(i), evaluateFraction(generator.coefficient(i))), approximateReals.quotientByInt(epsilon, rank)) > 0) {
         improveErrorBound
       }
     }
