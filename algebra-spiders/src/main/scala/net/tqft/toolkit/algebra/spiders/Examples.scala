@@ -68,6 +68,8 @@ object QuantumExceptionalVariable {
   })
 }
 
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial._
+
 object QuantumExceptional extends TrivalentSpider[MultivariableRationalFunction[Fraction[Int], QuantumExceptionalVariable]] {
   override val ring = implicitly[Field[MultivariableRationalFunction[Fraction[Int], QuantumExceptionalVariable]]]
 

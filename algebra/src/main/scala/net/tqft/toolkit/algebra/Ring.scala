@@ -4,16 +4,27 @@ trait Ring[@specialized(Int, Long, Float, Double) A] extends Rig[A] with Additiv
 
 trait CommutativeRing[A] extends CommutativeRig[A] with Ring[A]
 
-object Ring {
+trait RingLowPriorityImplicits {
+  implicit def pointwiseRingMap[A, B: Ring]: Ring[Map[A, B]] = new Ring.PointwiseRingMap[A, B]
+}
+
+object Ring extends RingLowPriorityImplicits {
   implicit def forget[A: EuclideanRing]: Ring[A] = implicitly[EuclideanRing[A]]
 
-  class RingMap[A: AdditiveMonoid, B: Ring] extends Rig.RigMap[A, B] with Ring[Map[A, B]] with Module[B, Map[A, B]] {
-    override def values = implicitly[Ring[B]]
+  protected trait RingMapLike[A, B] extends Ring[Map[A, B]] with Module[B, Map[A, B]] {
+    def values: Ring[B]
 
-    override def scalarMultiply(b: B, m: Map[A, B]) = m.mapValues(v => values.multiply(b, v))
     override def negate(m: Map[A, B]) = m.mapValues(values.negate)
   }
-  
+
+  class RingMap[A: AdditiveMonoid, B: Ring] extends Rig.RigMap[A, B] with RingMapLike[A, B] {
+    override def values = implicitly[Ring[B]]
+  }
+
+  class PointwiseRingMap[A, B: Ring] extends Rig.PointwiseRigMap[A, B] with RingMapLike[A, B] {
+    override def values = implicitly[Ring[B]]
+  }
+
   class RingSeq[B: Ring] extends Rig.RigSeq[B] with Ring[Seq[B]] with Module[B, Seq[B]] {
     override def values = implicitly[Ring[B]]
 
