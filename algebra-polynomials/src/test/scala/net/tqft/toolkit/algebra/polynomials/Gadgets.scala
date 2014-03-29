@@ -28,7 +28,6 @@ object Gadgets {
   def rigOfMultivariablePolynomials = implicitly[Rig[MultivariablePolynomial[Int, String]]]
   def ringOfMultivariablePolynomials = implicitly[Ring[MultivariablePolynomial[Int, String]]]
 
-  import MultivariablePolynomial._
   def euclideanRingOfMultivariablePolynomials = implicitly[EuclideanRing[MultivariablePolynomial[Fraction[Int], String]]]
   def multivariableRationalFunctions = implicitly[Field[MultivariableRationalFunction[Fraction[Int], String]]]
 

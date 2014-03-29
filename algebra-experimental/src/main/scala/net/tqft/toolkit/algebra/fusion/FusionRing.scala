@@ -6,37 +6,28 @@ import net.tqft.toolkit.algebra.RealNumberField
 import net.tqft.toolkit.permutations.Permutations.Permutation
 import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.algebra.polynomials.Polynomial
-import net.tqft.toolkit.algebra.modules._
 import net.tqft.toolkit.algebra.graphs.Graph
 import net.tqft.toolkit.algebra.graphs.ColouredGraph
 import scala.collection.mutable.WrappedArray
 import scala.reflect.ClassTag
 
-trait FiniteDimensionalFreeModuleOverRig[A] extends ModuleOverRig[A, Seq[A]] {
-  def coefficients: Rig[A]
+trait FiniteDimensionalFreeModuleOverRig[A] extends Rig.RigSeq[A] {
   def rank: Int
   override lazy val zero = Seq.fill(rank)(coefficients.zero)
-  override def add(x: Seq[A], y: Seq[A]) = x.zip(y).map(p => coefficients.add(p._1, p._2))
-  override def scalarMultiply(a: A, b: Seq[A]) = b.map(x => coefficients.multiply(a, x))
 
   def innerProduct(x: Seq[A], y: Seq[A]) = coefficients.sum(x.zip(y).map(p => coefficients.multiply(p._1, p._2)))
 
   lazy val basis = for (i <- 0 until rank) yield for (j <- 0 until rank) yield if (i == j) coefficients.one else coefficients.zero
 }
 
-trait FiniteDimensionalFreeModule[A] extends FiniteDimensionalFreeModuleOverRig[A] with Module[A, Seq[A]] {
-  override def coefficients: Ring[A]
-  override def negate(x: Seq[A]) = x.map(coefficients.negate)
-}
 
-
-trait FiniteDimensionalVectorSpace[A] extends FiniteDimensionalFreeModule[A] {
-  override def coefficients: Field[A]
+abstract class FiniteDimensionalVectorSpace[A: Field] extends Ring.RingSeq[A] with FiniteDimensionalFreeModuleOverRig[A]  {
+  override def coefficients: Field[A] = implicitly[Field[A]]
 }
 
 object FiniteDimensionalVectorSpace {
   def ofDimension[F:Field](dimension: Int) = {
-    new VectorSpace[F, Seq[F]] with FiniteDimensionalFreeModule[F] {
+    new FiniteDimensionalVectorSpace[F] with VectorSpace[F, Seq[F]] {
       override def coefficients = implicitly[Field[F]]
       override def rank = dimension
     }
@@ -46,7 +37,8 @@ object FiniteDimensionalVectorSpace {
 
 // Usually A = Int, for a concrete fusion ring. We allow other possibilities so we can write fusion solvers, etc.
 trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A]] { fr =>
-
+  override implicit def coefficients: Rig[A]
+  
   override lazy val hashCode = structureCoefficients.hashCode
   override def equals(other: Any) = {
     other match {
@@ -236,7 +228,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   }
 
   trait FusionModule extends FiniteDimensionalFreeModuleOverRig[A] { fm =>
-    override def coefficients = fr.coefficients
+    override implicit def coefficients = fr.coefficients
 
     def fusionRing = fr
 
@@ -360,6 +352,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     }
   }
 
+  implicit val rig = coefficients
   protected class StructureCoefficientFusionModule(matrices: Seq[Matrix[A]]) extends FusionModule {
     for (m <- matrices) {
       require(m.numberOfColumns == matrices.size)
@@ -394,7 +387,9 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
     override def structureCoefficients = fr.structureCoefficients
   }
 
-  lazy val regularModule: RegularModule = new RegularModule {}
+  lazy val regularModule: RegularModule = {
+    new RegularModule {}
+  }
 }
 
 object FusionRing {
