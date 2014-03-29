@@ -32,7 +32,7 @@ object AdditiveMonoid extends AdditiveMonoidLowPriorityImplicits {
   
   class AdditiveMonoidMap[A, B:AdditiveMonoid] extends AdditiveMonoid[Map[A, B]] {
     def values: AdditiveMonoid[B] = implicitly[AdditiveMonoid[B]]
-    
+        
     override def add(m1: Map[A, B], m2: Map[A, B]): Map[A, B] = {
       val newMap = scala.collection.mutable.Map[A,B]().withDefault(_ => values.zero)
       for(m <- Seq(m1, m2); (a, b) <- m) {

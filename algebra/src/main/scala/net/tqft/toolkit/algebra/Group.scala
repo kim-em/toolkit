@@ -13,3 +13,14 @@ trait Group[A] extends Monoid[A] with WithInverses[A] {
     }
   }
 }
+
+object Group {
+  implicit def forget[A: AdditiveGroup]: Group[A] = {
+    val additiveGroup = implicitly[AdditiveGroup[A]]
+    new Group[A] {
+      def one = additiveGroup.zero
+      def multiply(a1: A, a2: A) = additiveGroup.add(a1, a2)
+      def inverse(a: A) = additiveGroup.negate(a)
+    }
+  }
+}

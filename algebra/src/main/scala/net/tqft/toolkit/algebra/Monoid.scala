@@ -35,5 +35,13 @@ trait Monoid[@specialized(Int, Long, Float, Double) A] extends Semigroup[A] with
 }
 
 object Monoid {
-  def forget[A: Group]: Monoid[A] = implicitly[Group[A]]
+  implicit def forget[A: Group]: Monoid[A] = implicitly[Group[A]]
+
+  implicit def forget[A: AdditiveMonoid]: Monoid[A] = {
+    val additiveMonoid = implicitly[AdditiveMonoid[A]]
+    new Monoid[A] {
+      def one = additiveMonoid.zero
+      def multiply(a1: A, a2: A) = additiveMonoid.add(a1, a2)
+    }
+  }
 }

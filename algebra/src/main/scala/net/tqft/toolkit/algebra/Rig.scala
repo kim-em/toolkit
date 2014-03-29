@@ -12,10 +12,20 @@ trait Rig[@specialized(Int, Long, Float, Double) A] extends Monoid[A] with Addit
   }
 }
 
-object Rig {
+trait RigLowPriorityImplicits {
+  implicit def pointwiseRigMap[A, B: Rig]: Rig[Map[A, B]] = new Rig.PointwiseRigMap[A, B]
+}
+
+object Rig extends RigLowPriorityImplicits {
   implicit def forget[A: Ring]: Rig[A] = implicitly[Ring[A]]
-  
-  class RigMap[A: AdditiveMonoid, B: Rig] extends AdditiveMonoid.AdditiveMonoidMap[A, B] with Rig[Map[A, B]] {
+
+  protected trait RigMapLike[A, B] extends ModuleOverRig[B, Map[A, B]] {
+    def values: Rig[B]
+
+    override def scalarMultiply(b: B, m: Map[A, B]) = m.mapValues(v => values.multiply(b, v))
+  }
+
+  class RigMap[A: AdditiveMonoid, B: Rig] extends AdditiveMonoid.AdditiveMonoidMap[A, B] with Rig[Map[A, B]] with RigMapLike[A, B] {
     def keys = implicitly[AdditiveMonoid[A]]
     override def values = implicitly[Rig[B]]
 
@@ -30,15 +40,23 @@ object Rig {
     }
   }
 
+  class PointwiseRigMap[A, B: Rig] extends AdditiveMonoid.AdditiveMonoidMap[A, B] with Rig[Map[A, B]] with RigMapLike[A, B] {
+    override def values = implicitly[Rig[B]]
+    override def one = Map().withDefault(_ => values.one)
+    override def multiply(m1: Map[A, B], m2: Map[A, B]): Map[A, B] = {
+      for ((a, b) <- m1; c = m2.get(a).getOrElse(values.zero)) yield (a -> values.multiply(b, c))
+    }
+  }
+
   class RigSeq[B: Rig] extends AdditiveMonoid.AdditiveMonoidSeq[B] with Rig[Seq[B]] {
     override def values = implicitly[Rig[B]]
-    
+
     override def one = Seq(values.one)
     override def multiply(s1: Seq[B], s2: Seq[B]): Seq[B] = {
       ???
     }
   }
-  
+
   implicit def rigMap[A: AdditiveMonoid, B: Rig]: Rig[Map[A, B]] = new RigMap[A, B]
   implicit def rigSeq[B: Rig]: Rig[Seq[B]] = new RigSeq[B]
 
