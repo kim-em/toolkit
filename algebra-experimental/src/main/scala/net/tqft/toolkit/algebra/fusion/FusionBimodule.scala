@@ -5,7 +5,7 @@ import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.permutations.Permutations.Permutation
 
 trait FusionBimodule[A] extends FiniteDimensionalFreeModuleOverRig[A] {
-  def coefficients = leftRing.coefficients.ensuring(_ == rightRing.coefficients)
+  override def coefficients = leftRing.coefficients.ensuring(_ == rightRing.coefficients)
 
   def switch(implicit rig: Rig[A]) = FusionBimodule(rightRing.structureCoefficients, rightModule.structureCoefficients, leftRing.structureCoefficients, leftModule.structureCoefficients)
   

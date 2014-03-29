@@ -31,12 +31,12 @@ object AdditiveMonoid extends AdditiveMonoidLowPriorityImplicits {
   implicit def forget[A:AdditiveGroup]: AdditiveMonoid[A] = implicitly[AdditiveGroup[A]]
   
   class AdditiveMonoidMap[A, B:AdditiveMonoid] extends AdditiveMonoid[Map[A, B]] {
-    def values: AdditiveMonoid[B] = implicitly[AdditiveMonoid[B]]
+    def coefficients: AdditiveMonoid[B] = implicitly[AdditiveMonoid[B]]
         
     override def add(m1: Map[A, B], m2: Map[A, B]): Map[A, B] = {
-      val newMap = scala.collection.mutable.Map[A,B]().withDefault(_ => values.zero)
+      val newMap = scala.collection.mutable.Map[A,B]().withDefault(_ => coefficients.zero)
       for(m <- Seq(m1, m2); (a, b) <- m) {
-        newMap(a) = values.add(newMap(a), b)
+        newMap(a) = coefficients.add(newMap(a), b)
       }
       Map() ++ newMap
     }
@@ -44,11 +44,11 @@ object AdditiveMonoid extends AdditiveMonoidLowPriorityImplicits {
     override def zero = Map[A, B]()
   }
   class AdditiveMonoidSeq[B:AdditiveMonoid] extends AdditiveMonoid[Seq[B]] {
-    def values: AdditiveMonoid[B] = implicitly[AdditiveMonoid[B]]
+    def coefficients: AdditiveMonoid[B] = implicitly[AdditiveMonoid[B]]
 
-    override def zero = Seq.empty
+    override def zero: Seq[B] = Seq.empty
     override def add(s1: Seq[B], s2: Seq[B]): Seq[B] = {
-      s1.zipAll(s2, values.zero, values.zero).map(p => values.add(p._1, p._2))
+      s1.zipAll(s2, coefficients.zero, coefficients.zero).map(p => coefficients.add(p._1, p._2))
     }
   }
   

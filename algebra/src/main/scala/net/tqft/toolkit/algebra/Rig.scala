@@ -20,38 +20,38 @@ object Rig extends RigLowPriorityImplicits {
   implicit def forget[A: Ring]: Rig[A] = implicitly[Ring[A]]
 
   protected trait RigMapLike[A, B] extends ModuleOverRig[B, Map[A, B]] {
-    def values: Rig[B]
+    def coefficients: Rig[B]
 
-    override def scalarMultiply(b: B, m: Map[A, B]) = m.mapValues(v => values.multiply(b, v))
+    override def scalarMultiply(b: B, m: Map[A, B]) = m.mapValues(v => coefficients.multiply(b, v))
   }
 
   class RigMap[A: AdditiveMonoid, B: Rig] extends AdditiveMonoid.AdditiveMonoidMap[A, B] with Rig[Map[A, B]] with RigMapLike[A, B] {
     def keys = implicitly[AdditiveMonoid[A]]
-    override def values = implicitly[Rig[B]]
+    override def coefficients = implicitly[Rig[B]]
 
-    override def one = Map(keys.zero -> values.one)
+    override def one = Map(keys.zero -> coefficients.one)
     override def multiply(m1: Map[A, B], m2: Map[A, B]): Map[A, B] = {
-      val newMap = scala.collection.mutable.Map[A, B]().withDefault(_ => values.zero)
+      val newMap = scala.collection.mutable.Map[A, B]().withDefault(_ => coefficients.zero)
       for ((a1, b1) <- m1; (a2, b2) <- m2) {
         val p = keys.add(a1, a2)
-        newMap(p) = values.add(newMap(p), values.multiply(b1, b2))
+        newMap(p) = coefficients.add(newMap(p), coefficients.multiply(b1, b2))
       }
       Map() ++ newMap
     }
   }
 
   class PointwiseRigMap[A, B: Rig] extends AdditiveMonoid.AdditiveMonoidMap[A, B] with Rig[Map[A, B]] with RigMapLike[A, B] {
-    override def values = implicitly[Rig[B]]
-    override def one = Map().withDefault(_ => values.one)
+    override def coefficients = implicitly[Rig[B]]
+    override def one = Map().withDefault(_ => coefficients.one)
     override def multiply(m1: Map[A, B], m2: Map[A, B]): Map[A, B] = {
-      for ((a, b) <- m1; c = m2.get(a).getOrElse(values.zero)) yield (a -> values.multiply(b, c))
+      for ((a, b) <- m1; c = m2.get(a).getOrElse(coefficients.zero)) yield (a -> coefficients.multiply(b, c))
     }
   }
 
   class RigSeq[B: Rig] extends AdditiveMonoid.AdditiveMonoidSeq[B] with Rig[Seq[B]] {
-    override def values = implicitly[Rig[B]]
+    override def coefficients = implicitly[Rig[B]]
 
-    override def one = Seq(values.one)
+    override def one = Seq(coefficients.one)
     override def multiply(s1: Seq[B], s2: Seq[B]): Seq[B] = {
       ???
     }

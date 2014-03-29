@@ -1,9 +1,6 @@
 package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.algebra.modules._
-import net.tqft.toolkit.algebra.modules.MapFreeModuleOnMonoidOverRig
-import net.tqft.toolkit.algebra.modules.MapFreeModuleOnMonoid
 
 trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolynomial[A, V]] with ModuleOverRig[A, MultivariablePolynomial[A, V]] {
   implicit def ring: Rig[A]
