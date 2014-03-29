@@ -1,24 +1,20 @@
 package net.tqft.toolkit.algebra.polynomials
 
-import net.tqft.toolkit.algebra.EuclideanRing
-import net.tqft.toolkit.algebra.Field
-import net.tqft.toolkit.algebra.OrderedEuclideanRing
-import net.tqft.toolkit.algebra.OrderedField
+import net.tqft.toolkit.algebra._
 
-trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanRing[Polynomial[A]] {
+trait PolynomialAlgebraOverField[A, P] extends PolynomialAlgebra[A, P] with EuclideanRing[P] {
   override def ring: Field[A]
 
-  def quotientRemainder(x: Polynomial[A], y: Polynomial[A]): (Polynomial[A], Polynomial[A]) = {
-    (x.maximumDegree, y.maximumDegree) match {
+  def quotientRemainder(x: P, y: P): (P, P) = {
+    (maximumDegree(x), maximumDegree(y)) match {
       case (_, None) => throw new ArithmeticException
       case (None, Some(dy)) => (zero, zero)
-      // FIXME why are these type ascriptions needed?
-      case (Some(dx: Int), Some(dy: Int)) => {
+      case (Some(dx), Some(dy)) => {
         if (dy > dx) {
           (zero, x)
         } else {
-          val ax = x.leadingCoefficient.get
-          val ay = y.leadingCoefficient.get
+          val ax = leadingCoefficient(x).get
+          val ay = leadingCoefficient(y).get
 
           require(ax != ring.zero)
           require(ay != ring.zero)
@@ -27,7 +23,6 @@ trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanR
 
           val quotientLeadingTerm = monomial(dx - dy, q)
           val difference = add(x, negate(multiply(quotientLeadingTerm, y)))
-          //          require(difference.coefficientOf(dx) == None)
           val (restOfQuotient, remainder) = quotientRemainder(difference, y)
 
           (add(quotientLeadingTerm, restOfQuotient), remainder)
@@ -36,43 +31,31 @@ trait PolynomialAlgebraOverField[A] extends PolynomialAlgebra[A] with EuclideanR
     }
   }
 
-  def removeMultipleRoots(p: Polynomial[A]): Polynomial[A] = {
+  def removeMultipleRoots(p: P): P = {
     quotient(p, gcd(p, formalDerivative(p)))
   }
 }
 
 object PolynomialAlgebraOverField {
-  implicit def overField[F: Field]: PolynomialAlgebraOverField[F] = new PolynomialAlgebraOverField[F] {
-      override val ring = implicitly[Field[F]]
-    }
-}
-
-trait PolynomialAlgebraOverOrderedField[A] extends PolynomialAlgebraOverField[A] with OrderedEuclideanRing[Polynomial[A]] {
-  override def ring: OrderedField[A]
+  trait PolynomialAlgebraOverFieldForMaps[A] extends PolynomialAlgebra.PolynomialAlgebraForMaps[A] with PolynomialAlgebraOverField[A, Map[Int, A]] {
+    override def ring: Field[A]
+  }
+  trait PolynomialAlgebraOverFieldForPolynomials[A] extends PolynomialAlgebra.PolynomialAlgebraForPolynomials[A] with PolynomialAlgebraOverField[A, Polynomial[A]] {
+    override def ring: Field[A]
+  }
   
-  override def compare(p: Polynomial[A], q: Polynomial[A]): Int = {
-    implicitly[Ordering[Option[Int]]].compare(p.maximumDegree, q.maximumDegree)  match {
-      case 0 => {
-        if(p.maximumDegree.isEmpty) {
-          0
-        } else {
-          for(i <- p.maximumDegree.get to 0 by -1) {
-            ring.compare(p.coefficient(i)(ring), q.coefficient(i)(ring)) match {
-              case 0 => {}
-              case c => return c
-            }
-          }
-          0
-        }
-      }
-      case e => e
-    }
+  implicit def forMaps[A: Field]: PolynomialAlgebraOverField[A, Map[Int, A]] = new PolynomialAlgebraOverFieldForMaps[A] {
+    override def ring = implicitly[Field[A]]
+  }
+  implicit def over[A: Field]: PolynomialAlgebraOverField[A, Polynomial[A]] = new PolynomialAlgebra.PolynomialAlgebraForPolynomials[A] with PolynomialAlgebraOverField[A, Polynomial[A]] {
+    override def ring = implicitly[Field[A]]
   }
 }
 
-object PolynomialAlgebraOverOrderedField {
-  implicit def overOrderedField[F: OrderedField]: PolynomialAlgebraOverOrderedField[F] = new PolynomialAlgebraOverOrderedField[F] {
-      override val ring = implicitly[OrderedField[F]]
-    }
+trait PolynomialsOverField[A] extends PolynomialAlgebraOverField[A, Polynomial[A]] with Polynomials[A]
+object PolynomialsOverField {
+  implicit def over[A: Field]: PolynomialsOverField[A] = new PolynomialAlgebraOverField.PolynomialAlgebraOverFieldForPolynomials[A] with PolynomialsOverField[A] {
+    override def ring = implicitly[Field[A]]
+  }
 }
 

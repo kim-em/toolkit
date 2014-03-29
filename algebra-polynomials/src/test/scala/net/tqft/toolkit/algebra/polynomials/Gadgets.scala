@@ -3,9 +3,9 @@ package net.tqft.toolkit.algebra.polynomials
 import net.tqft.toolkit.algebra._
 
 object Gadgets {
-  def algebraOfRationalPolynomials_0 = implicitly[PolynomialAlgebra[Fraction[Int]]]
-  def algebraOfRationalPolynomials_1 = implicitly[PolynomialAlgebraOverField[Fraction[Int]]]
-  def algebraOfRationalPolynomials_2 = implicitly[PolynomialAlgebraOverOrderedField[Fraction[Int]]]
+  def algebraOfRationalPolynomials_0 = implicitly[Polynomials[Fraction[Int]]]
+  def algebraOfRationalPolynomials_1 = implicitly[PolynomialsOverField[Fraction[Int]]]
+  def algebraOfRationalPolynomials_2 = implicitly[PolynomialsOverOrderedField[Fraction[Int]]]
 
   def ordereedEuclideanRingOfRationalPolynomials = implicitly[OrderedEuclideanRing[Polynomial[Fraction[Int]]]]
   def euclideanRingOfRationalPolynomials = implicitly[EuclideanRing[Polynomial[Fraction[Int]]]]

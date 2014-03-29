@@ -3,7 +3,6 @@ package net.tqft.toolkit.algebra.numberfields
 import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.ComplexConjugation
 import net.tqft.toolkit.algebra.polynomials.Polynomial
-//import net.tqft.toolkit.algebra.cones.CubicalCone
 
 trait CyclotomicNumberField[A] extends NumberField[A] with ComplexConjugation[Polynomial[A]] { cnf =>
   val order: Int
@@ -19,9 +18,10 @@ trait CyclotomicNumberField[A] extends NumberField[A] with ComplexConjugation[Po
     (f _).memo
   }
 
-  def bar(q: Polynomial[A]) = sum(normalize(q).terms.map({ case (k, a) => scalarMultiply(a, zetaInversePowers(k)) }))
+  def bar(q: Polynomial[A]) = sum(normalize(q).toMap.toSeq.map({ case (k, a) => scalarMultiply(a, zetaInversePowers(k)) }))
 
   // TODO these belong somewhere else
+  // import net.tqft.toolkit.algebra.cones.CubicalCone
   //  def house_?(p: Polynomial[A]): Boolean = galoisConjugates(p).forall(x => ???)
   //  def housesUpTo(limit: Double): Iterator[Polynomial[A]] = {
   //    houseConeApproximation.enumeratePointsBelowWall(???, limit)(this).filter(house_?)
