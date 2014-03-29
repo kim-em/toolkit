@@ -16,8 +16,6 @@ object RationalFunction {
 }
 
 object RationalFunctions {
-  type RationalFunction[A] = Fraction[Polynomial[A]]
-
   val over = new Functor[Field, Field, RationalFunction] { self =>
     def source = Fields
     def target = Fields
