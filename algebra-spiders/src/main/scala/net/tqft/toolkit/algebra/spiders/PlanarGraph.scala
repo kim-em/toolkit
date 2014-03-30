@@ -22,6 +22,7 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
   def numberOfFaces = faceSet.size
 
   def edgesAdjacentTo(vertex: Int): Seq[Int] = vertexFlags(vertex).map(_._1)
+  def neighboursOf(vertex: Int) = edgesAdjacentTo(vertex).map(e => target(vertex, e))
 
   lazy val edgeIncidences: Map[Int, List[Int]] = {
     val map = scala.collection.mutable.Map[Int, ListBuffer[Int]]()
@@ -43,6 +44,27 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
   }
 
   def boundaryFaces = vertexFlags(0).map(_._2)
+
+  def faceNeighbours(face: Int) = {
+    for (i <- vertices; (e, `face`) <- vertexFlags(i)) yield vertexFlags(target(i, e)).find(_._1 == e).get._2
+  }
+
+  lazy val distancesFromOuterFace: Map[Int, Int] = {
+    def facesByRadius: Stream[Set[Int]] = {
+      def internal: Stream[Set[Int]] = Set.empty[Int] #:: Set(outerFace) #:: internal.zip(internal.tail).map(p => p._2.flatMap(faceNeighbours) -- p._2 -- p._1)
+      internal.tail
+    }
+    (for ((faces, i) <- facesByRadius.takeWhile(_.nonEmpty).iterator.zipWithIndex; f <- faces) yield (f -> i)).toMap
+  }
+  def geodesicsToOuterFace(face: Int): Iterator[Seq[Int]] = {
+    if (face == outerFace) {
+      Iterator(Seq(face))
+    } else {
+      for (next <- faceNeighbours(face).iterator; if distancesFromOuterFace(next) == distancesFromOuterFace(face) - 1; remainder <- geodesicsToOuterFace(next)) yield {
+        face +: remainder
+      }
+    }
+  }
 
   lazy val relabelEdgesAndFaces: PlanarGraph = {
     val edgeMap = (for ((e, ei) <- edgeSet.zipWithIndex) yield (e, numberOfVertices + ei)).toMap
@@ -110,35 +132,56 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
 
     def excisions: Iterator[Excision] = {
 
-      // map tells us where vertices/edges/faces are going. values of -1 mean they haven't been assigned yet
-      def extendPartialExcision(map: Array[Int]): Iterator[Excision] = {
+      case class PartialMap(map: Array[Int], vertexRotations: Array[Int]) {
+        override def clone = PartialMap(map.clone, vertexRotations.clone)
+      }
 
-        def mapVertex(sourceVertex: Int, targetVertex: Int, rotation: Int): Option[Array[Int]] = {
-          if (map(sourceVertex) != -1 && map(sourceVertex) != targetVertex) {
+      // map tells us where vertices/edges/faces are going. values of -1 mean they haven't been assigned yet
+      def extendPartialExcision(partial: PartialMap): Iterator[Excision] = {
+
+        def mapVertex(sourceVertex: Int, targetVertex: Int, rotation: Int, partial: PartialMap): Option[PartialMap] = {
+          if (partial.map(sourceVertex - 1) == targetVertex && partial.vertexRotations(sourceVertex - 1) == rotation) {
+            // already done this vertex
+            Some(partial)
+          } else if (partial.map(sourceVertex - 1) != -1) {
             None
           } else if (packedShape.degree(sourceVertex) != graph.degree(targetVertex)) {
             None
           } else {
-            val newMap = map.clone
-            newMap(sourceVertex) = targetVertex
-            ???
+            partial.map(sourceVertex - 1) = targetVertex
+            partial.vertexRotations(sourceVertex - 1) = rotation
+
+            import net.tqft.toolkit.collections.Rotate._
+            val sourceNeighbours = packedShape.edgesAdjacentTo(sourceVertex).zip(packedShape.neighboursOf(sourceVertex))
+            val targetNeighbours = graph.edgesAdjacentTo(targetVertex).zip(graph.neighboursOf(targetVertex)).rotateLeft(rotation)
+
+            val next = for (((es, s), (et, t)) <- sourceNeighbours.zip(targetNeighbours); if s != 0) yield {
+              val r = packedShape.edgesAdjacentTo(s).indexOf(es) - graph.edgesAdjacentTo(t).indexOf(et)
+              (s, t, r)
+            }
+
+            next.foldLeft[Option[PartialMap]](Some(partial))((o, n) => o.flatMap(p => mapVertex(n._1, n._2, n._3, p)))
           }
         }
 
-        val i = map.indexOf(-1)
-        if (i == -1) {
+        val i = partial.map.indexOf(-1) + 1 //
+        if (i == 0) {
           // build an Excision
-          Iterator(???)
-        } else if (i >= numberOfVertices) {
+          // first, choose a path to cut along
+          val geodesic = geodesicsToOuterFace(???).next
+          
+          val excision = ???
+          Iterator(excision)
+        } else if (i > numberOfVertices) {
           // this shouldn't happen?
           ???
         } else {
           // pick somewhere to send it to
           for (
             j <- (1 to graph.numberOfVertices).iterator;
-            if !map.contains(j);
+            if !partial.map.contains(j);
             k <- 0 until packedShape.degree(i);
-            Some(newMap) = mapVertex(i, j, k);
+            newMap <- mapVertex(i, j, k, partial.clone).iterator;
             excision <- extendPartialExcision(newMap)
           ) yield {
             excision
@@ -146,7 +189,10 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
         }
       }
 
-      extendPartialExcision(Array.fill(packedShape.numberOfVertices + packedShape.numberOfEdges + packedShape.numberOfFaces)(-1))
+      extendPartialExcision(
+        PartialMap(
+          Array.fill(packedShape.numberOfVertices - 1 /* + packedShape.numberOfEdges + packedShape.numberOfFaces */ )(-1),
+          Array.fill(packedShape.numberOfVertices - 1)(-1)))
     }
   }
 }
