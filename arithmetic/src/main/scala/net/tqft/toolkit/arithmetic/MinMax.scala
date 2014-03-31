@@ -5,16 +5,16 @@ import scala.language.implicitConversions
 
 object MinMax {
 
-  implicit class MinMaxIterable[A](iterable: Iterable[A]) {
-    def minOption(implicit cmp: Ordering[A]): Option[A] = if(iterable.isEmpty) {
+  implicit class MinMaxOption[A](c: TraversableOnce[A]) {
+    def minOption(implicit cmp: Ordering[A]): Option[A] = if(c.isEmpty) {
       None
     } else {
-      Some(iterable.min)
+      Some(c.min)
     }
-    def maxOption(implicit cmp: Ordering[A]): Option[A] = if(iterable.isEmpty) {
+    def maxOption(implicit cmp: Ordering[A]): Option[A] = if(c.isEmpty) {
       None
     } else {
-      Some(iterable.max)
+      Some(c.max)
     }
   }
   
