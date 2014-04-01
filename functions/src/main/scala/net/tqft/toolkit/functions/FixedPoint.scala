@@ -27,27 +27,27 @@ object FixedPoint {
     }
 
     /**
-     * Finds the first repeated value in the sequence of iterates a, f(a), f(f(a)), ..., and returns its value, position in the sequence, and the period.
+     * Finds the first repeating subsequence in the sequence of iterates a, f(a), f(f(a)), ..., and returns the subsequence and the offset at which it starts
      */
-    def findFirstRepetition(a: A): (A, Int, Int) = {
+    def findRepeatingSubsequence(a: A): (Seq[A], Int) = {
       var values: List[A] = Nil
       var current = a
       var previousPosition: Int = 0
-      while ({ previousPosition = values.indexOf({ b: A => equalityTest(b, current) }); previousPosition == -1 }) {
+      while ({ previousPosition = values.indexWhere({ b: A => equalityTest(b, current) }); previousPosition == -1 }) {
         values = current :: values
         current = f(current)
       }
-      (current, values.size, previousPosition + 1)
+      (values.take(previousPosition + 1).reverse, values.size - previousPosition - 1)
     }
 
     /**
      * Finds the first repeated value in the sequence of iterates a, f(a), f(f(a)), ...
      */
-    def firstRepeatedIterate(a: A): A = findFirstRepetition(a)._1
+    def firstRepeatedIterate(a: A): A = findRepeatingSubsequence(a)._1.head
     /**
      * Finds the period of the eventual cycle in a, f(a), f(f(a)), ...
      */
-    def eventualPeriod(a: A): Int = findFirstRepetition(a)._3
+    def eventualPeriod(a: A): Int = findRepeatingSubsequence(a)._1.size
   }
 
   def apply[A](f: A => A): A => A = new FunctionFixedPoint(f).fixedPoint(_)
