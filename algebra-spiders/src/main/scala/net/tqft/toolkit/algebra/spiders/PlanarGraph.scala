@@ -232,11 +232,15 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
 
     val facesAroundSubgraph: Seq[Int] = for(b <- boundaryEdgesToDelete; v <- verticesToDelete; (`b`, f) <- vertexFlags(v)) yield f
     
-    val perimeterEdges = faceBoundary(outerFace).map(_._2)
+    val perimeterEdges = {
+      import net.tqft.toolkit.collections.Rotate._
+      val boundary = faceBoundary(outerFace)
+      boundary.rotateLeft(boundary.indexWhere(_._1 == 0)).map(_._2)
+    }
     val initialSegmentPerimeter = perimeterEdges.takeWhile(e => !boundaryEdgesToDelete.contains(e))
 
     val newFace = faceSet.max + 1
-    val newExternalFlag = vertexFlags.head ++ boundaryEdgesToDelete.reverse.zip(newFace +: facesAroundSubgraph.tail) 
+    val newExternalFlag = vertexFlags.head ++ boundaryEdgesToDelete.zip(newFace +: facesAroundSubgraph.tail) 
     val newInternalFlags = vertexFlags.zipWithIndex.tail.collect({
       case (flags, i) if !verticesToDelete.contains(i) => flags.map({
         case (e, f) if initialSegmentPerimeter.contains(e) && f == outerFace => (e, newFace)
