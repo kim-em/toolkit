@@ -40,6 +40,9 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
 
   lazy val edgeSet = vertexFlags.flatMap(_.map(_._1)).sorted.distinct
   lazy val faceSet = vertexFlags.flatMap(_.map(_._2)).sorted.distinct
+  
+  def internalEdges = edgeSet.filterNot(boundaryEdges.contains)
+  
   def numberOfEdges = edgeSet.size
   def numberOfFaces = faceSet.size
 
@@ -94,7 +97,9 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
     }
   }
 
-  def faceBoundary(face: Int): Seq[(Int, Int)] = {
+  type VertexEdge = (Int, Int)
+  
+  def faceBoundary(face: Int): Seq[VertexEdge] = {
     val initialEdge = edgeFaceIncidences.find(p => p._2._1 == face || p._2._2 == face).get._1
     val initialVertex = vertexFlags.indexWhere(_.contains((initialEdge, face)))
     def nextFlag(p: (Int, Int)): (Int, Int) = {
@@ -343,7 +348,7 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
             val targetNeighbours = graph.edgesAdjacentTo(targetVertex).zip(graph.neighboursOf(targetVertex)).rotateLeft(rotation)
 
             val next = for (((es, s), (et, t)) <- sourceNeighbours.zip(targetNeighbours); if s != 0) yield {
-              val r = graph.edgesAdjacentTo(t).indexOf(et) - packedShape.edgesAdjacentTo(s).indexOf(es)
+              val r =  graph.edgesAdjacentTo(t).indexOf(et) - packedShape.edgesAdjacentTo(s).indexOf(es)
               (s, t, r)
             }
 
@@ -353,9 +358,16 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
 
         val i = partial.map.indexOf(-1) + 1 //
         if (i == 0) {
+          require(!partial.vertexRotations.contains(-666))
           // build an Excision
-          // first, choose a path to cut along
-          val geodesic = graph.geodesicsToOuterFace(partial.faceMap(packedShape.outerFace)).next
+          // first, choose a path to cut along // TODO we can't cut through the stuff we're about to remove!!
+          val interiorEdges = packedShape.internalEdges.map(partial.edgeMap)
+          def geodesicAllowed_?(geodesic: Seq[EdgeFace]) = {
+            geodesic.forall(p => !interiorEdges.contains(p._1))
+          }
+          val allowedGeodesics = graph.geodesicsToOuterFace(partial.faceMap(packedShape.outerFace)).filter(geodesicAllowed_?)
+          
+          val geodesic = allowedGeodesics.next
           val verticesToDelete = partial.map
           val cut = graph.cutAlong(geodesic)
 
@@ -397,7 +409,7 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
       extendPartialExcision(
         PartialMap(
           Array.fill(packedShape.numberOfVertices - 1 /* + packedShape.numberOfEdges + packedShape.numberOfFaces */ )(-1),
-          Array.fill(packedShape.numberOfVertices - 1)(-1)))
+          Array.fill(packedShape.numberOfVertices - 1)(-666)))
     }
   }
 }
