@@ -63,14 +63,11 @@ object DiagramSpider {
 
       override def canonicalFormWithDefect(graph: PlanarGraph) = {
         val packed = graph.relabelEdgesAndFaces
-        println(packed)
         val nautyGraph = packed.nautyGraph
-        println(nautyGraph)
         val labelling = Dreadnaut.canonicalLabelling(nautyGraph)
         
         require(labelling(0) == 0)
         
-        println(labelling)
         import net.tqft.toolkit.permutations.Permutations._
         import net.tqft.toolkit.collections.Rotate._
         import Ordering.Implicits._
@@ -80,7 +77,7 @@ object DiagramSpider {
         val vertexRotations = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
 
         def identifyRotation[A](x: Seq[A], y: Seq[A]) = {
-          println("identifying rotation for: " + x + " and " + y)
+//          println("identifying rotation for: " + x + " and " + y)
           if (x.isEmpty) {
             0
           } else {
@@ -92,7 +89,6 @@ object DiagramSpider {
         import net.tqft.toolkit.arithmetic.Mod._
 
         val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(0))
-//        require(boundaryRotation == 0)
 
         for (i <- 1 until graph.numberOfVertices) {
           val k = packed.vertexFlags(i).size
