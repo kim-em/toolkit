@@ -36,7 +36,7 @@ object Split {
         def hasNext = x.hasNext
         def next = {
           import TakeToFirst._
-          x.takeToFirst(p)
+          x.takeToFirst(p).toList
         }
       }
     }

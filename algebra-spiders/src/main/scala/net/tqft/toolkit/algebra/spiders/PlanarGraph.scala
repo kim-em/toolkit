@@ -51,14 +51,14 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
     for (v <- vertices; e <- edgesAdjacentTo(v)) {
       map.getOrElseUpdate(e, ListBuffer[Int]()) += v
     }
-    Map() ++ map.mapValues({ case ListBuffer(v1, v2) => (v1, v2) })
+    Map() ++ map.mapValues({ case ListBuffer(v1, v2) => (v1, v2); case _ => require(false); ??? })
   }
   lazy val edgeFaceIncidences: Map[Int, (Int, Int)] = {
     val map = scala.collection.mutable.Map[Int, ListBuffer[Int]]()
     for (flags <- vertexFlags; (e, f) <- flags) {
       map.getOrElseUpdate(e, ListBuffer[Int]()) += f
     }
-    Map() ++ map.mapValues({ case ListBuffer(f1, f2) => (f1, f2) })
+    Map() ++ map.mapValues({ case ListBuffer(f1, f2) => (f1, f2); case _ => require(false); ??? })
   }
   lazy val maxEdgeLabel = edgeVertexIncidences.keysIterator.max
 
@@ -76,8 +76,12 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
   lazy val boundaryEdges = vertexFlags(0).map(_._1)
   lazy val boundaryFaces = vertexFlags(0).map(_._2)
 
-  def faceNeighbours(face: Int) = {
-    for (i <- vertices; (e, `face`) <- vertexFlags(i)) yield vertexFlags(target(i, e)).find(_._1 == e).get._2
+  type EdgeFace = (Int, Int)
+  
+  def faceNeighbours(face: Int): Seq[EdgeFace] = {
+    faceBoundary(face).map(p => edgeFaceIncidences(p._2) match {
+      case (`face`, f) => (p._2, f); case (f, `face`) => (p._2, f)
+    })
   }
 
   def edgesBetweenFaces(face1: Int, face2: Int) = {
@@ -98,30 +102,34 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
       //      require(vertices.contains(vertex))
       //      require(edgeSet.contains(edge))
       val nextVertex = target(vertex, edge)
-      val nextEdge = vertexFlags(nextVertex)((vertexFlags(nextVertex).indexWhere(_._1 == edge) + 1) % vertexFlags(nextVertex).size)._1
+      val nextEdge = {
+        import net.tqft.toolkit.collections.Rotate._
+        vertexFlags(nextVertex)((vertexFlags(nextVertex).zip(vertexFlags(nextVertex).rotateLeft(1)).indexWhere(p => p._1._1 == edge && p._2._2 == face) + 1) % vertexFlags(nextVertex).size)._1
+      }
       (nextVertex, nextEdge)
     }
     import net.tqft.toolkit.functions.FixedPoint._
     val (boundary, offset) = (nextFlag _).findRepeatingSubsequence((initialVertex, initialEdge))
 
-    require(offset == 0)
+    require(offset == 0, s"Something went wrong computing faceBoundary($face): ${Iterator.iterate((initialVertex, initialEdge))(nextFlag).take(10).toList}")
 
     boundary
   }
 
   lazy val distancesFromOuterFace: Map[Int, Int] = {
     def facesByRadius: Stream[Set[Int]] = {
-      def internal: Stream[Set[Int]] = Set.empty[Int] #:: Set(outerFace) #:: internal.zip(internal.tail).map(p => p._2.flatMap(faceNeighbours) -- p._2 -- p._1)
+      def internal: Stream[Set[Int]] = Set.empty[Int] #:: Set(outerFace) #:: internal.zip(internal.tail).map(p => p._2.flatMap(f => faceNeighbours(f).map(_._2)) -- p._2 -- p._1)
       internal.tail
     }
     (for ((faces, i) <- facesByRadius.takeWhile(_.nonEmpty).iterator.zipWithIndex; f <- faces) yield (f -> i)).toMap
   }
-  def geodesicsToOuterFace(face: Int): Iterator[Seq[Int]] = {
+  
+  def geodesicsToOuterFace(face: Int): Iterator[Seq[EdgeFace]] = {
     if (face == outerFace) {
-      Iterator(Seq(face))
+      Iterator(Seq())
     } else {
-      for (next <- faceNeighbours(face).iterator; if distancesFromOuterFace(next) == distancesFromOuterFace(face) - 1; remainder <- geodesicsToOuterFace(next)) yield {
-        face +: remainder
+      for ((e, f) <- faceNeighbours(face).iterator; if distancesFromOuterFace(f) == distancesFromOuterFace(face) - 1; remainder <- geodesicsToOuterFace(f)) yield {
+        (e, face) +: remainder
       }
     }
   }
@@ -172,17 +180,24 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
       (0 +: IndexedSeq.fill(numberOfVertices - 1)(1)) ++ IndexedSeq.fill(edgeSet.size)(2) ++ IndexedSeq.fill(faceSet.size)(3) ++ IndexedSeq.fill(flagSet.size)(4) ++ IndexedSeq.fill(flagSet.size)(5) ++ IndexedSeq.fill(flagSet.size)(6))
   }
 
-  private def cutAlong(pathOfFaces: Seq[Int]): PlanarGraph = {
-    require(pathOfFaces.distinct.size == pathOfFaces.size)
+  private def cutAlong(pathOfEdgesFaces: Seq[EdgeFace]): PlanarGraph = {
+    require(pathOfEdgesFaces.distinct.size == pathOfEdgesFaces.size)
 
-    pathOfFaces match {
-      case Seq(_outerFace) if _outerFace == outerFace => this
-      case initialPath :+ penultimateFace :+ _outerFace if _outerFace == outerFace => {
-        val oneCut = cutEdgeParallelToBoundary(edgeBetweenFaces(penultimateFace, outerFace), penultimateFace)
-        oneCut.cutAlong(initialPath :+ penultimateFace)
+    pathOfEdgesFaces match {
+      case Seq() => this
+      case initialPath :+ ((penultimateEdge, penultimateFace)) => {
+        val oneCut = cutEdgeParallelToBoundary(penultimateEdge, penultimateFace)
+        oneCut.cutAlong(initialPath)
       }
     }
   }
+
+  def outerFaceBoundary = {
+    import net.tqft.toolkit.collections.Rotate._
+    val boundary = faceBoundary(outerFace)
+    boundary.rotateLeft(boundary.indexWhere(p => p._1 == 0 && p._2 == vertexFlags(0)(0)._1)) // rotate the face so we start at the external vertex
+  }
+
   private def cutEdgeParallelToBoundary(edge: Int, internalFace: Int): PlanarGraph = {
     import net.tqft.toolkit.collections.Rotate._
     val boundaryOfInnerFace = {
@@ -190,13 +205,10 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
       require(boundary.exists(_._2 == edge))
       boundary.rotateLeft(boundary.indexWhere(_._2 == edge)) // rotate the face so we start at the given edge
     }
-    val boundaryOfOuterFace = {
-      val boundary = faceBoundary(outerFace)
-      boundary.rotateLeft(boundary.indexWhere(_._1 == 0)) // rotate the face so we start at the external vertex
-    }
     val (initialSegmentOfOuterFace, finalSegmentOfOuterFace) = {
-      val i = boundaryOfOuterFace.indexWhere(_._2 == edge)
-      (boundaryOfOuterFace.take(i).map(_._2), boundaryOfOuterFace.drop(i + 1).map(_._2))
+      val b = outerFaceBoundary
+      val i = b.indexWhere(_._2 == edge)
+      (b.take(i).map(_._2), b.drop(i + 1).map(_._2))
     }
 
     val f = internalFace
@@ -206,7 +218,8 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
     val e1 = edgeSet.max + 1
     val e2 = edgeSet.max + 2
 
-    val updateFlag: ((Int, Int)) => (Int, Int) = {
+    def updateFlag(external: Boolean): ((Int, Int)) => (Int, Int) = {
+      case (ee, ff) if ff == outerFace && initialSegmentOfOuterFace.contains(ee) && finalSegmentOfOuterFace.contains(ee) => (ee, if(external) h else g) // the degenerate case for 1-boundary point diagrams
       case (ee, ff) if ff == outerFace && initialSegmentOfOuterFace.contains(ee) => (ee, h)
       case (ee, ff) if ff == outerFace && finalSegmentOfOuterFace.contains(ee) => (ee, g)
       case (`edge`, `f`) => (e1, f)
@@ -214,38 +227,45 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
       case (ee, ff) => (ee, ff)
     }
 
-    val outerFlag = (e2, f) +: vertexFlags.head.map(updateFlag) :+ (e1, g)
-    val internalFlags = vertexFlags.tail.map(_.map(updateFlag))
+    val outerFlag = (e2, f) +: vertexFlags.head.map(updateFlag(true)) :+ (e1, g)
+    val internalFlags = vertexFlags.tail.map(_.map(updateFlag(false)))
 
     val newVertexFlags = outerFlag +: internalFlags
     PlanarGraph(newVertexFlags, loops)
   }
 
-  private def deleteSubgraph(verticesToDelete: Seq[Int], boundaryEdgesToDelete: Seq[Int]) = {
+  private def deleteSubgraph(verticesToDelete: Seq[Int], boundaryEdgesAndFacesToDelete: Seq[(Int, Int)]) = {
+    require(!verticesToDelete.contains(0))
     require(verticesToDelete.forall(vertices.contains))
-    require(boundaryEdgesToDelete.forall(edgeSet.contains))
     
+    val boundaryEdgesToDelete = boundaryEdgesAndFacesToDelete.map(_._1)
+    
+    require(boundaryEdgesToDelete.forall(edgeSet.contains))
+
     require({
-      val facesThatMustBeOuterFaces = for (v <- verticesToDelete; (e, f) <- vertexFlags(v); if e == boundaryEdgesToDelete.head) yield f
-      facesThatMustBeOuterFaces.size == 1 && facesThatMustBeOuterFaces.head == outerFace
+      boundaryEdgesAndFacesToDelete.head._2 == outerFace
     })
 
-    val facesAroundSubgraph: Seq[Int] = for(b <- boundaryEdgesToDelete; v <- verticesToDelete; (`b`, f) <- vertexFlags(v)) yield f
-    
+    val facesAroundSubgraph: Seq[Int] = boundaryEdgesAndFacesToDelete.map(_._2)
+
     val perimeterEdges = {
-      import net.tqft.toolkit.collections.Rotate._
-      val boundary = faceBoundary(outerFace)
-      boundary.rotateLeft(boundary.indexWhere(_._1 == 0)).map(_._2)
+      outerFaceBoundary.map(_._2)
     }
-    val initialSegmentPerimeter = perimeterEdges.takeWhile(e => !boundaryEdgesToDelete.contains(e))
+    val finalSegmentPerimeter = {
+      import net.tqft.toolkit.collections.TakeToFirst._
+      perimeterEdges.reverse.takeToFirst(e => boundaryEdgesToDelete.contains(e)).toList.reverse
+    }
 
     val newFace = faceSet.max + 1
-    val newExternalFlag = vertexFlags.head ++ boundaryEdgesToDelete.zip(newFace +: facesAroundSubgraph.tail) 
+
+    val updateFlag: ((Int, Int)) => (Int, Int) = {
+      case (e, f) if finalSegmentPerimeter.contains(e) && f == outerFace => (e, newFace)
+      case (e, f) => (e, f)
+    }
+
+    val newExternalFlag = vertexFlags.head.head +: (vertexFlags.head.tail ++ boundaryEdgesToDelete.zip(newFace +: facesAroundSubgraph.tail)).map(updateFlag)
     val newInternalFlags = vertexFlags.zipWithIndex.tail.collect({
-      case (flags, i) if !verticesToDelete.contains(i) => flags.map({
-        case (e, f) if initialSegmentPerimeter.contains(e) && f == outerFace => (e, newFace)
-        case (e, f) => (e, f)
-      })
+      case (flags, i) if !verticesToDelete.contains(i) => flags.map(updateFlag)
     })
     PlanarGraph(newExternalFlag +: newInternalFlags, loops)
   }
@@ -258,26 +278,31 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
     private val packedShape = shape.relabelEdgesAndFaces
 
     case class Excision(cut: PlanarGraph, depth: Int, rotations: Rotation) {
-      require(verify)
+      verify
 
       private def verify = {
         val result = replace(shape)
-        spider.canonicalFormWithDefect(graph)._1 == spider.canonicalFormWithDefect(result)._1
+        val thisCanonicalForm = spider.canonicalFormWithDefect(graph)._1
+        val resultCanonicalForm = spider.canonicalFormWithDefect(result)._1
+        require(thisCanonicalForm == resultCanonicalForm)
+        println(this + " looks good to me!")
       }
 
-      def replace(other: PlanarGraph): PlanarGraph = spider.stitchesAt(spider.rotate(spider.multiply(spider.rotate(cut, depth), other, spider.circumference(shape)), -depth), depth, depth)
+      def replace(other: PlanarGraph): PlanarGraph = spider.stitchesAt(spider.rotate(spider.multiply(other, cut, spider.circumference(shape)), depth), depth, depth)
     }
 
     def excisions: Iterator[Excision] = {
 
       case class PartialMap(map: Array[Int], vertexRotations: Array[Int]) {
         override def clone = PartialMap(map.clone, vertexRotations.clone)
+        
+        import net.tqft.toolkit.arithmetic.Mod._
         lazy val edgeMap = {
           (for (
             (flags, i) <- packedShape.vertexFlags.tail.zipWithIndex;
             ((e, f), j) <- flags.zipWithIndex
           ) yield {
-            e -> graph.vertexFlags(map(i))((j + vertexRotations(i)) % graph.vertexFlags(map(i)).size)._1
+            e -> graph.vertexFlags(map(i))((j + vertexRotations(i)) mod graph.vertexFlags(map(i)).size)._1
           }).toMap
         }
         lazy val faceMap = {
@@ -285,8 +310,16 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
             (flags, i) <- packedShape.vertexFlags.tail.zipWithIndex;
             ((e, f), j) <- flags.zipWithIndex
           ) yield {
-            f -> graph.vertexFlags(map(i))((j + vertexRotations(i)) % graph.vertexFlags(map(i)).size)._2
+            f -> graph.vertexFlags(map(i))((j + vertexRotations(i)) mod graph.vertexFlags(map(i)).size)._2
           }).toMap
+        }
+        def finalVertexRotations = {
+          val newMap = scala.collection.mutable.Map[Int, Int]().withDefault(_ => 0)
+          for ((r, i) <- vertexRotations.zipWithIndex) {
+            val d = packedShape.degree(i + 1)
+            newMap(d) = newMap(d) + r
+          }
+          Rotation(Map() ++ newMap)
         }
       }
 
@@ -294,12 +327,12 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
       def extendPartialExcision(partial: PartialMap): Iterator[Excision] = {
 
         def mapVertex(sourceVertex: Int, targetVertex: Int, rotation: Int, partial: PartialMap): Option[PartialMap] = {
+          require(sourceVertex < shape.numberOfVertices)
+          require(targetVertex < graph.numberOfVertices)
           if (partial.map(sourceVertex - 1) == targetVertex && partial.vertexRotations(sourceVertex - 1) == rotation) {
             // already done this vertex
             Some(partial)
-          } else if (partial.map(sourceVertex - 1) != -1) {
-            None
-          } else if (packedShape.degree(sourceVertex) != graph.degree(targetVertex)) {
+          } else if (targetVertex == 0 || partial.map.contains(targetVertex) || partial.map(sourceVertex - 1) != -1 || packedShape.degree(sourceVertex) != graph.degree(targetVertex)) {
             None
           } else {
             partial.map(sourceVertex - 1) = targetVertex
@@ -310,7 +343,7 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
             val targetNeighbours = graph.edgesAdjacentTo(targetVertex).zip(graph.neighboursOf(targetVertex)).rotateLeft(rotation)
 
             val next = for (((es, s), (et, t)) <- sourceNeighbours.zip(targetNeighbours); if s != 0) yield {
-              val r = packedShape.edgesAdjacentTo(s).indexOf(es) - graph.edgesAdjacentTo(t).indexOf(et)
+              val r = graph.edgesAdjacentTo(t).indexOf(et) - packedShape.edgesAdjacentTo(s).indexOf(es)
               (s, t, r)
             }
 
@@ -325,17 +358,24 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
           val geodesic = graph.geodesicsToOuterFace(partial.faceMap(packedShape.outerFace)).next
           val verticesToDelete = partial.map
           val cut = graph.cutAlong(geodesic)
-          
-          val boundaryEdgesToDelete = for(
-              (flag, i) <- packedShape.vertexFlags.tail.zipWithIndex;
-              ((e, f), j) <- flag.zipWithIndex;
-              if packedShape.boundaryEdges.contains(e)) yield {
-            cut.vertexFlags(partial.map(i))(j)._1
-          }
-             
-          val rest = cut.deleteSubgraph(verticesToDelete, boundaryEdgesToDelete)
 
-          val excision = Excision(rest, geodesic.size - 1, ???)
+          val boundaryEdgesAndFacesToDelete_2 = for (e <- packedShape.boundaryEdges.reverse) yield {
+            val i = packedShape.vertexFlags.tail.indexWhere(_.exists(_._1 == e)) // find the vertex connected to e
+            require(i != -1)
+            val j = packedShape.vertexFlags(i + 1).indexWhere(_._1 == e) // find which edge is e
+            require(j != -1)
+            val flag = cut.vertexFlags(partial.map(i))
+            
+            import net.tqft.toolkit.arithmetic.Mod._
+            
+            (i, j, flag((j + partial.vertexRotations(i)) mod flag.size))    
+          }
+          
+          val boundaryEdgesAndFacesToDelete = boundaryEdgesAndFacesToDelete_2.map(_._3)
+
+          val rest = cut.deleteSubgraph(verticesToDelete, boundaryEdgesAndFacesToDelete)
+
+          val excision = Excision(rest, geodesic.size, partial.finalVertexRotations)
           Iterator(excision)
         } else if (i > numberOfVertices) {
           // this shouldn't happen?
@@ -343,7 +383,7 @@ case class PlanarGraph(vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { g
         } else {
           // pick somewhere to send it to
           for (
-            j <- (1 to graph.numberOfVertices).iterator;
+            j <- (1 until graph.numberOfVertices).iterator;
             if !partial.map.contains(j);
             k <- 0 until packedShape.degree(i);
             newMap <- mapVertex(i, j, k, partial.clone).iterator;
