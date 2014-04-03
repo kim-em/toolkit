@@ -182,8 +182,14 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
         flag._1
       })
     }
-    val withExtraEdge = vertexToEdgeAdjacencies.updated(0, vertexToEdgeAdjacencies(0) :+ outerFace)
+//    val withExtraEdge = vertexToEdgeAdjacencies.updated(0, vertexToEdgeAdjacencies(0) :+ outerFace)
 
+    val breakRotationalSymmetry = if(numberOfBoundaryPoints == 0) {
+      IndexedSeq.empty
+    } else {
+      IndexedSeq(0, vertexFlags(0)(0)._1, vertexFlags(0)(0)._2)
+    }
+    
     val flagSet = for ((flags, v) <- vertexFlags.zipWithIndex; (e, f) <- flags) yield Seq(v, e, f)
     var i = numberOfVertices + edgeSet.size + faceSet.size - 1
     val flagsFore = for ((flags, v) <- vertexFlags.zipWithIndex; ((e, f), j) <- flags.zipWithIndex) yield {
@@ -200,9 +206,9 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       }
     }
 
-    ColouredGraph(numberOfVertices + edgeSet.size + faceSet.size + 3 * flagSet.size,
-      withExtraEdge ++ edgeToFaceAdjacencies ++ IndexedSeq.fill(faceSet.size)(Seq.empty) ++ flagSet ++ flagsFore ++ flagsAft,
-      (0 +: IndexedSeq.fill(numberOfVertices - 1)(1)) ++ IndexedSeq.fill(edgeSet.size)(2) ++ faceSet.map({ case `outerFace` => 3; case _ => 4 }) ++ IndexedSeq.fill(flagSet.size)(5) ++ IndexedSeq.fill(flagSet.size)(6) ++ IndexedSeq.fill(flagSet.size)(7))
+    ColouredGraph(numberOfVertices + edgeSet.size + faceSet.size + 3 * flagSet.size + 1,
+      vertexToEdgeAdjacencies ++ edgeToFaceAdjacencies ++ IndexedSeq.fill(faceSet.size)(Seq.empty) ++ flagSet ++ flagsFore ++ flagsAft :+ breakRotationalSymmetry,
+      (0 +: IndexedSeq.fill(numberOfVertices - 1)(1)) ++ IndexedSeq.fill(edgeSet.size)(2) ++ faceSet.map({ case `outerFace` => 3; case _ => 4 }) ++ IndexedSeq.fill(flagSet.size)(5) ++ IndexedSeq.fill(flagSet.size)(6) ++ IndexedSeq.fill(flagSet.size)(7) :+ 8)
   }
 
   private def cutAlong(pathOfEdgesFaces: Seq[EdgeFace]): PlanarGraph = {
@@ -322,7 +328,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
         val graphCanonicalForm = spider.canonicalFormWithDefect(graph)
         val resultCanonicalForm = spider.canonicalFormWithDefect(result)
         require(graphCanonicalForm._1 == resultCanonicalForm._1)
-        Logging.info(this + " looks good to me!")
+//        Logging.info(this + " looks good to me!")
       }
 
       def replace(other: PlanarGraph): PlanarGraph = spider.stitchesAt(spider.rotate(spider.multiply(other, cut, spider.circumference(shape)), depth), depth, depth)
@@ -374,10 +380,10 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
             // already done this vertex
             Some(partial)
           } else if (targetVertex == 0 || partial.map.contains(targetVertex) || partial.map(sourceVertex - 1) != -1 || packedShape.degree(sourceVertex) != graph.degree(targetVertex)) {
-            Logging.info(s"rejecting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
+//            Logging.info(s"rejecting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
             None
           } else {
-            Logging.info(s"accepting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
+//            Logging.info(s"accepting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
             partial.map(sourceVertex - 1) = targetVertex
             partial.vertexRotations(sourceVertex - 1) = rotation mod packedShape.degree(sourceVertex)
 

@@ -1,10 +1,6 @@
 package net.tqft.toolkit.arithmetic
 
-import scala.language.implicitConversions
-
-
 object MinMax {
-
   implicit class MinMaxOption[A](c: TraversableOnce[A]) {
     def minOption(implicit cmp: Ordering[A]): Option[A] = if(c.isEmpty) {
       None
@@ -17,5 +13,4 @@ object MinMax {
       Some(c.max)
     }
   }
-  
 }

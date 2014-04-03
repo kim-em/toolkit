@@ -96,7 +96,6 @@ object DiagramSpider {
         val vertexRotations = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
 
         def identifyRotation[A](x: Seq[A], y: Seq[A]) = {
-          //          println("identifying rotation for: " + x + " and " + y)
           if (x.isEmpty) {
             0
           } else {
@@ -108,14 +107,14 @@ object DiagramSpider {
         import net.tqft.toolkit.arithmetic.Mod._
 
         val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(0))
-
+        
         for (i <- 1 until graph.numberOfVertices) {
           val k = packed.vertexFlags(i).size
           val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
           vertexRotations(k) = vertexRotations(k) + j mod k
         }
 
-        (result, Rotation(Map() ++ vertexRotations))
+        (rotate(result, -boundaryRotation), Rotation(Map() ++ vertexRotations))
       }
     }
   }

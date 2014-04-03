@@ -26,9 +26,25 @@ abstract class TrivalentSpider[R: Ring] extends PlanarGraphReductionSpider[R] {
   }
 
   private val loopReduction = Reduction(PlanarGraph.loop, Map(PlanarGraph.empty -> d))
+  private val monogonReduction = Reduction(PlanarGraph.polygon(1), Map(PlanarGraph.polygon(1) -> 0))
   private val bigonReduction = Reduction(PlanarGraph.polygon(2), Map(PlanarGraph.strand -> b))
   private val triangleReduction = Reduction(PlanarGraph.polygon(3), Map(PlanarGraph.star(3) -> t))
   override def reductions = Seq(loopReduction, bigonReduction, triangleReduction)
+}
+
+object Trivalent { trivalent =>
+  implicit val ring = {
+    implicitly[Ring[MultivariableRationalFunction[Fraction[Int], String]]]
+  }
+  
+  object TrivalentSpider extends TrivalentSpider[MultivariableRationalFunction[Fraction[Int], String]] {
+    override def d = Map(Map("d" -> 1) -> 1)
+    override def b = Map(Map("b" -> 1) -> 1)
+    override def t = Map(Map("t" -> 1) -> 1)
+    override def omega = 1
+    
+    override def ring = trivalent.ring
+  }
 }
 
 object TwistedCoefficients {

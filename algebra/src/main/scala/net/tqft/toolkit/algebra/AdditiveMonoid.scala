@@ -39,7 +39,7 @@ object AdditiveMonoid extends AdditiveMonoidLowPriorityImplicits {
       for (m <- Seq(m1, m2); (a, b) <- m) {
         newMap(a) = coefficients.add(newMap(a), b)
       }
-      Map() ++ newMap
+      Map() ++ newMap.filter({ case (_, v) => v != coefficients.zero })
     }
 
     override def zero = Map[A, B]()

@@ -12,10 +12,10 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
 
   "empty graphs with different face labels" should "be the same" in {
     def g(i: Int) = PlanarGraph(i, IndexedSeq(IndexedSeq()), 0)
-    
+
     g(0) should be_isomorphic_to(g(1))
   }
-  
+
   "a stitched strand" should "be a loop" in {
     loop should be_isomorphic_to(spider.stitch(strand))
   }
@@ -27,11 +27,11 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
   "a rotated trivalent vertex" should "not be a trivalent vertex" in {
     spider.rotate(star(3), 1) shouldNot be_isomorphic_to(star(3))
   }
-  
+
   "a rotated trivalent vertex" should "be rotationally equivalent to a trivalent vertex" in {
     spider.rotate(star(3), 1) should be_rotationally_equivalent_to(star(3))
   }
-  
+
   "a strand times a strand" should "be a strand" in {
     spider.multiply(strand, strand, 1) should be_isomorphic_to(strand)
   }
@@ -54,8 +54,8 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
   }
 
   "a polygon" should "be rotationally invariant" in {
-    for(k <- 3 to 7) {
-    polygon(k) should be_isomorphic_to(spider.rotate(polygon(k), 1))
+    for (k <- 3 to 7) {
+      polygon(k) should be_isomorphic_to(spider.rotate(polygon(k), 1))
     }
   }
 
@@ -66,10 +66,16 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
       p(k) should be_isomorphic_to(polygon(k))
     }
   }
-  
+
+  "two identical diagrams" should "be isomorphic" in {
+    val d1 = PlanarGraph(9, IndexedSeq(List((6, 9), (8, 12), (4, 10), (5, 9), (7, 13), (3, 11)), List((3, 9), (7, 11), (5, 13)), List((4, 9), (8, 10), (6, 12))), 0)
+    val d2 = PlanarGraph(9, IndexedSeq(List((5, 9), (7, 13), (3, 11), (6, 9), (8, 12), (4, 10)), List((3, 9), (7, 11), (5, 13)), List((4, 9), (8, 10), (6, 12))), 0)
+    d1 should be_isomorphic_to(d2)
+  }
+
   "a monogon" should "have a geodesic from the inner face to the outer face" in {
-    polygon(1).faceBoundary(5) should equal(Seq((1,3)))
-    polygon(1).faceNeighbours(5) should equal(Seq((3,4)))
+    polygon(1).faceBoundary(5) should equal(Seq((1, 3)))
+    polygon(1).faceNeighbours(5) should equal(Seq((3, 4)))
     polygon(1).geodesics(5).size should equal(1)
   }
 }

@@ -6,7 +6,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
   implicit def ring: Rig[A]
 
   protected val implementation = new Rig.RigMap[Map[V, Int], A] {
-    override def keys = ??? // implicitly[AdditiveMonoid[Map[V, Int]]]
+    override def keys = implicitly[AdditiveGroup[Map[V, Int]]]
     override def coefficients = implicitly[ModuleOverRig[A, A]]
     override def multiplicativeCoefficients = implicitly[Rig[A]]
   }
@@ -30,6 +30,12 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
     }
   }
 
+  
+  def highestMonomial(p: MultivariablePolynomial[A, V]) = {
+    import net.tqft.toolkit.arithmetic.MinMax._
+    p.coefficients.keySet.minOption(monomialOrdering)
+  }
+  
   def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]) = substitute_(values, p)
 
   private def substitute_(values: Map[V, MultivariablePolynomial[A, V]], p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
@@ -74,7 +80,7 @@ trait MultivariablePolynomialAlgebra[A, V] extends Ring[MultivariablePolynomial[
   implicit override def ring: Ring[A]
 
   override protected val implementation = new Ring.RingMap[Map[V, Int], A] {
-    override def keys = ??? // implicitly[AdditiveMonoid[Map[V, Int]]]
+    override def keys = implicitly[AdditiveGroup[Map[V, Int]]]
     override def coefficients = implicitly[Module[A, A]]
     override def multiplicativeCoefficients = implicitly[Ring[A]]
   }
@@ -131,6 +137,31 @@ object MultivariablePolynomialAlgebraOverField {
     override val variableOrdering = implicitly[Ordering[V]]
     override val ring = implicitly[Field[A]]
 
-    override def quotientRemainder(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = ???
+    override def quotientRemainder(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = {
+      (highestMonomial(x), highestMonomial(y)) match {
+      case (_, None) => throw new ArithmeticException
+      case (None, Some(dy)) => (zero, zero)
+      case (Some(dx), Some(dy)) => {
+        if (monomialOrdering.compare(dy, dx) > 0) {
+          (zero, x)
+        } else {
+          val ax = x.coefficients(dx)
+          val ay = y.coefficients(dy)
+
+          require(ax != ring.zero)
+          require(ay != ring.zero)
+
+          val q = ring.quotient(ax, ay)
+
+          val quotientLeadingTerm = monomial(implementation.keys.subtract(dx, dy), q)
+          val difference = add(x, negate(multiply(quotientLeadingTerm, y)))
+          val (restOfQuotient, remainder) = quotientRemainder(difference, y)
+
+          (add(quotientLeadingTerm, restOfQuotient), remainder)
+        }
+      }
+    }
+
+    }
   }
 }

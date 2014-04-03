@@ -21,7 +21,7 @@ object ModuleOverRig {
   trait ModuleOverRigMap[A, B, C] extends AdditiveMonoid.AdditiveMonoidMap[B, C] with ModuleOverRig[A, Map[B, C]] {
     override def coefficients: ModuleOverRig[A, C]
 
-    override def scalarMultiply(a: A, m: Map[B, C]) = m.mapValues(c => coefficients.scalarMultiply(a, c))
+    override def scalarMultiply(a: A, m: Map[B, C]) = m.mapValues(c => coefficients.scalarMultiply(a, c)).filter({ case (_, v) => v != coefficients.zero })
   }
 
   implicit def moduleOverRigMap[A, B, C](implicit module: ModuleOverRig[A, C]): ModuleOverRig[A, Map[B, C]] = new ModuleOverRigMap[A, B, C] {
