@@ -34,6 +34,8 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     for (f <- faceSet; (v, e) <- faceBoundary(f)) {
       require(edgeFaceIncidences(e)._1 == f || edgeFaceIncidences(e)._2 == f)
     }
+    
+    require(vertexFlags.head.distinct.size == vertexFlags.head.size)
   }
 
   def numberOfBoundaryPoints = vertexFlags(0).size
@@ -275,12 +277,9 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
     val facesAroundSubgraph: Seq[Int] = boundaryEdgesAndFacesToDelete.map(_._2)
 
-    val perimeterEdges = {
-      outerFaceBoundary.map(_._2)
-    }
     val finalSegmentPerimeter = {
       import net.tqft.toolkit.collections.TakeToFirst._
-      perimeterEdges.reverse.takeToFirst(e => boundaryEdgesToDelete.contains(e)).toList.reverse
+      outerFaceBoundary.reverse.takeToFirst(p => boundaryEdgesToDelete.contains(p._2)).toList.reverse
     }
 
     val newFace = if (numberOfBoundaryPoints == 0) {
@@ -289,21 +288,21 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       faceSet.max + 1
     }
 
-    val updateFlag: ((Int, Int)) => (Int, Int) = {
-      case (e, f) if finalSegmentPerimeter.contains(e) && f == outerFace => (e, newFace)
+    def updateFlag(i: Int, force: Boolean): ((Int, Int)) => (Int, Int) = {
+      case (e, f) if (finalSegmentPerimeter.contains((i, e)) || (force && finalSegmentPerimeter.exists(_._2 == e))) && f == outerFace => (e, newFace)
       case (e, f) => (e, f)
     }
 
     val newExternalFlag = {
-      val newBoundaryEdges = boundaryEdgesToDelete.zip(newFace +: facesAroundSubgraph.tail).map(updateFlag)
+      val newBoundaryEdges = boundaryEdgesToDelete.zip(newFace +: facesAroundSubgraph.tail).map(updateFlag(0, true))
       if (numberOfBoundaryPoints == 0) {
         newBoundaryEdges
       } else {
-        (vertexFlags.head.head +: vertexFlags.head.tail.map(updateFlag)) ++ newBoundaryEdges
+        (vertexFlags.head.head +: vertexFlags.head.tail.map(updateFlag(0, false))) ++ newBoundaryEdges
       }
     }
     val newInternalFlags = vertexFlags.zipWithIndex.tail.collect({
-      case (flags, i) if !verticesToDelete.contains(i) => flags.map(updateFlag)
+      case (flags, i) if !verticesToDelete.contains(i) => flags.map(updateFlag(i, false))
     })
     PlanarGraph(if (numberOfBoundaryPoints == 0) newFace else outerFace, newExternalFlag +: newInternalFlags, loops)
   }
@@ -387,7 +386,11 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
             val targetNeighbours = graph.edgesAdjacentTo(targetVertex).zip(graph.neighboursOf(targetVertex)).rotateLeft(rotation)
 
             val next = for (((es, s), (et, t)) <- sourceNeighbours.zip(targetNeighbours); if s != 0) yield {
-              val r = graph.edgesAdjacentTo(t).indexOf(et) - packedShape.edgesAdjacentTo(s).indexOf(es)
+              val r = if (s == sourceVertex) {
+                rotation
+              } else {
+                graph.edgesAdjacentTo(t).indexOf(et) - packedShape.edgesAdjacentTo(s).indexOf(es)
+              }
               (s, t, r)
             }
 

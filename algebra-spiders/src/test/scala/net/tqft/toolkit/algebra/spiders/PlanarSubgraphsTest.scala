@@ -38,6 +38,12 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
       q.Subgraphs(q).excisions.size should equal(k)
     }
   }
+  "some diagrams with monogons" should "contain monogons" in {
+    val d1 = PlanarGraph(11,IndexedSeq(List((3,11), (6,10), (5,10), (4,8)), List((6,10), (7,10), (7,9)), List((3,10), (4,11), (5,8))),0)
+    d1.Subgraphs(polygon(1)).excisions.size should equal(1)
+    val d2 = PlanarGraph(8,IndexedSeq(List((3,8), (5,10), (4,9), (3,10)), List((4,10), (7,9), (5,9)), List((6,9), (6,11), (7,9))),0)
+    d2.Subgraphs(polygon(1)).excisions.size should equal(1)
+  }
   "a theta" should "contain ..." in {
     theta.Subgraphs(star(3)).excisions.size should equal(6)
     theta.Subgraphs(I).excisions.size should equal(6)
@@ -49,7 +55,7 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
     tetrahedron.Subgraphs(polygon(3)).excisions.size should equal(9)
   }
 
-  "a dodecahedron" should "contain 60 pentagons" in {
+  "a dodecahedron" should "contain 55 pentagons" in {
     dodecahedron.Subgraphs(polygon(5)).excisions.size should equal(55)
   }
 }

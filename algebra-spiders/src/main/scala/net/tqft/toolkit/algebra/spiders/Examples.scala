@@ -6,7 +6,11 @@ import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
 import net.tqft.toolkit.algebra.Fraction
-
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial._
+import net.tqft.toolkit.algebra.numberfields.NumberField
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebraOverField
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
+import net.tqft.toolkit.algebra.EuclideanRing
 
 abstract class TrivalentSpider[R: Ring] extends PlanarGraphReductionSpider[R] {
   def d: R
@@ -25,6 +29,21 @@ abstract class TrivalentSpider[R: Ring] extends PlanarGraphReductionSpider[R] {
   private val bigonReduction = Reduction(PlanarGraph.polygon(2), Map(PlanarGraph.strand -> b))
   private val triangleReduction = Reduction(PlanarGraph.polygon(3), Map(PlanarGraph.star(3) -> t))
   override def reductions = Seq(loopReduction, bigonReduction, triangleReduction)
+}
+
+object TwistedCoefficients {
+  implicit val numberField: Field[Polynomial[Fraction[Int]]] = NumberField.cyclotomic[Fraction[Int]](3)
+  implicit val polynomialRing = {
+    def polynomials = MultivariablePolynomialAlgebraOverField.over[Polynomial[Fraction[Int]], String]
+  }
+  implicit val ring = {
+    implicitly[Ring[MultivariableRationalFunction[Polynomial[Fraction[Int]], String]]]
+  }
+
+  abstract class TwistedTrivalentSpider extends TrivalentSpider[MultivariableRationalFunction[Polynomial[Fraction[Int]], String]] {
+    override def t = ring.zero
+    override def omega = MultivariablePolynomial.constant[Polynomial[Fraction[Int]], String](Polynomial[Fraction[Int]](Map(1 -> Fraction.whole(1))))
+  }
 }
 
 abstract class CubicSpider[R: Ring] extends TrivalentSpider[R] {
@@ -67,8 +86,6 @@ object QuantumExceptionalVariable {
     case `w` => 2
   })
 }
-
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial._
 
 object QuantumExceptional extends TrivalentSpider[MultivariableRationalFunction[Fraction[Int], QuantumExceptionalVariable]] {
   override val ring = implicitly[Field[MultivariableRationalFunction[Fraction[Int], QuantumExceptionalVariable]]]
