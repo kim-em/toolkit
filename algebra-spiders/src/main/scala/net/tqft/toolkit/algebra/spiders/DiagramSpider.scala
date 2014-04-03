@@ -16,7 +16,15 @@ object DiagramSpider {
       override def circumference(graph: PlanarGraph) = graph.numberOfBoundaryPoints
       override def rotate(graph: PlanarGraph, k: Int) = {
         import net.tqft.toolkit.collections.Rotate._
-        PlanarGraph(graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)), graph.loops)
+        val newOuterFace = {
+          if (k == 0 || graph.numberOfBoundaryPoints == 0) {
+            graph.outerFace
+          } else {
+            import net.tqft.toolkit.arithmetic.Mod._
+            graph.vertexFlags(0)(k mod graph.numberOfBoundaryPoints)._2
+          }
+        }
+        PlanarGraph(newOuterFace, graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)), graph.loops)
       }
       override def tensor(graph1: PlanarGraph, graph2: PlanarGraph) = {
         def flags = {
@@ -31,7 +39,7 @@ object DiagramSpider {
           }
           (externalFlag +: graph1.vertexFlags.tail) ++ graph2.vertexFlags.tail.map(_.map(relabelFlag))
         }
-        PlanarGraph(flags, graph1.loops + graph2.loops)
+        PlanarGraph(graph1.outerFace, flags, graph1.loops + graph2.loops)
       }
       override def stitch(graph: PlanarGraph) = {
         require(graph.numberOfBoundaryPoints >= 2)
@@ -48,7 +56,7 @@ object DiagramSpider {
         val e1 = graph.vertexFlags(0).secondLast._1
 
         if (e0 == e1) {
-          PlanarGraph(graph.vertexFlags.head.dropRight(2) +: graph.vertexFlags.tail, graph.loops + 1)
+          PlanarGraph(graph.outerFace, graph.vertexFlags.head.dropRight(2) +: graph.vertexFlags.tail, graph.loops + 1)
         } else {
           val emin = if (e0 < e1) e0 else e1
 
@@ -57,7 +65,7 @@ object DiagramSpider {
             case (e, f) => (e, relabelFace(f))
           }))
 
-          PlanarGraph(flags, graph.loops)
+          PlanarGraph(graph.outerFace, flags, graph.loops)
         }
       }
 
@@ -65,19 +73,26 @@ object DiagramSpider {
         val packed = graph.relabelEdgesAndFaces
         val nautyGraph = packed.nautyGraph
         val labelling = Dreadnaut.canonicalLabelling(nautyGraph)
-        
+
         require(labelling(0) == 0)
-        
+
         import net.tqft.toolkit.permutations.Permutations._
         import net.tqft.toolkit.collections.Rotate._
         import Ordering.Implicits._
         val inv = labelling.inverse
-        val result = PlanarGraph(labelling.take(packed.numberOfVertices).permute(packed.vertexFlags.map(_.map(p => (inv(p._1), inv(p._2))).leastRotation)), graph.loops)
+
+        val resultFlags = labelling.take(packed.numberOfVertices).permute(packed.vertexFlags.map(_.map(p => (inv(p._1), inv(p._2))).leastRotation))
+        val newOuterFace = if (graph.numberOfBoundaryPoints == 0) {
+          inv(packed.outerFace)
+        } else {
+          resultFlags(0)(0)._2
+        }
+        val result = PlanarGraph(newOuterFace, resultFlags, graph.loops)
 
         val vertexRotations = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
 
         def identifyRotation[A](x: Seq[A], y: Seq[A]) = {
-//          println("identifying rotation for: " + x + " and " + y)
+          //          println("identifying rotation for: " + x + " and " + y)
           if (x.isEmpty) {
             0
           } else {

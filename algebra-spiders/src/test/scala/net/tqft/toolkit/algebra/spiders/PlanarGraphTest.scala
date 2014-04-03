@@ -6,10 +6,16 @@ import org.scalatest._
 
 @RunWith(classOf[JUnitRunner])
 class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
-  val spider = implicitly[Spider[PlanarGraph]]
+  val spider = implicitly[DiagramSpider[PlanarGraph]]
 
   import PlanarGraph._
 
+  "empty graphs with different face labels" should "be the same" in {
+    def g(i: Int) = PlanarGraph(i, IndexedSeq(IndexedSeq()), 0)
+    
+    g(0) should be_isomorphic_to(g(1))
+  }
+  
   "a stitched strand" should "be a loop" in {
     loop should be_isomorphic_to(spider.stitch(strand))
   }
@@ -63,8 +69,8 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
   
   "a monogon" should "have a geodesic from the inner face to the outer face" in {
     polygon(1).faceBoundary(5) should equal(Seq((1,3)))
-    polygon(1).faceNeighbours(5) should equal(Seq(4))
-    polygon(1).geodesicsToOuterFace(5).size should equal(1)
+    polygon(1).faceNeighbours(5) should equal(Seq((3,4)))
+    polygon(1).geodesics(5).size should equal(1)
   }
 }
 
