@@ -12,6 +12,7 @@ trait LinearSpider[R, M] extends Spider[M] with CanonicalLabelling[M] with Modul
     ring.product(rotations.vertexRotations.map({ case (v, p) => ring.power(eigenvalue(v), p) }))
   }
   def ring: Ring[R]
+  override def innerProduct(a: M, b: M) = canonicalForm(super.innerProduct(a, b))
 }
 
 object LinearSpider {

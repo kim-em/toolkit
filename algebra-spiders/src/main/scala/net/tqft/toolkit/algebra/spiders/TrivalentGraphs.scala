@@ -16,7 +16,7 @@ object TrivalentGraphs {
     def addHs(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints) yield spider.rotate(spider.multiply(spider.rotate(graph, j), PlanarGraph.H, 2), -j)
     def addForks(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints + 1) yield spider.rotate(spider.multiply(spider.rotate(graph, Seq(graph.numberOfBoundaryPoints - 1, j).max), spider.rotate(PlanarGraph.star(3), -2), 1), -j)
     def addCups(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints + 2) yield spider.rotate(spider.tensor(spider.rotate(graph, Seq(graph.numberOfBoundaryPoints - 1, j).max), PlanarGraph.strand), -j)
-    def addCaps(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints) yield spider.rotate(spider.multiply(spider.rotate(graph, j), PlanarGraph.strand, 2), -Seq(graph.numberOfBoundaryPoints - 2, j).max)
+//    def addCaps(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints) yield spider.rotate(spider.multiply(spider.rotate(graph, j), PlanarGraph.strand, 2), -Seq(graph.numberOfBoundaryPoints - 2, j).max)
 
     if (n < 0 || k < 0 || n > g) {
       Seq.empty

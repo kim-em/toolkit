@@ -4,49 +4,8 @@ import net.tqft.toolkit.algebra._
 
 import scala.language.implicitConversions
 
-//trait MultivariablePolynomial[A, V] extends MapLinearCombo[A, Map[V, Int]] {
-//  def totalDegree = {
-//    import net.tqft.toolkit.arithmetic.MinMax._
-//    toMap.keys.map(_.values.sum).maxOption
-//  }
-//  def termsOfDegree(k: Int) = toMap.filterKeys(_.values.sum == k)
-//  def constantTerm(implicit ring: Rig[A]) = toMap.getOrElse(Map.empty, ring.zero)
-//
-//  def nonZero = toMap.nonEmpty
-//  lazy val variables = toMap.keySet.flatMap(_.keySet)
-//
-//  def divideByCoefficientGCD(implicit euclideanDomain: EuclideanRing[A], ordering: Ordering[V]) = {
-//    val gcd = euclideanDomain.gcd(toMap.values.toSeq: _*)
-//    if (gcd == euclideanDomain.one) {
-//      this
-//    } else {
-//      MultivariablePolynomial(toMap.mapValues(v => euclideanDomain.quotient(v, gcd)))
-//    }
-//  }
-//
-//  override lazy val toString = {
-//    if (toMap.isEmpty) {
-//      "0"
-//    } else {
-//      toSeq.map({
-//        case (m, a) => {
-//          val showCoefficient = m.isEmpty || a.toString != "1"
-//          val showMonomial = m.nonEmpty
-//          (if (showCoefficient) a.toString else "") + (if (showCoefficient && showMonomial) " * " else "") + (if (showMonomial) { m.map({ case (v, k) => v + (if (k > 1) "^" + k else "") }).mkString(" * ") } else "")
-//        }
-//      }).mkString(" + ")
-//    }
-//  }
-//  override def equals(other: Any) = {
-//    other match {
-//      case other: MultivariablePolynomial[_, _] => hashCode == other.hashCode && super.equals(other)
-//      case _ => false
-//    }
-//  }
-//  override lazy val hashCode: Int = super.hashCode
-//}
-//
 case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
+  require(coefficients.valuesIterator.forall(_.toString != "0"))
   override lazy val toString = {
     if (coefficients.isEmpty) {
       "0"
@@ -67,6 +26,11 @@ object MultivariablePolynomial {
 
   implicit def lift[A, V](coefficients: Map[Map[V, Int], A]) = MultivariablePolynomial[A, V](coefficients)
 
+  implicit def constantRationalFunction[A: Field, V: Ordering](a: A): MultivariableRationalFunction[A, V] = MultivariablePolynomial[A, V](Map(Map.empty -> a))
+  implicit def constantToFractionRationalFuncation[A: EuclideanRing, V: Ordering](a: A): MultivariableRationalFunction[Fraction[A], V] = constantRationalFunction(a)
+  implicit def liftToRationalFunction[A: Field, V: Ordering](coefficients: Map[Map[V, Int], A]): MultivariableRationalFunction[A, V] = lift(coefficients)
+  implicit def liftCoefficientsToFractions[A: EuclideanRing, V: Ordering](coefficients: Map[Map[V, Int], A]): MultivariableRationalFunction[Fraction[A], V] = liftToRationalFunction(coefficients.mapValues(a => (a: Fraction[A])))
+  
   implicit class RichMultivariablePolynomial[A, V](m: MultivariablePolynomial[A, V]) {
     def variables = m.coefficients.keySet.flatMap(_.keySet)
     def constantTerm(implicit ring: Ring[A]): A = m.coefficients.get(Map.empty).getOrElse(implicitly[Ring[A]].zero)
