@@ -27,19 +27,23 @@ object DiagramSpider {
         PlanarGraph(newOuterFace, graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)), graph.loops)
       }
       override def tensor(graph1: PlanarGraph, graph2: PlanarGraph) = {
-        def flags = {
-          val ne = graph1.maxEdgeLabel
-          val nf = graph1.maxFaceLabel
-          def relabelFlag: ((Int, Int)) => (Int, Int) = {
-            case (e, f) if f == graph2.outerFace => (e + 1 + ne, graph1.outerFace)
-            case (e, f) => (e + 1 + ne, f + 1 + nf)
+        if (graph1.numberOfEdges == 0) {
+          graph2
+        } else {
+          def flags = {
+            val ne = graph1.maxEdgeLabel
+            val nf = graph1.maxFaceLabel
+            def relabelFlag: ((Int, Int)) => (Int, Int) = {
+              case (e, f) if f == graph2.outerFace => (e + 1 + ne, graph1.outerFace)
+              case (e, f) => (e + 1 + ne, f + 1 + nf)
+            }
+            val externalFlag = {
+              graph2.vertexFlags.head.map(relabelFlag) ++ graph1.vertexFlags.head
+            }
+            (externalFlag +: graph1.vertexFlags.tail) ++ graph2.vertexFlags.tail.map(_.map(relabelFlag))
           }
-          val externalFlag = {
-            graph2.vertexFlags.head.map(relabelFlag) ++ graph1.vertexFlags.head
-          }
-          (externalFlag +: graph1.vertexFlags.tail) ++ graph2.vertexFlags.tail.map(_.map(relabelFlag))
+          PlanarGraph(graph1.outerFace, flags, graph1.loops + graph2.loops)
         }
-        PlanarGraph(graph1.outerFace, flags, graph1.loops + graph2.loops)
       }
       override def stitch(graph: PlanarGraph) = {
         require(graph.numberOfBoundaryPoints >= 2)
