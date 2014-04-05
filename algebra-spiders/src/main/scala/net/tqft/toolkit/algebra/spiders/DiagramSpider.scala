@@ -13,6 +13,7 @@ trait DiagramSpider[A] extends Spider[A] with CanonicalLabellingWithDefect[A, Ro
 object DiagramSpider {
   implicit def graphSpider: DiagramSpider[PlanarGraph] = {
     new DiagramSpider[PlanarGraph] {
+      override def empty = PlanarGraph.empty
       override def circumference(graph: PlanarGraph) = graph.numberOfBoundaryPoints
       override def rotate(graph: PlanarGraph, k: Int) = {
         import net.tqft.toolkit.collections.Rotate._
@@ -28,7 +29,11 @@ object DiagramSpider {
       }
       override def tensor(graph1: PlanarGraph, graph2: PlanarGraph) = {
         if (graph1.numberOfEdges == 0) {
-          graph2
+          if (graph1.loops == 0) {
+            graph2
+          } else {
+            graph2.copy(loops = graph1.loops + graph2.loops)
+          }
         } else {
           def flags = {
             val ne = graph1.maxEdgeLabel
@@ -107,7 +112,7 @@ object DiagramSpider {
         import net.tqft.toolkit.arithmetic.Mod._
 
         val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(0))
-        
+
         for (i <- 1 until graph.numberOfVertices) {
           val k = packed.vertexFlags(i).size
           val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))

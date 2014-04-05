@@ -30,12 +30,11 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
     }
   }
 
-  
   def highestMonomial(p: MultivariablePolynomial[A, V]) = {
     import net.tqft.toolkit.arithmetic.MinMax._
     p.coefficients.keySet.minOption(monomialOrdering)
   }
-  
+
   def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]) = substitute_(values, p)
 
   private def substitute_(values: Map[V, MultivariablePolynomial[A, V]], p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
@@ -91,7 +90,7 @@ object MultivariablePolynomialAlgebraOverRig {
   trait LexicographicOrdering[A, V] { self: MultivariablePolynomialAlgebraOverRig[A, V] =>
     implicit def variableOrdering: Ordering[V]
 
-    override val monomialOrdering = {
+    override lazy val monomialOrdering = {
       import net.tqft.toolkit.orderings.LexicographicOrdering._
       implicitly[Ordering[Map[V, Int]]]
     }
@@ -130,15 +129,10 @@ object MultivariablePolynomialAlgebraOverEuclideanRing {
   }
 }
 
-trait MultivariablePolynomialAlgebraOverField[A, V] extends MultivariablePolynomialAlgebra[A, V] with EuclideanRing[MultivariablePolynomial[A, V]]
-
-object MultivariablePolynomialAlgebraOverField {
-  implicit def over[A: Field, V: Ordering]: MultivariablePolynomialAlgebraOverField[A, V] = new MultivariablePolynomialAlgebraOverField[A, V] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
-    override val variableOrdering = implicitly[Ordering[V]]
-    override val ring = implicitly[Field[A]]
-
-    override def quotientRemainder(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = {
-      (highestMonomial(x), highestMonomial(y)) match {
+trait MultivariablePolynomialAlgebraOverField[A, V] extends MultivariablePolynomialAlgebra[A, V] with EuclideanRing[MultivariablePolynomial[A, V]] {
+  override def ring: Field[A]
+  override def quotientRemainder(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = {
+    (highestMonomial(x), highestMonomial(y)) match {
       case (_, None) => throw new ArithmeticException
       case (None, Some(dy)) => (zero, zero)
       case (Some(dx), Some(dy)) => {
@@ -162,6 +156,25 @@ object MultivariablePolynomialAlgebraOverField {
       }
     }
 
+  }
+}
+
+object MultivariablePolynomialAlgebraOverField {
+  implicit def over[A: Field, V: Ordering]: MultivariablePolynomialAlgebraOverField[A, V] = new MultivariablePolynomialAlgebraOverField[A, V] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
+    override val variableOrdering = implicitly[Ordering[V]]
+    override val ring = implicitly[Field[A]]
+  }
+}
+
+trait MultivariablePolynomialAlgebraOverOrderedField[A, V] extends MultivariablePolynomialAlgebraOverField[A, V] with OrderedEuclideanRing[MultivariablePolynomial[A, V]]
+
+object MultivariablePolynomialAlgebraOverOrderedField {
+  implicit def over[A: OrderedField, V: Ordering]: MultivariablePolynomialAlgebraOverOrderedField[A, V] = new MultivariablePolynomialAlgebraOverOrderedField[A, V] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
+    override val variableOrdering = implicitly[Ordering[V]]
+    override val ring = implicitly[OrderedField[A]]
+    override def compare(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): Int = {
+      import net.tqft.toolkit.orderings.LexicographicOrdering._
+      implicitly[Ordering[Map[Map[V, Int], A]]].compare(x.coefficients, y.coefficients)
     }
   }
 }

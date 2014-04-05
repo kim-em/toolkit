@@ -6,7 +6,7 @@ sealed trait Fraction[@specialized(Int, Long) A] extends Serializable {
   def denominator: A
   def numerator: A
 
-  override def toString = numerator.toString + " / " + denominator.toString
+  override def toString = s"Fraction($numerator, $denominator)"
   override def equals(other: Any) = {
     other match {
       case other: Fraction[_] => numerator == other.numerator && denominator == other.denominator
@@ -34,7 +34,6 @@ object Fraction {
   }
 
   private case class FractionWhole[A: Ring](numerator: A) extends Fraction[A] {
-    override def toString = numerator.toString
     override def denominator = implicitly[Ring[A]].one
   }
   private case class FractionRatio[A](numerator: A, denominator: A) extends Fraction[A]
