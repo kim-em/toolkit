@@ -58,5 +58,10 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
   "a dodecahedron" should "contain 55 pentagons" in {
     dodecahedron.Subgraphs(polygon(5)).excisions.size should equal(55)
   }
+  
+  "a theta inside another theta" should "only contain 6 bigons" in {
+    val q = PlanarGraph(9,IndexedSeq(List(), List((4,13), (8,10), (6,9)), List((3,13), (7,11), (5,12)), List((5,13), (7,12), (3,11)), List((6,13), (8,9), (4,10))),0)
+    q.Subgraphs(polygon(2)).excisions.size should equal(6)
+  }
 }
 

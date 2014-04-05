@@ -13,11 +13,11 @@ abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.Pl
   def innerProductMatrix(diagrams1: IndexedSeq[PlanarGraph], diagrams2: IndexedSeq[PlanarGraph]): IndexedSeq[IndexedSeq[R]] = {
     def ring = implicitly[Ring[R]]
 
-    for (x <- diagrams1) yield {
-      for (y <- diagrams2) yield {
+    (for (x <- diagrams1) yield {
+      (for (y <- diagrams2) yield {
         evaluatedInnerProduct(Map(x -> ring.one), Map(y -> ring.one))
-      }
-    }
+      }).toIndexedSeq
+    }).toIndexedSeq
   }
   def innerProductMatrix(diagrams: IndexedSeq[PlanarGraph]): IndexedSeq[IndexedSeq[R]] = innerProductMatrix(diagrams, diagrams)
 
