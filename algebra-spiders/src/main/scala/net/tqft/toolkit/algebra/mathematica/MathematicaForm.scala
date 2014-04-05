@@ -84,7 +84,7 @@ object MathematicaForm {
           case (m, a) => {
             val showCoefficient = m.isEmpty || a.toMathemathicaInputString != "1"
             val showMonomial = m.nonEmpty
-            (if (showCoefficient) a.toMathemathicaInputString else "") + (if (showCoefficient && showMonomial) " * " else "") + (if (showMonomial) { m.map({ case (v, k) => v.toMathemathicaInputString + (if (k > 1) "^" + k else "") }).mkString(" * ") } else "")
+            (if (showCoefficient) "(" + a.toMathemathicaInputString + ")" else "") + (if (showCoefficient && showMonomial) " * " else "") + (if (showMonomial) { m.map({ case (v, k) => v.toMathemathicaInputString + (if (k > 1) "^" + k else "") }).mkString(" * ") } else "")
           }
         }).mkString(" + ")
       }

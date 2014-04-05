@@ -25,6 +25,7 @@ class NumberFieldTest extends FlatSpec with Matchers {
     cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 1), 0) should equal(cyclotomicNumbers.zero)
     cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 0), 1) should not equal(cyclotomicNumbers.zero)
     cyclotomicNumbers.add(cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 0), 1), cyclotomicNumbers.multiplyByInt(cyclotomicNumbers.power(zeta, 1), 0))  should not equal(cyclotomicNumbers.zero)
+    cyclotomicNumbers.power(zeta, 6) should equal(cyclotomicNumbers.one)
   }
   
 }

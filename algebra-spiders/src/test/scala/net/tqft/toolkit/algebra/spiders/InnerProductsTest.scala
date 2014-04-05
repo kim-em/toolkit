@@ -9,23 +9,33 @@ import net.tqft.toolkit.algebra.matrices2.Matrix
 
 @RunWith(classOf[JUnitRunner])
 class InnerProductsTest extends FlatSpec with Matchers with IsomorphismMatchers {
-  val spider = Trivalent.TrivalentSpider
 
   val `D(4,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(4, 0)
-  val `M(4,0)` = spider.innerProductMatrix(`D(4,0)`.toIndexedSeq)
-  
-//  import net.tqft.toolkit.algebra.matrices2.GaussianElimination._
-//  val `Delta(4,0)` = `M(4,0)`.determinant
-  
+
   "inner products of D(4,0)" should "be correct" in {
+    val spider = Trivalent.TrivalentSpider
+    val `M(4,0)` = spider.innerProductMatrix(`D(4,0)`.toIndexedSeq)
 
     val d = "d"
     val b = "b"
     val t = "t"
-    val result: List[List[Fraction[MultivariablePolynomial[Fraction[Int], String]]]] = List(List(Fraction(MultivariablePolynomial(Map(Map(d -> 2) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map(Map(d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1))))), List(Fraction(MultivariablePolynomial(Map(Map(d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map(Map(d -> 2) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map() -> Fraction(1, 1))))), List(Fraction(MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1))))), List(Fraction(MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), Fraction(MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1))))))
+    val result: List[List[MultivariablePolynomial[Fraction[Int], String]]] = List(List(MultivariablePolynomial(Map(Map(d -> 2) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1)))), List(MultivariablePolynomial(Map(Map(d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(d -> 2) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map())), List(MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> Fraction(1, 1)))), List(MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> Fraction(1, 1)))))
 
     `M(4,0)` should equal(result)
   }
 
+  "twisted inner products of D(4,0)" should "be correct" in {
+    val diagramSpider = implicitly[DiagramSpider[PlanarGraph]]
+    val spider = TwistedTrivalent.TwistedTrivalentSpider
+    import TwistedTrivalent.polynomialRing
+    val x = diagramSpider.innerProduct(
+      PlanarGraph.H,
+      diagramSpider.tensor(PlanarGraph.strand, PlanarGraph.strand))
+    println(x)
+    val subgraphs = x.Subgraphs(PlanarGraph.polygon(2))
+    for(s <- subgraphs.excisions) println(s)
+    val xc = spider.canonicalForm(Map(x -> polynomialRing.one))
+    println(xc)
+  }
 }
 

@@ -8,9 +8,9 @@ import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
 import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial._
 import net.tqft.toolkit.algebra.numberfields.NumberField
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebraOverField
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.algebra.EuclideanRing
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebraOverEuclideanRing
 
 abstract class TrivalentSpider[R: Ring] extends PlanarGraphReductionSpider[R] {
   def d: R
@@ -32,38 +32,42 @@ abstract class TrivalentSpider[R: Ring] extends PlanarGraphReductionSpider[R] {
   override def reductions = Seq(loopReduction, monogonReduction, bigonReduction, triangleReduction)
 }
 
+trait PolynomialTrivalentSpider[A] extends TrivalentSpider[MultivariablePolynomial[A, String]] {
+  def coefficientRing: Ring[A]
+  override def d = Map(Map("d" -> 1) -> coefficientRing.one)
+  override def b = Map(Map("b" -> 1) -> coefficientRing.one)
+  override def t = Map(Map("t" -> 1) -> coefficientRing.one)
+}
+
+trait RationalPolynomialTrivalentSpider extends PolynomialTrivalentSpider[Fraction[Int]] {
+  override def coefficientRing = implicitly[Ring[Fraction[Int]]]
+}
+
 object Trivalent { trivalent =>
-  type R = MultivariableRationalFunction[Fraction[Int], String]
+  type R = MultivariablePolynomial[Fraction[Int], String]
 
   implicit val ring = {
     implicitly[Ring[R]]
   }
 
-  object TrivalentSpider extends TrivalentSpider[R] {
-    override def d = Map(Map("d" -> 1) -> 1)
-    override def b = Map(Map("b" -> 1) -> 1)
-    override def t = Map(Map("t" -> 1) -> 1)
+  object TrivalentSpider extends TrivalentSpider[R] with RationalPolynomialTrivalentSpider {
     override def omega = 1
-
     override def ring = trivalent.ring
   }
 }
 
 object TwistedTrivalent {
   implicit val numberField: Field[Polynomial[Fraction[Int]]] = NumberField.cyclotomic[Fraction[Int]](3)
-  implicit val polynomialRing = {
-    def polynomials = MultivariablePolynomialAlgebraOverField.over[Polynomial[Fraction[Int]], String]
-  }
-  type R = MultivariableRationalFunction[Polynomial[Fraction[Int]], String]
+  implicit val polynomialRing = MultivariablePolynomialAlgebraOverEuclideanRing.over[Polynomial[Fraction[Int]], String]
+  type R = MultivariablePolynomial[Polynomial[Fraction[Int]], String]
   implicit val ring = {
     implicitly[Ring[R]]
   }
 
   object TwistedTrivalentSpider extends TrivalentSpider[R] {
     override def t = ring.zero
-    // TODO feel like working on implicit conversions? This shouldn't be so hard.
-    override def d = Fraction.whole(MultivariablePolynomial(Map(Map("d" -> 1) -> Polynomial(0 -> Fraction.whole(1)))))
-    override def b = Fraction.whole(MultivariablePolynomial(Map(Map("b" -> 1) -> Polynomial(0 -> Fraction.whole(1)))))
+    override def d = MultivariablePolynomial(Map(Map("d" -> 1) -> 1))
+    override def b = MultivariablePolynomial(Map(Map("b" -> 1) -> 1))
     override def omega = MultivariablePolynomial.constant[Polynomial[Fraction[Int]], String](Polynomial[Fraction[Int]](Map(1 -> Fraction.whole(1))))
 
     override def ring = TwistedTrivalent.ring
@@ -71,10 +75,36 @@ object TwistedTrivalent {
 }
 
 abstract class CubicSpider[R: Ring] extends TrivalentSpider[R] {
-  override val omega = ring.one
+  def alpha: R
+  def beta: R
 
-  private val squareReduction = ???
+  private val squareReduction = Reduction(PlanarGraph.polygon(4),
+    Map(
+      PlanarGraph.two_strands_horizontal -> alpha,
+      PlanarGraph.two_strands_vertical -> alpha,
+      PlanarGraph.I -> beta,
+      PlanarGraph.H -> beta))
   override def reductions = super.reductions :+ squareReduction
+}
+
+object Cubic {
+  type R = MultivariablePolynomial[Fraction[Int], String]
+
+  implicit val ring = {
+    implicitly[Ring[R]]
+  }
+
+  object CubicSpider extends CubicSpider[R] with RationalPolynomialTrivalentSpider {
+    override val omega = ring.one
+
+    val z: MultivariablePolynomial[Fraction[Int], String] = Map(Map("z" -> 1) -> 1) // MultivariablePolynomial(Map(Map("b" -> 1, "d" -> 1) -> 1, Map("d" -> 1, "t" -> 1) -> 1, Map("t" -> 1) -> 1)) // b d + t + d t
+
+    override def alpha = ring.multiply(z, Map(Map("b" -> 3) -> 1, Map("b" -> 2, "t" -> 1) -> 1, Map("b" -> 1, "t" -> 2) -> -1)) // b^3 + b^2 t - b t^2
+    override def beta = ring.multiply(z, Map(Map("b" -> 2) -> -1, Map("t" -> 2) -> 1, Map("d" -> 1, "t" -> 2) -> 1)) // -b^2 + t^2 + d t^2
+
+    override def ring = Cubic.ring
+
+  }
 }
 
 object `SO(3)_q` extends CubicSpider[RationalFunction[Fraction[Int]]] {
@@ -84,6 +114,9 @@ object `SO(3)_q` extends CubicSpider[RationalFunction[Fraction[Int]]] {
   override val d = ring.add(q, ring.inverse(q))
   override val b = ???
   override val t = ???
+  override val alpha = ???
+  override val beta = ???
+  override val omega = ring.one
 
   private val pentagonReduction = ???
   override def reductions = super.reductions :+ pentagonReduction
@@ -96,6 +129,9 @@ object `(G_2)_q` extends CubicSpider[RationalFunction[Fraction[Int]]] {
   override val d = ???
   override val b = ???
   override val t = ???
+  override val alpha = ???
+  override val beta = ???
+  override val omega = ring.one
 
   private val pentagonReduction = ???
   override def reductions = super.reductions :+ pentagonReduction
@@ -111,8 +147,8 @@ object QuantumExceptionalVariable {
   })
 }
 
-object QuantumExceptional extends TrivalentSpider[MultivariableRationalFunction[Fraction[Int], QuantumExceptionalVariable]] {
-  override val ring = implicitly[Field[MultivariableRationalFunction[Fraction[Int], QuantumExceptionalVariable]]]
+object QuantumExceptional extends TrivalentSpider[MultivariablePolynomial[Fraction[Int], QuantumExceptionalVariable]] {
+  override val ring = implicitly[Ring[MultivariablePolynomial[Fraction[Int], QuantumExceptionalVariable]]]
 
   override val omega = ring.one
   override val d = ???

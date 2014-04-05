@@ -565,6 +565,9 @@ object PlanarGraph {
     PlanarGraph(0, IndexedSeq(IndexedSeq((0, 0), (0, 1))), 0)
   }
 
+  val two_strands_horizontal = spider.tensor(strand, strand)
+  val two_strands_vertical = spider.rotate(two_strands_horizontal, 1)
+  
   private def polygon_(k: Int) = {
     if (k == 0) {
       loop
