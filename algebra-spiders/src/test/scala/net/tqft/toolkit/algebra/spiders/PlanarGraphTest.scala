@@ -20,6 +20,10 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
     loop should be_isomorphic_to(spider.stitch(strand))
   }
 
+  "the empty diagram" should "be the tensor identity" in {
+    spider.tensor(PlanarGraph.empty, strand) should be_isomorphic_to(strand)
+  }
+  
   "a rotated strand" should "be a strand" in {
     spider.rotate(strand, 1) should be_isomorphic_to(strand)
   }

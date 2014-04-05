@@ -6,19 +6,6 @@ import scala.language.implicitConversions
 
 case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
   require(coefficients.valuesIterator.forall(_.toString != "0"))
-  override lazy val toString = {
-    if (coefficients.isEmpty) {
-      "0"
-    } else {
-      coefficients.toSeq.map({
-        case (m, a) => {
-          val showCoefficient = m.isEmpty || a.toString != "1"
-          val showMonomial = m.nonEmpty
-          (if (showCoefficient) a.toString else "") + (if (showCoefficient && showMonomial) " * " else "") + (if (showMonomial) { m.map({ case (v, k) => v + (if (k > 1) "^" + k else "") }).mkString(" * ") } else "")
-        }
-      }).mkString(" + ")
-    }
-  }
 }
 
 object MultivariablePolynomial {
@@ -44,4 +31,5 @@ object MultivariablePolynomial {
   implicit def multivariablePolynomialAlgebraAsRig[A: Rig, V: Ordering]: Rig[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverRig[A, V]]
   implicit def multivariablePolynomialAlgebraAsRing[A: Ring, V: Ordering]: Ring[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebra[A, V]]
   implicit def multivariablePolynomialAlgebraAsEuclideanRing[A: Field, V: Ordering]: EuclideanRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverField[A, V]]
+  implicit def multivariablePolynomialAlgebraAsOrderedEuclideanRing[A: OrderedField, V: Ordering]: OrderedEuclideanRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverOrderedField[A, V]]
 }

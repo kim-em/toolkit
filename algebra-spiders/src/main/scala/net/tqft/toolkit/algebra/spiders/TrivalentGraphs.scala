@@ -6,33 +6,55 @@ object TrivalentGraphs {
 
   def spider = implicitly[DiagramSpider[PlanarGraph]]
 
-  def withoutTinyFaces = without(tinyFaces) _
-  def withoutTinyFacesAnd(faces: Seq[PlanarGraph]) = without(tinyFaces ++ faces) _
-  def withoutSmallFaces = without(smallFaces) _
-  def withoutSmallFacesAnd(faces: Seq[PlanarGraph]) = without(smallFaces ++ faces) _
+  def withoutTinyFacesAnd(faces: Seq[PlanarGraph]) = Enumerator(tinyFaces ++ faces)
+  def withoutSmallFacesAnd(faces: Seq[PlanarGraph]) = Enumerator(smallFaces ++ faces)
 
-  def without(faces: Seq[PlanarGraph])(n: Int, g: Int, k: Int): Seq[PlanarGraph] = {    
-    // TODO double check these rotations are correct!
-    def addHs(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints) yield spider.rotate(spider.multiply(spider.rotate(graph, j), PlanarGraph.H, 2), -j)
-    def addForks(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints + 1) yield spider.rotate(spider.multiply(spider.rotate(graph, Seq(graph.numberOfBoundaryPoints - 1, j).max), spider.rotate(PlanarGraph.star(3), -2), 1), -j)
-    def addCups(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints + 2) yield spider.rotate(spider.tensor(spider.rotate(graph, Seq(graph.numberOfBoundaryPoints - 1, j).max), PlanarGraph.strand), -j)
-//    def addCaps(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints) yield spider.rotate(spider.multiply(spider.rotate(graph, j), PlanarGraph.strand, 2), -Seq(graph.numberOfBoundaryPoints - 2, j).max)
+  val withoutTinyFaces = Enumerator(tinyFaces)
+  val withoutSmallFaces = Enumerator(smallFaces)
 
-    if (n < 0 || k < 0 || n > g) {
-      Seq.empty
-    } else {
-      if (n == 0 && k == 0) {
-        Seq(PlanarGraph.empty)
+  case class Enumerator(avoidingFaces: Seq[PlanarGraph]) {
+
+    def byNumberOfFaces(numberOfBoundaryPoints: Int, maximumNumberOfFaces: Int): Iterator[PlanarGraph] = {
+      for (
+        k <- (0 to numberOfBoundaryPoints + 2 * maximumNumberOfFaces - 2).iterator /* TODO is that right? */ ;
+        g <- byNumberOfVertices(numberOfBoundaryPoints, numberOfBoundaryPoints /* FIXME that isn't right */ , k);
+        if g.numberOfInternalFaces <= maximumNumberOfFaces
+      ) yield g
+    }
+
+    val byNumberOfVertices = {
+      import net.tqft.toolkit.functions.Memo._
+      val cached = ({ t: (Int, Int, Int) => byNumberOfVertices_(t._1, t._2, t._3) }).memo;
+      { (n: Int, g: Int, k: Int) => cached((n, g, k)) }
+    }
+
+    def byNumberOfVertices_(numberOfBoundaryPoints: Int, maximumGirth: Int, numberOfVertices: Int): Stream[PlanarGraph] = {
+      def addHs(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints) yield spider.rotate(spider.multiply(spider.rotate(graph, j), PlanarGraph.H, 2), -j)
+      def addForks(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints + 1) yield spider.rotate(spider.multiply(spider.rotate(graph, Seq(graph.numberOfBoundaryPoints - 1, j).max), spider.rotate(PlanarGraph.star(3), -2), 1), -j)
+      def addCups(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints + 2) yield spider.rotate(spider.tensor(spider.rotate(graph, Seq(graph.numberOfBoundaryPoints - 1, j).max), PlanarGraph.strand), -j)
+      //    def addCaps(graph: PlanarGraph) = for (j <- 0 until graph.numberOfBoundaryPoints) yield spider.rotate(spider.multiply(spider.rotate(graph, j), PlanarGraph.strand, 2), -Seq(graph.numberOfBoundaryPoints - 2, j).max)
+
+      // FIXME add caps sometimes!
+
+      if (numberOfBoundaryPoints < 0 || numberOfVertices < 0) {
+        Stream.empty
       } else {
-        (without(faces)(n, g, k - 2).flatMap(addHs) ++
-          without(faces)(n - 1, g, k - 1).flatMap(addForks) ++
-          without(faces)(n - 2, g, k).flatMap(addCups)/* ++
-          without(faces)(n + 2, g, k).flatMap(addCaps)*/)
-          .map(spider.canonicalFormWithDefect)
-          .map(_._1)
-          .distinct
-          .filter(g => g.loops == 0 && faces.forall(f => g.Subgraphs(f).excisions.isEmpty))
+        if (numberOfBoundaryPoints == 0 && numberOfVertices == 0) {
+          Stream(PlanarGraph.empty)
+        } else {
+          val candidates = (byNumberOfVertices(numberOfBoundaryPoints, maximumGirth, numberOfVertices - 2).flatMap(addHs) ++
+            byNumberOfVertices(numberOfBoundaryPoints - 1, maximumGirth, numberOfVertices - 1).flatMap(addForks) ++
+            byNumberOfVertices(numberOfBoundaryPoints - 2, maximumGirth, numberOfVertices).flatMap(addCups))
+
+          val distinct = candidates.map(spider.canonicalFormWithDefect)
+            .map(_._1)
+            .distinct
+
+          distinct.filter(g => g.loops == 0 && avoidingFaces.forall(f => g.Subgraphs(f).excisions.isEmpty))
+        }
       }
+
     }
   }
+
 }

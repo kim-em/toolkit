@@ -15,10 +15,18 @@ trait LinearSpider[R, M] extends Spider[M] with CanonicalLabelling[M] with Modul
   override def innerProduct(a: M, b: M) = canonicalForm(super.innerProduct(a, b))
 }
 
+trait EvaluableSpider[R, A] extends Spider[A] {
+  def evaluate(a: A): R
+  def evaluatedInnerProduct(a1: A, a2: A) = evaluate(innerProduct(a1, a2))
+}
+
 object LinearSpider {
-  abstract class MapLinearSpider[A: DiagramSpider, R: Ring] extends Module.ModuleMap[R, A, R] with LinearSpider[R, Map[A, R]] {
+  abstract class MapLinearSpider[A: DiagramSpider, R: Ring] extends Module.ModuleMap[R, A, R] with LinearSpider[R, Map[A, R]] with EvaluableSpider[R, Map[A, R]] {
     val diagramSpider = implicitly[DiagramSpider[A]]
+    def multiplicativeCoefficients = implicitly[Ring[R]]
     override val coefficients = implicitly[Module[R, R]]
+
+    override def empty = Map(diagramSpider.empty -> implicitly[Ring[R]].one)
 
     private def mapKeys(f: A => A)(map: TraversableOnce[(A, R)]) = {
       val newMap = scala.collection.mutable.Map[A, R]()
@@ -51,6 +59,23 @@ object LinearSpider {
     }
 
     override def circumference(map: Map[A, R]) = diagramSpider.circumference(map.head._1)
+
+    override def evaluate(map: Map[A, R]) = {
+      if (map.isEmpty) {
+        ring.zero
+      } else {
+        if (map.size > 1) {
+          throw new UnsupportedOperationException("No default partition function for " + map)
+        } else {
+          val (k, v) = map.head
+          if (diagramSpider.canonicalFormWithDefect(k)._1 == diagramSpider.empty) {
+            v
+          } else {
+            throw new UnsupportedOperationException("No default partition function for " + map)
+          }
+        }
+      }
+    }
   }
 
   implicit def diskLinearSpider[A, R, M](implicit spider: LinearSpider[R, M]): LinearSpider[R, Disk[M]] = new Spider.DiskSpider(spider) with LinearSpider[R, Disk[M]] {

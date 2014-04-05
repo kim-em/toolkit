@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra.spiders
 
 trait Spider[A] {
+  def empty: A
   def rotate(a: A, k: Int): A
   def tensor(a1: A, a2: A): A
   def stitch(a: A): A
@@ -28,6 +29,7 @@ object Spider {
   implicit def forget[A: DiagramSpider]: Spider[A] = implicitly[Spider[A]]
 
   implicit class DiskSpider[A](spider: Spider[A]) extends Spider[Disk[A]] {
+    override def empty = Disk(0, spider.empty)
     override def rotate(disk: Disk[A], k: Int) = Disk(disk.circumference, spider.rotate(disk.contents, k))
     override def tensor(disk1: Disk[A], disk2: Disk[A]) = Disk(disk1.circumference + disk2.circumference, spider.tensor(disk1.contents, disk2.contents))
     override def stitch(disk: Disk[A]) = Disk(disk.circumference - 2, spider.stitch(disk.contents))
