@@ -19,19 +19,7 @@ trait NumberField[A] extends Field[Polynomial[A]] with VectorSpace[A, Polynomial
     def f(n: Int) = polynomials.remainder(polynomials.monomial(n), generator)
     (f _).memo
   }
-  def normalize(q: Polynomial[A]) = {
-    q.maximumDegree match {
-      case None => zero
-      case Some(k) if k < rank => q
-      case Some(k) if k < 2 * rank => {
-        Polynomial[A]((q.toMap.toSeq.flatMap {
-          case (n, a) if n < rank => List((n, a))
-          case (n, a) => powers(n).toMap.map { case (m, b) => (m, coefficients.multiply(a, b)) }
-        }): _*)
-      }
-      case _ => polynomials.remainder(q, generator)
-    }
-  }
+  def normalize(q: Polynomial[A]) = polynomials.remainder(q, generator)
 
   override def fromInt(x: Int) = polynomials.fromInt(x)
   override def inverse(q: Polynomial[A]) = {
@@ -60,8 +48,8 @@ object NumberField {
   def apply[A: Field](p: Polynomial[A]): NumberField[A] = new NumberField[A] {
     override val generator = p
     override val coefficients = implicitly[Field[A]]
-    override val galoisGroup = ???
-    override val galoisGroupAction = ???
+    override lazy val galoisGroup = ???
+    override lazy val galoisGroupAction = ???
   }
 
   def cyclotomic[A: Field](n: Int): CyclotomicNumberField[A] = new CyclotomicNumberField[A] {

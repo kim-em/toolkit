@@ -20,7 +20,7 @@ object FusionRings {
     implicit val polynomialAlgebra = implicitly[MultivariablePolynomialAlgebra[Int, V]]
 
     val identity = Matrix.identityMatrix[MultivariablePolynomial[Int, V]](rank)
-    val generator = m.mapEntries({ x => (x: MultivariablePolynomial[Int, V]) })
+    val generator = m.mapEntries({ x => MultivariablePolynomial.constant[Int, V](x) })
     val unknowns = for (i <- 2 until rank) yield {
       Matrix(rank,
         for (j <- 0 until rank) yield {
