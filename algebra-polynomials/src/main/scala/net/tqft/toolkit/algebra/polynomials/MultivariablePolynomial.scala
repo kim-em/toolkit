@@ -6,6 +6,7 @@ import scala.language.implicitConversions
 
 case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
   require(coefficients.valuesIterator.forall(_.toString != "0"))
+  require(coefficients.keysIterator.forall(_.valuesIterator.forall(_ >= 0)))
 }
 
 object MultivariablePolynomial {

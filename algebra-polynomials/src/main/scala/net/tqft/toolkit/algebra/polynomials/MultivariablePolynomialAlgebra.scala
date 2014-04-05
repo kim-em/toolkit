@@ -132,29 +132,49 @@ object MultivariablePolynomialAlgebraOverEuclideanRing {
 trait MultivariablePolynomialAlgebraOverField[A, V] extends MultivariablePolynomialAlgebra[A, V] with EuclideanRing[MultivariablePolynomial[A, V]] {
   override def ring: Field[A]
   override def quotientRemainder(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = {
-    (highestMonomial(x), highestMonomial(y)) match {
-      case (_, None) => throw new ArithmeticException
-      case (None, Some(dy)) => (zero, zero)
-      case (Some(dx), Some(dy)) => {
-        if (monomialOrdering.compare(dy, dx) > 0) {
-          (zero, x)
-        } else {
-          val ax = x.coefficients(dx)
-          val ay = y.coefficients(dy)
+    println("quotientRemainder(")
+    println("  " + x + ",")
+    println("  " + y)
+    println(")")
 
-          require(ax != ring.zero)
-          require(ay != ring.zero)
-
-          val q = ring.quotient(ax, ay)
-
-          val quotientLeadingTerm = monomial(implementation.keys.subtract(dx, dy), q)
-          val difference = add(x, negate(multiply(quotientLeadingTerm, y)))
-          val (restOfQuotient, remainder) = quotientRemainder(difference, y)
-
-          (add(quotientLeadingTerm, restOfQuotient), remainder)
+    highestMonomial(y) match {
+      case None => throw new ArithmeticException
+      case Some(lm) => {
+        val reducibleMonomials = x.coefficients.keys.filter(m => implementation.keys.subtract(m, lm).values.forall(_ >= 0))
+        import net.tqft.toolkit.orderings.LexicographicOrdering._
+        import net.tqft.toolkit.arithmetic.MinMax._
+        reducibleMonomials.maxOption(monomialOrdering) match {
+          case None => (zero, x)
+          case Some(m) => {
+            ???
+          }
         }
       }
     }
+
+    //    (highestMonomial(x), highestMonomial(y)) match {
+    //      case (_, None) => throw new ArithmeticException
+    //      case (None, Some(dy)) => (zero, zero)
+    //      case (Some(dx), Some(dy)) => {
+    //        if (monomialOrdering.compare(dy, dx) > 0) {
+    //          (zero, x)
+    //        } else {
+    //          val ax = x.coefficients(dx)
+    //          val ay = y.coefficients(dy)
+    //
+    //          require(ax != ring.zero)
+    //          require(ay != ring.zero)
+    //
+    //          val q = ring.quotient(ax, ay)
+    //
+    //          val quotientLeadingTerm = monomial(implementation.keys.subtract(dx, dy), q)
+    //          val difference = add(x, negate(multiply(quotientLeadingTerm, y)))
+    //          val (restOfQuotient, remainder) = quotientRemainder(difference, y)
+    //
+    //          (add(quotientLeadingTerm, restOfQuotient), remainder)
+    //        }
+    //      }
+    //    }
 
   }
 }
