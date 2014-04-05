@@ -27,6 +27,17 @@ object ComputeInnerProducts extends App {
     println("trivalent Delta(5,0)")
     println(`M(5,0)`.toMathemathicaInputString)    
   }
+  {
+    val spider = Trivalent.TrivalentSpider
+
+    val `D(6,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(6, 0)
+    val `M(6,0)` = spider.innerProductMatrix(`D(6,0)`.toIndexedSeq)
+
+    import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
+
+    println("trivalent Delta(6,0)")
+    println(`M(6,0)`.toMathemathicaInputString)    
+  }
   
   {
     val spider = TwistedTrivalent.TwistedTrivalentSpider

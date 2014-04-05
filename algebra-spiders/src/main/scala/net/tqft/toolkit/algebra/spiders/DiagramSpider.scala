@@ -53,24 +53,33 @@ object DiagramSpider {
       override def stitch(graph: PlanarGraph) = {
         require(graph.numberOfBoundaryPoints >= 2)
 
-        val f1 = graph.vertexFlags(0).secondLast._2
-        def relabelFace(f: Int) = {
-          if (f == f1) {
-            graph.outerFace
-          } else {
-            f
-          }
-        }
         val e0 = graph.vertexFlags(0).last._1
         val e1 = graph.vertexFlags(0).secondLast._1
 
         if (e0 == e1) {
-          PlanarGraph(graph.outerFace, graph.vertexFlags.head.dropRight(2) +: graph.vertexFlags.tail, graph.loops + 1)
+          val f1 = graph.vertexFlags(0).last._2
+          def relabelFace(f: Int) = {
+            if (f == f1) {
+              graph.outerFace
+            } else {
+              f
+            }
+          }
+
+          PlanarGraph(relabelFace(graph.outerFace), graph.vertexFlags.head.dropRight(2) +: graph.vertexFlags.tail.map(_.map(p => (p._1, relabelFace(p._2)))), graph.loops + 1)
         } else {
+          val f1 = graph.vertexFlags(0).secondLast._2
+          def relabelFace(f: Int) = {
+            if (f == f1) {
+              graph.outerFace
+            } else {
+              f
+            }
+          }
           val emin = if (e0 < e1) e0 else e1
 
           def flags = (graph.vertexFlags.head.dropRight(2) +: graph.vertexFlags.tail).map(_.map({
-            case (e, f) if e == e0 || e == e1 => (emin, f)
+            case (e, f) if e == e0 || e == e1 => (emin, relabelFace(f))
             case (e, f) => (e, relabelFace(f))
           }))
 
