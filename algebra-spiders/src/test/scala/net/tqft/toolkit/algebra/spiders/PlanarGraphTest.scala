@@ -78,8 +78,8 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
   }
 
   "a monogon" should "have a geodesic from the inner face to the outer face" in {
-    polygon(1).faceBoundary(5) should equal(Seq((1, 3)))
-    polygon(1).faceNeighbours(5) should equal(Seq((3, 4)))
+    polygon(1).faceBoundary(5) should equal(Seq(Seq((1, 3))))
+    polygon(1).faceNeighbours(5) should equal(Seq(Seq((3, 4))))
     polygon(1).geodesics(5).size should equal(1)
   }
 }

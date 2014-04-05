@@ -22,6 +22,10 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     require(edgeSet == edgeVertexIncidences.keys.toList.sorted, s"edgeSet $edgeSet didn't match with the keys in edgeVertexIncidences: $edgeVertexIncidences")
     require(edgeSet == edgeFaceIncidences.keys.toList.sorted)
 
+    for ((flags, i) <- vertexFlags.zipWithIndex; Seq((e1, _), (_, f2)) <- (flags ++ flags).sliding(2); t = target(i, e1); if i != t) {
+      require(f2 == vertexFlags(t).find(_._1 == e1).get._2)
+    }
+
     for ((e, (v1, v2)) <- edgeVertexIncidences) {
       require(vertexFlags(v1).exists(p => p._1 == e))
       require(vertexFlags(v2).exists(p => p._1 == e))
@@ -29,10 +33,10 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
     // Compare two descriptions of edge-face incidences
     for ((e, (f1, f2)) <- edgeFaceIncidences) {
-      require(faceBoundary(f1).exists(p => p._2 == e))
-      require(faceBoundary(f2).exists(p => p._2 == e))
+      require(faceBoundary(f1).flatten.exists(p => p._2 == e))
+      require(faceBoundary(f2).flatten.exists(p => p._2 == e))
     }
-    for (f <- faceSet; (v, e) <- faceBoundary(f)) {
+    for (f <- faceSet; component <- faceBoundary(f); (v, e) <- component) {
       require(edgeFaceIncidences(e)._1 == f || edgeFaceIncidences(e)._2 == f)
     }
 
@@ -72,6 +76,13 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     }
     Map() ++ map.mapValues({ case ListBuffer(f1, f2) => (f1, f2); case _ => require(false); ??? })
   }
+  lazy val faceEdgeIncidences: Map[Int, Set[Int]] = {
+    val map = scala.collection.mutable.Map[Int, ListBuffer[Int]]()
+    for (flags <- vertexFlags; (e, f) <- flags) {
+      map.getOrElseUpdate(f, ListBuffer[Int]()) += e
+    }
+    Map() ++ map.mapValues(_.toSet)
+  }
   lazy val maxEdgeLabel = edgeVertexIncidences.keysIterator.max
 
   lazy val maxFaceLabel = vertexFlags.iterator.flatMap(_.map(_._2)).max
@@ -90,10 +101,10 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   type EdgeFace = (Int, Int)
 
-  def faceNeighbours(face: Int): Seq[EdgeFace] = {
-    faceBoundary(face).map(p => edgeFaceIncidences(p._2) match {
+  def faceNeighbours(face: Int): Seq[Seq[EdgeFace]] = {
+    faceBoundary(face).map(_.map(p => edgeFaceIncidences(p._2) match {
       case (`face`, f) => (p._2, f); case (f, `face`) => (p._2, f)
-    })
+    }))
   }
 
   def edgesBetweenFaces(face1: Int, face2: Int) = {
@@ -108,30 +119,36 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   type VertexEdge = (Int, Int)
 
-  def faceBoundary(face: Int): Seq[VertexEdge] = {
+  def faceBoundary(face: Int): Seq[Seq[VertexEdge]] = {
     if (numberOfEdges == 0) {
       require(face == outerFace)
       Seq.empty
     } else {
-      val initialEdge = edgeFaceIncidences.find(p => p._2._1 == face || p._2._2 == face).get._1
-      val initialVertex = vertexFlags.indexWhere(_.contains((initialEdge, face)))
-      def nextFlag(p: (Int, Int)): (Int, Int) = {
-        val (vertex, edge) = p
-        //      require(vertices.contains(vertex))
-        //      require(edgeSet.contains(edge))
-        val nextVertex = target(vertex, edge)
-        val nextEdge = {
-          import net.tqft.toolkit.collections.Rotate._
-          vertexFlags(nextVertex)((vertexFlags(nextVertex).zip(vertexFlags(nextVertex).rotateLeft(1)).indexWhere(p => p._1._1 == edge && p._2._2 == face) + 1) % vertexFlags(nextVertex).size)._1
+      val components = scala.collection.mutable.ListBuffer[Seq[VertexEdge]]()
+      def edgesLocated = components.flatten.map(_._2)
+      val allEdgesAroundFace = faceEdgeIncidences(face)
+
+      while ((allEdgesAroundFace -- edgesLocated).nonEmpty) {
+        val initialEdge = edgeFaceIncidences.find(p => !edgesLocated.contains(p._1) && p._2._1 == face || p._2._2 == face).get._1
+        val initialVertex = vertexFlags.indexWhere(_.contains((initialEdge, face)))
+        def nextFlag(p: (Int, Int)): (Int, Int) = {
+          val (vertex, edge) = p
+          //      require(vertices.contains(vertex))
+          //      require(edgeSet.contains(edge))
+          val nextVertex = target(vertex, edge)
+          val nextEdge = {
+            import net.tqft.toolkit.collections.Rotate._
+            vertexFlags(nextVertex)((vertexFlags(nextVertex).zip(vertexFlags(nextVertex).rotateLeft(1)).indexWhere(p => p._1._1 == edge && p._2._2 == face) + 1) % vertexFlags(nextVertex).size)._1
+          }
+          (nextVertex, nextEdge)
         }
-        (nextVertex, nextEdge)
+        import net.tqft.toolkit.functions.FixedPoint._
+        val (boundary, offset) = (nextFlag _).findRepeatingSubsequence((initialVertex, initialEdge))
+
+        require(offset == 0, s"Something went wrong computing faceBoundary($face): ${Iterator.iterate((initialVertex, initialEdge))(nextFlag).take(10).toList}")
+        components += boundary
       }
-      import net.tqft.toolkit.functions.FixedPoint._
-      val (boundary, offset) = (nextFlag _).findRepeatingSubsequence((initialVertex, initialEdge))
-
-      require(offset == 0, s"Something went wrong computing faceBoundary($face): ${Iterator.iterate((initialVertex, initialEdge))(nextFlag).take(10).toList}")
-
-      boundary
+      components.toList
     }
   }
 
@@ -139,7 +156,13 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   def distancesFromOuterFaceAvoiding(edges: Seq[Int]): Map[Int, Int] = {
     def facesByRadius: Stream[Set[Int]] = {
-      def internal: Stream[Set[Int]] = Set.empty[Int] #:: Set(outerFace) #:: internal.zip(internal.tail).map(p => p._2.flatMap(f => faceNeighbours(f).collect({ case (e, f) if !edges.contains(e) => f })) -- p._2 -- p._1)
+      def internal: Stream[Set[Int]] = {
+        Set.empty[Int] #::
+          Set(outerFace) #::
+          internal.zip(internal.tail).map({ p =>
+            p._2.flatMap(f => faceNeighbours(f).flatten.collect({ case (e, f) if !edges.contains(e) => f })) -- p._2 -- p._1
+          })
+      }
       internal.tail
     }
     (for ((faces, i) <- facesByRadius.takeWhile(_.nonEmpty).iterator.zipWithIndex; f <- faces) yield (f -> i)).toMap.withDefault(_ => Integer.MAX_VALUE)
@@ -152,7 +175,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       if (face == outerFace) {
         Iterator(Seq())
       } else {
-        for ((e, f) <- faceNeighbours(face).iterator; if !avoidingEdges.contains(e); if distances(f) == distances(face) - 1; remainder <- geodesics_(f)) yield {
+        for (component <- faceNeighbours(face).iterator; (e, f) <- component; if !avoidingEdges.contains(e); if distances(f) == distances(face) - 1; remainder <- geodesics_(f)) yield {
           (e, face) +: remainder
         }
       }
@@ -228,14 +251,26 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   def outerFaceBoundary = {
     import net.tqft.toolkit.collections.Rotate._
     val boundary = faceBoundary(outerFace)
-    boundary.rotateLeft(boundary.indexWhere(p => p._1 == 0 && p._2 == vertexFlags(0)(0)._1)) // rotate the face so we start at the external vertex
+    boundary.find(c => c.exists(_._1 == 0)) match {
+      case None => Seq.empty
+      case Some(outerBoundary) =>
+        outerBoundary.rotateLeft(outerBoundary.indexWhere(p => p._1 == 0 && p._2 == vertexFlags(0)(0)._1).ensuring(_ != -1)) // rotate the face so we start at the external vertex
+    }
+
+    val outerBoundary = faceBoundary(outerFace).flatten
+    val k = outerBoundary.indexWhere(p => p._1 == 0 && p._2 == vertexFlags(0)(0)._1)
+    if (k != -1) {
+      outerBoundary.rotateLeft(k) // rotate the face so we start at the external vertex
+    } else {
+      outerBoundary
+
+    }
   }
 
   private def cutEdgeParallelToBoundary(edge: Int, internalFace: Int): PlanarGraph = {
     import net.tqft.toolkit.collections.Rotate._
     val boundaryOfInnerFace = {
-      val boundary = faceBoundary(internalFace)
-      require(boundary.exists(_._2 == edge))
+      val boundary = faceBoundary(internalFace).find(_.exists(_._2 == edge)).get
       boundary.rotateLeft(boundary.indexWhere(_._2 == edge)) // rotate the face so we start at the given edge
     }
     val (initialSegmentOfOuterFace, finalSegmentOfOuterFace) = {
