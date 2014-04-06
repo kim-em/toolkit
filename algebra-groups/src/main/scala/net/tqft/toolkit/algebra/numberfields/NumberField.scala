@@ -12,7 +12,7 @@ trait NumberField[A] extends Field[Polynomial[A]] with VectorSpace[A, Polynomial
   val generator: Polynomial[A]
   lazy val rank = generator.maximumDegree.get
 
-  protected lazy val polynomials = implicitly[PolynomialsOverField[A]] // has to be lazy so coefficientField is available
+  protected lazy val polynomials = implicitly[PolynomialsOverEuclideanRing[A]] // has to be lazy so coefficientField is available
 
   private val powers = {
     import net.tqft.toolkit.functions.Memo._
