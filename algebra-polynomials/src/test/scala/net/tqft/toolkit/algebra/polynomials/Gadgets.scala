@@ -4,14 +4,16 @@ import net.tqft.toolkit.algebra._
 
 object Gadgets {
   def algebraOfRationalPolynomials_0 = implicitly[Polynomials[Fraction[Int]]]
-  def algebraOfRationalPolynomials_1 = implicitly[PolynomialsOverField[Fraction[Int]]]
-  def algebraOfRationalPolynomials_2 = implicitly[PolynomialsOverOrderedField[Fraction[Int]]]
+  def algebraOfRationalPolynomials_1 = implicitly[PolynomialsOverEuclideanRing[Fraction[Int]]]
+//  def algebraOfRationalPolynomials_2 = implicitly[PolynomialsOverField[Fraction[Int]]]
+//  def algebraOfRationalPolynomials_3 = implicitly[PolynomialsOverOrderedField[Fraction[Int]]]
 
   def ordereedEuclideanRingOfRationalPolynomials = implicitly[OrderedEuclideanRing[Polynomial[Fraction[Int]]]]
   def euclideanRingOfRationalPolynomials = implicitly[EuclideanRing[Polynomial[Fraction[Int]]]]
   def ringOfRationalPolynomials = implicitly[Ring[Polynomial[Fraction[Int]]]]
 
-  def ringOfPolynomials = implicitly[Ring[Polynomial[Int]]]
+  def ringOfPolynomials_0 = implicitly[Ring[Polynomial[Int]]]
+  def ringOfPolynomials_1 = implicitly[EuclideanRing[Polynomial[Int]]]
   def ringOfDoublePolynomials = implicitly[Ring[Polynomial[Double]]]
 
   def rationalFunctions = implicitly[Ring[RationalFunction[Fraction[Int]]]]

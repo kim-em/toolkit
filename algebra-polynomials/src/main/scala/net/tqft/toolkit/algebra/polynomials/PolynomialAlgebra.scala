@@ -24,7 +24,9 @@ trait PolynomialAlgebra[A, P] extends Module[A, P] with AssociativeAlgebra[A, P]
   def constantTerm(p: P) = coefficientOf(p)(0)
   def coefficientOf(p: P): Int => A
   def evaluateAt(a: A)(p: P): A
+  
   def composeAsFunctions(p1: P, p2: P): P
+  
   def formalDerivative(p: P): P
 }
 
@@ -53,7 +55,9 @@ object PolynomialAlgebra {
       ring.sum(p map { case (e, b) => ring.multiply(b, ring.power(a, e)) })
     }
     override def composeAsFunctions(p1: Map[Int, A], p2: Map[Int, A]) = ???
-    override def formalDerivative(p: Map[Int, A]) = ???
+    override def formalDerivative(p: Map[Int, A]) = p.collect({
+      case (i, a) if i != 0 => (i - 1, multiplicativeCoefficients.multiply(multiplicativeCoefficients.fromInt(i), a))
+    })
   }
 
   abstract class PolynomialAlgebraForWrapper[A: Ring, P] extends PolynomialAlgebra[A, P] {

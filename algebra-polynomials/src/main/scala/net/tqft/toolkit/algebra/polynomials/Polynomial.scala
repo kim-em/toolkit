@@ -20,9 +20,8 @@ object Polynomial {
     Polynomial(p.coefficients.mapValues(x => x: Fraction[A]))
   }
   
-  implicit def polynomialAlgebraAsRing[A: EuclideanRing]: Ring[Polynomial[A]] = implicitly[PolynomialAlgebra[A, Polynomial[A]]]
-  implicit def polynomialAlgebraOverFieldAsEuclideanRing[A: Field]: EuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverField[A, Polynomial[A]]]
-  implicit def polynomialAlgebraOverOrderedFieldAsOrderedEuclideanRing[A: OrderedField]: OrderedEuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverOrderedField[A, Polynomial[A]]]
+  implicit def polynomialAlgebraAsEuclideanRing[A: EuclideanRing]: EuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]]]
+  implicit def polynomialAlgebraOverOrderedEuclideanRingAsOrderedEuclideanRing[A: OrderedEuclideanRing]: OrderedEuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverOrderedEuclideanRing[A, Polynomial[A]]]
 
   implicit class RichPolynomial[A: Polynomials](p: Polynomial[A]) {
 	  val polynomials = implicitly[Polynomials[A]]
@@ -34,11 +33,11 @@ object Polynomial {
 	  def toIndexedSeq: IndexedSeq[A] = polynomials.toIndexedSeq(p)(ring)
   }
   
-  def cyclotomic[F: Field](n: Int): Polynomial[F] = {
-    val field = implicitly[Field[F]]
-    val polynomials = implicitly[PolynomialsOverField[F]]
-    val divisors = for (d <- 1 until n; if n % d == 0) yield cyclotomic(d)
-    polynomials.quotient(apply((0, field.negate(field.one)), (n, field.one)), polynomials.product(divisors))
+  def cyclotomic[A: EuclideanRing](n: Int): Polynomial[A] = {
+    val ring = implicitly[EuclideanRing[A]]
+    val polynomials = implicitly[PolynomialsOverEuclideanRing[A]]
+    val divisors = for (d <- 1 until n; if n % d == 0) yield cyclotomic[A](d)
+    polynomials.quotient(apply((0, ring.negate(ring.one)), (n, ring.one)), polynomials.product(divisors))
   }
 
 }
