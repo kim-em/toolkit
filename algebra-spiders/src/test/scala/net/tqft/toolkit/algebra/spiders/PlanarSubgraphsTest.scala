@@ -63,5 +63,10 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
     val q = PlanarGraph(9,IndexedSeq(List(), List((4,13), (8,10), (6,9)), List((3,13), (7,11), (5,12)), List((5,13), (7,12), (3,11)), List((6,13), (8,9), (4,10))),0)
     q.Subgraphs(polygon(2)).excisions.size should equal(6)
   }
+  
+  "this graph" should "not blow up while finding subgraphs" in {
+    val q = PlanarGraph(12,IndexedSeq(List(), List((8,13), (8,12), (11,13)), List((7,15), (11,13), (9,13)), List((4,16), (5,13), (6,17)), List((4,13), (23,16), (22,13)), List((7,13), (9,15), (22,13)), List((5,17), (23,13), (6,16))),0)
+    q.Subgraphs(polygon(2)).excisions.size should equal(4)
+  }
 }
 
