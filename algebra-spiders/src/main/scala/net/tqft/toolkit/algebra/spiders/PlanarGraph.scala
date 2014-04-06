@@ -5,23 +5,16 @@ import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import scala.collection.mutable.ListBuffer
 import net.tqft.toolkit.Logging
 
-trait Rotatable[L] {
-  def circumference(l: L): Int
-  def allowedRotations(l: L): Set[Int]
-  def rotationAllowed_?(l: L, k: Int) = {
-    import net.tqft.toolkit.arithmetic.Mod._
-    allowedRotations(l).contains(k mod circumference(l))
-  }
-}
-
 // flags veer to the left
 // edges are ordered clockwise around each vertex
-case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { graph =>
+case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
   verify
 
   def verify = {
     // There are many things we might check here!
     require(loops >= 0)
+    
+    require(labels.size == numberOfVertices - 1)
 
     require(vertexFlags(0).headOption match {
       case None => true
@@ -215,7 +208,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     if (edgeMap.forall(p => p._1 == p._2) && faceMap.forall(p => p._1 == p._2)) {
       this
     } else {
-      PlanarGraph(faceMap(outerFace), vertexFlags.map(_.map(p => (edgeMap(p._1), faceMap(p._2)))), loops)
+      PlanarGraph(faceMap(outerFace), vertexFlags.map(_.map(p => (edgeMap(p._1), faceMap(p._2)))), labels, loops)
     }
   }
 
@@ -325,7 +318,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     val internalFlags = vertexFlags.zipWithIndex.tail.map(p => p._1.map(updateFlag(p._2, false)))
 
     val newVertexFlags = outerFlag +: internalFlags
-    PlanarGraph(f, newVertexFlags, loops)
+    PlanarGraph(f, newVertexFlags, labels, loops)
   }
 
   private def deleteSubgraph(verticesToDelete: Seq[Int], boundaryEdgesAndFacesToDelete: Seq[(Int, Int)], loopsToDelete: Int) = {
@@ -390,7 +383,8 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       val newInternalFlags = vertexFlags.zipWithIndex.tail.collect({
         case (flags, i) if !verticesToDelete.contains(i) => flags.map(updateFlag(i, false))
       })
-      PlanarGraph(if (numberOfBoundaryPoints == 0) newFace else outerFace, newExternalFlag +: newInternalFlags, loops - loopsToDelete)
+      val newLabels = (0 +: labels).zipWithIndex.collect({ case (l, i) if !verticesToDelete.contains(i) => l }).tail
+      PlanarGraph(if (numberOfBoundaryPoints == 0) newFace else outerFace, newExternalFlag +: newInternalFlags, newLabels, loops - loopsToDelete)
     }
   }
 
@@ -572,15 +566,15 @@ object PlanarGraph {
   private def spider = implicitly[Spider[PlanarGraph]]
 
   val empty = {
-    PlanarGraph(1, IndexedSeq(IndexedSeq.empty), 0)
+    PlanarGraph(1, IndexedSeq(IndexedSeq.empty), IndexedSeq.empty, 0)
   }
 
   val loop = {
-    PlanarGraph(1, IndexedSeq(IndexedSeq.empty), 1)
+    PlanarGraph(1, IndexedSeq(IndexedSeq.empty), IndexedSeq.empty, 1)
   }
 
   val strand = {
-    PlanarGraph(0, IndexedSeq(IndexedSeq((0, 0), (0, 1))), 0)
+    PlanarGraph(0, IndexedSeq(IndexedSeq((0, 0), (0, 1))), IndexedSeq.empty, 0)
   }
 
   val two_strands_horizontal = spider.tensor(strand, strand)
@@ -593,7 +587,7 @@ object PlanarGraph {
       import net.tqft.toolkit.arithmetic.Mod._
       val flags = IndexedSeq.tabulate(k)(i => (i + k + 1, i + 3 * k + 1)) +:
         IndexedSeq.tabulate(k)(i => IndexedSeq((i + 2 * k + 1, 4 * k + 1), (i + k + 1, (i + 1 mod k) + 3 * k + 1), ((i - 1 mod k) + 2 * k + 1, i + 3 * k + 1)))
-      PlanarGraph(3 * k + 1, flags, 0)
+      PlanarGraph(3 * k + 1, flags, IndexedSeq.fill(k)(1), 0)
     }
   }
 
@@ -606,7 +600,7 @@ object PlanarGraph {
     val flags = IndexedSeq(
       Seq.tabulate(k)(i => (i + 2, i + k + 2)),
       Seq.tabulate(k)(i => (i + 2, ((i + 1) % k) + k + 2)).reverse)
-    PlanarGraph(k + 2, flags, 0)
+    PlanarGraph(k + 2, flags, IndexedSeq(1), 0)
   }
 
   val star = {

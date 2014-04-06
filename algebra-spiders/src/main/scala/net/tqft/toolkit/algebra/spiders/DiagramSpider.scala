@@ -11,7 +11,7 @@ case class Rotation(vertexRotations: Map[Int, Int])
 trait DiagramSpider[A] extends Spider[A] with CanonicalLabellingWithDefect[A, Rotation]
 
 object DiagramSpider {
-  implicit def graphSpider: DiagramSpider[PlanarGraph] = {
+  implicit val graphSpider: DiagramSpider[PlanarGraph] = {
     new DiagramSpider[PlanarGraph] {
       override def empty = PlanarGraph.empty
       override def circumference(graph: PlanarGraph) = graph.numberOfBoundaryPoints
@@ -25,7 +25,7 @@ object DiagramSpider {
             graph.vertexFlags(0)(k mod graph.numberOfBoundaryPoints)._2
           }
         }
-        PlanarGraph(newOuterFace, graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)), graph.loops)
+        PlanarGraph(newOuterFace, graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)), graph.labels, graph.loops)
       }
       override def tensor(graph1: PlanarGraph, graph2: PlanarGraph) = {
         if (graph1.numberOfEdges == 0) {
@@ -47,7 +47,7 @@ object DiagramSpider {
             }
             (externalFlag +: graph1.vertexFlags.tail) ++ graph2.vertexFlags.tail.map(_.map(relabelFlag))
           }
-          PlanarGraph(graph1.outerFace, flags, graph1.loops + graph2.loops)
+          PlanarGraph(graph1.outerFace, flags, graph1.labels ++ graph2.labels, graph1.loops + graph2.loops)
         }
       }
       override def stitch(graph: PlanarGraph) = {
@@ -66,7 +66,11 @@ object DiagramSpider {
             }
           }
 
-          PlanarGraph(relabelFace(graph.outerFace), graph.vertexFlags.head.dropRight(2) +: graph.vertexFlags.tail.map(_.map(p => (p._1, relabelFace(p._2)))), graph.loops + 1)
+          PlanarGraph(
+              relabelFace(graph.outerFace), 
+              graph.vertexFlags.head.dropRight(2) +: graph.vertexFlags.tail.map(_.map(p => (p._1, relabelFace(p._2)))), 
+              graph.labels,
+              graph.loops + 1)
         } else {
           val f1 = graph.vertexFlags(0).secondLast._2
           def relabelFace(f: Int) = {
@@ -83,7 +87,7 @@ object DiagramSpider {
             case (e, f) => (e, relabelFace(f))
           }))
 
-          PlanarGraph(graph.outerFace, flags, graph.loops)
+          PlanarGraph(graph.outerFace, flags, graph.labels, graph.loops)
         }
       }
 
@@ -105,7 +109,7 @@ object DiagramSpider {
         } else {
           resultFlags(0)(0)._2
         }
-        val result = PlanarGraph(newOuterFace, resultFlags, graph.loops)
+        val result = PlanarGraph(newOuterFace, resultFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
 
         val vertexRotations = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
 
