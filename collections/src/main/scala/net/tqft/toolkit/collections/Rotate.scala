@@ -2,7 +2,6 @@ package net.tqft.toolkit.collections
 
 object Rotate {
   implicit class Rotatable[A](i: Seq[A]) {
-
     // from net.tqft.toolkit.arithmetic.Mod, for the sake of avoiding the dependency
     private def mod(x: Int, k: Int) = {
       if (x < 0) {

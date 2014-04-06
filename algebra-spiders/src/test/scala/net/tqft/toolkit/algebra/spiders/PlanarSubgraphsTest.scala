@@ -39,9 +39,9 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
     }
   }
   "some diagrams with monogons" should "contain monogons" in {
-    val d1 = PlanarGraph(11,IndexedSeq(List((3,11), (6,10), (5,10), (4,8)), List((6,10), (7,10), (7,9)), List((3,10), (4,11), (5,8))),0)
+    val d1 = PlanarGraph(11,IndexedSeq(List((3,11), (6,10), (5,10), (4,8)), List((6,10), (7,10), (7,9)), List((3,10), (4,11), (5,8))),IndexedSeq(1,1), 0)
     d1.Subgraphs(polygon(1)).excisions.size should equal(1)
-    val d2 = PlanarGraph(8,IndexedSeq(List((3,8), (5,10), (4,9), (3,10)), List((4,10), (7,9), (5,9)), List((6,9), (6,11), (7,9))),0)
+    val d2 = PlanarGraph(8,IndexedSeq(List((3,8), (5,10), (4,9), (3,10)), List((4,10), (7,9), (5,9)), List((6,9), (6,11), (7,9))),IndexedSeq(1,1),0)
     d2.Subgraphs(polygon(1)).excisions.size should equal(1)
   }
   "a theta" should "contain ..." in {
@@ -60,12 +60,12 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
   }
   
   "a theta inside another theta" should "only contain 6 bigons" in {
-    val q = PlanarGraph(9,IndexedSeq(List(), List((4,13), (8,10), (6,9)), List((3,13), (7,11), (5,12)), List((5,13), (7,12), (3,11)), List((6,13), (8,9), (4,10))),0)
+    val q = PlanarGraph(9,IndexedSeq(List(), List((4,13), (8,10), (6,9)), List((3,13), (7,11), (5,12)), List((5,13), (7,12), (3,11)), List((6,13), (8,9), (4,10))),IndexedSeq(1,1,1,1),0)
     q.Subgraphs(polygon(2)).excisions.size should equal(6)
   }
   
   "this graph" should "not blow up while finding subgraphs" in {
-    val q = PlanarGraph(12,IndexedSeq(List(), List((8,13), (8,12), (11,13)), List((7,15), (11,13), (9,13)), List((4,16), (5,13), (6,17)), List((4,13), (23,16), (22,13)), List((7,13), (9,15), (22,13)), List((5,17), (23,13), (6,16))),0)
+    val q = PlanarGraph(12,IndexedSeq(List(), List((8,13), (8,12), (11,13)), List((7,15), (11,13), (9,13)), List((4,16), (5,13), (6,17)), List((4,13), (23,16), (22,13)), List((7,13), (9,15), (22,13)), List((5,17), (23,13), (6,16))),IndexedSeq(1,1,1,1,1,1),0)
     q.Subgraphs(polygon(2)).excisions.size should equal(4)
   }
 }

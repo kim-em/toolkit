@@ -10,11 +10,11 @@ import net.tqft.toolkit.algebra.matrices2.Matrix
 @RunWith(classOf[JUnitRunner])
 class InnerProductsTest extends FlatSpec with Matchers with IsomorphismMatchers {
 
-  val `D(4,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(4, 0)
+  val `D(4,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(4, 0).toList
 
   "inner products of D(4,0)" should "be correct" in {
     val spider = TrivalentSpider
-    val `M(4,0)` = spider.innerProductMatrix(`D(4,0)`.toIndexedSeq)
+    val `M(4,0)` = spider.innerProductMatrix(`D(4,0)`)
 
     val d = "d"
     val b = "b"
