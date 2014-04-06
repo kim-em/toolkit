@@ -5,10 +5,8 @@ import net.tqft.toolkit.algebra._
 object Gadgets {
   def algebraOfRationalPolynomials_0 = implicitly[Polynomials[Fraction[Int]]]
   def algebraOfRationalPolynomials_1 = implicitly[PolynomialsOverEuclideanRing[Fraction[Int]]]
-//  def algebraOfRationalPolynomials_2 = implicitly[PolynomialsOverField[Fraction[Int]]]
-//  def algebraOfRationalPolynomials_3 = implicitly[PolynomialsOverOrderedField[Fraction[Int]]]
 
-  def ordereedEuclideanRingOfRationalPolynomials = implicitly[OrderedEuclideanRing[Polynomial[Fraction[Int]]]]
+  def orderedEuclideanRingOfRationalPolynomials = implicitly[OrderedEuclideanRing[Polynomial[Fraction[Int]]]]
   def euclideanRingOfRationalPolynomials = implicitly[EuclideanRing[Polynomial[Fraction[Int]]]]
   def ringOfRationalPolynomials = implicitly[Ring[Polynomial[Fraction[Int]]]]
 
@@ -30,7 +28,7 @@ object Gadgets {
   def rigOfMultivariablePolynomials = implicitly[Rig[MultivariablePolynomial[Int, String]]]
   def ringOfMultivariablePolynomials = implicitly[Ring[MultivariablePolynomial[Int, String]]]
 
-//  def euclideanRingOfMultivariablePolynomials = implicitly[EuclideanRing[MultivariablePolynomial[Fraction[Int], String]]]
-//  def multivariableRationalFunctions = implicitly[Field[MultivariableRationalFunction[Fraction[Int], String]]]
+  def euclideanRingOfMultivariablePolynomials = implicitly[EuclideanRing[MultivariablePolynomial[Fraction[Int], String]]]
+  def multivariableRationalFunctions = implicitly[Field[MultivariableRationalFunction[Fraction[Int], String]]]
 
 }

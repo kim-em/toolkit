@@ -5,7 +5,7 @@ import scala.collection.SortedMap
 
 object LexicographicOrdering {
 
-  implicit def ordering[A: Ordering, B: Ordering]: Ordering[Map[A, B]] = {
+  implicit def mapOrdering[A: Ordering, B: Ordering]: Ordering[Map[A, B]] = {
     // FIXME this could be made more efficient, probably!
     require(implicitly[Ordering[A]] != null)
     require(implicitly[Ordering[B]] != null)
