@@ -7,10 +7,20 @@ object MinMax {
     } else {
       Some(c.min)
     }
+    def minByOption[B: Ordering](f: A => B): Option[A] = if(c.isEmpty) {
+      None
+    } else {
+      Some(c.minBy(f))
+    }
     def maxOption(implicit cmp: Ordering[A]): Option[A] = if(c.isEmpty) {
       None
     } else {
       Some(c.max)
+    }
+    def maxByOption[B: Ordering](f: A => B): Option[A] = if(c.isEmpty) {
+      None
+    } else {
+      Some(c.maxBy(f))
     }
   }
   

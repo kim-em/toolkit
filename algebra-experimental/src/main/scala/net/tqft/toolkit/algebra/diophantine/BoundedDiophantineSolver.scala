@@ -81,7 +81,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
         qs.foldLeft[Option[Equations]](Some(this))({ (o, e) => o.flatMap(_.addEquation(e)) })
       }
       def addEquation(q: P): Option[Equations] = {
-        val p = polynomialAlgebra.divideByCoefficientGCD(polynomialAlgebra.substitute(substitutions)(q))
+        val p = polynomialAlgebra.primitivePart(polynomialAlgebra.substitute(substitutions)(q))
 
         def splitIfPositiveOrOtherwiseAdd: Option[Equations] = {
           if (p.coefficients.size > 1 && (p.coefficients.forall(_._2 > 0) || p.coefficients.forall(_._2 < 0))) {
