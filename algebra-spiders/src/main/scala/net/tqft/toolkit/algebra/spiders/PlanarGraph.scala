@@ -5,6 +5,15 @@ import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import scala.collection.mutable.ListBuffer
 import net.tqft.toolkit.Logging
 
+trait Rotatable[L] {
+  def circumference(l: L): Int
+  def allowedRotations(l: L): Set[Int]
+  def rotationAllowed_?(l: L, k: Int) = {
+    import net.tqft.toolkit.arithmetic.Mod._
+    allowedRotations(l).contains(k mod circumference(l))
+  }
+}
+
 // flags veer to the left
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], loops: Int) { graph =>
@@ -341,10 +350,19 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
       val facesAroundSubgraph: Seq[Int] = boundaryEdgesAndFacesToDelete.map(_._2)
 
-      val finalSegmentPerimeter = {
+      val finalSegmentPerimeter_old = {
         import net.tqft.toolkit.collections.TakeToFirst._
         outerFaceBoundary.reverse.takeToFirst(p => boundaryEdgesToDelete.contains(p._2)).toList.reverse
       }
+
+      val finalSegmentPerimeter = {
+        import net.tqft.toolkit.collections.TakeToFirst._
+        outerFaceBoundary.reverse.takeToFirst({ p =>
+          boundaryEdgesToDelete.head == p._2 && (boundaryEdgesToDelete.count(_ == p._2) == 2 || !verticesToDelete.contains(target(p._1, p._2)))
+        }).toList.reverse
+      }
+
+      //      require(finalSegmentPerimeter == finalSegmentPerimeter_old)
 
       def needNewFace = {
         (numberOfBoundaryPoints != 0) && faceBoundary(outerFace).find(_.exists(_._1 == 0)).get.map(_._2).toSet.intersect(boundaryEdgesToDelete.toSet).nonEmpty
@@ -567,7 +585,7 @@ object PlanarGraph {
 
   val two_strands_horizontal = spider.tensor(strand, strand)
   val two_strands_vertical = spider.rotate(two_strands_horizontal, 1)
-  
+
   private def polygon_(k: Int) = {
     if (k == 0) {
       loop

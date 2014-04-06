@@ -14,7 +14,9 @@ object MultivariablePolynomial {
 
   implicit def lift[A, V](coefficients: Map[Map[V, Int], A]) = MultivariablePolynomial[A, V](coefficients)
 
-  implicit def liftCoefficientsToFractions[A: EuclideanRing, V: Ordering](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(coefficients.mapValues(a => (a: Fraction[A])))
+  implicit def liftCoefficientsToFractions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(coefficients.mapValues(a => (a: Fraction[A])))
+  implicit def liftCoefficientToPolynomials[A, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[A], V] = coefficients.mapValues(a => (a: Polynomial[A]))
+  implicit def liftCoefficientToRationalFunctions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[Fraction[A]], V] = coefficients.mapValues(a => (a: Polynomial[Fraction[A]]))
   implicit def constantPolynomial[A: Field, V: Ordering](a: A): MultivariablePolynomial[A, V] = MultivariablePolynomial(Map(Map.empty -> a))
   implicit def constantPolynomialFraction[A: EuclideanRing, V: Ordering](a: A): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(Map(Map.empty -> (a: Fraction[A])))
   

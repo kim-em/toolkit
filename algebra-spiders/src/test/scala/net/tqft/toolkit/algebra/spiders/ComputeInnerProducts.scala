@@ -8,64 +8,21 @@ import net.tqft.toolkit.algebra.matrices.Matrix
 object ComputeInnerProducts extends App {
   lazy val `D(4,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(4, 0).toList
   lazy val `D(4,1)` = TrivalentGraphs.withoutTinyFaces.byNumberOfFaces(4, 1).toList
-  lazy val `D(5,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(5, 0)
-  lazy val `D(6,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(6, 0)
-
-//  {
-//    val spider = Trivalent.TrivalentSpider
-//
-//    val `M(4,0)` = spider.innerProductMatrix(`D(4,0)`)
-//
-//    import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
-//
-//    println("trivalent Delta(4,0)")
-//    println(`M(4,0)`.toMathemathicaInputString)
-//
-//    println(spider.innerProductMatrix(`D(4,0)`, `D(4,1)`).toMathemathicaInputString)
-//  }
-  //  {
-  //    val spider = Trivalent.TrivalentSpider
-  //
-  //    val `M(5,0)` = spider.innerProductMatrix(`D(5,0)`.toIndexedSeq)
-  //
-  //    import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
-  //
-  //    println("trivalent Delta(5,0)")
-  //    println(`M(5,0)`.toMathemathicaInputString)
-  //  }
-  //  {
-  //    val spider = Trivalent.TrivalentSpider
-  //
-  //    val `M(6,0)` = spider.innerProductMatrix(`D(6,0)`.toIndexedSeq)
-  //
-  //    import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
-  //
-  //    println("trivalent Delta(6,0)")
-  //    println(`M(6,0)`.toMathemathicaInputString)
-  //  }
-  //
-  {
-    val spider = TwistedTrivalent.TwistedTrivalentSpider
-
-    val `M(4,0)` = spider.innerProductMatrix(`D(4,0)`.toIndexedSeq)
-
-    import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
-    implicit val polynomialForm = MathematicaForm.polynomialMathematicaForm[Fraction[Int]]("w")
-
-    println("twisted trivalent Delta(4,0)")
-    println(`M(4,0)`.toMathemathicaInputString)
-
-    println(spider.innerProductMatrix(`D(4,0)`, `D(4,1)`).toMathemathicaInputString)
+  def D(n: Int, k: Int) = {
+    TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(n, k).toList
   }
-  {
-    val spider = TwistedTrivalent.TwistedTrivalentSpider
+  def M(n: Int, k: Int) = {
+    CubicSpider.innerProductMatrix(D(n, k))
+  }
+  def Mw(n: Int, k: Int) = {
+    TwistedCubicSpider.innerProductMatrix(D(n, k))
+  }
 
-    val `M(5,0)` = spider.innerProductMatrix(`D(5,0)`.toIndexedSeq)
+  import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
+  implicit val polynomialForm = MathematicaForm.polynomialMathematicaForm[Fraction[Int]]("w")
 
-    import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
-    implicit val polynomialForm = MathematicaForm.polynomialMathematicaForm[Fraction[Int]]("w")
-
-    println("twisted trivalent Delta(5,0)")
-    println(`M(5,0)`.toMathemathicaInputString)
+  for ((n, k) <- Seq(/*(4, 0), (4, 1), (5, 0), (5, 1), (6, 0), (6, 1), (6, 2), */(7, 0), (7,1), (7,2))) {
+    println(s"twisted M($n, $k)")
+    println(Mw(n, k).toMathemathicaInputString)
   }
 }

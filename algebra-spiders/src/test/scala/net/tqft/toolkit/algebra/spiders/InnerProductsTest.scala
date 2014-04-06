@@ -13,7 +13,7 @@ class InnerProductsTest extends FlatSpec with Matchers with IsomorphismMatchers 
   val `D(4,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(4, 0)
 
   "inner products of D(4,0)" should "be correct" in {
-    val spider = Trivalent.TrivalentSpider
+    val spider = TrivalentSpider
     val `M(4,0)` = spider.innerProductMatrix(`D(4,0)`.toIndexedSeq)
 
     val d = "d"
@@ -26,15 +26,15 @@ class InnerProductsTest extends FlatSpec with Matchers with IsomorphismMatchers 
 
   "twisted inner products of D(4,0)" should "be correct" in {
     val diagramSpider = implicitly[DiagramSpider[PlanarGraph]]
-    val spider = TwistedTrivalent.TwistedTrivalentSpider
-    import TwistedTrivalent.polynomialRing
+    val spider = TwistedTrivalentSpider
+    import spider.ring
     val x = diagramSpider.innerProduct(
       PlanarGraph.H,
       diagramSpider.tensor(PlanarGraph.strand, PlanarGraph.strand))
     println(x)
     val subgraphs = x.Subgraphs(PlanarGraph.polygon(2))
     for(s <- subgraphs.excisions) println(s)
-    val xc = spider.canonicalForm(Map(x -> polynomialRing.one))
+    val xc = spider.canonicalForm(Map(x -> ring.one))
     println(xc)
   }
 }
