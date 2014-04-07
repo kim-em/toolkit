@@ -9,13 +9,13 @@ import org.scalatest._
 @RunWith(classOf[JUnitRunner])
 class MultivariablePolynomialsTest extends FlatSpec with Matchers {
 
-  //  "gcd of zero and a monomial " should "be that monomial" in {
-  //    val polynomials = implicitly[MultivariablePolynomialAlgebraOverEuclideanRing[Fraction[Int], String]]
-  //    val m = polynomials.monomial(Map("d" -> 1), 1)
-  //    val z = polynomials.zero
-  //    polynomials.gcd(m, z) should equal(m)
-  //    polynomials.gcd(z, m) should equal(m)
-  //  }
+  "gcd of zero and a monomial " should "be that monomial" in {
+    val polynomials = implicitly[MultivariablePolynomialAlgebraOverEuclideanRing[Fraction[Int], String]]
+    val m = polynomials.monomial(Map("d" -> 1), 1)
+    val z = polynomials.zero
+    polynomials.gcd(m, z) should equal(m)
+    polynomials.gcd(z, m) should equal(m)
+  }
   "gcd of 0 and x" should "be x" in {
     val polynomials = implicitly[MultivariablePolynomialAlgebraOverEuclideanRing[Fraction[Int], String]]
     val t = "t"
