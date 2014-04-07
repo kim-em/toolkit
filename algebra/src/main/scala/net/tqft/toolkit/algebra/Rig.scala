@@ -13,6 +13,8 @@ trait Rig[@specialized(Int, Long, Float, Double) A] extends Monoid[A] with Addit
 }
 
 trait RigLowPriorityImplicits {
+  implicit def forget[A: GCDRig]: Rig[A] = implicitly[Rig[A]]
+
   implicit def pointwiseRigMap[A, B: Rig]: Rig[Map[A, B]] = new Rig.PointwiseRigMap[A, B] {
     override def coefficients = implicitly[ModuleOverRig[B, B]]
     override def multiplicativeCoefficients = implicitly[Rig[B]]
@@ -20,7 +22,7 @@ trait RigLowPriorityImplicits {
 }
 
 object Rig extends RigLowPriorityImplicits {
-  implicit def forget[A: Ring]: Rig[A] = implicitly[Ring[A]]
+  implicit def forget[A: Ring]: Rig[A] = implicitly[Rig[A]]
 
   trait RigMap[A, B] extends ModuleOverRig.ModuleOverRigMap[B, A, B] with Rig[Map[A, B]] {
     def keys: AdditiveMonoid[A]

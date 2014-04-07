@@ -54,21 +54,16 @@ object PolynomialAlgebraOverEuclideanRing {
   trait PolynomialAlgebraOverEuclideanRingForMaps[A] extends PolynomialAlgebra.PolynomialAlgebraForMaps[A] with PolynomialAlgebraOverEuclideanRing[A, Map[Int, A]] {
     override def ring: EuclideanRing[A]
   }
-  trait PolynomialAlgebraOverEuclideanRingForPolynomials[A] extends PolynomialAlgebra.PolynomialAlgebraForPolynomials[A] with PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]] {
-    override def ring: EuclideanRing[A]
-  }
 
   implicit def forMaps[A: EuclideanRing]: PolynomialAlgebraOverEuclideanRing[A, Map[Int, A]] = new PolynomialAlgebraOverEuclideanRingForMaps[A] {
     override def ring = implicitly[EuclideanRing[A]]
   }
-  implicit def over[A: EuclideanRing]: PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]] = new PolynomialAlgebra.PolynomialAlgebraForPolynomials[A] with PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]] {
-    override def ring = implicitly[EuclideanRing[A]]
-  }
+  implicit def over[A: EuclideanRing]: PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]] = PolynomialsOverEuclideanRing.over[A]
 }
 
-trait PolynomialsOverEuclideanRing[A] extends PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]] with Polynomials[A]
+abstract class PolynomialsOverEuclideanRing[A: EuclideanRing] extends Polynomials[A] with PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]]
 object PolynomialsOverEuclideanRing {
-  implicit def over[A: EuclideanRing]: PolynomialsOverEuclideanRing[A] = new PolynomialAlgebraOverEuclideanRing.PolynomialAlgebraOverEuclideanRingForPolynomials[A] with PolynomialsOverEuclideanRing[A] {
+  implicit def over[A: EuclideanRing]: PolynomialsOverEuclideanRing[A] = new PolynomialsOverEuclideanRing[A] { 
     override def ring = implicitly[EuclideanRing[A]]
   }
 }

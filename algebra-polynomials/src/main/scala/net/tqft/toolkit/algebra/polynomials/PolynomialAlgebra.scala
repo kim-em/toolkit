@@ -83,12 +83,6 @@ object PolynomialAlgebra {
     override def formalDerivative(p: P) = implementation.formalDerivative(p)
   }
 
-  abstract class PolynomialAlgebraForPolynomials[A: Ring] extends PolynomialAlgebraForWrapper[A, Polynomial[A]] {
-
-    override def toMap(p: Polynomial[A]) = p.coefficients
-    override def fromMap(m: Map[Int, A]) = Polynomial(m)
-  }
-
   //  class PolynomialAlgebraForCoefficientSequences[A: Ring] extends PolynomialAlgebra[A, Seq[A]]
   //  class PolynomialAlgebraForCoefficientStreams[A: Ring] extends Ring.RingMap[Int, A] with PolynomialAlgebra[A, Stream[A]] 
   //  class PolynomialAlgebraForRootMultiplicities[A: Ring] extends PolynomialAlgebra[A, (A, Map[A, Int])]
@@ -96,15 +90,20 @@ object PolynomialAlgebra {
   implicit def forMaps[A: Ring]: PolynomialAlgebra[A, Map[Int, A]] = new PolynomialAlgebraForMaps[A] {
     override def ring = implicitly[Ring[A]]
   }
-  implicit def over[A: Ring]: PolynomialAlgebra[A, Polynomial[A]] = new PolynomialAlgebraForPolynomials[A] {
+  implicit def over[A: Ring]: PolynomialAlgebra[A, Polynomial[A]] = new Polynomials[A] {
     override def ring = implicitly[Ring[A]]
   }
 }
 
-trait Polynomials[A] extends PolynomialAlgebra[A, Polynomial[A]]
+  abstract class Polynomials[A: Ring] extends PolynomialAlgebra.PolynomialAlgebraForWrapper[A, Polynomial[A]] {
+    override def toMap(p: Polynomial[A]) = p.coefficients
+    override def fromMap(m: Map[Int, A]) = Polynomial(m)
+  }
+
+
 
 object Polynomials {
-  implicit def over[A: Ring]: Polynomials[A] = new PolynomialAlgebra.PolynomialAlgebraForPolynomials[A] with Polynomials[A] {
+  implicit def over[A: Ring]: Polynomials[A] = new Polynomials[A] {
     override def ring = implicitly[Ring[A]]
   }
 }

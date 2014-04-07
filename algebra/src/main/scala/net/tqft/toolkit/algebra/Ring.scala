@@ -9,7 +9,7 @@ trait RingLowPriorityImplicits {
 }
 
 object Ring extends RingLowPriorityImplicits {
-  implicit def forget[A: EuclideanRing]: Ring[A] = implicitly[EuclideanRing[A]]
+  implicit def forget[A: GCDRing]: Ring[A] = implicitly[Ring[A]]
 
   trait RingMap[A, B] extends Module.ModuleMap[B, A, B] with Rig.RigMap[A, B]  with Ring[Map[A, B]] {
     override def coefficients: Module[B, B]

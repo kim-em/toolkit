@@ -3,8 +3,9 @@ package net.tqft.toolkit.algebra.numberfields
 import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.ComplexConjugation
 import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.EuclideanRing
 
-trait CyclotomicNumberField[A] extends NumberField[A] with ComplexConjugation[Polynomial[A]] { cnf =>
+abstract class CyclotomicNumberField[A: Field] extends NumberField[A] with ComplexConjugation[Polynomial[A]] { cnf =>
   val order: Int
   override lazy val generator = Polynomial.cyclotomic(order)(coefficients) // has to be lazy so coefficentField is available
 
@@ -18,7 +19,7 @@ trait CyclotomicNumberField[A] extends NumberField[A] with ComplexConjugation[Po
     (f _).memo
   }
 
-  def bar(q: Polynomial[A]) = sum(normalize(q).toMap.toSeq.map({ case (k, a) => scalarMultiply(a, zetaInversePowers(k)) }))
+  def bar(q: Polynomial[A]) = sum(q.toMap.toSeq.map({ case (k, a) => scalarMultiply(a, zetaInversePowers(k)) }))
 
   // TODO these belong somewhere else
   // import net.tqft.toolkit.algebra.cones.CubicalCone

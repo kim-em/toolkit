@@ -42,6 +42,6 @@ object MultivariablePolynomial {
 
   implicit def multivariablePolynomialAlgebraAsRig[A: Rig, V: Ordering]: Rig[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverRig[A, V]]
   implicit def multivariablePolynomialAlgebraAsRing[A: Ring, V: Ordering]: Ring[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebra[A, V]]
-  implicit def multivariablePolynomialAlgebraAsEuclideanRing[A: EuclideanRing, V: Ordering]: EuclideanRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverEuclideanRing[A, V]]
-  implicit def multivariablePolynomialAlgebraAsOrderedEuclideanRing[A: OrderedEuclideanRing, V: Ordering]: OrderedEuclideanRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V]]
+//  implicit def multivariablePolynomialAlgebraAsEuclideanRing[A: EuclideanRing, V: Ordering]: EuclideanRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverEuclideanRing[A, V]]
+//  implicit def multivariablePolynomialAlgebraAsOrderedEuclideanRing[A: OrderedEuclideanRing, V: Ordering]: OrderedEuclideanRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V]]
 }

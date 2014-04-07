@@ -30,22 +30,16 @@ object PolynomialAlgebraOverOrderedEuclideanRing {
   trait PolynomialAlgebraOverOrderedEuclideanRingForMaps[A] extends PolynomialAlgebraOverEuclideanRing.PolynomialAlgebraOverEuclideanRingForMaps[A] with PolynomialAlgebraOverOrderedEuclideanRing[A, Map[Int, A]] {
     override def ring: OrderedEuclideanRing[A]
   }
-  trait PolynomialAlgebraOverOrderedEuclideanRingForPolynomials[A] extends PolynomialAlgebraOverEuclideanRing.PolynomialAlgebraOverEuclideanRingForPolynomials[A] with PolynomialAlgebraOverOrderedEuclideanRing[A, Polynomial[A]] {
-    override def ring: OrderedEuclideanRing[A]
-  }
-
   implicit def forMaps[A: OrderedEuclideanRing]: PolynomialAlgebraOverOrderedEuclideanRing[A, Map[Int, A]] = new PolynomialAlgebra.PolynomialAlgebraForMaps[A] with PolynomialAlgebraOverOrderedEuclideanRing[A, Map[Int, A]] {
     override def ring = implicitly[OrderedEuclideanRing[A]]
   }
-  implicit def over[A: OrderedEuclideanRing]: PolynomialAlgebraOverOrderedEuclideanRing[A, Polynomial[A]] = new PolynomialAlgebra.PolynomialAlgebraForPolynomials[A] with PolynomialAlgebraOverOrderedEuclideanRing[A, Polynomial[A]] {
-    override def ring = implicitly[OrderedEuclideanRing[A]]
-  }
+  implicit def over[A: OrderedEuclideanRing]: PolynomialAlgebraOverOrderedEuclideanRing[A, Polynomial[A]] = PolynomialsOverOrderedEuclideanRing.over[A]
 }
 
-trait PolynomialsOverOrderedEuclideanRing[A] extends PolynomialAlgebraOverOrderedEuclideanRing[A, Polynomial[A]]
+abstract class PolynomialsOverOrderedEuclideanRing[A:OrderedEuclideanRing] extends PolynomialsOverEuclideanRing[A] with PolynomialAlgebraOverOrderedEuclideanRing[A, Polynomial[A]]
 object PolynomialsOverOrderedEuclideanRing {
-  implicit def over[A: OrderedEuclideanRing]: PolynomialsOverOrderedEuclideanRing[A] = new PolynomialAlgebraOverOrderedEuclideanRing.PolynomialAlgebraOverOrderedEuclideanRingForPolynomials[A] with PolynomialsOverOrderedEuclideanRing[A] {
-    override def ring = implicitly[OrderedEuclideanRing[A]]
+  implicit def over[A: OrderedEuclideanRing]: PolynomialsOverOrderedEuclideanRing[A] = new PolynomialsOverOrderedEuclideanRing[A] { 
+    override def ring: OrderedEuclideanRing[A] = implicitly[OrderedEuclideanRing[A]]
   }
 }
 
