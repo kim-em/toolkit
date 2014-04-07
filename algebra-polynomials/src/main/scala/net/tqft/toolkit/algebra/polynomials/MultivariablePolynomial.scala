@@ -1,7 +1,6 @@
 package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
-
 import scala.language.implicitConversions
 
 case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
@@ -19,9 +18,9 @@ object MultivariablePolynomial {
   implicit def liftCoefficientToRationalFunctions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[Fraction[A]], V] = coefficients.mapValues(a => (a: Polynomial[Fraction[A]]))
   implicit def constant[A: Ring, V](a: A): MultivariablePolynomial[A, V] = {
     if (a == implicitly[Ring[A]].zero) {
-      MultivariablePolynomial(Map())
+      MultivariablePolynomial(Map.empty)
     } else {
-      MultivariablePolynomial(Map(Map.empty -> a))
+      MultivariablePolynomial(new scala.collection.immutable.Map.Map1(Map.empty, a))
     }
   }
   implicit def constantFraction[A: EuclideanRing, V](a: A): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(Map(Map.empty -> (a: Fraction[A])))
