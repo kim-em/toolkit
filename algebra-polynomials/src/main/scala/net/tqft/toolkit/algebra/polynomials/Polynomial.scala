@@ -4,12 +4,16 @@ import scala.language.implicitConversions
 
 import net.tqft.toolkit.algebra._
 
-case class Polynomial[A](coefficients: Map[Int, A])
+case class Polynomial[A](coefficients: Map[Int, A]) {
+//  require(coefficients.valuesIterator.forall(_ != implicitly[Rig[A]].zero))
+}
 
 object Polynomial {
-  def apply[A](terms: (Int, A)*): Polynomial[A] = Polynomial(terms.toMap)
+  def apply[A:Rig](terms: (Int, A)*): Polynomial[A] = Polynomial(terms.toMap)
 
   def identity[A: Ring] = Polynomial(Map(1 -> implicitly[Ring[A]].one))
+  
+  implicit def lift[A](m: Map[Int, A]) = Polynomial(m)
   
   implicit def constant[A](a: A): Polynomial[A] = Polynomial(Map(0 -> a))
   implicit def constantFraction[A: EuclideanRing](a: A): Polynomial[Fraction[A]] = constant(a)
@@ -20,6 +24,7 @@ object Polynomial {
     Polynomial(p.coefficients.mapValues(x => x: Fraction[A]))
   }
   
+  implicit def polynomialAlgebraAsRing[A: Ring]: Ring[Polynomial[A]] = implicitly[PolynomialAlgebra[A, Polynomial[A]]]
   implicit def polynomialAlgebraAsEuclideanRing[A: EuclideanRing]: EuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]]]
   implicit def polynomialAlgebraOverOrderedEuclideanRingAsOrderedEuclideanRing[A: OrderedEuclideanRing]: OrderedEuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverOrderedEuclideanRing[A, Polynomial[A]]]
 

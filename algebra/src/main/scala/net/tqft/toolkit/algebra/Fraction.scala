@@ -19,9 +19,9 @@ sealed trait Fraction[@specialized(Int, Long) A] extends Serializable {
 object Fraction {
 
   implicit def whole[@specialized(Int, Long) A: Rig](x: A): Fraction[A] = FractionWhole(x)
-  
+
   def alreadyReduced[A](numerator: A, denominator: A): Fraction[A] = FractionRatio(numerator, denominator)
-  
+
   def apply[@specialized(Int, Long) A: GCDRing](numerator: A, denominator: A): Fraction[A] = {
     val _numerator = numerator
     val _denominator = denominator
@@ -38,9 +38,9 @@ object Fraction {
   }
   private case class FractionRatio[A](numerator: A, denominator: A) extends Fraction[A]
 
-//  implicit def constant[A: EuclideanRing](x: A): RationalFunction[A] = Fraction.whole(Polynomial.constant(Fraction.whole(x)))
+  //  implicit def constant[A: EuclideanRing](x: A): RationalFunction[A] = Fraction.whole(Polynomial.constant(Fraction.whole(x)))
 
-//  implicit def toMathematicaExpression[A <% net.tqft.toolkit.mathematica.MathematicaExpression](f: Fraction[A]) = new net.tqft.toolkit.mathematica.ShortMathematicaExpression {
-//    def toMathematicaInputString = "(" + f.numerator.toMathematicaInputString + ")/(" + f.denominator.toMathematicaInputString + ")"
-//  }
+  //  implicit def toMathematicaExpression[A <% net.tqft.toolkit.mathematica.MathematicaExpression](f: Fraction[A]) = new net.tqft.toolkit.mathematica.ShortMathematicaExpression {
+  //    def toMathematicaInputString = "(" + f.numerator.toMathematicaInputString + ")/(" + f.denominator.toMathematicaInputString + ")"
+  //  }
 }

@@ -10,6 +10,13 @@ object ComputeCubicRelation extends App {
   lazy val `D(4,1)` = TrivalentGraphs.withoutTinyFaces.byNumberOfFaces(4, 1).toList
 
   val m = Matrix(5, CubicSpider.innerProductMatrix(`D(4,0)`, `D(4,1)`).map(_.map(x => (x: MultivariableRationalFunction[Fraction[Int], String]))))
+
   import MathematicaForm._
-//  println(m.nullSpace)
+
+  println("matrix: ")
+  println(m.entries.toIndexedSeq.toMathemathicaInputString)
+  while (true) {
+    println("nullspace: ")
+    println(m.nullSpace.toMathemathicaInputString)
+  }
 }
