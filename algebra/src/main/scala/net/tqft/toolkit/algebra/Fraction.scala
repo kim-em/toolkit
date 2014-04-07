@@ -18,23 +18,23 @@ sealed trait Fraction[@specialized(Int, Long) A] extends Serializable {
 
 object Fraction {
 
-  implicit def whole[@specialized(Int, Long) A: EuclideanRing](x: A): Fraction[A] = FractionWhole(x)
+  implicit def whole[@specialized(Int, Long) A: Rig](x: A): Fraction[A] = FractionWhole(x)
   
   def alreadyReduced[A](numerator: A, denominator: A): Fraction[A] = FractionRatio(numerator, denominator)
   
-  def apply[@specialized(Int, Long) A: EuclideanRing](numerator: A, denominator: A): Fraction[A] = {
+  def apply[@specialized(Int, Long) A: GCDRing](numerator: A, denominator: A): Fraction[A] = {
     val _numerator = numerator
     val _denominator = denominator
-    val ring = implicitly[EuclideanRing[A]]
+    val ring = implicitly[GCDRing[A]]
     val gcd = ring.gcd(_numerator, _denominator)
-    ring.quotient(_denominator, gcd) match {
-      case q if q == ring.one => FractionWhole(ring.quotient(_numerator, gcd))
-      case _ => FractionRatio(ring.quotient(_numerator, gcd), ring.quotient(_denominator, gcd))
+    ring.exactQuotient(_denominator, gcd) match {
+      case q if q == ring.one => FractionWhole(ring.exactQuotient(_numerator, gcd))
+      case _ => FractionRatio(ring.exactQuotient(_numerator, gcd), ring.exactQuotient(_denominator, gcd))
     }
   }
 
-  private case class FractionWhole[A: Ring](numerator: A) extends Fraction[A] {
-    override def denominator = implicitly[Ring[A]].one
+  private case class FractionWhole[A: Rig](numerator: A) extends Fraction[A] {
+    override def denominator = implicitly[Rig[A]].one
   }
   private case class FractionRatio[A](numerator: A, denominator: A) extends Fraction[A]
 

@@ -109,7 +109,7 @@ object MultivariablePolynomialAlgebra {
   }
 }
 
-trait MultivariablePolynomialAlgebraOverEuclideanRing[A, V] extends MultivariablePolynomialAlgebra[A, V] with EuclideanRing[MultivariablePolynomial[A, V]] {
+trait MultivariablePolynomialAlgebraOverEuclideanRing[A, V] extends MultivariablePolynomialAlgebra[A, V] with GCDRing[MultivariablePolynomial[A, V]] {
   override implicit def ring: EuclideanRing[A]
 
   def content(p: MultivariablePolynomial[A, V]): A = {
@@ -143,65 +143,76 @@ trait MultivariablePolynomialAlgebraOverEuclideanRing[A, V] extends Multivariabl
     x.coefficients.keySet.flatMap(_.keySet)
   }
 
-  override def quotientRemainder(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): (MultivariablePolynomial[A, V], MultivariablePolynomial[A, V]) = {
-    println("quotientRemainder(")
-    println("  " + x + ",")
-    println("  " + y)
-    println(")")
-
-    import net.tqft.toolkit.arithmetic.MinMax._
-    variables(x).maxByOption(v => Map(v -> 1))(monomialOrdering) match {
-      case None => {
-        // x is just a constant
-        if (variables(y).isEmpty) {
-          val (aq, ar) = ring.quotientRemainder(x.constantTerm, y.constantTerm)
-          (aq, ar)
-        } else {
-          (x, zero)
-        }
-      }
-      case Some(v) => {
-        val dx = maximumDegreeOfVariable(v)(x).get
-        val ody = maximumDegreeOfVariable(v)(y)
-        ody match {
-          case None => throw new ArithmeticException
-          case Some(dy) => {
-            if (dx < dy) {
-              (x, zero)
-            } else {
-              val ax = coefficientOfOneVariable(v, dx)(x)
-              val ay = coefficientOfOneVariable(v, dy)(y)
-              val q = quotient(ax, ay) // ax = q ay + r
-              val q1 = multiply(q, monomial(Map(v -> (dx - dy))))
-              val difference = add(x, negate(multiply(q1, y)))
-              val (q2, r) = quotientRemainder(difference, y)
-              (add(q1, q2), r).ensuring(p => x == add(multiply(p._1, y), p._2))
-            }
-          }
-        }
-      }
-    }
-  }
+//  private var stackDepth = 0
+//  override def quotientRemainder(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): (MultivariablePolynomial[A, V], MultivariablePolynomial[A, V]) = {
+//    println("quotientRemainder(")
+//    println("  " + x + ",")
+//    println("  " + y)
+//    println(")")
+//
+//    stackDepth = stackDepth + 1
+//    require(stackDepth < 40)
+//    import net.tqft.toolkit.arithmetic.MinMax._
+//    variables(x).maxByOption(v => Map(v -> 1))(monomialOrdering) match {
+//      case None => {
+//        stackDepth = stackDepth - 1
+//        // x is just a constant
+//        if (variables(y).isEmpty) {
+//          val (aq, ar) = ring.quotientRemainder(x.constantTerm, y.constantTerm)
+//          (aq, ar)
+//        } else {
+//          (zero, x)
+//        }
+//      }
+//      case Some(v) => {
+//        val dx = maximumDegreeOfVariable(v)(x).get
+//        val ody = maximumDegreeOfVariable(v)(y)
+//        ody match {
+//          case None => throw new ArithmeticException
+//          case Some(dy) => {
+//            if (dx < dy) {
+//              stackDepth = stackDepth - 1
+//              (zero, x)
+//            } else {
+//              val ax = coefficientOfOneVariable(v, dx)(x)
+//              val ay = coefficientOfOneVariable(v, dy)(y)
+//              val q = quotient(ax, ay) // ax = q ay + r
+//              if (q != zero) {
+//                val q1 = multiply(q, monomial(Map(v -> (dx - dy))))
+//                val difference = add(x, negate(multiply(q1, y)))
+//                val (q2, r) = quotientRemainder(difference, y)
+//                stackDepth = stackDepth - 1
+//                (add(q1, q2), r).ensuring(p => x == add(multiply(p._1, y), p._2))
+//              } else {
+//                stackDepth = stackDepth - 1
+//                (zero, x)
+//              }
+//            }
+//          }
+//        }
+//      }
+//    }
+//  }
 }
 
-object MultivariablePolynomialAlgebraOverEuclideanRing {
-  implicit def over[A: EuclideanRing, V: Ordering]: MultivariablePolynomialAlgebraOverEuclideanRing[A, V] = new MultivariablePolynomialAlgebraOverEuclideanRing[A, V] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
-    override val variableOrdering = implicitly[Ordering[V]]
-    override val ring = implicitly[EuclideanRing[A]]
-  }
-}
-
-trait MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V] extends MultivariablePolynomialAlgebraOverEuclideanRing[A, V] with OrderedEuclideanRing[MultivariablePolynomial[A, V]] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V]  {
-  override implicit def ring: OrderedEuclideanRing[A]
-  override def compare(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = {
-    import net.tqft.toolkit.orderings.LexicographicOrdering
-    LexicographicOrdering.mapOrdering[Map[V, Int], A](monomialOrdering, ring).compare(x.coefficients, y.coefficients)
-  }
-}
-
-object MultivariablePolynomialAlgebraOverOrderedEuclideanRing {
-  implicit def over[A: OrderedEuclideanRing, V: Ordering]: MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V] = new MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V] {
-    override val variableOrdering = implicitly[Ordering[V]]
-    override val ring = implicitly[OrderedEuclideanRing[A]]
-  }
-}
+//object MultivariablePolynomialAlgebraOverEuclideanRing {
+//  implicit def over[A: EuclideanRing, V: Ordering]: MultivariablePolynomialAlgebraOverEuclideanRing[A, V] = new MultivariablePolynomialAlgebraOverEuclideanRing[A, V] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
+//    override val variableOrdering = implicitly[Ordering[V]]
+//    override val ring = implicitly[EuclideanRing[A]]
+//  }
+//}
+//
+//trait MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V] extends MultivariablePolynomialAlgebraOverEuclideanRing[A, V] with OrderedEuclideanRing[MultivariablePolynomial[A, V]] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
+//  override implicit def ring: OrderedEuclideanRing[A]
+//  override def compare(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = {
+//    import net.tqft.toolkit.orderings.LexicographicOrdering
+//    LexicographicOrdering.mapOrdering[Map[V, Int], A](monomialOrdering, ring).compare(x.coefficients, y.coefficients)
+//  }
+//}
+//
+//object MultivariablePolynomialAlgebraOverOrderedEuclideanRing {
+//  implicit def over[A: OrderedEuclideanRing, V: Ordering]: MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V] = new MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V] {
+//    override val variableOrdering = implicitly[Ordering[V]]
+//    override val ring = implicitly[OrderedEuclideanRing[A]]
+//  }
+//}

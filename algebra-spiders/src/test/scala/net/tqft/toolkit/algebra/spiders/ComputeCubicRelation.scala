@@ -11,5 +11,5 @@ object ComputeCubicRelation extends App {
 
   val m = Matrix(5, CubicSpider.innerProductMatrix(`D(4,0)`, `D(4,1)`).map(_.map(x => (x: MultivariableRationalFunction[Fraction[Int], String]))))
   import MathematicaForm._
-  println(m.nullSpace)
+//  println(m.nullSpace)
 }

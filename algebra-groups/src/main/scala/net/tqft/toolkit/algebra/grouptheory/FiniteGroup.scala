@@ -309,7 +309,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
           case c: RationalCharacter => c.character.map({ x => Polynomial.constant(x) })
           case c: CyclotomicCharacter => {
             val power = exponent / c.order
-            c.character.map({ p => field.normalize(polynomials.composeAsFunctions(p, polynomials.monomial(power))) })
+            c.character.map({ p => field.normalForm(polynomials.composeAsFunctions(p, polynomials.monomial(power))) })
           }
         }
       }
