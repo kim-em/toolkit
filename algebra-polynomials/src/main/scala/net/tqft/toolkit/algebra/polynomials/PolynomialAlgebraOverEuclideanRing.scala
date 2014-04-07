@@ -1,9 +1,37 @@
 package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra.EuclideanRing
+import net.tqft.toolkit.algebra.GCDRing
 
-trait PolynomialAlgebraOverEuclideanRing[A, P] extends PolynomialAlgebra[A, P] with EuclideanRing[P] {
+trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] {
+  override def ring: GCDRing[A]
+
+  def content(p: Polynomial[A]): A = {
+    ring.gcd(p.coefficients.values.toSeq:_*)
+  }
+}
+
+object PolynomialAlgebraOverGCDRing {
+  trait PolynomialAlgebraOverGCDRingForMaps[A] extends PolynomialAlgebra.PolynomialAlgebraForMaps[A] with PolynomialAlgebraOverGCDRing[A, Map[Int, A]] {
+    override def ring: GCDRing[A]
+  }
+
+  implicit def forMaps[A: GCDRing]: PolynomialAlgebraOverGCDRing[A, Map[Int, A]] = new PolynomialAlgebraOverGCDRingForMaps[A] {
+    override def ring = implicitly[GCDRing[A]]
+  }
+  implicit def over[A: GCDRing]: PolynomialAlgebraOverGCDRing[A, Polynomial[A]] = PolynomialsOverGCDRing.over[A]
+}
+
+abstract class PolynomialsOverGCDRing[A: GCDRing] extends Polynomials[A] with PolynomialAlgebraOverGCDRing[A, Polynomial[A]]
+object PolynomialsOverGCDRing {
+  implicit def over[A: GCDRing]: PolynomialsOverGCDRing[A] = new PolynomialsOverGCDRing[A] {
+    override def ring = implicitly[GCDRing[A]]
+  }
+}
+
+trait PolynomialAlgebraOverEuclideanRing[A, P] extends PolynomialAlgebraOverGCDRing[A, P] with EuclideanRing[P] {
   override def ring: EuclideanRing[A]
+
   override def quotientRemainder(x: P, y: P): (P, P) = {
     (maximumDegree(x), maximumDegree(y)) match {
       case (_, None) => throw new ArithmeticException
@@ -63,7 +91,7 @@ object PolynomialAlgebraOverEuclideanRing {
 
 abstract class PolynomialsOverEuclideanRing[A: EuclideanRing] extends Polynomials[A] with PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]]
 object PolynomialsOverEuclideanRing {
-  implicit def over[A: EuclideanRing]: PolynomialsOverEuclideanRing[A] = new PolynomialsOverEuclideanRing[A] { 
+  implicit def over[A: EuclideanRing]: PolynomialsOverEuclideanRing[A] = new PolynomialsOverEuclideanRing[A] {
     override def ring = implicitly[EuclideanRing[A]]
   }
 }

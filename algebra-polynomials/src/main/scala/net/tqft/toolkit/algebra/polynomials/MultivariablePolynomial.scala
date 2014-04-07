@@ -5,16 +5,17 @@ import net.tqft.toolkit.algebra._
 import scala.language.implicitConversions
 
 case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
-  require(coefficients.valuesIterator.forall(_.toString != "0"))
-  require(coefficients.valuesIterator.forall(_.toString != "Fraction(0, 1)"))
-  require(coefficients.keysIterator.forall(_.valuesIterator.forall(_ >= 0)))
+//  require(coefficients.valuesIterator.forall(_ != implicitly[Rig[A]].zero))
+  //  require(coefficients.valuesIterator.forall(_.toString != "0"))
+  //  require(coefficients.valuesIterator.forall(_.toString != "Fraction(0, 1)"))
+  //  require(coefficients.keysIterator.forall(_.valuesIterator.forall(_ >= 0)))
 }
 
 object MultivariablePolynomial {
   implicit def lift[A, V](coefficients: Map[Map[V, Int], A]) = MultivariablePolynomial[A, V](coefficients)
 
   implicit def liftCoefficientsToFractions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(coefficients.mapValues(a => (a: Fraction[A])))
-  implicit def liftCoefficientToPolynomials[A, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[A], V] = coefficients.mapValues(a => (a: Polynomial[A]))
+  implicit def liftCoefficientToPolynomials[A: Ring, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[A], V] = lift(coefficients.mapValues(a => (a: Polynomial[A])))
   implicit def liftCoefficientToRationalFunctions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[Fraction[A]], V] = coefficients.mapValues(a => (a: Polynomial[Fraction[A]]))
   implicit def constant[A: Ring, V](a: A): MultivariablePolynomial[A, V] = {
     if (a == implicitly[Ring[A]].zero) {
@@ -42,6 +43,6 @@ object MultivariablePolynomial {
 
   implicit def multivariablePolynomialAlgebraAsRig[A: Rig, V: Ordering]: Rig[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverRig[A, V]]
   implicit def multivariablePolynomialAlgebraAsRing[A: Ring, V: Ordering]: Ring[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebra[A, V]]
-//  implicit def multivariablePolynomialAlgebraAsEuclideanRing[A: EuclideanRing, V: Ordering]: EuclideanRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverEuclideanRing[A, V]]
-//  implicit def multivariablePolynomialAlgebraAsOrderedEuclideanRing[A: OrderedEuclideanRing, V: Ordering]: OrderedEuclideanRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V]]
+  implicit def multivariablePolynomialAlgebraAsGCDRing[A: EuclideanRing, V: Ordering]: GCDRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverEuclideanRing[A, V]]
+  //  implicit def multivariablePolynomialAlgebraAsOrderedEuclideanRing[A: OrderedEuclideanRing, V: Ordering]: OrderedEuclideanRing[MultivariablePolynomial[A, V]] = implicitly[MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V]]
 }

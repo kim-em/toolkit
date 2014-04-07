@@ -8,7 +8,7 @@ import net.tqft.toolkit.algebra._
 
 abstract class PolynomialQuotientRing[A: EuclideanRing] extends PolynomialsOverEuclideanRing[A] {
   def generator: Polynomial[A]
-  override def multiply(a: Polynomial[A], b: Polynomial[A]) = remainder(multiply(a, b), generator)
+  override def multiply(a: Polynomial[A], b: Polynomial[A]) = remainder(super.multiply(a, b), generator)
   def normalForm(p: Polynomial[A]) = remainder(p, generator)
 }
 

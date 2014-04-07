@@ -34,6 +34,40 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
     import net.tqft.toolkit.arithmetic.MinMax._
     p.coefficients.keySet.minOption(monomialOrdering)
   }
+  def coefficientOfOneVariable(v: V, i: Int)(x: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
+    x.coefficients.collect({
+      case (m, a) if m.getOrElse(v, 0) == i => (m - v, a)
+    })
+  }
+  def maximumDegreeOfVariable(v: V)(x: MultivariablePolynomial[A, V]): Option[Int] = {
+    import net.tqft.toolkit.arithmetic.MinMax._
+    x.coefficients.keys.flatMap(_.get(v)).maxOption match {
+      case Some(d) => Some(d)
+      case None => {
+        x.coefficients.find(p => p._2 != ring.zero).map(_ => 0)
+      }
+    }
+  }
+  def asUnivariatePolynomialInVariable(v: V)(x: MultivariablePolynomial[A, V]): Polynomial[MultivariablePolynomial[A, V]] = {
+    val exponents = 0 +: x.coefficients.keys.flatMap(_.get(v)).toSeq
+    val result = (for (
+      k <- 0 +: x.coefficients.keys.flatMap(_.get(v)).toSeq;
+      c = coefficientOfOneVariable(v, k)(x);
+      if c != zero
+    ) yield {
+      k -> c
+    }).toMap[Int, MultivariablePolynomial[A, V]]
+
+    result
+  }
+  def fromUnivariatePolynomialInVariable(v: V)(p: Polynomial[MultivariablePolynomial[A, V]]): MultivariablePolynomial[A, V] = {
+    sum(p.coefficients.map({
+      case (k, q) => multiply(monomial(Map(v -> k)), q)
+    }))
+  }
+  def variables(x: MultivariablePolynomial[A, V]): Set[V] = {
+    x.coefficients.keySet.flatMap(_.keySet)
+  }
 
   def substitute(values: Map[V, MultivariablePolynomial[A, V]])(p: MultivariablePolynomial[A, V]) = substitute_(values, p)
 
@@ -112,95 +146,144 @@ object MultivariablePolynomialAlgebra {
 trait MultivariablePolynomialAlgebraOverEuclideanRing[A, V] extends MultivariablePolynomialAlgebra[A, V] with GCDRing[MultivariablePolynomial[A, V]] {
   override implicit def ring: EuclideanRing[A]
 
-  def content(p: MultivariablePolynomial[A, V]): A = {
-    ring.gcd(p.coefficients.values.toSeq: _*)
-  }
-
-  def primitivePart(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
-    val gcd = content(p)
-    if (gcd == ring.one) {
-      p
-    } else {
-      MultivariablePolynomial(p.coefficients.mapValues(v => ring.quotient(v, gcd)))
-    }
-  }
-
-  def coefficientOfOneVariable(v: V, i: Int)(x: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
-    x.coefficients.collect({
-      case (m, a) if m.getOrElse(v, 0) == i => (m - v, a)
-    })
-  }
-  def maximumDegreeOfVariable(v: V)(x: MultivariablePolynomial[A, V]): Option[Int] = {
+  override def gcd(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
     import net.tqft.toolkit.arithmetic.MinMax._
-    x.coefficients.keys.flatMap(_.get(v)).maxOption match {
-      case Some(d) => Some(d)
+    (variables(x) ++ variables(y)).maxByOption(v => Map(v -> 1))(monomialOrdering) match {
       case None => {
-        x.coefficients.find(p => p._2 != ring.zero).map(_ => 0)
+        if (x.coefficients.isEmpty && y.coefficients.isEmpty) {
+          one
+        } else if(x.coefficients.isEmpty || y.coefficients.isEmpty) {
+          x.coefficients ++ y.coefficients
+        } else {
+          ring.gcd(x.coefficients(Map()), y.coefficients(Map()))
+        }
+      }
+      case Some(v) => {
+        implicit val polynomials = this
+        val rationalFunctions = implicitly[Ring[MultivariableRationalFunction[A, V]]]
+        val univariatePolynomialsInMultivariablePolynomials = implicitly[PolynomialsOverGCDRing[MultivariablePolynomial[A, V]]]
+        val univariatePolynomialsInMultivariableRationalFunctions = implicitly[PolynomialsOverFieldOfFractions[MultivariablePolynomial[A, V]]]
+
+        val xp = asUnivariatePolynomialInVariable(v)(x)
+        val yp = asUnivariatePolynomialInVariable(v)(y)
+
+        val xc = univariatePolynomialsInMultivariablePolynomials.content(xp)
+        val yc = univariatePolynomialsInMultivariablePolynomials.content(yp)
+
+        val xv = xp.coefficients.mapValues(p => Fraction.whole(p)(polynomials))
+        val yv = yp.coefficients.mapValues(p => Fraction.whole(p)(polynomials))
+
+        val gcdOverRationalFunctions = univariatePolynomialsInMultivariableRationalFunctions.gcd(xv, yv)
+        val primitivePart = univariatePolynomialsInMultivariableRationalFunctions.primitivePart(gcdOverRationalFunctions)
+
+        val contentGCD = gcd(xc, yc)
+        
+        val result = multiply(
+          contentGCD,
+          fromUnivariatePolynomialInVariable(v)(primitivePart))
+
+//        require(multiply(result, exactQuotient(x, result)) == x)
+//        require(multiply(result, exactQuotient(y, result)) == y)
+
+        result
       }
     }
   }
-  def variables(x: MultivariablePolynomial[A, V]): Set[V] = {
-    x.coefficients.keySet.flatMap(_.keySet)
+
+  override def exactQuotientOption(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): Option[MultivariablePolynomial[A, V]] = {
+    import net.tqft.toolkit.arithmetic.MinMax._
+    (variables(x) ++ variables(y)).maxByOption(v => Map(v -> 1))(monomialOrdering) match {
+      case None => {
+        if (y.coefficients.isEmpty) {
+          throw new ArithmeticException
+        } else {
+          if (x.coefficients.isEmpty) {
+            Some(zero)
+          } else {
+            ring.exactQuotientOption(x.coefficients(Map()), y.coefficients(Map())).map({ x => x })
+          }
+        }
+      }
+      case Some(v) => {
+        // it is not clear to me that this is a good method
+
+        implicit val polynomials = this
+        val univariatePolynomialsInMultivariableRationalFunctions = implicitly[PolynomialsOverFieldOfFractions[MultivariablePolynomial[A, V]]]
+
+        val xp = asUnivariatePolynomialInVariable(v)(x).coefficients.mapValues(p => Fraction.whole(p)(polynomials))
+        val yp = asUnivariatePolynomialInVariable(v)(y).coefficients.mapValues(p => Fraction.whole(p)(polynomials))
+
+        univariatePolynomialsInMultivariableRationalFunctions.exactQuotientOption(xp, yp).flatMap({ p =>
+          if (p.coefficients.values.forall(_.denominator == one)) {
+            Some(fromUnivariatePolynomialInVariable(v)(p.coefficients.mapValues(_.numerator)))
+          } else {
+            None
+          }
+        })
+
+      }
+    }
   }
 
-//  private var stackDepth = 0
-//  override def quotientRemainder(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): (MultivariablePolynomial[A, V], MultivariablePolynomial[A, V]) = {
-//    println("quotientRemainder(")
-//    println("  " + x + ",")
-//    println("  " + y)
-//    println(")")
-//
-//    stackDepth = stackDepth + 1
-//    require(stackDepth < 40)
-//    import net.tqft.toolkit.arithmetic.MinMax._
-//    variables(x).maxByOption(v => Map(v -> 1))(monomialOrdering) match {
-//      case None => {
-//        stackDepth = stackDepth - 1
-//        // x is just a constant
-//        if (variables(y).isEmpty) {
-//          val (aq, ar) = ring.quotientRemainder(x.constantTerm, y.constantTerm)
-//          (aq, ar)
-//        } else {
-//          (zero, x)
-//        }
-//      }
-//      case Some(v) => {
-//        val dx = maximumDegreeOfVariable(v)(x).get
-//        val ody = maximumDegreeOfVariable(v)(y)
-//        ody match {
-//          case None => throw new ArithmeticException
-//          case Some(dy) => {
-//            if (dx < dy) {
-//              stackDepth = stackDepth - 1
-//              (zero, x)
-//            } else {
-//              val ax = coefficientOfOneVariable(v, dx)(x)
-//              val ay = coefficientOfOneVariable(v, dy)(y)
-//              val q = quotient(ax, ay) // ax = q ay + r
-//              if (q != zero) {
-//                val q1 = multiply(q, monomial(Map(v -> (dx - dy))))
-//                val difference = add(x, negate(multiply(q1, y)))
-//                val (q2, r) = quotientRemainder(difference, y)
-//                stackDepth = stackDepth - 1
-//                (add(q1, q2), r).ensuring(p => x == add(multiply(p._1, y), p._2))
-//              } else {
-//                stackDepth = stackDepth - 1
-//                (zero, x)
-//              }
-//            }
-//          }
-//        }
-//      }
-//    }
-//  }
+  //  private var stackDepth = 0
+  //  override def quotientRemainder(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): (MultivariablePolynomial[A, V], MultivariablePolynomial[A, V]) = {
+  //    println("quotientRemainder(")
+  //    println("  " + x + ",")
+  //    println("  " + y)
+  //    println(")")
+  //
+  //    stackDepth = stackDepth + 1
+  //    require(stackDepth < 40)
+  //    import net.tqft.toolkit.arithmetic.MinMax._
+  //    variables(x).maxByOption(v => Map(v -> 1))(monomialOrdering) match {
+  //      case None => {
+  //        stackDepth = stackDepth - 1
+  //        // x is just a constant
+  //        if (variables(y).isEmpty) {
+  //          val (aq, ar) = ring.quotientRemainder(x.constantTerm, y.constantTerm)
+  //          (aq, ar)
+  //        } else {
+  //          (zero, x)
+  //        }
+  //      }
+  //      case Some(v) => {
+  //        val dx = maximumDegreeOfVariable(v)(x).get
+  //        val ody = maximumDegreeOfVariable(v)(y)
+  //        ody match {
+  //          case None => throw new ArithmeticException
+  //          case Some(dy) => {
+  //            if (dx < dy) {
+  //              stackDepth = stackDepth - 1
+  //              (zero, x)
+  //            } else {
+  //              val ax = coefficientOfOneVariable(v, dx)(x)
+  //              val ay = coefficientOfOneVariable(v, dy)(y)
+  //              val q = quotient(ax, ay) // ax = q ay + r
+  //              if (q != zero) {
+  //                val q1 = multiply(q, monomial(Map(v -> (dx - dy))))
+  //                val difference = add(x, negate(multiply(q1, y)))
+  //                val (q2, r) = quotientRemainder(difference, y)
+  //                stackDepth = stackDepth - 1
+  //                (add(q1, q2), r).ensuring(p => x == add(multiply(p._1, y), p._2))
+  //              } else {
+  //                stackDepth = stackDepth - 1
+  //                (zero, x)
+  //              }
+  //            }
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
 }
 
-//object MultivariablePolynomialAlgebraOverEuclideanRing {
-//  implicit def over[A: EuclideanRing, V: Ordering]: MultivariablePolynomialAlgebraOverEuclideanRing[A, V] = new MultivariablePolynomialAlgebraOverEuclideanRing[A, V] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
-//    override val variableOrdering = implicitly[Ordering[V]]
-//    override val ring = implicitly[EuclideanRing[A]]
-//  }
-//}
+object MultivariablePolynomialAlgebraOverEuclideanRing {
+  implicit def over[A: EuclideanRing, V: Ordering]: MultivariablePolynomialAlgebraOverEuclideanRing[A, V] = new MultivariablePolynomialAlgebraOverEuclideanRing[A, V] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
+    override val variableOrdering = implicitly[Ordering[V]]
+    override val ring = implicitly[EuclideanRing[A]]
+  }
+}
+
 //
 //trait MultivariablePolynomialAlgebraOverOrderedEuclideanRing[A, V] extends MultivariablePolynomialAlgebraOverEuclideanRing[A, V] with OrderedEuclideanRing[MultivariablePolynomial[A, V]] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
 //  override implicit def ring: OrderedEuclideanRing[A]

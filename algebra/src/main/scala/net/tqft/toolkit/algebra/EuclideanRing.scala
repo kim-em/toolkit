@@ -10,7 +10,7 @@ trait GCDRig[A] extends IntegralRig[A] {
   def gcd(x: A, y: A): A
   def gcd(xs: A*): A = {
     xs.size match {
-      case 0 => one
+      case 0 => zero
       case 1 => xs.head
       case _ => gcd((gcd(xs(0), xs(1)) +: xs.drop(2)): _*)
     }
@@ -18,7 +18,7 @@ trait GCDRig[A] extends IntegralRig[A] {
   def lcm(x: A, y: A): A = exactQuotient(multiply(x, y), gcd(x, y))
   def lcm(xs: A*): A = {
     xs.size match {
-      case 0 => one
+      case 0 => zero
       case 1 => xs.head
       case _ => lcm((lcm(xs(0), xs(1)) +: xs.drop(2)): _*)
     }
