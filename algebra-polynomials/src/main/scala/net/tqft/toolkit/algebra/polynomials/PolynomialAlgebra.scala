@@ -12,10 +12,10 @@ trait PolynomialAlgebra[A, P] extends Module[A, P] with AssociativeAlgebra[A, P]
   def fromMap(m: Map[Int, A]): P
   def fromSeq(s: Seq[A]): P
 
-  def monomial(i: Int, a: A = ring.one) = fromMap(Map(i -> a))
+  def monomial(i: Int, a: A = ring.one) = fromMap(new scala.collection.immutable.Map.Map1(i, a))
   def constant(a: A) = monomial(0, a)
-  override def zero = fromMap(Map.empty)
-  override def one = monomial(0, ring.one)
+  override val zero = fromMap(Map.empty)
+  override lazy val one = monomial(0, ring.one)
   override def fromInt(k: Int) = constant(ring.fromInt(k))
   def identity = monomial(1, ring.one)
 

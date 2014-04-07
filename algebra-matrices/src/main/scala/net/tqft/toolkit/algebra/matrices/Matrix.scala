@@ -147,23 +147,6 @@ class Matrix[B](
 
     @scala.annotation.tailrec
     def recurse(finishedRows: List[Seq[B]], remainingRows: GenSeq[(Seq[B], Int)], remainingIndexes: Seq[Int]): List[Seq[B]] = {
-      // FIMXE remove this
-      println("finished: ")
-      for(r <- finishedRows.reverse) {
-        val r2 = r.asInstanceOf[Seq[Fraction[MultivariablePolynomial[Fraction[Int], String]]]]
-        import net.tqft.toolkit.algebra.mathematica.MathematicaForm
-        import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
-        val f = implicitly[MathematicaForm[Seq[Fraction[MultivariablePolynomial[Fraction[Int], String]]]]]
-        println(f.toMathematicaInputString(r2))
-      }
-      println("remaining: ")
-      for(r <- remainingRows) {
-        val r2 = r._1.asInstanceOf[Seq[Fraction[MultivariablePolynomial[Fraction[Int], String]]]]
-        import net.tqft.toolkit.algebra.mathematica.MathematicaForm
-        import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
-        val f = implicitly[MathematicaForm[Seq[Fraction[MultivariablePolynomial[Fraction[Int], String]]]]]
-        println(f.toMathematicaInputString(r2))
-      }
       
       //      println("finished " + finishedRows.size + " rows")
 

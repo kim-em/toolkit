@@ -28,7 +28,7 @@ object Rig extends RigLowPriorityImplicits {
     def keys: AdditiveMonoid[A]
     def multiplicativeCoefficients: Rig[B]
 
-    override def one = Map(keys.zero -> multiplicativeCoefficients.one)
+    override lazy val one = Map(keys.zero -> multiplicativeCoefficients.one)
     override def multiply(m1: Map[A, B], m2: Map[A, B]): Map[A, B] = {
       val newMap = scala.collection.mutable.Map[A, B]().withDefault(_ => coefficients.zero)
       for ((a1, b1) <- m1; (a2, b2) <- m2) {
@@ -42,7 +42,7 @@ object Rig extends RigLowPriorityImplicits {
   trait PointwiseRigMap[A, B] extends ModuleOverRig.ModuleOverRigMap[B, A, B] with Rig[Map[A, B]] {
     def multiplicativeCoefficients: Rig[B]
 
-    override def one = Map().withDefault(_ => multiplicativeCoefficients.one)
+    override val one = Map().withDefault({ a: A => multiplicativeCoefficients.one })
     override def multiply(m1: Map[A, B], m2: Map[A, B]): Map[A, B] = {
       for ((a, b) <- m1; c = m2.get(a).getOrElse(coefficients.zero)) yield (a -> multiplicativeCoefficients.multiply(b, c))
     }
@@ -51,7 +51,7 @@ object Rig extends RigLowPriorityImplicits {
   class RigSeq[B: Rig] extends AdditiveMonoid.AdditiveMonoidSeq[B] with Rig[Seq[B]] {
     override def coefficients = implicitly[Rig[B]]
 
-    override def one = Seq(coefficients.one)
+    override lazy val one = Seq(coefficients.one)
     override def multiply(s1: Seq[B], s2: Seq[B]): Seq[B] = {
       ???
     }

@@ -42,7 +42,7 @@ object AdditiveMonoid extends AdditiveMonoidLowPriorityImplicits {
       Map() ++ newMap.filter({ case (_, v) => v != coefficients.zero })
     }
 
-    override def zero = Map[A, B]()
+    override val zero = Map[A, B]()
   }
   trait AdditiveMonoidSeq[B] extends AdditiveMonoid[Seq[B]] {
     def coefficients: AdditiveMonoid[B]
