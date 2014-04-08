@@ -19,9 +19,10 @@ class InnerProductsTest extends FlatSpec with Matchers with IsomorphismMatchers 
     val d = "d"
     val b = "b"
     val t = "t"
-    val result: List[List[MultivariablePolynomial[Fraction[Int], String]]] = List(List(MultivariablePolynomial(Map(Map(d -> 2) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1)))), List(MultivariablePolynomial(Map(Map(d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(d -> 2) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map())), List(MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> Fraction(1, 1)))), List(MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> Fraction(1, 1)))))
+    val rationalResult: List[List[MultivariablePolynomial[Fraction[Int], String]]] = List(List(MultivariablePolynomial(Map(Map(d -> 2) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1)))), List(MultivariablePolynomial(Map(Map(d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(d -> 2) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map())), List(MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> Fraction(1, 1)))), List(MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> Fraction(1, 1))), MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> Fraction(1, 1)))))
+    val integerResult: List[List[MultivariablePolynomial[Int, String]]] = List(List(MultivariablePolynomial(Map(Map(d -> 2) -> 1)), MultivariablePolynomial(Map(Map(d -> 1) -> 1)), MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> 1))), List(MultivariablePolynomial(Map(Map(d -> 1) -> 1)), MultivariablePolynomial(Map(Map(d -> 2) -> 1)), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> 1)), MultivariablePolynomial(Map())), List(MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> 1)), MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> 1)), MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> 1))), List(MultivariablePolynomial(Map(Map(b -> 1, d -> 1) -> 1)), MultivariablePolynomial(Map()), MultivariablePolynomial(Map(Map(t -> 1, b -> 1, d -> 1) -> 1)), MultivariablePolynomial(Map(Map(b -> 2, d -> 1) -> 1))))
 
-    `M(4,0)` should equal(result)
+    `M(4,0)` should equal(integerResult)
   }
 
   "twisted inner products of D(4,0)" should "be correct" in {
@@ -33,7 +34,7 @@ class InnerProductsTest extends FlatSpec with Matchers with IsomorphismMatchers 
       diagramSpider.tensor(PlanarGraph.strand, PlanarGraph.strand))
     println(x)
     val subgraphs = x.Subgraphs(PlanarGraph.polygon(2))
-    for(s <- subgraphs.excisions) println(s)
+    for (s <- subgraphs.excisions) println(s)
     val xc = spider.canonicalForm(Map(x -> ring.one))
     println(xc)
   }

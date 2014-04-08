@@ -6,6 +6,10 @@ import net.tqft.toolkit.algebra._
 
 case class Polynomial[A](coefficients: Map[Int, A]) {
 //  require(coefficients.valuesIterator.forall(_ != implicitly[Rig[A]].zero))
+  def degree = {
+    import net.tqft.toolkit.arithmetic.MinMax._
+    coefficients.keySet.maxOption
+  }
 }
 
 object Polynomial {
@@ -13,7 +17,8 @@ object Polynomial {
 
   def identity[A: Ring] = Polynomial(Map(1 -> implicitly[Ring[A]].one))
   
-  implicit def lift[A](m: Map[Int, A]) = Polynomial(m)
+  implicit def lift[A](m: Map[Int, A]): Polynomial[A] = Polynomial(m)
+  implicit def liftFractions[A: GCDRing](m: Map[Int, A]): Polynomial[Fraction[A]] = Polynomial(m.mapValues(a => (a: Fraction[A])))
   
   implicit def constant[A](a: A): Polynomial[A] = Polynomial(Map(0 -> a))
   implicit def constantFraction[A: EuclideanRing](a: A): Polynomial[Fraction[A]] = constant(a)
