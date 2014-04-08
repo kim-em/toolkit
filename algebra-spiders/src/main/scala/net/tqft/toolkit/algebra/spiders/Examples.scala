@@ -40,9 +40,9 @@ trait MultivariablePolynomialTrivalentSpider[A] extends TrivalentSpider[Multivar
   override def t = Map(Map("t" -> 1) -> coefficientRing.one)
 }
 
-trait IntegerMultivariablePolynomialTrivalentSpider extends MultivariablePolynomialTrivalentSpider[Int] {
+trait IntegerMultivariablePolynomialTrivalentSpider extends MultivariablePolynomialTrivalentSpider[BigInt] {
   override def omega = 1
-  override def coefficientRing = implicitly[Ring[Int]]
+  override def coefficientRing = implicitly[Ring[BigInt]]
 }
 trait TwistedMultivariablePolynomialTrivalentSpider extends MultivariablePolynomialTrivalentSpider[Polynomial[Fraction[Int]]] {
   override def t = ring.zero
@@ -68,10 +68,10 @@ abstract class CubicSpider[R: Ring] extends TrivalentSpider[R] {
   override def reductions = super.reductions :+ squareReduction
 }
 
-object CubicSpider extends CubicSpider[MultivariablePolynomial[Int, String]] with IntegerMultivariablePolynomialTrivalentSpider {
+object CubicSpider extends CubicSpider[MultivariablePolynomial[BigInt, String]] with IntegerMultivariablePolynomialTrivalentSpider {
   override val omega = ring.one
 
-  def z: MultivariablePolynomial[Int, String] = Map(Map("z" -> 1) -> 1) // inverse of MultivariablePolynomial(Map(Map("b" -> 1, "d" -> 1) -> 1, Map("d" -> 1, "t" -> 1) -> 1, Map("t" -> 1) -> 1)) // b d + t + d t
+  def z: MultivariablePolynomial[BigInt, String] = Map(Map("z" -> 1) -> 1) // inverse of MultivariablePolynomial(Map(Map("b" -> 1, "d" -> 1) -> 1, Map("d" -> 1, "t" -> 1) -> 1, Map("t" -> 1) -> 1)) // b d + t + d t
 
   override def alpha = ring.multiply(z, Map(Map("b" -> 3) -> 1, Map("b" -> 2, "t" -> 1) -> 1, Map("b" -> 1, "t" -> 2) -> -1)) // b^3 + b^2 t - b t^2
   override def beta = ring.multiply(z, Map(Map("b" -> 2) -> -1, Map("t" -> 2) -> 1, Map("d" -> 1, "t" -> 2) -> 1)) // -b^2 + t^2 + d t^2
