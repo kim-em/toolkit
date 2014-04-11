@@ -13,11 +13,19 @@ case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
 object MultivariablePolynomial {
   implicit def lift[A, V](coefficients: Map[Map[V, Int], A]) = MultivariablePolynomial[A, V](coefficients)
 
-  implicit def liftCoefficientsToFractions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(coefficients.mapValues(a => (a: Fraction[A])))
-  implicit def liftCoefficientToPolynomials[A: Ring, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[A], V] = lift(coefficients.mapValues(a => (a: Polynomial[A])))
-  implicit def liftCoefficientToRationalFunctions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[Fraction[A]], V] = coefficients.mapValues(a => (a: Polynomial[Fraction[A]]))
+  implicit def liftCoefficientsToFractions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(coefficients.mapValues(a => a))
+  implicit def liftCoefficientsToBigInts[V](coefficients: Map[Map[V, Int], Int]): MultivariablePolynomial[BigInt, V] = MultivariablePolynomial(coefficients.mapValues(a => a))
+  implicit def liftCoefficientToPolynomials[A: Ring, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[A], V] = lift(coefficients.mapValues(a => a))
+  implicit def liftCoefficientToRationalFunctions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[Fraction[A]], V] = coefficients.mapValues(a => a)
   implicit def constant[A: Ring, V](a: A): MultivariablePolynomial[A, V] = {
     if (a == implicitly[Ring[A]].zero) {
+      MultivariablePolynomial(Map.empty)
+    } else {
+      MultivariablePolynomial(new scala.collection.immutable.Map.Map1(Map.empty, a))
+    }
+  }
+  implicit def bigIntConstant[V](a: Int): MultivariablePolynomial[BigInt, V] = {
+    if (a == 0) {
       MultivariablePolynomial(Map.empty)
     } else {
       MultivariablePolynomial(new scala.collection.immutable.Map.Map1(Map.empty, a))

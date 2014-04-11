@@ -11,4 +11,14 @@ object Longs extends NumericTypes.IntegralEuclideanRing(scala.math.Numeric.LongI
 object BigIntegers extends NumericTypes.IntegralEuclideanRing(scala.math.Numeric.BigIntIsIntegral) {
   override def toBigInt(i: BigInt) = i
   override def fromBigInt(b: BigInt) = b
+  
+  override def gcd(x: BigInt, y: BigInt) = {
+    val builtInGCD = x.gcd(y)
+    val result = if(y.signum * builtInGCD.signum == 1) {
+      builtInGCD
+    } else {
+      - builtInGCD
+    }
+    result//.ensuring(_ == super.gcd(x, y))
+  }
 }
