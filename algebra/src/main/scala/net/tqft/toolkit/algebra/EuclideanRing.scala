@@ -40,6 +40,11 @@ trait EuclideanRig[A] extends GCDRig[A] {
   
   @scala.annotation.tailrec
   final def euclideanAlgorithm(x: A, y: A): A = {
+    // FIXME
+    x match {
+      case x: Int => require(scala.math.abs(x) < 100000)
+      case _ =>
+    }
     if (y == zero) {
       x
     } else {
