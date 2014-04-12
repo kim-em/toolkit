@@ -10,6 +10,7 @@ case class Polynomial[A](coefficients: Map[Int, A]) {
     import net.tqft.toolkit.arithmetic.MinMax._
     coefficients.keySet.maxOption
   }
+  def mapValues[B](f: A => B) = Polynomial(coefficients.mapValues(f))
 }
 
 object Polynomial {

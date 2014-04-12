@@ -1,12 +1,12 @@
 package net.tqft.toolkit.wiki
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
+import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import scala.math._
 
 @RunWith(classOf[JUnitRunner])
-class WikiMapTest extends FlatSpec with ShouldMatchers {
+class WikiMapTest extends FlatSpec with Matchers {
 
   val wikiScriptURL = "http://tqft.net/mlp/index.php"
   val wm = WikiMap(wikiScriptURL)

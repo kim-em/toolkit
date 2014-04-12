@@ -26,11 +26,11 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
       a
     } else {
 
-      def _remainder(x: P, y: P): P = {
+      def _remainder(x: Polynomial[A], y: Polynomial[A]): Polynomial[A] = {
         // TODO can we do this better?
         // not unless we have a EuclideanRing[A]?
         val rationalPolynomials = implicitly[PolynomialsOverEuclideanRing[Fraction[A]]]
-        fromMap(rationalPolynomials.remainder(toMap(x).mapValues(a => (a: Fraction[A])), toMap(y).mapValues(a => (a: Fraction[A]))).coefficients.mapValues(f => f.ensuring(_.denominator == gcdRing.one).numerator))
+        rationalPolynomials.remainder(x.mapValues(a => (a: Fraction[A])), y.mapValues(a => (a: Fraction[A]))).coefficients.mapValues(f => f.ensuring(_.denominator == gcdRing.one).numerator)
       }
 
       var r0 = a
@@ -45,16 +45,23 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
       var oldgamma = gamma
       var beta = gcdRing.fromInt(if (d % 2 == 0) -1 else 1)
       var psi = gcdRing.fromInt(-1)
-      var done = r1 ==zero
+      var done = r1 == zero
       while (!done) {
         val oldr1 = r1
-        r1 = fromMap(toMap(_remainder(scalarMultiply(gcdRing.power(gamma, d + 1), r0), r1)).mapValues(c => gcdRing.exactQuotient(c, beta)))
+        r1 = fromMap(_remainder(toMap(scalarMultiply(gcdRing.power(gamma, d + 1), r0)), toMap(r1)).mapValues(c => gcdRing.exactQuotient(c, beta)).coefficients)
         r0 = oldr1
         done = r1 == zero
         if (!done) {
           oldgamma = gamma
           gamma = leadingCoefficient(r1).get
-          psi = gcdRing.exactQuotient(gcdRing.power(gcdRing.negate(gamma), d), gcdRing.power(psi, d - 1))
+          val `-gamma^d` = gcdRing.power(gcdRing.negate(gamma), d)
+          val `psi^(d-1)` = if(d == 0) {
+            require(psi == gcdRing.fromInt(-1))
+            psi
+          } else {
+            gcdRing.power(psi, d - 1)            
+          }
+          psi = gcdRing.exactQuotient(`-gamma^d`, `psi^(d-1)`)
           d = maximumDegree(r0).get - maximumDegree(r1).get
           beta = gcdRing.negate(gcdRing.multiply(oldgamma, gcdRing.power(psi, d)))
         }
