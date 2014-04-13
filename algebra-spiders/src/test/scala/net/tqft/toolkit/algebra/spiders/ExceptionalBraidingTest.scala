@@ -8,16 +8,16 @@ import org.scalatest._
 class ExceptionalBraidingTest extends FlatSpec with Matchers with IsomorphismMatchers {
 
   "actionOfBraiding on the 3-box space" should "verify" in {
-	  QuantumExceptional.verifyActionOfBraiding(QuantumExceptional.basisFor3Boxes)
+	  QuantumExceptional.basisFor3Boxes.verifyActionOfBraiding
   }
   "actionOfBraiding on the 4-box space" should "verify" in {
-	  QuantumExceptional.verifyActionOfBraiding(QuantumExceptional.basisFor4Boxes)
+	  QuantumExceptional.basisFor4Boxes.verifyActionOfBraiding
   }
   "actionOfBraiding on the 5-box space" should "verify" in {
-	  QuantumExceptional.verifyActionOfBraiding(QuantumExceptional.basisFor5Boxes)
+	  QuantumExceptional.basisFor5Boxes.verifyActionOfBraiding
   }
   "actionOfBraiding on the 6-box space" should "verify" in {
-	  QuantumExceptional.verifyActionOfBraiding(QuantumExceptional.basisFor6Boxes)
+	  QuantumExceptional.basisFor6Boxes.verifyActionOfBraiding
   }
 
 }

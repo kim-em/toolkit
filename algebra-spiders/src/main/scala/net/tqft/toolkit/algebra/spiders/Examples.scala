@@ -58,7 +58,7 @@ abstract class CubicSpider[R: Field] extends TrivalentSpider[R] { cs =>
       override def b = cs.b
       override def t = cs.t
     }
-    PreCubicSpider.Basis(4, PreCubicSpider.reducedDiagrams(4, 0) ++ PreCubicSpider.reducedDiagrams(4, 2)).deriveNewRelations(4).next
+    PreCubicSpider.basis(4, PreCubicSpider.reducedDiagrams(4, 0) ++ PreCubicSpider.reducedDiagrams(4, 2)).deriveNewRelations(4).next
   }
   override def reductions = super.reductions :+ squareReduction
 }
@@ -76,7 +76,7 @@ object Spiders {
       override def b = b_
       override def t = t_
     }
-    preCubicSpider.Basis(4, preCubicSpider.reducedDiagrams(4, 0) ++ preCubicSpider.reducedDiagrams(4, 2)).withNewRelations(4)
+    preCubicSpider.basis(4, preCubicSpider.reducedDiagrams(4, 0) ++ preCubicSpider.reducedDiagrams(4, 2)).withNewRelations(4)
   }
 }
 
@@ -104,7 +104,7 @@ abstract class PentagonReductionSpider[R: Field] extends CubicSpider[R] { cs =>
       override def b = cs.b
       override def t = cs.t
     }
-    PrePentagonReductionSpider.Basis(5, PrePentagonReductionSpider.reducedDiagrams(5, 1) ++ PrePentagonReductionSpider.reducedDiagrams(5, 3)).deriveNewRelations(5).next
+    PrePentagonReductionSpider.basis(5, PrePentagonReductionSpider.reducedDiagrams(5, 1) ++ PrePentagonReductionSpider.reducedDiagrams(5, 3)).deriveNewRelations(5).next
   }
   override def reductions = super.reductions :+ pentagonReduction
 }
@@ -173,14 +173,62 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
     matrices.multiply(m1, m2.inverse.get).entries.seq
   }
 
-  def verifyActionOfBraiding(basis: Seq[PlanarGraph]) = {
-    val s1 = Matrix(basis.size, actionOfBraiding(basis))
-    val matrices = Matrices.matricesOver(basis.size)(ring)
-    val rho = Matrix(basis.size, actionOfRotation(basis))
-    val s2 = matrices.multiply(rho.inverse.get, s1, rho)
+  case class Braid(width: Int, crossings: Seq[(Int, Int)])
 
-    matrices.multiply(s1, s2, s1) == matrices.multiply(s2, s1, s2)
+  trait Basis extends super.Basis {
+    lazy val actionOfBraiding = {
+      val m1 = Matrix(diagrams.size, innerProductMatrix(diagrams, diagrams.map(x => diagramSpider.multiply(x, crossing, 2))))
+      val matrices = Matrices.matricesOver(diagrams.size)(ring)
+      matrices.multiply(m1, Matrix(diagrams.size, inverseInnerProducts)).entries.seq
+    }
+    def verifyActionOfBraiding = {
+      val s1 = Matrix(diagrams.size, actionOfBraiding)
+      val matrices = Matrices.matricesOver(diagrams.size)(ring)
+      val rho = Matrix(diagrams.size, actionOfRotation)
+      val s2 = matrices.multiply(rho.inverse.get, s1, rho)
+
+      matrices.multiply(s1, s2, s1) == matrices.multiply(s2, s1, s2)
+    }
   }
+
+  trait BasisWithPlatElement extends Basis {
+    def platElement: Int
+    
+    private val braidCache = {
+      def braidElement(crossing: (Int, Int)) = ???
+      ???
+    }
+    
+    def braidActionOnPlatElement(braid: Braid): Seq[R] = {
+      ???
+    }
+
+    def platClosure(braid: Braid): R = {
+      ring.product(
+        braidActionOnPlatElement(braid)
+          .zip(innerProducts.map(_(platElement)))
+          .map(p => ring.multiply(p._1, p._2)))
+    }
+  }
+
+  override def basis(numberOfBoundaryPoints: Int, diagrams: Seq[PlanarGraph]): Basis = {
+    val numberOfBoundaryPoints_ = numberOfBoundaryPoints
+    val diagrams_ = diagrams
+    new Basis {
+      override val numberOfBoundaryPoints = numberOfBoundaryPoints_
+      override val diagrams = diagrams_
+    }
+  }
+  def basisWithPlatElement(numberOfBoundaryPoints: Int, diagrams: Seq[PlanarGraph]): BasisWithPlatElement = {
+    val numberOfBoundaryPoints_ = numberOfBoundaryPoints
+    val diagrams_ = diagrams
+    new BasisWithPlatElement {
+      override val numberOfBoundaryPoints = numberOfBoundaryPoints_
+      override val diagrams = diagrams_
+      override val platElement = ???
+    }
+  }
+
 }
 
 object QuantumExceptional extends BraidedTrivalentSpider[MultivariableRationalFunction[BigInt, String]] {
@@ -204,21 +252,21 @@ object QuantumExceptional extends BraidedTrivalentSpider[MultivariableRationalFu
   override def reductions = super.reductions
 
   lazy val basisFor3Boxes =
-    Seq(vertex)
+    basis(3, Seq(vertex))
 
   lazy val basisFor4Boxes =
-    (reducedDiagrams(4, Map.empty[VertexType, Int]) ++
+    basisWithPlatElement(4, (reducedDiagrams(4, Map.empty[VertexType, Int]) ++
       reducedDiagrams(4, Map(VertexType(3, 1) -> 2)) ++
-      reducedDiagrams(4, Map(VertexType(4, 2) -> 1)).headOption).ensuring(_.size == 5)
+      reducedDiagrams(4, Map(VertexType(4, 2) -> 1)).headOption).ensuring(_.size == 5))
 
   lazy val basisFor5Boxes = {
     val tangle = reducedDiagrams(5, Map(VertexType(3, 1) -> 3, VertexType(4, 2) -> 1)).head
     val tangles = Seq.tabulate(5)(k => diagramSpider.rotate(tangle, k))
 
-    (reducedDiagrams(5, Map(VertexType(3, 1) -> 1)) ++
+    basis(5, (reducedDiagrams(5, Map(VertexType(3, 1) -> 1)) ++
       reducedDiagrams(5, Map(VertexType(3, 1) -> 3)) ++
-      reducedDiagrams(5, Map(VertexType(3, 1) -> 5)) ++ tangles).ensuring(_.size == 16)
+      reducedDiagrams(5, Map(VertexType(3, 1) -> 5)) ++ tangles).ensuring(_.size == 16))
   }
 
-  lazy val basisFor6Boxes = ???
+  lazy val basisFor6Boxes: BasisWithPlatElement = ???
 }

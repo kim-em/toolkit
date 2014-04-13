@@ -31,23 +31,29 @@ abstract class PlanarGraphReductionSpider[R: GCDRing] extends SubstitutionSpider
 }
 
 abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraphReductionSpider[R] { spider =>
-  def actionOfRotation(basis: Seq[PlanarGraph]): Seq[Seq[R]] = {
-    val m1 = Matrix(basis.size, innerProductMatrix(basis, basis.map(x => diagramSpider.rotate(x, 1))))
-    val m2 = Matrix(basis.size, innerProductMatrix(basis))
-    val matrices = Matrices.matricesOver(basis.size)(ring)
-    matrices.multiply(m1, m2.inverse.get).entries.seq
-  }
 
-  def verifyActionOfRotation = {
-    // TODO check that the 2\pi rotation is the identity
-  }
-  
-  case class Basis(numberOfBoundaryPoints: Int, diagrams: Seq[PlanarGraph]) {
+  trait Basis {
+    def numberOfBoundaryPoints: Int
+    def diagrams: Seq[PlanarGraph]
+
     def coefficients(x: PlanarGraph): Seq[R] = {
       val m = Matrix(diagrams.size + 1, innerProductMatrix(diagrams, x +: diagrams))
       m.nullSpace.head
     }
     def linearCombination(a: Seq[R]) = diagrams.zip(a).toMap
+
+    lazy val innerProducts = innerProductMatrix(diagrams)
+    lazy val inverseInnerProducts = Matrix(diagrams.size, innerProducts).inverse.get.entries.seq
+
+    lazy val actionOfRotation: Seq[Seq[R]] = {
+      val m1 = Matrix(diagrams.size, innerProductMatrix(diagrams, diagrams.map(x => diagramSpider.rotate(x, 1))))
+      val matrices = Matrices.matricesOver(diagrams.size)(ring)
+      matrices.multiply(m1, Matrix(diagrams.size, inverseInnerProducts)).entries.seq
+    }
+
+    def verifyActionOfRotation = {
+      // TODO check that the 2\pi rotation is the identity
+    }
 
     def deriveNewRelations(numberOfVertices: Int): Iterator[Reduction[PlanarGraph, R]] = {
       require(vertexTypes.size == 1)
@@ -68,5 +74,15 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
       override def eigenvalue(valence: Int) = spider.eigenvalue(valence)
       override def reductions = spider.reductions ++ deriveNewRelations(numberOfVertices)
     }
+  }
+
+  def basis(numberOfBoundaryPoints: Int, diagrams: Seq[PlanarGraph]): Basis = {
+    val numberOfBoundaryPoints_ = numberOfBoundaryPoints
+    val diagrams_ = diagrams
+    new Basis {
+      override val numberOfBoundaryPoints = numberOfBoundaryPoints_
+      override val diagrams = diagrams_
+    }
+
   }
 }
