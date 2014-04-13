@@ -21,14 +21,14 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
 
     private def byNumberOfVertices_(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = {
       stackDepth = stackDepth + 1
-      print("\n" + List.fill(stackDepth)(' ').mkString + " " + numberOfBoundaryPoints + " " + numberOfVertices)
+//      print("\n" + List.fill(stackDepth)(' ').mkString + " " + numberOfBoundaryPoints + " " + numberOfVertices)
 
       if (numberOfBoundaryPoints < 0 || numberOfVertices.values.exists(_ < 0)) {
-        print(".")
+//        print(".")
         stackDepth = stackDepth - 1
         Stream.empty
       } else if (numberOfBoundaryPoints == 0 && numberOfVertices.values.forall(_ == 0)) {
-        print(".")
+//        print(".")
         stackDepth = stackDepth - 1
         Stream(PlanarGraph.empty)
       } else {
@@ -98,7 +98,7 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
         val distinct = Set() ++ candidates.map(spider.canonicalFormWithDefect).map(_._1)
 
         val result = distinct.filter(g => g.loops == 0 && faces.forall(f => g.Subgraphs(f).excisions.isEmpty))
-        print(".")
+//        print(".")
         stackDepth = stackDepth - 1
         result.toSeq
 

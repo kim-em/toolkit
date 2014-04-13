@@ -37,8 +37,9 @@ class PolynomialsTest extends FlatSpec with Matchers {
 
   "subresultant_gcd" should "work correctly" in {
     val polynomials = implicitly[PolynomialsOverGCDRing[BigInt]]
-    polynomials.gcd(Map(8->1, 6->1, 4-> -3,3-> -3, 2-> 8, 1->2,0-> -5), Map(6->3,4->5,2-> -4, 1-> -9,0->21)) should equal(Polynomial(Map(0 -> 260708)))
-    polynomials.gcd(Polynomial(Map(3 -> 1, 2 -> -1, 1 -> -1)), Polynomial(Map(3 -> -3, 4 -> 1, 2 -> 3, 1 -> -1)))
+    polynomials.subresultant_gcd(Map(8->1, 6->1, 4-> -3,3-> -3, 2-> 8, 1->2,0-> -5), Map(6->3,4->5,2-> -4, 1-> -9,0->21)) should equal(Polynomial(Map(0 -> -260708)))
+    polynomials.gcd(Map(8->1, 6->1, 4-> -3,3-> -3, 2-> 8, 1->2,0-> -5), Map(6->3,4->5,2-> -4, 1-> -9,0->21)) should equal(Polynomial(Map(0 -> 1)))
+    polynomials.gcd(Map(3 -> 1, 2 -> -1, 1 -> -1), Map(3 -> -3, 4 -> 1, 2 -> 3, 1 -> -1))
   }
   
   "Sturm sequences" should "be calculated correctly" in {
