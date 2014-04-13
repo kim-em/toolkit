@@ -10,7 +10,7 @@ case class Polynomial[A](coefficients: Map[Int, A]) {
     import net.tqft.toolkit.arithmetic.MinMax._
     coefficients.keySet.maxOption
   }
-  def mapValues[B](f: A => B) = Polynomial(coefficients.mapValues(f))
+  def mapValues[B](f: A => B) = Polynomial(Map() ++ coefficients.mapValues(f))
 }
 
 object Polynomial {
@@ -20,6 +20,8 @@ object Polynomial {
   
   implicit def lift[A](m: Map[Int, A]): Polynomial[A] = Polynomial(m)
   implicit def liftFractions[A: GCDRing](m: Map[Int, A]): Polynomial[Fraction[A]] = Polynomial(m.mapValues(a => (a: Fraction[A])))
+  implicit def liftAsRationalFunction[A: GCDRing](m: Map[Int, A]): Fraction[Polynomial[A]] = lift(m)
+  implicit def liftFractionsAsRationalFunction[A: GCDRing](m: Map[Int, A]): Fraction[Polynomial[Fraction[A]]] = liftFractions(m)
   
   implicit def constant[A](a: A): Polynomial[A] = Polynomial(Map(0 -> a))
   implicit def constantFraction[A: EuclideanRing](a: A): Polynomial[Fraction[A]] = constant(a)
@@ -29,6 +31,7 @@ object Polynomial {
   implicit def wholeCoefficients[A: EuclideanRing](p: Polynomial[A]): Polynomial[Fraction[A]] = {
     Polynomial(p.coefficients.mapValues(x => x: Fraction[A]))
   }
+  implicit def intCoefficientsToBigInts(p: Polynomial[Int]) = p.mapValues(BigInt.apply)
   
   implicit def polynomialAlgebraAsRing[A: Ring]: Ring[Polynomial[A]] = implicitly[PolynomialAlgebra[A, Polynomial[A]]]
   implicit def polynomialAlgebraAsEuclideanRing[A: EuclideanRing]: EuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]]]

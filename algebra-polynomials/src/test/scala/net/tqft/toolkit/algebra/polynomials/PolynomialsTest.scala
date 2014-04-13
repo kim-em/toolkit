@@ -35,6 +35,11 @@ class PolynomialsTest extends FlatSpec with Matchers {
     Polynomial.cyclotomic[Fraction[Int]](6) should equal(Polynomial(0 -> Fraction(1, 1), 1 -> Fraction(-1, 1), 2 -> Fraction(1, 1)))
   }
 
+  "subresultant_gcd" should "work correctly" in {
+    val polynomials = implicitly[PolynomialsOverGCDRing[BigInt]]
+    polynomials.gcd(Polynomial(Map(3 -> 1, 2 -> -1, 1 -> -1)), Polynomial(Map(3 -> -3, 4 -> 1, 2 -> 3, 1 -> -1)))
+  }
+  
   "Sturm sequences" should "be calculated correctly" in {
     val p: Polynomial[Fraction[Int]] = Polynomial(4 -> 1, 3 -> 1, 1 -> -1, 0 -> -1)
     implicitly[PolynomialsOverEuclideanRing[Fraction[Int]]].sturmSequence(p) should equal(

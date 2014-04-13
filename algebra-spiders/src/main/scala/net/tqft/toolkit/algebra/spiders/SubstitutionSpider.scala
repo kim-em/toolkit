@@ -32,6 +32,9 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
 
 object SubstitutionSpider {
   abstract class PlanarGraphMapSubstitutionSpider[R: Ring] extends LinearSpider.MapLinearSpider[PlanarGraph, R] with SubstitutionSpider[PlanarGraph, R] {
+    def vertexTypes: Seq[VertexType]
+    val graphs = GraphsGeneratedBy(vertexTypes)
+    
     override def allReplacements(reduction: Reduction[PlanarGraph, R])(diagram: PlanarGraph) = {
       for (
         excision <- diagram.Subgraphs(reduction.big).excisions
