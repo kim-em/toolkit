@@ -13,7 +13,6 @@ object TrivalentGraphs {
   val withoutSmallFaces = Enumerator(smallFaces)
 
   case class Enumerator(avoidingFaces: Seq[PlanarGraph]) {
-
     def byNumberOfFaces(numberOfBoundaryPoints: Int, maximumNumberOfFaces: Int): Iterator[PlanarGraph] = {
       for (
         k <- (0 to numberOfBoundaryPoints + 2 * maximumNumberOfFaces - 2).iterator /* TODO is that right? */ ;
@@ -51,6 +50,7 @@ object TrivalentGraphs {
             .distinct
 
           distinct.filter(g => g.loops == 0 && avoidingFaces.forall(f => g.Subgraphs(f).excisions.isEmpty))
+
         }
       }
 

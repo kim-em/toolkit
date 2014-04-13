@@ -8,7 +8,7 @@ import net.tqft.toolkit.Logging
 // flags veer to the left
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
-  verify
+//  verify
 
   def verify = {
     // There are many things we might check here!
@@ -51,6 +51,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   def numberOfBoundaryPoints = vertexFlags(0).size
 
   def numberOfVertices = vertexFlags.size
+  def numberOfInternalVertices = numberOfVertices - 1
 
   def vertices = 0 until numberOfVertices
   def degree(i: Int) = vertexFlags(i).size
@@ -65,6 +66,11 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   def numberOfFaces = faceSet.size
   def numberOfInternalFaces = numberOfFaces - boundaryFaces.distinct.size
 
+  def dangle = {
+    import net.tqft.toolkit.collections.Tally._
+    (0 +: neighboursOf(0).filterNot(_ == 0).tally.map(_._2)).max
+  }
+  
   def edgesAdjacentTo(vertex: Int): Seq[Int] = vertexFlags(vertex).map(_._1)
   def neighboursOf(vertex: Int) = edgesAdjacentTo(vertex).map(e => target(vertex, e))
 
@@ -396,7 +402,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     private val packedShape = shape.relabelEdgesAndFaces
 
     case class Excision(cut: PlanarGraph, depth: Int, rotations: Rotation) {
-      verify
+//      verify
 
       private def verify = {
         val result = replace(shape)
@@ -596,17 +602,19 @@ object PlanarGraph {
     (polygon_ _).memo
   }
 
-  private def star_(k: Int) = {
+  private def star_(k: Int, r: Int) = {
     val flags = IndexedSeq(
       Seq.tabulate(k)(i => (i + 2, i + k + 2)),
       Seq.tabulate(k)(i => (i + 2, ((i + 1) % k) + k + 2)).reverse)
-    PlanarGraph(k + 2, flags, IndexedSeq(1), 0)
+    PlanarGraph(k + 2, flags, IndexedSeq(r), 0)
   }
 
-  val star = {
-    import net.tqft.toolkit.functions.Memo._
-    (star_ _).memo
+  private val starCache = {
+    import net.tqft.toolkit.functions.Memo
+    Memo(star_ _)
   }
+  
+  def star(k: Int, r: Int = 1) = starCache(k, r)
 
   val I = spider.multiply(spider.rotate(star(3), 1), spider.rotate(star(3), -1), 1)
   val H = spider.rotate(I, 1)
