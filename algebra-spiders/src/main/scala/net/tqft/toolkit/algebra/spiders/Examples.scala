@@ -3,6 +3,8 @@ package net.tqft.toolkit.algebra.spiders
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.numberfields.NumberField
+import net.tqft.toolkit.algebra.matrices.Matrix
+import net.tqft.toolkit.algebra.matrices.Matrices
 
 abstract class TrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverField[R] {
   override lazy val vertexTypes = Seq(VertexType(3, 1))
@@ -146,8 +148,8 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
   private lazy val bigonReduction = Reduction(PlanarGraph.polygon(2), Map(PlanarGraph.strand -> b))
   private lazy val triangleReduction = Reduction(PlanarGraph.polygon(3), Map(PlanarGraph.star(3) -> t))
 
-  private val vertex = PlanarGraph.star(3, 1)
-  private val crossing = PlanarGraph.star(4, 2)
+  protected val vertex = PlanarGraph.star(3, 1)
+  protected val crossing = PlanarGraph.star(4, 2)
 
   private lazy val curlReduction = Reduction(diagramSpider.stitch(crossing), Map(PlanarGraph.strand -> ring.power(z, 2)))
   private lazy val twistedVertexReduction = Reduction(diagramSpider.multiply(crossing, vertex, 2), Map(vertex -> z))
@@ -163,6 +165,22 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
     curlReduction,
     twistedVertexReduction,
     Reidemeister2Reduction)
+
+  def actionOfBraiding(basis: Seq[PlanarGraph]) = {
+    val m1 = Matrix(basis.size, innerProductMatrix(basis, basis.map(x => diagramSpider.multiply(x, crossing, 2))))
+    val m2 = Matrix(basis.size, innerProductMatrix(basis))
+    val matrices = Matrices.matricesOver(basis.size)(ring)
+    matrices.multiply(m1, m2.inverse.get).entries.seq
+  }
+
+  def verifyActionOfBraiding(basis: Seq[PlanarGraph]) = {
+    val s1 = Matrix(basis.size, actionOfBraiding(basis))
+    val matrices = Matrices.matricesOver(basis.size)(ring)
+    val rho = Matrix(basis.size, actionOfRotation(basis))
+    val s2 = matrices.multiply(rho.inverse.get, s1, rho)
+
+    matrices.multiply(s1, s2, s1) == matrices.multiply(s2, s1, s2)
+  }
 }
 
 object QuantumExceptional extends BraidedTrivalentSpider[MultivariableRationalFunction[BigInt, String]] {
@@ -184,4 +202,23 @@ object QuantumExceptional extends BraidedTrivalentSpider[MultivariableRationalFu
   override def z = -(v ^ 6)
 
   override def reductions = super.reductions
+
+  lazy val basisFor3Boxes =
+    Seq(vertex)
+
+  lazy val basisFor4Boxes =
+    (reducedDiagrams(4, Map.empty[VertexType, Int]) ++
+      reducedDiagrams(4, Map(VertexType(3, 1) -> 2)) ++
+      reducedDiagrams(4, Map(VertexType(4, 2) -> 1)).headOption).ensuring(_.size == 5)
+
+  lazy val basisFor5Boxes = {
+    val tangle = reducedDiagrams(5, Map(VertexType(3, 1) -> 3, VertexType(4, 2) -> 1)).head
+    val tangles = Seq.tabulate(5)(k => diagramSpider.rotate(tangle, k))
+
+    (reducedDiagrams(5, Map(VertexType(3, 1) -> 1)) ++
+      reducedDiagrams(5, Map(VertexType(3, 1) -> 3)) ++
+      reducedDiagrams(5, Map(VertexType(3, 1) -> 5)) ++ tangles).ensuring(_.size == 16)
+  }
+
+  lazy val basisFor6Boxes = ???
 }
