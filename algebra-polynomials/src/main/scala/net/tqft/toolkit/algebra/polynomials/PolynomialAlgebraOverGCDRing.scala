@@ -15,12 +15,12 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
   }
 
   def pseudoQuotientRemainder(f: P, g: P): (P, P) = {
-    println("f = " + f)
-    println("g = " + g)
+//    println("f = " + f)
+//    println("g = " + g)
     val df = maximumDegree(f).getOrElse(0)
     val dg = maximumDegree(g).getOrElse(0)
     if (df == 0 && dg == 0) {
-      ???
+      (f, zero)
     } else {
       val d = if (df >= dg) df - dg + 1 else 0
       if (df < dg) {
@@ -29,7 +29,6 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
         val b = leadingCoefficient(g).get
         val a = monomial(df - dg, leadingCoefficient(f).get)
         val `bf-ag` = subtract(scalarMultiply(b, f), multiply(a, g))
-        require(maximumDegree(`bf-ag`).getOrElse(0) < df)
 
         val e = {
           val d_ = maximumDegree(`bf-ag`).getOrElse(0)
@@ -39,7 +38,6 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
             0
           }
         }
-        require(e >= 0)
         val (s, r0) = pseudoQuotientRemainder(`bf-ag`, g)
         val `b^(d-e-1)` = ring.power(b, d - e - 1)
         val r = scalarMultiply(`b^(d-e-1)`, r0)
@@ -50,10 +48,10 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
         //b^d f == g b^(d-e-1) (s + b^e a) + b^(d-e-1) r
         //      == g (b^(d-e-1) s + b^(d-1) a) + b^(d-e-1) r
 
-        require({
-          val q = result._1
-          scalarMultiply(ring.power(b, d), f) == add(multiply(g, q), r)
-        })
+//        require({
+//          val q = result._1
+//          scalarMultiply(ring.power(b, d), f) == add(multiply(g, q), r)
+//        })
 
         result
       }
@@ -90,76 +88,13 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
     f
   }
 
-  def subresultant_gcd(f0: P, f1: P) = subresultantSequence(f0, f1).takeWhile(p => maximumDegree(p).nonEmpty).last
-
-  // subresultant_gcd gives (hopefully efficiently) the gcd after extending the coefficients to the field of fractions.
-  //  def subresultant_gcd(a: P, b: P): P = {
-  //    val gcdRing = implicitly[GCDRing[A]]
-  //
-  //    if (toMap(a).isEmpty && toMap(b).isEmpty) {
-  //      one
-  //    } else if (toMap(a).isEmpty) {
-  //      b
-  //    } else if (toMap(b).isEmpty) {
-  //      a
-  //    } else {
-  //
-  //      def _remainder(x: Polynomial[A], y: Polynomial[A]): Polynomial[A] = {
-  //        // TODO can we do this better?
-  //        // not unless we have a EuclideanRing[A]?
-  //        val rationalPolynomials = implicitly[PolynomialsOverEuclideanRing[Fraction[A]]]
-  //        val rationalRemainder = rationalPolynomials.remainder(x.mapValues(a => (a: Fraction[A])), y.mapValues(a => (a: Fraction[A])))
-  //        rationalRemainder.mapValues(f => f.ensuring(_.denominator == gcdRing.one).numerator)
-  //      }
-  //
-  //      var r0 = a
-  //      var r1 = b
-  //      var d = maximumDegree(a).get - maximumDegree(b).get
-  //      if (d < 0) {
-  //        d = -d
-  //        r0 = b
-  //        r1 = a
-  //      }
-  //      var gamma = leadingCoefficient(r1).get
-  //      var oldgamma = gamma
-  //      var beta = gcdRing.fromInt(if (d % 2 == 0) -1 else 1)
-  //      var psi = gcdRing.fromInt(-1)
-  //      var done = r1 == zero
-  //      while (!done) {
-  //        println("r0 = " + r0)
-  //        println("r1 = " + r1)
-  //        println("d = " + d)
-  //        println("gamma = " + gamma)
-  //        println("beta = " + beta)
-  //        println("psi = " + psi)
-  //        val oldr1 = r1
-  //        val `gamma^(d+1) r0` = scalarMultiply(gcdRing.power(gamma, d + 1), r0)
-  //        println("gamma^(d+1) r0 = " + `gamma^(d+1) r0`)
-  //        val remainder = _remainder(toMap(`gamma^(d+1) r0`), toMap(r1))
-  //        println("remainder = " + remainder)
-  //        // cheat
-  //        beta = ring.gcd(remainder.coefficients.values.toSeq: _*)
-  //        r1 = fromMap(remainder.mapValues(c => gcdRing.exactQuotient(c, beta)).coefficients)
-  //        r0 = oldr1
-  //        done = r1 == zero
-  //        if (!done) {
-  //          oldgamma = gamma
-  //          gamma = leadingCoefficient(r1).get
-  //          val `-gamma^d` = gcdRing.power(gcdRing.negate(gamma), d)
-  //          val `psi^(d-1)` = if (d == 0) {
-  //            psi
-  //          } else {
-  //            gcdRing.power(psi, d - 1)
-  //          }
-  //          //          psi = gcdRing.exactQuotient(`-gamma^d`, `psi^(d-1)`)
-  //          //          d = maximumDegree(r0).get - maximumDegree(r1).get
-  //          //          beta = gcdRing.negate(gcdRing.multiply(oldgamma, gcdRing.power(psi, d)))
-  //
-  //        }
-  //      }
-  //      r0
-  //    }
-  //  }
+  def subresultant_gcd(f0: P, f1: P): P = {
+    if (maximumDegree(f0).getOrElse(0) < maximumDegree(f1).getOrElse(0)) {
+      subresultant_gcd(f1, f0)
+    } else {
+      subresultantSequence(f0, f1).takeWhile(p => maximumDegree(p).nonEmpty).last
+    }
+  }
 
   override def gcd(x: P, y: P): P = {
     val xc = content(x)

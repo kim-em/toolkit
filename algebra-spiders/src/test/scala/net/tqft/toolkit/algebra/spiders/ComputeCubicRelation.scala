@@ -15,8 +15,6 @@ object ComputeCubicRelation extends App {
 
   println("matrix: ")
   println(m.entries.toIndexedSeq.toMathemathicaInputString)
-  while(true) {
   println("nullspace: ")
   println(m.nullSpace.toMathemathicaInputString)
-  }
 }
