@@ -31,6 +31,7 @@ object Polynomial {
   implicit def wholeCoefficients[A: EuclideanRing](p: Polynomial[A]): Polynomial[Fraction[A]] = {
     Polynomial(p.coefficients.mapValues(x => x: Fraction[A]))
   }
+  implicit def liftToBigInts(m: Map[Int, Int]): Polynomial[BigInt] = Polynomial(m.mapValues(a => a: BigInt))
   implicit def intCoefficientsToBigInts(p: Polynomial[Int]) = p.mapValues(BigInt.apply)
   
   implicit def polynomialAlgebraAsRing[A: Ring]: Ring[Polynomial[A]] = implicitly[PolynomialAlgebra[A, Polynomial[A]]]
