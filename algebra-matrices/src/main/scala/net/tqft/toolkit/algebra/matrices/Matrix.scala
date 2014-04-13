@@ -7,6 +7,7 @@ import net.tqft.toolkit.algebra.polynomials._
 import scala.language.implicitConversions
 
 object Matrix extends net.tqft.toolkit.Logging {
+  
   def apply[B](numberOfColumns: Int, entries: GenSeq[Seq[B]]): Matrix[B] = new Matrix(numberOfColumns, entries.map({
     case r: IndexedSeq[B] => r
     case r => r.toIndexedSeq
