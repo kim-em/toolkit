@@ -15,7 +15,7 @@ class G2SpiderTest extends FlatSpec with Matchers with IsomorphismMatchers {
   }
   "PreCubic" should "automatically compute the relation reducing a square" in {
     val basis = preCubic.reducedDiagrams(4, 0) ++ preCubic.reducedDiagrams(4, 2)
-    for (r <- preCubic.Basis(4, basis).deriveNewRelations(4)) {
+    for (r <- preCubic.basis(4, basis).deriveNewRelations(4)) {
       println(r)
     }
   }

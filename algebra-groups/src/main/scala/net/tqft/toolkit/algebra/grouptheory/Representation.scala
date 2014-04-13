@@ -5,7 +5,7 @@ import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.categories._
 import scala.reflect.ClassTag
 
-trait Representation[A, F] extends Homomorphism[Group, A, Matrix[F]] { representation =>
+trait Representation[A, F] extends Homomorphism[FiniteGroup, A, Matrix[F]] { representation =>
   def degree: Int
   override val source: FiniteGroup[A]
   override def target = ??? // GL(F, n)?
