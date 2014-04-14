@@ -42,9 +42,16 @@ class PolynomialsTest extends FlatSpec with Matchers {
     polynomials.gcd(Map(3 -> 1, 2 -> -1, 1 -> -1), Map(3 -> -3, 4 -> 1, 2 -> 3, 1 -> -1))
   }
   
+  "rational functions" should "multiply" in {
+    val  p = Fraction(Polynomial(Map(0 -> 1, 2 -> 1, 4 -> 1)), Polynomial(Map(2 -> -1)))
+    val q = Fraction(Polynomial(Map(0 -> 1, 2 -> 1, 4 -> 1)), Polynomial(Map(2 -> -1)))
+    val ring = implicitly[Field[Fraction[Polynomial[Int]]]]
+    ring.multiply(p, q) should equal (Fraction(Polynomial(Map(0 -> 1, 2 -> 2, 4 -> 3, 6 -> 2, 8 -> 1)), Polynomial(Map(4 -> 1))) )
+  }
+  
   "Sturm sequences" should "be calculated correctly" in {
     val p: Polynomial[Fraction[Int]] = Polynomial(4 -> 1, 3 -> 1, 1 -> -1, 0 -> -1)
-    implicitly[PolynomialsOverEuclideanRing[Fraction[Int]]].sturmSequence(p) should equal(
+    implicitly[PolynomialsOverField[Fraction[Int]]].sturmSequence(p) should equal(
       List[Polynomial[Fraction[Int]]](
         Polynomial(4 -> 1, 3 -> 1, 1 -> -1, 0 -> -1),
         Polynomial(3 -> 4, 2 -> 3, 0 -> -1),
