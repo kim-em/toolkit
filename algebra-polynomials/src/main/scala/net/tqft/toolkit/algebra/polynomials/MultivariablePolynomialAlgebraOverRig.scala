@@ -68,7 +68,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
     result
   }
   def fromUnivariatePolynomialInVariable(v: V)(p: Polynomial[MultivariablePolynomial[A, V]]): MultivariablePolynomial[A, V] = {
-    sum(p.coefficients.map({
+    sum(p.toMap.map({
       case (k, q) => multiply(monomial(Map(v -> k)), q)
     }))
   }

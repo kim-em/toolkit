@@ -19,6 +19,10 @@ trait Zero[A] {
   def zero: A
 }
 
+object Zero {
+  implicit def forget[A: AdditiveMonoid]: Zero[A] = implicitly[Zero[A]]
+}
+
 trait AdditiveMonoid[@specialized(Int, Long, Float, Double) A] extends AdditiveSemigroup[A] with Zero[A] {
   def sum(xs: GenTraversableOnce[A]): A = xs.reduceOption(add _).getOrElse(zero)
 }
@@ -42,14 +46,23 @@ object AdditiveMonoid extends AdditiveMonoidLowPriorityImplicits {
       Map() ++ newMap.filter({ case (_, v) => v != coefficients.zero })
     }
 
-    override val zero = Map[A, B]()
+    override lazy val zero = Map[A, B]()
   }
   trait AdditiveMonoidSeq[B] extends AdditiveMonoid[Seq[B]] {
     def coefficients: AdditiveMonoid[B]
 
     override def zero: Seq[B] = Seq.empty
     override def add(s1: Seq[B], s2: Seq[B]): Seq[B] = {
-      s1.zipAll(s2, coefficients.zero, coefficients.zero).map(p => coefficients.add(p._1, p._2))
+      truncate(s1.zipAll(s2, coefficients.zero, coefficients.zero).map(p => coefficients.add(p._1, p._2)))
+    }
+    
+    def truncate(s: Seq[B]): Seq[B] = {
+      val k = s.lastIndexWhere({ b: B => b != coefficients.zero })
+      if(k == -1) {
+        Seq.empty
+      } else {
+        s.take(k + 1)
+      }
     }
   }
 

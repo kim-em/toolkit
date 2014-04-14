@@ -50,10 +50,10 @@ object MathematicaForm {
     override def toMathematicaInputString(p: Polynomial[A]) = {
       def F = implicitly[MathematicaForm[A]]
       def R = implicitly[Ring[A]]
-      if (p.coefficients.isEmpty) {
+      if (p.toMap.isEmpty) {
         F.toMathematicaInputString(implicitly[Ring[A]].zero)
       }
-      (for ((i, a) <- p.coefficients) yield {
+      (for ((i, a) <- p.toMap) yield {
         val c = (if (i == 0 || a != R.one) F.toMathematicaInputString(a) else "")
         val d = (if (i != 0) { variableName + (if (i != 1) { "^" + i.toString } else { "" }) } else { "" })
         Seq(c, d).filter(_.nonEmpty).mkString(" * ")
