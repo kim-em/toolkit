@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.spiders
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest._
+import net.tqft.toolkit.algebra.graphs.Dreadnaut
 
 @RunWith(classOf[JUnitRunner])
 class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
@@ -34,6 +35,29 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
 
   "a rotated trivalent vertex" should "be rotationally equivalent to a trivalent vertex" in {
     spider.rotate(star(3), 1) should be_rotationally_equivalent_to(star(3))
+  }
+
+  "a rotated crossing" should "not be rotationally equivalent to a crossing" in {
+    val s1 = star(4,2)
+    val s2 = spider.rotate(s1, 1)
+    
+    println(s1)
+    println(s1.relabelEdgesAndFaces)
+    println(s1.relabelEdgesAndFaces.nautyGraph)
+    println(s1.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
+    println(Dreadnaut.canonicalLabelling(s1.relabelEdgesAndFaces.nautyGraph))
+    println(spider.canonicalFormWithDefect(s1))
+    println(spider.canonicalFormWithDefect(s1)._1.nautyGraph)
+    println()
+    println(s2)
+    println(s2.relabelEdgesAndFaces)
+    println(s2.relabelEdgesAndFaces.nautyGraph)
+    println(s2.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
+    println(Dreadnaut.canonicalLabelling(s2.relabelEdgesAndFaces.nautyGraph))
+    println(spider.canonicalFormWithDefect(s2))
+    println(spider.canonicalFormWithDefect(s2)._1.nautyGraph)
+    
+    spider.rotate(star(4, 2), 1) shouldNot be_rotationally_equivalent_to(star(4, 2))
   }
 
   "a strand times a strand" should "be a strand" in {

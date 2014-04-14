@@ -126,13 +126,21 @@ object DiagramSpider {
 
         val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(0))
 
-        for (i <- 1 until graph.numberOfVertices) {
+        // Now, we check all the vertex rotations, fixing any that were rotated by an forbidden amount... This is a hack.
+        val fixedFlags = for (i <- 1 until graph.numberOfVertices) yield {
           val k = packed.vertexFlags(i).size
           val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
-          vertexRotations(k) = vertexRotations(k) + j mod k
+          
+          val j0 = j mod packed.labels(i - 1)
+          
+          vertexRotations(k) = (vertexRotations(k) + j - j0) mod k
+          
+          result.vertexFlags(i).rotateLeft(-j0)
         }
 
-        (rotate(result, -boundaryRotation), Rotation(Map() ++ vertexRotations))
+        val fixedResult = result.copy(vertexFlags = result.vertexFlags.head +: fixedFlags)
+        
+        (rotate(fixedResult, -boundaryRotation), Rotation(Map() ++ vertexRotations))
       }
     }
   }

@@ -8,12 +8,12 @@ import net.tqft.toolkit.Logging
 // flags veer to the left
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
-//  verify
+  //  verify
 
   def verify = {
     // There are many things we might check here!
     require(loops >= 0)
-    
+
     require(labels.size == numberOfVertices - 1)
 
     require(vertexFlags(0).headOption match {
@@ -70,7 +70,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     import net.tqft.toolkit.collections.Tally._
     (0 +: neighboursOf(0).filterNot(_ == 0).tally.map(_._2)).max
   }
-  
+
   def edgesAdjacentTo(vertex: Int): Seq[Int] = vertexFlags(vertex).map(_._1)
   def neighboursOf(vertex: Int) = edgesAdjacentTo(vertex).map(e => target(vertex, e))
 
@@ -230,13 +230,6 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
         flag._1
       })
     }
-    //    val withExtraEdge = vertexToEdgeAdjacencies.updated(0, vertexToEdgeAdjacencies(0) :+ outerFace)
-
-    val breakRotationalSymmetry = if (numberOfBoundaryPoints == 0) {
-      IndexedSeq.empty
-    } else {
-      IndexedSeq(0, vertexFlags(0)(0)._1, vertexFlags(0)(0)._2)
-    }
 
     val flagSet = for ((flags, v) <- vertexFlags.zipWithIndex; (e, f) <- flags) yield Seq(v, e, f)
     var i = numberOfVertices + edgeSet.size + faceSet.size - 1
@@ -252,6 +245,12 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       } else {
         Seq(i - 1)
       }
+    }
+
+    val breakRotationalSymmetry = if (numberOfBoundaryPoints == 0) {
+      IndexedSeq.empty
+    } else {
+      IndexedSeq(0, vertexFlags(0)(0)._1, vertexFlags(0)(0)._2)
     }
 
     ColouredGraph(numberOfVertices + edgeSet.size + faceSet.size + 3 * flagSet.size + 1,
@@ -402,7 +401,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     private val packedShape = shape.relabelEdgesAndFaces
 
     case class Excision(cut: PlanarGraph, depth: Int, rotations: Rotation) {
-//      verify
+      //      verify
 
       private def verify = {
         val result = replace(shape)
@@ -613,7 +612,7 @@ object PlanarGraph {
     import net.tqft.toolkit.functions.Memo
     Memo(star_ _)
   }
-  
+
   def star(k: Int, r: Int = 1) = starCache(k, r)
 
   val I = spider.multiply(spider.rotate(star(3), 1), spider.rotate(star(3), -1), 1)
