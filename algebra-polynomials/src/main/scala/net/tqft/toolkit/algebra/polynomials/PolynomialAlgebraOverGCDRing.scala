@@ -15,8 +15,8 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
   }
 
   def pseudoQuotientRemainder(f: P, g: P): (P, P) = {
-//    println("f = " + f)
-//    println("g = " + g)
+    //    println("f = " + f)
+    //    println("g = " + g)
     val df = maximumDegree(f).getOrElse(0)
     val dg = maximumDegree(g).getOrElse(0)
     if (df == 0 && dg == 0) {
@@ -48,10 +48,10 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
         //b^d f == g b^(d-e-1) (s + b^e a) + b^(d-e-1) r
         //      == g (b^(d-e-1) s + b^(d-1) a) + b^(d-e-1) r
 
-//        require({
-//          val q = result._1
-//          scalarMultiply(ring.power(b, d), f) == add(multiply(g, q), r)
-//        })
+        //        require({
+        //          val q = result._1
+        //          scalarMultiply(ring.power(b, d), f) == add(multiply(g, q), r)
+        //        })
 
         result
       }
@@ -92,7 +92,11 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
     if (maximumDegree(f0).getOrElse(0) < maximumDegree(f1).getOrElse(0)) {
       subresultant_gcd(f1, f0)
     } else {
-      subresultantSequence(f0, f1).takeWhile(p => maximumDegree(p).nonEmpty).last
+      if (f0 == zero) {
+        f1
+      } else {
+        subresultantSequence(f0, f1).takeWhile(p => maximumDegree(p).nonEmpty).last
+      }
     }
   }
 
@@ -108,6 +112,8 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
       primitive)
   }
   override def exactQuotientOption(x: P, y: P): Option[P] = {
+    println(s"exactQuotientOption($x, $y)")
+
     (maximumDegree(x), maximumDegree(y)) match {
       case (_, None) => throw new ArithmeticException
       case (None, Some(dy)) => Some(zero)
