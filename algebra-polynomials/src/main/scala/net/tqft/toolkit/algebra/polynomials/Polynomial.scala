@@ -1,20 +1,17 @@
 package net.tqft.toolkit.algebra.polynomials
 
 import scala.language.implicitConversions
-
 import net.tqft.toolkit.algebra._
+import scala.collection.immutable.TreeMap
 
-case class Polynomial[A](coefficients: Map[Int, A]) {
-//  require(coefficients.valuesIterator.forall(_ != implicitly[Rig[A]].zero))
-  def degree = {
-    import net.tqft.toolkit.arithmetic.MinMax._
-    coefficients.keySet.maxOption
-  }
-  def mapValues[B](f: A => B) = Polynomial(Map() ++ coefficients.mapValues(f))
+case class Polynomial[A](coefficients: TreeMap[Int, A]) {
+  def degree = coefficients.keySet.lastOption
+  def mapValues[B](f: A => B) = Polynomial(TreeMap[Int, B]() ++ coefficients.mapValues(f))
 }
 
 object Polynomial {
-  def apply[A:Rig](terms: (Int, A)*): Polynomial[A] = Polynomial(terms.toMap)
+  def apply[A](terms: (Int, A)*): Polynomial[A] = Polynomial(TreeMap[Int, A]() ++ terms)
+  def apply[A](terms: Map[Int, A]): Polynomial[A] = Polynomial(TreeMap[Int, A]() ++ terms)
 
   def identity[A: Ring] = Polynomial(Map(1 -> implicitly[Ring[A]].one))
   
@@ -35,8 +32,9 @@ object Polynomial {
   implicit def intCoefficientsToBigInts(p: Polynomial[Int]) = p.mapValues(BigInt.apply)
   
   implicit def polynomialAlgebraAsRing[A: Ring]: Ring[Polynomial[A]] = implicitly[PolynomialAlgebra[A, Polynomial[A]]]
-  implicit def polynomialAlgebraAsEuclideanRing[A: EuclideanRing]: EuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverEuclideanRing[A, Polynomial[A]]]
-  implicit def polynomialAlgebraOverOrderedEuclideanRingAsOrderedEuclideanRing[A: OrderedEuclideanRing]: OrderedEuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverOrderedEuclideanRing[A, Polynomial[A]]]
+  implicit def polynomialAlgebraAsGCDRing[A: GCDRing]: GCDRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverGCDRing[A, Polynomial[A]]]
+  implicit def polynomialAlgebraAsEuclideanRing[A: Field]: EuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverField[A, Polynomial[A]]]
+  implicit def polynomialAlgebraOverOrderedFieldAsOrderedEuclideanRing[A: OrderedField]: OrderedEuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverOrderedField[A, Polynomial[A]]]
 
   implicit class RichPolynomial[A: Polynomials](p: Polynomial[A]) {
 	  val polynomials = implicitly[Polynomials[A]]
@@ -48,9 +46,9 @@ object Polynomial {
 	  def toIndexedSeq: IndexedSeq[A] = polynomials.toIndexedSeq(p)(ring)
   }
   
-  def cyclotomic[A: EuclideanRing](n: Int): Polynomial[A] = {
-    val ring = implicitly[EuclideanRing[A]]
-    val polynomials = implicitly[PolynomialsOverEuclideanRing[A]]
+  def cyclotomic[A: Field](n: Int): Polynomial[A] = {
+    val ring = implicitly[Field[A]]
+    val polynomials = implicitly[PolynomialsOverField[A]]
     val divisors = for (d <- 1 until n; if n % d == 0) yield cyclotomic[A](d)
     polynomials.quotient(apply((0, ring.negate(ring.one)), (n, ring.one)), polynomials.product(divisors))
   }

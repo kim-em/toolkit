@@ -6,15 +6,15 @@ import net.tqft.toolkit.algebra.grouptheory.Representation
 import net.tqft.toolkit.permutations.Permutations.Permutation
 import net.tqft.toolkit.algebra._
 
-abstract class PolynomialQuotientRing[A: EuclideanRing] extends PolynomialsOverEuclideanRing[A] {
+abstract class PolynomialQuotientRing[A: Field] extends PolynomialsOverField[A] {
   def generator: Polynomial[A]
   override def multiply(a: Polynomial[A], b: Polynomial[A]) = remainder(super.multiply(a, b), generator)
   def normalForm(p: Polynomial[A]) = remainder(p, generator)
 }
 
 object PolynomialQuotientRing {
-   def apply[A: EuclideanRing](p: Polynomial[A]) = new PolynomialQuotientRing[A] {
-     override def ring = implicitly[EuclideanRing[A]]
+   def apply[A: Field](p: Polynomial[A]) = new PolynomialQuotientRing[A] {
+     override def ring = implicitly[Field[A]]
      override def generator = p
    }
 }

@@ -468,7 +468,14 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
           if (partial.map(sourceVertex - 1) == targetVertex && (((partial.vertexRotations(sourceVertex - 1) - rotation) mod packedShape.degree(sourceVertex)) == 0)) {
             // already done this vertex
             Some(partial)
-          } else if (targetVertex == 0 || partial.map.contains(targetVertex) || partial.map(sourceVertex - 1) != -1 || packedShape.degree(sourceVertex) != graph.degree(targetVertex)) {
+          } else if (
+              targetVertex == 0 || 
+              partial.map.contains(targetVertex) || 
+              partial.map(sourceVertex - 1) != -1 || 
+              packedShape.degree(sourceVertex) != graph.degree(targetVertex) ||
+              packedShape.labels(sourceVertex - 1) != graph.labels(sourceVertex - 1) ||
+              (rotation mod packedShape.labels(sourceVertex - 1)) != 0
+              ) {
             //            Logging.info(s"rejecting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
             None
           } else {

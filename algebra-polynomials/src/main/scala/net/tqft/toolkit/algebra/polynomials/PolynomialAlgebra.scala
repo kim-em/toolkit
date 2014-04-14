@@ -98,6 +98,8 @@ object PolynomialAlgebra {
   abstract class Polynomials[A: Ring] extends PolynomialAlgebra.PolynomialAlgebraForWrapper[A, Polynomial[A]] {
     override def toMap(p: Polynomial[A]) = p.coefficients
     override def fromMap(m: Map[Int, A]) = Polynomial(m)
+    override def maximumDegree(p: Polynomial[A]) = p.coefficients.lastOption.map(_._1)
+    override def leadingCoefficient(p: Polynomial[A]) = p.coefficients.lastOption.map(_._2)
   }
 
 

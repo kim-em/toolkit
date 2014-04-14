@@ -17,7 +17,10 @@ abstract class PlanarGraphReductionSpider[R: GCDRing] extends SubstitutionSpider
 
     (for (x <- diagrams1) yield {
       (for (y <- diagrams2) yield {
-        evaluatedInnerProduct(Map(x -> ring.one), Map(y -> ring.one))
+        println("evaluating inner product of " + x + " and " + y)
+        val r = evaluatedInnerProduct(Map(x -> ring.one), Map(y -> ring.one))
+        println(r)
+        r
       })
     })
   }
