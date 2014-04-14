@@ -53,7 +53,13 @@ object Rig extends RigLowPriorityImplicits {
 
     override lazy val one = Seq(coefficients.one)
     override def multiply(s1: Seq[B], s2: Seq[B]): Seq[B] = {
-      ???
+      val cA = coefficients.zero.getClass
+      val array = java.lang.reflect.Array.newInstance(cA, s1.size + s2.size - 1).asInstanceOf[Array[B]]
+      for(i <- 0 until array.length) array(i) = coefficients.zero
+      for ((x, i) <- s1.zipWithIndex; (y, j) <- s2.zipWithIndex) {
+        array(i + j) = coefficients.add(array(i + j), coefficients.multiply(x, y))
+      }
+      truncate(array)
     }
   }
 

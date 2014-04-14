@@ -25,6 +25,22 @@ class PolynomialsTest extends FlatSpec with Matchers {
     val bigN = Fraction(BigInt(499), BigInt(100))
     implicitly[Polynomials[Fraction[BigInt]]].evaluateAt(bigN)(z: Polynomial[Fraction[BigInt]]) should equal(Fraction(BigInt(17790799), BigInt(1000000)))
   }
+  "SeqPolynomial arithmetic" should "be correct" in {
+    import AlgebraicNotation._
+
+    val p: Polynomial[Fraction[Int]] = Polynomial(Seq(Fraction(1, 1), Fraction(3, 1), Fraction(1, 1)))
+    val q: Polynomial[Fraction[Int]] = Polynomial(Seq(Fraction(-2, 1), Fraction(1, 1)))
+
+    (p % q) should equal(Polynomial(Seq(Fraction(11, 1))))
+
+    val a: Polynomial[Int] = Polynomial(Seq(-18,21,-8,1))
+
+    implicitly[Polynomials[Int]].evaluateAt(5)(a) should equal(12)
+
+    val z: Polynomial[BigInt] = Seq(-12,16,-7,1)
+    val bigN = Fraction(BigInt(499), BigInt(100))
+    implicitly[Polynomials[Fraction[BigInt]]].evaluateAt(bigN)(z: Polynomial[Fraction[BigInt]]) should equal(Fraction(BigInt(17790799), BigInt(1000000)))
+  }
 
   "cyclotomic" should "give the cyclotomic polynomials" in {
     Polynomial.cyclotomic[Fraction[Int]](1) should equal(Polynomial(0 -> Fraction(-1, 1), 1 -> Fraction(1, 1)))
@@ -48,13 +64,6 @@ class PolynomialsTest extends FlatSpec with Matchers {
     val ring = implicitly[Field[Fraction[Polynomial[Int]]]]
     ring.multiply(p, q) should equal (Fraction(Polynomial(Map(0 -> 1, 2 -> 2, 4 -> 3, 6 -> 2, 8 -> 1)), Polynomial(Map(4 -> 1))) )
   }
-  
-//  "Laurent polynomials" should "work too" in {
-//    val p = Polynomial(Map(-2 -> -1, 0 -> -1, 2 -> -1))
-//    val q= Polynomial(Map(0 -> 1))
-//    val ring = implicitly[GCDRing[Polynomial[Int]]]
-//    ring.exactQuotient(p, q)
-//  }
   
   "Sturm sequences" should "be calculated correctly" in {
     val p: Polynomial[Fraction[Int]] = Polynomial(4 -> 1, 3 -> 1, 1 -> -1, 0 -> -1)

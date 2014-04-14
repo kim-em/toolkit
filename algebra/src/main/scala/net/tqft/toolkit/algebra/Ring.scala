@@ -23,7 +23,7 @@ object Ring extends RingLowPriorityImplicits {
   class RingSeq[B: Ring] extends Rig.RigSeq[B] with Ring[Seq[B]] with Module[B, Seq[B]] {
     override def coefficients = implicitly[Ring[B]]
 
-    override def scalarMultiply(b: B, s: Seq[B]) = s.map(v => coefficients.multiply(b, v))
+    override def scalarMultiply(b: B, s: Seq[B]) = truncate(s.map(v => coefficients.multiply(b, v)))
     override def negate(s: Seq[B]) = s.map(coefficients.negate)
   }
 

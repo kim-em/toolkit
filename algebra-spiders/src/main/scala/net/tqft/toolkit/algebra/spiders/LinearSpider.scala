@@ -20,6 +20,11 @@ trait EvaluableSpider[R, A] extends Spider[A] {
   def evaluatedInnerProduct(a1: A, a2: A) = evaluate(innerProduct(a1, a2))
 }
 
+trait CachingEvaluableSpider[R, A] extends EvaluableSpider[R, A] {
+  private val cache = scala.collection.mutable.Map[(A, A), R]()
+  override def evaluatedInnerProduct(a1: A, a2: A) = cache.getOrElseUpdate((a1, a2), super.evaluatedInnerProduct(a1, a2))
+}
+
 object LinearSpider {
   abstract class MapLinearSpider[A: DiagramSpider, R: Ring] extends Module.ModuleMap[R, A, R] with LinearSpider[R, Map[A, R]] with EvaluableSpider[R, Map[A, R]] {
     val diagramSpider = implicitly[DiagramSpider[A]]

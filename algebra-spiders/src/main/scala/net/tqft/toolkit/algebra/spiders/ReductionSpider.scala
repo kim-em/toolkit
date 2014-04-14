@@ -7,20 +7,20 @@ import net.tqft.toolkit.algebra.matrices.Matrices
 trait ReductionSpider[A, R] extends SubstitutionSpider[A, R] {
   def reductions: Seq[Reduction[A, R]]
   override def canonicalForm(m: Map[A, R]) = super.canonicalForm(replaceRepeatedly(reductions)(m))
-
+  override def stitch(x: Map[A, R]): Map[A, R] = {
+    replaceRepeatedly(reductions)(super.stitch(x))
+  }
 }
 
 abstract class PlanarGraphReductionSpider[R: GCDRing] extends SubstitutionSpider.PlanarGraphMapSubstitutionSpider[R] with ReductionSpider[PlanarGraph, R] {
   // move these further up the hierarchy?
+
   def innerProductMatrix(diagrams1: Seq[PlanarGraph], diagrams2: Seq[PlanarGraph]): Seq[Seq[R]] = {
     def ring = implicitly[Ring[R]]
 
     (for (x <- diagrams1) yield {
       (for (y <- diagrams2) yield {
-        println("evaluating inner product of " + x + " and " + y)
-        val r = evaluatedInnerProduct(Map(x -> ring.one), Map(y -> ring.one))
-        println(r)
-        r
+        evaluatedInnerProduct(Map(x -> ring.one), Map(y -> ring.one))
       })
     })
   }
@@ -40,7 +40,8 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
     def diagrams: Seq[PlanarGraph]
 
     def coefficients(x: PlanarGraph): Seq[R] = {
-      val m = Matrix(diagrams.size + 1, innerProductMatrix(diagrams, x +: diagrams))
+      val additionalInnerProducts = for (d <- diagrams) yield evaluatedInnerProduct(Map(d -> ring.one), Map(x -> ring.one))
+      val m = Matrix(diagrams.size + 1, innerProducts.zip(additionalInnerProducts).map(p => p._1 :+ p._2))
       m.nullSpace.head
     }
     def linearCombination(a: Seq[R]) = diagrams.zip(a).toMap
@@ -75,7 +76,7 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
       override def vertexTypes = spider.vertexTypes
       override def ring = spider.ring
       override def eigenvalue(valence: Int) = spider.eigenvalue(valence)
-      override def reductions = spider.reductions ++ deriveNewRelations(numberOfVertices)
+      override lazy val reductions = spider.reductions ++ deriveNewRelations(numberOfVertices)
     }
   }
 

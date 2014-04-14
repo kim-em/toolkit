@@ -8,7 +8,7 @@ import net.tqft.toolkit.Logging
 // flags veer to the left
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
-  //  verify
+//    verify
 
   def verify = {
     // There are many things we might check here!
@@ -473,7 +473,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
               partial.map.contains(targetVertex) || 
               partial.map(sourceVertex - 1) != -1 || 
               packedShape.degree(sourceVertex) != graph.degree(targetVertex) ||
-              packedShape.labels(sourceVertex - 1) != graph.labels(sourceVertex - 1) ||
+              packedShape.labels(sourceVertex - 1) != graph.labels(targetVertex - 1) ||
               (rotation mod packedShape.labels(sourceVertex - 1)) != 0
               ) {
             //            Logging.info(s"rejecting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")

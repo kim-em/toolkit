@@ -13,18 +13,15 @@ object Gadgets {
   def ringOfPolynomials_0 = implicitly[Ring[Polynomial[Int]]]
   def ringOfPolynomials_1 = implicitly[GCDRing[Polynomial[Int]]]
   def ringOfDoublePolynomials = implicitly[Ring[Polynomial[Double]]]
-
   def ringOfPolynomials_2[A: Ring] = implicitly[Ring[Polynomial[A]]]
   
   def rationalFunctions = implicitly[Ring[RationalFunction[Fraction[Int]]]]
-
   def rationalFunctionsOver[B: Field] = implicitly[Ring[RationalFunction[B]]]
 
   def one_0 = 1
   def one_1: Fraction[Int] = 1
   def one_2: Polynomial[Fraction[Int]] = 1
-  def one_3: Fraction[Polynomial[Fraction[Int]]] = 1
-  def one_4: RationalFunction[Fraction[Int]] = 1
+  def one_3: Fraction[Polynomial[Int]] = 1
 
   def multivariablePolynomials = implicitly[MultivariablePolynomialAlgebra[Int, String]]
   def rigOfMultivariablePolynomials = implicitly[Rig[MultivariablePolynomial[Int, String]]]

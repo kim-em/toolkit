@@ -30,7 +30,7 @@ object PolynomialAlgebraOverOrderedField {
   trait PolynomialAlgebraOverOrderedFieldForMaps[A] extends PolynomialAlgebraOverField.PolynomialAlgebraOverFieldForMaps[A] with PolynomialAlgebraOverOrderedField[A, Map[Int, A]] {
     override def ring: OrderedField[A]
   }
-  implicit def forMaps[A: OrderedField]: PolynomialAlgebraOverOrderedField[A, Map[Int, A]] = new PolynomialAlgebra.PolynomialAlgebraForMaps[A] with PolynomialAlgebraOverOrderedField[A, Map[Int, A]] {
+  implicit def forMaps[A: OrderedField]: PolynomialAlgebraOverOrderedField[A, Map[Int, A]] = new PolynomialAlgebraOverField.PolynomialAlgebraOverFieldForMaps[A] with PolynomialAlgebraOverOrderedField[A, Map[Int, A]] {
     override def ring = implicitly[OrderedField[A]]
   }
   implicit def over[A: OrderedField]: PolynomialAlgebraOverOrderedField[A, Polynomial[A]] = PolynomialsOverOrderedField.over[A]

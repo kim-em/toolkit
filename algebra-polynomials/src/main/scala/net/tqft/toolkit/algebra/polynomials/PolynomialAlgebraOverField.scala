@@ -9,7 +9,7 @@ trait PolynomialAlgebraOverField[A, P] extends PolynomialAlgebraOverGCDRing[A, P
   override def ring: Field[A]
 
   override def quotientRemainder(x: P, y: P): (P, P) = {
-    println(s"beginning quotientRemainder($x, $y)")
+//    println(s"beginning quotientRemainder($x, $y)")
     (maximumDegree(x), maximumDegree(y)) match {
       case (_, None) => throw new ArithmeticException
       case (None, Some(dy)) => (zero, zero)
@@ -57,7 +57,7 @@ trait PolynomialAlgebraOverField[A, P] extends PolynomialAlgebraOverGCDRing[A, P
 }
 
 object PolynomialAlgebraOverField {
-  trait PolynomialAlgebraOverFieldForMaps[A] extends PolynomialAlgebra.PolynomialAlgebraForMaps[A] with PolynomialAlgebraOverField[A, Map[Int, A]] {
+  trait PolynomialAlgebraOverFieldForMaps[A] extends PolynomialAlgebraOverGCDRing.PolynomialAlgebraOverGCDRingForMaps[A] with PolynomialAlgebraOverField[A, Map[Int, A]] {
     override def ring: Field[A]
   }
 
@@ -67,7 +67,7 @@ object PolynomialAlgebraOverField {
   implicit def over[A: Field]: PolynomialAlgebraOverField[A, Polynomial[A]] = PolynomialsOverField.over[A]
 }
 
-abstract class PolynomialsOverField[A: Field] extends Polynomials[A] with PolynomialAlgebraOverField[A, Polynomial[A]]
+abstract class PolynomialsOverField[A: Field] extends PolynomialsOverGCDRing[A] with PolynomialAlgebraOverField[A, Polynomial[A]]
 object PolynomialsOverField {
   implicit def over[A: Field]: PolynomialsOverField[A] = new PolynomialsOverField[A] {
     override def ring = implicitly[Field[A]]

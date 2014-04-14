@@ -33,32 +33,14 @@ trait MultivariablePolynomialAlgebraOverEuclideanRing[A, V] extends Multivariabl
 
         if ((variables(x) ++ variables(y)).size == 1) {
           // actually, there are no more variables in the coefficient functions, switch to univariate gcd
-          val xo: Polynomial[A] = xp.coefficients.mapValues(p => constantTerm(p))
-          val yo: Polynomial[A] = yp.coefficients.mapValues(p => constantTerm(p))
+          val xo: Polynomial[A] = xp.mapValues(p => constantTerm(p))
+          val yo: Polynomial[A] = yp.mapValues(p => constantTerm(p))
 
           val univariatePolynomials = implicitly[PolynomialsOverGCDRing[A]]
           val univariateGCD = univariatePolynomials.gcd(xo, yo)
-          fromUnivariatePolynomialInVariable(v)(univariateGCD.coefficients.mapValues(a => MultivariablePolynomial.constant[A, V](a))) //.ensuring(verifyResult _)
+          fromUnivariatePolynomialInVariable(v)(univariateGCD.mapValues(a => MultivariablePolynomial.constant[A, V](a))) //.ensuring(verifyResult _)
         } else {
-
           fromUnivariatePolynomialInVariable(v)(univariatePolynomialsInMultivariablePolynomials.gcd(xp, yp)) //.ensuring(verifyResult _)
-
-          //          // TODO this probably shouldn't lift the coefficients to fractions: the subresultant_gcd algorithm is more efficient
-          //
-          //          val xc = univariatePolynomialsInMultivariablePolynomials.content(xp)
-          //          val yc = univariatePolynomialsInMultivariablePolynomials.content(yp)
-          //
-          //          val xv = xp.coefficients.mapValues(p => Fraction.whole(p)(polynomials))
-          //          val yv = yp.coefficients.mapValues(p => Fraction.whole(p)(polynomials))
-          //
-          //          val gcdOverRationalFunctions = univariatePolynomialsInMultivariableRationalFunctions.gcd(xv, yv)
-          //          val primitivePart = univariatePolynomialsInMultivariableRationalFunctions.primitivePartOverFractions(gcdOverRationalFunctions)
-          //
-          //          val contentGCD = gcd(xc, yc)
-          //
-          //          multiply(
-          //            contentGCD,
-          //            fromUnivariatePolynomialInVariable(v)(primitivePart)) //.ensuring(verifyResult _)
         }
       }
     }

@@ -12,13 +12,9 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
     val newMap = scala.collection.mutable.Map[A, R]()
     for ((a, r) <- element) {
       import net.tqft.toolkit.collections.Iterators._
-      println("about to look for replacements in " + a)
       val m: Map[A, R] = allReplacements(reduction)(a).headOption.getOrElse(Map(a -> ring.one))
-      println("found " + m)
       for ((b, t) <- m) {
-        println("about to multiply " + r +  " and " + t)
         val p = ring.multiply(r, t)
-        println("finished multiplying")
         newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)
       }
     }
@@ -26,7 +22,6 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
   }
 
   def replace(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Map[A, R] = {
-    println("running replace on " + element)
     reductions.iterator.map(r => replace(r)(element)).find(_ != element).getOrElse(element)
   }
   def replaceRepeatedly(reductions: Seq[Reduction[A, R]])(element: Map[A, R]) = {
@@ -36,10 +31,10 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
 }
 
 object SubstitutionSpider {
-  abstract class PlanarGraphMapSubstitutionSpider[R: Ring] extends LinearSpider.MapLinearSpider[PlanarGraph, R] with SubstitutionSpider[PlanarGraph, R] {
+  abstract class PlanarGraphMapSubstitutionSpider[R: Ring] extends LinearSpider.MapLinearSpider[PlanarGraph, R] with SubstitutionSpider[PlanarGraph, R] with CachingEvaluableSpider[R, Map[PlanarGraph, R]] {
     def vertexTypes: Seq[VertexType]
     val graphs = GraphsGeneratedBy(vertexTypes)
-    
+
     override def allReplacements(reduction: Reduction[PlanarGraph, R])(diagram: PlanarGraph) = {
       for (
         excision <- diagram.Subgraphs(reduction.big).excisions
@@ -48,7 +43,7 @@ object SubstitutionSpider {
         val newMap = scala.collection.mutable.Map[PlanarGraph, R]()
         for ((a, r) <- reduction.small) {
           val (b, rotations2) = diagramSpider.canonicalFormWithDefect(excision.replace(a))
-//          val br = diagramSpider.rotate(b, -rotations2.boundaryRotation)
+          //          val br = diagramSpider.rotate(b, -rotations2.boundaryRotation)
           val eigenvalueFactor2 = eigenvalue(rotations2)
           val p = ring.multiply(eigenvalueFactor1, eigenvalueFactor2, r)
           newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)
