@@ -122,9 +122,9 @@ object `SO(3)_q` extends PentagonReductionSpider[RationalFunction[Int]] {
 object `(G_2)_q` extends PentagonReductionSpider[RationalFunction[Int]] {
   override val ring = implicitly[Field[RationalFunction[Int]]]
 
-  override val d: RationalFunction[Int] = Map(5 -> 1, 4 -> 1, 1 -> 1, 0 -> 1, -1 -> 1, -4 -> 1, -5 -> 1)
-  override val b: RationalFunction[Int] = Map(3 -> 1, 2 -> 1, 1 -> 1, -1 -> 1, -2 -> 1, -3 -> 1)
-  override val t: RationalFunction[Int] = Map(2 -> -1, 0 -> -1, -2 -> -1)
+  override val d: RationalFunction[Int] = Fraction(Map(10 -> 1, 9 -> 1, 6 -> 1, 5 -> 1, 4 -> 1, 1 -> 1, 0 -> 1), Map(5 -> 1))
+  override val b: RationalFunction[Int] = Fraction(Map(6 -> 1, 5 -> 1, 4 -> 1, 2 -> 1, 1 -> 1, 0 -> 1), Map(3 -> 1))
+  override val t: RationalFunction[Int] = Fraction(Map(4 -> -1, 2 -> -1, 0 -> -1), Map(2 -> 1))
   override val omega = ring.one
 }
 
@@ -193,12 +193,12 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
 
   trait BasisWithPlatElement extends Basis {
     def platElement: Int
-    
+
     private val braidCache = {
       def braidElement(crossing: (Int, Int)) = ???
       ???
     }
-    
+
     def braidActionOnPlatElement(braid: Braid): Seq[R] = {
       ???
     }

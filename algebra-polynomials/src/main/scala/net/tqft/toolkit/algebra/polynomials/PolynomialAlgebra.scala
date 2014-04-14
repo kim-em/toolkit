@@ -24,9 +24,9 @@ trait PolynomialAlgebra[A, P] extends Module[A, P] with AssociativeAlgebra[A, P]
   def constantTerm(p: P) = coefficientOf(p)(0)
   def coefficientOf(p: P): Int => A
   def evaluateAt(a: A)(p: P): A
-  
+
   def composeAsFunctions(p1: P, p2: P): P
-  
+
   def formalDerivative(p: P): P
 }
 
@@ -35,7 +35,7 @@ object PolynomialAlgebra {
     override def keys = implicitly[AdditiveMonoid[Int]]
     override def multiplicativeCoefficients = implicitly[Ring[A]]
     override def coefficients = implicitly[Module[A, A]]
-    
+
     override def toMap(p: Map[Int, A]) = p
     override def toIndexedSeq[Z: Zero](p: Map[Int, A]) = {
       maximumDegree(p) match {
@@ -95,14 +95,12 @@ object PolynomialAlgebra {
   }
 }
 
-  abstract class Polynomials[A: Ring] extends PolynomialAlgebra.PolynomialAlgebraForWrapper[A, Polynomial[A]] {
-    override def toMap(p: Polynomial[A]) = p.coefficients
-    override def fromMap(m: Map[Int, A]) = Polynomial(m)
-    override def maximumDegree(p: Polynomial[A]) = p.coefficients.lastOption.map(_._1)
-    override def leadingCoefficient(p: Polynomial[A]) = p.coefficients.lastOption.map(_._2)
-  }
-
-
+abstract class Polynomials[A: Ring] extends PolynomialAlgebra.PolynomialAlgebraForWrapper[A, Polynomial[A]] {
+  override def toMap(p: Polynomial[A]) = p.coefficients
+  override def fromMap(m: Map[Int, A]) = Polynomial(m)
+  override def maximumDegree(p: Polynomial[A]) = p.coefficients.lastOption.map(_._1)
+  override def leadingCoefficient(p: Polynomial[A]) = p.coefficients.lastOption.map(_._2)
+}
 
 object Polynomials {
   implicit def over[A: Ring]: Polynomials[A] = new Polynomials[A] {
