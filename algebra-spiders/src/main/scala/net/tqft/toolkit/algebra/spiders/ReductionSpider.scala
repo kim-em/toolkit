@@ -42,7 +42,11 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
     def coefficients(x: PlanarGraph): Seq[R] = {
       val additionalInnerProducts = for (d <- diagrams) yield evaluatedInnerProduct(Map(d -> ring.one), Map(x -> ring.one))
       val m = Matrix(diagrams.size + 1, innerProducts.zip(additionalInnerProducts).map(p => p._1 :+ p._2))
-      m.nullSpace.head
+      val kernel = m.nullSpace.head
+      require(kernel.last == ring.one)
+      val result = kernel.most.map(ring.negate)
+      require(result.size == diagrams.size)
+      result
     }
     def linearCombination(a: Seq[R]) = diagrams.zip(a).toMap
 
