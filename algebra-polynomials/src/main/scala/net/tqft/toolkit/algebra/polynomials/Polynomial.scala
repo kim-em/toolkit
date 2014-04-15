@@ -49,6 +49,7 @@ object Polynomial {
   implicit def liftSeqFractionsAsRationalFunction[A: GCDRing](m: Seq[A]): Fraction[Polynomial[Fraction[A]]] = liftSeqFractions(m)
 
   implicit def constant[A:Zero](a: A): Polynomial[A] = Polynomial(Seq(a))
+//  implicit def constant[A:Zero](a: A): Polynomial[A] = Polynomial(Map(0 -> a))
   implicit def constantFraction[A: EuclideanRing](a: A): Polynomial[Fraction[A]] = constant(a)
   implicit def constantRationalFunction[A: GCDRing](a: A): Fraction[Polynomial[A]] = constant(a)
   implicit def constantBigInt(i: Int): Polynomial[BigInt] = constant(i: BigInt)
