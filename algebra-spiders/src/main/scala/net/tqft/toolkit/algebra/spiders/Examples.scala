@@ -69,14 +69,13 @@ object Spiders {
     val d_ = d
     val b_ = b
     val t_ = t
-    val preCubicSpider = new TrivalentSpider[R] {
+    new CubicSpider[R] {
       override def ring = implicitly[Field[R]]
       override def omega = omega_
       override def d = d_
       override def b = b_
       override def t = t_
     }
-    preCubicSpider.basis(4, preCubicSpider.reducedDiagrams(4, 0) ++ preCubicSpider.reducedDiagrams(4, 2)).withNewRelations(4)
   }
 }
 
@@ -110,8 +109,6 @@ abstract class PentagonReductionSpider[R: Field] extends CubicSpider[R] { cs =>
 }
 
 object `SO(3)_q` extends PentagonReductionSpider[RationalFunction[Int]] {
-  override val ring = implicitly[Field[RationalFunction[Int]]]
-
   val q: RationalFunction[Int] = Polynomial(1 -> 1)
   override val d = ring.add(q, ring.inverse(q))
   override val b = ???
@@ -126,6 +123,21 @@ object `(G_2)_q` extends PentagonReductionSpider[RationalFunction[Int]] {
   override val b: RationalFunction[Int] = Fraction(Map(6 -> 1, 5 -> 1, 4 -> 1, 2 -> 1, 1 -> 1, 0 -> 1), Map(3 -> 1))
   override val t: RationalFunction[Int] = Fraction(Map(4 -> -1, 2 -> -1, 0 -> -1), Map(2 -> 1))
   override val omega = ring.one
+}
+
+object `H3` extends CubicSpider[Polynomial[Fraction[Int]]]()(NumberField[Fraction[Int]](Seq(-13, 0, 1))) {
+  override val omega = ring.one
+  override val d: Polynomial[Fraction[Int]] = Seq(Fraction(3, 2), Fraction(1, 2))
+  override val b: Polynomial[Fraction[Int]] = ???
+  override val t: Polynomial[Fraction[Int]] = ???
+  
+  private lazy val pentapentAndHexapentReductions: Seq[Reduction[PlanarGraph, Polynomial[Fraction[Int]]]] = {
+    val preSpider = Spiders.cubic(omega, d,b, t)(ring)
+    val pentapentReduction = preSpider.basis(7, ???).deriveNewRelations(9).next
+    val hexapentReduction = preSpider.basis(8, ???).deriveNewRelations(10).next
+    Seq(pentapentReduction, hexapentReduction)
+  } 
+  override def reductions = super.reductions ++ pentapentAndHexapentReductions
 }
 
 abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverField[R] {

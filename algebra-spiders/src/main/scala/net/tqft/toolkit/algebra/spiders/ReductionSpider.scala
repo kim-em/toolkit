@@ -34,7 +34,8 @@ abstract class PlanarGraphReductionSpider[R: GCDRing] extends SubstitutionSpider
 }
 
 abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraphReductionSpider[R] { spider =>
-
+  override def ring = implicitly[Field[R]]
+  
   trait Basis {
     def numberOfBoundaryPoints: Int
     def diagrams: Seq[PlanarGraph]
