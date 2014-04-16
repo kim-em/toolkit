@@ -29,6 +29,8 @@ class G2SpiderTest extends FlatSpec with Matchers with IsomorphismMatchers {
       for (r <- basis.deriveNewRelations(5)) {
         println(r)
       }
+      
+      `(G_2)_q`
   }
 
 }
