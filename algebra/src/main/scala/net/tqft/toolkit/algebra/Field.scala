@@ -21,10 +21,24 @@ object Field {
     def ring = implicitly[GCDRing[A]]
     override val one = Fraction.whole(ring.one)
     override val zero = Fraction.whole(ring.zero)
-    override def multiply(x: Fraction[A], y: Fraction[A]) = Fraction(ring.multiply(x.numerator, y.numerator), ring.multiply(x.denominator, y.denominator))
+    override def multiply(x: Fraction[A], y: Fraction[A]) = {
+      if (x == one) {
+        y
+      } else if (y == one) {
+        x
+      } else {
+        Fraction(ring.multiply(x.numerator, y.numerator), ring.multiply(x.denominator, y.denominator))
+      }
+    }
     override def add(x: Fraction[A], y: Fraction[A]) = {
-      val denominatorGCD = ring.gcd(x.denominator, y.denominator)
-      Fraction(ring.add(ring.multiply(x.numerator, ring.exactQuotient(y.denominator, denominatorGCD)), ring.multiply(ring.exactQuotient(x.denominator, denominatorGCD), y.numerator)), ring.multiply(ring.exactQuotient(x.denominator, denominatorGCD), y.denominator))
+      if (x == zero) {
+        y
+      } else if (y == zero) {
+        x
+      } else {
+        val denominatorGCD = ring.gcd(x.denominator, y.denominator)
+        Fraction(ring.add(ring.multiply(x.numerator, ring.exactQuotient(y.denominator, denominatorGCD)), ring.multiply(ring.exactQuotient(x.denominator, denominatorGCD), y.numerator)), ring.multiply(ring.exactQuotient(x.denominator, denominatorGCD), y.denominator))
+      }
     }
     override def fromInt(x: Int) = Fraction.whole(ring.fromInt(x))
     override def negate(x: Fraction[A]) = Fraction.alreadyReduced(ring.negate(x.numerator), x.denominator)
@@ -32,7 +46,7 @@ object Field {
   }
 
   implicit def fieldOfFractions[A: GCDRing]: Field[Fraction[A]] = new FieldOfFractions[A]
-  
+
   implicit def forget[A: OrderedField]: Field[A] = implicitly[OrderedField[A]]
 }
 

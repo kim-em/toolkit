@@ -4,6 +4,7 @@ trait Spider[A] {
   def empty: A
   def rotate(a: A, k: Int): A
   def tensor(a1: A, a2: A): A
+  def tensorProduct(as: Seq[A]): A = as.reduce(tensor)
   def stitch(a: A): A
 
   def circumference(a: A): Int

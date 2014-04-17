@@ -16,9 +16,9 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
   }
 
   def pseudoQuotientRemainder(f: P, g: P): (P, P) = {
-//    require(f.toString.size < 500)
-//    println("f = " + f)
-//    println("g = " + g)
+    //    require(f.toString.size < 500)
+    //    println("f = " + f)
+    //    println("g = " + g)
     val df = maximumDegree(f).getOrElse(0)
     val dg = maximumDegree(g).getOrElse(0)
     val result = if (df == 0 && dg == 0) {
@@ -29,13 +29,13 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
         (zero, f)
       } else {
         val b = leadingCoefficient(g).get
-//        println("b = " + b)
+        //        println("b = " + b)
 
         val a = monomial(df - dg, leadingCoefficient(f).get)
-//        println("a = " + a)
+        //        println("a = " + a)
 
         val `bf-ag` = subtract(scalarMultiply(b, f), multiply(a, g))
-//        println("bf-ag = " + `bf-ag`)
+        //        println("bf-ag = " + `bf-ag`)
 
         val e = {
           val d_ = maximumDegree(`bf-ag`).getOrElse(0)
@@ -47,11 +47,11 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
           }
         }
         val (s, r0) = pseudoQuotientRemainder(`bf-ag`, g)
-//        println("s = " + s)
-//        println("r0 = " + r0)
+        //        println("s = " + s)
+        //        println("r0 = " + r0)
         val `b^(d-e-1)` = ring.power(b, d - e - 1)
         val r = scalarMultiply(`b^(d-e-1)`, r0)
-//        println("r = " + r0)
+        //        println("r = " + r0)
         (add(scalarMultiply(`b^(d-e-1)`, s), scalarMultiply(ring.power(b, d - 1), a)), r)
 
         //b^e(bf-ag) == gs + r
@@ -61,12 +61,12 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
 
       }
     }
-//    require({
-//      val q = result._1
-//      scalarMultiply(ring.power(b, d), f) == add(multiply(g, q), r)
-//    })
-//    println("result._1 = " + result._1)
-//    println("result._2 = " + result._2)
+    //    require({
+    //      val q = result._1
+    //      scalarMultiply(ring.power(b, d), f) == add(multiply(g, q), r)
+    //    })
+    //    println("result._1 = " + result._1)
+    //    println("result._2 = " + result._2)
 
     result
 
@@ -114,15 +114,19 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
   }
 
   override def gcd(x: P, y: P): P = {
-    val xc = content(x)
-    val yc = content(y)
-    val contentGCD = ring.gcd(xc, yc)
+    if (x == one || y == one) {
+      one
+    } else {
+      val xc = content(x)
+      val yc = content(y)
+      val contentGCD = ring.gcd(xc, yc)
 
-    val primitive = primitivePart(subresultant_gcd(x, y))
+      val primitive = primitivePart(subresultant_gcd(x, y))
 
-    scalarMultiply(
-      contentGCD,
-      primitive)
+      scalarMultiply(
+        contentGCD,
+        primitive)
+    }
   }
   override def exactQuotientOption(x: P, y: P): Option[P] = {
     //    println(s"exactQuotientOption($x, $y)")

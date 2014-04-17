@@ -13,12 +13,11 @@ case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
 object MultivariablePolynomial {
   implicit def lift[A, V](coefficients: Map[Map[V, Int], A]) = MultivariablePolynomial[A, V](coefficients)
 
-  implicit def liftCoefficientsToFractions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(coefficients.mapValues(a => a))
+  implicit def liftCoefficientsToFractions[A: Rig, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(coefficients.mapValues(a => a))
   implicit def liftCoefficientsToBigInts[V](coefficients: Map[Map[V, Int], Int]): MultivariablePolynomial[BigInt, V] = MultivariablePolynomial(coefficients.mapValues(a => a))
-  implicit def liftCoefficientsToPolynomials[A: Ring, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[A], V] = lift(coefficients.mapValues(a => a))
-  implicit def liftCoefficientsToRationalFunctions[A: EuclideanRing, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[Polynomial[A]], V] = coefficients.mapValues(a => a)
-  implicit def constant[A: Ring, V](a: A): MultivariablePolynomial[A, V] = {
-    if (a == implicitly[Ring[A]].zero) {
+  implicit def liftCoefficientsToPolynomials[A: Rig, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[A], V] = lift(coefficients.mapValues(a => a))
+  implicit def constant[A: Rig, V](a: A): MultivariablePolynomial[A, V] = {
+    if (a == implicitly[Rig[A]].zero) {
       MultivariablePolynomial(Map.empty)
     } else {
       MultivariablePolynomial(new scala.collection.immutable.Map.Map1(Map.empty, a))
