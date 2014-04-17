@@ -23,7 +23,7 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
         override def hashCode = elements.hashCode
         override def equals(other: Any) = {
           other match {
-            case other: Orbit => other.elements == elements
+            case other: FinitelyGeneratedFiniteGroup[A]#Action[B]#Orbit => other.elements == elements
             case _ => false
           }
         }

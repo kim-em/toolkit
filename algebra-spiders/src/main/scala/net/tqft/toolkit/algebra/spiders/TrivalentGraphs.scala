@@ -1,5 +1,6 @@
 package net.tqft.toolkit.algebra.spiders
 
+// FIXME deprecate
 object TrivalentGraphs {
   private val tinyFaces = for (i <- 1 to 3) yield PlanarGraph.polygon(i)
   private val smallFaces = for (i <- 1 to 4) yield PlanarGraph.polygon(i)

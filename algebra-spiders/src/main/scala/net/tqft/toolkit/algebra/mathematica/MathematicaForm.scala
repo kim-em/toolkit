@@ -12,10 +12,6 @@ trait MathematicaForm[A] {
 }
 
 object MathematicaForm {
-  implicit class MathematicaFormOperations[A: MathematicaForm](a: A) {
-    def toMathemathicaInputString = implicitly[MathematicaForm[A]].toMathematicaInputString(a)
-  }
-
   implicit object StringMathematicaForm extends MathematicaForm[String] {
     override def toMathematicaInputString(s: String) = "\"" + s + "\""
   }
@@ -90,4 +86,9 @@ object MathematicaForm {
       }
     }
   }
+  
+  implicit class MathematicaFormOperations[A: MathematicaForm](a: A) {
+    def toMathemathicaInputString = implicitly[MathematicaForm[A]].toMathematicaInputString(a)
+  }
+
 }

@@ -8,7 +8,7 @@ import net.tqft.toolkit.Logging
 // flags veer to the left
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
-//    verify
+      verify
 
   def verify = {
     // There are many things we might check here!
@@ -336,6 +336,8 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       } else {
         this
       }
+    } else if(verticesToDelete.size == vertices.size - 1 && boundaryEdgesAndFacesToDelete.isEmpty) {
+      PlanarGraph.empty.copy(loops = loops - loopsToDelete)
     } else {
 
       val boundaryEdgesToDelete = boundaryEdgesAndFacesToDelete.map(_._1)
@@ -401,7 +403,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     private val packedShape = shape.relabelEdgesAndFaces
 
     case class Excision(cut: PlanarGraph, depth: Int, rotations: Rotation) {
-      //      verify
+            verify
 
       private def verify = {
         val result = replace(shape)
@@ -468,14 +470,12 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
           if (partial.map(sourceVertex - 1) == targetVertex && (((partial.vertexRotations(sourceVertex - 1) - rotation) mod packedShape.degree(sourceVertex)) == 0)) {
             // already done this vertex
             Some(partial)
-          } else if (
-              targetVertex == 0 || 
-              partial.map.contains(targetVertex) || 
-              partial.map(sourceVertex - 1) != -1 || 
-              packedShape.degree(sourceVertex) != graph.degree(targetVertex) ||
-              packedShape.labels(sourceVertex - 1) != graph.labels(targetVertex - 1) ||
-              (rotation mod packedShape.labels(sourceVertex - 1)) != 0
-              ) {
+          } else if (targetVertex == 0 ||
+            partial.map.contains(targetVertex) ||
+            partial.map(sourceVertex - 1) != -1 ||
+            packedShape.degree(sourceVertex) != graph.degree(targetVertex) ||
+            packedShape.labels(sourceVertex - 1) != graph.labels(targetVertex - 1) ||
+            (rotation mod packedShape.labels(sourceVertex - 1)) != 0) {
             //            Logging.info(s"rejecting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
             None
           } else {

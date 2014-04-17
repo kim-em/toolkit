@@ -23,13 +23,21 @@ object Fraction {
   def alreadyReduced[A](numerator: A, denominator: A): Fraction[A] = FractionRatio(numerator, denominator)
 
   def apply[@specialized(Int, Long) A: GCDRing](numerator: A, denominator: A): Fraction[A] = {
-    val _numerator = numerator
-    val _denominator = denominator
-    val ring = implicitly[GCDRing[A]]
-    val gcd = ring.gcd(_numerator, _denominator)
-    ring.exactQuotient(_denominator, gcd) match {
-      case q if q == ring.one => FractionWhole(ring.exactQuotient(_numerator, gcd))
-      case _ => FractionRatio(ring.exactQuotient(_numerator, gcd), ring.exactQuotient(_denominator, gcd))
+    def ring = implicitly[GCDRing[A]]
+    if (denominator == ring.one) {
+      FractionWhole(numerator)
+    } else {
+      def _numerator = numerator
+      def _denominator = denominator
+      val gcd = ring.gcd(_numerator, _denominator)
+      if (gcd == ring.one) {
+        FractionRatio(numerator, denominator)
+      } else {
+        ring.exactQuotient(_denominator, gcd) match {
+          case q if q == ring.one => FractionWhole(ring.exactQuotient(_numerator, gcd))
+          case q => FractionRatio(ring.exactQuotient(_numerator, gcd), q)
+        }
+      }
     }
   }
 
