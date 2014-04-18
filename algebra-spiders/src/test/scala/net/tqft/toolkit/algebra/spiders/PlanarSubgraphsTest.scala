@@ -68,5 +68,11 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
     val q = PlanarGraph(12,IndexedSeq(List(), List((8,13), (8,12), (11,13)), List((7,15), (11,13), (9,13)), List((4,16), (5,13), (6,17)), List((4,13), (23,16), (22,13)), List((7,13), (9,15), (22,13)), List((5,17), (23,13), (6,16))),IndexedSeq(1,1,1,1,1,1),0)
     q.Subgraphs(polygon(2)).excisions.size should equal(4)
   }
+  
+  "an octahedron with a loop" should "have a loop" in {
+    val q = PlanarGraph(19,Vector(Vector(), List((10,20), (11,23), (16,21), (13,25)), List((11,21), (12,23), (18,22), (14,24)), List((10,23), (17,20), (15,26), (12,22)), List((7,25), (8,19), (17,26), (13,20)), List((7,19), (16,25), (14,21), (9,24)), List((8,26), (9,19), (18,24), (15,22))),IndexedSeq(1, 1, 1, 1, 1, 1),1)
+
+    q.Subgraphs(loop).excisions.size should equal (1)
+  }
 }
 

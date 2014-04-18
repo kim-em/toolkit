@@ -1,8 +1,12 @@
-package net.tqft.toolkit.algebra.spiders
+package net.tqft.toolkit.algebra.spiders.examples
 
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
+import org.scalatest.junit.JUnitRunner
+import net.tqft.toolkit.algebra.spiders._
+import net.tqft.toolkit.algebra.polynomials._
+import net.tqft.toolkit.algebra._
+
 
 @RunWith(classOf[JUnitRunner])
 class TrivalentGraphsTest extends FlatSpec with Matchers with IsomorphismMatchers {
