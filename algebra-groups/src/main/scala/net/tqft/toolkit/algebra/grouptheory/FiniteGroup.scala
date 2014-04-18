@@ -187,7 +187,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
 
     def classCoefficientSimultaneousEigenvectorsModPrime = {
       import net.tqft.toolkit.arithmetic.Mod._
-      implicit val modP = Mod(preferredPrime)
+      implicit val modP = PrimeField(preferredPrime)
       val zeroVector = Seq.fill(k)(0)
 
       def subtractDiagonal(m: Seq[Seq[Int]], lambda: Int) = {
@@ -228,7 +228,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
     }
 
     def characterTableModPreferredPrime = {
-      implicit val modP = Mod(preferredPrime)
+      implicit val modP = PrimeField(preferredPrime)
 
       def sqrt(x: Int) = {
         import net.tqft.toolkit.arithmetic.Mod._
@@ -249,7 +249,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
       for (i <- 0 until k) yield for (j <- 0 until k) yield modP.quotient(omega(i)(j) * degrees(i), conjugacyClasses(j).size)
     }
 
-    val modP = Mod(preferredPrime)
+    val modP = PrimeField(preferredPrime)
 
     val cyclotomicNumbers = NumberField.cyclotomic[Fraction[Int]](exponent)
     val zeta = Polynomial.identity[Fraction[Int]]
