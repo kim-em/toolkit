@@ -2,8 +2,8 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
 
-trait MultivariablePolynomialAlgebraOverEuclideanRing[A, V] extends MultivariablePolynomialAlgebra[A, V] with GCDRing[MultivariablePolynomial[A, V]] {
-  override implicit def ring: EuclideanRing[A]
+trait MultivariablePolynomialAlgebraOverGCDRing[A, V] extends MultivariablePolynomialAlgebra[A, V] with GCDRing[MultivariablePolynomial[A, V]] {
+  override implicit def ring: GCDRing[A]
 
   override def gcd(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
     import net.tqft.toolkit.arithmetic.MinMax._
@@ -68,29 +68,15 @@ trait MultivariablePolynomialAlgebraOverEuclideanRing[A, V] extends Multivariabl
         univariatePolynomialsInMultivariablePolynomials.exactQuotientOption(
           asUnivariatePolynomialInVariable(v)(x),
           asUnivariatePolynomialInVariable(v)(y)).map(fromUnivariatePolynomialInVariable(v))
-
-        // it is not clear to me that this is a good method
-        //        val univariatePolynomialsInMultivariableRationalFunctions = implicitly[PolynomialsOverFieldOfFractions[MultivariablePolynomial[A, V]]]
-        //
-        //        val xp = asUnivariatePolynomialInVariable(v)(x).coefficients.mapValues(p => Fraction.whole(p)(polynomials))
-        //        val yp = asUnivariatePolynomialInVariable(v)(y).coefficients.mapValues(p => Fraction.whole(p)(polynomials))
-        //
-        //        univariatePolynomialsInMultivariableRationalFunctions.exactQuotientOption(xp, yp).flatMap({ p =>
-        //          if (p.coefficients.values.forall(_.denominator == one)) {
-        //            Some(fromUnivariatePolynomialInVariable(v)(p.coefficients.mapValues(_.numerator)))
-        //          } else {
-        //            None
-        //          }
-        //        })
       }
     }
   }
 
 }
 
-object MultivariablePolynomialAlgebraOverEuclideanRing {
-  implicit def over[A: EuclideanRing, V: Ordering]: MultivariablePolynomialAlgebraOverEuclideanRing[A, V] = new MultivariablePolynomialAlgebraOverEuclideanRing[A, V] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
+object MultivariablePolynomialAlgebraOverGCDRing {
+  implicit def over[A: GCDRing, V: Ordering]: MultivariablePolynomialAlgebraOverGCDRing[A, V] = new MultivariablePolynomialAlgebraOverGCDRing[A, V] with MultivariablePolynomialAlgebraOverRig.LexicographicOrdering[A, V] {
     override val variableOrdering = implicitly[Ordering[V]]
-    override val ring = implicitly[EuclideanRing[A]]
+    override val ring = implicitly[GCDRing[A]]
   }
 }
