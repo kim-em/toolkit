@@ -17,6 +17,7 @@ object Toolkit extends Build {
         permutations, 
         orderings, 
         algebra, 
+        `algebra-apfloat`,
         `algebra-polynomials`,
         `algebra-categories`,
         `algebra-matrices`,
@@ -56,6 +57,10 @@ object Toolkit extends Build {
     base = file("algebra"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (arithmetic /* for 'mod' */)
 
+  lazy val `algebra-apfloat` = Project(id = "toolkit-algebra-apfloat",
+    base = file("algebra-apfloat"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(apfloat))) dependsOn (algebra)
+
   lazy val `algebra-polynomials` = Project(id = "toolkit-algebra-polynomials",
     base = file("algebra-polynomials"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (orderings, algebra, collections)
@@ -78,7 +83,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-spiders` = Project(id = "toolkit-algebra-spiders",
     base = file("algebra-spiders"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (collections, algebra, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (collections, algebra, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-apfloat`)
 
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),
