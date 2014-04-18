@@ -1,9 +1,6 @@
 package net.tqft.toolkit.algebra.numberfields
 
 import net.tqft.toolkit.algebra.polynomials._
-import net.tqft.toolkit.algebra.grouptheory.FiniteGroup
-import net.tqft.toolkit.algebra.grouptheory.Representation
-import net.tqft.toolkit.permutations.Permutations.Permutation
 import net.tqft.toolkit.algebra._
 
 abstract class PolynomialQuotientRing[A: Field] extends PolynomialsOverField[A] {
@@ -39,17 +36,12 @@ abstract class NumberField[A: Field] extends PolynomialQuotientRing[A] with Fiel
   def minimalPolynomial(p: Polynomial[A]): Polynomial[A] = {
     ???
   }
-  val galoisGroup: FiniteGroup[Permutation]
-  def galoisGroupAction: galoisGroup.Action[Polynomial[A]]
-  def galoisConjugates(p: Polynomial[A]): Set[Polynomial[A]] = galoisGroupAction.orbit(p)
 }
 
 object NumberField {
   def apply[A: Field](p: Polynomial[A]): NumberField[A] = new NumberField[A] {
     override val generator = p
     override val coefficients = implicitly[Field[A]]
-    override lazy val galoisGroup = ???
-    override lazy val galoisGroupAction = ???
   }
 
   def cyclotomic[A: Field](n: Int): CyclotomicNumberField[A] = new CyclotomicNumberField[A] {

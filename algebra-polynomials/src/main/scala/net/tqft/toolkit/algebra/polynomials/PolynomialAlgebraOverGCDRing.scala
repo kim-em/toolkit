@@ -156,6 +156,18 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
       }
     }
   }
+  def multiplicityFactorization(p: P): Stream[P] = {
+    maximumDegree(p) match {
+      case None | Some(0) => Stream(p)
+      case _ => gcd(p, formalDerivative(p)) match {
+        case q if maximumDegree(q).get == 0 => Stream(q)
+        case q => exactQuotient(p, q) #:: multiplicityFactorization(q)
+      }
+    }
+  }
+
+  def squareFreeFactorization(p: P): P = multiplicityFactorization(p).head
+
 }
 
 object PolynomialAlgebraOverGCDRing {
@@ -180,26 +192,13 @@ object PolynomialsOverGCDRing {
   }
 }
 
-abstract class PolynomialsOverIntegerModel[A: IntegerModel] extends PolynomialsOverGCDRing[A] with Factorization[Polynomial[A]] {
-	override def ring: IntegerModel[A]
-	override def factor(x: Polynomial[A]): Map[Polynomial[A], Int] = ???
+abstract class PolynomialsOverIntegerModel[A: IntegerModel] extends PolynomialsOverGCDRing[A] {
+  override def ring: IntegerModel[A]
 }
 
 object PolynomialsOverIntegerModel {
   implicit def over[A: IntegerModel]: PolynomialsOverIntegerModel[A] = new PolynomialsOverIntegerModel[A] {
     override def ring = implicitly[IntegerModel[A]]
-  }  
+  }
 }
-
-trait KroneckerSubstitutionMultiplication[A] { self: PolynomialsOverIntegerModel[A] =>
-	override def multiply(x: Polynomial[A], y: Polynomial[A]): Polynomial[A] = {
-	  if(ring.isInstanceOf[ArbitraryPrecisionIntegerModel[A]]) {
-	    ???
-	  } else {
-	    implicit def ring = self.ring
-	    implicitly[PolynomialsOverIntegerModel[BigInt]].multiply(x.mapValues(v => ring.toBigInt(v)), y.mapValues(v => ring.toBigInt(v))).mapValues(v => ring.fromBigInt(v))
-	  }
-	}
-}
-
 

@@ -9,9 +9,6 @@ abstract class CyclotomicNumberField[A: Field] extends NumberField[A] with Compl
   val order: Int
   override lazy val generator = Polynomial.cyclotomic(order)(coefficients) // has to be lazy so coefficentField is available
 
-  override lazy val galoisGroup = ???
-  override lazy val galoisGroupAction = ???
-
   private def zeta = Polynomial.identity(coefficients)
   private val zetaInversePowers = {
     import net.tqft.toolkit.functions.Memo._
@@ -33,9 +30,6 @@ abstract class CyclotomicNumberField[A: Field] extends NumberField[A] with Compl
   object RealPart extends NumberField[A] with ComplexConjugation[Polynomial[A]] {
     override def coefficients = cnf.coefficients
     override lazy val generator = cnf.minimalPolynomial(cnf.add(cnf.zeta, cnf.inverse(cnf.zeta)))
-
-    override val galoisGroup = ???
-    override val galoisGroupAction = ???
 
     override def bar(q: Polynomial[A]) = q
   }
