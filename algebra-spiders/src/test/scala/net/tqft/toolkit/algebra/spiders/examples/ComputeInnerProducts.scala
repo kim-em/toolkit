@@ -1,9 +1,8 @@
-package net.tqft.toolkit.algebra.spiders
+package net.tqft.toolkit.algebra.spiders.examples
 
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
-import net.tqft.toolkit.algebra.Fraction
-import net.tqft.toolkit.algebra.mathematica.MathematicaForm
-import net.tqft.toolkit.algebra.matrices.Matrix
+import net.tqft.toolkit.algebra._
+import net.tqft.toolkit.algebra.spiders._
+import net.tqft.toolkit.algebra.mathematica._
 
 object ComputeInnerProducts extends App {
   lazy val `D(4,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(4, 0).toList
@@ -18,7 +17,7 @@ object ComputeInnerProducts extends App {
     TwistedCubicSpider.innerProductMatrix(D(n, k))
   }
 
-  import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
+  import mathematica.MathematicaForm._
   implicit val polynomialForm = MathematicaForm.polynomialMathematicaForm[Fraction[Int]]("w")
 
   for ((n, k) <- Seq(/*(4, 0), (4, 1), (5, 0), (5, 1), (6, 0), (6, 1), (6, 2), *//*(7, 0), (7,1), (7,2)*/(8,0), (8,1), (9,0))) {

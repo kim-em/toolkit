@@ -1,11 +1,11 @@
-package net.tqft.toolkit.algebra.spiders
+package net.tqft.toolkit.algebra.spiders.examples
 
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
-import net.tqft.toolkit.algebra.Fraction
-import net.tqft.toolkit.algebra.matrices2.Matrix
+import org.scalatest.junit.JUnitRunner
+import net.tqft.toolkit.algebra.spiders._
+import net.tqft.toolkit.algebra.polynomials._
+import net.tqft.toolkit.algebra._
 
 @RunWith(classOf[JUnitRunner])
 class InnerProductsTest extends FlatSpec with Matchers with IsomorphismMatchers {

@@ -8,7 +8,7 @@ import net.tqft.toolkit.Logging
 // flags veer to the left
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
-      verify
+  verify
 
   def verify = {
     // There are many things we might check here!
@@ -336,7 +336,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       } else {
         this
       }
-    } else if(verticesToDelete.size == vertices.size - 1 && boundaryEdgesAndFacesToDelete.isEmpty) {
+    } else if (verticesToDelete.size == vertices.size - 1 && boundaryEdgesAndFacesToDelete.isEmpty) {
       PlanarGraph.empty.copy(loops = loops - loopsToDelete)
     } else {
 
@@ -403,7 +403,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     private val packedShape = shape.relabelEdgesAndFaces
 
     case class Excision(cut: PlanarGraph, depth: Int, rotations: Rotation) {
-            verify
+      verify
 
       private def verify = {
         val result = replace(shape)
