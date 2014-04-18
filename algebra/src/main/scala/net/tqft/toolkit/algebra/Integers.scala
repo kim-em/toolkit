@@ -8,7 +8,7 @@ object Longs extends NumericTypes.IntegralEuclideanRing(scala.math.Numeric.LongI
   override def toBigInt(i: Long) = BigInt(i)
   override def fromBigInt(b: BigInt) = b.ensuring(_ <= Long.MaxValue).ensuring(_ >= Long.MinValue).longValue
 }
-object BigIntegers extends NumericTypes.IntegralEuclideanRing(scala.math.Numeric.BigIntIsIntegral) {
+object BigIntegers extends NumericTypes.IntegralEuclideanRing(scala.math.Numeric.BigIntIsIntegral) with ArbitraryPrecisionIntegerModel[BigInt] {
   override def toBigInt(i: BigInt) = i
   override def fromBigInt(b: BigInt) = b
   
