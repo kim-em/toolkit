@@ -21,7 +21,7 @@ abstract class PolynomialFactorization[A: GCDRing: Factorization] extends Factor
 }
 
 object ZassenhausFactoring {
-  implicit class FactorizablePolynomials[A:IntegerModel](polynomials: PolynomialsOverIntegerModel[A]) extends PolynomialFactorization[A] {
+  implicit class FactorizablePolynomials[A: IntegerModel](polynomials: PolynomialsOverIntegerModel[A]) extends PolynomialFactorization[A] {
     import polynomials._
     override def factorSquareAndContentFree(x: Polynomial[A]): Seq[Polynomial[A]] = {
       // pick a prime
@@ -29,6 +29,15 @@ object ZassenhausFactoring {
       // factor mod p
       // Hensel lift to a factorization mod p^a
       // look for true factors
+      ???
+    }
+  }
+}
+
+object LLLFactoring {
+  implicit class FactorizablePolynoomials[A: IntegerModel](polynomials: PolynomialsOverIntegerModel[A]) extends PolynomialFactorization[A] {
+    import polynomials._
+    override def factorSquareAndContentFree(x: Polynomial[A]): Seq[Polynomial[A]] = {
       ???
     }
   }

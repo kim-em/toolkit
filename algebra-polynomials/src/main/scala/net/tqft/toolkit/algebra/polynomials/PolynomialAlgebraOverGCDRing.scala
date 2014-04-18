@@ -192,13 +192,3 @@ object PolynomialsOverGCDRing {
   }
 }
 
-abstract class PolynomialsOverIntegerModel[A: IntegerModel] extends PolynomialsOverGCDRing[A] {
-  override def ring: IntegerModel[A]
-}
-
-object PolynomialsOverIntegerModel {
-  implicit def over[A: IntegerModel]: PolynomialsOverIntegerModel[A] = new PolynomialsOverIntegerModel[A] {
-    override def ring = implicitly[IntegerModel[A]]
-  }
-}
-
