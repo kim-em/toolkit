@@ -31,6 +31,30 @@ trait Monoid[@specialized(Int, Long, Float, Double) A] extends Semigroup[A] with
       result
     }
   }
+  def power[I: IntegerModel](x: A, k: I): A = {
+    def integers = implicitly[IntegerModel[I]]
+    require(integers.compare(k, integers.zero) >= 0)
+    val two = integers.fromInt(2)
+    if (k == integers.zero) {
+      one
+    } else if (k == integers.one) {
+      x
+    } else {
+      var b = x
+      var e = k
+      var result = one
+      while (e != 0) {
+        if (integers.remainder(e, two) != integers.zero) {
+          result = multiply(result, b)
+        }
+        e = integers.quotient(e, two)
+        b = multiply(b, b)
+      }
+
+      result
+    }
+
+  }
   def orderOfElement(a: A): Int = Iterator.iterate(a)(multiply(_, a)).indexOf(one) + 1
 }
 
