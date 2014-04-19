@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
 
-abstract class PolynomialFactorization[A: GCDRing: Factorization] extends Factorization[Polynomial[A]] {
+abstract class PolynomialFactorization[A: GCDRing: Factorization] extends Factorization[Polynomial[A]] { 
   val polynomials = implicitly[PolynomialsOverGCDRing[A]]
   val factorization = implicitly[Factorization[A]]
   import polynomials._
