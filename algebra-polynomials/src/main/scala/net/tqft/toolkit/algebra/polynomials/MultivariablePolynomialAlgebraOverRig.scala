@@ -20,8 +20,8 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
   override def scalarMultiply(a: A, p: MultivariablePolynomial[A, V]) = implementation.scalarMultiply(a, p.coefficients)
 
   override def fromInt(k: Int) = constant(ring.fromInt(k))
-  
-  val monomialOrdering: Ordering[Map[V, Int]]
+
+  implicit val monomialOrdering: Ordering[Map[V, Int]]
 
   def constant(a: A) = monomial(Map.empty, a)
   def monomial(v: V): MultivariablePolynomial[A, V] = Map(Map(v -> 1) -> ring.one)
@@ -37,9 +37,9 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
   def constantTerm(p: MultivariablePolynomial[A, V]): A = {
     p.coefficients.get(Map()).getOrElse(ring.zero)
   }
-  def highestMonomial(p: MultivariablePolynomial[A, V]) = {
+  def leadingMonomial(p: MultivariablePolynomial[A, V]): Option[Map[V, Int]] = {
     import net.tqft.toolkit.arithmetic.MinMax._
-    p.coefficients.keySet.minOption(monomialOrdering)
+    p.coefficients.keySet.maxOption(monomialOrdering)
   }
   def coefficientOfOneVariable(v: V, i: Int)(x: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
     x.coefficients.collect({
@@ -118,6 +118,10 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
     })
   }
 
+  trait Ideal {
+    def generators: Seq[MultivariablePolynomial[A, V]]
+  }
+
 }
 
 object MultivariablePolynomialAlgebraOverRig {
@@ -127,6 +131,18 @@ object MultivariablePolynomialAlgebraOverRig {
     override lazy val monomialOrdering = {
       import net.tqft.toolkit.orderings.LexicographicOrdering._
       implicitly[Ordering[Map[V, Int]]]
+    }
+  }
+
+  trait DegreeLexicographicOrdering[A, V] { self: MultivariablePolynomialAlgebraOverRig[A, V] =>
+    implicit def variableOrdering: Ordering[V]
+
+    override lazy val monomialOrdering = {
+      import net.tqft.toolkit.orderings.LexicographicOrdering._
+      import net.tqft.toolkit.orderings.Orderings._
+      Ordering
+        .by({ m: Map[V, Int] => m.values.sum })
+        .refineAlong(implicitly[Ordering[Map[V, Int]]])
     }
   }
 
