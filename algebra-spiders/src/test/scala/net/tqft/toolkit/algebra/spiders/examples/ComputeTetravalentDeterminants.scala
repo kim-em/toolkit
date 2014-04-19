@@ -7,24 +7,24 @@ import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.algebra.mathematica._
 
 object ComputeTetravalentDeterminants extends App {
-  //  {
-  //    lazy val diagrams6 = TetravalentSpider.reducedDiagrams(6, 0) ++ TetravalentSpider.reducedDiagrams(6, 1) ++ TetravalentSpider.reducedDiagrams(6, 2) ++ TetravalentSpider.reducedDiagrams(6, 3)
-  //
-  //    require(diagrams6.size == 16)
-  //
-  //    val m0 = Matrix(14, TetravalentSpider.innerProductMatrix(diagrams6.dropRight(2), diagrams6.dropRight(2)).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String]))))
-  //    val m1 = Matrix(15, TetravalentSpider.innerProductMatrix(diagrams6.dropRight(1), diagrams6.dropRight(1)).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String]))))
-  //    val m2 = Matrix(16, TetravalentSpider.innerProductMatrix(diagrams6, diagrams6).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String]))))
-  //
-  //    import MathematicaForm._
-  //
-  //    println("matrix: ")
-  //    println(m2.entries.toIndexedSeq.toMathemathicaInputString)
-  //    println("determinants: ")
-  //    println(m0.determinant.toMathemathicaInputString)
-  //    println(m1.determinant.toMathemathicaInputString)
-  //    println(m2.determinant.toMathemathicaInputString)
-  //  }
+    {
+      lazy val diagrams6 = TetravalentSpider.reducedDiagrams(6, 0) ++ TetravalentSpider.reducedDiagrams(6, 1) ++ TetravalentSpider.reducedDiagrams(6, 2) ++ TetravalentSpider.reducedDiagrams(6, 3)
+  
+      require(diagrams6.size == 16)
+  
+      val m0 = Matrix(14, TetravalentSpider.innerProductMatrix(diagrams6.dropRight(2), diagrams6.dropRight(2)).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String]))))
+      val m1 = Matrix(15, TetravalentSpider.innerProductMatrix(diagrams6.dropRight(1), diagrams6.dropRight(1)).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String]))))
+      val m2 = Matrix(16, TetravalentSpider.innerProductMatrix(diagrams6, diagrams6).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String]))))
+  
+      import MathematicaForm._
+  
+      println("matrix: ")
+      println(m2.entries.toIndexedSeq.toMathemathicaInputString)
+      println("determinants: ")
+      println(m0.determinant.toMathemathicaInputString)
+      println(m1.determinant.toMathemathicaInputString)
+      println(m2.determinant.toMathemathicaInputString)
+    }
 
   {
     def diagrams8(k: Int) = for (i <- 0 to k; d <- TetravalentSpider.reducedDiagrams(8, i)) yield d

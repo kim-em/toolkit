@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
 import scala.language.implicitConversions
+import scala.collection.SortedMap
 
 case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
   //  require(coefficients.valuesIterator.forall(_ != implicitly[Rig[A]].zero))
