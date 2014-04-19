@@ -15,6 +15,9 @@ abstract class PolynomialsOverFiniteField[I: FiniteField] extends PolynomialsOve
     val n = maximumDegree(p).get
     (for (d <- Integers.divisors(n); if d != n; if euclideanAlgorithm(p, r(d)) == one) yield d).isEmpty && exactQuotientOption(r(n), p).nonEmpty
   }
+  def randomPolynomial(degree: Int): Polynomial[Polynomial[I]] = {
+    ???
+  }
 }
 
 object PolynomialsOverFiniteField {

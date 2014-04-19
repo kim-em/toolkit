@@ -11,6 +11,10 @@ trait FiniteField[I] extends Field[Polynomial[I]] with Finite[Polynomial[I]] {
   override def elements = {
     ???
   }
+  def randomElement: Polynomial[I] = {
+    implicit def zero = integers
+    IndexedSeq.fill(exponent)(integers.fromInt(scala.util.Random.nextInt(Integers.from(characteristic))))
+  }
 }
 
 object FiniteField {
@@ -22,12 +26,12 @@ object FiniteField {
     override val integers = implicitly[IntegerModel[I]]
   }
 
-  def findIrreduciblePolynomial[I: IntegerModel](degree: Int, prime: I): Polynomial[I] = {
+  private def findIrreduciblePolynomial[I: IntegerModel](degree: Int, prime: I): Polynomial[I] = {
     def integers = implicitly[IntegerModel[I]]
     if (degree == 1) {
       implicitly[Polynomials[I]].monomial(1, integers.one)
     } else {
-      def randomPolynomial: Polynomial[I] = IndexedSeq.fill(degree + 1)(integers.fromInt(scala.util.Random.nextInt))
+      def randomPolynomial: Polynomial[I] = IndexedSeq.fill(degree)(integers.fromInt(scala.util.Random.nextInt)) :+ integers.one
       val polynomials = PolynomialsOverFiniteField.over(FiniteField(prime, 1))
       Iterator.continually(randomPolynomial).find(p => polynomials.irreducible_?(p)).get
     }
