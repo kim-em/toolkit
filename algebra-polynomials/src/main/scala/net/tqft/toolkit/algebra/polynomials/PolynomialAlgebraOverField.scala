@@ -1,9 +1,6 @@
 package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.algebra.numberfields.NumberField
-import net.tqft.toolkit.algebra.numberfields.PolynomialQuotientRing
-import net.tqft.toolkit.algebra.numberfields.FiniteField
 
 trait PolynomialAlgebraOverField[A, P] extends PolynomialAlgebraOverGCDRing[A, P] with EuclideanRing[P] {
   override def ring: Field[A]
