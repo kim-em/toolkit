@@ -3,7 +3,7 @@ package net.tqft.toolkit.algebra
 // TODO should have
 //		@specialized(Int, Long, Float, Double) 
 // but this crashes the compiler.
-trait Semigroup[A] {
+trait Semigroup[@specialized(Int, Long, Float, Double) A] {
   def multiply(x: A, y: A): A
   def multiply(x0: A, x1: A, x2: A*): A = {
     x2.fold(multiply(x0, x1))(multiply)

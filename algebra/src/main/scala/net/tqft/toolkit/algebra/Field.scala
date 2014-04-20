@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra
 
-trait DivisionRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRing[A] with Group[A] {
+trait DivisionRing[@specialized(Float, Double) A] extends EuclideanRing[A] with Group[A] {
   override def quotientRemainder(x: A, y: A) = (multiply(x, inverse(y)), zero)
   override def exactQuotientOption(x: A, y: A) = Some(multiply(x, inverse(y)))
   override def remainder(x: A, y: A) = zero
@@ -14,7 +14,7 @@ trait DivisionRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRi
 }
 
 // there's not much to say here; the only additional requirement to be a field is commutativity, but the type system doesn't see that.
-trait Field[@specialized(Int, Long, Float, Double) A] extends DivisionRing[A]
+trait Field[@specialized(Float, Double) A] extends DivisionRing[A]
 
 object Field {
   class FieldOfFractions[A: GCDRing] extends Field[Fraction[A]] {
