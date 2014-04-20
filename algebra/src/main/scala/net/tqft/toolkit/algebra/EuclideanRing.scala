@@ -1,12 +1,12 @@
 package net.tqft.toolkit.algebra
 
-trait IntegralRig[A] extends CommutativeRig[A] {
+trait IntegralRig[@specialized(Int, Long, Float, Double) A] extends CommutativeRig[A] {
   // nothing to see here; we just add the condition that ab=0 implies a=0 or b=0
   def exactQuotientOption(x: A, y: A): Option[A]
   def exactQuotient(x: A, y: A) = exactQuotientOption(x, y).get
 }
 
-trait GCDRig[A] extends IntegralRig[A] {
+trait GCDRig[@specialized(Int, Long, Float, Double) A] extends IntegralRig[A] {
   def gcd(x: A, y: A): A
   def gcd(xs: A*): A = {
     xs.size match {
@@ -23,10 +23,9 @@ trait GCDRig[A] extends IntegralRig[A] {
       case _ => lcm((lcm(xs(0), xs(1)) +: xs.drop(2)): _*)
     }
   }
-
 }
 
-trait EuclideanRig[A] extends GCDRig[A] {
+trait EuclideanRig[@specialized(Int, Long, Float, Double) A] extends GCDRig[A] {
   def quotientRemainder(x: A, y: A): (A, A)
   def quotient(x: A, y: A): A = quotientRemainder(x, y)._1
   def remainder(x: A, y: A): A = quotientRemainder(x, y)._2
@@ -37,7 +36,7 @@ trait EuclideanRig[A] extends GCDRig[A] {
       case _ => None
     }
   }
-  
+
   @scala.annotation.tailrec
   final def euclideanAlgorithm(x: A, y: A): A = {
     if (y == zero) {
@@ -60,16 +59,15 @@ trait EuclideanRig[A] extends GCDRig[A] {
   }
 }
 
-trait GCDRing[A] extends GCDRig[A] with CommutativeRing[A]
+trait GCDRing[@specialized(Int, Long, Float, Double) A] extends GCDRig[A] with CommutativeRing[A]
 
-trait EuclideanRing[A] extends EuclideanRig[A] with GCDRing[A] with CommutativeRing[A] {
+trait EuclideanRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRig[A] with GCDRing[A] with CommutativeRing[A] {
   /**
    *
    * @param x
    * @param y
    * @return (a,b,g) such that a*x + b*y == g, and g is the gcd of x and y
    */
-  // FIXME tail recursive
   final def extendedEuclideanAlgorithm(x: A, y: A): (A, A, A) = {
     if (y == zero) {
       (one, zero, x)
@@ -78,10 +76,22 @@ trait EuclideanRing[A] extends EuclideanRig[A] with GCDRing[A] with CommutativeR
       (b1, subtract(a1, multiply(b1, quotient(x, y))), g)
     }
   }
+  // FIXME tail recursive version
+  final def extendedEuclideanAlgorithm_(x: A, y: A): (A, A, A) = {
+    @scala.annotation.tailrec
+    def impl(x: A, y: A, a: A, b: A, g: A): (A, A, A) = {
+      if (y == zero) {
+        (a, b, g)
+      } else {
+        impl(y, remainder(x, y), ???, ???, ???)
+      }
+    }
+    impl(x, y, ???, ???, ???)
+  }
 }
 
 trait GCDRigLowPriorityImplicits {
-  implicit def forgetGCDRing[A: GCDRing]: GCDRig[A] = implicitly[GCDRig[A]]  
+  implicit def forgetGCDRing[A: GCDRing]: GCDRig[A] = implicitly[GCDRig[A]]
 }
 
 object GCDRig extends GCDRigLowPriorityImplicits {
@@ -90,7 +100,6 @@ object GCDRig extends GCDRigLowPriorityImplicits {
 object GCDRing {
   implicit def forgetEuclideanRing[A: EuclideanRing]: GCDRing[A] = implicitly[GCDRing[A]]
 }
-
 
 object EuclideanRig {
   implicit def forgetRing[A: EuclideanRing]: EuclideanRig[A] = implicitly[EuclideanRing[A]]

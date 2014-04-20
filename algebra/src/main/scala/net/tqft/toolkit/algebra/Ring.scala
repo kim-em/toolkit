@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra
 
 trait Ring[@specialized(Int, Long, Float, Double) A] extends Rig[A] with AdditiveGroup[A]
 
-trait CommutativeRing[A] extends CommutativeRig[A] with Ring[A]
+trait CommutativeRing[@specialized(Int, Long, Float, Double) A] extends CommutativeRig[A] with Ring[A]
 
 trait RingLowPriorityImplicits {
   implicit def pointwiseRingMap[A, B: Ring]: Ring[Map[A, B]] = new Ring.PointwiseRingMap[A, B]

@@ -72,4 +72,4 @@ object Rig extends RigLowPriorityImplicits {
 
 }
 
-trait CommutativeRig[A] extends Rig[A]
+trait CommutativeRig[@specialized(Int, Long, Float, Double) A] extends Rig[A]
