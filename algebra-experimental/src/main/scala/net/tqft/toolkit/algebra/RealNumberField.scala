@@ -17,8 +17,6 @@ object RealNumberField {
       override val approximateReals = implicitly[ApproximateReals[D]]
       override val coefficients = Fields.fieldOfFractions(integers)
 
-      override val galoisGroup = ???
-      override val galoisGroupAction = ???
     }
   }
 }
@@ -38,7 +36,7 @@ trait RealNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[P
 
   def improveErrorBound = ???
 
-  def evaluateAt(d: D)(p: Polynomial[Fraction[I]]): D = approximateReals.sum(for ((i, c) <- p.toMap.toSeq) yield approximateReals.multiply(evaluateFraction(c), approximateReals.power(d, i)))
+  def evaluateAtApproximatePoint(d: D)(p: Polynomial[Fraction[I]]): D = approximateReals.sum(for ((i, c) <- p.toMap.toSeq) yield approximateReals.multiply(evaluateFraction(c), approximateReals.power(d, i)))
   def evaluateFraction(x: Fraction[I]) = approximateReals.quotient(approximateReals.fromInteger(x.numerator), approximateReals.fromInteger(x.denominator))
 
   def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = {
@@ -47,7 +45,7 @@ trait RealNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[P
         improveErrorBound
       }
     }
-    evaluateAt(bestApproximation)(p)
+    evaluateAtApproximatePoint(bestApproximation)(p)
   }
 
   override def compare(x: Polynomial[Fraction[I]], y: Polynomial[Fraction[I]]) = {

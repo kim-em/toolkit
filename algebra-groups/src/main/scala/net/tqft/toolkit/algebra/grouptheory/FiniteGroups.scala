@@ -218,6 +218,37 @@ object FiniteGroups {
 
     }
   }
+  
+  
+  trait `SL(n, GF(q))`[I] extends FinitelyGeneratedFiniteGroup[Seq[Seq[Polynomial[I]]]] {
+    
+  }
+  trait `SL(n, Z/pZ)`[I] extends FinitelyGeneratedFiniteGroup[Seq[Seq[I]]] {
+    def integers: IntegerModel[I]
+    implicit lazy val ring = PrimeField(p)(integers)
+    lazy val matrixRing = Matrices.matricesOver(n)(ring)
+    def n: Int
+    def p: I
+    override def multiply(x: Seq[Seq[I]], y: Seq[Seq[I]]) = {
+      matrixRing.multiply(Matrix(n, x), Matrix(n, y)).entries.seq
+    }
+    override lazy val one = Matrix.diagonalMatrix(Seq.fill(n)(ring.one)).entries.seq
+    override def inverse(x: Seq[Seq[I]]) = Matrix(n, x).inverse.get.entries.seq
+  }
+  trait `SL(2, Z/pZ)`[I] extends `SL(n, Z/pZ)`[I] {
+    override val n = 2
+    def S: Seq[Seq[I]] = Seq(Seq(ring.zero, ring.negate(ring.one)), Seq(ring.one, ring.zero))
+    def T: Seq[Seq[I]] = Seq(Seq(ring.one, ring.one), Seq(ring.zero, ring.one))
+    override def generators = Set(S, T)
+  }
+  
+  def `SL(2, Z/pZ)`[I: IntegerModel](p: I) = {
+    val p_ = p
+    new `SL(2, Z/pZ)`[I] {
+      override def p = p_
+      override def integers = implicitly[IntegerModel[I]]
+    }
+  }
 }
 
 trait FiniteGroupHomomorphism[A, B] extends Homomorphism[FiniteGroup, A, B] { homomorphism =>

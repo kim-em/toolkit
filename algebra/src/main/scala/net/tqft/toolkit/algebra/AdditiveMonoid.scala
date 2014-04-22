@@ -2,20 +2,13 @@ package net.tqft.toolkit.algebra
 
 import scala.collection.GenTraversableOnce
 
-// TODO should have
-//		@specialized(Int, Long, Float, Double) 
-// but this crashes the compiler (somewhere in FiniteGroups??).
-// Fixed by Paul Phillips, c.f. https://issues.scala-lang.org/browse/SI-6301 but hasn't hit 2.10 yet.
-trait AdditiveSemigroup[A] {
+trait AdditiveSemigroup[@specialized(Int, Long, Float, Double) A] {
   def add(x: A, y: A): A
   final def add(x0: A, x1: A, x2: A*): A = x2.fold(add(x0, x1))(add _)
 }
 
-// TODO should have
-//	    @specialized(Int, Long, Float, Double) 
-// but this causes Gadgets.Integers.zero to stack overflow!
-// Also fixed by Paul, see above.
-trait Zero[A] {
+
+trait Zero[@specialized(Int, Long, Float, Double) A] {
   def zero: A
 }
 

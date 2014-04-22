@@ -5,10 +5,11 @@ import net.tqft.toolkit.algebra._
 trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GCDRing[P] {
   override implicit def ring: GCDRing[A]
 
+  def scalarExactQuotient(p: P, a: A): P
+  
   def content(p: P): A = {
     ring.gcd(toMap(p).values.toSeq: _*)
   }
-  def scalarExactQuotient(p: P, a: A): P
   def primitivePart(p: P): P = {
     val c = content(p)
     scalarExactQuotient(p, c)
@@ -172,8 +173,8 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
 
 object PolynomialAlgebraOverGCDRing {
   trait PolynomialAlgebraOverGCDRingForMaps[A] extends PolynomialAlgebra.PolynomialAlgebraForMaps[A] with PolynomialAlgebraOverGCDRing[A, Map[Int, A]] {
-    override def scalarExactQuotient(p: Map[Int, A], a: A) = p.mapValues(x => ring.exactQuotient(x, a))
     override def ring: GCDRing[A]
+    override def scalarExactQuotient(p: Map[Int, A], a: A) = p.mapValues(x => ring.exactQuotient(x, a))
   }
 
   implicit def forMaps[A: GCDRing]: PolynomialAlgebraOverGCDRing[A, Map[Int, A]] = new PolynomialAlgebraOverGCDRingForMaps[A] {
