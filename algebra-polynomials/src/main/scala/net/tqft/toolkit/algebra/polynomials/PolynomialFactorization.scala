@@ -23,7 +23,7 @@ abstract class PolynomialFactorization[A: GCDRing: Factorization] extends Factor
 }
 
 object ZassenhausFactoring {
-  implicit class FactorizablePolynomials[A: IntegerModel](polynomials: PolynomialsOverIntegerModel[A]) extends PolynomialFactorization[A] {
+  implicit class FactorizablePolynomials[A:IntegerModel:Factorization](polynomials: PolynomialsOverIntegerModel[A]) extends PolynomialFactorization[A] {
     import polynomials._
     override def factorSquareAndContentFree(x: Polynomial[A]): Seq[Polynomial[A]] = {
       // pick a prime
@@ -65,7 +65,7 @@ object CantorZassenhausFactoring {
 }
 
 object LLLFactoring {
-  implicit class FactorizablePolynomials[A: IntegerModel](polynomials: PolynomialsOverIntegerModel[A]) extends PolynomialFactorization[A] {
+  implicit class FactorizablePolynomials[A:IntegerModel:Factorization](polynomials: PolynomialsOverIntegerModel[A]) extends PolynomialFactorization[A] {
     import polynomials._
     override def factorSquareAndContentFree(x: Polynomial[A]): Seq[Polynomial[A]] = {
       ???

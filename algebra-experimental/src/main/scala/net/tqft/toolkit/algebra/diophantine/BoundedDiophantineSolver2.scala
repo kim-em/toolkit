@@ -9,7 +9,7 @@ class BoundedDiophantineSolver2[V: Ordering] extends net.tqft.toolkit.Logging {
   type P = MultivariablePolynomial[Int, V]
   import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial._
   
-  val polynomialAlgebra: MultivariablePolynomialAlgebraOverEuclideanRing[Int, V] = implicitly
+  val polynomialAlgebra: MultivariablePolynomialAlgebraOverGCDRing[Int, V] = implicitly
 
   // not exactly integer polynomial programming;
   // we try to find positive integer roots of the polynomials

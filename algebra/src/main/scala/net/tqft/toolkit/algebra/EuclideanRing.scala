@@ -62,6 +62,14 @@ trait EuclideanRig[@specialized(Int, Long, Float, Double) A] extends GCDRig[A] {
 trait GCDRing[@specialized(Int, Long, Float, Double) A] extends GCDRig[A] with CommutativeRing[A]
 
 trait EuclideanRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRig[A] with GCDRing[A] with CommutativeRing[A] {
+//  final def extendedEuclideanAlgorithm_(x: A, y: A): (A, A, A) = {
+//    if (y == zero) {
+//      (one, zero, x)
+//    } else {
+//      val (a1, b1, g) = extendedEuclideanAlgorithm_(y, remainder(x, y))
+//      (b1, subtract(a1, multiply(b1, quotient(x, y))), g)
+//    }
+//  }
   /**
    *
    * @param x
@@ -69,24 +77,26 @@ trait EuclideanRing[@specialized(Int, Long, Float, Double) A] extends EuclideanR
    * @return (a,b,g) such that a*x + b*y == g, and g is the gcd of x and y
    */
   final def extendedEuclideanAlgorithm(x: A, y: A): (A, A, A) = {
-    if (y == zero) {
-      (one, zero, x)
-    } else {
-      val (a1, b1, g) = extendedEuclideanAlgorithm(y, remainder(x, y))
-      (b1, subtract(a1, multiply(b1, quotient(x, y))), g)
+    var s1 = zero
+    var s0 = one
+    var t1 = s0
+    var t0 = s1
+    var r1 = y
+    var r0 = x
+    var z = s1
+    while(r1 != zero) {
+      val q = quotient(r0, r1)
+      z = r1
+      r1 = subtract(r0, multiply(q, r1))
+      r0 = z
+      z = s1
+      s1 = subtract(s0, multiply(q, s1))
+      s0 = z
+      z = t1
+      t1 = subtract(t0, multiply(q, t1))
+      t0 = z
     }
-  }
-  // FIXME tail recursive version
-  final def extendedEuclideanAlgorithm_(x: A, y: A): (A, A, A) = {
-    @scala.annotation.tailrec
-    def impl(x: A, y: A, a: A, b: A, g: A): (A, A, A) = {
-      if (y == zero) {
-        (a, b, g)
-      } else {
-        impl(y, remainder(x, y), ???, ???, ???)
-      }
-    }
-    impl(x, y, ???, ???, ???)
+    (s0, t0, r0)
   }
 }
 

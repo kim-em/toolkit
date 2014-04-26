@@ -49,7 +49,7 @@ trait FusionRing[A] extends FiniteDimensionalFreeModuleOverRig[A] with Rig[Seq[A
   override def toString = "FusionRing(Seq(\n" + structureCoefficients.mkString(",\n") + "\n))"
 
   override def fromInt(x: Int) = coefficients.fromInt(x) +: Seq.fill(rank - 1)(coefficients.zero)
-  override val one = fromInt(1)
+  override lazy val one = fromInt(1)
 
   def multiplyBasisElements(x: Int, y: Int): Seq[A] = {
     structureCoefficients(x).entries(y)
