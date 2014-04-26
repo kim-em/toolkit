@@ -4,7 +4,6 @@ import net.tqft.toolkit.algebra._
 import scala.collection.SortedMap
 import scala.collection.immutable.TreeMap
 
-
 trait MultivariablePolynomialAlgebra[A, V] extends Ring[MultivariablePolynomial[A, V]] with MultivariablePolynomialAlgebraOverRig[A, V] {
   implicit override def ring: Ring[A]
 
