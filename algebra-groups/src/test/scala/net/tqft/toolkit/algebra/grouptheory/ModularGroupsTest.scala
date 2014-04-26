@@ -10,7 +10,7 @@ class ModularGroupsTest extends FlatSpec with Matchers {
   def g(p: Int) = FiniteGroups.`SL(2, Z/pZ)`(p)
 
   "SL(2, Z/13Z)" should "be a group with ?? elements" in {
-    g(2).size should equal(95040)
+    g(13).size should equal(26328)
   }
   "SL(2, Z/13Z)" should "have ??? conjugacy classes" in {
     g(13).conjugacyClasses.size should equal(15)
