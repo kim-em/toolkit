@@ -2,14 +2,13 @@ package net.tqft.toolkit.algebra
 
 import net.tqft.toolkit.arithmetic.Factor
 
-trait IntegerModel[@specialized(Int, Long) I] extends OrderedEuclideanRing[I] with Factorization[I] {
+import scala.language.implicitConversions
+
+trait IntegerModel[@specialized(Int, Long) I] extends OrderedEuclideanRing[I] {
   def toBigInt(i: I): BigInt
   def fromBigInt(i: BigInt): I
   def from[II: IntegerModel](i: II): I = {
     fromBigInt(implicitly[IntegerModel[II]].toBigInt(i))
-  }
-  override def factor(x: I) = {
-    Factor(toBigInt(x)).groupBy(x => x).map(p => fromBigInt(p._1) -> p._2.size)
   }
 }
 
@@ -19,5 +18,7 @@ object IntegerModel {
   implicit val integers = Integers
   implicit val longs = Longs
   implicit val bigIntegers = BigIntegers
+
+  implicit def defaultFactorizationAlgorithm_[A](integers: IntegerModel[A]): Factorization[A] = new ECMFactorization.provideFactorization[A](integers)  
 }
 

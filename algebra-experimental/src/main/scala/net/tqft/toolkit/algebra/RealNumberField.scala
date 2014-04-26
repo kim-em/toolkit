@@ -16,9 +16,6 @@ object RealNumberField {
       override val integers = implicitly[IntegerModel[I]]
       override val approximateReals = implicitly[ApproximateReals[D]]
       override val coefficients = Fields.fieldOfFractions(integers)
-
-      override val galoisGroup = ???
-      override val galoisGroupAction = ???
     }
   }
 }

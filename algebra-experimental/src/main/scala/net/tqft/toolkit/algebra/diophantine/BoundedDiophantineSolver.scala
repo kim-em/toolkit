@@ -12,7 +12,7 @@ object BoundedDiophantineSolver extends net.tqft.toolkit.Logging {
 
   def solve[V: Ordering](polynomials: TraversableOnce[MultivariablePolynomial[Int, V]], variables: Seq[V], boundary: Map[V, Int] => Boolean, knownSolution: Option[Map[V, Int]] = None): Iterator[Map[V, Int]] = {
     type P = MultivariablePolynomial[Int, V]
-    val polynomialAlgebra: MultivariablePolynomialAlgebraOverEuclideanRing[Int, V] = implicitly
+    val polynomialAlgebra: MultivariablePolynomialAlgebraOverGCDRing[Int, V] = implicitly
 
     // this is a hack; caseBash could be designed differently so this isn't needed.
     lazy val cachedLimit = {

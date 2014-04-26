@@ -9,6 +9,7 @@ case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
   //  require(coefficients.valuesIterator.forall(_.toString != "0"))
   //  require(coefficients.valuesIterator.forall(_.toString != "Fraction(0, 1)"))
   //  require(coefficients.keysIterator.forall(_.valuesIterator.forall(_ >= 0)))
+  def mapValues[B](f: A => B) = MultivariablePolynomial(coefficients.mapValues(f))
 }
 
 object MultivariablePolynomial {

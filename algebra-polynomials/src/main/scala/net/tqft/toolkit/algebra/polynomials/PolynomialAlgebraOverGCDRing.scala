@@ -8,11 +8,11 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
   def content(p: P): A = {
     ring.gcd(toMap(p).values.toSeq: _*)
   }
-  def scalarExactQuotient(p: P, a: A): P
   def primitivePart(p: P): P = {
     val c = content(p)
     scalarExactQuotient(p, c)
   }
+  def scalarExactQuotient(p: P, a: A): P
 
   def pseudoQuotientRemainder(f: P, g: P): (P, P) = {
     //    require(f.toString.size < 500)
