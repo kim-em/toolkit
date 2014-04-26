@@ -9,11 +9,11 @@ abstract class PolynomialsOverIntegerModel[A: IntegerModel] extends PolynomialsO
 }
 
 object PolynomialsOverIntegerModel {
-  implicit def over[A: IntegerModel]: PolynomialsOverIntegerModel[A] = new PolynomialsOverIntegerModel[A] {
+  implicit def over[A:IntegerModel]: PolynomialsOverIntegerModel[A] = new PolynomialsOverIntegerModel[A] {
     override def ring = implicitly[IntegerModel[A]]
   }
 
-  implicit def defaultFactorizationAlgorithm[A: IntegerModel](polynomials: PolynomialsOverIntegerModel[A]) = {
+  implicit def defaultFactorizationAlgorithm[A: IntegerModel:Factorization](polynomials: PolynomialsOverIntegerModel[A]) = {
     import ZassenhausFactoring._
     polynomials: Factorization[Polynomial[A]]
   }
