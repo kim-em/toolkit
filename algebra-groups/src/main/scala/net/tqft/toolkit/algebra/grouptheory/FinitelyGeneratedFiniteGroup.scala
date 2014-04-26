@@ -9,17 +9,17 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
 
   override lazy val elements = {
     @scala.annotation.tailrec
-    def extendElements(generators: Set[A], elements: Set[A], newestElements: GenSet[A]): Set[A] = {
-          FiniteGroup.info("... found " + elements.size + " elements of the group so far.")
+    def extendElements(generators: Set[A], elementsSoFar: Set[A], newestElements: GenSet[A]): Set[A] = {
+      FiniteGroup.info("... found " + elementsSoFar.size + " elements of the group so far.")
       if (newestElements.isEmpty) {
-        elements
+        elementsSoFar
       } else {
-        val allElements = elements union newestElements;
+        val allElements = elementsSoFar union newestElements;
         extendElements(generators, allElements, (for (b <- newestElements; a <- generators) yield multiply(a, b)) diff allElements)
       }
     }
 
-    extendElements(generators, Set(one), generators.par)
+    extendElements(generators, Set(one), generators)
   }
 
   trait Action[B] extends super.Action[B] { action =>
