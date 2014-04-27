@@ -182,6 +182,8 @@ object PolynomialAlgebraOverGCDRing {
 
 abstract class PolynomialsOverGCDRing[A: GCDRing] extends Polynomials[A] with PolynomialAlgebraOverGCDRing[A, Polynomial[A]] {
   override def scalarExactQuotient(p: Polynomial[A], a: A) = p.mapValues(x => ring.exactQuotient(x, a))
+    override def toString = s"PolynomialsOverGCDRing.over($ring)"
+
 }
 
 object PolynomialsOverGCDRing {

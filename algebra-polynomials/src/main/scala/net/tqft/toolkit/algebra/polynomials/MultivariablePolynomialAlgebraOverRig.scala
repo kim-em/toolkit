@@ -65,6 +65,8 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
       k -> c
     }).toMap[Int, MultivariablePolynomial[A, V]]
 
+    implicit def zero_ = this
+    
     result
   }
   def fromUnivariatePolynomialInVariable(v: V)(p: Polynomial[MultivariablePolynomial[A, V]]): MultivariablePolynomial[A, V] = {

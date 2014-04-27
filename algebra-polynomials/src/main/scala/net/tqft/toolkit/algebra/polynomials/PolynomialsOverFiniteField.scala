@@ -8,16 +8,23 @@ abstract class PolynomialsOverFiniteField[I: FiniteField] extends PolynomialsOve
   def irreducible_?(p: Polynomial[I]): Boolean = {
     val modQ = PrimeField(ring.characteristic)(ring.integers)
     val quotientRing: Ring[Polynomial[I]] = PolynomialQuotientRing(p)(modQ)
-    val polynomials = Polynomials.over(modQ)
+    val polynomials = PolynomialsOverField.over(modQ)
     def r(k: Int) = {
-      subtract(quotientRing.power(polynomials.monomial(1), ring.integers.power(ring.order, k))(ring.integers), polynomials.monomial(1))
+      val `q^k` = ring.integers.power(ring.order, k)
+      val `x^(q^k)` = quotientRing.power(polynomials.monomial(1), `q^k`)(ring.integers)
+      val x = polynomials.monomial(1)
+      val result = polynomials.subtract(`x^(q^k)`, x)
+      require(result.toMap.values.forall(ring.integers.compare(_ ,ring.integers.zero) > 0))
+      result
     }
     val n = maximumDegree(p).get
-    (for (d <- Integers.divisors(n); if d != n; if euclideanAlgorithm(p, r(d)) == one) yield d).isEmpty && exactQuotientOption(r(n), p).nonEmpty
+    (for (d <- Integers.divisors(n); if d != n; if polynomials.euclideanAlgorithm(p, r(d)) == one) yield d).isEmpty && polynomials.exactQuotientOption(r(n), p).nonEmpty
   }
   def randomPolynomial(degree: Int): Polynomial[Polynomial[I]] = {
     ???
   }
+  
+  override def toString = s"PolynomialsOverFiniteField.over($ring)"
 }
 
 object PolynomialsOverFiniteField {
