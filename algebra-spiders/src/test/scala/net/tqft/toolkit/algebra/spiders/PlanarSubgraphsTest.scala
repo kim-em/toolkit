@@ -75,9 +75,10 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
     q.Subgraphs(loop).excisions.size should equal(1)
   }
 
-  "a crossing with a bowtie" should "contain two twists" in {
-    val q = PlanarGraph(10, Vector(List(), List((6, 11), (7, 10), (8, 12), (9, 13)), List((6, 10), (9, 11), (8, 13), (7, 12)), List((4, 10), (5, 15), (5, 14), (4, 15))), IndexedSeq(1, 1, 1), 0)
-    q.Subgraphs(PlanarGraph(6, Vector(List((2, 6), (3, 7)), List((4, 6), (4, 9), (3, 6), (2, 7))), IndexedSeq(1), 0)).excisions.size should equal(2)
+  "an inverted bowtie" should "contain one twists" in {
+    val q = PlanarGraph(10, Vector(List(), List((4, 10), (5, 15), (5, 14), (4, 15))), IndexedSeq(1), 0)
+    val e = q.Subgraphs(PlanarGraph(6, Vector(List((2, 6), (3, 7)), List((4, 6), (4, 9), (3, 6), (2, 7))), IndexedSeq(1), 0)).excisions.toList
+    e.size should equal(1)
   }
 }
 

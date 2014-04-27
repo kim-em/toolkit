@@ -126,7 +126,8 @@ object BuildSettings {
     scalaVersion := buildScalaVersion,
     publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
     resolvers := sonatypeResolvers /* ++ SonatypeSettings.publishing */,
-    libraryDependencies += "org.scalatest" % "scalatest_2.10" % "2.1.3" % "test",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.3" % "test",
+    libraryDependencies += Dependencies.scala.xml,
     //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
 //    scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j),
@@ -192,6 +193,9 @@ object Dependencies {
 		val math = "org.apache.commons" % "commons-math" % "2.2"	// simplex algorithm
 		val logging = "commons-logging" % "commons-logging" % "1.1.1"
 		val io = "commons-io" % "commons-io" % "2.4"
+	}
+	object scala {
+		val xml = "org.scala-lang.modules" %% "scala-xml" % "1.0.1"
 	}
 	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.3.2"
 	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
