@@ -7,6 +7,7 @@ import net.tqft.toolkit.algebra.numberfields._
 import scala.collection.GenSet
 import scala.collection.GenSeq
 import scala.language.implicitConversions
+import net.tqft.toolkit.Logging
 
 object FiniteGroup extends net.tqft.toolkit.Logging
 
@@ -221,16 +222,16 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
       }
 
       val omega = classCoefficientSimultaneousEigenvectorsModPrime
-      
+
       println("omega -> " + omega)
-      
+
       val degrees = for (omega_i <- omega) yield {
         sqrt(modP.quotient(finiteGroup.size, (for (j <- 0 until k) yield modP.quotient(omega_i(j) * omega_i(inverseOnConjugacyClasses(j)), conjugacyClasses(j).size)).sum))
       }
 
       println("degrees -> " + degrees)
       require(degrees.map(n => n * n).sum == size)
-          
+
       for (i <- 0 until k) yield for (j <- 0 until k) yield modP.quotient(omega(i)(j) * degrees(i), conjugacyClasses(j).size)
     }
 
@@ -327,10 +328,14 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
     }
 
     def lower(p: Polynomial[Fraction[Int]]): Int = {
-      require(p == Q.zero || p.maximumDegree == Some(0))
-      val c = p.constantTerm
-      require(c.denominator == 1)
-      c.numerator
+      if (p == Q.zero || p.maximumDegree == Some(0)) {
+        val c = p.constantTerm
+        require(c.denominator == 1)
+        c.numerator
+      } else {
+        Logging.warn("Something went wrong computing a pairing between characters: not an integer!")
+        ???
+      }
     }
 
     // hmm, deadlocks; maybe this will make sure they don't happen!

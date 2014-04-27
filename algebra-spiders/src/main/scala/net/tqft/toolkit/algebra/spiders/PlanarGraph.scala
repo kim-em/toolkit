@@ -467,19 +467,29 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
           require(sourceVertex < shape.numberOfVertices)
           require(targetVertex < graph.numberOfVertices)
           import net.tqft.toolkit.arithmetic.Mod._
+          import net.tqft.toolkit.collections.Rotate._
+
+          def compareSelfLoops(sourceFlag: Seq[(Int, Int)], targetFlag: Seq[(Int, Int)]): Boolean = {
+            sourceFlag.forall({
+              case (e, _) => sourceFlag.zipWithIndex.filter(_._1._1 == e).map(_._2).map(targetFlag(_)._1).distinct.size == 1
+            })
+          }
+
           if (partial.map(sourceVertex - 1) == targetVertex && (((partial.vertexRotations(sourceVertex - 1) - rotation) mod packedShape.degree(sourceVertex)) == 0)) {
             // already done this vertex
+//            Logging.info(" ... already done")
             Some(partial)
           } else if (targetVertex == 0 ||
             partial.map.contains(targetVertex) ||
             partial.map(sourceVertex - 1) != -1 ||
             packedShape.degree(sourceVertex) != graph.degree(targetVertex) ||
             packedShape.labels(sourceVertex - 1) != graph.labels(targetVertex - 1) ||
+            !compareSelfLoops(packedShape.vertexFlags(sourceVertex), graph.vertexFlags(targetVertex).rotateLeft(rotation)) ||
             (rotation mod packedShape.labels(sourceVertex - 1)) != 0) {
-            //            Logging.info(s"rejecting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
+//            Logging.info(s"rejecting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
             None
           } else {
-            //            Logging.info(s"accepting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
+//            Logging.info(s"accepting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
             partial.map(sourceVertex - 1) = targetVertex
             partial.vertexRotations(sourceVertex - 1) = rotation mod packedShape.degree(sourceVertex)
 
@@ -502,63 +512,69 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
         if (packedShape.loops <= graph.loops) {
 
-          val i = partial.map.indexOf(-1) + 1 //
-          if (i == 0) {
-            require(!partial.vertexRotations.contains(-1))
+          if (packedShape.numberOfInternalVertices == 0) {
+            Iterator(Excision(graph.copy(loops = graph.loops - packedShape.loops), 0, Rotation(Map.empty)))
+          } else {
+            val i = partial.map.indexOf(-1) + 1 //
+            if (i == 0) {
+              require(!partial.vertexRotations.contains(-1))
 
-            // make sure we didn't swallow up anything smaller
-            if (packedShape.internalFaceSet.forall(f => packedShape.faceBoundary(f).size == graph.faceBoundary(partial.faceMap(f)).size)) {
+              // make sure we didn't swallow up anything smaller
+              if (packedShape.internalFaceSet.forall(f => packedShape.faceBoundary(f).size == graph.faceBoundary(partial.faceMap(f)).size)) {
 
-              // build an Excision
-              // first, choose a path to cut along
-              val interiorEdges = packedShape.internalEdges.map(partial.edgeMap)
-              val allowedGeodesics = graph.geodesics(partial.faceMap(packedShape.outerFace), interiorEdges)
+                // build an Excision
+                // first, choose a path to cut along
+                val interiorEdges = packedShape.internalEdges.map(partial.edgeMap)
+                val allowedGeodesics = graph.geodesics(partial.faceMap(packedShape.outerFace), interiorEdges)
 
-              if (allowedGeodesics.hasNext) {
-                val geodesic = allowedGeodesics.next
-                val verticesToDelete = partial.map
-                val cut = graph.cutAlong(geodesic)
+                if (allowedGeodesics.hasNext) {
+                  val geodesic = allowedGeodesics.next
+                  val verticesToDelete = partial.map
+                  val cut = graph.cutAlong(geodesic)
 
-                val boundaryEdgesAndFacesToDelete_2 = for (e <- packedShape.boundaryEdges.reverse) yield {
-                  val i = packedShape.vertexFlags.tail.indexWhere(_.exists(_._1 == e)) // find the vertex connected to e
-                  require(i != -1)
-                  val j = packedShape.vertexFlags(i + 1).indexWhere(_._1 == e) // find which edge is e
-                  require(j != -1)
-                  val flag = cut.vertexFlags(partial.map(i))
+                  val boundaryEdgesAndFacesToDelete_2 = for (e <- packedShape.boundaryEdges.reverse) yield {
+                    val i = packedShape.vertexFlags.tail.indexWhere(_.exists(_._1 == e)) // find the vertex connected to e
+                    require(i != -1)
+                    val j = packedShape.vertexFlags(i + 1).indexWhere(_._1 == e) // find which edge is e
+                    require(j != -1)
+                    val flag = cut.vertexFlags(partial.map(i))
 
-                  import net.tqft.toolkit.arithmetic.Mod._
+                    import net.tqft.toolkit.arithmetic.Mod._
 
-                  (i, j, flag((j + partial.vertexRotations(i)) mod flag.size))
+                    (i, j, flag((j + partial.vertexRotations(i)) mod flag.size))
+                  }
+
+                  val boundaryEdgesAndFacesToDelete = boundaryEdgesAndFacesToDelete_2.map(_._3)
+
+                  val rest = cut.deleteSubgraph(verticesToDelete, boundaryEdgesAndFacesToDelete, packedShape.loops)
+
+                  val excision = Excision(rest, geodesic.size, partial.finalVertexRotations)
+                  Iterator(excision)
+                } else {
+//                  Logging.info(" ... no geodesics found")
+                  Iterator.empty
                 }
-
-                val boundaryEdgesAndFacesToDelete = boundaryEdgesAndFacesToDelete_2.map(_._3)
-
-                val rest = cut.deleteSubgraph(verticesToDelete, boundaryEdgesAndFacesToDelete, packedShape.loops)
-
-                val excision = Excision(rest, geodesic.size, partial.finalVertexRotations)
-                Iterator(excision)
               } else {
-                //              Logging.info(" ... no geodesics found")
+                // ooops, swallowed something up, ignore this one
+//                Logging.info("... there's something inside!")
                 Iterator.empty
               }
-            } else {
-              // ooops, swallowed something up, ignore this one
-              Iterator.empty
-            }
 
-          } else if (i > numberOfVertices) {
-            // this shouldn't happen?
-            ???
-          } else {
-            // pick somewhere to send it to
-            for (
-              j <- (1 until graph.numberOfVertices).iterator;
-              if !partial.map.contains(j);
-              k <- 0 until packedShape.degree(i);
-              newMap <- mapVertex(i, j, k, partial.clone).iterator;
-              excision <- extendPartialExcision(newMap)
-            ) yield {
-              excision
+            } else if (i > numberOfVertices) {
+              // this shouldn't happen?
+              ???
+            } else {
+              // pick somewhere to send it to
+              for (
+                j <- (1 until graph.numberOfVertices).iterator;
+                if !partial.map.contains(j);
+                k <- 0 until packedShape.degree(i);
+                newMap <- mapVertex(i, j, k, partial.clone).iterator;
+                excision <- extendPartialExcision(newMap)
+              ) yield {
+                Logging.info(excision)
+                excision
+              }
             }
           }
         } else {

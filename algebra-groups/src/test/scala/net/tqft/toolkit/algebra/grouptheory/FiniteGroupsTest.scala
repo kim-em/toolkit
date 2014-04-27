@@ -48,7 +48,7 @@ class FiniteGroupsTest extends FlatSpec with Matchers {
     FiniteGroups.doubleCosets(d6, h, g).size should equal(2)
   }
   "subgroups" should "work" in {
-    val s6 = FiniteGroups.symmetricGroup(6)
-    s6.subgroups.size should equal(0)
+    val s4 = FiniteGroups.symmetricGroup(4)
+    s4.subgroups.size should equal(30)
   }
 }

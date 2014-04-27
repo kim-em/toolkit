@@ -62,7 +62,7 @@ object PolynomialAlgebra {
       import net.tqft.toolkit.arithmetic.MinMax._
       p.keys.maxOption
     }
-    override def coefficientOf(p: Map[Int, A]) = p
+    override def coefficientOf(p: Map[Int, A]) = { i => p.getOrElse(i, ring.zero) }
     override def evaluateAt(a: A)(p: Map[Int, A]) = {
       ring.sum(p map { case (e, b) => ring.multiply(b, ring.power(a, e)) })
     }
@@ -70,29 +70,6 @@ object PolynomialAlgebra {
     override def formalDerivative(p: Map[Int, A]) = p.collect({
       case (i, a) if i != 0 => (i - 1, multiplicativeCoefficients.multiply(multiplicativeCoefficients.fromInt(i), a))
     })
-  }
-
-  abstract class PolynomialAlgebraForWrapper[A: Ring, P] extends PolynomialAlgebra[A, P] {
-    val implementation = new PolynomialAlgebraForMaps[A] {
-      override def ring = implicitly[Ring[A]]
-    }
-
-    override implicit def toMap(p: P): Map[Int, A]
-    override def toSeq[Z: Zero](p: P) = implementation.toSeq[Z](toMap(p))
-
-    override implicit def fromMap(p: Map[Int, A]): P
-    override def fromSeq(s: Seq[A]) = implementation.fromSeq(s)
-
-    override def add(p1: P, p2: P) = implementation.add(p1, p2)
-    override def multiply(p1: P, p2: P) = implementation.multiply(p1, p2)
-    override def scalarMultiply(a: A, p: P) = implementation.scalarMultiply(a, p)
-    override def negate(p: P) = implementation.negate(p)
-
-    override def maximumDegree(p: P) = implementation.maximumDegree(p)
-    override def coefficientOf(p: P) = implementation.coefficientOf(p)
-    override def evaluateAt(a: A)(p: P) = implementation.evaluateAt(a)(p)
-    override def composeAsFunctions(p1: P, p2: P) = implementation.composeAsFunctions(p1, p2)
-    override def formalDerivative(p: P) = implementation.formalDerivative(p)
   }
 
   abstract class PolynomialAlgebraForCoefficientSequences[A: Ring] extends Ring.RingSeq[A] with PolynomialAlgebra[A, Seq[A]] {
@@ -120,10 +97,12 @@ object PolynomialAlgebra {
     }
 
     override def maximumDegree(p: Seq[A]) = ???
-    override def coefficientOf(p: Seq[A]) = p
+    override def coefficientOf(p: Seq[A]) = { i => if(i < p.size) p(i) else ring.zero }
     override def evaluateAt(a: A)(p: Seq[A]) = ring.sum(for((x,i) <- p.zipWithIndex) yield ring.multiply(x, ring.power(a, i)))
-    override def composeAsFunctions(p1: Seq[A], p2: Seq[A]) = ???
-    override def formalDerivative(p: Seq[A]) = ???
+    override def composeAsFunctions(p1: Seq[A], p2: Seq[A]) = {
+      sum(p2.zipWithIndex.map(p => scalarMultiply(p._1, power(p1, p._2))))
+    }
+    override def formalDerivative(p: Seq[A]) = p.zipWithIndex.tail.map(p => ring.multiply(p._1, ring.fromInt(p._2)))
   }
   //  class PolynomialAlgebraForCoefficientStreams[A: Ring] extends Ring.RingMap[Int, A] with PolynomialAlgebra[A, Stream[A]] 
   //  class PolynomialAlgebraForRootMultiplicities[A: Ring] extends PolynomialAlgebra[A, (A, Map[A, Int])]
@@ -219,11 +198,20 @@ abstract class Polynomials[A: Ring] extends PolynomialAlgebra[A, Polynomial[A]] 
   def coefficientOf(p: Polynomial[A]): Int => A = {
     p match {
       case p: MapPolynomial[A] => p.coefficients.lift.andThen(_.getOrElse(ring.zero))
-      case p: SeqPolynomial[A] => p.coefficients
+      case p: SeqPolynomial[A] => { i => if(i < p.coefficients.size) p.coefficients(i) else ring.zero }
     }
   }
 
-  def composeAsFunctions(p1: Polynomial[A], p2: Polynomial[A]): Polynomial[A] = ???
+  def composeAsFunctions(x: Polynomial[A], y: Polynomial[A]): Polynomial[A] = {
+    (x, y) match {
+      case (x: SeqPolynomial[A], y: SeqPolynomial[A]) => {
+        seqImplementation.composeAsFunctions(x.coefficients, y.coefficients)
+      }
+      case (x, y) => {
+        mapImplementation.composeAsFunctions(x.toMap, y.toMap)
+      }
+    }
+  }
   def evaluateAt(a: A)(p: Polynomial[A]): A = {
     p match {
       case p: MapPolynomial[A] => mapImplementation.evaluateAt(a)(p.coefficients)
