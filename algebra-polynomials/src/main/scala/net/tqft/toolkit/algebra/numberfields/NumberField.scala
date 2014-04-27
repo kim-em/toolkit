@@ -4,11 +4,14 @@ import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra._
 
 abstract class PolynomialQuotientRing[A: Field] extends PolynomialsOverField[A] {
-  private val polynomials = implicitly[PolynomialsOverField[A]]
+  protected val polynomials = implicitly[PolynomialsOverField[A]]
 
   def generator: Polynomial[A]
+  
   override def multiply(a: Polynomial[A], b: Polynomial[A]) = polynomials.remainder(polynomials.multiply(a, b), generator)
   def normalForm(p: Polynomial[A]) = polynomials.remainder(p, generator)
+  
+  override def toString = s"PolynomialQuotientRing($generator)(${implicitly[Field[A]]})"
 }
 
 object PolynomialQuotientRing {
@@ -31,8 +34,9 @@ abstract class NumberField[A: Field] extends PolynomialQuotientRing[A] with Fiel
   }
   override def inverse(q: Polynomial[A]) = {
     if (q == zero) throw new ArithmeticException("/ by zero")
-    val (_, b, u) = (extendedEuclideanAlgorithm(generator, q))
+    val (_, b, u) = (polynomials.extendedEuclideanAlgorithm(generator, q))
     require(maximumDegree(u) == Some(0))
+    require(maximumDegree(b).get < maximumDegree(generator).get)
     scalarMultiply(coefficients.inverse(constantTerm(u)), b)
   }
 

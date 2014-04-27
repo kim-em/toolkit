@@ -9,13 +9,14 @@ sealed trait Polynomial[A] {
   def toMap: Map[Int, A]
 }
 
-case class MapPolynomial[A](coefficients: TreeMap[Int, A]) extends Polynomial[A] {
+case class MapPolynomial[A:Zero](coefficients: TreeMap[Int, A]) extends Polynomial[A] {
+  private def zero = implicitly[Zero[A]].zero
   override def mapValues[B:Zero](f: A => B) = MapPolynomial(TreeMap[Int, B]() ++ coefficients.mapValues(f))
-  override def toMap = coefficients
+  override def toMap = coefficients.filter(_._2 != zero)
   
   override def equals(other: Any): Boolean = {
     other match {
-      case other: Polynomial[A] => coefficients == other.toMap
+      case other: Polynomial[A] => toMap == other.toMap
     }
   }
 }
@@ -25,31 +26,33 @@ case class SeqPolynomial[A:Zero](coefficients: IndexedSeq[A]) extends Polynomial
   override def toMap = coefficients.zipWithIndex.collect({ case (x, i) if x != zero => (i, x) }).toMap
   override def equals(other: Any): Boolean = {
     other match {
-      case other: SeqPolynomial[A] => coefficients == other.coefficients
-      case other: MapPolynomial[A] => toMap == other.coefficients
+      case other: SeqPolynomial[A] => coefficients.zipAll(other.coefficients, zero, zero).forall(p => p._1 == p._2)
+      case other: MapPolynomial[A] => toMap == other.toMap
     }
   }
 }
+object SeqPolynomial {
+  def apply[A:Zero](terms: A*): Polynomial[A] = SeqPolynomial(terms.toIndexedSeq)
+}
 
 object Polynomial {
-  def apply[A](terms: (Int, A)*): Polynomial[A] = MapPolynomial(TreeMap[Int, A]() ++ terms)
-  def apply[A](terms: Map[Int, A]): Polynomial[A] = MapPolynomial(TreeMap[Int, A]() ++ terms)
-  def apply[A:Zero](coefficients: Seq[A]): Polynomial[A] = SeqPolynomial(coefficients.toIndexedSeq)
+  def apply[A:Zero](terms: (Int, A)*): Polynomial[A] = MapPolynomial(TreeMap[Int, A]() ++ terms)
+  def apply[A:Zero](terms: Map[Int, A]): Polynomial[A] = MapPolynomial(TreeMap[Int, A]() ++ terms)
+  def apply[A:AdditiveMonoid](coefficients: Seq[A]): Polynomial[A] = SeqPolynomial(coefficients.toIndexedSeq)
   
   def identity[A: Ring] = Polynomial(Map(1 -> implicitly[Ring[A]].one))
 
-  implicit def lift[A](m: Map[Int, A]): Polynomial[A] = Polynomial(m)
+  implicit def lift[A:Zero](m: Map[Int, A]): Polynomial[A] = Polynomial(m)
   implicit def liftFractions[A: GCDRing](m: Map[Int, A]): Polynomial[Fraction[A]] = Polynomial(m.mapValues(a => (a: Fraction[A])))
   implicit def liftAsRationalFunction[A: GCDRing](m: Map[Int, A]): Fraction[Polynomial[A]] = lift(m)
   implicit def liftFractionsAsRationalFunction[A: GCDRing](m: Map[Int, A]): Fraction[Polynomial[Fraction[A]]] = liftFractions(m)
   
-  implicit def liftSeq[A:Zero](m: Seq[A]): Polynomial[A] = Polynomial(m)
+  implicit def liftSeq[A:AdditiveMonoid](m: Seq[A]): Polynomial[A] = Polynomial(m)
   implicit def liftSeqFractions[A: GCDRing](m: Seq[A]): Polynomial[Fraction[A]] = Polynomial(m.map(a => (a: Fraction[A])))
   implicit def liftSeqAsRationalFunction[A: GCDRing](m: Seq[A]): Fraction[Polynomial[A]] = liftSeq(m)
   implicit def liftSeqFractionsAsRationalFunction[A: GCDRing](m: Seq[A]): Fraction[Polynomial[Fraction[A]]] = liftSeqFractions(m)
 
-  implicit def constant[A:Zero](a: A): Polynomial[A] = Polynomial(Seq(a))
-//  implicit def constant[A:Zero](a: A): Polynomial[A] = Polynomial(Map(0 -> a))
+  implicit def constant[A:AdditiveMonoid](a: A): Polynomial[A] = Polynomial(Seq(a))
   implicit def constantFraction[A: EuclideanRing](a: A): Polynomial[Fraction[A]] = constant(a)
   implicit def constantRationalFunction[A: GCDRing](a: A): Fraction[Polynomial[A]] = constant(a)
   implicit def constantBigInt(i: Int): Polynomial[BigInt] = constant(i: BigInt)

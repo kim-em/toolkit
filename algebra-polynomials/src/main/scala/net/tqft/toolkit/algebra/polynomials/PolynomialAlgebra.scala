@@ -236,6 +236,9 @@ abstract class Polynomials[A: Ring] extends PolynomialAlgebra[A, Polynomial[A]] 
       case p: SeqPolynomial[A] => seqImplementation.formalDerivative(p.coefficients)
     }
   }
+  
+    override def toString = s"Polynomials.over($ring)"
+
 }
 
 object Polynomials {

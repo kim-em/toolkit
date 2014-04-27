@@ -52,7 +52,10 @@ object PolynomialAlgebraOverField {
   implicit def over[A: Field]: PolynomialAlgebraOverField[A, Polynomial[A]] = PolynomialsOverField.over[A]
 }
 
-abstract class PolynomialsOverField[A: Field] extends PolynomialsOverGCDRing[A] with PolynomialAlgebraOverField[A, Polynomial[A]]
+abstract class PolynomialsOverField[A: Field] extends PolynomialsOverGCDRing[A] with PolynomialAlgebraOverField[A, Polynomial[A]] {
+    override def toString = s"PolynomialsOverField.over($ring)"
+
+}
 object PolynomialsOverField {
   implicit def over[A: Field]: PolynomialsOverField[A] = new PolynomialsOverField[A] {
     override def ring = implicitly[Field[A]]

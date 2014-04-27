@@ -9,6 +9,10 @@ import org.scalatest._
 @RunWith(classOf[JUnitRunner])
 class PolynomialsTest extends FlatSpec with Matchers {
 
+  "Polynomial equality" should "be correct" in {
+    SeqPolynomial(IndexedSeq(1, 0, 2)) should equal(Polynomial(0->1, 1->0, 2-> 2))
+  }
+  
   "Polynomial arithmetic" should "be correct" in {
     import AlgebraicNotation._
 

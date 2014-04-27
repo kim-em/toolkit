@@ -5,7 +5,7 @@ import net.tqft.toolkit.algebra._
 trait KroneckerSubstitutionMultiplication[A] { self: PolynomialsOverIntegerModel[A] =>
   override def multiply(x: Polynomial[A], y: Polynomial[A]): Polynomial[A] = {
     if (ring.isInstanceOf[ArbitraryPrecisionIntegerModel[A]]) {
-      implicit def zero: Zero[A] = ring
+      implicit def ring_ : Ring[A] = ring
       val t: Int = x.toMap.values.map(v => ring.log(v, 2)).max + y.toMap.values.map(v => ring.log(v, 2)).max + Integers.log(Seq(maximumDegree(x).getOrElse(0), maximumDegree(y).getOrElse(0)).max, 2)
       val z = ring.power(ring.fromInt(2), t)
       ring.digits(ring.multiply(evaluateAt(z)(x), evaluateAt(z)(y)), z)
