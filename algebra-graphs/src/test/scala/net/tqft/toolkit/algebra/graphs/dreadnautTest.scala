@@ -34,5 +34,10 @@ class DreadnautTest extends FlatSpec with Matchers {
     val g2 = Graph(4, IndexedSeq(Seq(1), Seq(0,3), Seq(), Seq(1)))
     Dreadnaut.canonicalize(g1) should equal(Dreadnaut.canonicalize(g2))
   }
+  "dreadnaut" should "find orbits of vertices under the automorphism group" in {
+    val g = Graph(5, IndexedSeq(Seq(1), Seq(0), Seq(3), Seq(4), Seq(2)))
+    g.automorphismAction.orbits.size should equal (2)
+    g.automorphismAction.orbits.toSeq.map(_.size).sorted should equal(Seq(2,3))
+  }
 
 }
