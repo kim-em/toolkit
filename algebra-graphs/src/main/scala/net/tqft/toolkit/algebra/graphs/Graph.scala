@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra.graphs
 
 import net.tqft.toolkit.permutations.Permutations._
+import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 
 trait Graph {
   def numberOfVertices: Int
@@ -59,6 +60,21 @@ trait Graph {
 
   def colour[V: Ordering](colours: IndexedSeq[V]): ColouredGraph[V] = {
     ColouredGraph(numberOfVertices, adjacencies, colours)
+  }
+
+  private lazy val automorphismGroupAndOrbits = Dreadnaut.automorphismGroupAndOrbits(this)
+  lazy val automorphismGroup: FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = automorphismGroupAndOrbits._1
+  lazy val automorphismAction: automorphismGroup.Action[Int] = new automorphismGroup.Action[Int] {
+    override def act(g: IndexedSeq[Int], x: Int) = g(x)
+
+    override def elements = (0 until numberOfVertices).iterator
+    override lazy val orbits: Set[this.Orbit] = automorphismGroupAndOrbits._2.map({ orbit: Seq[Int] =>
+      new this.Orbit {
+        override val representative = orbit.head
+        override val elements = orbit.toSet
+        override def stabilizer = ???
+      }
+    }).toSet
   }
 }
 
