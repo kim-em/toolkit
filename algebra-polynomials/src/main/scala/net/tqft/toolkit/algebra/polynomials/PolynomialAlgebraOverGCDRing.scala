@@ -16,9 +16,6 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
   }
 
   def pseudoQuotientRemainder(f: P, g: P): (P, P) = {
-    //    require(f.toString.size < 500)
-    //    println("f = " + f)
-    //    println("g = " + g)
     val df = maximumDegree(f).getOrElse(0)
     val dg = maximumDegree(g).getOrElse(0)
     val result = if (df == 0 && dg == 0) {
