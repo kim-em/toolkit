@@ -37,7 +37,7 @@ class MultivariablePolynomialsTest extends FlatSpec with Matchers {
     val p = MultivariablePolynomial[C, String](Map(Map(d -> 5) -> -4, Map(d -> 1) -> -2, Map() -> -1, Map(d -> 7) -> 1, Map(d -> 3) -> 5, Map(d -> 4) -> -1, Map(d -> 2) -> 2))
     val q = MultivariablePolynomial[C, String](Map(Map(b -> 4, d -> 2) -> 2, Map(b -> 4, d -> 3) -> -3, Map(b -> 4, d -> 6) -> 3, Map(b -> 4, d -> 5) -> 5, Map(b -> 4, d -> 7) -> -4, Map(b -> 4, d -> 1) -> 1, Map(b -> 4, d -> 4) -> -5, Map(b -> 4, d -> 8) -> 1))
     val g = polynomials.gcd(p, q)
-    g should equal(MultivariablePolynomial[C, String](Map(Map(d -> 3) -> -1, Map(d -> 2) -> 2, Map() -> -1)))
+    g should equal(MultivariablePolynomial[C, String](Map(Map(d -> 3) -> 1, Map(d -> 2) -> -2, Map() -> 1)))
   }
   "rational functions with zero numerator" should "be zero" in {
     val polynomials = implicitly[MultivariablePolynomialAlgebraOverGCDRing[Fraction[Int], String]]

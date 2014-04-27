@@ -4,21 +4,24 @@ import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra._
 
 abstract class PolynomialQuotientRing[A: Field] extends PolynomialsOverField[A] {
+  private val polynomials = implicitly[PolynomialsOverField[A]]
+
   def generator: Polynomial[A]
-  override def multiply(a: Polynomial[A], b: Polynomial[A]) = remainder(super.multiply(a, b), generator)
-  def normalForm(p: Polynomial[A]) = remainder(p, generator)
+  override def multiply(a: Polynomial[A], b: Polynomial[A]) = polynomials.remainder(polynomials.multiply(a, b), generator)
+  def normalForm(p: Polynomial[A]) = polynomials.remainder(p, generator)
 }
 
 object PolynomialQuotientRing {
-   def apply[A: Field](p: Polynomial[A]) = new PolynomialQuotientRing[A] {
-     override def ring = implicitly[Field[A]]
-     override def generator = p
-   }
+  def apply[A: Field](p: Polynomial[A]) = new PolynomialQuotientRing[A] {
+    override def ring = implicitly[Field[A]]
+    override def generator = p
+  }
 }
 
 abstract class NumberField[A: Field] extends PolynomialQuotientRing[A] with Field[Polynomial[A]] with VectorSpace[A, Polynomial[A]] {
   override def ring: Field[A] = implicitly[Field[A]]
   override def coefficients: Field[A] = implicitly[Field[A]]
+
   lazy val rank = maximumDegree(generator).get
 
   private val powers = {
