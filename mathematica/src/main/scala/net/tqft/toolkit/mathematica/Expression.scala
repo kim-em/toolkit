@@ -58,7 +58,7 @@ object Expression_ {
       SyntaxParserImplementation.parseSyntax(s).get
     }
 
-    override def toInputForm(e: Expression_) = {
+    override def toInputForm(e: Expression_): String = {
       e match {
         case SymbolExpression(name) => name
         case StringExpression(contents) => "\"" + contents + "\""
@@ -70,3 +70,4 @@ object Expression_ {
     override def build(head: Expression_, arguments: Seq[Expression_]) = FullFormExpression(head, arguments)
   }
 }
+  

@@ -1,6 +1,6 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
-import net.tqft.toolkit.algebra.mathematica.MathematicaForm
+import net.tqft.toolkit.algebra.mathematica2.MathematicaForm
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.spiders.VertexType
 

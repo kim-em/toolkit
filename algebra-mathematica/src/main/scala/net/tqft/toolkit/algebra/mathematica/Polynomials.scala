@@ -1,4 +1,4 @@
-package net.tqft.toolkit.algebra.mathematica
+package net.tqft.toolkit.algebra.mathematica2
 
 import scala.language.implicitConversions
 import net.tqft.toolkit.mathematica.Expression_

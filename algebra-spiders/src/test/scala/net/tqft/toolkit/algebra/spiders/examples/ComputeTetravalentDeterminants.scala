@@ -4,13 +4,11 @@ import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.matrices.Matrix
-import net.tqft.toolkit.algebra.mathematica._
-import net.tqft.toolkit.algebra.mathematica.MathematicaForm
+import net.tqft.toolkit.algebra.mathematica2._
+import net.tqft.toolkit.algebra.mathematica2.MathematicaForm
 import net.tqft.toolkit.mathematica.Expression_
 
 object ComputeTetravalentDeterminants extends App {
-  println(net.tqft.toolkit.mathematica.Expression_.expression.fromInputString("1+1"))
-
   
   {
     lazy val diagrams4 = TetravalentSpider.reducedDiagrams(4, 0) ++ TetravalentSpider.reducedDiagrams(4, 1) ++ TetravalentSpider.reducedDiagrams(4, 2)
@@ -36,7 +34,7 @@ object ComputeTetravalentDeterminants extends App {
       d.numerator
     }
     
-    import mathematica.GroebnerBasis._
+    import mathematica2.GroebnerBasis._
     println(determinants.computeGroebnerBasis)
     
     //      println(m1.determinant.toMathemathicaInputString)

@@ -1,4 +1,4 @@
-package net.tqft.toolkit.algebra.mathematica
+package net.tqft.toolkit.algebra.mathematica2
 
 import org.scalatest._
 import org.junit.runner.RunWith
@@ -11,7 +11,7 @@ import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 class GroebnerBasisTest extends FlatSpec with Matchers {
 
   "GroebnerBasis" should "work via Mathematica" in {
-    import mathematica.GroebnerBasis._
+    import mathematica2.GroebnerBasis._
 
     // x^2 + x y, y^3 + x y^2
 
