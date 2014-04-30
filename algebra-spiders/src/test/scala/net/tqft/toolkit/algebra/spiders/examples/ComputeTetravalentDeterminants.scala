@@ -30,12 +30,18 @@ object ComputeTetravalentDeterminants extends App {
     println("determinants: ")
     val determinants = for (k <- 0 to 4) yield {
       val d = m(k).determinant
-      println(d.denominator)
-      d.numerator
+      require(d.denominator == implicitly[MultivariablePolynomialAlgebra[BigInt, String]].one)
+      val n = d.numerator
+      println(n)
+      n
     }
     
+    println("Groebner basis:")
     import mathematica2.GroebnerBasis._
-    println(determinants.computeGroebnerBasis)
+    implicit def variableOrdering = TetravalentSpider.polyhedronOrdering 
+    for(p <- determinants.computeGroebnerBasis) {
+      println(p.toMathemathicaInputString)
+    }
     
     //      println(m1.determinant.toMathemathicaInputString)
     println(m2.determinant.toMathemathicaInputString)
