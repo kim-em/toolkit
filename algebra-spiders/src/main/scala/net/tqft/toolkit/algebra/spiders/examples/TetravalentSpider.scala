@@ -9,6 +9,7 @@ abstract class TetravalentSpider[R: Field] extends PlanarGraphReductionSpiderOve
   override lazy val vertexTypes = Seq(VertexType(4, 1))
 
   def d: R
+  def b: R
   override def eigenvalue(label: Int) = {
     label match {
       case 4 => ring.one
@@ -21,11 +22,16 @@ abstract class TetravalentSpider[R: Field] extends PlanarGraphReductionSpiderOve
   private lazy val uncappableReduction = Reduction(
     diagramSpider.stitch(vertex),
     Map(PlanarGraph.strand -> ring.zero))
-  override def reductions = Seq(loopReduction, uncappableReduction)
+  private lazy val threeStrings = Reduction(
+    diagramSpider.multiply(vertex, vertex, 3),
+    Map(PlanarGraph.strand -> b))
+
+  override def reductions = Seq(loopReduction, uncappableReduction, threeStrings)
 }
 
 trait MultivariableRationalFunctionTetravalentSpider[A] extends TetravalentSpider[MultivariableRationalFunction[A, String]] with MultivariableRationalFunctionSpider[A] {
   override def d = Map(Map("d" -> 1) -> coefficientRing.one)
+  override def b = Map(Map("b" -> 1) -> coefficientRing.one)
 }
 
 trait IntegerMultivariableRationalFunctionTetravalentSpider extends MultivariableRationalFunctionTetravalentSpider[BigInt] {

@@ -11,7 +11,7 @@ object LexicographicOrdering {
     require(implicitly[Ordering[B]] != null)
     
     import Ordering.Implicits._
-    Ordering.by[Map[A,B], Seq[(A, B)]]({ x: Map[A, B] => (SortedMap[A, B]() ++ x).toSeq })
+    Ordering.by[Map[A, B], Seq[(A, B)]]({ x: Map[A, B] => (SortedMap[A, B]() ++ x).toSeq })
   }
 
 }

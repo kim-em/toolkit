@@ -11,7 +11,8 @@ object Toolkit extends Build {
     base = file("."),
     settings = buildSettings) aggregate (
         base, 
-        arithmetic, 
+        arithmetic,
+        mathematica, 
         amazon, 
         collections, 
         permutations, 
@@ -41,6 +42,10 @@ object Toolkit extends Build {
     base = file("collections"),
     settings = buildSettings) dependsOn (base, functions)
 
+  lazy val mathematica = Project(id = "toolkit-mathematica",
+    base = file("mathematica"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(omath.parser, apfloat))) dependsOn ()
+
   lazy val amazon = Project(id = "toolkit-amazon",
     base = file("amazon"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq(httpclient, jets3t, typica, commons.io))) dependsOn (base, collections)
@@ -65,6 +70,10 @@ object Toolkit extends Build {
     base = file("algebra-polynomials"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (orderings, algebra, collections)
 
+  lazy val `algebra-mathematica` = Project(id = "toolkit-algebra-mathematica",
+    base = file("algebra-mathematica"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (mathematica, `algebra-polynomials`)
+
   lazy val `algebra-categories` = Project(id = "toolkit-algebra-categories",
     base = file("algebra-categories"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, `algebra-polynomials`)
@@ -83,7 +92,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-spiders` = Project(id = "toolkit-algebra-spiders",
     base = file("algebra-spiders"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (collections, algebra, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-apfloat`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (collections, algebra, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-apfloat`, `algebra-mathematica`)
 
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),
@@ -125,9 +134,8 @@ object BuildSettings {
     version := buildVersion,
     scalaVersion := buildScalaVersion,
     publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
-    resolvers := sonatypeResolvers /* ++ SonatypeSettings.publishing */,
-    libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.3" % "test",
-    libraryDependencies += Dependencies.scala.xml,
+    resolvers := sonatypeResolvers ++ tqftResolvers /* ++ SonatypeSettings.publishing */,
+    libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.4" % "test",
     //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
 //    scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j),
@@ -183,11 +191,14 @@ object Resolvers {
   val sonatypeResolvers = Seq(
     "Sonatype Nexus Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     "Sonatype Nexus Releases" at "https://oss.sonatype.org/content/repositories/releases")
+  val tqftResolvers = Seq(
+	"tqft.net Maven repository" at "http://tqft.net/releases"	
+  )
 }
 
 object Dependencies {
-        val junit = "junit" % "junit" % "4.11" % "test"
-        val slf4j = "org.slf4j" % "slf4j-log4j12" % "1.6.1"
+	val junit = "junit" % "junit" % "4.11" % "test"
+	val slf4j = "org.slf4j" % "slf4j-log4j12" % "1.6.1"
 	val apfloat = "org.apfloat" % "apfloat" % "1.6.3"		// arbitrary precision integers and floats; much better than BigInt and BigDecimal
 	object commons {
 		val math = "org.apache.commons" % "commons-math" % "2.2"	// simplex algorithm
@@ -213,5 +224,8 @@ object Dependencies {
 	val slick = "com.typesafe.slick" % "slick_2.11.0-RC4" % "2.1.0-M1"
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0-M6"
 	val spire = "org.spire-math" %% "spire" % "0.7.1"
+	object omath {
+		val parser = "org.omath" %% "omath-parser" % "0.0.1-SNAPSHOT"
+	}
 }
 
