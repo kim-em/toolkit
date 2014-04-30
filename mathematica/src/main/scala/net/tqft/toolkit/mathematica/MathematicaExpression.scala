@@ -1,9 +1,8 @@
 package net.tqft.toolkit.mathematica
 
-
 trait MathematicaExpression[T] {
   def toInputForm(t: T): String
-  def fromInputForm(t: String): T
+  def fromInputForm(t: String): T  
 
   def build(head: T, arguments: Seq[T]): T
 }

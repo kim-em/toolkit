@@ -92,7 +92,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-spiders` = Project(id = "toolkit-algebra-spiders",
     base = file("algebra-spiders"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (collections, algebra, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-apfloat`, `algebra-mathematica`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (collections, algebra, `algebra-mathematica`, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-apfloat`)
 
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),

@@ -6,13 +6,12 @@ import org.scalatest.junit.JUnitRunner
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
-import net.tqft.toolkit.mathematica.Expression
 
 @RunWith(classOf[JUnitRunner])
 class GroebnerBasisTest extends FlatSpec with Matchers {
 
   "GroebnerBasis" should "work via Mathematica" in {
-    import GroebnerBasis._
+    import mathematica.GroebnerBasis._
 
     // x^2 + x y, y^3 + x y^2
 

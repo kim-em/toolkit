@@ -88,42 +88,5 @@ trait MultivariableRationalFunctionSpider[A] extends PlanarGraphReductionSpiderO
   override def ring = implicitly[Field[MultivariableRationalFunction[A, String]]]
 }
 
-trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
-
-  val names = scala.collection.mutable.Set[(PlanarGraph, String)](
-    PlanarGraph(7, IndexedSeq(List(), List((6, 10), (3, 8), (4, 7), (5, 9)), List((3, 7), (6, 8), (5, 10), (4, 9))), List(2, 2), 0) -> "hopf")
-  def namedReductions = names.toSeq.map({ p =>
-    Reduction[PlanarGraph, MultivariableRationalFunction[A, String]](p._1, Map(PlanarGraph.empty -> Map(Map(p._2 -> 1) -> coefficientRing.one)))
-  })
-
-  private var count = 0
-  private def nextName = {
-    count = count + 1
-    "p" + count
-  }
-  
-  def sphericalCanonicalForm(p: PlanarGraph) = {
-    require(p.numberOfBoundaryPoints == 0)
-    p.faceSet.toSeq.map(f => diagramSpider.canonicalFormWithDefect(p.copy(outerFace = f))._1).sorted.head
-  }
-
-  override def evaluate(map: Map[PlanarGraph, MultivariableRationalFunction[A, String]]) = {
-    ring.sum(for ((k, v) <- map) yield {
-      if (diagramSpider.canonicalFormWithDefect(k)._1 == diagramSpider.empty) {
-        v
-      } else {
-        val ck = diagramSpider.canonicalFormWithDefect(k)._1
-        if (!names.exists(p => diagramSpider.canonicalFormWithDefect(p._1)._1 == ck)) {
-          val newName = nextName
-          println("Naming new polyhedron:")
-          println(ck)
-          println(newName)
-          names += (ck -> newName)
-        }
-        replace(namedReductions)(Map(k -> v))(PlanarGraph.empty)
-      }
-    })
-  }
-}
 
 
