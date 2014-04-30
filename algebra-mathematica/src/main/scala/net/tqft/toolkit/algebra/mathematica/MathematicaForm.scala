@@ -1,11 +1,12 @@
-package net.tqft.toolkit.algebra.mathematica
+package net.tqft.toolkit.algebra.mathematica2
 
 import scala.language.higherKinds
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
+
 import net.tqft.toolkit.algebra.Ring
 import net.tqft.toolkit.algebra.Fraction
-import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.IntegerModel
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 
 trait MathematicaForm[A] {
   def toMathematicaInputString(a: A): String
