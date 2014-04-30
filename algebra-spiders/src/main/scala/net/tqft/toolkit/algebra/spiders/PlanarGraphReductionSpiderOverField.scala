@@ -101,6 +101,11 @@ trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
     count = count + 1
     "p" + count
   }
+  
+  def sphericalCanonicalForm(p: PlanarGraph) = {
+    require(p.numberOfBoundaryPoints == 0)
+    p.faceSet.toSeq.map(f => diagramSpider.canonicalFormWithDefect(p.copy(outerFace = f))._1).sorted.head
+  }
 
   override def evaluate(map: Map[PlanarGraph, MultivariableRationalFunction[A, String]]) = {
     ring.sum(for ((k, v) <- map) yield {

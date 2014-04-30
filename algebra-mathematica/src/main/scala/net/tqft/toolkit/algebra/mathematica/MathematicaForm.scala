@@ -1,11 +1,11 @@
 package net.tqft.toolkit.algebra.mathematica
 
 import scala.language.higherKinds
-
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.algebra.Ring
 import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.IntegerModel
 
 trait MathematicaForm[A] {
   def toMathematicaInputString(a: A): String
@@ -29,6 +29,10 @@ object MathematicaForm {
     override def toMathematicaInputString(i: BigInt) = i.toString
   }
 
+  implicit def integerModelMathematicaForm[I: IntegerModel]: MathematicaForm[I] = new MathematicaForm[I] {
+    override def toMathematicaInputString(i: I) = i.toString
+  } 
+  
   implicit def seqMathematicaForm[A: MathematicaForm, CC[X] <: Seq[X]] = new MathematicaForm[CC[A]] {
     override def toMathematicaInputString(s: CC[A]) = {
       def F = implicitly[MathematicaForm[A]]

@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.spiders.examples
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.mathematica._
+import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 
 object ComputeInnerProducts extends App {
   lazy val `D(4,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(4, 0).toList

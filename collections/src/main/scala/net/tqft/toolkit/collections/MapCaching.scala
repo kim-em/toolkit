@@ -1,20 +1,20 @@
 package net.tqft.toolkit.collections
 
-import scala.concurrent.future
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object MapCaching {
   implicit class CachableMap[A, B](other: scala.collection.mutable.Map[A, B]) {
     def caching(cache: scala.collection.mutable.Map[A, B] = scala.collection.mutable.Map[A, B]()) = new scala.collection.mutable.Map[A, B] {
       override def -=(key: A): this.type = {
-        future {
+        Future {
           other -= key
         }
         cache -= key
         this
       }
       override def +=(kv: (A, B)): this.type = {
-        future {
+        Future {
           other += kv
         }
         cache += kv
@@ -26,7 +26,7 @@ object MapCaching {
         case None => {
           other.get(key) match {
             case Some(v) => {
-              future {
+              Future {
                 cache += ((key, v))
               }
               Some(v)

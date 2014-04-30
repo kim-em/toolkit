@@ -591,6 +591,12 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 }
 
 object PlanarGraph {
+  implicit def ordering: Ordering[PlanarGraph] = {
+    import scala.math.Ordering.Implicits._
+    Ordering.by({ x: PlanarGraph => (x.outerFace, x.vertexFlags, x.labels, x.loops) })
+  }
+  
+  
   private def spider = implicitly[Spider[PlanarGraph]]
 
   val empty = {

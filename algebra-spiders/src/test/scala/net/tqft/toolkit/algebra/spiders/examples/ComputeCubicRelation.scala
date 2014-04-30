@@ -5,6 +5,7 @@ import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.algebra.mathematica._
+import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 
 object ComputeCubicRelation extends App {
   lazy val `D(4,0)` = TrivalentGraphs.withoutSmallFaces.byNumberOfFaces(4, 0).toList
