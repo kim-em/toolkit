@@ -17,7 +17,17 @@ abstract class PolynomialFactorization[A: GCDRing: Factorization] extends Factor
   }
   def factorContentFree(x: Polynomial[A]): Map[Polynomial[A], Int] = {
     // we reduce to the square free case
-    factorSquareAndContentFree(squareFreeFactorization(x)).map(f => f -> ???).toMap
+    def powerDividing(f: Polynomial[A]) = {
+      var k = -1
+      var p = Some(x)
+      while(p.nonEmpty) {
+        k = k + 1
+        p.flatMap(q => polynomials.exactQuotientOption(q, f))
+      }
+      k
+    }
+    
+    factorSquareAndContentFree(squareFreeFactorization(x)).map(factor => factor -> powerDividing(factor)).toMap
   }
   def factorSquareAndContentFree(x: Polynomial[A]): Seq[Polynomial[A]]
 }
