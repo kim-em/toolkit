@@ -12,6 +12,11 @@ trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
     })
   })
 
+  val polyhedronOrdering: Ordering[String] = {
+    // TODO hack
+    Ordering.by({ s: String => - names.find(_._2 == s ).map(p => p._1.numberOfInternalVertices).getOrElse(s match { case "d" => 0; case "b" => 2 }) })
+  }
+  
   private var count = 0
   private def nextName = {
     count = count + 1
