@@ -7,9 +7,9 @@ import net.tqft.toolkit.algebra.EuclideanRing
 
 abstract class CyclotomicNumberField[A: Field] extends NumberField[A] with ComplexConjugation[Polynomial[A]] { cnf =>
   val order: Int
-  override lazy val generator = Polynomial.cyclotomic(order)(coefficients) // has to be lazy so coefficentField is available
+  override lazy val generator = Polynomial.cyclotomic(order)(ring) // has to be lazy so coefficentField is available
 
-  private def zeta = Polynomial.identity(coefficients)
+  private def zeta = Polynomial.identity(ring)
   private val zetaInversePowers = {
     import net.tqft.toolkit.functions.Memo._
     def f(n: Int) = inverse(power(zeta, n))
@@ -27,11 +27,10 @@ abstract class CyclotomicNumberField[A: Field] extends NumberField[A] with Compl
   //
   //  def houseConeApproximation: CubicalCone[A, Polynomial[A]] = ???
 
-  object RealPart extends NumberField[A] with ComplexConjugation[Polynomial[A]] {
-    override def coefficients = cnf.coefficients
-    override lazy val generator = cnf.minimalPolynomial(cnf.add(cnf.zeta, cnf.inverse(cnf.zeta)))
-
-    override def bar(q: Polynomial[A]) = q
-  }
+//  object RealPart extends NumberField[A] with ComplexConjugation[Polynomial[A]] {
+//    override lazy val generator = cnf.minimalPolynomial(cnf.add(cnf.zeta, cnf.inverse(cnf.zeta)))
+//
+//    override def bar(q: Polynomial[A]) = q
+//  }
 
 }

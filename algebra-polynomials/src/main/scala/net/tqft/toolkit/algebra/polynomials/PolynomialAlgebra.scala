@@ -8,7 +8,7 @@ trait PolynomialAlgebra[A, P] extends Module[A, P] with AssociativeAlgebra[A, P]
   def ring: Ring[A]
 
   def toMap(p: P): Map[Int, A]
-  def toSeq[Z: Zero](p: P): IndexedSeq[A]
+  def toSeq(p: P): IndexedSeq[A]
   def fromMap(m: Map[Int, A]): P
   def fromSeq(s: Seq[A]): P
   
@@ -39,7 +39,7 @@ object PolynomialAlgebra {
     override def coefficients = implicitly[Module[A, A]]
 
     override def toMap(p: Map[Int, A]) = p
-    override def toSeq[Z: Zero](p: Map[Int, A]) = {
+    override def toSeq(p: Map[Int, A]) = {
       maximumDegree(p) match {
         case None => IndexedSeq.empty[A]
         case Some(d) => IndexedSeq.tabulate(d + 1)(i => coefficientOf(p)(i))
@@ -74,7 +74,7 @@ object PolynomialAlgebra {
 
   abstract class PolynomialAlgebraForCoefficientSequences[A: Ring] extends Ring.RingSeq[A] with PolynomialAlgebra[A, Seq[A]] {
     override def toMap(p: Seq[A]): Map[Int, A] = ???
-    override def toSeq[Z: Zero](p: Seq[A]) = p.toIndexedSeq
+    override def toSeq(p: Seq[A]) = p.toIndexedSeq
 
     override def fromMap(p: Map[Int, A]): Seq[A] = {
       val keys = p.keySet
@@ -148,7 +148,7 @@ abstract class Polynomials[A: Ring] extends PolynomialAlgebra[A, Polynomial[A]] 
   }
 
   override def fromSeq(s: Seq[A]): Polynomial[A] = SeqPolynomial(s.toIndexedSeq)
-  override def toSeq[Z: Zero](p: Polynomial[A]): IndexedSeq[A] = {
+  def toSeq(p: Polynomial[A]): IndexedSeq[A] = {
     p match {
       case p: MapPolynomial[A] => maximumDegree(p) match {
         case None => IndexedSeq.empty
