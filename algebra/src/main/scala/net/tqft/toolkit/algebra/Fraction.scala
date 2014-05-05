@@ -51,4 +51,9 @@ object Fraction {
   //  implicit def toMathematicaExpression[A <% net.tqft.toolkit.mathematica.MathematicaExpression](f: Fraction[A]) = new net.tqft.toolkit.mathematica.ShortMathematicaExpression {
   //    def toMathematicaInputString = "(" + f.numerator.toMathematicaInputString + ")/(" + f.denominator.toMathematicaInputString + ")"
   //  }
+  
+  implicit class IntegerFraction[I:IntegerModel](f: Fraction[I]) {
+    import IntegerModel._
+    def toDouble = f.numerator.toDouble / f.denominator.toDouble
+  }
 }

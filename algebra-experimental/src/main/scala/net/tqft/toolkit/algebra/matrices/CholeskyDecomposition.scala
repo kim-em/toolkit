@@ -6,7 +6,7 @@ object CholeskyDecomposition {
 
   implicit class MatrixCholeskyDecomposition[B: ApproximateReals](matrix: Matrix[B]) {
     val field = implicitly[ApproximateReals[B]]
-    
+
     def positiveSemidefinite_? : Boolean = {
       choleskyDecomposition.nonEmpty
     }
@@ -36,9 +36,10 @@ object CholeskyDecomposition {
 
       lazy val diagonalEntries: Int => Option[B] = Memo({ i: Int =>
         val r = field.subtract(matrix.entries(i)(i), field.sum(for (k <- 0 until i) yield field.power(L(i, k), 2)))
-        val result = if (field.compare(field.chop(r), field.zero) < 0) {
+        val c = field.compare(field.chop(r), field.zero)
+        val result = if (c < 0) {
           None
-        } else if (field.compare(field.chop(r), field.zero) == 0) {
+        } else if (c == 0) {
           Some(field.zero)
         } else {
           Some(field.sqrt(r))

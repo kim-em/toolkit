@@ -7,6 +7,8 @@ import scala.collection.immutable.TreeMap
 trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolynomial[A, V]] with ModuleOverRig[A, MultivariablePolynomial[A, V]] {
   implicit def ring: Rig[A]
 
+  implicit def variableOrdering: Ordering[V]
+
   protected val implementation = new Rig.RigMap[Map[V, Int], A] {
     override def keys = implicitly[AdditiveGroup[Map[V, Int]]]
     override def coefficients = implicitly[ModuleOverRig[A, A]]
@@ -66,7 +68,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
     }).toMap[Int, MultivariablePolynomial[A, V]]
 
     implicit def zero_ = this
-    
+
     result
   }
   def fromUnivariatePolynomialInVariable(v: V)(p: Polynomial[MultivariablePolynomial[A, V]]): MultivariablePolynomial[A, V] = {
@@ -128,8 +130,6 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
 
 object MultivariablePolynomialAlgebraOverRig {
   trait LexicographicOrdering[A, V] { self: MultivariablePolynomialAlgebraOverRig[A, V] =>
-    implicit def variableOrdering: Ordering[V]
-
     override lazy val monomialOrdering = {
       import net.tqft.toolkit.orderings.LexicographicOrdering._
       implicitly[Ordering[Map[V, Int]]]
@@ -137,8 +137,6 @@ object MultivariablePolynomialAlgebraOverRig {
   }
 
   trait DegreeLexicographicOrdering[A, V] { self: MultivariablePolynomialAlgebraOverRig[A, V] =>
-    implicit def variableOrdering: Ordering[V]
-
     override lazy val monomialOrdering = {
       import net.tqft.toolkit.orderings.LexicographicOrdering._
       import net.tqft.toolkit.orderings.Orderings._

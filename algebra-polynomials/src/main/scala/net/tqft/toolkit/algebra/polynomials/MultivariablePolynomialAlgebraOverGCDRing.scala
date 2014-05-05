@@ -81,14 +81,6 @@ trait MultivariablePolynomialAlgebraOverGCDRing[A, V] extends MultivariablePolyn
     }
   }
 
-  case class GroebnerBasis(generators: Seq[MultivariablePolynomial[A, V]]) extends Ideal {
-    require(generators.forall({ p =>
-      val lm = leadingMonomial(p).get
-      p.coefficients.keys.forall(m => m.keys.forall(v => m(v) <= lm.getOrElse(v, 0)))
-    }))
-
-    def reduce(p: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = ???
-  }
 
 }
 
@@ -99,26 +91,3 @@ object MultivariablePolynomialAlgebraOverGCDRing {
   }
 }
 
-trait MultivariablePolynomialQuotientAlgebra[A, V] extends MultivariablePolynomialAlgebraOverGCDRing[A, V] {
-  def ideal: GroebnerBasis
-}
-
-object MultivariablePolynomialAlgebras {
-  def quotient[A, V](a: MultivariablePolynomialAlgebraOverGCDRing[A, V])(i: a.GroebnerBasis): MultivariablePolynomialAlgebraOverGCDRing[A, V] = {
-    val ideal = a match {
-      case a: MultivariablePolynomialQuotientAlgebra[A, V] => {
-        // this require a Groebner basis algorithm to combine bases
-        ???
-      }
-      case a => i
-    }
-    new MultivariablePolynomialQuotientAlgebra[A, V] {
-      override def ring = a.ring
-      override val monomialOrdering = a.monomialOrdering
-      override val ideal = GroebnerBasis(i.generators)
-      override def multiply(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = {
-        ideal.reduce(a.multiply(x, y))
-      }
-    }
-  }
-}

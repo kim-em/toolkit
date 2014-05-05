@@ -26,7 +26,7 @@ object FiniteField {
   def apply[I: IntegerModel](p: I, n: Int, polynomial: Polynomial[I]) = {
     new NumberField[I]()(PrimeField(p)) with FiniteField[I] {
       override val generator = polynomial
-      override val coefficients = PrimeField(p)
+      override val ring = PrimeField(p)
       override val exponent = n
       override val characteristic = p
       override val integers = implicitly[IntegerModel[I]]

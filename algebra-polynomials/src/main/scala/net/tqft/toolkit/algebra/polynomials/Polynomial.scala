@@ -75,7 +75,9 @@ object Polynomial {
     def constantTerm = polynomials.constantTerm(p)
     def coefficient(i: Int) = polynomials.coefficientOf(p)(i)
     def toMap: Map[Int, A] = polynomials.toMap(p)
-    def toSeq: IndexedSeq[A] = polynomials.toSeq(p)(ring)
+    def toSeq: IndexedSeq[A] = polynomials.toSeq(p)
+    
+    def evaluateAt(a: A) = polynomials.evaluateAt(a)(p)
   }
 
   def cyclotomic[A: Field](n: Int): Polynomial[A] = {
