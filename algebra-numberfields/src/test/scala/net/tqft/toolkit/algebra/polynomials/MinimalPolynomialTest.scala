@@ -1,10 +1,11 @@
 package net.tqft.toolkit.algebra.polynomials
 
-import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.scalatest._
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.numberfields.NumberField
+import net.tqft.toolkit.algebra.numberfields.MinimalPolynomial
 
 @RunWith(classOf[JUnitRunner])
 class MinimalPolynomialTest extends FlatSpec with Matchers {

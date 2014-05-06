@@ -1,7 +1,6 @@
 package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.algebra.numberfields.FiniteField
 import net.tqft.toolkit.algebra.numberfields.PolynomialQuotientRing
 
 abstract class PolynomialFactorization[A: GCDRing: Factorization] extends Factorization[Polynomial[A]] {
