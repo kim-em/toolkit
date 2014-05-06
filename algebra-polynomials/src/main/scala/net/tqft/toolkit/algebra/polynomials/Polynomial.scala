@@ -32,7 +32,11 @@ case class SeqPolynomial[A:Zero](coefficients: IndexedSeq[A]) extends Polynomial
   }
 }
 object SeqPolynomial {
-  def apply[A:Zero](terms: A*): Polynomial[A] = SeqPolynomial(terms.toIndexedSeq)
+  def apply[A:Zero](terms: A*): Polynomial[A] = {
+    val iterms = terms.toIndexedSeq
+    val i = iterms.lastIndexWhere(_ != implicitly[Zero[A]].zero)
+    SeqPolynomial(iterms.take(i + 1))
+  }
 }
 
 object Polynomial {
@@ -72,6 +76,7 @@ object Polynomial {
     val polynomials = implicitly[Polynomials[A]]
     def ring = polynomials.ring
     def maximumDegree = polynomials.maximumDegree(p)
+    def leadingCoefficient = maximumDegree.map(d => coefficient(d)).getOrElse(polynomials.ring.zero)
     def constantTerm = polynomials.constantTerm(p)
     def coefficient(i: Int) = polynomials.coefficientOf(p)(i)
     def toMap: Map[Int, A] = polynomials.toMap(p)
