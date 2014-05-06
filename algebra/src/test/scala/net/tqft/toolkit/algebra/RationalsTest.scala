@@ -18,6 +18,7 @@ class RationalsTest extends FlatSpec with Matchers {
       
       Fraction(0, -1) should equal(Fraction(0, 1))
       Fraction(-1, 1) should equal(Fraction(1, -1))
+	  Fraction(1,1) + Fraction(-1,1) should equal(Fraction(0,1))
   }
   
   "BigRational arithmetic" should "be correct" in {	  

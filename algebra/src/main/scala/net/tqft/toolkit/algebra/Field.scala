@@ -43,6 +43,8 @@ object Field {
     override def fromInt(x: Int) = Fraction.whole(ring.fromInt(x))
     override def negate(x: Fraction[A]) = Fraction.alreadyReduced(ring.negate(x.numerator), x.denominator)
     override def inverse(x: Fraction[A]) = Fraction.alreadyReduced(x.denominator, x.numerator)
+    
+    override def toString = "Field.fieldOfFractions(" + ring + ")"
   }
 
   implicit def fieldOfFractions[A: GCDRing]: Field[Fraction[A]] = new FieldOfFractions[A]
