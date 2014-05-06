@@ -32,9 +32,9 @@ object AdditiveMonoid extends AdditiveMonoidLowPriorityImplicits {
     def coefficients: AdditiveMonoid[B]
 
     override def add(m1: Map[A, B], m2: Map[A, B]): Map[A, B] = {
-      val newMap = scala.collection.mutable.Map[A, B]().withDefault(_ => coefficients.zero)
+      val newMap = scala.collection.mutable.Map[A, B]()
       for (m <- Seq(m1, m2); (a, b) <- m) {
-        newMap(a) = coefficients.add(newMap(a), b)
+        newMap(a) = coefficients.add(newMap.getOrElse(a, coefficients.zero), b)
       }
       Map() ++ newMap.filter({ case (_, v) => v != coefficients.zero })
     }

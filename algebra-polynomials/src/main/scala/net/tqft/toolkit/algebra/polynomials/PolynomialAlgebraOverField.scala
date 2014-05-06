@@ -24,6 +24,8 @@ trait PolynomialAlgebraOverField[A, P] extends PolynomialAlgebraOverGCDRing[A, P
 
           val quotientLeadingTerm = monomial(dx - dy, q)
           val difference = add(x, negate(multiply(quotientLeadingTerm, y)))
+          val f0 = multiply(quotientLeadingTerm, y)
+          val f1 = negate(multiply(quotientLeadingTerm, y))
           require(maximumDegree(difference).isEmpty || maximumDegree(difference).get < maximumDegree(x).get)
           val (restOfQuotient, remainder) = quotientRemainder(difference, y)
 

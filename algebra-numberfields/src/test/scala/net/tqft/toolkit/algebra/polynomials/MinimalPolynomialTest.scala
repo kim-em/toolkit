@@ -11,7 +11,7 @@ import net.tqft.toolkit.algebra.numberfields.MinimalPolynomial
 class MinimalPolynomialTest extends FlatSpec with Matchers {
 
   "minimal polynomial" should "be correct" in {
-    val sqrt13 = Polynomial(2 -> Fraction(1, 1), 0 -> Fraction(-13, 1))
+    val sqrt13 = Polynomial(2 -> 1, 0 -> -13)
     val L = Polynomial(1 -> Fraction(1, 2), 0 -> Fraction(5, 2))
     val numberField = NumberField(sqrt13)
     import MinimalPolynomial._
