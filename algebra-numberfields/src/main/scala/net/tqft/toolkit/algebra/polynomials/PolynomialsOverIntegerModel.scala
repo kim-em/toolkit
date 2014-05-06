@@ -2,8 +2,6 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
 
-import scala.language.implicitConversions
-
 abstract class PolynomialsOverIntegerModel[A: IntegerModel] extends PolynomialsOverGCDRing[A] {
   override def ring: IntegerModel[A]
 }

@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra.numberfields._
 import net.tqft.toolkit.algebra._
+import net.tqft.toolkit.algebra.IntegerModel.defaultFactorizationAlgorithm_
 
 abstract class PolynomialsOverFiniteField[I: FiniteField] extends PolynomialsOverField[Polynomial[I]] {
   override def ring: FiniteField[I] = implicitly[FiniteField[I]]

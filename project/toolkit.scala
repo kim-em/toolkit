@@ -82,6 +82,10 @@ object Toolkit extends Build {
     base = file("algebra-matrices"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (collections, permutations, algebra, `algebra-polynomials`, `algebra-categories`)
 
+  lazy val `algebra-numberfields` = Project(id = "toolkit-algebra-numberfields",
+    base = file("algebra-numberfields"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (`algebra-polynomials`, `algebra-matrices`)
+
   lazy val `algebra-groups` = Project(id = "toolkit-algebra-groups",
     base = file("algebra-groups"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (functions, permutations, algebra, `algebra-polynomials`, `algebra-matrices`)
@@ -100,7 +104,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),

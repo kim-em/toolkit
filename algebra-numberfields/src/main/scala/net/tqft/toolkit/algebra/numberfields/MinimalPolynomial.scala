@@ -1,12 +1,12 @@
-package net.tqft.toolkit.algebra.polynomials
+package net.tqft.toolkit.algebra.numberfields
 
 import net.tqft.toolkit.algebra.IntegerModel
-import net.tqft.toolkit.algebra.numberfields.NumberField
 import net.tqft.toolkit.algebra.matrices.Matrix
-import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.Fraction
-import net.tqft.toolkit.algebra.AlgebraicNotation
 import net.tqft.toolkit.algebra.GCDRing
+import net.tqft.toolkit.algebra.polynomials.Polynomial
+import net.tqft.toolkit.algebra.polynomials.SeqPolynomial
+import net.tqft.toolkit.algebra.AlgebraicNotation
 
 // usage... if x: Polynomial[A], and we have ring: NumberField[A], then ring.minimalPolynomial(x): Polynomial[A]
 //      ... if ring is implicit, x.minimalPolynomial: Polynomial[A]
