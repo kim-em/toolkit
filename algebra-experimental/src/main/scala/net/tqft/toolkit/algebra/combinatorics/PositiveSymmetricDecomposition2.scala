@@ -31,7 +31,9 @@ object PositiveSymmetricDecomposition2 {
 
     def positive_?(matrix: Seq[Seq[Int]]): Boolean = {
       import CholeskyDecomposition._
-      Matrix(rank, matrix.map(r => r.map(x => x.toDouble + 0.0001))).choleskyDecomposition.nonEmpty
+      val cd = Matrix(rank, matrix.map(r => r.map(x => x.toDouble + 0.0001))).choleskyDecomposition
+      println(cd)
+      cd.nonEmpty
     }
 
     def subtractColumn(matrix: Seq[Seq[Int]], column: Seq[Int]) = {
@@ -137,6 +139,8 @@ object PositiveSymmetricDecomposition2 {
 
     case class PartialDecomposition(difference: Seq[Seq[Int]], columns: List[List[Int]]) {
       println(this)
+      require(positive_?(difference))
+      require(difference.forall(_.forall(_ >= 0)))
       lazy val firstNonzeroEntry = {
         var k = 0
         while (difference(k)(k) == 0) {

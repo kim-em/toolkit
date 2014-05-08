@@ -96,7 +96,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-spiders` = Project(id = "toolkit-algebra-spiders",
     base = file("algebra-spiders"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, mathematica, `algebra-mathematica`, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-apfloat`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, mathematica, `algebra-mathematica`, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`)
 
   lazy val `algebra-bugs` = Project(id = "toolkit-algebra-bugs",
     base = file("algebra-bugs"),
