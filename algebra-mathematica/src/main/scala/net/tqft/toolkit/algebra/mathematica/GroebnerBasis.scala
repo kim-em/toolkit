@@ -1,4 +1,4 @@
-package net.tqft.toolkit.algebra.mathematica2
+package net.tqft.toolkit.algebra.mathematica
 
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.mathematica.Symbols
@@ -14,7 +14,6 @@ object GroebnerBasis extends GroebnerBasisOperations {
     implicit def vmf = MathematicaForm.BareStringMathematicaForm
     override def apply(polynomials: Seq[MultivariablePolynomial[I, String]])(implicit order: Ordering[String]) = {
       val variables = polynomials.flatMap(_.variables).distinct.sorted
-      println(variables)
       import Polynomials._
       import Mathematica._
       val result = FullFormExpression(SymbolExpression("GroebnerBasis"),

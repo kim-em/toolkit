@@ -6,7 +6,7 @@ import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.spiders._
 
 
-object `H3` extends CubicSpider[Polynomial[Fraction[Int]]]()(NumberField[Fraction[Int]](Seq(-13, 0, 1))) {
+object `H3` extends CubicSpider[Polynomial[Fraction[Int]]]()(NumberField[Int](Seq(-13, 0, 1))) {
   override val omega = ring.one
   override val d: Polynomial[Fraction[Int]] = Seq(Fraction(3, 2), Fraction(1, 2))
   override val b: Polynomial[Fraction[Int]] = ???

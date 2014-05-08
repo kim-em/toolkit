@@ -1,4 +1,4 @@
-package net.tqft.toolkit.algebra.mathematica2
+package net.tqft.toolkit.algebra.mathematica
 
 import scala.language.higherKinds
 

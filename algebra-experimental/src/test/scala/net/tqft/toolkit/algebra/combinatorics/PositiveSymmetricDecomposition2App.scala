@@ -63,8 +63,8 @@ object PositiveSymmetricDecomposition2App extends App {
 //  for (A <- PositiveSymmetricDecomposition2.apply(EH.annularHoms, EH.numberField, EH.globalDimension, EH.dimensions)) {
 //    println(A)
 //  }
-//  for (A <- PositiveSymmetricDecomposition2.apply(`4442`.annularHoms, `4442`.numberField, `4442`.globalDimension, `4442`.dimensions)) {
-//    println(A)
-//  }
+  for (A <- PositiveSymmetricDecomposition2.apply(`4442`.annularHoms, `4442`.numberField, `4442`.globalDimension, `4442`.dimensions)) {
+    println(A)
+  }
 
 }

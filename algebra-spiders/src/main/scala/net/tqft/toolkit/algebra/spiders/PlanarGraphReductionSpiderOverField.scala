@@ -88,5 +88,8 @@ trait MultivariableRationalFunctionSpider[A] extends PlanarGraphReductionSpiderO
   override def ring = implicitly[Field[MultivariableRationalFunction[A, String]]]
 }
 
+trait BigIntMultivariableRationalFunctionSpider extends MultivariableRationalFunctionSpider[BigInt] {
+  override def coefficientRing = implicitly[EuclideanRing[BigInt]]
+}
 
 

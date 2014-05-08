@@ -40,7 +40,7 @@ trait TwistedMultivariableRationalFunctionTrivalentSpider extends MultivariableR
   override def t = ring.zero
   // TODO improve implicits here?:
   override def omega = MultivariablePolynomial.constant[Polynomial[Fraction[Int]], String](Polynomial[Fraction[Int]](Map(1 -> Fraction.whole(1))))
-  override def coefficientRing: Field[Polynomial[Fraction[Int]]] = NumberField.cyclotomic[Fraction[Int]](3)
+  override def coefficientRing: Field[Polynomial[Fraction[Int]]] = NumberField.cyclotomic[Int](3)
 }
 
 object TrivalentSpider extends IntegerMultivariableRationalFunctionTrivalentSpider

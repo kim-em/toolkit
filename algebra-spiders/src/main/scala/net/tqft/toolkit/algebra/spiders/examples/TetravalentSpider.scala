@@ -34,8 +34,6 @@ trait MultivariableRationalFunctionTetravalentSpider[A] extends TetravalentSpide
   override def b = Map(Map("b" -> 1) -> coefficientRing.one)
 }
 
-trait IntegerMultivariableRationalFunctionTetravalentSpider extends MultivariableRationalFunctionTetravalentSpider[BigInt] {
-  override def coefficientRing = implicitly[EuclideanRing[BigInt]]
-}
+trait IntegerMultivariableRationalFunctionTetravalentSpider extends MultivariableRationalFunctionTetravalentSpider[BigInt] with BigIntMultivariableRationalFunctionSpider
 
 object TetravalentSpider extends IntegerMultivariableRationalFunctionTetravalentSpider with PolyhedronNamer[BigInt]
