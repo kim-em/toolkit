@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra.polynomials
 
+import scala.language.implicitConversions 
+
 import net.tqft.toolkit.algebra._
 
 abstract class PolynomialsOverIntegerModel[A: IntegerModel] extends PolynomialsOverGCDRing[A] {

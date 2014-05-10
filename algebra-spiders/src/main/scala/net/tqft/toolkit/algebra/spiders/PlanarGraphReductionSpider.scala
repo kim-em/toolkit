@@ -2,7 +2,7 @@ package net.tqft.toolkit.algebra.spiders
 
 import net.tqft.toolkit.algebra._
 
-abstract class PlanarGraphReductionSpider[R: GCDRing] extends SubstitutionSpider.PlanarGraphMapSubstitutionSpider[R] with ReductionSpider[PlanarGraph, R] {
+abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.PlanarGraphMapSubstitutionSpider[R] with ReductionSpider[PlanarGraph, R] {
   // move these further up the hierarchy?
 
   def innerProductMatrix(diagrams1: Seq[PlanarGraph], diagrams2: Seq[PlanarGraph]): Seq[Seq[R]] = {

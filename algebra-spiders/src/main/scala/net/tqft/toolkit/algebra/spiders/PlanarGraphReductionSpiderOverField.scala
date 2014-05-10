@@ -84,12 +84,12 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
 }
 
 trait MultivariableRationalFunctionSpider[A] extends PlanarGraphReductionSpiderOverField[MultivariableRationalFunction[A, String]] {
-  implicit def coefficientRing: EuclideanRing[A]
+  implicit def coefficientRing: Field[A]
   override def ring = implicitly[Field[MultivariableRationalFunction[A, String]]]
 }
 
-trait BigIntMultivariableRationalFunctionSpider extends MultivariableRationalFunctionSpider[BigInt] {
-  override def coefficientRing = implicitly[EuclideanRing[BigInt]]
+trait BigIntMultivariableRationalFunctionSpider extends MultivariableRationalFunctionSpider[Fraction[BigInt]] {
+  override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
 }
 
 

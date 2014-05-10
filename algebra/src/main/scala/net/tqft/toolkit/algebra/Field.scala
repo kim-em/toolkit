@@ -42,7 +42,7 @@ object Field {
     }
     override def fromInt(x: Int) = Fraction.whole(ring.fromInt(x))
     override def negate(x: Fraction[A]) = Fraction.alreadyReduced(ring.negate(x.numerator), x.denominator)
-    override def inverse(x: Fraction[A]) = Fraction.alreadyReduced(x.denominator, x.numerator)
+    override def inverse(x: Fraction[A]) = Fraction(x.denominator, x.numerator) // we can't assume it's already reduced, because we might want to move units around
     
     override def toString = "Field.fieldOfFractions(" + ring + ")"
   }

@@ -7,58 +7,6 @@ import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.algebra.mathematica._
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 import net.tqft.toolkit.mathematica.Expression_
-import net.tqft.toolkit.collections.KSubsets
-
-case class SpiderData(
-  spider: MultivariableRationalFunctionSpider[BigInt],
-  polyhedra: Seq[String],
-  groebnerBasis: Seq[MultivariablePolynomial[BigInt, String]],
-  relations: Seq[Seq[Map[PlanarGraph, MultivariablePolynomial[BigInt, String]]]],
-  dimensionBounds: Seq[Int],
-  consideredDiagramsVertexBound: Seq[Int],
-  consideredDiagrams: Seq[Seq[PlanarGraph]],
-  preferredSpanningSet: Seq[Option[Seq[PlanarGraph]]],
-  preferredBasis: Seq[Option[Seq[PlanarGraph]]]) {
-  def considerDiagrams(boundary: Int, vertices: Int): SpiderData = {
-    val newConsideredDiagramsVertexBound = consideredDiagramsVertexBound.padTo(boundary, 0).updated(boundary, vertices)
-    val newConsideredDiagrams = {
-      val padded = consideredDiagrams.padTo(boundary, Seq.empty)
-      padded.updated(boundary, (padded(boundary) ++ spider.reducedDiagrams(boundary, vertices)).distinct)
-    }
-    val diagramsToConsider = newConsideredDiagrams(boundary)
-
-    if (diagramsToConsider.size <= dimensionBounds(boundary)) {
-      // nothing to see here
-      copy(consideredDiagramsVertexBound = newConsideredDiagramsVertexBound, consideredDiagrams = newConsideredDiagrams)
-    } else {
-      // time to compute some determinants!
-      import KSubsets._
-      val subsets = diagramsToConsider.kSubsets(dimensionBounds(boundary) + 1)
-      val matrix = spider.innerProductMatrix(diagramsToConsider, diagramsToConsider).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String])))
-      val matrices = (for (subset <- KSubsets(diagramsToConsider.size, dimensionBounds(boundary) + 1)) yield {
-        val entries = /* FIXME */ matrix
-        Matrix(dimensionBounds(boundary) + 1, entries)
-      })
-      val determinants = matrices.map(_.determinant.ensuring(_.denominator == implicitly[MultivariablePolynomialAlgebra[BigInt, String]].one).numerator)
-
-      val newGroebnerBasis = {
-        import mathematica.GroebnerBasis._
-        (groebnerBasis ++ determinants).computeGroebnerBasis
-      }
-      ???
-    }
-  }
-}
-
-object InvestigateTetravalentSpiders {
-  val freeTetravalentSpider = new FreeSpider {
-    override def generators = Seq((VertexType(4, 1), ring.one))
-  }
-
-  val initialData = SpiderData(freeTetravalentSpider, Seq.empty, Seq.empty, Seq.empty, dimensionBounds = Seq(1, 0, 1, 0, 3), Seq.empty, Seq.empty, Seq.empty, Seq.empty)
-
-  initialData.considerDiagrams(0, 0)
-}
 
 object ComputeTetravalentDeterminants extends App {
 
@@ -67,22 +15,24 @@ object ComputeTetravalentDeterminants extends App {
 
     require(diagrams4.size == 5)
 
-    val m1 = Matrix(4, TetravalentSpider.innerProductMatrix(diagrams4.dropRight(1), diagrams4.dropRight(1)).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String]))))
-    val m2 = Matrix(5, TetravalentSpider.innerProductMatrix(diagrams4, diagrams4).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String]))))
+    val m1 = Matrix(4, TetravalentSpider.innerProductMatrix(diagrams4.dropRight(1), diagrams4.dropRight(1)))
+    val m2 = Matrix(5, TetravalentSpider.innerProductMatrix(diagrams4, diagrams4))
 
     def m(k: Int) = {
       val subset = diagrams4.take(k) ++ diagrams4.drop(k + 1)
-      Matrix(4, TetravalentSpider.innerProductMatrix(subset, subset).map(_.map(x => (x: MultivariableRationalFunction[BigInt, String]))))
+      Matrix(4, TetravalentSpider.innerProductMatrix(subset, subset))
     }
 
     import MathematicaForm._
+
+    val polynomials = implicitly[MultivariablePolynomialAlgebra[Fraction[BigInt], String]]
 
     println("matrix: ")
     println(m2.entries.toIndexedSeq.toMathemathicaInputString)
     println("determinants: ")
     val determinants = for (k <- 0 to 4) yield {
       val d = m(k).determinant
-      require(d.denominator == implicitly[MultivariablePolynomialAlgebra[BigInt, String]].one)
+      require(d.denominator == polynomials.one)
       val n = d.numerator
       println(n)
       n
@@ -91,12 +41,31 @@ object ComputeTetravalentDeterminants extends App {
     println("Groebner basis:")
     import mathematica.GroebnerBasis._
     implicit def variableOrdering = TetravalentSpider.polyhedronOrdering
-    for (p <- determinants.computeGroebnerBasis) {
+    val groebnerBasis = determinants.computeGroebnerBasis
+    for (p <- groebnerBasis) {
       println(p.toMathemathicaInputString)
     }
 
-    //      println(m1.determinant.toMathemathicaInputString)
-    println(m2.determinant.toMathemathicaInputString)
+    val quotientRing = Field.fieldOfFractions(
+      MultivariablePolynomialAlgebras.quotient(groebnerBasis))
+
+      println("determinant in quotient: " )
+      println(m(0).determinant(quotientRing))
+//    for(row <- m(0).rowEchelonForm(quotientRing).entries) {
+//      println(row)
+//    }
+    println("Relations:")
+    for (rel <- m(0).dropRows(Seq(3)).nullSpace) {
+      println(rel.toMathemathicaInputString)
+    }
+    println("Relations (in qutoient):")
+    for (rel <- m(0).dropRows(Seq(3)).nullSpace(quotientRing)) {
+      println(rel.toMathemathicaInputString)
+    }
+    for (rel <- m(0).nullSpace(quotientRing)) {
+      println(rel.toMathemathicaInputString)
+    }
+
   }
   //    {
   //      lazy val diagrams4 = TetravalentSpider.reducedDiagrams(4, 0) ++ TetravalentSpider.reducedDiagrams(4, 1) ++ TetravalentSpider.reducedDiagrams(4, 2)

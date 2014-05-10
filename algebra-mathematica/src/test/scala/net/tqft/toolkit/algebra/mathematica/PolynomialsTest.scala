@@ -13,9 +13,9 @@ class PolynomialsTest extends FlatSpec with Matchers {
 
   "multivariablePolynomialToExpression" should "convert a multivariable polynomial to something Mathematica understands" in {
     import Polynomials._
-	  val p = MultivariablePolynomial(Map(Map("x" -> 2, "y" -> 1) -> 7, Map("x" ->1) -> 2))
-	  println(p)
-	  println(p: Expression_)
-	  println((p: Expression_): MultivariablePolynomial[Int, String])
+    val p = MultivariablePolynomial(Map(Map("x" -> 2, "y" -> 1) -> 7, Map("x" -> 1) -> 2))
+    println(p)
+    println(p: Expression_)
+    println((p: Expression_): MultivariablePolynomial[Fraction[Int], String])
   }
 }

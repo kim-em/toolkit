@@ -17,6 +17,10 @@ object AlgebraicNotation {
     def ^(k: Int) = rig.power(a, k)
   }
 
+  implicit class IntAsRigElement[A: Rig](i: Int) {
+    def *(a: A) = implicitly[Rig[A]].multiplyByInt(a, i)
+  }
+  
   implicit class EuclideanRigElement[A: EuclideanRig](a: A) {
     private def domain = implicitly[EuclideanRig[A]]
     def %(b: A) = domain.remainder(a, b)

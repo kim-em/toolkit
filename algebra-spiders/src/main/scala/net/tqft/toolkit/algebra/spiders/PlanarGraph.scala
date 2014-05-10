@@ -572,7 +572,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
                 newMap <- mapVertex(i, j, k, partial.clone).iterator;
                 excision <- extendPartialExcision(newMap)
               ) yield {
-                Logging.info(excision)
+//                Logging.info(excision)
                 excision
               }
             }
