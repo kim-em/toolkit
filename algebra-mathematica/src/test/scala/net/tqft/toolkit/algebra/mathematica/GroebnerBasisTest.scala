@@ -15,7 +15,7 @@ class GroebnerBasisTest extends FlatSpec with Matchers {
 
     // x^2 + x y, y^3 + x y^2
 
-    val polynomials = Seq(
+    val polynomials: Seq[MultivariablePolynomial[Fraction[Int], String]] = Seq(
       MultivariablePolynomial(Map(Map("x" -> 2) -> 1, Map("x" -> 1, "y" -> 1) -> 1)),
       MultivariablePolynomial(Map(Map("y" -> 3) -> 1, Map("x" -> 1, "y" -> 2) -> 1)))
 

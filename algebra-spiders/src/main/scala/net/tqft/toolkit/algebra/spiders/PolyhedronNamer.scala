@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra.spiders
 
 import net.tqft.toolkit.algebra.polynomials._
+import net.tqft.toolkit.orderings.Orderings
 
 trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
 
@@ -14,7 +15,14 @@ trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
 
   val polyhedronOrdering: Ordering[String] = {
     // TODO hack
-    Ordering.by({ s: String => - names.find(_._2 == s ).map(p => p._1.numberOfInternalVertices).getOrElse(s match { case "d" => 0; case "b" => 2 }) })
+    import Orderings._
+    val o = Ordering.by({ s: String =>
+      names.find(_._2 == s ).map(p => p._1.numberOfInternalVertices).getOrElse(s match { case "d" => 0; case "b" => 2 })
+      }).refineBy(s => s)
+    new Ordering[String] {
+      override def toString = "polyhedronOrdering: " + (names.values.toSeq ++ Seq("b", "d")).sorted(o).mkString(" < ")
+      override def compare(x: String, y: String) = o.compare(x, y)
+    }
   }
   
   private var count = 0

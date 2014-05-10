@@ -11,6 +11,7 @@ import net.tqft.toolkit.algebra.Ring
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 import net.tqft.toolkit.mathematica.MathematicaExpression
 import net.tqft.toolkit.mathematica.Symbols
+import net.tqft.toolkit.algebra.Fraction
 
 object Polynomials {
   implicit def multivariablePolynomialToExpression[A: MathematicaForm, V: MathematicaForm](p: MultivariablePolynomial[A, V]): Expression_ = {
@@ -19,12 +20,12 @@ object Polynomials {
     Expression_.expression.fromInputForm(mf.toMathematicaInputString(p))
   }
 
-  implicit def expressionToMultivariablePolynomial[I: IntegerModel](e: Expression_): MultivariablePolynomial[I, String] = {
+  implicit def expressionToMultivariablePolynomial[I: IntegerModel](e: Expression_): MultivariablePolynomial[Fraction[I], String] = {
     val integers = implicitly[IntegerModel[I]]
-    val polynomials = implicitly[MultivariablePolynomialAlgebra[I, String]]
+    val polynomials = implicitly[MultivariablePolynomialAlgebra[Fraction[I], String]]
     val expressions = implicitly[MathematicaExpression[Expression_]]
 
-    def expressionToMultivariableMonomial(e: Expression_): MultivariablePolynomial[I, String] = {
+    def expressionToMultivariableMonomial(e: Expression_): MultivariablePolynomial[Fraction[I], String] = {
 //      println(s"expressionToMultivariableMonomial($e)")
 
       e match {
@@ -34,13 +35,14 @@ object Polynomials {
       }
     }
 
-    def expressionToMonomial(e: Expression_): MultivariablePolynomial[I, String] = {
+    def expressionToMonomial(e: Expression_): MultivariablePolynomial[Fraction[I], String] = {
 //      println(s"expressionToMonomial($e)")
 
       e match {
         case FullFormExpression(SymbolExpression("Power"), Seq(SymbolExpression(v), IntegerExpression(i))) => polynomials.monomial(Map(v -> i.intValue))
         case IntegerExpression(i) => polynomials.constant(integers.fromBigInt(i.toBigInteger()))
         case SymbolExpression(v) => polynomials.monomial(v)
+        case _ => require(false); ???
       }
     }
 

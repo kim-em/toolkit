@@ -1,7 +1,5 @@
 package net.tqft.toolkit.algebra
 
-import net.tqft.toolkit.arithmetic.Factor
-
 trait Factorization[A] {
   def factor(a: A): Map[A, Int]
   def divisors(a: A)(implicit ring: Ring[A]): Iterator[A] = {
@@ -14,18 +12,21 @@ object Factorization {
 }
 
 trait FactorizationAlgorithm {
-  implicit class operation[I: IntegerModel](i: I) {
-    def factor = implementation(i)
+  implicit class operation[A: Factorization](a: A) {
+    def factor = implicitly[Factorization[A]].factor(a)
   }
+}
+
+trait IntegerFactorizationAlgorithm extends FactorizationAlgorithm {
   implicit class provideFactorization[I](integers: IntegerModel[I]) extends Factorization[I] {
     override def factor(i: I) = implementation(i)(integers)
   }
   def implementation[I: IntegerModel](i: I): Map[I, Int]
 }
 
-object ECMFactorization extends FactorizationAlgorithm {
+object ECMFactorization extends IntegerFactorizationAlgorithm {
   override def implementation[I: IntegerModel](x: I) = {
     def integers = implicitly[IntegerModel[I]]
-    Factor(integers.toBigInt(x)).groupBy(x => x).map(p => integers.fromBigInt(p._1) -> p._2.size)
+    net.tqft.toolkit.arithmetic.Factor(integers.toBigInt(x)).groupBy(x => x).map(p => integers.fromBigInt(p._1) -> p._2.size)
   }
 }

@@ -19,24 +19,20 @@ case class RealExpression(value: Apfloat) extends LiteralExpression with org.oma
 case class FullFormExpression(head: Expression_, arguments: Seq[Expression_]) extends Expression_ with org.omath.expression.FullFormExpression
 
 object Symbols {
-  object List {
-    def apply(arguments: Expression_ *) = FullFormExpression(SymbolExpression("List"), arguments)
+  abstract class SymbolSkeleton(name: String) {
+    def apply(arguments: Expression_ *) = FullFormExpression(SymbolExpression(name), arguments)
     def unapplySeq(expression: Expression_): Option[Seq[Expression_]] = {
       expression match {
-        case FullFormExpression(SymbolExpression("List"), arguments) => Some(arguments)
+        case FullFormExpression(SymbolExpression(name), arguments) => Some(arguments)
         case _ => None
       }
     }
   }
-  object Times {
-    def apply(arguments: Expression_ *) = FullFormExpression(SymbolExpression("Times"), arguments)
-  }
-  object Plus {
-    def apply(arguments: Expression_ *) = FullFormExpression(SymbolExpression("Plus"), arguments)
-  }
-  object Power {
-    def apply(arguments: Expression_ *) = FullFormExpression(SymbolExpression("Power"), arguments)
-  }
+  
+  object List extends SymbolSkeleton("List")
+  object Times extends SymbolSkeleton("Times")
+  object Plus extends SymbolSkeleton("Plus")
+  object Power extends SymbolSkeleton("Power")
 }
 
 object Expression_ {

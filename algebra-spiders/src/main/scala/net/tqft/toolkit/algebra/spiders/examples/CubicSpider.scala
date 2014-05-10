@@ -18,7 +18,7 @@ abstract class CubicSpider[R: Field] extends TrivalentSpider[R] { cs =>
   override def reductions = super.reductions :+ squareReduction
 }
 
-object CubicSpider extends CubicSpider[MultivariableRationalFunction[BigInt, String]] with IntegerMultivariableRationalFunctionTrivalentSpider {
+object CubicSpider extends CubicSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with IntegerMultivariableRationalFunctionTrivalentSpider {
   override val omega = ring.one
 
   //  def z: MultivariableRationalFunction[BigInt, String] = Map(Map("z" -> 1) -> 1) // inverse of MultivariablePolynomial(Map(Map("b" -> 1, "d" -> 1) -> 1, Map("d" -> 1, "t" -> 1) -> 1, Map("t" -> 1) -> 1)) // b d + t + d t

@@ -32,9 +32,9 @@ trait MultivariableRationalFunctionTrivalentSpider[A] extends TrivalentSpider[Mu
   override def t = Map(Map("t" -> 1) -> coefficientRing.one)
 }
 
-trait IntegerMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[BigInt] {
+trait IntegerMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[Fraction[BigInt]] {
   override def omega = 1
-  override def coefficientRing = implicitly[EuclideanRing[BigInt]]
+  override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
 }
 trait TwistedMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[Polynomial[Fraction[Int]]] {
   override def t = ring.zero

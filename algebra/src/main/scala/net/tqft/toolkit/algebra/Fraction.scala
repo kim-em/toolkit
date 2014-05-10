@@ -44,7 +44,12 @@ object Fraction {
   private case class FractionWhole[A: Rig](numerator: A) extends Fraction[A] {
     override def denominator = implicitly[Rig[A]].one
   }
-  private case class FractionRatio[A](numerator: A, denominator: A) extends Fraction[A]
+  private case class FractionRatio[A](numerator: A, denominator: A) extends Fraction[A] {
+	  denominator match {
+	    case i: Int => require(i > 0)
+	    case _ =>
+	  }
+  }
 
   //  implicit def constant[A: EuclideanRing](x: A): RationalFunction[A] = Fraction.whole(Polynomial.constant(Fraction.whole(x)))
 

@@ -3,7 +3,7 @@ import net.tqft.toolkit.Logging
 
 object KSubsets extends Logging {
   def apply(n: Int, k: Int): Iterable[Seq[Int]] = {
-    new KSubsetable(0 until n) kSubsets (k)
+    (new KSubsetable(0 until n)).kSubsets(k)
   }
 
   implicit class KSubsetable[A](list: Seq[A]) {

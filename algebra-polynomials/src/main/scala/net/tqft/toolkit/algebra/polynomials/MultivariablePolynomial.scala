@@ -32,14 +32,25 @@ object MultivariablePolynomial {
       MultivariablePolynomial(new scala.collection.immutable.Map.Map1(Map.empty, a))
     }
   }
-  implicit def constantFraction[A: EuclideanRing, V](a: A): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(Map(Map.empty -> (a: Fraction[A])))
+  implicit def bigIntConstantFraction[V](a: Int): MultivariablePolynomial[Fraction[BigInt], V] = {
+    if (a == 0) {
+      MultivariablePolynomial(Map.empty)
+    } else {
+      MultivariablePolynomial(new scala.collection.immutable.Map.Map1(Map.empty, Fraction.whole(a)))
+    }
+  }
+  
+  
+  implicit def constantFraction[A: GCDRing, V](a: A): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(Map(Map.empty -> (a: Fraction[A])))
 
-  implicit def constantRationalFunction[A: EuclideanRing, V: Ordering](a: A): MultivariableRationalFunction[A, V] = MultivariablePolynomial[A, V](Map(Map.empty -> a))
-  implicit def constantToFractionRationalFuncation[A: EuclideanRing, V: Ordering](a: A): MultivariableRationalFunction[Fraction[A], V] = constantRationalFunction(a)
-  implicit def liftToRationalFunction[A: EuclideanRing, V: Ordering](coefficients: Map[Map[V, Int], A]): MultivariableRationalFunction[A, V] = lift(coefficients)
-  implicit def liftCoefficientsToFractions[A: EuclideanRing, V: Ordering](coefficients: Map[Map[V, Int], A]): MultivariableRationalFunction[Fraction[A], V] = liftToRationalFunction(coefficients.mapValues(a => (a: Fraction[A])))
+  implicit def constantRationalFunction[A: GCDRing, V: Ordering](a: A): MultivariableRationalFunction[A, V] = MultivariablePolynomial[A, V](Map(Map.empty -> a))
+  implicit def constantToFractionRationalFuncation[A: GCDRing, V: Ordering](a: A): MultivariableRationalFunction[Fraction[A], V] = constantRationalFunction(a)
+  implicit def liftToRationalFunction[A: GCDRing, V: Ordering](coefficients: Map[Map[V, Int], A]): MultivariableRationalFunction[A, V] = lift(coefficients)
+  implicit def liftCoefficientsToFractions[A: GCDRing, V: Ordering](coefficients: Map[Map[V, Int], A]): MultivariableRationalFunction[Fraction[A], V] = liftToRationalFunction(coefficients.mapValues(a => (a: Fraction[A])))
   implicit def bigIntConstantRationalFunction[V: Ordering](a: Int): MultivariableRationalFunction[BigInt, V] = Fraction.whole(bigIntConstant[V](a))
+  implicit def bigIntConstantFractionRationalFunction[V: Ordering](a: Int): MultivariableRationalFunction[Fraction[BigInt], V] = Fraction.whole(bigIntConstantFraction[V](a))
   implicit def bigIntRationalFunction[V: Ordering](coefficients: Map[Map[V, Int], Int]): MultivariableRationalFunction[BigInt, V] = coefficients.mapValues(a => a: BigInt)
+  implicit def bigIntFractionRationalFunction[V: Ordering](coefficients: Map[Map[V, Int], Int]): MultivariableRationalFunction[Fraction[BigInt], V] = coefficients.mapValues(a => a: BigInt)
   
   implicit class RichMultivariablePolynomial[A, V](m: MultivariablePolynomial[A, V]) {
     def variables = m.coefficients.keySet.flatMap(_.keySet)

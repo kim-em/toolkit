@@ -4,14 +4,14 @@ import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.spiders._
 
-object QuantumExceptionalSeries extends BraidedTrivalentSpider[MultivariableRationalFunction[BigInt, String]] with PolyhedronNamer[BigInt] {
-  override def coefficientRing = implicitly[EuclideanRing[BigInt]]
-  override def ring = implicitly[Field[MultivariableRationalFunction[BigInt, String]]]
+object QuantumExceptionalSeries extends BraidedTrivalentSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with PolyhedronNamer[Fraction[BigInt]] {
+  override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
+  override def ring = implicitly[Field[MultivariableRationalFunction[Fraction[BigInt], String]]]
 
   override val omega = ring.one
 
-  val v: MultivariableRationalFunction[BigInt, String] = Map(Map("v" -> 1) -> 1)
-  val w: MultivariableRationalFunction[BigInt, String] = Map(Map("w" -> 1) -> 1)
+  val v: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("v" -> 1) -> 1)
+  val w: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("w" -> 1) -> 1)
 
   import AlgebraicNotation._
 

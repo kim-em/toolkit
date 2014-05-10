@@ -9,9 +9,17 @@ object LexicographicOrdering {
     // FIXME this could be made more efficient, probably!
     require(implicitly[Ordering[A]] != null)
     require(implicitly[Ordering[B]] != null)
-    
-    import Ordering.Implicits._
-    Ordering.by[Map[A, B], Seq[(A, B)]]({ x: Map[A, B] => (SortedMap[A, B]() ++ x).toSeq })
+
+    new Ordering[Map[A, B]] {
+      override def compare(x: Map[A, B], y: Map[A, B]) = {
+        val keys = (x.keys ++ y.keys).toSeq.sorted.reverse
+//        println(s"keys = $keys")
+        val xs = keys.map(x.get)
+        val ys = keys.map(y.get)
+        import Ordering.Implicits._
+        implicitly[Ordering[Seq[Option[B]]]].compare(xs, ys)
+      }
+    }
   }
 
 }

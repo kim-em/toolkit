@@ -16,6 +16,9 @@ class RationalsTest extends FlatSpec with Matchers {
 	  x * 5 should equal(Fraction(3, 2))      
       x * y should equal(Fraction(1, 5))
       
+	  Fraction(-1,1) * Fraction(-1, 1) should equal(Fraction(1,1))
+	  Fraction(-1,1) / Fraction(-1, 1) should equal(Fraction(1,1))
+	  
       Fraction(0, -1) should equal(Fraction(0, 1))
       Fraction(-1, 1) should equal(Fraction(1, -1))
 	  Fraction(1,1) + Fraction(-1,1) should equal(Fraction(0,1))
