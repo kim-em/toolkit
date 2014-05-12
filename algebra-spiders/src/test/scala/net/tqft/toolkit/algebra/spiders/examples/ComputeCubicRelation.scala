@@ -16,7 +16,7 @@ object ComputeCubicRelation extends App {
   import MathematicaForm._
 
   println("matrix: ")
-  println(m.entries.toIndexedSeq.toMathemathicaInputString)
+  println(m.entries.toIndexedSeq.toMathematicaInputString)
   println("nullspace: ")
-  println(m.nullSpace.toMathemathicaInputString)
+  println(m.nullSpace.toMathematicaInputString)
 }

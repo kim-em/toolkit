@@ -23,6 +23,6 @@ class GroebnerBasisTest extends FlatSpec with Matchers {
     val result = polynomials.computeGroebnerBasis
 
     import MathematicaForm._
-    println(result.toMathemathicaInputString)
+    println(result.toMathematicaInputString)
   }
 }

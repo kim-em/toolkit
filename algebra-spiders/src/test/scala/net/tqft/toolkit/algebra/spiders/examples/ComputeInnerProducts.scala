@@ -23,6 +23,6 @@ object ComputeInnerProducts extends App {
 
   for ((n, k) <- Seq(/*(4, 0), (4, 1), (5, 0), (5, 1), (6, 0), (6, 1), (6, 2), *//*(7, 0), (7,1), (7,2)*/(8,0), (8,1), (9,0))) {
     println(s"twisted M($n, $k)")
-    println(Mw(n, k).toMathemathicaInputString)
+    println(Mw(n, k).toMathematicaInputString)
   }
 }

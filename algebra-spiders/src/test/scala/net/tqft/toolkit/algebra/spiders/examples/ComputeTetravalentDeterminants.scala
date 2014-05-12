@@ -25,10 +25,10 @@ object ComputeTetravalentDeterminants extends App {
 
     import MathematicaForm._
 
-    val polynomials = implicitly[MultivariablePolynomialAlgebra[Fraction[BigInt], String]]
+    val polynomials = implicitly[MultivariablePolynomialAlgebraOverField[Fraction[BigInt], String]]
 
     println("matrix: ")
-    println(m2.entries.toIndexedSeq.toMathemathicaInputString)
+    println(m2.entries.toIndexedSeq.toMathematicaInputString)
     println("determinants: ")
     val determinants = for (k <- 0 to 4) yield {
       val d = m(k).determinant
@@ -43,27 +43,27 @@ object ComputeTetravalentDeterminants extends App {
     implicit def variableOrdering = TetravalentSpider.polyhedronOrdering
     val groebnerBasis = determinants.computeGroebnerBasis
     for (p <- groebnerBasis) {
-      println(p.toMathemathicaInputString)
+      println(p.toMathematicaInputString)
     }
 
     val quotientRing = Field.fieldOfFractions(
       MultivariablePolynomialAlgebras.quotient(groebnerBasis))
 
-      println("determinant in quotient: " )
-      println(m(0).determinant(quotientRing))
-//    for(row <- m(0).rowEchelonForm(quotientRing).entries) {
-//      println(row)
-//    }
+    println("determinant in quotient: ")
+    println(m(0).determinant(quotientRing))
+    //    for(row <- m(0).rowEchelonForm(quotientRing).entries) {
+    //      println(row)
+    //    }
     println("Relations:")
     for (rel <- m(0).dropRows(Seq(3)).nullSpace) {
-      println(rel.toMathemathicaInputString)
-    }
-    println("Relations (in qutoient):")
-    for (rel <- m(0).dropRows(Seq(3)).nullSpace(quotientRing)) {
-      println(rel.toMathemathicaInputString)
-    }
-    for (rel <- m(0).nullSpace(quotientRing)) {
-      println(rel.toMathemathicaInputString)
+      println(rel.toMathematicaInputString)
+      val d = polynomials.lcm(rel.map(_.denominator): _*)
+      println("denominator factorization: " + d.toMathematicaInputString)
+      val factors = {
+        import mathematica.Factor._
+        polynomials.factor(d)
+      }
+      println("denominator factorization: " + factors.map(p => (p._1.toMathematicaInputString, p._2)))
     }
 
   }
