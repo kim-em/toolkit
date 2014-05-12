@@ -15,7 +15,6 @@ object RealNumberField {
 
       override val integers = implicitly[IntegerModel[I]]
       override val approximateReals = implicitly[ApproximateReals[D]]
-      override val coefficients = Fields.fieldOfFractions(integers)
     }
   }
 }
@@ -39,8 +38,8 @@ trait RealNumberField[I, D] extends NumberField[Fraction[I]] with OrderedField[P
   def evaluateFraction(x: Fraction[I]) = approximateReals.quotient(approximateReals.fromInteger(x.numerator), approximateReals.fromInteger(x.denominator))
 
   def approximateWithin(epsilon: D)(p: Polynomial[Fraction[I]]): D = {
-    for (i <- 0 until rank) {
-      while (approximateReals.compare(approximateReals.multiply(errorBoundForPower(i), evaluateFraction(generator.coefficient(i))), approximateReals.quotientByInt(epsilon, rank)) > 0) {
+    for (i <- 0 until degree) {
+      while (approximateReals.compare(approximateReals.multiply(errorBoundForPower(i), evaluateFraction(generator.coefficient(i))), approximateReals.quotientByInt(epsilon, degree)) > 0) {
         improveErrorBound
       }
     }

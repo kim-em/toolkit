@@ -237,7 +237,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
 
     val modP = PrimeField(preferredPrime)
 
-    val cyclotomicNumbers = NumberField.cyclotomic[Fraction[Int]](exponent)
+    val cyclotomicNumbers = NumberField.cyclotomic[Int](exponent)
     val zeta = Polynomial.identity[Fraction[Int]]
     val chi = characterTableModPreferredPrime
     println("preferredPrime -> " + preferredPrime)
@@ -300,7 +300,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
         }
       }
     }
-    val Q = NumberField.cyclotomic[Fraction[Int]](exponent)
+    val Q = NumberField.cyclotomic[Int](exponent)
     val result = Q.quotientByInt(
       Q.sum(
         for (((a, b), t) <- liftCharacterToCyclotomicFieldOfExponent(m).character zip liftCharacterToCyclotomicFieldOfExponent(n).character zip conjugacyClasses.map(_.size)) yield {
@@ -321,7 +321,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
   // TODO rewrite this in terms of other stuff!
   lazy val tensorProductMultiplicities: Seq[Seq[Seq[Int]]] = {
     val k = conjugacyClasses.size
-    implicit val Q = NumberField.cyclotomic[Fraction[Int]](exponent)
+    implicit val Q = NumberField.cyclotomic[Int](exponent)
 
     def pairing(x: Seq[Polynomial[Fraction[Int]]], y: Seq[Polynomial[Fraction[Int]]]): Polynomial[Fraction[Int]] = {
       Q.quotientByInt(Q.sum((x zip y zip conjugacyClasses.map(_.size)).map({ p => Q.multiplyByInt(Q.multiply(p._1._1, p._1._2), p._2) })), finiteGroup.size)

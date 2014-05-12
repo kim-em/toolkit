@@ -50,7 +50,7 @@ object ApproximateReals {
     override def fromDouble(x: Double) = new jBigDecimal(x, mc)
     override def fromBigDecimal(x: BigDecimal) = x(mc).underlying
     override def setPrecision(x: jBigDecimal) = x.round(mc)
-    override def bigDecimalValue(x: jBigDecimal) = BigDecimal(x, mc)
+    override def bigDecimalValue(x: jBigDecimal) = new BigDecimal(x, mc)
     override val one = new jBigDecimal(1, mc)
     override val zero = new jBigDecimal(0, mc)
     override def abs(x: jBigDecimal) = x.abs(mc)
