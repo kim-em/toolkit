@@ -83,9 +83,9 @@ object MathematicaForm {
       } else {
         p.coefficients.toSeq.map({
           case (m, a) => {
-            val showCoefficient = m.isEmpty || a.toMathemathicaInputString != "1"
+            val showCoefficient = m.isEmpty || a.toMathematicaInputString != "1"
             val showMonomial = m.nonEmpty
-            (if (showCoefficient) "(" + a.toMathemathicaInputString + ")" else "") + (if (showCoefficient && showMonomial) " * " else "") + (if (showMonomial) { m.map({ case (v, k) => v.toMathemathicaInputString + (if (k > 1) "^" + k else "") }).mkString(" * ") } else "")
+            (if (showCoefficient) "(" + a.toMathematicaInputString + ")" else "") + (if (showCoefficient && showMonomial) " * " else "") + (if (showMonomial) { m.map({ case (v, k) => v.toMathematicaInputString + (if (k > 1) "^" + k else "") }).mkString(" * ") } else "")
           }
         }).mkString(" + ")
       }
@@ -93,7 +93,7 @@ object MathematicaForm {
   }
   
   implicit class MathematicaFormOperations[A: MathematicaForm](a: A) {
-    def toMathemathicaInputString = implicitly[MathematicaForm[A]].toMathematicaInputString(a)
+    def toMathematicaInputString = implicitly[MathematicaForm[A]].toMathematicaInputString(a)
   }
 
 }

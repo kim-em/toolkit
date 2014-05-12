@@ -23,7 +23,7 @@ object Symbols {
     def apply(arguments: Expression_ *) = FullFormExpression(SymbolExpression(name), arguments)
     def unapplySeq(expression: Expression_): Option[Seq[Expression_]] = {
       expression match {
-        case FullFormExpression(SymbolExpression(name), arguments) => Some(arguments)
+        case FullFormExpression(SymbolExpression(`name`), arguments) => Some(arguments)
         case _ => None
       }
     }
