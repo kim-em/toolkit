@@ -10,6 +10,7 @@ import net.tqft.toolkit.algebra.mathematica._
 import net.tqft.toolkit.algebra.spiders.VertexType
 import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebraOverField
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
 
 case class SpiderData(
@@ -23,8 +24,8 @@ case class SpiderData(
   consideredDiagrams: Seq[Seq[PlanarGraph]],
   independentDiagrams: Seq[Seq[PlanarGraph]]) {
 
-  lazy val quotientRing = Field.fieldOfFractions(
-    MultivariablePolynomialAlgebras.quotient(groebnerBasis))
+  def polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
+  lazy val rationalFunctions = Field.fieldOfFractions(polynomials)
 
   def considerDiagram(p: PlanarGraph): Seq[SpiderData] = {
     val boundary = p.numberOfBoundaryPoints
@@ -35,13 +36,13 @@ case class SpiderData(
     val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
     val candidateIndependentDiagrams = paddedIndependentDiagrams(boundary) :+ p
     val matrix = spider.innerProductMatrix(candidateIndependentDiagrams, candidateIndependentDiagrams)
-    val determinant = Matrix(candidateIndependentDiagrams.size, matrix).determinant(quotientRing).ensuring(_.denominator == quotientRing.one.denominator).numerator
-    
+    val determinant = Matrix(candidateIndependentDiagrams.size, matrix).determinant(rationalFunctions).ensuring(_.denominator == polynomials.one).numerator
+
     val addIndependentDiagram: Option[SpiderData] = {
-      if (determinant != quotientRing.zero && candidateIndependentDiagrams.size <= dimensionBounds(boundary)) {
+      if (determinant != polynomials.zero && candidateIndependentDiagrams.size <= dimensionBounds(boundary)) {
         // TODO update nonzero
         val newNonzero = {
-          import
+          import mathematica.Factor._
           val factors = determinant.factor
           ???
         }
@@ -58,9 +59,16 @@ case class SpiderData(
         import mathematica.GroebnerBasis._
         (groebnerBasis :+ determinant).computeGroebnerBasis
       }
-      Some(copy(
-        consideredDiagrams = newConsideredDiagrams,
-        groebnerBasis = newGroebnerBasis))
+
+      // does this kill anything in nonzero? 
+      val newNonzero = nonzero.map(polynomials.normalForm)
+      if (newNonzero.exists(_ == polynomials.zero)) {
+        None
+      } else {
+        Some(copy(
+          consideredDiagrams = newConsideredDiagrams,
+          groebnerBasis = newGroebnerBasis))
+      }
     }
 
     addIndependentDiagram.toSeq ++ addDeterminantToIdeal
