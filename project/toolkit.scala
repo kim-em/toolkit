@@ -24,6 +24,8 @@ object Toolkit extends Build {
         `algebra-matrices`,
         `algebra-groups`,
         `algebra-graphs`,
+        `algebra-numberfields`,
+        `algebra-mathematica`,
         `algebra-spiders`,
         `algebra-experimental`, 
         functions, 
@@ -88,7 +90,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-groups` = Project(id = "toolkit-algebra-groups",
     base = file("algebra-groups"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (functions, permutations, algebra, `algebra-polynomials`, `algebra-matrices`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (functions, permutations, algebra, `algebra-polynomials`, `algebra-matrices`, `algebra-numberfields`)
 
   lazy val `algebra-graphs` = Project(id = "toolkit-algebra-graphs",
     base = file("algebra-graphs"),
