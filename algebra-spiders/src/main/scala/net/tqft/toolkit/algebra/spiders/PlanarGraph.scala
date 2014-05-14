@@ -8,7 +8,7 @@ import net.tqft.toolkit.Logging
 // flags veer to the left
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
-  verify
+//  verify
 
   def verify = {
     // There are many things we might check here!
@@ -133,8 +133,11 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   type VertexEdge = (Int, Int)
 
   lazy val faceBoundary = {
-    import net.tqft.toolkit.functions.Memo._
-    (faceBoundary_ _).memo
+    val map = scala.collection.mutable.HashMap[Int, Seq[Seq[VertexEdge]]]()
+    
+    { face: Int => 
+    	map.getOrElseUpdate(face, faceBoundary_(face))
+    }
   }
 
   private def faceBoundary_(face: Int): Seq[Seq[VertexEdge]] = {
@@ -403,7 +406,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     private val packedShape = shape.relabelEdgesAndFaces
 
     case class Excision(cut: PlanarGraph, depth: Int, rotations: Rotation) {
-      verify
+//      verify
 
       private def verify = {
         val result = replace(shape)

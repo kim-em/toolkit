@@ -7,9 +7,27 @@ import org.scalatest._
 @RunWith(classOf[JUnitRunner])
 class GraphsGeneratedByTest extends FlatSpec with Matchers with IsomorphismMatchers {
   val trivalentEnumerator = GraphsGeneratedBy(Seq((3, 1)))
+  val tetravalentEnumerator = GraphsGeneratedBy(Seq((4, 1)))
+  val freeTetravalent = tetravalentEnumerator.avoiding(Seq())
   val withoutSmallFaces = trivalentEnumerator.avoiding(for (i <- 1 to 4) yield PlanarGraph.polygon(i))
   val withoutTinyFaces = trivalentEnumerator.avoiding(for (i <- 1 to 3) yield PlanarGraph.polygon(i))
 
+  
+  "byNumberOfVertices" should "find 2 tetravalent diagram with 0 boundary points and 1 vertex" in {
+    freeTetravalent.byNumberOfVertices(0, 1).size should equal(2)
+  }
+  "byNumberOfVertices" should "find 6 connected tetravalent diagram with 0 boundary points and 2 vertices" in {
+    tetravalentEnumerator.avoiding(freeTetravalent.byNumberOfVertices(0, 1)).byNumberOfVertices(0, 2).size should equal(6)
+  }
+  "byNumberOfVertices" should "find 6 tetravalent diagram with 2 boundary points and 1 vertex" in {
+    freeTetravalent.byNumberOfVertices(2, 1).size should equal(6)
+  }
+  "byNumberOfVertices" should "find 2 connected tetravalent diagram with 2 boundary points and 1 vertex" in {
+    tetravalentEnumerator.avoiding(freeTetravalent.byNumberOfVertices(0, 1)).byNumberOfVertices(2, 1).size should equal(2)
+  }
+  "byNumberOfVertices" should "find 1 connected tetravalent diagram with 0 boundary points and 2 vertices and no twists" in {
+    tetravalentEnumerator.avoiding(tetravalentEnumerator.avoiding(freeTetravalent.byNumberOfVertices(0, 1)).byNumberOfVertices(2, 1).take(1)).byNumberOfVertices(0,2).size should equal(1)
+  }
   "byNumberOfVertices" should "find 1 diagrams with 0 boundary points and 0 vertices" in {
     withoutSmallFaces.byNumberOfVertices(0, 0).size should equal(1)
   }
