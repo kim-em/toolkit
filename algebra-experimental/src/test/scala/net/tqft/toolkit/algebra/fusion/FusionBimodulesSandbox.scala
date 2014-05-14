@@ -7,8 +7,14 @@ object FusionBimodulesSandbox extends App {
   val AH2 = FusionRings.Examples.AH2
   val AH3 = FusionRings.Examples.AH3
   
-  for (fm <- AH1.candidateFusionModules) {
-    val commutants = FusionBimodules.commutantsWithRank(fm, 15, 3)
-    println(fm + " has " + commutants.size + " commutants with rank 15 and 3 self-dual objects.")
+  val `2D2` = FusionRings.Examples.`2D2` 
+  
+  for(fm <- `2D2`.candidateFusionModules) {
+    println(fm.structureCoefficients)
   }
+  
+//  for (fm <- AH1.candidateFusionModules) {
+//    val commutants = FusionBimodules.commutantsWithRank(fm, 15, 3)
+//    println(fm + " has " + commutants.size + " commutants with rank 15 and 3 self-dual objects.")
+//  }
 }

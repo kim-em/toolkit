@@ -23,10 +23,7 @@ object Factor extends FactorizationAlgorithm {
       val result = FullFormExpression(SymbolExpression("Factor"),
         Seq(polynomial)).evaluate        
         
-        println(result)
-        
       def unpack(e: Expression_): Map[MultivariablePolynomial[Fraction[I], String], Int] = {
-        println(e)
         e match {
           case Symbols.Power(p, k: IntegerExpression) => Map((p: MultivariablePolynomial[Fraction[I], String]) -> k.value.intValue)
           case Symbols.Times(arguments @ _*) => arguments.flatMap(unpack).toMap

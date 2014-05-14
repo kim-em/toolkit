@@ -12,7 +12,7 @@ trait MultivariablePolynomialAlgebraOverField[A, V] extends MultivariablePolynom
     lazy val leadingMonomials = generators.groupBy(g => leadingMonomial(g).get).mapValues(v => v.ensuring(_.size == 1).head)
 
     for((lm, g) <- leadingMonomials) {
-      println((lm, g))
+//      println((lm, g))
       require(leadingMonomial(g).get == lm)
     }
     

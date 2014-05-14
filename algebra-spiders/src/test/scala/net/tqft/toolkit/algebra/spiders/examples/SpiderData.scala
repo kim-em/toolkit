@@ -24,6 +24,16 @@ case class SpiderData(
   consideredDiagrams: Seq[Seq[PlanarGraph]],
   independentDiagrams: Seq[Seq[PlanarGraph]]) {
 
+  override def toString = {
+    s"""SpiderData(
+  groebnerBasis = $groebnerBasis,
+  nonzero = $nonzero,
+  consideredDiagramsVertexBound = $consideredDiagramsVertexBound,
+  consideredDiagrams = $consideredDiagrams,
+  independentDiagrams = $independentDiagrams
+)"""
+  }
+
   def polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
   lazy val rationalFunctions = Field.fieldOfFractions(polynomials)
 
@@ -40,11 +50,10 @@ case class SpiderData(
 
     val addIndependentDiagram: Option[SpiderData] = {
       if (determinant != polynomials.zero && candidateIndependentDiagrams.size <= dimensionBounds(boundary)) {
-        // TODO update nonzero
         val newNonzero = {
           import mathematica.Factor._
-          val factors = determinant.factor
-          ???
+          val factors = determinant.factor.filterNot(_._1 == polynomials.one)
+          (nonzero ++ factors.keys).distinct
         }
         val newIndependentDiagrams = paddedIndependentDiagrams.updated(boundary, candidateIndependentDiagrams)
         Some(copy(nonzero = newNonzero,
@@ -60,14 +69,20 @@ case class SpiderData(
         (groebnerBasis :+ determinant).computeGroebnerBasis
       }
 
-      // does this kill anything in nonzero? 
-      val newNonzero = nonzero.map(polynomials.normalForm)
-      if (newNonzero.exists(_ == polynomials.zero)) {
+      // has everything collapsed?
+      if (newGroebnerBasis.contains(polynomials.one)) {
         None
       } else {
-        Some(copy(
-          consideredDiagrams = newConsideredDiagrams,
-          groebnerBasis = newGroebnerBasis))
+        // does this kill anything in nonzero? 
+        val newNonzero = nonzero.map(MultivariablePolynomialAlgebras.quotient(newGroebnerBasis).normalForm)
+        if (newNonzero.exists(_ == polynomials.zero)) {
+          None
+        } else {
+          Some(copy(
+            consideredDiagrams = newConsideredDiagrams,
+            groebnerBasis = newGroebnerBasis,
+            nonzero = newNonzero))
+        }
       }
     }
 
@@ -77,6 +92,7 @@ case class SpiderData(
   def considerDiagrams(boundary: Int, vertices: Int): Seq[SpiderData] = {
     val newConsideredDiagramsVertexBound = consideredDiagramsVertexBound.padTo(boundary + 1, 0).updated(boundary, vertices)
     val diagramsToConsider = spider.reducedDiagrams(boundary, vertices)
+    for(d <- diagramsToConsider) println("   " + d)
 
     diagramsToConsider.foldLeft(Seq(this))({ (s: Seq[SpiderData], p: PlanarGraph) => s.flatMap(d => d.considerDiagram(p)) })
       .map(_.copy(consideredDiagramsVertexBound = newConsideredDiagramsVertexBound))
@@ -99,5 +115,19 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty)
 
-  println(Seq(initialData).flatMap(_.considerDiagrams(0, 0)).flatMap(_.considerDiagrams(0, 2)))
+    val steps = Seq((0,0), (2,0), (0,2), (2,1))
+    
+    
+    // TODO evaluate disjoint unions correctly
+    // TODO graphs with capped vertices are not being generated, even though we don't have a relation reducing those
+    // TODO make generators uncappable automatically?
+    // TODO declare d nonzero?
+    
+    steps.foldLeft(Seq(initialData))({ (data: Seq[SpiderData], step: (Int, Int)) =>
+      println(s"Considering diagrams with ${step._1} boundary points and ${step._2} vertices...")
+      val result = data.flatMap(_.considerDiagrams(step._1, step._2))
+      for(s <- result) println(s)
+      result
+    })
+    
 }

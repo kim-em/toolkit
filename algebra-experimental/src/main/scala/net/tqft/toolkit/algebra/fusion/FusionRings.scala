@@ -207,13 +207,13 @@ object FusionRings {
     }
 
     def estimates(substitution: Array[Int]): Array[Double] = {
-      if(substitution(0) > 100) {
+      if (substitution(0) > 100) {
         println(lastEstimates.mkString(" "))
         println(lastMatrices.map(_.map(_.mkString(",")).mkString("\n")).mkString("\n"))
         println(lastEstimates.mkString("  "))
         ???
       }
-      
+
       val dirtyMatrices = Array.fill(n)(false)
 
       if (substitution != lastSubstitution) {
@@ -641,6 +641,48 @@ object FusionRings {
           Polynomial(0 -> Fraction(3, 1), 1 -> Fraction(1, 1)))
       }
       FusionRing(AH3Multiplicities, AHFieldGenerator, AHFieldGeneratorApproximation, AHFieldGeneratorEpsilon, AH3Dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+    }
+
+    val `2D2` = {
+      val multiplicityString = """1 0 0 0 
+0 1 0 0 
+0 0 1 0 
+0 0 0 1 
+
+0 1 0 0 
+1 2 2 0 
+0 2 2 1 
+0 0 1 0 
+
+0 0 1 0 
+0 2 2 1 
+1 2 2 0 
+0 1 0 0 
+
+0 0 0 1 
+0 0 1 0 
+0 1 0 0 
+1 0 0 0 """
+
+      import net.tqft.toolkit.Extractors.Int
+      val parsedMultiplicities: Seq[Seq[Seq[Int]]] = multiplicityString.split("\n\n").toSeq.map(p => p.split("\n").toSeq.map(_.split(" ").toSeq.collect({ case Int(n) => n })))
+      val dualData = Seq(0, 1, 2, 3)
+
+      val multiplicities: Seq[Matrix[Int]] = parsedMultiplicities.map(m => Matrix(4, m))
+
+      val dimensions: Seq[Polynomial[Fraction[Int]]] = {
+        Seq(
+          Polynomial(0 -> Fraction(1, 1)),
+          Polynomial(0 -> Fraction(2, 1), 1 -> Fraction(1, 1)),
+          Polynomial(0 -> Fraction(2, 1), 1 -> Fraction(1, 1)),
+          Polynomial(0 -> Fraction(1, 1)))
+      }
+
+      val fieldGeneratorApproximation: Double = 2.23607
+      val fieldGeneratorEpsilon: Double = 0.001
+
+      FusionRing(multiplicities, Polynomial(0 -> -5, 2 -> 1), fieldGeneratorApproximation, fieldGeneratorEpsilon, dimensions).ensuring(_.verifyAssociativity).ensuring(_.verifyIdentity)
+
     }
 
     def rank1 = FusionRing(IndexedSeq(IndexedSeq(IndexedSeq(1)): Matrix[Int]))
