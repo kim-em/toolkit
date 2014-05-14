@@ -98,7 +98,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-spiders` = Project(id = "toolkit-algebra-spiders",
     base = file("algebra-spiders"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, mathematica, `algebra-mathematica`, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(mapdb))) dependsOn (algebra, mathematica, `algebra-mathematica`, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`)
 
   lazy val `algebra-bugs` = Project(id = "toolkit-algebra-bugs",
     base = file("algebra-bugs"),
@@ -231,6 +231,7 @@ object Dependencies {
 		val util = "net.liftweb" %% "lift-util" % "2.6-M2"
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
+	val mapdb = "org.mapdb" % "mapdb" % "0.9.9"
 	val slick = "com.typesafe.slick" % "slick_2.11.0-RC4" % "2.1.0-M1"
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0-M6"
 	val spire = "org.spire-math" %% "spire" % "0.7.1"

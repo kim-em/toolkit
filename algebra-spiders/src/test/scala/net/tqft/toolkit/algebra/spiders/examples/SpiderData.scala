@@ -100,12 +100,12 @@ case class SpiderData(
 }
 
 object InvestigateTetravalentSpiders extends App {
-  val freeTetravalentSpider = new FreeSpider {
+  val lowestWeightTetravalentSpider = new LowestWeightSpider {
     override def generators = Seq((VertexType(4, 1), ring.one))
   }
 
   val initialData = SpiderData(
-    freeTetravalentSpider,
+    lowestWeightTetravalentSpider,
     Seq.empty,
     Seq.empty,
     Seq.empty,
@@ -119,8 +119,6 @@ object InvestigateTetravalentSpiders extends App {
     
     
     // TODO evaluate disjoint unions correctly
-    // TODO graphs with capped vertices are not being generated, even though we don't have a relation reducing those
-    // TODO make generators uncappable automatically?
     // TODO declare d nonzero?
     
     steps.foldLeft(Seq(initialData))({ (data: Seq[SpiderData], step: (Int, Int)) =>
