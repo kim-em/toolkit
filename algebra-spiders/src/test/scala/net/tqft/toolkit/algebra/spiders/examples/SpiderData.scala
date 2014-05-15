@@ -34,7 +34,11 @@ case class SpiderData(
 )"""
   }
 
-  def polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
+  val complexity: Ordering[PlanarGraph] = {
+    ???
+  }
+
+  lazy val polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
   lazy val rationalFunctions = Field.fieldOfFractions(polynomials)
 
   def considerDiagram(p: PlanarGraph): Seq[SpiderData] = {
@@ -44,28 +48,51 @@ case class SpiderData(
       padded.updated(boundary, (padded(boundary) :+ p).distinct)
     }
     val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
-    val candidateIndependentDiagrams = paddedIndependentDiagrams(boundary) :+ p
-    
+    val oldIndependentDiagrams = paddedIndependentDiagrams(boundary)
+    val candidateIndependentDiagrams = oldIndependentDiagrams :+ p
+
     // FIXME the spider should know the ring, so the inner product automatically happens mod the ideal.
-    val matrix = spider.innerProductMatrix(candidateIndependentDiagrams, candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
-    val determinant = Matrix(candidateIndependentDiagrams.size, matrix).determinant(rationalFunctions).ensuring(_.denominator == polynomials.one).numerator
+    lazy val rectangularMatrix = spider.innerProductMatrix(oldIndependentDiagrams, candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
+    lazy val lastRow = spider.innerProductMatrix(Seq(p), candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
+    def matrix = rectangularMatrix ++ lastRow
+    lazy val determinant = Matrix(candidateIndependentDiagrams.size, matrix).determinant(rationalFunctions).ensuring(_.denominator == polynomials.one).numerator
 
     val addIndependentDiagram: Option[SpiderData] = {
-      if (determinant != polynomials.zero && candidateIndependentDiagrams.size <= dimensionBounds(boundary)) {
-        val newNonzero = {
-          import mathematica.Factor._
-          val factors = determinant.factor.filterNot(_._1 == polynomials.one)
-          (nonzero ++ factors.keys).distinct
+      if (candidateIndependentDiagrams.size <= dimensionBounds(boundary)) {
+        if (determinant != polynomials.zero) {
+          val newNonzero = {
+            import mathematica.Factor._
+            val factors = determinant.factor.filterNot(_._1 == polynomials.one)
+            (nonzero ++ factors.keys).distinct
+          }
+          val newIndependentDiagrams = paddedIndependentDiagrams.updated(boundary, candidateIndependentDiagrams)
+          Some(copy(nonzero = newNonzero,
+            consideredDiagrams = newConsideredDiagrams,
+            independentDiagrams = newIndependentDiagrams))
+        } else {
+          None
         }
-        val newIndependentDiagrams = paddedIndependentDiagrams.updated(boundary, candidateIndependentDiagrams)
-        Some(copy(nonzero = newNonzero,
-          consideredDiagrams = newConsideredDiagrams,
-          independentDiagrams = newIndependentDiagrams))
       } else {
         None
       }
     }
-    val addDeterminantToIdeal: Option[SpiderData] = {
+    val addDependentDiagram: Option[SpiderData] = {
+      val relation = Matrix(oldIndependentDiagrams.size + 1, rectangularMatrix).nullSpace(rationalFunctions).ensuring(_.size == 1).head
+      require(relation.last == rationalFunctions.one)
+
+      // is it a reducing relation?
+      val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case (x, i) if x != rationalFunctions.zero => i })
+      val reducing = nonzeroPositions.forall({ i => complexity.lt(oldIndependentDiagrams(i), p) })
+
+      if (reducing) {
+        // are there denominators? we better insure they are invertible
+        ???
+      } else {
+        // hmm... not clear what to do for now
+
+        ???
+      }
+
       val newGroebnerBasis = {
         import mathematica.GroebnerBasis._
         (groebnerBasis :+ determinant).computeGroebnerBasis
@@ -88,7 +115,7 @@ case class SpiderData(
       }
     }
 
-    addIndependentDiagram.toSeq ++ addDeterminantToIdeal
+    addIndependentDiagram.toSeq ++ addDependentDiagram
   }
 
   def considerDiagrams(boundary: Int, vertices: Int): Seq[SpiderData] = {
@@ -127,13 +154,13 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty)
 
-  val steps = Seq((0, 0), (2, 0), (0,1), (0, 2), (2, 1), (2,2), (4, 0), (4,1))
+  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (4, 0), (4, 1))
 
   // TODO declare d nonzero?
   // TODO start computing relations, also
   // TODO have SpiderData compute lower bounds on ranks
   // TODO have consider diagram automatically call considerDiagrams for fewer vertices, if they haven't already been done.
-  
+
   initialData.considerDiagrams(steps)
 
 }
