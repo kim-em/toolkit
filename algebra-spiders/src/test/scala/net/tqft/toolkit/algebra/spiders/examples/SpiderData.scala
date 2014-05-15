@@ -90,12 +90,22 @@ case class SpiderData(
   }
 
   def considerDiagrams(boundary: Int, vertices: Int): Seq[SpiderData] = {
+    println(s"Considering diagrams with $boundary boundary points and $vertices vertices...")
+
     val newConsideredDiagramsVertexBound = consideredDiagramsVertexBound.padTo(boundary + 1, 0).updated(boundary, vertices)
     val diagramsToConsider = spider.reducedDiagrams(boundary, vertices)
-    for(d <- diagramsToConsider) println("   " + d)
+    for (d <- diagramsToConsider) println("   " + d)
 
     diagramsToConsider.foldLeft(Seq(this))({ (s: Seq[SpiderData], p: PlanarGraph) => s.flatMap(d => d.considerDiagram(p)) })
       .map(_.copy(consideredDiagramsVertexBound = newConsideredDiagramsVertexBound))
+  }
+
+  def considerDiagrams(diagramSizes: Seq[(Int, Int)]): Seq[SpiderData] = {
+    diagramSizes.foldLeft(Seq(this))({ (data: Seq[SpiderData], step: (Int, Int)) =>
+      val result = data.flatMap(_.considerDiagrams(step._1, step._2))
+      for (s <- result) println(s)
+      result
+    })
   }
 }
 
@@ -115,17 +125,11 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty)
 
-    val steps = Seq((0,0), (2,0), (0,2), (2,1))
-    
-    
-    // TODO evaluate disjoint unions correctly
-    // TODO declare d nonzero?
-    
-    steps.foldLeft(Seq(initialData))({ (data: Seq[SpiderData], step: (Int, Int)) =>
-      println(s"Considering diagrams with ${step._1} boundary points and ${step._2} vertices...")
-      val result = data.flatMap(_.considerDiagrams(step._1, step._2))
-      for(s <- result) println(s)
-      result
-    })
-    
+  val steps = Seq((0, 0), (2, 0), (0, 2), (2, 1))
+
+  // TODO evaluate disjoint unions correctly
+  // TODO declare d nonzero?
+  
+  initialData.considerDiagrams(steps)
+
 }

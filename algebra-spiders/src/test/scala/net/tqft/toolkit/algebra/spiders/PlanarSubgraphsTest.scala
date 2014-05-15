@@ -80,5 +80,16 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
     val e = q.Subgraphs(PlanarGraph(6, Vector(List((2, 6), (3, 7)), List((4, 6), (4, 9), (3, 6), (2, 7))), IndexedSeq(1), 0)).excisions.toList
     e.size should equal(1)
   }
+  
+  "a pair of nested hopf links" should "contain two hopf link" in {
+    val q = PlanarGraph(13,Vector(List(), List((5,13), (6,19), (10,16), (9,14)), List((5,19), (9,13), (10,14), (6,16)), List((7,18), (8,19), (11,17), (12,15)), List((7,19), (12,18), (11,15), (8,17))),IndexedSeq(1, 1, 1, 1),0)
+    val e = q.Subgraphs(PlanarGraph(7,Vector(List(), List((3,8), (4,7), (5,9), (6,10)), List((3,7), (6,8), (5,10), (4,9))),IndexedSeq(1, 1),0)).excisions.toList
+    e.size should equal(2)
+  }
+  "a disjoint pair of hopf links" should "contain four hopf link" in {
+    val q = PlanarGraph(13,Vector(List(), List((5,13), (6,19), (10,16), (9,14)), List((5,19), (9,13), (10,14), (6,16)), List((7,18), (8,13), (11,17), (12,15)), List((7,13), (12,18), (11,15), (8,17))),IndexedSeq(1, 1, 1, 1),0)
+    val e = q.Subgraphs(PlanarGraph(7,Vector(List(), List((3,8), (4,7), (5,9), (6,10)), List((3,7), (6,8), (5,10), (4,9))),IndexedSeq(1, 1),0)).excisions.toList
+    e.size should equal(4)
+  }
 }
 
