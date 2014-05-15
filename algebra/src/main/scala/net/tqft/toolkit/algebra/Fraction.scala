@@ -24,7 +24,9 @@ object Fraction {
 
   def apply[@specialized(Int, Long) A: GCDRing](numerator: A, denominator: A): Fraction[A] = {
     def ring = implicitly[GCDRing[A]]
-    if (denominator == ring.one) {
+    if (denominator == ring.zero) {
+      throw new ArithmeticException(s"Division by zero: Fraction($numerator, $denominator)")
+    } else if (denominator == ring.one) {
       FractionWhole(numerator)
     } else {
       def _numerator = numerator
@@ -45,10 +47,10 @@ object Fraction {
     override def denominator = implicitly[Rig[A]].one
   }
   private case class FractionRatio[A](numerator: A, denominator: A) extends Fraction[A] {
-	  denominator match {
-	    case i: Int => require(i > 0)
-	    case _ =>
-	  }
+    denominator match {
+      case i: Int => require(i > 0)
+      case _ =>
+    }
   }
 
   //  implicit def constant[A: EuclideanRing](x: A): RationalFunction[A] = Fraction.whole(Polynomial.constant(Fraction.whole(x)))
@@ -56,8 +58,8 @@ object Fraction {
   //  implicit def toMathematicaExpression[A <% net.tqft.toolkit.mathematica.MathematicaExpression](f: Fraction[A]) = new net.tqft.toolkit.mathematica.ShortMathematicaExpression {
   //    def toMathematicaInputString = "(" + f.numerator.toMathematicaInputString + ")/(" + f.denominator.toMathematicaInputString + ")"
   //  }
-  
-  implicit class IntegerFraction[I:IntegerModel](f: Fraction[I]) {
+
+  implicit class IntegerFraction[I: IntegerModel](f: Fraction[I]) {
     import IntegerModel._
     def toDouble = f.numerator.toDouble / f.denominator.toDouble
   }
