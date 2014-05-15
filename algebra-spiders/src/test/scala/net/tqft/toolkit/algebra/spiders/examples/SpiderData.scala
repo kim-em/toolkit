@@ -45,7 +45,9 @@ case class SpiderData(
     }
     val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
     val candidateIndependentDiagrams = paddedIndependentDiagrams(boundary) :+ p
-    val matrix = spider.innerProductMatrix(candidateIndependentDiagrams, candidateIndependentDiagrams)
+    
+    // FIXME the spider should know the ring, so the inner product automatically happens mod the ideal.
+    val matrix = spider.innerProductMatrix(candidateIndependentDiagrams, candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
     val determinant = Matrix(candidateIndependentDiagrams.size, matrix).determinant(rationalFunctions).ensuring(_.denominator == polynomials.one).numerator
 
     val addIndependentDiagram: Option[SpiderData] = {
@@ -125,10 +127,12 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty)
 
-  val steps = Seq((0, 0), (2, 0), (0, 2), (2, 1))
+  val steps = Seq((0, 0), (2, 0), (0,1), (0, 2), (2, 1), (2,2), (4, 0), (4,1))
 
-  // TODO evaluate disjoint unions correctly
   // TODO declare d nonzero?
+  // TODO start computing relations, also
+  // TODO have SpiderData compute lower bounds on ranks
+  // TODO have consider diagram automatically call considerDiagrams for fewer vertices, if they haven't already been done.
   
   initialData.considerDiagrams(steps)
 

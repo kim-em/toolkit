@@ -87,6 +87,8 @@ abstract class MultivariablePolynomialQuotientAlgebra[A: Field, V: Ordering] ext
   override def multiply(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = {
     normalForm(polynomials.multiply(x, y))
   }
+  
+  override def toString = s"MultivariablePolynomialAlgebras.quotient(${ideal.generators})"
 }
 
 object MultivariablePolynomialAlgebras {
