@@ -26,4 +26,15 @@ abstract class LowestWeightSpider extends FreeSpider {
   }
   
   override def reductions = super.reductions ++ lowestWeightReductions
+
+  def asQuotientSpider = QuotientSpider(generators)
 }
+
+case class QuotientSpider(
+    generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])], 
+    extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty) extends LowestWeightSpider {
+  override def reductions = super.reductions ++ extraReductions
+  
+  def addReduction(reduction: Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]) = copy(extraReductions = extraReductions :+ reduction)
+}
+
