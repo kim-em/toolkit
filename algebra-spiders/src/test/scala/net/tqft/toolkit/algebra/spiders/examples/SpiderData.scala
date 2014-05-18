@@ -79,14 +79,14 @@ case class SpiderData(
         // are there denominators? we better ensure they are invertible
         val denominatorLCM = polynomials.lcm(relation.map(_.denominator): _*)
 
-        val whenDenominatorsVanish = addPolyhedronRelation(denominatorLCM).toSeq.flatMap(_.considerDiagram(p))
+        val whenDenominatorsVanish = declarePolynomialZero(denominatorLCM).toSeq.flatMap(_.considerDiagram(p))
         val whenDenominatorsNonzero = declarePolynomialNonzero(denominatorLCM).map(_.copy(spider = spider.addReduction(???)))
 
         whenDenominatorsVanish ++ whenDenominatorsNonzero
       } else {
         // hmm... just ask that the determinant vanishes
         // TODO record non-reducing relations!
-        addPolyhedronRelation(determinant).toSeq.map(_.copy(consideredDiagrams = newConsideredDiagrams))
+        declarePolynomialZero(determinant).toSeq.map(_.copy(consideredDiagrams = newConsideredDiagrams))
       }
 
     }
@@ -108,7 +108,7 @@ case class SpiderData(
 
   }
 
-  def addPolyhedronRelation(r: MultivariablePolynomial[Fraction[BigInt], String]): Option[SpiderData] = {
+  def declarePolynomialZero(r: MultivariablePolynomial[Fraction[BigInt], String]): Option[SpiderData] = {
     val newGroebnerBasis = {
       import mathematica.GroebnerBasis._
       (groebnerBasis :+ r).computeGroebnerBasis
