@@ -11,6 +11,12 @@ trait ReductionSpider[A, R] extends SubstitutionSpider[A, R] {
   override def stitch(x: Map[A, R]): Map[A, R] = {
     replaceRepeatedly(reductions)(super.stitch(x))
   }
+
+  def allEvaluations(diagram: A) = {
+    // this version to too expensive:
+//    allReplacementsRepeated(reductions)(Map(diagram -> ring.one)).map(canonicalForm).map(evaluate)
+    allReplacements(reductions)(Map(diagram -> ring.one)).map(canonicalForm).map(evaluate)
+  }
 }
 
 

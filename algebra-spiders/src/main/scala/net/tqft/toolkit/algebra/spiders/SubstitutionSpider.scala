@@ -28,6 +28,12 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
     import net.tqft.toolkit.functions.FixedPoint._
     (replace(reductions) _).fixedPoint(element)
   }
+  def allReplacements(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Iterator[Map[A, R]] = {
+    reductions.iterator.map(r => replace(r)(element)).filter(_ != element)
+  }
+  def allReplacementsRepeated(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Iterator[Map[A, R]] = {
+    Iterator(element) ++ allReplacements(reductions)(element).flatMap(allReplacementsRepeated(reductions))
+  }
 }
 
 object SubstitutionSpider {

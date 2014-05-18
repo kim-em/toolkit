@@ -2,13 +2,29 @@ package net.tqft.toolkit.algebra.spiders
 
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.orderings.Orderings
+import java.util.concurrent.ConcurrentHashMap
+import scala.collection.JavaConverters
+
+object PolyhedronNamer {
+  // global mutable state, oh my!
+  val names = {
+    import JavaConverters._
+    new ConcurrentHashMap[PlanarGraph, String]().asScala
+  }
+
+  def byName(name: String) = names.find(_._2 == name).map(_._1)
+  
+  private var count = 0
+  private def nextName = {
+    count = count + 1
+    "p" + count
+  }
+
+}
 
 trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
 
-  val names = scala.collection.mutable.Map[PlanarGraph, String](
-//    PlanarGraph(7, IndexedSeq(List(), List((6, 10), (3, 8), (4, 7), (5, 9)), List((3, 7), (6, 8), (5, 10), (4, 9))), List(2, 2), 0) -> "hopf"
-    )
-  def polyhedronReductions = names.toSeq.flatMap({ p =>
+  def polyhedronReductions = PolyhedronNamer.names.toSeq.flatMap({ p =>
     sphericalEquivalents(p._1).map({ q =>
       Reduction[PlanarGraph, MultivariableRationalFunction[A, String]](q, Map(PlanarGraph.empty -> Map(Map(p._2 -> 1) -> coefficientRing.one)))
     })
@@ -18,18 +34,12 @@ trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
     // TODO hack
     import Orderings._
     val o = Ordering.by({ s: String =>
-      names.find(_._2 == s ).map(p => p._1.numberOfInternalVertices).getOrElse(s match { case "d" => 0; case "b" => 2 })
-      }).refineBy(s => s)
+      PolyhedronNamer.names.find(_._2 == s).map(p => p._1.numberOfInternalVertices).getOrElse(s match { case "d" => 0; case "b" => 2 })
+    }).refineBy(s => s)
     new Ordering[String] {
-      override def toString = "polyhedronOrdering: " + (names.values.toSeq ++ Seq("b", "d")).sorted(o).mkString(" < ")
+      override def toString = "polyhedronOrdering: " + (PolyhedronNamer.names.values.toSeq ++ Seq("b", "d")).sorted(o).mkString(" < ")
       override def compare(x: String, y: String) = o.compare(x, y)
     }
-  }
-  
-  private var count = 0
-  private def nextName = {
-    count = count + 1
-    "p" + count
   }
 
   private def sphericalEquivalents_(p: PlanarGraph) = {
@@ -52,12 +62,13 @@ trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
         v
       } else {
         val ck = sphericalCanonicalForm(k)
-        if (!names.keys.exists(p => p == ck)) {
-          val newName = nextName
+        if (!PolyhedronNamer.names.keys.exists(p => p == ck)) {
+          require(ck.loops < 2 && ck.numberOfInternalVertices == 0 || ck.loops == 0)
+          val newName = PolyhedronNamer.nextName
           println("Naming new polyhedron:")
           println(ck)
           println(newName)
-          names += (ck -> newName)
+          PolyhedronNamer.names += (ck -> newName)
         }
         replace(polyhedronReductions)(Map(k -> v))(PlanarGraph.empty)
       }
