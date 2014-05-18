@@ -1,17 +1,11 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.algebra.spiders.MultivariableRationalFunctionSpider
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
-import net.tqft.toolkit.algebra.spiders.PlanarGraph
+import net.tqft.toolkit.algebra.spiders._
+import net.tqft.toolkit.algebra.mathematica._
+import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.collections.KSubsets
 import net.tqft.toolkit.algebra.matrices.Matrix
-import net.tqft.toolkit.algebra.mathematica._
-import net.tqft.toolkit.algebra.spiders.VertexType
-import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebraOverField
-import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebras
 
 case class SpiderData(
   spider: QuotientSpider,
@@ -35,7 +29,7 @@ case class SpiderData(
   }
 
   val complexity: Ordering[PlanarGraph] = {
-    ???
+    Ordering.by(_.numberOfInternalVertices)
   }
 
   lazy val polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
@@ -80,7 +74,11 @@ case class SpiderData(
         val denominatorLCM = polynomials.lcm(relation.map(_.denominator): _*)
 
         val whenDenominatorsVanish = declarePolynomialZero(denominatorLCM).toSeq.flatMap(_.considerDiagram(p))
-        val whenDenominatorsNonzero = declarePolynomialNonzero(denominatorLCM).map(_.copy(spider = spider.addReduction(???)))
+        val whenDenominatorsNonzero = declarePolynomialNonzero(denominatorLCM).map(
+          _.copy(spider = spider.addReduction(
+            Reduction(
+              p,
+              oldIndependentDiagrams.zip(relation.dropRight(1).map(rationalFunctions.negate)).toMap))))
 
         whenDenominatorsVanish ++ whenDenominatorsNonzero
       } else {
@@ -108,7 +106,15 @@ case class SpiderData(
 
   }
 
-  def declarePolynomialZero(r: MultivariablePolynomial[Fraction[BigInt], String]): Option[SpiderData] = {
+  def declarePolynomialZero(r: MultivariablePolynomial[Fraction[BigInt], String]): Seq[SpiderData] = {
+    val factors = {
+      import mathematica.Factor._
+      r.factor.keys.toSeq.ensuring(_.nonEmpty)
+    }
+    factors.flatMap(declareIrreduciblePolynomialZero)
+  }
+
+  def declareIrreduciblePolynomialZero(r: MultivariablePolynomial[Fraction[BigInt], String]): Option[SpiderData] = {
     val newGroebnerBasis = {
       import mathematica.GroebnerBasis._
       (groebnerBasis :+ r).computeGroebnerBasis
