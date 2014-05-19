@@ -105,10 +105,9 @@ object Permutations {
   //  private val preservingIntCached = Memo({ l: List[Int] => NonStrictIterable.from(preserving(l).toList) })
 
   def preserving[A](list: Seq[A]): Iterator[Permutation] = {
-    val listWithIndices = list.zipWithIndex
     val positions = list.zipWithIndex.groupBy(_._1).mapValues(_.map(_._2)).values.toIndexedSeq
-    val factors = positions map { l: Seq[Int] => of(l.size) }
-    val product = factors.reverse.foldLeft(Iterator(List[Permutation]()))((s0, s1) => s0.flatMap { a => s1.map(_ :: a) })
+    val factors = positions map { l: Seq[Int] => l.size }
+    val product = factors.reverse.foldLeft(Iterator(List[Permutation]()))((s0, s1) => s0.flatMap { a => of(s1).map(_ :: a) })
 
     def assemblePermutations(positions: IndexedSeq[Seq[Int]], permutations: List[Permutation]): Permutation = {
       (positions.flatten.inverse) permute ((positions zip permutations) flatMap { case (p, q) => q permute p })

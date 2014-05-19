@@ -22,6 +22,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
   override def scalarMultiply(a: A, p: MultivariablePolynomial[A, V]) = implementation.scalarMultiply(a, p.coefficients)
 
   override def fromInt(k: Int) = constant(ring.fromInt(k))
+  override def fromBigInt(k: BigInt) = constant(ring.fromBigInt(k))
 
   implicit val monomialOrdering: Ordering[Map[V, Int]]
 

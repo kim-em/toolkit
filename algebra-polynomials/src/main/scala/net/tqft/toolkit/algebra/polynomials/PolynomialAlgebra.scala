@@ -19,6 +19,7 @@ trait PolynomialAlgebra[A, P] extends Module[A, P] with AssociativeAlgebra[A, P]
   override lazy val zero = fromMap(Map.empty)
   override lazy val one = monomial(0, ring.one)
   override def fromInt(k: Int) = constant(ring.fromInt(k))
+  override def fromBigInt(k: BigInt) = constant(ring.fromBigInt(k))
   def identity = monomial(1, ring.one)
 
   def maximumDegree(p: P): Option[Int]

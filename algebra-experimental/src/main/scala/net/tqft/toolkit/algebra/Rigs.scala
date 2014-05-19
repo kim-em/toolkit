@@ -15,6 +15,7 @@ object Rigs {
       override def zero = rig.zero
       override def one = rig.one
       override def fromInt(k: Int) = rig.fromInt(k)
+      override def fromBigInt(k: BigInt) = rig.fromBigInt(k)
       override def add(x: A or ?, y: A or ?) = for (xa <- x.left; ya <- y.left) yield rig.add(xa, ya)
       override def multiply(x: A or ?, y: A or ?) = {
         if(x == Left(rig.zero) || y == Left(rig.zero)) {

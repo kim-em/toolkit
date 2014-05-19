@@ -30,6 +30,7 @@ object ApproximateReals {
   def BigDecimals(precision: Int = 128): ApproximateReals[BigDecimal] = BigDecimals(new java.math.MathContext(precision, java.math.RoundingMode.HALF_EVEN))
   def BigDecimals(mc: java.math.MathContext): ApproximateReals[BigDecimal] = new NumericTypes.FractionalField(scala.math.Numeric.BigDecimalIsFractional) with ApproximateReals[BigDecimal] {
     override def fromInt(x: Int) = BigDecimal(x, mc)
+    override def fromBigInt(x: BigInt) = BigDecimal(x, mc)
     override def fromDouble(x: Double) = BigDecimal(x, mc)
     override def fromBigDecimal(x: BigDecimal) = x(mc)
     override def setPrecision(x: BigDecimal) = x(mc)

@@ -167,7 +167,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
       println("Looking at rank " + n + " fusion matrices.")
 
       val classes = {
-        matricesBySize.getOrElse(n, Nil).groupBy(_.dimensionsSquared).values.toSeq.par
+        matricesBySize.getOrElse(n, Nil).groupBy(_.dimensionsSquared).values.toSeq
       }
 
       println("found classes: ")
@@ -177,7 +177,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
       }
 
       val n_tuples = {
-        (for (c <- classes.par; d_squared = c.head.dimensionsSquared) yield {
+        (for (c <- classes; d_squared = c.head.dimensionsSquared) yield {
           def acc(j: Int, partial: List[FusionMatrix]): Iterator[List[FusionMatrix]] = {
             j match {
               case 0 => Iterator(partial)
@@ -201,13 +201,17 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
       println("processing " + n_tuples.size + " " + n + "-tuples:")
       (for (t <- n_tuples) yield {
         println(t)
+        println(t.head.dimensionsSquared)
         import net.tqft.toolkit.permutations.Permutations
         import net.tqft.toolkit.permutations.Permutations._
-        val permutations = Permutations.preserving(t.head.dimensionsSquared).toSeq.par
+        val permutations = Permutations.preserving(t.head.dimensionsSquared).toSeq
 
         println(permutations.size + " possible permutations to consider, for each element of the tuple")
-        println("there are " + Permutations.preserving(t).size + " symmetries of the tuple")
+//        for(p <- permutations) println(p)
+        println("there are " + Permutations.preserving(t).size + " symmetries of the tuple") // TODO if this number is high in slow cases, we could switch to using cosets.
 
+        // TODO is this what Pinhas suggested? Or do we still need to do something here?
+        // https://mail.google.com/mail/u/0/?ui=2&pli=1#search/from%3Apinhas+AH/13bab0c8007a5103
         val permutedMatrices = t.foldLeft(Iterator(Seq.empty[Matrix[Int]]))({
           case (i: Iterator[Seq[Matrix[Int]]], m0: FusionMatrix) =>
             def permuteColumns(p: Permutation) = new Matrix(m0.matrix.numberOfColumns, p.permute(m0.matrix.entries.seq.transpose).transpose)

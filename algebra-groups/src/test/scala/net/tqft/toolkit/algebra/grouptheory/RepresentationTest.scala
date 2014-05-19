@@ -11,7 +11,7 @@ class RepresentationTest {
 
   @Test
   def testIrrepMultiplicities = {
-    val V = Representations.permutationRepresentation[Fraction[Int]](S_3)
+    val V = Representations.permutationRepresentation[Fraction[BigInt]](S_3)
     assertEquals(Seq(1, 0, 1), V.irrepMultiplicities)
   }
 
@@ -19,7 +19,7 @@ class RepresentationTest {
   def testTensorPowersDecompose = {
     for (k <- 1 to 7) {
       Logging.info("Looking at the " + k + "-th tensor power.")
-      val V = Representations.tensorPower(Representations.permutationRepresentation[Fraction[Int]](3), k)
+      val V = Representations.tensorPower(Representations.permutationRepresentation[Fraction[BigInt]](3), k)
       (S_3.reducedCharacters zip V.irrepMultiplicities).collect({ case (c: S_3.RationalCharacter, n) => assertEquals(n * c.degree, V.basisForIsotypicComponent(c.character).size) })
     }
   }
