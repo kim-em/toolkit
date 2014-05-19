@@ -24,7 +24,7 @@ object Fraction {
 
   def apply[@specialized(Int, Long) A: GCDRing](numerator: A, denominator: A): Fraction[A] = {
     def ring = implicitly[GCDRing[A]]
-    if (denominator == ring.zero) {
+    if (ring.zero_?(denominator)) {
       throw new ArithmeticException(s"Division by zero: Fraction($numerator, $denominator)")
     } else if (denominator == ring.one) {
       FractionWhole(numerator)

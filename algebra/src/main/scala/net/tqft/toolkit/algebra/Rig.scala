@@ -36,7 +36,7 @@ object Rig extends RigLowPriorityImplicits {
         val p = keys.add(a1, a2)
         newMap(p) = coefficients.add(newMap(p), multiplicativeCoefficients.multiply(b1, b2))
       }
-      Map() ++ newMap.filter({ case (_, v) => v != multiplicativeCoefficients.zero })
+      Map() ++ newMap.filter({ case (_, v) => !multiplicativeCoefficients.zero_?(v) })
     }
   }
 

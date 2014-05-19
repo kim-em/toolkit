@@ -15,7 +15,7 @@ object PrimeField {
       
       override def elements = (0 until Integers.from(p)).map(integers.fromInt).toSet
       override def inverse(x: I): I = {
-        if (x == integers.zero) throw new ArithmeticException("/ by zero")
+        if (integers.zero_?(x)) throw new ArithmeticException("/ by zero")
         normalForm(integers.extendedEuclideanAlgorithm(x, p)._1)
       }
       override def negate(x: I) = normalForm(integers.negate(x))

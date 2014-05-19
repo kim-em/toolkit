@@ -32,7 +32,7 @@ abstract class NumberField[A: Field] extends PolynomialQuotientRing[A] with Fiel
     (f _).memo
   }
   override def inverse(q: Polynomial[A]) = {
-    if (q == zero) throw new ArithmeticException("/ by zero")
+    if (zero_?(q)) throw new ArithmeticException("/ by zero")
     val (_, b, u) = (polynomials.extendedEuclideanAlgorithm(generator, q))
     require(maximumDegree(u) == Some(0))
     require(maximumDegree(b).get < maximumDegree(generator).get)

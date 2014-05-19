@@ -10,6 +10,7 @@ trait AdditiveSemigroup[@specialized(Int, Long, Float, Double) A] {
 
 trait Zero[@specialized(Int, Long, Float, Double) A] {
   def zero: A
+  def zero_?(a: A): Boolean = a == zero
 }
 
 object Zero {
@@ -36,7 +37,7 @@ object AdditiveMonoid extends AdditiveMonoidLowPriorityImplicits {
       for (m <- Seq(m1, m2); (a, b) <- m) {
         newMap(a) = coefficients.add(newMap.getOrElse(a, coefficients.zero), b)
       }
-      Map() ++ newMap.filter({ case (_, v) => v != coefficients.zero })
+      Map() ++ newMap.filter({ case (_, v) => !coefficients.zero_?(v) })
     }
 
     override lazy val zero = Map[A, B]()
@@ -50,7 +51,7 @@ object AdditiveMonoid extends AdditiveMonoidLowPriorityImplicits {
     }
     
     def truncate(s: Seq[B]): Seq[B] = {
-      val k = s.lastIndexWhere({ b: B => b != coefficients.zero })
+      val k = s.lastIndexWhere({ b: B => !coefficients.zero_?(b) })
       if(k == -1) {
         Seq.empty
       } else {
