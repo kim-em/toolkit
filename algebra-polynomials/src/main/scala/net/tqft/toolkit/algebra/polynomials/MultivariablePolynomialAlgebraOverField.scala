@@ -83,6 +83,8 @@ abstract class MultivariablePolynomialQuotientAlgebra[A: Field, V: Ordering] ext
   }
   override def lcm(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]) = normalForm(polynomials.lcm(x, y))
 
+  override def zero_?(x: MultivariablePolynomial[A, V]) = polynomials.zero == normalForm(x)
+  
   override def ring = implicitly[Field[A]]
   override def variableOrdering = implicitly[Ordering[V]]
 

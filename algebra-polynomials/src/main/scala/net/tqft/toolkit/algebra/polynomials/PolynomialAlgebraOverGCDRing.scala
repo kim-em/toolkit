@@ -101,7 +101,7 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
     if (maximumDegree(f0).getOrElse(0) < maximumDegree(f1).getOrElse(0)) {
       subresultant_gcd(f1, f0)
     } else {
-      if (isZero(f0)) {
+      if (zero_?(f0)) {
         f1
       } else {
         val seq = subresultantSequence(f0, f1)

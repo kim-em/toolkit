@@ -45,14 +45,13 @@ object PolynomialAlgebra {
       }
     }
     override def fromMap(m: Map[Int, A]) = m
-    override def fromSeq(s: Seq[A]) = s.zipWithIndex.collect({ case (a, i) if a != ring.zero => (i, a) }).toMap
+    override def fromSeq(s: Seq[A]) = s.zipWithIndex.collect({ case (a, i) if !ring.zero_?(a) => (i, a) }).toMap
 
     override def zero_?(p: Map[Int, A]) = {
       if (p.isEmpty) {
         true
       } else {
-        // TODO remove
-        require(p.valuesIterator.forall(_ != coefficients.zero))
+//        require(p.valuesIterator.forall(x => !coefficients.zero_?(x)))
         false
       }
     }
@@ -90,7 +89,7 @@ object PolynomialAlgebra {
         true
       } else {
         // TODO remove
-        require(!coefficients.zero_?(s.last))
+//        require(!coefficients.zero_?(s.last))
         false
       }
     }

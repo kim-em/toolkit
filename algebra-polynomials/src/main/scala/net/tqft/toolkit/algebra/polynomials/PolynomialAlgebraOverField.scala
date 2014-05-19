@@ -17,8 +17,8 @@ trait PolynomialAlgebraOverField[A, P] extends PolynomialAlgebraOverGCDRing[A, P
           val ax = leadingCoefficient(x).get
           val ay = leadingCoefficient(y).get
 
-          require(ax != ring.zero)
-          require(ay != ring.zero)
+          require(!ring.zero_?(ax))
+          require(!ring.zero_?(ay))
 
           val q = ring.quotient(ax, ay)
 
