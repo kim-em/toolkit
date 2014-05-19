@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.spiders.examples
 import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
 import net.tqft.toolkit.algebra.Fraction
+import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 
 abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with PolyhedronNamer[Fraction[BigInt]] {
   def generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])]
@@ -21,20 +22,31 @@ abstract class LowestWeightSpider extends FreeSpider {
     k <- 0 until v.allowedRotationStep;
     d = diagramSpider.stitchAt(PlanarGraph.star(v.perimeter, v.allowedRotationStep), k)
   ) yield {
-//    println(s"Adding reduction formula so $v is lowest weight: $d")
+    //    println(s"Adding reduction formula so $v is lowest weight: $d")
     Reduction(d, Map.empty[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]])
   }
-  
+
   override def reductions = super.reductions ++ lowestWeightReductions
 
   def asQuotientSpider = QuotientSpider(generators)
+
+  override def toString = "LowestWeightSpider(...)"
+
 }
 
 case class QuotientSpider(
-    generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])], 
-    extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty) extends LowestWeightSpider {
+  generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])],
+  extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty) extends LowestWeightSpider {
   override def reductions = super.reductions ++ extraReductions
-  
+
   def addReduction(reduction: Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]) = copy(extraReductions = extraReductions :+ reduction)
+
+  override def toString = {
+    import MathematicaForm._
+    val extraReductionsString = extraReductions.map({
+      case Reduction(big, small) => s"Reduction($big, ${small.map(p => (p._1, p._2.toMathematicaInputString))})"
+    }).toString
+    s"QuotientSpider($generators, $extraReductionsString))"
+  }
 }
 

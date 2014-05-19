@@ -6,7 +6,7 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
   override implicit def ring: GCDRing[A]
 
   def scalarExactQuotient(p: P, a: A): P
-  
+
   def content(p: P): A = {
     ring.gcd(toMap(p).values.toSeq: _*)
   }
@@ -182,8 +182,7 @@ object PolynomialAlgebraOverGCDRing {
 
 abstract class PolynomialsOverGCDRing[A: GCDRing] extends Polynomials[A] with PolynomialAlgebraOverGCDRing[A, Polynomial[A]] {
   override def scalarExactQuotient(p: Polynomial[A], a: A) = p.mapValues(x => ring.exactQuotient(x, a))
-    override def toString = s"PolynomialsOverGCDRing.over($ring)"
-
+  override def toString = s"PolynomialsOverGCDRing.over($ring)"
 }
 
 object PolynomialsOverGCDRing {

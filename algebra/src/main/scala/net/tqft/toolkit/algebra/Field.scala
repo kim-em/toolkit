@@ -37,8 +37,8 @@ object Field {
       } else if (y == zero) {
         x
       } else {
-        val denominatorGCD = ring.gcd(x.denominator, y.denominator)
-        Fraction(ring.add(ring.multiply(x.numerator, ring.exactQuotient(y.denominator, denominatorGCD)), ring.multiply(ring.exactQuotient(x.denominator, denominatorGCD), y.numerator)), ring.multiply(ring.exactQuotient(x.denominator, denominatorGCD), y.denominator))
+        val (denominatorGCD, xQuotient, yQuotient) = ring.gcdWithQuotients(x.denominator, y.denominator)
+        Fraction(ring.add(ring.multiply(x.numerator, yQuotient), ring.multiply(xQuotient, y.numerator)), ring.multiply(xQuotient, y.denominator))
       }
     }
     override def fromInt(x: Int) = Fraction.whole(ring.fromInt(x))

@@ -407,8 +407,10 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   }
 
   case class Subgraphs(shape: PlanarGraph) {
-    // TODO require that every edge of shape attaches to an internal vertex?
-
+    // require that every edge of shape attaches to an internal vertex
+    // this is an unfortunate implementation restriction!
+	require(shape.vertexFlags.head.map(_._1).distinct.size == shape.numberOfBoundaryPoints)
+    
     private def spider = implicitly[DiagramSpider[PlanarGraph]]
 
     private val packedShape = shape.relabelEdgesAndFaces

@@ -18,6 +18,10 @@ object FusionBimodulesSandbox extends App {
     println("Found a fusion module with algebra object " + fm.algebraObject)
     println(fm.structureCoefficients)
   }
+  for (fm <- AH3.candidateFusionModules) {
+    println("Found a fusion module with algebra object " + fm.algebraObject)
+    println(fm.structureCoefficients)
+  }
 
   //  for (fm <- AH1.candidateFusionModules) {
   //    val commutants = FusionBimodules.commutantsWithRank(fm, 15, 3)

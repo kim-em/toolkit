@@ -8,6 +8,10 @@ trait IntegralRig[@specialized(Int, Long, Float, Double) A] extends CommutativeR
 
 trait GCDRig[@specialized(Int, Long, Float, Double) A] extends IntegralRig[A] {
   def gcd(x: A, y: A): A
+  def gcdWithQuotients(x: A, y: A): (A, A, A) = {
+    val g = gcd(x, y)
+    (g, exactQuotient(x, g), exactQuotient(y, g))
+  }
   def gcd(xs: A*): A = {
     xs.size match {
       case 0 => zero
