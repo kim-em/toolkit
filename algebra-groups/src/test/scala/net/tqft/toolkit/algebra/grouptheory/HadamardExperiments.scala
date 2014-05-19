@@ -38,7 +38,7 @@ class HadamardExperiments extends FlatSpec with Matchers {
   "the tensor powers of the permutation representation" should "decompose correctly" in {
     for (k <- 2 to 4) {
       println("Looking at tensor power " + k)
-      val V = Representations.tensorPower(Representations.signedPermutationRepresentation[Fraction[Int]](half), k)
+      val V = Representations.tensorPower(Representations.signedPermutationRepresentation[Fraction[BigInt]](half), k)
       (half.reducedCharacters zip V.irrepMultiplicities).collect({
         case (c: half.RationalCharacter, n) if n == 12 => {
           println("Looking for the isotypic component with character " + c.character)

@@ -23,7 +23,7 @@ object PositiveSymmetricDecompositions extends Logging {
     import net.tqft.toolkit.functions.Memo._
     ({ x: Matrix[Int] => this.apply(x).toSeq }).memoUsing(transformedBucket)
   }
-  
+
   // return all ways to write M=AA^t, up to permuting the columns of A
   def apply(M: Matrix[Int]): Iterator[Matrix[Int]] = {
     info("finding positiveSymmetricDecompositions of " + M.entries)
@@ -40,7 +40,7 @@ object PositiveSymmetricDecompositions extends Logging {
         //        println("investigating new rows for " + d + " " + P.entries)
 
         // TODO (minor) don't need to recompute these all the time
-        val columnHashes = for(i <- 0 until P.numberOfColumns) yield P.takeColumn(i).hashCode
+        val columnHashes = for (i <- 0 until P.numberOfColumns) yield P.takeColumn(i).hashCode
         val rowLengths = P.entries.map(row => row.length - row.reverse.takeWhile(_ == 0).length)
 
         case class PartialRow(j: Int /* == entries.size */ , reversedEntries: List[Int], gaps: Seq[Int], remaining: Map[Int, Int]) {
@@ -53,7 +53,7 @@ object PositiveSymmetricDecompositions extends Logging {
               if ((m > 0 || next > 0) && (j == 0 || columnHashes(j) != columnHashes(j - 1) || next <= reversedEntries.head));
               newGaps = for (l <- 0 until m - 1) yield gaps(l) - next * P.entries(l)(j);
               // earlier rows end with lots of zeroes; once we reach the zeroes we should be checking that the gap is zero!
-              if (for (l <- (0 until m - 1).iterator) yield if(rowLengths(l) == j + 1) { newGaps(l) == 0 }  else { newGaps(l) >= 0}).forall(_ == true);
+              if (for (l <- (0 until m - 1).iterator) yield if (rowLengths(l) == j + 1) { newGaps(l) == 0 } else { newGaps(l) >= 0 }).forall(_ == true);
               newRemaining = {
                 if (next > 0) {
                   if (remaining(next) > 1) {
@@ -109,19 +109,20 @@ object PositiveSymmetricDecompositions extends Logging {
 
     val integerMatrices = new MatrixCategoryOverRing[Int]
 
-//    // we need to filter the results; if M wasn't positive definite there are spurious answers.
-//    val result = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
-//
-//    //    if (result.nonEmpty && !M.mapEntries(Conversions.integersAsDoubles).positiveSemidefinite_?) {
-//    //      println("positiveSemidefinite_? seems to fail on:")
-//    //      println(M)
-//    //      throw new IllegalArgumentException("positiveSemidefinite_? failed on " + M)
-//    //    }
-//
-//    result
+    // we need to filter the results; if M wasn't positive definite there are spurious answers.
+    val result = partialDecompositions(M.numberOfRows).filter(A => integerMatrices.compose(A, A.transpose) == M)
 
-    
-    PositiveSymmetricDecomposition(M.entries.toArray.map(_.toArray)).decompositions.map(Matrix.fromArray)
+    import CholeskyDecomposition._
+    if (result.nonEmpty && !M.mapEntries(_.toDouble).positiveSemidefinite_?) {
+      println("positiveSemidefinite_? seems to fail on:")
+      println(M)
+      throw new IllegalArgumentException("positiveSemidefinite_? failed on " + M)
+    }
+
+    result
+
+    // here's a newer implementation, but that seems to be broken
+    //    PositiveSymmetricDecomposition(M.entries.toArray.map(_.toArray)).decompositions.map(Matrix.fromArray)
   }
 
 }

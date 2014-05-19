@@ -10,6 +10,7 @@ trait Rig[@specialized(Int, Long, Float, Double) A] extends Monoid[A] with Addit
       Iterator.fill(x)(one).reduce(add)
     }
   }
+  def fromBigInt(x: BigInt): A = fromInt(x.toInt)
 }
 
 trait RigLowPriorityImplicits {

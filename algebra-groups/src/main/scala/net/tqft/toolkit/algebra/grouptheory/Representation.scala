@@ -16,7 +16,7 @@ trait Representation[A, F] extends Homomorphism[FiniteGroup, A, Matrix[F]] { rep
     }
   }
 
-  def irrepMultiplicities(implicit evidence: F =:= Fraction[Int]): Seq[Int] = {
+  def irrepMultiplicities(implicit evidence: F =:= Fraction[BigInt]): Seq[Int] = {
     val chi = character(Rationals.asInstanceOf[Field[F]]).map(evidence)
     for (c <- source.reducedCharacters) yield {
       source.characterPairing(chi, c)
@@ -34,13 +34,13 @@ trait Representation[A, F] extends Homomorphism[FiniteGroup, A, Matrix[F]] { rep
       import net.tqft.toolkit.collections.SparseSeq
       matrices.zero.par.mapRows({ r => r.toArray[F] })
     }
-    def projectorConjugacyClass(cc: Set[A], c: Fraction[Int]) = {
-      val result = matrices.scalarMultiply(field.fromRational(c), cc.foldLeft(volatileZeroMatrix)({ (m: Matrix[F], g: A) => blip; matrices.add(m, representation(g)) }))
+    def projectorConjugacyClass(cc: Set[A], c: Fraction[BigInt]) = {
+      val result = matrices.scalarMultiply(field.fromBigRational(c), cc.foldLeft(volatileZeroMatrix)({ (m: Matrix[F], g: A) => blip; matrices.add(m, representation(g)) }))
       require(result.entries.head.isInstanceOf[scala.collection.mutable.WrappedArray[_]])
       result
     }
     val projector = (source.conjugacyClasses zip chi.character).foldLeft(volatileZeroMatrix)({
-      (m: Matrix[F], p: (Orbit[A, A], Fraction[Int])) =>
+      (m: Matrix[F], p: (Orbit[A, A], Fraction[BigInt])) =>
         {
           Representation.info("Preparing projector to the " + chi.character + " isotypic component in conjugacy class " + p._1.representative)
           matrices.add(m, projectorConjugacyClass(p._1.elements, p._2))

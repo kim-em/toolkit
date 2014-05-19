@@ -45,6 +45,7 @@ class PermutationTest extends FlatSpec with Matchers {
     Permutations.preserving(List("A", "A", "B", "B", "A")).size should equal(12)
     Permutations.preserving(List(0, 1, 0, 1)).toStream should contain(IndexedSeq(0, 1, 2, 3))
     Permutations.preserving(List("A", "A", "B", "B", "A")).toStream should contain(IndexedSeq(0, 1, 2, 3, 4))
+    
   }
 
   "Permutations" should "return non-strict iterables (1)" in {
@@ -63,9 +64,9 @@ class PermutationTest extends FlatSpec with Matchers {
   }
   "Permutations" should "find all permutations mapping one list to another (2)" in {
     Permutations.findOneMapping(List(0, 1, 0, 1), List(0, 1, 0, 1)) should equal(Some(List(0, 1, 2, 3)))
-    val p = Permutations.mapping(List(0, 1, 0, 1), List(0, 1, 0, 1))
+    val p = Permutations.mapping(List(0, 1, 0, 1), List(0, 1, 0, 1)).toStream
     p.size should equal(4)
-    p.toStream.should(contain(IndexedSeq(0, 1, 2, 3)))
+    p.should(contain(IndexedSeq(0, 1, 2, 3)))
   }
   "Permutations" should "find all permutations preserving a large list without duplicates without crashing" in {
     Permutations.preserving((1 to 12).toList).size should equal(1)

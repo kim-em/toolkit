@@ -24,6 +24,7 @@ object PrimeField {
       override def multiply(x: I, y: I) = normalForm(integers.multiply(x, y))
       override def add(x: I, y: I) = normalForm(integers.add(x, y))
       override def fromInt(x: Int) = normalForm(integers.fromInt(x))
+      override def fromBigInt(x: BigInt) = normalForm(integers.fromBigInt(x))
       
       override def toString = s"PrimeField($p)"
     }

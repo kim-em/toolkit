@@ -11,6 +11,7 @@ trait DivisionRing[@specialized(Float, Double) A] extends EuclideanRing[A] with 
     }
   }
   def fromRational(x: Fraction[Int]) = quotient(fromInt(x.numerator), fromInt(x.denominator))
+  def fromBigRational(x: Fraction[BigInt]) = quotient(fromBigInt(x.numerator), fromBigInt(x.numerator))
 }
 
 // there's not much to say here; the only additional requirement to be a field is commutativity, but the type system doesn't see that.
@@ -41,6 +42,7 @@ object Field {
       }
     }
     override def fromInt(x: Int) = Fraction.whole(ring.fromInt(x))
+    override def fromBigInt(x: BigInt) = Fraction.whole(ring.fromBigInt(x))
     override def negate(x: Fraction[A]) = Fraction.alreadyReduced(ring.negate(x.numerator), x.denominator)
     override def inverse(x: Fraction[A]) = Fraction(x.denominator, x.numerator) // we can't assume it's already reduced, because we might want to move units around
     

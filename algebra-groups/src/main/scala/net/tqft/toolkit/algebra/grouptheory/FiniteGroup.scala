@@ -149,26 +149,26 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
   }
   object Character {
     //    import language.implicitConversions
-    implicit def liftRationals(x: Seq[Fraction[Int]]): RationalCharacter = new RationalCharacter {
+    implicit def liftRationals(x: Seq[Fraction[BigInt]]): RationalCharacter = new RationalCharacter {
       override val character = x
     }
     implicit def liftIntegers(x: Seq[Int]): RationalCharacter = new RationalCharacter {
-      override val character = x.map(Rationals.fromInt(_))
+      override val character = x.map(y => Fraction.whole(BigInt(y)))
     }
   }
 
-  trait RationalCharacter extends Character[Fraction[Int]] {
-    override def field = Rationals
-    override def degree = character.head.ensuring(_.denominator == 1).numerator
+  trait RationalCharacter extends Character[Fraction[BigInt]] {
+    override def field = implicitly[Field[Fraction[BigInt]]]
+    override def degree = character.head.ensuring(_.denominator == 1).numerator.toInt
   }
-  trait CyclotomicCharacter extends Character[Polynomial[Fraction[Int]]] {
+  trait CyclotomicCharacter extends Character[Polynomial[Fraction[BigInt]]] {
     def order: Int
     override def field = NumberField.cyclotomic(order)
-    override def degree = character.head.ensuring(_.maximumDegree.getOrElse(0) == 0).constantTerm.ensuring(_.denominator == 1).numerator
+    override def degree = character.head.ensuring(_.maximumDegree.getOrElse(0) == 0).constantTerm.ensuring(_.denominator == BigInt(1)).numerator.toInt
   }
 
   // This implementation of the Burnside-Dixon algorithm follows the description at http://www.maths.qmul.ac.uk/~rtb/mathpage/Richard%20Bayley's%20Homepage_files/Dixon.pdf
-  lazy val characters: Seq[Seq[Polynomial[Fraction[Int]]]] = {
+  lazy val characters: Seq[Seq[Polynomial[Fraction[BigInt]]]] = {
     val k = conjugacyClasses.size
 
     def classCoefficientSimultaneousEigenvectorsModPrime = {
@@ -237,8 +237,8 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
 
     val modP = PrimeField(preferredPrime)
 
-    val cyclotomicNumbers = NumberField.cyclotomic[Int](exponent)
-    val zeta = Polynomial.identity[Fraction[Int]]
+    val cyclotomicNumbers = NumberField.cyclotomic[BigInt](exponent)
+    val zeta = Polynomial.identity[Fraction[BigInt]]
     val chi = characterTableModPreferredPrime
     println("preferredPrime -> " + preferredPrime)
     println("chi -> " + chi)
@@ -261,7 +261,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
       cyclotomicNumbers.sum(for (s <- 0 until exponent) yield cyclotomicNumbers.multiplyByInt(zetapower(s), mu(i)(j)(s)))
     }).seq).seq
     val sortedCharacters = {
-      implicit val rationals = implicitly[OrderedField[Fraction[Int]]]
+      implicit val rationals = implicitly[OrderedField[Fraction[BigInt]]]
       unsortedCharacters.sortBy({ v => (v(0).constantTerm, v.tail.headOption.map({ p => rationals.negate(p.constantTerm) })) })
     }
 
@@ -288,7 +288,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
 
   def characterPairing[M, N](m: Character[M], n: Character[N]): Int = {
     def liftCharacterToCyclotomicFieldOfExponent(c: Character[_]) = {
-      val polynomials = implicitly[Polynomials[Fraction[Int]]]
+      val polynomials = implicitly[Polynomials[Fraction[BigInt]]]
       new CyclotomicCharacter {
         override val order = exponent
         override val character = c match {
@@ -300,7 +300,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
         }
       }
     }
-    val Q = NumberField.cyclotomic[Int](exponent)
+    val Q = NumberField.cyclotomic[BigInt](exponent)
     val result = Q.quotientByInt(
       Q.sum(
         for (((a, b), t) <- liftCharacterToCyclotomicFieldOfExponent(m).character zip liftCharacterToCyclotomicFieldOfExponent(n).character zip conjugacyClasses.map(_.size)) yield {
@@ -309,8 +309,8 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
       finiteGroup.size)
     require(result.maximumDegree.getOrElse(0) == 0)
     val rationalResult = result.constantTerm
-    require(rationalResult.denominator == 1)
-    rationalResult.numerator
+    require(rationalResult.denominator == BigInt(1))
+    rationalResult.numerator.toInt
   }
 
   def verifyOrthogonalityOfCharacters = {
@@ -321,17 +321,17 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
   // TODO rewrite this in terms of other stuff!
   lazy val tensorProductMultiplicities: Seq[Seq[Seq[Int]]] = {
     val k = conjugacyClasses.size
-    implicit val Q = NumberField.cyclotomic[Int](exponent)
+    implicit val Q = NumberField.cyclotomic[BigInt](exponent)
 
-    def pairing(x: Seq[Polynomial[Fraction[Int]]], y: Seq[Polynomial[Fraction[Int]]]): Polynomial[Fraction[Int]] = {
+    def pairing(x: Seq[Polynomial[Fraction[BigInt]]], y: Seq[Polynomial[Fraction[BigInt]]]): Polynomial[Fraction[BigInt]] = {
       Q.quotientByInt(Q.sum((x zip y zip conjugacyClasses.map(_.size)).map({ p => Q.multiplyByInt(Q.multiply(p._1._1, p._1._2), p._2) })), finiteGroup.size)
     }
 
-    def lower(p: Polynomial[Fraction[Int]]): Int = {
+    def lower(p: Polynomial[Fraction[BigInt]]): Int = {
       if (p == Q.zero || p.maximumDegree == Some(0)) {
         val c = p.constantTerm
         require(c.denominator == 1)
-        c.numerator
+        c.numerator.toInt
       } else {
         Logging.warn("Something went wrong computing a pairing between characters: not an integer!")
         ???
