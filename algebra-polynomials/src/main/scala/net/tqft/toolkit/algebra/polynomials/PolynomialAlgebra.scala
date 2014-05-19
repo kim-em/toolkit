@@ -12,8 +12,6 @@ trait PolynomialAlgebra[A, P] extends Module[A, P] with AssociativeAlgebra[A, P]
   def fromMap(m: Map[Int, A]): P
   def fromSeq(s: Seq[A]): P
   
-  def isZero(p: P): Boolean
-
   def monomial(i: Int, a: A = ring.one) = fromMap(new scala.collection.immutable.Map.Map1(i, a))
   def constant(a: A) = monomial(0, a)
   override lazy val zero = fromMap(Map.empty)
@@ -49,7 +47,7 @@ object PolynomialAlgebra {
     override def fromMap(m: Map[Int, A]) = m
     override def fromSeq(s: Seq[A]) = s.zipWithIndex.collect({ case (a, i) if a != ring.zero => (i, a) }).toMap
 
-    override def isZero(p: Map[Int, A]) = {
+    override def zero_?(p: Map[Int, A]) = {
       if (p.isEmpty) {
         true
       } else {
@@ -87,12 +85,12 @@ object PolynomialAlgebra {
     }
     override def fromSeq(s: Seq[A]) = s
 
-    override def isZero(s: Seq[A]): Boolean = {
+    override def zero_?(s: Seq[A]): Boolean = {
       if (s.isEmpty) {
         true
       } else {
         // TODO remove
-        require(s.last != coefficients.zero)
+        require(!coefficients.zero_?(s.last))
         false
       }
     }
@@ -128,11 +126,11 @@ abstract class Polynomials[A: Ring] extends PolynomialAlgebra[A, Polynomial[A]] 
   override def fromMap(m: Map[Int, A]) = Polynomial(m)
   override def maximumDegree(p: Polynomial[A]) = {
     p match {
-      case p: MapPolynomial[A] => p.coefficients.keySet.lastOption.ensuring(k => k.isEmpty || coefficientOf(p)(k.get) != ring.zero)
+      case p: MapPolynomial[A] => p.coefficients.keySet.lastOption.ensuring(k => k.isEmpty || !ring.zero_?(coefficientOf(p)(k.get)))
       case p: SeqPolynomial[A] => p.coefficients.size match {
         case 0 => None
         case k => {
-          require(p.coefficients.last != ring.zero)
+          require(!ring.zero_?(p.coefficients.last))
           Some(k - 1)
         }
       }
@@ -141,7 +139,7 @@ abstract class Polynomials[A: Ring] extends PolynomialAlgebra[A, Polynomial[A]] 
   override def leadingCoefficient(p: Polynomial[A]) = p match {
     case p: MapPolynomial[A] => p.coefficients.lastOption.map(_._2)
     case p: SeqPolynomial[A] => {
-      p.coefficients.lastIndexWhere({ a: A => a != ring.zero }) match {
+      p.coefficients.lastIndexWhere({ a: A => !ring.zero_?(a) }) match {
         case -1 => None
         case k => Some(p.coefficients(k))
       }
@@ -159,9 +157,9 @@ abstract class Polynomials[A: Ring] extends PolynomialAlgebra[A, Polynomial[A]] 
     }
   }
 
-  override def isZero(p: Polynomial[A]): Boolean = p match {
-    case p: MapPolynomial[A] => mapImplementation.isZero(p.coefficients)
-    case p: SeqPolynomial[A] => seqImplementation.isZero(p.coefficients)
+  override def zero_?(p: Polynomial[A]): Boolean = p match {
+    case p: MapPolynomial[A] => mapImplementation.zero_?(p.coefficients)
+    case p: SeqPolynomial[A] => seqImplementation.zero_?(p.coefficients)
   }
 
   override def monomial(i: Int, a: A = ring.one) = {

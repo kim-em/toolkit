@@ -6,7 +6,7 @@ trait DivisionRing[@specialized(Float, Double) A] extends EuclideanRing[A] with 
   override def remainder(x: A, y: A) = zero
   def quotientByInt(x: A, y: Int): A = {
     quotientRemainder(x, fromInt(y)) match {
-      case (q, r) if r == zero => q
+      case (q, r) if zero_?(r) => q
       case _ => throw new ArithmeticException("In the division ring " + this + ", " + x + " is not divisible by " + y)
     }
   }
@@ -32,9 +32,9 @@ object Field {
       }
     }
     override def add(x: Fraction[A], y: Fraction[A]) = {
-      if (x == zero) {
+      if (zero_?(x)) {
         y
-      } else if (y == zero) {
+      } else if (zero_?(y)) {
         x
       } else {
         val (denominatorGCD, xQuotient, yQuotient) = ring.gcdWithQuotients(x.denominator, y.denominator)

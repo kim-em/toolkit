@@ -35,7 +35,7 @@ trait Monoid[@specialized(Int, Long, Float, Double) A] extends Semigroup[A] with
     def integers = implicitly[IntegerModel[I]]
     require(integers.compare(k, integers.zero) >= 0)
     val two = integers.fromInt(2)
-    if (k == integers.zero) {
+    if (integers.zero_?(k)) {
       one
     } else if (k == integers.one) {
       x
@@ -44,7 +44,7 @@ trait Monoid[@specialized(Int, Long, Float, Double) A] extends Semigroup[A] with
       var e = k
       var result = one
       while (e != 0) {
-        if (integers.remainder(e, two) != integers.zero) {
+        if (!integers.zero_?(integers.remainder(e, two))) {
           result = multiply(result, b)
         }
         e = integers.quotient(e, two)

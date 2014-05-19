@@ -36,14 +36,14 @@ trait EuclideanRig[@specialized(Int, Long, Float, Double) A] extends GCDRig[A] {
 
   override def exactQuotientOption(x: A, y: A) = {
     quotientRemainder(x, y) match {
-      case (q, r) if r == zero => Some(q)
+      case (q, r) if zero_?(r) => Some(q)
       case _ => None
     }
   }
 
   @scala.annotation.tailrec
   final def euclideanAlgorithm(x: A, y: A): A = {
-    if (y == zero) {
+    if (zero_?(y)) {
       x
     } else {
       euclideanAlgorithm(y, remainder(x, y))
@@ -53,7 +53,7 @@ trait EuclideanRig[@specialized(Int, Long, Float, Double) A] extends GCDRig[A] {
   override def gcd(x: A, y: A): A = euclideanAlgorithm(x, y)
 
   def digits(x: A, base: A = fromInt(10)): Seq[A] = {
-    if (x == zero) {
+    if (zero_?(x)) {
       Seq.empty
     } else {
       quotientRemainder(x, base) match {
@@ -67,7 +67,7 @@ trait GCDRing[@specialized(Int, Long, Float, Double) A] extends GCDRig[A] with C
 
 trait EuclideanRing[@specialized(Int, Long, Float, Double) A] extends EuclideanRig[A] with GCDRing[A] with CommutativeRing[A] {
 //  final def extendedEuclideanAlgorithm_(x: A, y: A): (A, A, A) = {
-//    if (y == zero) {
+//    if (zero_?(y)) {
 //      (one, zero, x)
 //    } else {
 //      val (a1, b1, g) = extendedEuclideanAlgorithm_(y, remainder(x, y))
@@ -88,7 +88,7 @@ trait EuclideanRing[@specialized(Int, Long, Float, Double) A] extends EuclideanR
     var r1 = y
     var r0 = x
     var z = s1
-    while(r1 != zero) {
+    while(!zero_?(r1)) {
       val q = quotient(r0, r1)
       z = r1
       r1 = subtract(r0, multiply(q, r1))

@@ -39,7 +39,7 @@ object VectorOperations extends net.tqft.toolkit.Logging {
       array
     } else if (v.isInstanceOf[SparseSeq[_]]) {
       val s = v.asInstanceOf[SparseSeq[A]]
-      SparseSeq.withEntries(v.size, for ((b, i) <- s.asInstanceOf[SparseSeq[A]].nonZeroEntries; r = rig.multiply(a, b); if (r != rig.zero)) yield (r, i), rig.zero)
+      SparseSeq.withEntries(v.size, for ((b, i) <- s.asInstanceOf[SparseSeq[A]].nonZeroEntries; r = rig.multiply(a, b); if rig.zero_?(r)) yield (r, i), rig.zero)
     } else {
       v map { x => rig.multiply(a, x) }
     }

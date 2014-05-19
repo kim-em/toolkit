@@ -30,7 +30,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
   def monomial(v: V): MultivariablePolynomial[A, V] = Map(Map(v -> 1) -> ring.one)
   def monomial(m: Map[V, Int]): MultivariablePolynomial[A, V] = Map(m -> ring.one)
   def monomial(m: Map[V, Int], a: A): MultivariablePolynomial[A, V] = {
-    if (a == ring.zero) {
+    if (ring.zero_?(a)) {
       Map.empty[Map[V, Int], A]
     } else {
       Map(m -> a)
@@ -55,7 +55,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
     x.coefficients.keys.flatMap(_.get(v)).maxOption match {
       case Some(d) => Some(d)
       case None => {
-        x.coefficients.find(p => p._2 != ring.zero).map(_ => 0)
+        x.coefficients.find(p => !ring.zero_?(p._2)).map(_ => 0)
       }
     }
   }
@@ -64,7 +64,7 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
     val result = (for (
       k <- 0 +: x.coefficients.keys.flatMap(_.get(v)).toSeq;
       c = coefficientOfOneVariable(v, k)(x);
-      if c != zero
+      if !zero_?(c)
     ) yield {
       k -> c
     }).toMap[Int, MultivariablePolynomial[A, V]]

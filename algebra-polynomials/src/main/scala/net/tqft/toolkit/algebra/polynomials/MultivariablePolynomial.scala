@@ -19,7 +19,7 @@ object MultivariablePolynomial {
   implicit def liftCoefficientsToBigInts[V](coefficients: Map[Map[V, Int], Int]): MultivariablePolynomial[BigInt, V] = MultivariablePolynomial(coefficients.mapValues(a => a))
   implicit def liftCoefficientsToPolynomials[A: Rig, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[A], V] = lift(coefficients.mapValues(a => a))
   implicit def constant[A: Rig, V](a: A): MultivariablePolynomial[A, V] = {
-    if (a == implicitly[Rig[A]].zero) {
+    if (implicitly[Rig[A]].zero_?(a)) {
       MultivariablePolynomial(Map.empty)
     } else {
       MultivariablePolynomial(new scala.collection.immutable.Map.Map1(Map.empty, a))

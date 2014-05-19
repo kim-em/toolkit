@@ -61,7 +61,7 @@ object CantorZassenhausFactoring {
     def integers = implicitly[IntegerModel[I]]
     override def factorSquareFree(f: Polynomial[Polynomial[I]]): Seq[Polynomial[Polynomial[I]]] = {
       val quotient = PolynomialQuotientRing(f)(polynomials.ring)
-      val b = Iterator.continually(polynomials.randomPolynomial(polynomials.maximumDegree(f).get)).filter(p => p != polynomials.one && p != polynomials.fromInt(-1) && p != polynomials.zero).next
+      val b = Iterator.continually(polynomials.randomPolynomial(polynomials.maximumDegree(f).get)).filter(p => p != polynomials.one && p != polynomials.fromInt(-1) && !polynomials.zero_?(p)).next
       val a = quotient.power(b, integers.quotient(integers.subtract(polynomials.ring.order, integers.one),integers.fromInt(2)))
       val factors = Seq(polynomials.gcd(f, a), polynomials.gcd(f, polynomials.add(a, polynomials.one)), polynomials.gcd(f, polynomials.subtract(a, polynomials.one))).filter(_ != polynomials.one)
       if(factors.size == 1) {

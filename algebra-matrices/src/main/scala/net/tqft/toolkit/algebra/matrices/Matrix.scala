@@ -178,7 +178,7 @@ class Matrix[B](
           case Some(k) => {
             rest.map({
               case (row, index) =>
-                (if (row(k) == field.zero) {
+                (if (field.zero_?(row(k))) {
                   if (forward) {
                     row.drop(k + 1)
                   } else {
