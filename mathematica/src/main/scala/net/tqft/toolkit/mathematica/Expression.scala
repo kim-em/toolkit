@@ -40,6 +40,8 @@ object Expression_ {
 
   implicit def liftString(s: String): Expression_ = StringExpression(s)
   implicit def liftInt(i: Int): Expression_ = IntegerExpression(new Apint(i))
+  implicit def liftSeq(s: Seq[Expression_]): Expression_ = Symbols.List(s:_*)
+  implicit def liftSeqSeq(s: Seq[Seq[Expression_]]): Expression_ = Symbols.List(s.map(liftSeq):_*)
 
   private implicit object ExpressionBuilder extends org.omath.expression.ExpressionBuilder[Expression_] {
     override def createStringExpression(value: String) = StringExpression(value)

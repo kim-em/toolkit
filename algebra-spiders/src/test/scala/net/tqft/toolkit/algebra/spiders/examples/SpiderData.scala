@@ -25,8 +25,9 @@ case class SpiderData(
   groebnerBasis = ${groebnerBasis.toMathematicaInputString},
   nonzero = ${nonzero.toMathematicaInputString},
   dimensionBounds = $dimensionBounds,
-  dimensionLowerBounds = $dimensionLowerBounds,
-  allPolyhedra = $allPolyhedra,
+  dimensionLowerBounds: $dimensionLowerBounds,
+  allPolyhedra: $allPolyhedra,
+  reducibleDiagrams: ${spider.extraReductions.map(_.big)},
   consideredDiagramsVertexBound = $consideredDiagramsVertexBound,
   consideredDiagrams = $consideredDiagrams,
   independentDiagrams = $independentDiagrams
@@ -57,6 +58,17 @@ case class SpiderData(
   lazy val polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
   lazy val rationalFunctions = Field.fieldOfFractions(polynomials)
 
+  def addReduction(r: Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]): Seq[SpiderData] = {
+    copy(spider = spider.addReduction(r)).reevaluateAllPolyhedra.map(_.simplifyReductions)
+  }
+
+  def simplifyReductions: SpiderData = {
+    spider.extraReductions.tails.find(tail => tail.nonEmpty && tail.tail.find(d => tail.head.big.Subgraphs(d.big).excisions.nonEmpty).nonEmpty) match {
+      case Some(tail) => copy(spider = spider.copy(extraReductions = spider.extraReductions.filterNot(_.big == tail.head.big))).simplifyReductions
+      case None => this
+    }
+  }
+
   def considerDiagram(p: PlanarGraph): Seq[SpiderData] = {
     val boundary = p.numberOfBoundaryPoints
     val newConsideredDiagrams = {
@@ -72,7 +84,7 @@ case class SpiderData(
     lazy val lastRow = spider.innerProductMatrix(Seq(p), candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
     def matrix = rectangularMatrix ++ lastRow
     lazy val determinant = Matrix(candidateIndependentDiagrams.size, matrix).determinant(rationalFunctions)
-    lazy val determinantNumerator = determinant.ensuring(r => definitelyNonzero_?(r.denominator)).numerator
+    lazy val determinantNumerator = determinant /*.ensuring(r => definitelyNonzero_?(r.denominator))*/ .numerator
 
     val addIndependentDiagram: Option[SpiderData] = {
       if (candidateIndependentDiagrams.size <= dimensionBounds(boundary)) {
@@ -85,46 +97,45 @@ case class SpiderData(
       }
     }
     val addDependentDiagram: Seq[SpiderData] = {
-      val nullSpace = Matrix(oldIndependentDiagrams.size + 1, rectangularMatrix).nullSpace(rationalFunctions)
+      println("computing nullspace of: ")
+      println(rectangularMatrix.toMathematicaInputString)  
+      import mathematica.NullSpace.ofMultivariableRationalFunctionMatrix._
+      
+//      val nullSpace = Matrix(oldIndependentDiagrams.size + 1, rectangularMatrix).nullSpace(rationalFunctions)
+      val nullSpace = {
+        if(oldIndependentDiagrams.size == 0) {
+          Seq(Seq(rationalFunctions.one))
+        } else {
+          rectangularMatrix.nullSpace
+        }
+      }
 
-      println("matrix: ")
-      println(rectangularMatrix.toMathematicaInputString)
       println("nullspace: ")
       println(nullSpace.toMathematicaInputString)
 
-      if (nullSpace.size > 1) {
-        // the old diagrams have become dependent!
-        // note to self --- reevaluating all polyhedra whenever we add a reduction seems to avoid this possibility
-        println("old diagrams must have become dependent")
-        require(false)
-        Seq.empty
+      val relation = nullSpace.ensuring(_.size == 1).head
+      require(relation.last == rationalFunctions.one)
+
+      // is it a reducing relation?
+      val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case (x, i) if x != rationalFunctions.zero => i })
+      val reducing = relation.size > 1 && nonzeroPositions.forall({ i => complexity.lt(oldIndependentDiagrams(i), p) })
+      println(s"reducing: $reducing")
+
+      if (reducing && p.vertexFlags.head.map(_._1).distinct.size == p.numberOfBoundaryPoints /* a very annoying implementation restriction */ ) {
+        // are there denominators? we better ensure they are invertible
+        val denominatorLCM = polynomials.lcm(relation.map(_.denominator): _*)
+
+        val whenDenominatorsVanish = declarePolynomialZero(denominatorLCM).toSeq.flatMap(_.considerDiagram(p))
+
+        require(p.numberOfInternalVertices > 0)
+        val newReduction = Reduction(p, oldIndependentDiagrams.zip(relation.dropRight(1).map(rationalFunctions.negate)).toMap)
+        val whenDenominatorsNonzero = declarePolynomialNonzero(denominatorLCM).toSeq.flatMap(_.addReduction(newReduction)).map(_.copy(consideredDiagrams = newConsideredDiagrams))
+
+        whenDenominatorsVanish ++ whenDenominatorsNonzero
       } else {
-
-        val relation = nullSpace.ensuring(_.size == 1).head
-        require(relation.last == rationalFunctions.one)
-
-        // is it a reducing relation?
-        val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case (x, i) if x != rationalFunctions.zero => i })
-        val reducing = nonzeroPositions.nonEmpty && nonzeroPositions.forall({ i => complexity.lt(oldIndependentDiagrams(i), p) })
-
-        if (reducing) {
-          // are there denominators? we better ensure they are invertible
-          val denominatorLCM = polynomials.lcm(relation.map(_.denominator): _*)
-
-          val whenDenominatorsVanish = declarePolynomialZero(denominatorLCM).toSeq.flatMap(_.considerDiagram(p))
-
-          require(p.numberOfInternalVertices > 0)
-          val newReduction = Reduction(p, oldIndependentDiagrams.zip(relation.dropRight(1).map(rationalFunctions.negate)).toMap)
-          val whenDenominatorsNonzero = declarePolynomialNonzero(denominatorLCM).toSeq.flatMap(
-            _.copy(spider = spider.addReduction(
-              newReduction)).reevaluateAllPolyhedra)
-
-          whenDenominatorsVanish ++ whenDenominatorsNonzero
-        } else {
-          // hmm... just ask that the determinant vanishes
-          // TODO record non-reducing relations!
-          declarePolynomialZero(determinantNumerator).toSeq.map(_.copy(consideredDiagrams = newConsideredDiagrams))
-        }
+        // hmm... just ask that the determinant vanishes
+        // TODO record non-reducing relations!
+        declarePolynomialZero(determinantNumerator).toSeq.map(_.copy(consideredDiagrams = newConsideredDiagrams))
       }
     }
 
@@ -133,23 +144,27 @@ case class SpiderData(
 
   def normalizePolynomial(p: MultivariablePolynomial[Fraction[BigInt], String]) = {
     def bigRationals = implicitly[Field[Fraction[BigInt]]]
-    val a = p.coefficients(polynomials.leadingMonomial(p).get)
-    polynomials.scalarMultiply(bigRationals.inverse(a), p)
+    polynomials.leadingMonomial(p) match {
+      case Some(lm) => polynomials.scalarMultiply(bigRationals.inverse(p.coefficients(lm)), p)
+      case None => polynomials.zero
+    }
+
   }
-  
-  def definitelyNonzero_?(p: MultivariablePolynomial[Fraction[BigInt], String]): Boolean = {
-    import mathematica.Factor._
-    val factors = p.factor.keys.map(normalizePolynomial)
-    for (f <- factors.filterNot(f => f == polynomials.one || nonzero.contains(f))) println("factor which ought to be zero: " + f.toMathematicaInputString)
-    factors.forall(f => f == polynomials.one || nonzero.contains(f))
-  }
+
+  //  def definitelyNonzero_?(p: MultivariablePolynomial[Fraction[BigInt], String]): Boolean = {
+  //    import mathematica.Factor._
+  //    val factors = p.factor.keys.map(normalizePolynomial)
+  //    for (f <- factors.filterNot(f => f == polynomials.one || nonzero.contains(f))) println("factor which ought to be zero: " + f.toMathematicaInputString)
+  //    factors.forall(f => f == polynomials.one || nonzero.contains(f))
+  //  }
 
   def declarePolynomialNonzero(p: MultivariablePolynomial[Fraction[BigInt], String]): Option[SpiderData] = {
     if (p != polynomials.zero) {
       val newNonzero = {
         import mathematica.Factor._
-        val factors = p.factor.keys.map(normalizePolynomial).filterNot(_ == polynomials.one)
-        (nonzero ++ factors).distinct
+        println("Factoring something we're insisting is nonzero: " + p.toMathematicaInputString)
+        val factors = (p.factor.keySet + p).map(normalizePolynomial).filterNot(_ == polynomials.one)
+        (nonzero ++ factors).distinct // we add both p and its factors to the list; Groebner basis reduction could kill p without killing any factors
       }
       Some(copy(nonzero = newNonzero))
     } else {
@@ -159,11 +174,16 @@ case class SpiderData(
   }
 
   def declarePolynomialZero(r: MultivariablePolynomial[Fraction[BigInt], String]): Seq[SpiderData] = {
-    val factors = {
-      import mathematica.Factor._
-      r.factor.keys.toSeq.ensuring(_.nonEmpty)
+    if (r == polynomials.zero) {
+      Seq(this)
+    } else {
+      val factors = {
+        import mathematica.Factor._
+        println("Factoring something we're going to set to zero: " + r.toMathematicaInputString)
+        normalizePolynomial(r).factor.keys.toSeq.ensuring(_.nonEmpty)
+      }
+      factors.flatMap(declareIrreduciblePolynomialZero)
     }
-    factors.flatMap(declareIrreduciblePolynomialZero)
   }
 
   def declareIrreduciblePolynomialZero(r: MultivariablePolynomial[Fraction[BigInt], String]): Option[SpiderData] = {
@@ -178,11 +198,17 @@ case class SpiderData(
       None
     } else {
       // does this kill anything in nonzero? 
-      val newNonzero = nonzero.map(MultivariablePolynomialAlgebras.quotient(newGroebnerBasis).normalForm).filter(_ != polynomials.one)
+      val newPolynomials = MultivariablePolynomialAlgebras.quotient(newGroebnerBasis)
+      val newNonzero = nonzero.map(newPolynomials.normalForm).map(normalizePolynomial).filter(_ != polynomials.one)
       if (newNonzero.exists(_ == polynomials.zero)) {
         None
       } else {
+        // TODO if we have non-reducing relations, these will have to be updated as well
+        val newExtraReductions = spider.extraReductions.map({
+          case Reduction(big, small) => Reduction(big, small.map({ p => (p._1, Fraction(newPolynomials.normalForm(p._2.numerator), newPolynomials.normalForm(p._2.denominator))) }))
+        })
         Some(copy(
+          spider = spider.copy(extraReductions = newExtraReductions),
           groebnerBasis = newGroebnerBasis,
           nonzero = newNonzero))
       }
@@ -220,17 +246,14 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     nonzero = Seq(MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1)))),
     Seq.empty,
-    dimensionBounds = Seq(1, 0, 1, 0, 3),
+    dimensionBounds = Seq(1, 0, 1, 0, 3, 0, 14),
     Seq.empty,
     Seq.empty,
     Seq.empty)
 
-  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (4, 0), (4, 1), (4, 2))
+  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (4, 0), (4, 1), (4, 2), (6, 0), (6, 1), (6, 2))
 
-  // TODO nonzero shouldn't ever contain -1
-  // TODO verify that all the spiders at this point have reductions for R2
   // TODO start computing relations, also
-  // TODO simplify reductions, by discarding old reductions that are consequences of new ones
 
   val results = initialData.considerDiagrams(steps)
 

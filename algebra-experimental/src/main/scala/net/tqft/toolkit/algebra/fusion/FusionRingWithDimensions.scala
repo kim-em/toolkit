@@ -198,23 +198,27 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
 
       import net.tqft.toolkit.collections.GroupBy._
 
-      println("processing " + n_tuples.size + " " + n + "-tuples:")
+      //      println("processing " + n_tuples.size + " " + n + "-tuples:")
       (for (t <- n_tuples) yield {
-        println(t)
-        println(t.head.dimensionsSquared)
+        //        println(t)
         import net.tqft.toolkit.permutations.Permutations
         import net.tqft.toolkit.permutations.Permutations._
         val permutations = Permutations.preserving(t.head.dimensionsSquared).toSeq
 
-        println(permutations.size + " possible permutations to consider, for each element of the tuple")
-//        for(p <- permutations) println(p)
-        println("there are " + Permutations.preserving(t).size + " symmetries of the tuple") // TODO if this number is high in slow cases, we could switch to using cosets.
+        //        println(permutations.size + " possible permutations to consider, for each element of the tuple")
+        //        for(p <- permutations) println(p)
+        //        println("there are " + Permutations.preserving(t).size + " symmetries of the tuple") // TODO if this number is high in slow cases, we could switch to using cosets.
 
-        // TODO is this what Pinhas suggested? Or do we still need to do something here?
-        // https://mail.google.com/mail/u/0/?ui=2&pli=1#search/from%3Apinhas+AH/13bab0c8007a5103
         val permutedMatrices = t.foldLeft(Iterator(Seq.empty[Matrix[Int]]))({
           case (i: Iterator[Seq[Matrix[Int]]], m0: FusionMatrix) =>
             def permuteColumns(p: Permutation) = new Matrix(m0.matrix.numberOfColumns, p.permute(m0.matrix.entries.seq.transpose).transpose)
+
+            def verifyFrobeniusReciprocity(structureCoefficients: Seq[Matrix[Int]]): Boolean = {
+              (for (a <- (0 until fr.rank).iterator; x <- 0 until structureCoefficients.size) yield {
+                structureCoefficients.last.entries(a)(x) == structureCoefficients(x).entries(fr.duality(a))(structureCoefficients.size - 1)
+              }).forall(_ == true)
+            }
+
             def verifyPartialAssociativity(structureCoefficients: Seq[Matrix[Int]]): Boolean = {
 
               val n0 = structureCoefficients.size
@@ -242,6 +246,7 @@ trait FusionRingWithDimensions extends FusionRing[Int] with DimensionFunction { 
               pm0 <- permutations.map(permuteColumns _).distinct;
               if (pm0.entries(0)(s.size) == 1);
               ns = s :+ pm0;
+              if verifyFrobeniusReciprocity(ns);
               if verifyPartialAssociativity(ns)
             ) yield {
               ns
