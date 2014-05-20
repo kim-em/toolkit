@@ -17,9 +17,9 @@ case class FiniteFieldPolynomialSolver[A: Finite:  Polynomials]() extends Polyno
   
   // FIXME is this actually correct? p-th roots and all that
   override def roots(p: Polynomial[A]) = {
-    val rootsWithoutMultiplicities = implicitly[Finite[A]].elements.filter(a => polynomials.evaluateAt(a)(p) == zero)
+    val rootsWithoutMultiplicities = implicitly[Finite[A]].elements.filter(a => polynomials.ring.zero_?(polynomials.evaluateAt(a)(p)))
     rootsWithoutMultiplicities.map({ a =>
-      a -> Iterator.iterate(p)(polynomials.formalDerivative).zipWithIndex.find(p => polynomials.evaluateAt(a)(p._1) != zero).get._2
+      a -> Iterator.iterate(p)(polynomials.formalDerivative).zipWithIndex.find(p => !polynomials.ring.zero_?(polynomials.evaluateAt(a)(p._1))).get._2
     }).toMap
   }
 }

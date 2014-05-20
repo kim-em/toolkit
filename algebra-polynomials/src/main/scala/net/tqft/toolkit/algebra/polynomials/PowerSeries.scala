@@ -22,7 +22,7 @@
 //}
 //
 //case class DensePowerSeries[A](override val coefficients: Stream[A]) extends PowerSeries[A] {
-//  override def nonzeroCoefficients(implicit zero: Zero[A]) = coefficients.zipWithIndex.map(_.swap).filter(_._2 != zero.zero)
+//  override def nonzeroCoefficients(implicit zero: Zero[A]) = coefficients.zipWithIndex.map(_.swap).filter(x => !zero.zero_?(x._2))
 //}
 //
 //object PowerSeries {

@@ -138,8 +138,8 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
           val ax = leadingCoefficient(x).get
           val ay = leadingCoefficient(y).get
 
-          require(ax != ring.zero)
-          require(ay != ring.zero)
+          require(!ring.zero_?(ax) )
+          require(!ring.zero_?(ay))
 
           ring.exactQuotientOption(ax, ay) match {
             case None => None

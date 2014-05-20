@@ -18,7 +18,7 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
         newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)
       }
     }
-    Map() ++ newMap.filter(_._2 != ring.zero)
+    Map() ++ newMap.filter(x => !ring.zero_?(x._2))
   }
 
   def replace(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Map[A, R] = {
@@ -54,7 +54,7 @@ object SubstitutionSpider {
           val p = ring.multiply(eigenvalueFactor1, eigenvalueFactor2, r)
           newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)
         }
-        Map() ++ newMap.filter(_._2 != ring.zero)
+        Map() ++ newMap.filter(x => !ring.zero_?(x._2))
       }
     }
   }

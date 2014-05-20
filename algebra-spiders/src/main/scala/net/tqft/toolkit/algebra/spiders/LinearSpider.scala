@@ -38,7 +38,7 @@ object LinearSpider {
         val s = f(a)
         newMap(s) = newMap.get(s).map(v => ring.add(v, r)).getOrElse(r)
       }
-      Map() ++ newMap.filter(_._2 != ring.zero)
+      Map() ++ newMap.filter(x => !ring.zero_?(x._2))
     }
 
     override def rotate(map: Map[A, R], k: Int) = map.map(p => (diagramSpider.rotate(p._1, k), p._2))
@@ -49,7 +49,7 @@ object LinearSpider {
         val p = ring.multiply(r, s)
         newMap(t) = newMap.get(t).map(v => ring.add(v, p)).getOrElse(p)
       }
-      Map() ++ newMap.filter(_._2 != ring.zero)
+      Map() ++ newMap.filter(x => !ring.zero_?(x._2))
     }
     override def stitch(map: Map[A, R]) = mapKeys(diagramSpider.stitch)(map)
     override def canonicalForm(map: Map[A, R]) = {
@@ -59,7 +59,7 @@ object LinearSpider {
         val p = ring.multiply(r, eigenvalue(rotations))
         newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)
       }
-      Map() ++ newMap.filter(_._2 != ring.zero)
+      Map() ++ newMap.filter(x => !ring.zero_?(x._2))
     }
 
     override def circumference(map: Map[A, R]) = diagramSpider.circumference(map.head._1)
