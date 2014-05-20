@@ -96,5 +96,10 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
     val e = q.Subgraphs(PlanarGraph(7,Vector(List(), List((3,8), (4,7), (5,9), (6,10)), List((3,7), (6,8), (5,10), (4,9))),IndexedSeq(1, 1),0)).excisions.toList
     e.size should equal(4)
   }
+  "" should "" in {
+    val q = PlanarGraph(7,Vector(Vector((6,7), (6,8), (10,7), (10,23)), List((2,10), (3,7), (4,9), (5,11)), List((3,9), (2,7), (16,10), (15,24)), List((4,11), (15,9), (16,24), (5,10))),IndexedSeq(1, 1, 1),0)
+    val e = q.Subgraphs(PlanarGraph(10,Vector(List(), List((6,12), (9,13), (7,11), (8,14)), List((4,10), (6,13), (8,12), (5,14)), List((4,13), (5,10), (7,14), (9,11))),IndexedSeq(1, 1, 1),0)).excisions.toList
+    e.size should equal(-1)
+  }
 }
 
