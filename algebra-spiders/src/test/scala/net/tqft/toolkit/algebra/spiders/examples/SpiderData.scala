@@ -83,7 +83,11 @@ case class SpiderData(
     lazy val rectangularMatrix = spider.innerProductMatrix(oldIndependentDiagrams, candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
     lazy val lastRow = spider.innerProductMatrix(Seq(p), candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
     def matrix = rectangularMatrix ++ lastRow
-    lazy val determinant = Matrix(candidateIndependentDiagrams.size, matrix).determinant(rationalFunctions)
+    lazy val determinant = {
+      import mathematica.Determinant.ofMultivariableRationalFunctionMatrix._
+      val d = matrix.determinant
+      Fraction(polynomials.normalForm(d.numerator), polynomials.normalForm(d.denominator))
+    }
     lazy val determinantNumerator = determinant /*.ensuring(r => definitelyNonzero_?(r.denominator))*/ .numerator
 
     val addIndependentDiagram: Option[SpiderData] = {
