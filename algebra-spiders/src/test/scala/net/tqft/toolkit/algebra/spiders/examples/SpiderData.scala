@@ -31,15 +31,15 @@ case class SpiderData(
   groebnerBasis = ${groebnerBasis.toMathematicaInputString},
   nonzero = ${nonzero.toMathematicaInputString},
   dimensionBounds = $dimensionBounds,
-  dimensionLowerBounds: $dimensionLowerBounds,
-  numberOfDiagramsConsidered: ${consideredDiagrams.map(_.size)},
+  independentDiagrams.sizes: ${independentDiagrams.map(_.size)},
+  visiblyIndependentDiagrams.sizes: ${visiblyIndependentDiagrams.map(_.size)},
+  consideredDiagrams.sizes: ${consideredDiagrams.map(_.size)},
   allPolyhedra: $allPolyhedra,
   reducibleDiagrams: ${spider.extraReductions.map(_.big)},
   consideredDiagramsVertexBound = $consideredDiagramsVertexBound
 )"""
   }
 
-  def dimensionLowerBounds = independentDiagrams.map(_.size)
   def allPolyhedra =
     (groebnerBasis.flatMap(_.variables) ++
       nonzero.flatMap(_.variables) ++
@@ -97,6 +97,7 @@ case class SpiderData(
 
   def considerDiagram(p: PlanarGraph): Seq[SpiderData] = {
     println("considering diagram: " + p)
+    println("for: " + this)
 
     val boundary = p.numberOfBoundaryPoints
     val newConsideredDiagrams = {
@@ -107,7 +108,14 @@ case class SpiderData(
     val paddedVisiblyIndependentDiagrams = visiblyIndependentDiagrams.padTo(boundary + 1, Seq.empty)
     val padded = copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams)
 
-    (padded.addDependentDiagram(p) ++ padded.addIndependentDiagram(p)).map(_.copy(consideredDiagrams = newConsideredDiagrams))
+    val addDependent = padded.addDependentDiagram(p)
+    val addIndependent = if (padded.independentDiagrams(boundary).size < dimensionBounds(boundary)) {
+      padded.addIndependentDiagram(p)
+    } else {
+      Seq.empty
+    }
+
+    (addDependent ++ addIndependent).map(_.copy(consideredDiagrams = newConsideredDiagrams))
   }
 
   def addDependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
@@ -130,9 +138,9 @@ case class SpiderData(
     println("nullspace: ")
     println(nullSpace.toMathematicaInputString)
 
-    val relation = nullSpace.ensuring(_.size == 1).head
+    val relation = nullSpace.ensuring(_.size == independentDiagrams(p.numberOfBoundaryPoints).size - visiblyIndependentDiagrams(p.numberOfBoundaryPoints).size + 1).head
     require(relation.last == rationalFunctions.one)
-    
+
     // is it a reducing relation?
     val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case (x, i) if !rationalFunctions.zero_?(x) => i })
     val reducing = relation.size > 1 && nonzeroPositions.forall({ i => complexity.lt(independentDiagrams(p.numberOfBoundaryPoints)(i), p) })
@@ -150,9 +158,11 @@ case class SpiderData(
 
       whenDenominatorsVanish ++ whenDenominatorsNonzero
     } else {
-      // hmm... just ask that the determinant vanishes
       // TODO record non-reducing relations!
-      declarePolynomialZero(???)
+
+      // There's a lemma here. If b \in span{a1, ..., an}, and {a1, ..., ak} is maximally visibly independent,
+      // then the inner product determinant for {a1, ..., ak, b} vanishes.
+      declarePolynomialZero(calculateDeterminant(visiblyIndependentDiagrams(p.numberOfBoundaryPoints) :+ p).numerator)
     }
 
   }
@@ -162,7 +172,16 @@ case class SpiderData(
 
     val newIndependentDiagrams = independentDiagrams.updated(p.numberOfBoundaryPoints, independentDiagrams(p.numberOfBoundaryPoints) :+ p)
 
-    (addVisiblyIndependentDiagram(p) ++ addInvisiblyIndependentDiagram(p)).map(_.copy(independentDiagrams = newIndependentDiagrams))
+    val addVisibly = addVisiblyIndependentDiagram(p).filter({ s =>
+      s.visiblyIndependentDiagrams(p.numberOfBoundaryPoints).size >= 2 * independentDiagrams(p.numberOfBoundaryPoints).size + 2 - dimensionBounds(p.numberOfBoundaryPoints)
+    })
+    val addInvisibly = if (visiblyIndependentDiagrams(p.numberOfBoundaryPoints).size >= 2 * independentDiagrams(p.numberOfBoundaryPoints).size + 2 - dimensionBounds(p.numberOfBoundaryPoints)) {
+      addInvisiblyIndependentDiagram(p)
+    } else {
+      Seq.empty
+    }
+
+    (addVisibly ++ addInvisibly).map(_.copy(independentDiagrams = newIndependentDiagrams))
   }
 
   def addVisiblyIndependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
@@ -179,7 +198,9 @@ case class SpiderData(
       }).toMap
     }
 
+    // FIXME this should always be empty because denominators in determinants must already be invertible
     val someDenominatorVanishes = declareAtLeastOnePolynomialZero(determinants.values.map(_.denominator).toSeq).flatMap(_.addVisiblyIndependentDiagram(p))
+    require(someDenominatorVanishes.isEmpty)
 
     val determinantsWithBiggerDeterminants = {
       (for (s <- invisibleSubsets) yield {
