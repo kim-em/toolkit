@@ -355,11 +355,15 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty)
 
-  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (4, 0), (4, 1), (4, 2), (6, 0), (6, 1), (6, 2))
+  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (4, 0), (4, 1), (4, 2) , (6, 0), (6, 1)/*, (6, 2)*/)
 
   // TODO start computing relations, also
 
   val results = initialData.considerDiagrams(steps)
 
+  for(r <- results) {
+    println(r.innerProducts(r.consideredDiagrams(6)).toMathematicaInputString)
+  }
+  
   println(results.size)
 }
