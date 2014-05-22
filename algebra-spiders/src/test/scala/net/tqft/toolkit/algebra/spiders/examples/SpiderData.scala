@@ -16,7 +16,8 @@ case class SpiderData(
   dimensionBounds: Seq[Int],
   consideredDiagramsVertexBound: Seq[Int],
   consideredDiagrams: Seq[Seq[PlanarGraph]],
-  independentDiagrams: Seq[Seq[PlanarGraph]]) {
+  independentDiagrams: Seq[Seq[PlanarGraph]],
+  visiblyIndependentDiagrams: Seq[Seq[PlanarGraph]]) {
 
   require(!nonzero.contains(polynomials.one))
 
@@ -26,11 +27,10 @@ case class SpiderData(
   nonzero = ${nonzero.toMathematicaInputString},
   dimensionBounds = $dimensionBounds,
   dimensionLowerBounds: $dimensionLowerBounds,
+  numberOfDiagramsConsidered: ${consideredDiagrams.map(_.size)},
   allPolyhedra: $allPolyhedra,
   reducibleDiagrams: ${spider.extraReductions.map(_.big)},
-  consideredDiagramsVertexBound = $consideredDiagramsVertexBound,
-  consideredDiagrams = $consideredDiagrams,
-  independentDiagrams = $independentDiagrams
+  consideredDiagramsVertexBound = $consideredDiagramsVertexBound
 )"""
   }
 
@@ -69,45 +69,124 @@ case class SpiderData(
     }
   }
 
+  def calculateDeterminant(diagrams: Seq[PlanarGraph]) = {
+    val matrix = spider.innerProductMatrix(diagrams, diagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
+    
+    println("computing determinant of: ")
+    println(matrix.toMathematicaInputString)
+
+    import mathematica.Determinant.ofMultivariableRationalFunctionMatrix._
+    val d = matrix.determinant
+    val result = Fraction(polynomials.normalForm(d.numerator), polynomials.normalForm(d.denominator))
+
+    println("determinant: ")
+    println(result.toMathematicaInputString)
+    
+    result
+  }
+
   def considerDiagram(p: PlanarGraph): Seq[SpiderData] = {
+    addDependentDiagram(p) ++ addIndependentDiagram(p)
+  }
+
+  def addDependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
+    ???
+  }
+
+  def addIndependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
+    addVisiblyIndependentDiagram(p) ++ addInvisiblyIndependentDiagram(p)
+  }
+
+  def addVisiblyIndependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
+    ???
+  }
+
+  def addInvisiblyIndependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
+    ???
+  }
+
+  def oldConsiderDiagram(p: PlanarGraph): Seq[SpiderData] = {
     val boundary = p.numberOfBoundaryPoints
     val newConsideredDiagrams = {
       val padded = consideredDiagrams.padTo(boundary + 1, Seq.empty)
       padded.updated(boundary, (padded(boundary) :+ p).distinct)
     }
     val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
+    val paddedVisiblyIndependentDiagrams = visiblyIndependentDiagrams.padTo(boundary + 1, Seq.empty)
     val oldIndependentDiagrams = paddedIndependentDiagrams(boundary)
+    val oldVisiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams(boundary)
     val candidateIndependentDiagrams = oldIndependentDiagrams :+ p
 
+    // FIXME we can save more inner products; individual spiders come and go, but inner products survive.
     // FIXME the spider should know the ring, so the inner product automatically happens mod the ideal.
+    lazy val shortMatrix = spider.innerProductMatrix(oldVisiblyIndependentDiagrams, candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
     lazy val rectangularMatrix = spider.innerProductMatrix(oldIndependentDiagrams, candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
     lazy val lastRow = spider.innerProductMatrix(Seq(p), candidateIndependentDiagrams).map(row => row.map(entry => Fraction(polynomials.normalForm(entry.numerator), polynomials.normalForm(entry.denominator))))
     def matrix = rectangularMatrix ++ lastRow
     lazy val determinant = {
+      println("computing determinant of: ")
+      println(matrix.toMathematicaInputString)
+
       import mathematica.Determinant.ofMultivariableRationalFunctionMatrix._
       val d = matrix.determinant
-      Fraction(polynomials.normalForm(d.numerator), polynomials.normalForm(d.denominator))
+      val result = Fraction(polynomials.normalForm(d.numerator), polynomials.normalForm(d.denominator))
+
+      println("determinant: ")
+      println(result.toMathematicaInputString)
+      result
+
     }
     lazy val determinantNumerator = determinant /*.ensuring(r => definitelyNonzero_?(r.denominator))*/ .numerator
 
-    val addIndependentDiagram: Option[SpiderData] = {
+    val addIndependentDiagram: Seq[SpiderData] = {
+      println("adding independent diagram: " + p)
+
+      val invisibleDiagrams = oldIndependentDiagrams.filterNot(oldVisiblyIndependentDiagrams.contains)
+      val invisibleSubsets = {
+        import net.tqft.toolkit.collections.Subsets._
+        invisibleDiagrams.subsets.map(_.toSeq).toSeq
+      }
+      val determinants = {
+
+        (for (s <- invisibleSubsets) yield {
+          s -> calculateDeterminant(oldIndependentDiagrams ++ s :+ p)
+        }).toMap
+      }
+      val determinantsAndBiggerDeterminants = {
+        (for (s <- invisibleSubsets) yield {
+          s -> (determinants(s), invisibleSubsets.filter(t => t.size > s.size && s.forall(t.contains)).map(determinants))
+        }).toMap
+      }
+
+      for ((s, (nonzero, allZero)) <- determinantsAndBiggerDeterminants) yield {
+        val newIndependentDiagrams = paddedIndependentDiagrams.updated(boundary, candidateIndependentDiagrams)
+        val newVisiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams.updated(boundary, oldVisiblyIndependentDiagrams ++ s :+ p)
+
+      }
+
       if (candidateIndependentDiagrams.size <= dimensionBounds(boundary)) {
         val newIndependentDiagrams = paddedIndependentDiagrams.updated(boundary, candidateIndependentDiagrams)
+        val newVisiblyIndependentDiagrams = ???
         declarePolynomialNonzero(determinantNumerator).map(_.copy(
+          dimensionBounds = dimensionBounds.updated(boundary, newIndependentDiagrams.size),
           consideredDiagrams = newConsideredDiagrams,
-          independentDiagrams = newIndependentDiagrams))
+          independentDiagrams = newIndependentDiagrams,
+          visiblyIndependentDiagrams = newVisiblyIndependentDiagrams)).toSeq ++
+          Seq(copy(consideredDiagrams = newConsideredDiagrams,
+            independentDiagrams = newIndependentDiagrams))
       } else {
-        None
+        Seq.empty
       }
     }
     val addDependentDiagram: Seq[SpiderData] = {
+      println("adding dependent diagram: " + p)
       println("computing nullspace of: ")
-      println(rectangularMatrix.toMathematicaInputString)  
+      println(rectangularMatrix.toMathematicaInputString)
       import mathematica.NullSpace.ofMultivariableRationalFunctionMatrix._
-      
-//      val nullSpace = Matrix(oldIndependentDiagrams.size + 1, rectangularMatrix).nullSpace(rationalFunctions)
+
+      //      val nullSpace = Matrix(oldIndependentDiagrams.size + 1, rectangularMatrix).nullSpace(rationalFunctions)
       val nullSpace = {
-        if(oldIndependentDiagrams.size == 0) {
+        if (oldIndependentDiagrams.size == 0) {
           Seq(Seq(rationalFunctions.one))
         } else {
           rectangularMatrix.nullSpace
@@ -118,6 +197,7 @@ case class SpiderData(
       println(nullSpace.toMathematicaInputString)
 
       val relation = nullSpace.ensuring(_.size == 1).head
+      require(!rationalFunctions.zero_?(relation.last))
       require(relation.last == rationalFunctions.one)
 
       // is it a reducing relation?
@@ -163,7 +243,7 @@ case class SpiderData(
   //  }
 
   def declarePolynomialNonzero(p: MultivariablePolynomial[Fraction[BigInt], String]): Option[SpiderData] = {
-    if (p != polynomials.zero) {
+    if (!polynomials.zero_?(p)) {
       val newNonzero = {
         import mathematica.Factor._
         println("Factoring something we're insisting is nonzero: " + p.toMathematicaInputString)
@@ -172,13 +252,18 @@ case class SpiderData(
       }
       Some(copy(nonzero = newNonzero))
     } else {
+      println("polynomial was already zero; stopping")
       None
     }
 
   }
 
+  def declareAtLeastOnePolynomialZero(rs: Seq[MultivariablePolynomial[Fraction[BigInt], String]]): Seq[SpiderData] = {
+    rs.flatMap(declarePolynomialZero)
+  }
+  
   def declarePolynomialZero(r: MultivariablePolynomial[Fraction[BigInt], String]): Seq[SpiderData] = {
-    if (r == polynomials.zero) {
+    if (polynomials.zero_?(r)) {
       Seq(this)
     } else {
       val factors = {
@@ -194,7 +279,9 @@ case class SpiderData(
     val newGroebnerBasis = {
       import mathematica.GroebnerBasis._
       println("Computing Groebner basis for " + (groebnerBasis :+ r).toMathematicaInputString)
-      (groebnerBasis :+ r).computeGroebnerBasis
+      val result = (groebnerBasis :+ r).computeGroebnerBasis
+      println(" ... result: " + result.toMathematicaInputString)
+      result
     }
 
     // has everything collapsed?
@@ -203,7 +290,7 @@ case class SpiderData(
     } else {
       // does this kill anything in nonzero? 
       val newPolynomials = MultivariablePolynomialAlgebras.quotient(newGroebnerBasis)
-      val newNonzero = nonzero.map(newPolynomials.normalForm).map(normalizePolynomial).filter(_ != polynomials.one)
+      val newNonzero = nonzero.map(newPolynomials.normalForm).map(normalizePolynomial).filter(_ != polynomials.one).distinct
       if (newNonzero.exists(_ == polynomials.zero)) {
         None
       } else {
@@ -227,7 +314,7 @@ case class SpiderData(
     val diagramsToConsider = spider.reducedDiagrams(boundary, vertices)
     for (d <- diagramsToConsider) println("   " + d)
 
-    diagramsToConsider.foldLeft(Seq(this))({ (s: Seq[SpiderData], p: PlanarGraph) => s.flatMap(d => d.considerDiagram(p)) })
+    diagramsToConsider.foldLeft(Seq(this))({ (s: Seq[SpiderData], p: PlanarGraph) => s.flatMap(d => d.considerDiagram(p)).filter(s => s.independentDiagrams.lift(6).getOrElse(Seq.empty).size == s.consideredDiagrams.lift(6).getOrElse(Seq.empty).size) })
       .map(_.copy(consideredDiagramsVertexBound = newConsideredDiagramsVertexBound))
   }
 
@@ -248,7 +335,11 @@ object InvestigateTetravalentSpiders extends App {
   val initialData = SpiderData(
     lowestWeightTetravalentSpider,
     Seq.empty,
-    nonzero = Seq(MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1)))),
+    nonzero = Seq(
+      MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+      MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1))),
+      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1)))),
     Seq.empty,
     dimensionBounds = Seq(1, 0, 1, 0, 3, 0, 14),
     Seq.empty,

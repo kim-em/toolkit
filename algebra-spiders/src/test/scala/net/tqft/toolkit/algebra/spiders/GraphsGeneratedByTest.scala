@@ -12,7 +12,6 @@ class GraphsGeneratedByTest extends FlatSpec with Matchers with IsomorphismMatch
   val withoutSmallFaces = trivalentEnumerator.avoiding(for (i <- 1 to 4) yield PlanarGraph.polygon(i))
   val withoutTinyFaces = trivalentEnumerator.avoiding(for (i <- 1 to 3) yield PlanarGraph.polygon(i))
 
-  
   "byNumberOfVertices" should "find 2 tetravalent diagram with 0 boundary points and 1 vertex" in {
     freeTetravalent.byNumberOfVertices(0, 1).size should equal(2)
   }
@@ -26,7 +25,21 @@ class GraphsGeneratedByTest extends FlatSpec with Matchers with IsomorphismMatch
     tetravalentEnumerator.avoiding(freeTetravalent.byNumberOfVertices(0, 1)).byNumberOfVertices(2, 1).size should equal(2)
   }
   "byNumberOfVertices" should "find 1 connected tetravalent diagram with 0 boundary points and 2 vertices and no twists" in {
-    tetravalentEnumerator.avoiding(tetravalentEnumerator.avoiding(freeTetravalent.byNumberOfVertices(0, 1)).byNumberOfVertices(2, 1).take(1)).byNumberOfVertices(0,2).size should equal(1)
+    tetravalentEnumerator.avoiding(tetravalentEnumerator.avoiding(freeTetravalent.byNumberOfVertices(0, 1)).byNumberOfVertices(2, 1).take(1)).byNumberOfVertices(0, 2).size should equal(1)
+  }
+
+  val R1 = implicitly[Spider[PlanarGraph]].stitch(PlanarGraph.star(4, 1))
+  val R2 = PlanarGraph(9, Vector(List((3, 9), (5, 13), (6, 11), (4, 12)), List((3, 13), (4, 9), (7, 12), (8, 10)), List((5, 11), (8, 13), (7, 10), (6, 12))), IndexedSeq(1, 1), 0)
+  val smallTetravalent = tetravalentEnumerator.avoiding(Seq(R1, R2))
+
+  "byNumberOfVertices" should "find 5 small tetravalent diagrams with 6 boundary points and no vertices" in {
+    smallTetravalent.byNumberOfVertices(6, 0).size should equal(5)
+  }
+  "byNumberOfVertices" should "find 6 small tetravalent diagrams with 6 boundary points and 1 vertices" in {
+    smallTetravalent.byNumberOfVertices(6, 1).size should equal(6)
+  }
+  "byNumberOfVertices" should "find 3 small tetravalent diagrams with 6 boundary points and 2 vertices" in {
+    smallTetravalent.byNumberOfVertices(6, 2).size should equal(3)
   }
   "byNumberOfVertices" should "find 1 diagrams with 0 boundary points and 0 vertices" in {
     withoutSmallFaces.byNumberOfVertices(0, 0).size should equal(1)

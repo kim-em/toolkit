@@ -67,6 +67,9 @@ object ComputeTetravalentDeterminants extends App {
     }
 
   }
+  
+  
+  
   //    {
   //      lazy val diagrams4 = TetravalentSpider.reducedDiagrams(4, 0) ++ TetravalentSpider.reducedDiagrams(4, 1) ++ TetravalentSpider.reducedDiagrams(4, 2)
   //  
