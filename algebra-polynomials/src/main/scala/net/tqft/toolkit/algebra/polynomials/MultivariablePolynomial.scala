@@ -39,8 +39,7 @@ object MultivariablePolynomial {
       MultivariablePolynomial(new scala.collection.immutable.Map.Map1(Map.empty, Fraction.whole(a)))
     }
   }
-  
-  
+
   implicit def constantFraction[A: GCDRing, V](a: A): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(Map(Map.empty -> (a: Fraction[A])))
 
   implicit def constantRationalFunction[A: GCDRing, V: Ordering](a: A): MultivariableRationalFunction[A, V] = MultivariablePolynomial[A, V](Map(Map.empty -> a))
@@ -51,7 +50,28 @@ object MultivariablePolynomial {
   implicit def bigIntConstantFractionRationalFunction[V: Ordering](a: Int): MultivariableRationalFunction[Fraction[BigInt], V] = Fraction.whole(bigIntConstantFraction[V](a))
   implicit def bigIntRationalFunction[V: Ordering](coefficients: Map[Map[V, Int], Int]): MultivariableRationalFunction[BigInt, V] = coefficients.mapValues(a => a: BigInt)
   implicit def bigIntFractionRationalFunction[V: Ordering](coefficients: Map[Map[V, Int], Int]): MultivariableRationalFunction[Fraction[BigInt], V] = coefficients.mapValues(a => a: BigInt)
-  
+
+  implicit def degreeLexicographicOrdering[A: Ordering: Zero, V: Ordering]: Ordering[MultivariablePolynomial[A, V]] = {
+    val zero = implicitly[Zero[A]].zero
+    val aOrdering = implicitly[Ordering[A]]
+    new Ordering[MultivariablePolynomial[A, V]] {
+      override def compare(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): Int = {
+        val t = x.coefficients.keys.map(_.values.sum).max - y.coefficients.keys.map(_.values.sum).max
+        if (t != 0) {
+          t
+        } else {
+          import net.tqft.toolkit.orderings.LexicographicOrdering.degreeLexicographic
+          val keys = (x.coefficients.keySet ++ y.coefficients.keySet).toSeq.sorted
+          for (key <- keys) {
+            val c = aOrdering.compare(x.coefficients.get(key).getOrElse(zero), y.coefficients.get(key).getOrElse(zero))
+            if (c != 0) return c
+          }
+          0
+        }
+      }
+    }
+  }
+
   implicit class RichMultivariablePolynomial[A, V](m: MultivariablePolynomial[A, V]) {
     def variables = m.coefficients.keySet.flatMap(_.keySet)
     def constantTerm(implicit ring: Ring[A]): A = m.coefficients.get(Map.empty).getOrElse(implicitly[Ring[A]].zero)

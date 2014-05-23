@@ -133,18 +133,15 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
 object MultivariablePolynomialAlgebraOverRig {
   trait LexicographicOrdering[A, V] { self: MultivariablePolynomialAlgebraOverRig[A, V] =>
     override lazy val monomialOrdering = {
-      import net.tqft.toolkit.orderings.LexicographicOrdering._
+      import net.tqft.toolkit.orderings.LexicographicOrdering.mapOrdering
       implicitly[Ordering[Map[V, Int]]]
     }
   }
 
   trait DegreeLexicographicOrdering[A, V] { self: MultivariablePolynomialAlgebraOverRig[A, V] =>
     override lazy val monomialOrdering = {
-      import net.tqft.toolkit.orderings.LexicographicOrdering._
-      import net.tqft.toolkit.orderings.Orderings._
-      Ordering
-        .by({ m: Map[V, Int] => m.values.sum })
-        .refineAlong(implicitly[Ordering[Map[V, Int]]])
+      import net.tqft.toolkit.orderings.LexicographicOrdering.degreeLexicographic
+      implicitly[Ordering[Map[V, Int]]]
     }
   }
 
