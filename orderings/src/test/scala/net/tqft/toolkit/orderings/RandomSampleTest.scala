@@ -8,7 +8,7 @@ import org.scalatest._
 class LexicographicOrderingTest extends FlatSpec with Matchers {
 
   "map ordering" should "work as follows" in {
-    import LexicographicOrdering._
+    import LexicographicOrdering.mapOrdering
     val o = implicitly[Ordering[Map[Int, Int]]]
     o.compare(Map(0 -> 1, 1 -> 1), Map(1-> 0, 2-> 2)) < 0 should be(true)
     o.compare(Map(0 -> 1, 1 -> 1), Map(1-> 1, 2-> 2)) < 0 should be(true)

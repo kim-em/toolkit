@@ -53,6 +53,16 @@ object Fraction {
     }
   }
 
+  implicit def ordering[A: Rig: Ordering]: Ordering[Fraction[A]] = new Ordering[Fraction[A]] {
+    val aOrdering = implicitly[Ordering[A]]
+    val rig = implicitly[Rig[A]]
+    override def compare(x: Fraction[A], y: Fraction[A]) = {
+      require(aOrdering.gt(x.denominator, rig.zero))
+      require(aOrdering.gt(y.denominator, rig.zero))
+      aOrdering.compare(rig.multiply(x.numerator, y.denominator), rig.multiply(y.numerator, x.denominator))
+    }
+  }
+  
   //  implicit def constant[A: EuclideanRing](x: A): RationalFunction[A] = Fraction.whole(Polynomial.constant(Fraction.whole(x)))
 
   //  implicit def toMathematicaExpression[A <% net.tqft.toolkit.mathematica.MathematicaExpression](f: Fraction[A]) = new net.tqft.toolkit.mathematica.ShortMathematicaExpression {

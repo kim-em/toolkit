@@ -188,13 +188,16 @@ case class SpiderData(
     println("adding a visibly independent diagram: " + p)
 
     val invisibleDiagrams = independentDiagrams(p.numberOfBoundaryPoints).filterNot(visiblyIndependentDiagrams(p.numberOfBoundaryPoints).contains)
+    println("there are currently " + invisibleDiagrams.size + " invisible diagrams")
     val invisibleSubsets = {
       import net.tqft.toolkit.collections.Subsets._
-      invisibleDiagrams.subsets.map(_.toSeq).toSeq
+      invisibleDiagrams.subsets.map(_.toSeq).toSeq.ensuring(s => s.size == 1 << invisibleDiagrams.size)
     }
+    println("there are " + invisibleSubsets.size + " subsets of formerly invisible diagrams, which we need to reconsider.")
     val determinants = {
       (for (s <- invisibleSubsets) yield {
-        s -> calculateDeterminant(independentDiagrams(p.numberOfBoundaryPoints) ++ s :+ p)
+        println("considering a subset of size " + s.size)
+        s -> calculateDeterminant(visiblyIndependentDiagrams(p.numberOfBoundaryPoints) ++ s :+ p)
       }).toMap
     }
 
@@ -253,7 +256,7 @@ case class SpiderData(
         import mathematica.Factor._
         println("Factoring something we're insisting is nonzero: " + p.toMathematicaInputString)
         val factors = (p.factor.keySet + p).map(normalizePolynomial).filterNot(_ == polynomials.one)
-        (nonzero ++ factors).distinct // we add both p and its factors to the list; Groebner basis reduction could kill p without killing any factors
+        (nonzero ++ factors).distinct.sorted // we add both p and its factors to the list; Groebner basis reduction could kill p without killing any factors
       }
       Seq(copy(nonzero = newNonzero))
     } else {
@@ -345,9 +348,13 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     nonzero = Seq(
       MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-      MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1))),
-      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1)))),
+      MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1)))//,
+//      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+//      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+//      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+//      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+//      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 2) -> Fraction[BigInt](1, 1))) //
+      ),
     Seq.empty,
     dimensionBounds = Seq(1, 0, 1, 0, 3, 0, 14),
     Seq.empty,
@@ -355,15 +362,15 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty)
 
-  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (4, 0), (4, 1), (4, 2) , (6, 0), (6, 1)/*, (6, 2)*/)
+  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2,3),(4, 0), (4, 1), (4, 2), (4,3),(6, 0), (6, 1) /*, (6, 2)*/ )
 
   // TODO start computing relations, also
 
   val results = initialData.considerDiagrams(steps)
 
-  for(r <- results) {
-    println(r.innerProducts(r.consideredDiagrams(6)).toMathematicaInputString)
-  }
-  
+//  for (r <- results) {
+//    println(r.innerProducts(r.consideredDiagrams(6)).toMathematicaInputString)
+//  }
+
   println(results.size)
 }
