@@ -22,11 +22,11 @@ object PolyhedronNamer {
 
 }
 
-trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
+trait PolyhedronNamer[A] extends MultivariablePolynomialSpider[A] {
 
   def polyhedronReductions = PolyhedronNamer.names.toSeq.flatMap({ p =>
     sphericalEquivalents(p._1).map({ q =>
-      Reduction[PlanarGraph, MultivariableRationalFunction[A, String]](q, Map(PlanarGraph.empty -> Map(Map(p._2 -> 1) -> coefficientRing.one)))
+      Reduction[PlanarGraph, MultivariablePolynomial[A, String]](q, Map(PlanarGraph.empty -> Map(Map(p._2 -> 1) -> coefficientRing.one)))
     })
   })
 
@@ -56,7 +56,7 @@ trait PolyhedronNamer[A] extends MultivariableRationalFunctionSpider[A] {
     sphericalEquivalents(p).sorted.head
   }
 
-  override def evaluate(map: Map[PlanarGraph, MultivariableRationalFunction[A, String]]): MultivariableRationalFunction[A, String] = {
+  override def evaluate(map: Map[PlanarGraph, MultivariablePolynomial[A, String]]): MultivariablePolynomial[A, String] = {
     ring.sum(for ((k, v) <- map) yield {
       if (diagramSpider.canonicalFormWithDefect(k)._1 == diagramSpider.empty) {
         v
