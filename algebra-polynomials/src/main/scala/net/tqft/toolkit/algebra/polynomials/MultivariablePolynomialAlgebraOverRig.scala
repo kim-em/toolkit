@@ -42,8 +42,15 @@ trait MultivariablePolynomialAlgebraOverRig[A, V] extends Rig[MultivariablePolyn
   }
   def leadingMonomial(p: MultivariablePolynomial[A, V]): Option[Map[V, Int]] = {
     import net.tqft.toolkit.arithmetic.MinMax._
-//    p.coefficients.keySet.maxOption(monomialOrdering)
+    //    p.coefficients.keySet.maxOption(monomialOrdering)
     p.coefficients.map(_._1).toSeq.sorted(monomialOrdering).lastOption
+  }
+  def totalDegree(p: MultivariablePolynomial[A, V]): Int = {
+    if (p.coefficients.isEmpty) {
+      0
+    } else {
+      p.coefficients.keys.map(_.values.sum).max
+    }
   }
   def coefficientOfOneVariable(v: V, i: Int)(x: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
     x.coefficients.collect({

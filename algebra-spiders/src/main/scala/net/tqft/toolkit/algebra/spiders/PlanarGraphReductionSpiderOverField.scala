@@ -15,7 +15,6 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
     lazy val innerProducts = innerProductMatrix(diagrams)
     lazy val determinant = Matrix(diagrams.size, innerProducts).determinant
     def linearCombination(a: Seq[R]) = diagrams.zip(a).toMap
-
   }
 
   trait LinearlyDependentDiagrams extends CollectionOfDiagrams {
@@ -83,6 +82,14 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
 
 }
 
+trait MultivariablePolynomialSpider[A] extends PlanarGraphReductionSpider[MultivariablePolynomial[A, String]] {
+  implicit def coefficientRing: Ring[A]
+  override def ring = implicitly[Ring[MultivariablePolynomial[A, String]]]
+}
+
+trait BigIntMultivariablePolynomialSpider extends MultivariablePolynomialSpider[Fraction[BigInt]] {
+  override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
+}
 trait MultivariableRationalFunctionSpider[A] extends PlanarGraphReductionSpiderOverField[MultivariableRationalFunction[A, String]] {
   implicit def coefficientRing: Field[A]
   override def ring = implicitly[Field[MultivariableRationalFunction[A, String]]]
