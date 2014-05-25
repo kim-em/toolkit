@@ -11,15 +11,12 @@ import MathematicaForm._
 case class SpiderData(
   spider: QuotientSpider,
   groebnerBasis: Seq[MultivariablePolynomial[Fraction[BigInt], String]],
-  nonzero: Seq[MultivariablePolynomial[Fraction[BigInt], String]],
   relations: Seq[Seq[Map[PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String]]]],
   dimensionBounds: Seq[Int],
   consideredDiagramsVertexBound: Seq[Int],
   consideredDiagrams: Seq[Seq[PlanarGraph]],
   independentDiagrams: Seq[Seq[PlanarGraph]],
   visiblyIndependentDiagrams: Seq[Seq[PlanarGraph]]) {
-
-  require(!nonzero.contains(polynomials.one))
 
   for ((n, (k, j)) <- dimensionBounds.zip(independentDiagrams.map(_.size).zip(visiblyIndependentDiagrams.map(_.size)))) {
     require(k <= n)
@@ -31,7 +28,6 @@ case class SpiderData(
   override def toString = {
     s"""SpiderData(
   groebnerBasis = ${groebnerBasis.toMathematicaInputString},
-  nonzero = ${nonzero.toMathematicaInputString},
   dimensionBounds = $dimensionBounds,
   independentDiagrams.sizes: ${independentDiagrams.map(_.size)},
   visiblyIndependentDiagrams.sizes: ${visiblyIndependentDiagrams.map(_.size)},
@@ -44,7 +40,6 @@ case class SpiderData(
 
   def allPolyhedra =
     (groebnerBasis.flatMap(_.variables) ++
-      nonzero.flatMap(_.variables) ++
       spider.reductions.flatMap(_.small.values.flatMap(r => r.variables)) ++
       relations.flatMap(_.flatMap(_.values.flatMap(_.variables)))).distinct
 
@@ -211,7 +206,7 @@ case class SpiderData(
     (for ((s, (nonzero, allZero)) <- determinantsWithBiggerDeterminants) yield {
       val newVisiblyIndependentDiagrams = visiblyIndependentDiagrams.updated(p.numberOfBoundaryPoints, visiblyIndependentDiagrams(p.numberOfBoundaryPoints) ++ s :+ p)
 
-      declarePolynomialNonzero(nonzero).flatMap(_.declareAllPolynomialsZero(allZero)).map(_.copy(visiblyIndependentDiagrams = newVisiblyIndependentDiagrams))
+      invertPolynomial(nonzero).map(_._1).toSeq.flatMap(_.declareAllPolynomialsZero(allZero)).map(_.copy(visiblyIndependentDiagrams = newVisiblyIndependentDiagrams))
     }).flatten
   }
 
@@ -242,8 +237,8 @@ case class SpiderData(
 
   }
 
-  def liftDenominators(p: MultivariableRationalFunction[Fraction[BigInt], String]): P = ???
-  
+  def liftDenominators(p: MultivariableRationalFunction[Fraction[BigInt], String]): P = polynomials.multiply(p.numerator, inverse(p.denominator))
+
   def invertPolynomial(p: P): Option[(SpiderData, P)] = {
     import mathematica.Factor._
     println("Factoring something we're inverting: " + p.toMathematicaInputString)
@@ -262,27 +257,12 @@ case class SpiderData(
     if (polynomials.totalDegree(p) == 0) {
       polynomials.ring.inverse(polynomials.constantTerm(p))
     } else {
-      polynomials.monomial("(" + p.toMathematicaInputString + ")^(-1)")
+      polynomials.monomial("(" + p.toMathematicaInputString.ensuring(!_.contains("^(-1)")) + ")^(-1)")
     }
   }
   def invertIrreduciblePolynomial(p: P): Option[(SpiderData, P)] = {
     val i = inverse(p)
     declareIrreduciblePolynomialZero(polynomials.subtract(polynomials.multiply(i, p), polynomials.one)).map(s => (s, i))
-  }
-
-  def declarePolynomialNonzero(p: P): Seq[SpiderData] = {
-    if (!polynomials.zero_?(p)) {
-      val newNonzero = {
-        import mathematica.Factor._
-        println("Factoring something we're insisting is nonzero: " + p.toMathematicaInputString)
-        val factors = (p.factor.keySet + p).map(normalizePolynomial).filterNot(_ == polynomials.one)
-        (nonzero ++ factors).distinct.sorted // we add both p and its factors to the list; Groebner basis reduction could kill p without killing any factors
-      }
-      Seq(copy(nonzero = newNonzero))
-    } else {
-      println("polynomial was already zero; stopping")
-      Seq.empty
-    }
   }
 
   def declareAtLeastOnePolynomialZero(rs: Seq[P]): Seq[SpiderData] = {
@@ -321,19 +301,13 @@ case class SpiderData(
     } else {
       // does this kill anything in nonzero? 
       val newPolynomials = MultivariablePolynomialAlgebras.quotient(newGroebnerBasis)
-      val newNonzero = nonzero.map(newPolynomials.normalForm).map(normalizePolynomial).filter(_ != polynomials.one).distinct
-      if (newNonzero.exists(_ == polynomials.zero)) {
-        None
-      } else {
-        // TODO if we have non-reducing relations, these will have to be updated as well
-        val newExtraReductions = spider.extraReductions.map({
-          case Reduction(big, small) => Reduction(big, small.map({ p => (p._1, newPolynomials.normalForm(p._2)) }))
-        })
-        Some(copy(
-          spider = spider.copy(extraReductions = newExtraReductions),
-          groebnerBasis = newGroebnerBasis,
-          nonzero = newNonzero))
-      }
+      // TODO if we have non-reducing relations, these will have to be updated as well
+      val newExtraReductions = spider.extraReductions.map({
+        case Reduction(big, small) => Reduction(big, small.map({ p => (p._1, newPolynomials.normalForm(p._2)) }))
+      })
+      Some(copy(
+        spider = spider.copy(extraReductions = newExtraReductions),
+        groebnerBasis = newGroebnerBasis))
     }
 
   }
@@ -363,24 +337,24 @@ object InvestigateTetravalentSpiders extends App {
     override def generators = Seq((VertexType(4, 1), ring.one))
   }).asQuotientSpider
 
-  val initialData = SpiderData(
+  val invertible = Seq(MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+    MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1))) //,
+    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 2) -> Fraction[BigInt](1, 1))) //
+    )
+
+  val initialData = invertible.foldLeft(SpiderData(
     lowestWeightTetravalentSpider,
     Seq.empty,
-    nonzero = Seq(
-      MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-      MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1))) //,
-      //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-      //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-      //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-      //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-      //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 2) -> Fraction[BigInt](1, 1))) //
-      ),
     Seq.empty,
     dimensionBounds = Seq(1, 0, 1, 0, 3, 0, 14),
     Seq.empty,
     Seq.empty,
     Seq.empty,
-    Seq.empty)
+    Seq.empty))(_.invertPolynomial(_).get._1)
 
   val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2, 3), (4, 0), (4, 1), (4, 2), (4, 3), (6, 0), (6, 1) /*, (6, 2)*/ )
 
