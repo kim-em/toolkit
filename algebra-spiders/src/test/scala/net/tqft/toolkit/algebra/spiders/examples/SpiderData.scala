@@ -45,7 +45,7 @@ case class SpiderData(
   def allPolyhedra =
     (groebnerBasis.flatMap(_.variables) ++
       nonzero.flatMap(_.variables) ++
-      spider.reductions.flatMap(_.small.values.flatMap(r => r.numerator.variables ++ r.denominator.variables)) ++
+      spider.reductions.flatMap(_.small.values.flatMap(r => r.variables)) ++
       relations.flatMap(_.flatMap(_.values.flatMap(_.variables)))).distinct
 
   val complexity: Ordering[PlanarGraph] = {
@@ -88,8 +88,7 @@ case class SpiderData(
     println(matrix.toMathematicaInputString)
 
     import mathematica.Determinant.ofMultivariablePolynomialMatrix._
-    val d = matrix.determinant
-    val result = Fraction(polynomials.normalForm(d.numerator), polynomials.normalForm(d.denominator))
+    val result = polynomials.normalForm(matrix.determinant)
 
     println("determinant: ")
     println(result.toMathematicaInputString)
@@ -155,8 +154,8 @@ case class SpiderData(
       val whenDenominatorsVanish = declarePolynomialZero(denominatorLCM).toSeq.flatMap(_.addDependentDiagram(p))
 
       require(p.numberOfInternalVertices > 0)
-      val newReduction = Reduction(p, independentDiagrams(p.numberOfBoundaryPoints).zip(relation.dropRight(1).map(rationalFunctions.negate)).toMap)
-      val whenDenominatorsNonzero = declarePolynomialNonzero(denominatorLCM).toSeq.flatMap(_.addReduction(newReduction))
+      val newReduction = Reduction(p, independentDiagrams(p.numberOfBoundaryPoints).zip(relation.dropRight(1).map(rationalFunctions.negate).map(liftDenominators)).toMap)
+      val whenDenominatorsNonzero = invertPolynomial(denominatorLCM).map(_._1).toSeq.flatMap(_.addReduction(newReduction))
 
       whenDenominatorsVanish ++ whenDenominatorsNonzero
     } else {
@@ -203,26 +202,17 @@ case class SpiderData(
       }).toMap
     }
 
-    // FIXME this should always be empty because denominators in determinants must already be invertible
-    val someDenominatorVanishes = declareAtLeastOnePolynomialZero(determinants.values.map(_.denominator).toSeq).flatMap(_.addVisiblyIndependentDiagram(p))
-    require(someDenominatorVanishes.isEmpty)
-
     val determinantsWithBiggerDeterminants = {
       (for (s <- invisibleSubsets) yield {
         s -> (determinants(s), invisibleSubsets.filter(t => t.size > s.size && s.forall(t.contains)).map(determinants))
       })
     }
 
-    val results = (for ((s, (nonzero, allZero)) <- determinantsWithBiggerDeterminants) yield {
-      val nonzeroNumerator = nonzero.numerator
-      val allZeroNumerators = allZero.map(_.numerator)
-
+    (for ((s, (nonzero, allZero)) <- determinantsWithBiggerDeterminants) yield {
       val newVisiblyIndependentDiagrams = visiblyIndependentDiagrams.updated(p.numberOfBoundaryPoints, visiblyIndependentDiagrams(p.numberOfBoundaryPoints) ++ s :+ p)
 
-      declarePolynomialNonzero(nonzeroNumerator).flatMap(_.declareAllPolynomialsZero(allZeroNumerators)).map(_.copy(visiblyIndependentDiagrams = newVisiblyIndependentDiagrams))
+      declarePolynomialNonzero(nonzero).flatMap(_.declareAllPolynomialsZero(allZero)).map(_.copy(visiblyIndependentDiagrams = newVisiblyIndependentDiagrams))
     }).flatten
-
-    someDenominatorVanishes ++ results
   }
 
   def addInvisiblyIndependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
@@ -252,6 +242,8 @@ case class SpiderData(
 
   }
 
+  def liftDenominators(p: MultivariableRationalFunction[Fraction[BigInt], String]): P = ???
+  
   def invertPolynomial(p: P): Option[(SpiderData, P)] = {
     import mathematica.Factor._
     println("Factoring something we're inverting: " + p.toMathematicaInputString)

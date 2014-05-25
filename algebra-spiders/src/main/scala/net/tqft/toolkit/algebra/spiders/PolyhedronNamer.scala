@@ -1,5 +1,6 @@
 package net.tqft.toolkit.algebra.spiders
 
+import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.orderings.Orderings
 import java.util.concurrent.ConcurrentHashMap
@@ -22,11 +23,13 @@ object PolyhedronNamer {
 
 }
 
-trait PolyhedronNamer[A] extends MultivariablePolynomialSpider[A] {
+trait PolyhedronNamer[A, F] extends FunctionSpider[A, F] {
 
+  protected def variableToPolynomial(v: String): F
+  
   def polyhedronReductions = PolyhedronNamer.names.toSeq.flatMap({ p =>
     sphericalEquivalents(p._1).map({ q =>
-      Reduction[PlanarGraph, MultivariablePolynomial[A, String]](q, Map(PlanarGraph.empty -> Map(Map(p._2 -> 1) -> coefficientRing.one)))
+      Reduction[PlanarGraph, F](q, Map(PlanarGraph.empty -> variableToPolynomial(p._2)))
     })
   })
 
@@ -56,7 +59,7 @@ trait PolyhedronNamer[A] extends MultivariablePolynomialSpider[A] {
     sphericalEquivalents(p).sorted.head
   }
 
-  override def evaluate(map: Map[PlanarGraph, MultivariablePolynomial[A, String]]): MultivariablePolynomial[A, String] = {
+  override def evaluate(map: Map[PlanarGraph, F]): F = {
     ring.sum(for ((k, v) <- map) yield {
       if (diagramSpider.canonicalFormWithDefect(k)._1 == diagramSpider.empty) {
         v
@@ -74,4 +77,11 @@ trait PolyhedronNamer[A] extends MultivariablePolynomialSpider[A] {
       }
     })
   }
+}
+
+trait PolynomialPolyhedronNamer[A] extends PolyhedronNamer[A, MultivariablePolynomial[A, String]] {
+  override def variableToPolynomial(v: String) = MultivariablePolynomial(Map(Map(v -> 1) -> coefficientRing.one))
+}
+trait RationalFunctionPolyhedronNamer[A] extends PolyhedronNamer[A, MultivariableRationalFunction[A, String]] {
+  override def variableToPolynomial(v: String) = MultivariablePolynomial(Map(Map(v -> 1) -> coefficientRing.one))
 }

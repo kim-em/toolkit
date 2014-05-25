@@ -4,7 +4,7 @@ import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.spiders._
 
-object QuantumExceptionalSeries extends BraidedTrivalentSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with PolyhedronNamer[Fraction[BigInt]] {
+object QuantumExceptionalSeries extends BraidedTrivalentSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
   override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
   override def ring = implicitly[Field[MultivariableRationalFunction[Fraction[BigInt], String]]]
 

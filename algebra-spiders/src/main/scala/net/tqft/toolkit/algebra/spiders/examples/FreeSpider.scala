@@ -6,10 +6,10 @@ import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 
-abstract class FreeSpider extends BigIntMultivariablePolynomialSpider with PolyhedronNamer[Fraction[BigInt]] {
+abstract class FreeSpider extends BigIntMultivariablePolynomialSpider with PolynomialPolyhedronNamer[Fraction[BigInt]] {
   def generators: Seq[(VertexType, MultivariablePolynomial[Fraction[BigInt], String])]
   override lazy val vertexTypes = generators.map(_._1)
-  override def eigenvalue(label: Int): MultivariableRationalFunction[Fraction[BigInt], String] = {
+  override def eigenvalue(label: Int): MultivariablePolynomial[Fraction[BigInt], String] = {
     generators.filter(_._1.perimeter == label).ensuring(_.size == 1).head._2
   }
   override def reductions: Seq[Reduction[PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String]]] = polyhedronReductions
