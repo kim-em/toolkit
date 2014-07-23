@@ -27,6 +27,7 @@ object Toolkit extends Build {
         `algebra-numberfields`,
         `algebra-mathematica`,
         `algebra-spiders`,
+        `algebra-principalgraphs`,
         `algebra-experimental`, 
         functions, 
         eval, 
@@ -103,6 +104,10 @@ object Toolkit extends Build {
   lazy val `algebra-bugs` = Project(id = "toolkit-algebra-bugs",
     base = file("algebra-bugs"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (mathematica, `algebra-mathematica`)
+
+  lazy val `algebra-principalgraphs` = Project(id = "toolkit-algebra-principalgraphs",
+    base = file("algebra-principalgraphs"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (`algebra-graphs`)
 
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),
