@@ -18,9 +18,18 @@ case class SpiderData(
   independentDiagrams: Seq[Seq[PlanarGraph]],
   visiblyIndependentDiagrams: Seq[Seq[PlanarGraph]]) {
 
-  for ((n, (k, j)) <- dimensionBounds.zip(independentDiagrams.map(_.size).zip(visiblyIndependentDiagrams.map(_.size)))) {
-    require(k <= n)
-    require(j >= 2 * k - n)
+  // verify
+  def verify {
+    for ((n, (k, j)) <- dimensionBounds.zip(independentDiagrams.map(_.size).zip(visiblyIndependentDiagrams.map(_.size)))) {
+      require(k <= n)
+      require(j >= 2 * k - n)
+    }
+
+    for (visiblyIndependent <- visiblyIndependentDiagrams) {
+      // the determinants of visibly independent vectors must be invertible
+      val det = calculateDeterminant(visiblyIndependent)
+      require(declarePolynomialZero(det).isEmpty)
+    }
   }
 
   type P = MultivariablePolynomial[Fraction[BigInt], String]
@@ -47,21 +56,35 @@ case class SpiderData(
     Ordering.by(_.numberOfInternalVertices)
   }
 
+  // This forces all the formal inverses to come last in the variable ordering, which seems to help the Groebner bases.
+  implicit object stringOrdering extends Ordering[String] {
+    override def compare(x: String, y: String) = {
+      if (x.endsWith("^(-1)") && !y.endsWith("^(-1)")) {
+        1
+      } else if (!x.endsWith("^(-1)") && y.endsWith("^(-1)")) {
+        -1
+      } else {
+        Ordering.String.compare(x, y)
+      }
+    }
+  }
+
   lazy val polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
   lazy val rationalFunctions = Field.fieldOfFractions(polynomials)
 
-  def reevaluateAllPolyhedra: Seq[SpiderData] = {
-    val differences = (for (p <- allPolyhedra.iterator; g <- PolyhedronNamer.byName(p).iterator; r <- spider.allEvaluations(g)) yield {
-      rationalFunctions.subtract(Fraction.whole(polynomials.monomial(p)), r).numerator
-    }).toSeq.distinct
-
-    println("reevaluateAllPolyhedra found differences: " + differences.toMathematicaInputString)
-
-    differences.foldLeft(Seq(this))({ (s, d) => s.flatMap(r => r.declarePolynomialZero(d)) })
-  }
-
   def addReduction(r: Reduction[PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String]]): Seq[SpiderData] = {
-    copy(spider = spider.addReduction(r)).reevaluateAllPolyhedra.map(_.simplifyReductions)
+    val newSpider = spider.addReduction(r)
+
+    def reevaluateAllPolyhedra: Seq[SpiderData] = {
+      val differences = (for (p <- allPolyhedra.iterator; g <- PolyhedronNamer.byName(p).iterator; r <- newSpider.allEvaluations(g)) yield {
+        rationalFunctions.subtract(Fraction.whole(polynomials.monomial(p)), r).numerator
+      }).toSeq.distinct
+
+      println("reevaluateAllPolyhedra found differences: " + differences.toMathematicaInputString)
+
+      differences.foldLeft(Seq(this))({ (s, d) => s.flatMap(r => r.declarePolynomialZero(d)) })
+    }
+    reevaluateAllPolyhedra.map(_.copy(spider = newSpider).simplifyReductions)
   }
 
   def simplifyReductions: SpiderData = {
@@ -158,7 +181,7 @@ case class SpiderData(
 
       // There's a lemma here. If b \in span{a1, ..., an}, and {a1, ..., ak} is maximally visibly independent,
       // then the inner product determinant for {a1, ..., ak, b} vanishes.
-      declarePolynomialZero(calculateDeterminant(visiblyIndependentDiagrams(p.numberOfBoundaryPoints) :+ p).numerator)
+      declarePolynomialZero(calculateDeterminant(visiblyIndependentDiagrams(p.numberOfBoundaryPoints) :+ p))
     }
 
   }
@@ -224,8 +247,7 @@ case class SpiderData(
       }
     }
 
-    val someDenominatorVanishes = declareAtLeastOnePolynomialZero(determinants.map(_.denominator).toSeq).flatMap(_.addInvisiblyIndependentDiagram(p))
-    declareAllPolynomialsZero(determinants.map(_.numerator)) ++ someDenominatorVanishes
+    declareAllPolynomialsZero(determinants)
   }
 
   def normalizePolynomial(p: P) = {
@@ -237,32 +259,53 @@ case class SpiderData(
 
   }
 
-  def liftDenominators(p: MultivariableRationalFunction[Fraction[BigInt], String]): P = polynomials.multiply(p.numerator, inverse(p.denominator))
+  def liftDenominators(p: MultivariableRationalFunction[Fraction[BigInt], String]): P = polynomials.multiply(p.numerator, invertPolynomial(p.denominator).get._2)
 
   def invertPolynomial(p: P): Option[(SpiderData, P)] = {
     import mathematica.Factor._
     println("Factoring something we're inverting: " + p.toMathematicaInputString)
     val factors = p.factor
+    println("Factors: ")
+    for (f <- factors) println(f._1.toMathematicaInputString + "   ^" + f._2)
 
-    factors.foldLeft[Option[(SpiderData, P)]](Some(this, polynomials.one))({ (s: Option[(SpiderData, P)], q: (P, Int)) =>
+    val result = factors.foldLeft[Option[(SpiderData, P)]](Some(this, polynomials.one))({ (s: Option[(SpiderData, P)], q: (P, Int)) =>
       s.flatMap({
         z: (SpiderData, P) =>
-          z._1.invertIrreduciblePolynomial(q._1).map({ w =>
-            (w._1, polynomials.multiply(polynomials.power(w._2, q._2), z._2))
-          })
+          if (q._2 > 0) {
+            z._1.invertIrreduciblePolynomial(q._1).map({ w =>
+              (w._1, polynomials.multiply(polynomials.power(w._2, q._2), z._2))
+            })
+          } else {
+            Some((z._1, polynomials.multiply(polynomials.power(q._1, -q._2), z._2)))
+          }
       })
     })
+
+    if (polynomials.totalDegree(p) > 0) {
+      require(result.isEmpty || result.get._1.groebnerBasis.nonEmpty)
+    }
+
+    result
   }
   def inverse(p: P): P = {
     if (polynomials.totalDegree(p) == 0) {
       polynomials.ring.inverse(polynomials.constantTerm(p))
     } else {
-      polynomials.monomial("(" + p.toMathematicaInputString.ensuring(!_.contains("^(-1)")) + ")^(-1)")
+      p.toMathematicaInputString match {
+        case s if s.startsWith("(") && s.endsWith("^(-1)") => polynomials.monomial(s.stripPrefix("(").stripSuffix("^(-1)"))
+        case s if s.contains("^(-1)") => ???
+        case s => polynomials.monomial("(" + s + ")^(-1)")
+      }
     }
   }
   def invertIrreduciblePolynomial(p: P): Option[(SpiderData, P)] = {
-    val i = inverse(p)
-    declareIrreduciblePolynomialZero(polynomials.subtract(polynomials.multiply(i, p), polynomials.one)).map(s => (s, i))
+    println("inverting " + p.toMathematicaInputString)
+    if (polynomials.zero_?(p)) {
+      None
+    } else {
+      val i = inverse(p)
+      declareIrreduciblePolynomialZero(polynomials.subtract(polynomials.multiply(i, p), polynomials.one)).map(s => (s, i))
+    }
   }
 
   def declareAtLeastOnePolynomialZero(rs: Seq[P]): Seq[SpiderData] = {
@@ -276,20 +319,24 @@ case class SpiderData(
   def declarePolynomialZero(r: P): Seq[SpiderData] = {
     if (polynomials.zero_?(r)) {
       Seq(this)
+    } else if (r == polynomials.one || r == polynomials.negativeOne) {
+      Seq.empty
     } else {
       val factors = {
         import mathematica.Factor._
         println("Factoring something we're going to set to zero: " + r.toMathematicaInputString)
-        normalizePolynomial(r).factor.keys.toSeq.ensuring(_.nonEmpty)
+        normalizePolynomial(r).factor.filter(_._2 > 0).keys.toSeq.ensuring(_.nonEmpty)
       }
-      factors.flatMap(declareIrreduciblePolynomialZero)
+      factors.flatMap(f => { require(!f.toMathematicaInputString.contains("^(-1)")); declareIrreduciblePolynomialZero(f) })
     }
   }
 
   def declareIrreduciblePolynomialZero(r: P): Option[SpiderData] = {
+
     val newGroebnerBasis = {
       import mathematica.GroebnerBasis._
       println("Computing Groebner basis for " + (groebnerBasis :+ r).toMathematicaInputString)
+
       val result = (groebnerBasis :+ r).computeGroebnerBasis
       println(" ... result: " + result.toMathematicaInputString)
       result
@@ -299,7 +346,6 @@ case class SpiderData(
     if (newGroebnerBasis.contains(polynomials.one)) {
       None
     } else {
-      // does this kill anything in nonzero? 
       val newPolynomials = MultivariablePolynomialAlgebras.quotient(newGroebnerBasis)
       // TODO if we have non-reducing relations, these will have to be updated as well
       val newExtraReductions = spider.extraReductions.map({
@@ -338,9 +384,9 @@ object InvestigateTetravalentSpiders extends App {
   }).asQuotientSpider
 
   val invertible = Seq(MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-    MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1))) //,
-    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+    MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1))),
+    MultivariablePolynomial(Map(Map[String, Int]() -> Fraction[BigInt](1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+    MultivariablePolynomial(Map(Map[String, Int]() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))) //,
     //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
     //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
     //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 2) -> Fraction[BigInt](1, 1))) //

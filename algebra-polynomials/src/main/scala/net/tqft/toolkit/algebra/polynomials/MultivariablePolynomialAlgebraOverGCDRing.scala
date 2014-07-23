@@ -15,7 +15,7 @@ trait MultivariablePolynomialAlgebraOverGCDRing[A, V] extends MultivariablePolyn
   }
 
   override def gcd(x: MultivariablePolynomial[A, V], y: MultivariablePolynomial[A, V]): MultivariablePolynomial[A, V] = {
-    println(s"gcd($x, $y)")
+//    println(s"gcd($x, $y)")
     import net.tqft.toolkit.arithmetic.MinMax._
     variablesByMaximumDegree(x).headOption.orElse(variablesByMaximumDegree(y).headOption).map(_._2.head) match {
       case None => {

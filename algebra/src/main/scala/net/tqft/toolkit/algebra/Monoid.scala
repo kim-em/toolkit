@@ -11,6 +11,13 @@ trait Monoid[@specialized(Int, Long, Float, Double) A] extends Semigroup[A] with
   override def power(x: A, k: Int): A = {
     // modified from https://github.com/dlwh/breeze/blob/master/math/src/main/scala/breeze/numerics/IntMath.scala
     // under http://www.apache.org/licenses/LICENSE-2.0
+    if(k < 0) {
+      println("negative power ...")
+      println(x)
+      println(k)
+      println(this)
+      new Exception("").printStackTrace()
+    }
     require(k >= 0)
     if (k == 0) {
       one

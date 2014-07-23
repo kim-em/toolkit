@@ -4,6 +4,7 @@ import scala.language.implicitConversions
 import net.tqft.toolkit.mathematica.Expression_
 import net.tqft.toolkit.mathematica.FullFormExpression
 import net.tqft.toolkit.mathematica.SymbolExpression
+import net.tqft.toolkit.mathematica.StringExpression
 import net.tqft.toolkit.mathematica.IntegerExpression
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.algebra.IntegerModel
@@ -25,7 +26,7 @@ object Polynomials {
   implicit def multivariableRationalFunctionToExpression[A: MathematicaForm, V: MathematicaForm](p: MultivariableRationalFunction[A, V]): Expression_ = {
     val en = multivariablePolynomialToExpression(p.numerator)
     val ed = multivariablePolynomialToExpression(p.denominator)
-    
+
     if (ed == IntegerExpression(new Apint(1))) {
       en
     } else {
@@ -37,39 +38,24 @@ object Polynomials {
 
   implicit def expressionToMultivariablePolynomial[I: IntegerModel](e: Expression_): MultivariablePolynomial[Fraction[I], String] = {
     val integers = implicitly[IntegerModel[I]]
+    val rationals = implicitly[Field[Fraction[I]]]
     val polynomials = implicitly[MultivariablePolynomialAlgebra[Fraction[I], String]]
-    val expressions = implicitly[MathematicaExpression[Expression_]]
 
-    def expressionToMultivariableMonomial(e: Expression_): MultivariablePolynomial[Fraction[I], String] = {
-//      println(s"expressionToMultivariableMonomial($e)")
-
-      e match {
-        case FullFormExpression(SymbolExpression("Times"), Seq(IntegerExpression(i), factors)) => polynomials.multiplyByInt(expressionToMultivariableMonomial(factors), i.intValue)
-        case FullFormExpression(SymbolExpression("Times"), factors) => polynomials.product(factors.map(expressionToMonomial))
-        case e => expressionToMonomial(e)
-      }
-    }
-
-    def expressionToMonomial(e: Expression_): MultivariablePolynomial[Fraction[I], String] = {
-//      println(s"expressionToMonomial($e)")
-
-      e match {
-        case FullFormExpression(SymbolExpression("Power"), Seq(SymbolExpression(v), IntegerExpression(i))) => polynomials.monomial(Map(v -> i.intValue))
-        case IntegerExpression(i) => polynomials.constant(integers.fromBigInt(i.toBigInteger()))
-        case SymbolExpression(v) => polynomials.monomial(v)
-        case _ => require(false); ???
-      }
-    }
-
-//    println(s"expressionToMultivariablePolynomial($e)")
+    //    println(s"expressionToMultivariablePolynomial($e)")
     e match {
-      case FullFormExpression(SymbolExpression("Plus"), terms) => polynomials.sum(terms.map(expressionToMultivariableMonomial))
-      case e => expressionToMultivariableMonomial(e)
+      case Symbols.Plus(terms @ _*) => polynomials.sum(terms.map(expressionToMultivariablePolynomial[I]))
+      case Symbols.Times(factors @ _*) => polynomials.product(factors.map(expressionToMultivariablePolynomial[I]))
+      case Symbols.Power(IntegerExpression(x), IntegerExpression(i)) => polynomials.constant(rationals.power(integers.fromBigInt(x.toBigInteger()), i.intValue))
+      case Symbols.Power(x, IntegerExpression(i)) => polynomials.power(expressionToMultivariablePolynomial[I](x), i.intValue)
+      case IntegerExpression(i) => polynomials.constant(integers.fromBigInt(i.toBigInteger()))
+      case SymbolExpression(v) => polynomials.monomial(v)
+      case StringExpression(e) => polynomials.monomial(e)
+      case _ => require(false); ???
     }
   }
 
   implicit def expressionToMultivariableRationalFunction[I: IntegerModel](e: Expression_): MultivariableRationalFunction[Fraction[I], String] = {
-//    println(s"expressionToMultivariableRationalFunction($e)")
+    //    println(s"expressionToMultivariableRationalFunction($e)")
 
     val rationalFunctions = implicitly[Field[MultivariableRationalFunction[Fraction[I], String]]]
 

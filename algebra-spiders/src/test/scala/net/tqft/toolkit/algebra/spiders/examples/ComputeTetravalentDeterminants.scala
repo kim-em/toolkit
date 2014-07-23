@@ -60,7 +60,7 @@ object ComputeTetravalentDeterminants extends App {
       val d = polynomials.lcm(rel.map(_.denominator): _*)
       println("denominator factorization: " + d.toMathematicaInputString)
       val factors = {
-        import mathematica.Factor._
+        import mathematica.FactorWrapped._
         polynomials.factor(d)
       }
       println("denominator factorization: " + factors.map(p => (p._1.toMathematicaInputString, p._2)))

@@ -22,7 +22,6 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
   }
 
   def replace(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Map[A, R] = {
-    println("SubstitutionSpider.replace")
     reductions.iterator.map(r => replace(r)(element)).find(_ != element).getOrElse(element)
   }
   def replaceRepeatedly(reductions: Seq[Reduction[A, R]])(element: Map[A, R]) = {
