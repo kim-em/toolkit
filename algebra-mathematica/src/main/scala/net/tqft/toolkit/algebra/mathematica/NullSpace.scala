@@ -12,7 +12,7 @@ object NullSpace {
         import Polynomials._
         import Mathematica._
         val input = FullFormExpression(SymbolExpression("NullSpace"),
-          Seq(m.map(r => r.map({ x: MultivariableRationalFunction[Fraction[I], String] => x: Expression_ }))))
+          Seq(m.map(r => r.map({ x: MultivariableRationalFunction[Fraction[I], String] => x: Expression }))))
 
         input.evaluate match {
           case Symbols.List(rows @ _*) => rows.map(r => r match {

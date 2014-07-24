@@ -12,8 +12,8 @@ object Determinant {
 
   abstract class Determinant[I: IntegerModel, R](m: Seq[Seq[R]]) {
     def liftConstant(i: I): R
-    def toExpression(r: R): Expression_
-    def fromExpression(e: Expression_): R
+    def toExpression(r: R): Expression
+    def fromExpression(e: Expression): R
 
     def determinant: R = {
       if (m.isEmpty) {
@@ -29,7 +29,7 @@ object Determinant {
 
         val input = FullFormExpression(SymbolExpression("Det"),
           Seq(m.map(r => r.map(toExpression))))
-        val unwrappedInput = FullFormExpression(SymbolExpression("ReplaceAll"), Seq(input, Expression_.expression.fromInputForm("a[x_] :> x")))
+        val unwrappedInput = FullFormExpression(SymbolExpression("ReplaceAll"), Seq(input, Expression.expression.fromInputForm("a[x_] :> x")))
         fromExpression(unwrappedInput.evaluate)
       }
     }
@@ -38,7 +38,7 @@ object Determinant {
       import MathematicaForm._
       val hash = SHA1(m.map(_.map(toExpression)).toMathematicaInputString)
       val stringResult = cache.getOrElseUpdate(hash, toExpression(determinant).toInputForm)
-      fromExpression(implicitly[MathematicaExpression[Expression_]].fromInputForm(stringResult))
+      fromExpression(implicitly[MathematicaExpression[Expression]].fromInputForm(stringResult))
     }
   }
 
@@ -48,7 +48,7 @@ object Determinant {
 
       def liftConstant(i: I) = i
       def toExpression(r: MultivariableRationalFunction[Fraction[I], String]) = r
-      def fromExpression(e: Expression_) = e
+      def fromExpression(e: Expression) = e
     }
   }
   object ofMultivariablePolynomialMatrix {
@@ -57,7 +57,7 @@ object Determinant {
 
       def liftConstant(i: I) = i
       def toExpression(r: MultivariablePolynomial[Fraction[I], String]) = r
-      def fromExpression(e: Expression_) = e
+      def fromExpression(e: Expression) = e
     }
   }
 }
