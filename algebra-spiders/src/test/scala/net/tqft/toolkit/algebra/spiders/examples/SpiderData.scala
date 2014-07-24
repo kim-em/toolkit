@@ -56,7 +56,7 @@ case class SpiderData(
     Ordering.by(_.numberOfInternalVertices)
   }
 
-  // This forces all the formal inverses to come last in the variable ordering, which seems to help the Groebner bases.
+  // This forces all the formal inverses to come last in the variable ordering, which seems to help the Groebner bases a bit.
   implicit object stringOrdering extends Ordering[String] {
     override def compare(x: String, y: String) = {
       if (x.endsWith("^(-1)") && !y.endsWith("^(-1)")) {
@@ -106,7 +106,7 @@ case class SpiderData(
     println(matrix.toMathematicaInputString)
 
     import mathematica.Determinant.ofMultivariablePolynomialMatrix._
-    val result = polynomials.normalForm(matrix.determinant)
+    val result = polynomials.normalForm(matrix.cachedDeterminant)
 
     println("determinant: ")
     println(result.toMathematicaInputString)
@@ -402,7 +402,7 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty))(_.invertPolynomial(_).get._1)
 
-  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2, 3), (4, 0), (4, 1), (4, 2), (4, 3), (6, 0), (6, 1) /*, (6, 2)*/ )
+  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2, 3), (4, 0), (4, 1), (4, 2), (4, 3), (6, 0), (6, 1), (6, 2) )
 
   // TODO start computing relations, also
 

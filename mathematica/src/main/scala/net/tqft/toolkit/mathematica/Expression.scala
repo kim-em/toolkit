@@ -36,8 +36,6 @@ object Symbols {
 }
 
 object Expression_ {
-//  def apply(s: String) = expression.fromInputForm(s)
-
   implicit def liftString(s: String): Expression_ = StringExpression(s)
   implicit def liftInt(i: Int): Expression_ = IntegerExpression(new Apint(i))
   implicit def liftSeq(s: Seq[Expression_]): Expression_ = Symbols.List(s:_*)
