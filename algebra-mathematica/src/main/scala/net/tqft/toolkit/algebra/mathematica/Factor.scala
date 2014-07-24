@@ -4,7 +4,7 @@ import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.mathematica.Symbols
 import net.tqft.toolkit.mathematica.SymbolExpression
 import net.tqft.toolkit.mathematica.FullFormExpression
-import net.tqft.toolkit.mathematica.Expression_
+import net.tqft.toolkit.mathematica.Expression
 import net.tqft.toolkit.mathematica.IntegerExpression
 import net.tqft.toolkit.mathematica.Mathematica
 import net.tqft.toolkit.algebra.IntegerModel
@@ -26,11 +26,11 @@ object FactorWrapped extends FactorizationAlgorithm {
 
       val input = FullFormExpression(SymbolExpression("Factor"),
         Seq(polynomial))
-      val unwrappedInput = FullFormExpression(SymbolExpression("ReplaceAll"), Seq(input, Expression_.expression.fromInputForm("a[x_] :> x")))
+      val unwrappedInput = FullFormExpression(SymbolExpression("ReplaceAll"), Seq(input, Expression.expression.fromInputForm("a[x_] :> x")))
       //      println(unwrappedInput.toInputForm)
       val result = unwrappedInput.evaluate
 
-      def unpack(e: Expression_): Map[MultivariablePolynomial[Fraction[I], String], Int] = {
+      def unpack(e: Expression): Map[MultivariablePolynomial[Fraction[I], String], Int] = {
         e match {
           case Symbols.Power(p, k: IntegerExpression) => Map((p: MultivariablePolynomial[Fraction[I], String]) -> k.value.intValue)
           case Symbols.Times(arguments @ _*) => arguments.flatMap(unpack).toMap
@@ -60,7 +60,7 @@ object Factor extends FactorizationAlgorithm {
         
       val result = input.evaluate
 
-      def unpack(e: Expression_): Map[MultivariablePolynomial[Fraction[I], String], Int] = {
+      def unpack(e: Expression): Map[MultivariablePolynomial[Fraction[I], String], Int] = {
         e match {
           case Symbols.Power(p, k: IntegerExpression) => Map((p: MultivariablePolynomial[Fraction[I], String]) -> k.value.intValue)
           case Symbols.Times(arguments @ _*) => arguments.flatMap(unpack).toMap

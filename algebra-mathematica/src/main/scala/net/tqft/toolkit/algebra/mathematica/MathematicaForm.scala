@@ -6,7 +6,7 @@ import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.IntegerModel
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
-import net.tqft.toolkit.mathematica.Expression_
+import net.tqft.toolkit.mathematica.Expression
 
 trait MathematicaForm[A] {
   def toMathematicaInputString(a: A): String
@@ -30,8 +30,8 @@ object MathematicaForm {
     override def toMathematicaInputString(i: BigInt) = i.toString
   }
   
-  implicit object ExpressionMathematicaForm extends MathematicaForm[Expression_] {
-    override def toMathematicaInputString(e: Expression_) = e.toInputForm
+  implicit object ExpressionMathematicaForm extends MathematicaForm[Expression] {
+    override def toMathematicaInputString(e: Expression) = e.toInputForm
   }
 
   implicit def integerModelMathematicaForm[I: IntegerModel]: MathematicaForm[I] = new MathematicaForm[I] {

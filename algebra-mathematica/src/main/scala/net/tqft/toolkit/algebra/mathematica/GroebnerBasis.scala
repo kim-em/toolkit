@@ -4,7 +4,7 @@ import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.mathematica.Symbols
 import net.tqft.toolkit.mathematica.SymbolExpression
 import net.tqft.toolkit.mathematica.FullFormExpression
-import net.tqft.toolkit.mathematica.Expression_
+import net.tqft.toolkit.mathematica.Expression
 import net.tqft.toolkit.mathematica.Mathematica
 import net.tqft.toolkit.algebra.IntegerModel
 import net.tqft.toolkit.algebra.polynomials.GroebnerBasisOperations
@@ -22,9 +22,9 @@ object GroebnerBasis extends GroebnerBasisOperations {
       import Mathematica._
       val input = FullFormExpression(SymbolExpression("GroebnerBasis"),
         Seq(
-          Symbols.List(polynomials.map(x => (x: Expression_)): _*),
-          Symbols.List(variables.map(v => Expression_.expression.fromInputForm(WrappingMathematicaForm.toMathematicaInputString(v))): _*)))
-      val unwrappedInput = FullFormExpression(SymbolExpression("ReplaceAll"), Seq(input, Expression_.expression.fromInputForm("a[x_] :> x")))
+          Symbols.List(polynomials.map(x => (x: Expression)): _*),
+          Symbols.List(variables.map(v => Expression.expression.fromInputForm(WrappingMathematicaForm.toMathematicaInputString(v))): _*)))
+      val unwrappedInput = FullFormExpression(SymbolExpression("ReplaceAll"), Seq(input, Expression.expression.fromInputForm("a[x_] :> x")))
 //      println(unwrappedInput.toInputForm)
       val result = unwrappedInput.evaluate
       result match {

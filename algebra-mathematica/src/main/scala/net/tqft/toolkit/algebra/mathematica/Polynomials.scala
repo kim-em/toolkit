@@ -1,7 +1,7 @@
 package net.tqft.toolkit.algebra.mathematica
 
 import scala.language.implicitConversions
-import net.tqft.toolkit.mathematica.Expression_
+import net.tqft.toolkit.mathematica.Expression
 import net.tqft.toolkit.mathematica.FullFormExpression
 import net.tqft.toolkit.mathematica.SymbolExpression
 import net.tqft.toolkit.mathematica.StringExpression
@@ -18,12 +18,12 @@ import org.apfloat.Apint
 import net.tqft.toolkit.algebra.Field
 
 object Polynomials {
-  implicit def multivariablePolynomialToExpression[A: MathematicaForm, V: MathematicaForm](p: MultivariablePolynomial[A, V]): Expression_ = {
+  implicit def multivariablePolynomialToExpression[A: MathematicaForm, V: MathematicaForm](p: MultivariablePolynomial[A, V]): Expression = {
     // TODO why isn't this available implicitly?
     def mf = MathematicaForm.multivariablePolynomialMathematicaForm[A, V]
-    Expression_.expression.fromInputForm(mf.toMathematicaInputString(p))
+    Expression.expression.fromInputForm(mf.toMathematicaInputString(p))
   }
-  implicit def multivariableRationalFunctionToExpression[A: MathematicaForm, V: MathematicaForm](p: MultivariableRationalFunction[A, V]): Expression_ = {
+  implicit def multivariableRationalFunctionToExpression[A: MathematicaForm, V: MathematicaForm](p: MultivariableRationalFunction[A, V]): Expression = {
     val en = multivariablePolynomialToExpression(p.numerator)
     val ed = multivariablePolynomialToExpression(p.denominator)
 
@@ -36,7 +36,7 @@ object Polynomials {
     }
   }
 
-  implicit def expressionToMultivariablePolynomial[I: IntegerModel](e: Expression_): MultivariablePolynomial[Fraction[I], String] = {
+  implicit def expressionToMultivariablePolynomial[I: IntegerModel](e: Expression): MultivariablePolynomial[Fraction[I], String] = {
     val integers = implicitly[IntegerModel[I]]
     val rationals = implicitly[Field[Fraction[I]]]
     val polynomials = implicitly[MultivariablePolynomialAlgebra[Fraction[I], String]]
@@ -54,7 +54,7 @@ object Polynomials {
     }
   }
 
-  implicit def expressionToMultivariableRationalFunction[I: IntegerModel](e: Expression_): MultivariableRationalFunction[Fraction[I], String] = {
+  implicit def expressionToMultivariableRationalFunction[I: IntegerModel](e: Expression): MultivariableRationalFunction[Fraction[I], String] = {
     //    println(s"expressionToMultivariableRationalFunction($e)")
 
     val rationalFunctions = implicitly[Field[MultivariableRationalFunction[Fraction[I], String]]]

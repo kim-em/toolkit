@@ -6,7 +6,7 @@ import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.algebra.mathematica._
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm
-import net.tqft.toolkit.mathematica.Expression_
+import net.tqft.toolkit.mathematica.Expression
 
 object ComputeTetravalentDeterminants extends App {
 
