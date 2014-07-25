@@ -8,13 +8,25 @@ import net.tqft.toolkit.permutations.Involutions._
 import net.tqft.toolkit.algebra.graphs.Graph
 import net.tqft.toolkit.algebra.graphs.ColouredGraph
 
-
 case class Vertex(graph: Int, depth: Int, index: Int)
 case class TriplePointConfiguration(depth: Int, index0: Int, index1: Int, bijection: Seq[(Vertex, Vertex)])
 
 trait PairOfBigraphsWithDuals {
   def g0: BigraphWithDuals
   def g1: BigraphWithDuals
+  def graph(g: Int): BigraphWithDuals = {
+    g match {
+      case 0 => g0
+      case 1 => g1
+    }
+  }
+  def dual(v: Vertex): Vertex = {
+    v match {
+      case Vertex(g, d, k) if d % 2 == 1 => Vertex(1 - g, d, k)
+      case Vertex(g, d, k) => Vertex(g, d, graph(g).dualData(d / 2)(k))
+    }
+  }
+
   def associativityDefects: Memo[Seq[Seq[Int]]]
   def verticesByDimension: Memo[Seq[Seq[Seq[Int]]]]
 
@@ -55,10 +67,10 @@ trait PairOfBigraphsWithDuals {
     }
   }
   private def connectionsBetween(vertex0: (Int, Int), vertex1: (Int, Int)): Int = {
-    def rightNeighbours(v: Vertex) = {
-      ???
-    }
-    ???
+    def rightNeighbours(v: Vertex) = graph(v.graph).bigraph.neighbours(v.depth, v.index).map(p => Vertex(v.graph, p._1, p._2))
+    def leftNeighbours(v: Vertex) = rightNeighbours(dual(v)).map(dual)
+    // FIXME this is broken if graphs aren't simply laced!
+    rightNeighbours(Vertex(0, vertex0._1, vertex0._2)).intersect(leftNeighbours(Vertex(1, vertex1._1, vertex1._2))).size
   }
 
   protected def updateVerticesByDimensions(vertexClumps: Seq[Seq[Seq[Int]]]): Seq[Seq[Seq[Int]]] = ???
@@ -154,24 +166,35 @@ object PairOfBigraphsWithDuals {
   }
 
   def apply(g0: BigraphWithDuals, g1: BigraphWithDuals): PairOfBigraphsWithDuals = {
+    require(g0.bigraph.depth == g1.bigraph.depth)
     val graphs = List(g0, g1)
 
     var evenDepthScratch: EvenDepthPairOfBigraphsWithDuals = PairOfBigraphsWithDuals.empty(g0.dualData(0), g1.dualData(0))
     var oddDepthScratch: OddDepthPairOfBigraphsWithDuals = null
     for (workingDepth <- 1 to g0.bigraph.depth) {
+      println(s"workingDepth = $workingDepth")
       if (workingDepth % 2 == 1) {
         oddDepthScratch = evenDepthScratch.increaseDepth
+        println(s"oddDepthScratch = $oddDepthScratch")
+
         for (i <- 0 until g0.bigraph.rankAtDepth(workingDepth)) {
+          println(s" adding dual pair $i")
           oddDepthScratch = oddDepthScratch.addDualPairAtOddDepth(g0.bigraph.inclusions(workingDepth - 1)(i), g1.bigraph.inclusions(workingDepth - 1)(i)).get
+          println(s"oddDepthScratch = $oddDepthScratch")
         }
       } else {
         evenDepthScratch = oddDepthScratch.increaseDepth
+        println(s"evenDepthScratch = $evenDepthScratch")
         for (graph <- 0 to 1; i <- 0 until graphs(graph).bigraph.rankAtDepth(workingDepth)) {
           val j = graphs(graph).dualData(workingDepth / 2)(i)
           if (i == j) {
+            println(s" adding a self dual vertex")
             evenDepthScratch = evenDepthScratch.addSelfDualVertex(graph, graphs(graph).bigraph.inclusions(workingDepth - 1)(i)).get
+            println(s"evenDepthScratch = $evenDepthScratch")
           } else if (j == i + 1) {
+            println(s" adding a pair of dual vertices")
             evenDepthScratch = evenDepthScratch.addDualPairAtEvenDepth(graph, graphs(graph).bigraph.inclusions(workingDepth - 1)(i), graphs(graph).bigraph.inclusions(workingDepth - 1)(i + 1)).get
+            println(s"evenDepthScratch = $evenDepthScratch")
           } else if (j == i - 1) {
             // do nothing, the previous case has already added this row
           } else {
@@ -186,6 +209,10 @@ object PairOfBigraphsWithDuals {
       oddDepthScratch
     }
 
+  }
+
+  object Examples {
+    val Haagerup = apply(BigraphWithDuals.Examples.Haagerup, BigraphWithDuals.Examples.dualHaagerup.increaseDepth)
   }
 }
 case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: EvenDepthBigraphWithDuals, associativityDefects: Memo[Seq[Seq[Int]]], verticesByDimension: Memo[Seq[Seq[Seq[Int]]]], triplePointConfigurations: Memo[Seq[TriplePointConfiguration]]) extends PairOfBigraphsWithDuals {
@@ -337,7 +364,7 @@ case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: Odd
       }
       for (i <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
         for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
-          oldDefects(i)(j) + row0(i) * row1(j) - row1(i) * row0(j)
+          oldDefects(i)(j) + row0(i) * row1(g1.dualData.last(j)) - row0(g0.dualData.last(i)) * row1(j)
         }
       }
     })

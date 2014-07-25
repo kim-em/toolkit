@@ -7,6 +7,8 @@ import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.collections.KSubsets
 import net.tqft.toolkit.algebra.matrices.Matrix
 import MathematicaForm._
+import net.tqft.toolkit.amazon.S3
+import net.tqft.toolkit.Logging
 
 case class SpiderData(
   spider: QuotientSpider,
@@ -88,8 +90,13 @@ case class SpiderData(
   }
 
   def simplifyReductions: SpiderData = {
+    // FIXME I'm suspicious of this!
+    
     spider.extraReductions.tails.find(tail => tail.nonEmpty && tail.tail.find(d => tail.head.big.Subgraphs(d.big).excisions.nonEmpty).nonEmpty) match {
-      case Some(tail) => copy(spider = spider.copy(extraReductions = spider.extraReductions.filterNot(_.big == tail.head.big))).simplifyReductions
+      case Some(tail) => {
+        Logging.info("Discarding a redundant reduction for " + tail.head.big)
+        copy(spider = spider.copy(extraReductions = spider.extraReductions.filterNot(_.big == tail.head.big))).simplifyReductions
+      }
       case None => this
     }
   }
@@ -365,7 +372,10 @@ case class SpiderData(
     val diagramsToConsider = spider.reducedDiagrams(boundary, vertices)
     for (d <- diagramsToConsider) println("   " + d)
 
-    diagramsToConsider.foldLeft(Seq(this))({ (s: Seq[SpiderData], p: PlanarGraph) => s.flatMap(d => d.considerDiagram(p)).filter(s => s.independentDiagrams.lift(6).getOrElse(Seq.empty).size == s.consideredDiagrams.lift(6).getOrElse(Seq.empty).size) })
+    diagramsToConsider.foldLeft(Seq(this))({
+      (s: Seq[SpiderData], p: PlanarGraph) =>
+        s.flatMap(d => d.considerDiagram(p))
+    })
       .map(_.copy(consideredDiagramsVertexBound = newConsideredDiagramsVertexBound))
   }
 
@@ -379,6 +389,9 @@ case class SpiderData(
 }
 
 object InvestigateTetravalentSpiders extends App {
+
+  Determinant.cache = S3("determinants")
+
   val lowestWeightTetravalentSpider = (new LowestWeightSpider {
     override def generators = Seq((VertexType(4, 1), ring.one))
   }).asQuotientSpider
@@ -386,7 +399,8 @@ object InvestigateTetravalentSpiders extends App {
   val invertible = Seq(MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
     MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1))),
     MultivariablePolynomial(Map(Map[String, Int]() -> Fraction[BigInt](1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-    MultivariablePolynomial(Map(Map[String, Int]() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))) //,
+    MultivariablePolynomial(Map(Map[String, Int]() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
+    MultivariablePolynomial(Map(Map[String, Int]() -> Fraction[BigInt](-2, 1), Map("p1" -> 2) -> Fraction[BigInt](1, 1))) //,
     //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
     //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
     //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 2) -> Fraction[BigInt](1, 1))) //
@@ -402,7 +416,7 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty))(_.invertPolynomial(_).get._1)
 
-  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2, 3), (4, 0), (4, 1), (4, 2), (4, 3), (6, 0), (6, 1), (6, 2) )
+  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2, 3), (4, 0), (4, 1), (4, 2), (4, 3)/**/, (6, 0), (6, 1)/**/, (6, 2)/**/)
 
   // TODO start computing relations, also
 

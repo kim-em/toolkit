@@ -59,16 +59,35 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
       case k if k > 0 => inclusions(k - 1).size
     }
   }
-  def valence(k: Int, index: Int) = {
-    if (k == 0) {
+  def valence(d: Int, index: Int) = {
+//    require(d >= 0)
+//    require(d <= depth)
+//    require(index >= 0)
+//    require(index < rankAtDepth(d))
+    if (d == 0) {
       inclusions.head.map(_(index)).sum
-    } else if (k == depth) {
+    } else if (d == depth) {
       inclusions.last(index).sum
     } else {
-      inclusions(k - 1).map(_(index)).sum + inclusions(k)(index).sum
+      inclusions(d - 1)(index).sum + inclusions(d).map(_(index)).sum
     }
   }
-  lazy val neighbours: Map[(Int, Int), Seq[(Int, Int)]] = ??? // FIXME pass along?
+  lazy val neighbours: Map[(Int, Int), Seq[(Int, Int)]] = {
+    (for (d <- 0 to depth; i <- 0 until rankAtDepth(d)) yield {
+      (d, i) ->
+        (for (
+          j <- -1 to 0;
+          if d + j >= 0;
+          if d + j < depth;
+          m = inclusions(d + j);
+          c = if (j == -1) m(i) else m.map(_(i));
+          (multiplicity, k) <- c.zipWithIndex;
+          p <- 0 until multiplicity
+        ) yield {
+          (d + j, k)
+        })
+    }).toMap
+  }
   lazy val totalRank: Int = (for (k <- 0 to depth) yield rankAtDepth(k)).sum
   lazy val totalEvenRank: Int = (for (k <- 0 to depth by 2) yield rankAtDepth(k)).sum
   def depth: Int = inclusions.size
@@ -209,5 +228,17 @@ object Bigraph {
 
   def apply(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]]): Bigraph = {
     inclusions.foldLeft(empty(rankAtDepthZero))({ (b, i) => i.foldLeft(b.increaseDepth)({ (b, r) => b.addRow(r) }) })
+  }
+  
+  def apply(string: String): Bigraph = {
+    require(string.startsWith("gbg"))
+    val inclusions = string.stripPrefix("gbg").split("v").map(_.split("p").map(_.split("x").map(_.toInt).toSeq).toSeq).toSeq
+    val rankAtDepthZero = inclusions(0)(0).size
+    apply(rankAtDepthZero, inclusions)
+  }
+  
+  object Examples {
+    val Haagerup = apply("gbg1v1v1v1p1v1x0p0x1v1x0p0x1")
+    val dualHaagerup = apply("gbg1v1v1v1p1v1x0p1x0")
   }
 }

@@ -8,7 +8,7 @@ import net.tqft.toolkit.SHA1
 
 object Determinant {
 
-  private val cache = scala.collection.mutable.Map[String, String]()
+  var cache = scala.collection.mutable.Map[String, String]()
 
   abstract class Determinant[I: IntegerModel, R](m: Seq[Seq[R]]) {
     def liftConstant(i: I): R
@@ -30,15 +30,21 @@ object Determinant {
         val input = FullFormExpression(SymbolExpression("Det"),
           Seq(m.map(r => r.map(toExpression))))
         val unwrappedInput = FullFormExpression(SymbolExpression("ReplaceAll"), Seq(input, Expression.expression.fromInputForm("a[x_] :> x")))
-        fromExpression(unwrappedInput.evaluate)
+        val output = unwrappedInput.evaluate
+        println(output.toInputForm)
+        fromExpression(output)
       }
     }
 
     def cachedDeterminant: R = {
-      import MathematicaForm._
-      val hash = SHA1(m.map(_.map(toExpression)).toMathematicaInputString)
-      val stringResult = cache.getOrElseUpdate(hash, toExpression(determinant).toInputForm)
-      fromExpression(implicitly[MathematicaExpression[Expression]].fromInputForm(stringResult))
+      if (m.size < 10) {
+        determinant
+      } else {
+        import MathematicaForm._
+        val hash = SHA1(m.map(_.map(toExpression)).toMathematicaInputString)
+        val stringResult = cache.getOrElseUpdate(hash, toExpression(determinant).toInputForm)
+        fromExpression(implicitly[MathematicaExpression[Expression]].fromInputForm(stringResult))
+      }
     }
   }
 
