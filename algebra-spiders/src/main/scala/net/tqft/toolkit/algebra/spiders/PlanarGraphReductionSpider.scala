@@ -9,9 +9,9 @@ abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.Pl
     def ring = implicitly[Ring[R]]
 
     (for (x <- diagrams1) yield {
-      println("computing inner products: x = " + x)
+//      println("computing inner products: x = " + x)
       (for (y <- diagrams2) yield {
-        println("computing inner products: y = " + y)
+//        println("computing inner products: y = " + y)
 //        println("Reductions: ")
 //        for (r <- reductions) println("  " + r)
         evaluatedInnerProduct(Map(x -> ring.one), Map(y -> ring.one))

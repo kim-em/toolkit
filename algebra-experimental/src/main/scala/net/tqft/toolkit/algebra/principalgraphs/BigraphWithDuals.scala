@@ -14,6 +14,25 @@ trait BigraphWithDuals {
   def increaseDepth: BigraphWithDuals
 }
 
+object BigraphWithDuals {
+  def apply(string: String) = {
+    require(string.startsWith("bwd"))
+    require(string.contains("duals"))
+    val Seq(gbg, duals) = string.split("duals").toSeq
+    val bigraph = Bigraph("gbg" + gbg.stripPrefix("bwd"))
+    val dualData = duals.split("v").map(_.split("x").map(_.toInt - 1).toIndexedSeq).toSeq
+    bigraph.depth % 2 match {
+      case 0 => EvenDepthBigraphWithDuals(bigraph, dualData)
+      case 1 => OddDepthBigraphWithDuals(bigraph, dualData)
+    }
+  }
+  
+  object Examples {
+    val Haagerup = apply("bwd1v1v1v1p1v1x0p0x1v1x0p0x1duals1v1v1x2v2x1")
+    val dualHaagerup = apply("bwd1v1v1v1p1v1x0p1x0duals1v1v1x2")
+  }
+}
+
 case class EvenDepthBigraphWithDuals(bigraph: Bigraph, dualData: Seq[Involution]) extends BigraphWithDuals {
   require(bigraph.depth % 2 == 0)
   require(bigraph.depth / 2 + 1 == dualData.size)
