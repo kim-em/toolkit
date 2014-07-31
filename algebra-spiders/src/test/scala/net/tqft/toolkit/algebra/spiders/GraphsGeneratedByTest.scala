@@ -29,6 +29,16 @@ class GraphsGeneratedByTest extends FlatSpec with Matchers with IsomorphismMatch
   }
 
   val R1 = implicitly[Spider[PlanarGraph]].stitch(PlanarGraph.star(4, 1))
+  val phi = implicitly[Spider[PlanarGraph]].multiply(PlanarGraph.star(4, 1), PlanarGraph.star(4, 1), 3)
+
+  "byNumberOfVertices" should "find 4 tetravalent diagrams without twists with 2 boundary points and 3 vertices" in {
+    val diagrams = tetravalentEnumerator.avoiding(Seq(R1, phi)).byNumberOfVertices(2, 3)
+//    for(d <- diagrams) {
+//      println(d)
+//    }
+    diagrams.size should equal(6)
+  }
+
   val R2 = PlanarGraph(9, Vector(List((3, 9), (5, 13), (6, 11), (4, 12)), List((3, 13), (4, 9), (7, 12), (8, 10)), List((5, 11), (8, 13), (7, 10), (6, 12))), IndexedSeq(1, 1), 0)
   val smallTetravalent = tetravalentEnumerator.avoiding(Seq(R1, R2))
 
