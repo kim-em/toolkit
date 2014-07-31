@@ -140,7 +140,17 @@ object DiagramSpider {
 
         val fixedResult = result.copy(vertexFlags = result.vertexFlags.head +: fixedFlags)
         
-        (rotate(fixedResult, -boundaryRotation), Rotation(Map() ++ vertexRotations))
+        val finalResult = rotate(fixedResult, -boundaryRotation)
+        val rotation = Rotation(Map() ++ vertexRotations)
+        
+        // verify canonicalFormWithDefect is idempotent
+//        if(finalResult != graph) {
+//          val iterated = canonicalFormWithDefect(finalResult)
+//          require(iterated._1 == finalResult)
+//          require(iterated._2.vertexRotations.values.forall(_ == 0))
+//        }
+        
+        (finalResult, rotation)
       }
     }
   }
