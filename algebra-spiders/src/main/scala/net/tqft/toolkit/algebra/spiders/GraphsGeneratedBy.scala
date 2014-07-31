@@ -101,7 +101,7 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
         val result = distinct.filter(g => g.loops == 0 && faces.forall(f => g.Subgraphs(f).excisions.isEmpty))
         //        print(".")
         stackDepth = stackDepth - 1
-        result.toSeq
+        result.toSeq.sortBy(_.numberOfInternalFaces)
 
       }
 
@@ -109,32 +109,32 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
 
     private val byNumberOfVerticesCache = {
 
-//      val dbFile = new java.io.File("graphs-generated-by-db")
-//      import org.mapdb._
-//      val db = DBMaker.newFileDB(dbFile)
-//        .closeOnJvmShutdown
-//        .make
-//
-//      import scala.collection.JavaConverters._
-//      val store = db.getHashMap[(Seq[VertexType], Seq[PlanarGraph], Int, Map[VertexType, Int]), Seq[PlanarGraph]]("terms").asScala
-//
-//      { (n: Int, k: Map[VertexType, Int]) =>
-//        this.synchronized {
-//          var miss = false
-//          val result = store.getOrElseUpdate((vertexTypes, faces, n, k),
-//            {
-//              println(s"cache miss: $n, $k")
-//              miss = true
-//              byNumberOfVertices_(n, k)
-//            })
-//          if (miss) db.commit
-//          result
-//        }
-//      }
+      //      val dbFile = new java.io.File("graphs-generated-by-db")
+      //      import org.mapdb._
+      //      val db = DBMaker.newFileDB(dbFile)
+      //        .closeOnJvmShutdown
+      //        .make
+      //
+      //      import scala.collection.JavaConverters._
+      //      val store = db.getHashMap[(Seq[VertexType], Seq[PlanarGraph], Int, Map[VertexType, Int]), Seq[PlanarGraph]]("terms").asScala
+      //
+      //      { (n: Int, k: Map[VertexType, Int]) =>
+      //        this.synchronized {
+      //          var miss = false
+      //          val result = store.getOrElseUpdate((vertexTypes, faces, n, k),
+      //            {
+      //              println(s"cache miss: $n, $k")
+      //              miss = true
+      //              byNumberOfVertices_(n, k)
+      //            })
+      //          if (miss) db.commit
+      //          result
+      //        }
+      //      }
 
-            import net.tqft.toolkit.functions.Memo._
-            val cached = ({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }).memo;
-            { (n: Int, k: Map[VertexType, Int]) => cached((n, k)) }
+      import net.tqft.toolkit.functions.Memo._
+      val cached = ({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }).memo;
+      { (n: Int, k: Map[VertexType, Int]) => cached((n, k)) }
     }
 
     def byNumberOfVertices(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = byNumberOfVerticesCache(numberOfBoundaryPoints, numberOfVertices)

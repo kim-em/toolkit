@@ -13,7 +13,7 @@ import net.tqft.toolkit.Logging
 case class SpiderData(
   spider: QuotientSpider,
   groebnerBasis: Seq[MultivariablePolynomial[Fraction[BigInt], String]],
-  relations: Seq[Seq[Map[PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String]]]],
+  relations: Seq[Seq[Seq[MultivariablePolynomial[Fraction[BigInt], String]]]], // given as linear combinations of the considered diagrams
   dimensionBounds: Seq[Int],
   consideredDiagramsVertexBound: Seq[Int],
   consideredDiagrams: Seq[Seq[PlanarGraph]],
@@ -49,10 +49,10 @@ case class SpiderData(
 )"""
   }
 
-  def allPolyhedra =
+  def allPolyhedra: Seq[String] =
     (groebnerBasis.flatMap(_.variables) ++
       spider.reductions.flatMap(_.small.values.flatMap(r => r.variables)) ++
-      relations.flatMap(_.flatMap(_.values.flatMap(_.variables)))).distinct
+      relations.flatMap(_.flatMap(_.flatMap(_.variables)))).distinct.filter(!_.contains("^(-1)"))
 
   val complexity: Ordering[PlanarGraph] = {
     Ordering.by(_.numberOfInternalVertices)
@@ -91,7 +91,7 @@ case class SpiderData(
 
   def simplifyReductions: SpiderData = {
     // FIXME I'm suspicious of this!
-    
+
     spider.extraReductions.tails.find(tail => tail.nonEmpty && tail.tail.find(d => tail.head.big.Subgraphs(d.big).excisions.nonEmpty).nonEmpty) match {
       case Some(tail) => {
         Logging.info("Discarding a redundant reduction for " + tail.head.big)
@@ -122,26 +122,31 @@ case class SpiderData(
   }
 
   def considerDiagram(p: PlanarGraph): Seq[SpiderData] = {
-    println("considering diagram: " + p)
-    println("for: " + this)
-
-    val boundary = p.numberOfBoundaryPoints
-    val newConsideredDiagrams = {
-      val padded = consideredDiagrams.padTo(boundary + 1, Seq.empty)
-      padded.updated(boundary, (padded(boundary) :+ p).distinct)
-    }
-    val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
-    val paddedVisiblyIndependentDiagrams = visiblyIndependentDiagrams.padTo(boundary + 1, Seq.empty)
-    val padded = copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams)
-
-    val addDependent = padded.addDependentDiagram(p)
-    val addIndependent = if (padded.independentDiagrams(boundary).size < dimensionBounds(boundary)) {
-      padded.addIndependentDiagram(p)
+    if (spider.reducibleDiagram_?(p)) {
+      println("ignoring a diagram that is now reducible: " + p)
+      Seq(this)
     } else {
-      Seq.empty
-    }
+      println("considering diagram: " + p)
+      println("for: " + this)
 
-    (addDependent ++ addIndependent).map(_.copy(consideredDiagrams = newConsideredDiagrams))
+      val boundary = p.numberOfBoundaryPoints
+      val newConsideredDiagrams = {
+        val padded = consideredDiagrams.padTo(boundary + 1, Seq.empty)
+        padded.updated(boundary, (padded(boundary) :+ p).distinct)
+      }
+      val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
+      val paddedVisiblyIndependentDiagrams = visiblyIndependentDiagrams.padTo(boundary + 1, Seq.empty)
+      val padded = copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams)
+
+      val addDependent = padded.addDependentDiagram(p)
+      val addIndependent = if (padded.independentDiagrams(boundary).size < dimensionBounds(boundary)) {
+        padded.addIndependentDiagram(p)
+      } else {
+        Seq.empty
+      }
+
+      (addDependent ++ addIndependent).map(_.copy(consideredDiagrams = newConsideredDiagrams))
+    }
   }
 
   def addDependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
@@ -167,29 +172,53 @@ case class SpiderData(
     val relation = nullSpace.ensuring(_.size == independentDiagrams(p.numberOfBoundaryPoints).size - visiblyIndependentDiagrams(p.numberOfBoundaryPoints).size + 1).head
     require(relation.last == rationalFunctions.one)
 
+    val denominatorLCM = polynomials.lcm(relation.map(_.denominator): _*)
+    val relationNumerators = relation.map(x => rationalFunctions.multiply(x, denominatorLCM).numerator)
+    val consequences = 
+      for(i <- 0 until p.numberOfBoundaryPoints) yield {
+      spider.evaluate(spider.multiply((visiblyIndependentDiagrams(p.numberOfBoundaryPoints) :+ p).zip(relationNumerators).toMap, spider.rotate(Map(p -> polynomials.one), i), p.numberOfBoundaryPoints))
+      }
+    
+    
     // is it a reducing relation?
     val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case (x, i) if !rationalFunctions.zero_?(x) => i })
     val reducing = relation.size > 1 && nonzeroPositions.forall({ i => complexity.lt(independentDiagrams(p.numberOfBoundaryPoints)(i), p) })
     println(s"reducing: $reducing")
 
-    if (reducing && p.vertexFlags.head.map(_._1).distinct.size == p.numberOfBoundaryPoints /* FIXME a very annoying implementation restriction */ ) {
-      // are there denominators? we better ensure they are invertible
-      val denominatorLCM = polynomials.lcm(relation.map(_.denominator): _*)
+    // There's a lemma here. If b \in span{a1, ..., an}, and {a1, ..., ak} is maximally visibly independent,
+    // then the inner product determinant for {a1, ..., ak, b} vanishes.
+    (for (
+      s0 <- declareAllPolynomialsZero(consequences);
+      s <- s0.declarePolynomialZero(calculateDeterminant(visiblyIndependentDiagrams(p.numberOfBoundaryPoints) :+ p))
+    ) yield {
 
-      val whenDenominatorsVanish = declarePolynomialZero(denominatorLCM).toSeq.flatMap(_.addDependentDiagram(p))
+      if (reducing) {
+        /* we should never run into reducing relations which contain an arc */
+        if (p.vertexFlags.head.map(_._1).distinct.size != p.numberOfBoundaryPoints  ) {
+          println("found a reducing relation that contains an arc: ")
+          println(this)
+          for ((d, z) <- (independentDiagrams(p.numberOfBoundaryPoints) :+ p).zip(relation)) {
+            println(d)
+            println(" " + z)
+          }
+          ???
+        }
 
-      require(p.numberOfInternalVertices > 0)
-      val newReduction = Reduction(p, independentDiagrams(p.numberOfBoundaryPoints).zip(relation.dropRight(1).map(rationalFunctions.negate).map(liftDenominators)).toMap)
-      val whenDenominatorsNonzero = invertPolynomial(denominatorLCM).map(_._1).toSeq.flatMap(_.addReduction(newReduction))
+        // are there denominators? we better ensure they are invertible
 
-      whenDenominatorsVanish ++ whenDenominatorsNonzero
-    } else {
-      // TODO record non-reducing relations!
+        val whenDenominatorsVanish = s.declarePolynomialZero(denominatorLCM).flatMap(_.addDependentDiagram(p))
 
-      // There's a lemma here. If b \in span{a1, ..., an}, and {a1, ..., ak} is maximally visibly independent,
-      // then the inner product determinant for {a1, ..., ak, b} vanishes.
-      declarePolynomialZero(calculateDeterminant(visiblyIndependentDiagrams(p.numberOfBoundaryPoints) :+ p))
-    }
+        require(p.numberOfInternalVertices > 0)
+        val newReduction = Reduction(p, independentDiagrams(p.numberOfBoundaryPoints).zip(relation.dropRight(1).map(s.rationalFunctions.negate).map(s.liftDenominators)).toMap)
+        val whenDenominatorsNonzero = s.invertPolynomial(denominatorLCM).map(_._1).toSeq.flatMap(_.addReduction(newReduction))
+
+        whenDenominatorsVanish ++ whenDenominatorsNonzero
+      } else {
+        // TODO record non-reducing relations!
+
+        Seq(s)
+      }
+    }).flatten
 
   }
 
@@ -372,6 +401,8 @@ case class SpiderData(
     val diagramsToConsider = spider.reducedDiagrams(boundary, vertices)
     for (d <- diagramsToConsider) println("   " + d)
 
+    // FIXME during this fold, we might discover new reducing relations, after which some of these reduced diagrams are no longer reduced!
+
     diagramsToConsider.foldLeft(Seq(this))({
       (s: Seq[SpiderData], p: PlanarGraph) =>
         s.flatMap(d => d.considerDiagram(p))
@@ -416,7 +447,7 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty))(_.invertPolynomial(_).get._1)
 
-  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2, 3), (4, 0), (4, 1), (4, 2), (4, 3)/**/, (6, 0), (6, 1)/**/, (6, 2)/**/)
+  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2, 3), (4, 0), (4, 1), (4, 2), (4, 3) /**/ , (6, 0), (6, 1) /**/ , (6, 2) /**/ )
 
   // TODO start computing relations, also
 

@@ -42,6 +42,10 @@ case class QuotientSpider(
 
   def addReduction(reduction: Reduction[PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String]]) = copy(extraReductions = extraReductions :+ reduction)
 
+  def reducibleDiagram_?(p: PlanarGraph): Boolean = {
+    reductions.exists(r => p.Subgraphs(r.big).excisions.nonEmpty)
+  }
+  
   override def toString = {
     import MathematicaForm._
     val extraReductionsString = extraReductions.map({
