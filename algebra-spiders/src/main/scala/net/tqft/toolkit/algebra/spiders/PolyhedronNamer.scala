@@ -66,7 +66,7 @@ trait PolyhedronNamer[A, F] extends FunctionSpider[A, F] {
       } else {
         val ck = sphericalCanonicalForm(k)
         if (!PolyhedronNamer.names.keys.exists(p => p == ck)) {
-          require(ck.loops < 2 && ck.numberOfInternalVertices == 0 || ck.loops == 0)
+          require(ck.loops == 1 && ck.numberOfInternalVertices == 0 || ck.loops == 0)
           val newName = PolyhedronNamer.nextName
           println("Naming new polyhedron:")
           println(ck)

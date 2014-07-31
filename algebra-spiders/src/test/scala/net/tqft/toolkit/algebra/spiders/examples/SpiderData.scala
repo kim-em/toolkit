@@ -172,54 +172,81 @@ case class SpiderData(
     val relation = nullSpace.ensuring(_.size == independentDiagrams(p.numberOfBoundaryPoints).size - visiblyIndependentDiagrams(p.numberOfBoundaryPoints).size + 1).head
     require(relation.last == rationalFunctions.one)
 
-    val denominatorLCM = polynomials.lcm(relation.map(_.denominator): _*)
-    val relationNumerators = relation.map(x => rationalFunctions.multiply(x, denominatorLCM).numerator)
-    val consequences = 
-      for(i <- 0 until p.numberOfBoundaryPoints) yield {
-      spider.evaluate(spider.multiply((visiblyIndependentDiagrams(p.numberOfBoundaryPoints) :+ p).zip(relationNumerators).toMap, spider.rotate(Map(p -> polynomials.one), i), p.numberOfBoundaryPoints))
+    // are there denominators? we better ensure they are invertible
+    val denominators = relation.map(_.denominator)
+
+    val whenDenominatorsVanish = declareAtLeastOnePolynomialZero(denominators).flatMap(_.addDependentDiagram(p))
+    val whenDenominatorsNonzero = for (
+      (s, _) <- invertPolynomials(denominators).toSeq;
+      liftedRelation = relation.map(s.liftDenominators);
+      t <- addRelation(p.numberOfBoundaryPoints, (independentDiagrams(p.numberOfBoundaryPoints) :+ p).zip(liftedRelation))
+    ) yield t
+
+    whenDenominatorsVanish ++ whenDenominatorsNonzero
+  }
+
+  def addRelations(size: Int, relations: Seq[Seq[(PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String])]]): Seq[SpiderData] = {
+    relations.foldLeft(Seq(this))({ (spiders, relation) => spiders.flatMap(s => s.addRelation(size, relation)) })
+  }
+
+  def addRelation(size: Int, relation: Seq[(PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String])]): Seq[SpiderData] = {
+    addRelations(size - 2, for (
+      i <- 0 until size;
+      c = spider.stitchAt(relation.toMap, i);
+      if !spider.zero_?(c)
+    ) yield c.toSeq).flatMap(_._addRelation(size, relation))
+  }
+
+  private def _addRelation(size: Int, relation: Seq[(PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String])]): Seq[SpiderData] = {
+    if (relation.size == 1) {
+      require(size == 0)
+      if (relation.head._1 == PlanarGraph.empty) {
+        declarePolynomialZero(relation.head._2)
+      } else {
+        _addRelation(0, Seq((PlanarGraph.empty, spider.evaluate(relation.toMap))))
       }
-    
-    
-    // is it a reducing relation?
-    val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case (x, i) if !rationalFunctions.zero_?(x) => i })
-    val reducing = relation.size > 1 && nonzeroPositions.forall({ i => complexity.lt(independentDiagrams(p.numberOfBoundaryPoints)(i), p) })
-    println(s"reducing: $reducing")
+    } else {
 
-    // There's a lemma here. If b \in span{a1, ..., an}, and {a1, ..., ak} is maximally visibly independent,
-    // then the inner product determinant for {a1, ..., ak, b} vanishes.
-    (for (
-      s0 <- declareAllPolynomialsZero(consequences);
-      s <- s0.declarePolynomialZero(calculateDeterminant(visiblyIndependentDiagrams(p.numberOfBoundaryPoints) :+ p))
-    ) yield {
+      val p = relation.last._1
+      require(relation.last._2 == polynomials.one)
 
-      if (reducing) {
-        /* we should never run into reducing relations which contain an arc */
-        if (p.vertexFlags.head.map(_._1).distinct.size != p.numberOfBoundaryPoints  ) {
-          println("found a reducing relation that contains an arc: ")
-          println(this)
-          for ((d, z) <- (independentDiagrams(p.numberOfBoundaryPoints) :+ p).zip(relation)) {
-            println(d)
-            println(" " + z)
-          }
-          ???
+      val pairings =
+        for (i <- 0 until size) yield {
+          spider.evaluate(spider.multiply(relation.toMap, spider.rotate(Map(p -> polynomials.one), i), size))
         }
 
-        // are there denominators? we better ensure they are invertible
+      // is it a reducing relation?
+      val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case ((d, x), i) if !rationalFunctions.zero_?(x) => i })
+      val reducing = relation.size > 1 && nonzeroPositions.forall({ i => complexity.lt(independentDiagrams(size)(i), relation.last._1) })
+      println(s"reducing: $reducing")
 
-        val whenDenominatorsVanish = s.declarePolynomialZero(denominatorLCM).flatMap(_.addDependentDiagram(p))
+      // There's a lemma here. If b \in span{a1, ..., an}, and {a1, ..., ak} is maximally visibly independent,
+      // then the inner product determinant for {a1, ..., ak, b} vanishes.
+      (for (
+        s <- declareAllPolynomialsZero(pairings) //;
+      //      s <- s0.declarePolynomialZero(calculateDeterminant(relation.map(_._1)))
+      ) yield {
 
-        require(p.numberOfInternalVertices > 0)
-        val newReduction = Reduction(p, independentDiagrams(p.numberOfBoundaryPoints).zip(relation.dropRight(1).map(s.rationalFunctions.negate).map(s.liftDenominators)).toMap)
-        val whenDenominatorsNonzero = s.invertPolynomial(denominatorLCM).map(_._1).toSeq.flatMap(_.addReduction(newReduction))
+        if (reducing) {
+          /* we should never run into reducing relations which contain an arc */
+          if (relation.last._1.vertexFlags.head.map(_._1).distinct.size != size) {
+            println("found a reducing relation that contains an arc: ")
+            println(this)
+            for ((d, z) <- relation) {
+              println(d)
+              println(" " + z)
+            }
+            ???
+          }
 
-        whenDenominatorsVanish ++ whenDenominatorsNonzero
-      } else {
-        // TODO record non-reducing relations!
-
-        Seq(s)
-      }
-    }).flatten
-
+          val newReduction = Reduction(p, relation.dropRight(1).map(q => (q._1, s.polynomials.negate(q._2))).toMap)
+          s.addReduction(newReduction)
+        } else {
+          // TODO record non-reducing relations!
+          Seq(s)
+        }
+      }).flatten
+    }
   }
 
   def addIndependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
@@ -323,6 +350,11 @@ case class SpiderData(
 
     result
   }
+
+  def invertPolynomials(ps: Seq[P]): Option[(SpiderData, Seq[P])] = {
+    ps.foldLeft[Option[(SpiderData, Seq[P])]](Some((this, Seq.empty)))({ (o, p) => o.flatMap(q => q._1.invertPolynomial(p).map(r => (r._1, q._2 :+ r._2))) })
+  }
+
   def inverse(p: P): P = {
     if (polynomials.totalDegree(p) == 0) {
       polynomials.ring.inverse(polynomials.constantTerm(p))
