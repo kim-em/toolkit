@@ -354,6 +354,7 @@ case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: Odd
     val allowed = {
       g0.bigraph.depth == 1 ||
         (for (i <- (0 until g0.bigraph.rankAtDepth(-3)).iterator) yield {
+          // FIXME this is completely wrong.
           (for ((r0, r1) <- g0.bigraph.inclusions.secondLast.zip(g0.bigraph.inclusions.secondLast)) yield r1(i) * row0(g1.dualData.last(i)) - r0(i) * row1(g0.dualData.last(i))).sum
         }).forall(_ == 0)
     }
