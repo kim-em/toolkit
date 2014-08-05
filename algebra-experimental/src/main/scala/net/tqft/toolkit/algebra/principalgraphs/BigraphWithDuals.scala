@@ -26,7 +26,7 @@ object BigraphWithDuals {
       case 1 => OddDepthBigraphWithDuals(bigraph, dualData)
     }
   }
-  
+
   object Examples {
     val Haagerup = apply("bwd1v1v1v1p1v1x0p0x1v1x0p0x1duals1v1v1x2v2x1")
     val dualHaagerup = apply("bwd1v1v1v1p1v1x0p1x0duals1v1v1x2")
@@ -56,23 +56,25 @@ case class EvenDepthBigraphWithDuals(bigraph: Bigraph, dualData: Seq[Involution]
     EvenDepthBigraphWithDuals(bigraph.deleteRow(index).deleteRow(index), dualData.most :+ dualData.last.collect({ case i if i < index => i; case i if i > index + 1 => i - 2 }))
   }
 
-  // this checks if a row can be added to the dual graph, satisfying the associativity condition for paths from vertices at depth n-2 on _this_ graph to the new vertex on the _dual_ graph
+  // this checks if a row can be added to the other graph,
+  // satisfying the associativity condition for paths from vertices at depth n-2 on _this_ graph to the new vertex on the _other_ graph
   def rowAllowed_?(row: Seq[Int]): Boolean = {
     (for (i <- (0 until bigraph.rankAtDepth(-3)).iterator) yield {
       (for ((r, j) <- bigraph.inclusions.secondLast.zipWithIndex) yield (r(i) - r(dualData.secondLast(i))) * row(j)).sum
     }).forall(_ == 0)
   }
-  // this checks if a pair of rows can be added to the dual graph, satisfying the associativity condition for paths from vertices at depth n-2 on _this_ graph to the new vertices on the _dual_ graph
+  // this checks if a pair of rows can be added to the other graph,
+  // satisfying the associativity condition for paths from vertices at depth n-2 on _this_ graph to the new vertices on the _other_ graph
   def rowsAllowed_?(row0: Seq[Int], row1: Seq[Int]): Boolean = {
     (for (i <- (0 until bigraph.rankAtDepth(-3)).iterator) yield {
       var s = 0
       var t = 0
       for ((r, j) <- bigraph.inclusions.secondLast.zipWithIndex) {
-        s += r(i) * row0(j) - r(dualData.secondLast(i)) * row1(j)
-        t += r(i) * row1(j) - r(dualData.secondLast(i)) * row0(j)
+        s += r(i) * row1(j) - r(dualData.secondLast(i)) * row0(j)
+        t += r(i) * row0(j) - r(dualData.secondLast(i)) * row1(j)
       }
-      (s, t)
-    }).forall(_ == (0, 0))
+      (s, t).ensuring(_ == (0, 0))
+    }).forall(_ == (0, 0)).ensuring(_ == true)
   }
 
   override def truncate = OddDepthBigraphWithDuals(bigraph.truncate, dualData.most)

@@ -84,7 +84,7 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
           (multiplicity, k) <- c.zipWithIndex;
           p <- 0 until multiplicity
         ) yield {
-          (d + j, k)
+          (d + 2 * j + 1, k)
         })
     }).toMap
   }

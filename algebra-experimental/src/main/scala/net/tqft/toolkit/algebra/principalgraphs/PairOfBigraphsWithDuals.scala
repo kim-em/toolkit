@@ -27,8 +27,10 @@ trait PairOfBigraphsWithDuals {
     }
   }
 
+  type Clump = Int
+  
   def associativityDefects: Memo[Seq[Seq[Int]]]
-  def verticesByDimension: Memo[Seq[Seq[Seq[Int]]]]
+  def verticesByDimension: Memo[Seq[Seq[Seq[Clump]]]]
 
   def triplePointConfigurations: Memo[Seq[TriplePointConfiguration]]
 
@@ -46,34 +48,44 @@ trait PairOfBigraphsWithDuals {
     obstructedTriplePointOption.isEmpty
   }
 
-  protected def newTriplePointConfigurations = {
+  def newTriplePointConfigurations = {
     if (depth < 2) {
       Seq.empty
     } else {
       val d = depth - 2
+//      println(s"looking for new triple point configurations at depth = $depth")
       for (
         i <- 0 until g0.bigraph.rankAtDepth(d);
         j <- 0 until g1.bigraph.rankAtDepth(d);
+//        _ = println(s"i = $i, j = $j"); 
         if g0.bigraph.valence(d, i) == 3;
         if g1.bigraph.valence(d, j) == 3;
+//        _ = println("valences look ok!");
         if connectionsBetween((d, i), (d, j)) == 3;
         ni = g0.bigraph.neighbours(d, i);
         nj = g1.bigraph.neighbours(d, j);
+//        _ = println(s"ni = $ni, nj = $nj");
         p <- Permutations.of(3);
-        pnj = p.permute(nj) if Seq((0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)).forall(q => connectionsBetween(ni(q._1), pnj(q._2)) == 1)
+        pnj = p.permute(nj);
+        if Seq((0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)).forall(q => connectionsBetween(ni(q._1), pnj(q._2)) == 1)
       ) yield {
         TriplePointConfiguration(d, i, j, ni.map(n => Vertex(0, n._1, n._2)).zip(pnj.map(n => Vertex(1, n._1, n._2))))
       }
     }
   }
   private def connectionsBetween(vertex0: (Int, Int), vertex1: (Int, Int)): Int = {
-    def rightNeighbours(v: Vertex) = graph(v.graph).bigraph.neighbours(v.depth, v.index).map(p => Vertex(v.graph, p._1, p._2))
-    def leftNeighbours(v: Vertex) = rightNeighbours(dual(v)).map(dual)
-    // FIXME this is broken if graphs aren't simply laced!
-    rightNeighbours(Vertex(0, vertex0._1, vertex0._2)).intersect(leftNeighbours(Vertex(1, vertex1._1, vertex1._2))).size
+    def rightNeighbours(v: Vertex) = {
+      graph(v.graph).bigraph.neighbours(v.depth, v.index).map(p => Vertex(v.graph, p._1, p._2))
+    }
+    def leftNeighbours(v: Vertex) = {
+      rightNeighbours(dual(v)).map(dual)
+    }
+    val rn = rightNeighbours(Vertex(0, vertex0._1, vertex0._2))
+    val ln = leftNeighbours(Vertex(1, vertex1._1, vertex1._2))
+    rn.intersect(ln).size
   }
 
-  protected def updateVerticesByDimensions(vertexClumps: Seq[Seq[Seq[Int]]]): Seq[Seq[Seq[Int]]] = ???
+  protected def updateVerticesByDimensions(vertexClumps: Seq[Seq[Seq[Clump]]]): Seq[Seq[Seq[Clump]]] = ???
 
   override def toString = s"{ $g0, $g1 }"
 
@@ -188,11 +200,11 @@ object PairOfBigraphsWithDuals {
         for (graph <- 0 to 1; i <- 0 until graphs(graph).bigraph.rankAtDepth(workingDepth)) {
           val j = graphs(graph).dualData(workingDepth / 2)(i)
           if (i == j) {
-            println(s" adding a self dual vertex")
+            println(s" adding a self dual vertex to graph $graph")
             evenDepthScratch = evenDepthScratch.addSelfDualVertex(graph, graphs(graph).bigraph.inclusions(workingDepth - 1)(i)).get
             println(s"evenDepthScratch = $evenDepthScratch")
           } else if (j == i + 1) {
-            println(s" adding a pair of dual vertices")
+            println(s" adding a pair of dual vertices to graph $graph")
             evenDepthScratch = evenDepthScratch.addDualPairAtEvenDepth(graph, graphs(graph).bigraph.inclusions(workingDepth - 1)(i), graphs(graph).bigraph.inclusions(workingDepth - 1)(i + 1)).get
             println(s"evenDepthScratch = $evenDepthScratch")
           } else if (j == i - 1) {
@@ -346,16 +358,22 @@ case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: Odd
         }
       }
     }
-    def vertexClumps = ???
+    def vertexClumps = updateVerticesByDimensions(verticesByDimension.value)
     EvenDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth, Memo(defects), Memo(vertexClumps), triplePointConfigurations.map(_ ++ newTriplePointConfigurations))
   }
 
   def addDualPairAtOddDepth(row0: Seq[Int], row1: Seq[Int]): Option[OddDepthPairOfBigraphsWithDuals] = {
     val allowed = {
+      // this tests whether associativity between depth n-2 vertices and the new depth n pair is satisfied
       g0.bigraph.depth == 1 ||
-        (for (i <- (0 until g0.bigraph.rankAtDepth(-3)).iterator) yield {
-          // FIXME this is completely wrong.
-          (for ((r0, r1) <- g0.bigraph.inclusions.secondLast.zip(g0.bigraph.inclusions.secondLast)) yield r1(i) * row0(g1.dualData.last(i)) - r0(i) * row1(g0.dualData.last(i))).sum
+        (for (i /* indexing vertices at the previous odd depth */ <- (0 until g0.bigraph.rankAtDepth(-3)).iterator) yield {
+          val RL = (for (j <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
+            g0.bigraph.inclusions.secondLast(j)(i) * row1(g0.dualData.last(j))
+          }).sum
+          val LR = (for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
+            g1.bigraph.inclusions.secondLast(j)(i) * row0(g1.dualData.last(j))
+          }).sum
+          RL - LR
         }).forall(_ == 0)
     }
     def defects = associativityDefects.map({ oldDefects =>
