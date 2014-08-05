@@ -85,7 +85,10 @@ trait PairOfBigraphsWithDuals {
     rn.intersect(ln).size
   }
 
-  protected def updateVerticesByDimensions(vertexClumps: Seq[Seq[Seq[Clump]]]): Seq[Seq[Seq[Clump]]] = ???
+  protected def updateVerticesByDimensions(vertexClumps: Seq[Seq[Seq[Clump]]]): Seq[Seq[Seq[Clump]]] = {
+    // this should recursively re-clump vertices, solely on the basis of having clump-preserving neighbour bijections
+    ???
+  }
 
   override def toString = s"{ $g0, $g1 }"
 
