@@ -208,44 +208,53 @@ case class SpiderData(
     } else {
 
       val p = relation.last._1
-      require(relation.last._2 == polynomials.one)
+      val px = relation.last._2
 
-      val pairings =
-        for (i <- 0 until size) yield {
-          spider.evaluate(spider.multiply(relation.toMap, spider.rotate(Map(p -> polynomials.one), i), size))
-        }
-
-      // is it a reducing relation?
-      val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case ((d, x), i) if !rationalFunctions.zero_?(x) => i })
-      val reducing = relation.size > 1 && nonzeroPositions.forall({ i => complexity.lt(independentDiagrams(size)(i), relation.last._1) })
-      println(s"reducing: $reducing")
-
-      // There's a lemma here. If b \in span{a1, ..., an}, and {a1, ..., ak} is maximally visibly independent,
-      // then the inner product determinant for {a1, ..., ak, b} vanishes.
-      (for (
-        s <- declareAllPolynomialsZero(pairings) //;
-      //      s <- s0.declarePolynomialZero(calculateDeterminant(relation.map(_._1)))
-      ) yield {
-
-        if (reducing) {
-          /* we should never run into reducing relations which contain an arc */
-          if (relation.last._1.vertexFlags.head.map(_._1).distinct.size != size) {
-            println("found a reducing relation that contains an arc: ")
-            println(this)
-            for ((d, z) <- relation) {
-              println(d)
-              println(" " + z)
-            }
-            ???
+      if (px != polynomials.one) {
+        ((for (s <- declarePolynomialZero(px)) yield {
+          s._addRelation(size, relation.map(q => (q._1, s.polynomials.normalForm(q._2))).filter(q => !s.polynomials.zero_?(q._2)))
+        }) ++
+        (for ((s, i) <- invertPolynomial(px)) yield {
+          s._addRelation(size, relation.map(q => (q._1, s.polynomials.multiply(q._2, i))))
+        })).flatten
+      } else {
+        val pairings =
+          for (i <- 0 until size) yield {
+            spider.evaluate(spider.multiply(relation.toMap, spider.rotate(Map(p -> polynomials.one), i), size))
           }
 
-          val newReduction = Reduction(p, relation.dropRight(1).map(q => (q._1, s.polynomials.negate(q._2))).toMap)
-          s.addReduction(newReduction)
-        } else {
-          // TODO record non-reducing relations!
-          Seq(s)
-        }
-      }).flatten
+        // is it a reducing relation?
+        val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case ((d, x), i) if !rationalFunctions.zero_?(x) => i })
+        val reducing = relation.size > 1 && nonzeroPositions.forall({ i => complexity.lt(relation(i)._1, relation.last._1) })
+        println(s"reducing: $reducing")
+
+        // There's a lemma here. If b \in span{a1, ..., an}, and {a1, ..., ak} is maximally visibly independent,
+        // then the inner product determinant for {a1, ..., ak, b} vanishes.
+        (for (
+          s <- declareAllPolynomialsZero(pairings) //;
+        //      s <- s0.declarePolynomialZero(calculateDeterminant(relation.map(_._1)))
+        ) yield {
+
+          if (reducing) {
+            /* we should never run into reducing relations which contain an arc */
+            if (relation.last._1.vertexFlags.head.map(_._1).distinct.size != size) {
+              println("found a reducing relation that contains an arc: ")
+              println(this)
+              for ((d, z) <- relation) {
+                println(d)
+                println(" " + z)
+              }
+              ???
+            }
+
+            val newReduction = Reduction(p, relation.dropRight(1).map(q => (q._1, s.polynomials.negate(q._2))).toMap)
+            s.addReduction(newReduction)
+          } else {
+            // TODO record non-reducing relations!
+            Seq(s)
+          }
+        }).flatten
+      }
     }
   }
 
@@ -393,7 +402,7 @@ case class SpiderData(
       val factors = {
         import mathematica.Factor._
         println("Factoring something we're going to set to zero: " + r.toMathematicaInputString)
-        normalizePolynomial(r).factor.filter(_._2 > 0).keys.toSeq.ensuring(_.nonEmpty)
+        normalizePolynomial(r).factor.filter(_._2 > 0).keys.toSeq
       }
       factors.flatMap(f => { require(!f.toMathematicaInputString.contains("^(-1)")); declareIrreduciblePolynomialZero(f) })
     }
