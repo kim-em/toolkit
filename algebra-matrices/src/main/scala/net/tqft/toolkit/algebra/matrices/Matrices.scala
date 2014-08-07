@@ -6,6 +6,8 @@ import scala.collection.immutable.SortedMap
 import scala.collection.GenSeq
 
 object Matrices extends net.tqft.toolkit.Logging {
+  
+  // FIXME this requires the client to import scala.langauge.reflectiveCalls, ugh!
   def matricesOver(size: Int) = new Endofunctor[Ring, Matrix] { self =>
     override def source = Rings
     override def target = Rings

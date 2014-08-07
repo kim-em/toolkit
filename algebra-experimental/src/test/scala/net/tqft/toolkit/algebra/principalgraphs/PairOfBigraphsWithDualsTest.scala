@@ -8,8 +8,6 @@ import scala.math._
 @RunWith(classOf[JUnitRunner])
 class PairOfBigraphsWithDualsTest extends FlatSpec with Matchers {
 
-  PairOfBigraphsWithDuals.Examples.Haagerup
-  
   "passesTriplePointObstruction_?" should "allow Haagerup, but not `self-dual` Haagerup" in {
     PairOfBigraphsWithDuals.Examples.Haagerup.passesTriplePointObstruction_? should equal(true)
     PairOfBigraphsWithDuals(BigraphWithDuals.Examples.Haagerup, BigraphWithDuals.Examples.Haagerup).passesTriplePointObstruction_? should equal(false)
