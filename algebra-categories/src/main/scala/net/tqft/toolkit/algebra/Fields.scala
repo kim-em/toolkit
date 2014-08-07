@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import scala.language.reflectiveCalls
+
 import net.tqft.toolkit.algebra.categories._
 
 trait FieldHomomorphism[A, B] extends Homomorphism[Field, A, B]

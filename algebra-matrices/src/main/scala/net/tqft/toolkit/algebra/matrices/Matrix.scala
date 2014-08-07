@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra.matrices
 
+import scala.language.reflectiveCalls
+
 import scala.collection.GenSeq
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials._

@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import scala.language.reflectiveCalls
+
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.numberfields.NumberField
 

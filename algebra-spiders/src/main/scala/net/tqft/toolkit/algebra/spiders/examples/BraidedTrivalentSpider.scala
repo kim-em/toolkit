@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
+import scala.language.reflectiveCalls
+
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.matrices._
