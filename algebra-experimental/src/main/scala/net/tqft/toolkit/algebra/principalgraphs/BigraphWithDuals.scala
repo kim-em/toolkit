@@ -15,12 +15,12 @@ trait BigraphWithDuals {
 }
 
 object BigraphWithDuals {
-  def apply(string: String) = {
+  def apply(string: String): BigraphWithDuals = {
     require(string.startsWith("bwd"))
     require(string.contains("duals"))
-    val Seq(gbg, duals) = string.split("duals").toSeq
+    val Seq(gbg, duals) = string.split_!("duals")
     val bigraph = Bigraph("gbg" + gbg.stripPrefix("bwd"))
-    val dualData = duals.split("v").map(_.split("x").map(_.toInt - 1).toIndexedSeq).toSeq
+    val dualData = duals.split_!("v").map(_.split_!("x").map(_.toInt - 1).toIndexedSeq)
     bigraph.depth % 2 match {
       case 0 => EvenDepthBigraphWithDuals(bigraph, dualData)
       case 1 => OddDepthBigraphWithDuals(bigraph, dualData)
@@ -73,8 +73,8 @@ case class EvenDepthBigraphWithDuals(bigraph: Bigraph, dualData: Seq[Involution]
         s += r(i) * row1(j) - r(dualData.secondLast(i)) * row0(j)
         t += r(i) * row0(j) - r(dualData.secondLast(i)) * row1(j)
       }
-      (s, t).ensuring(_ == (0, 0))
-    }).forall(_ == (0, 0)).ensuring(_ == true)
+      (s, t)
+    }).forall(_ == (0, 0))
   }
 
   override def truncate = OddDepthBigraphWithDuals(bigraph.truncate, dualData.most)

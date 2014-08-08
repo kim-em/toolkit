@@ -28,7 +28,7 @@ trait PairOfBigraphsWithDuals {
   }
 
   type Clump = Int
-  
+
   def associativityDefects: Memo[Seq[Seq[Int]]]
   def verticesByDimension: Memo[Seq[Seq[Seq[Clump]]]]
 
@@ -36,10 +36,9 @@ trait PairOfBigraphsWithDuals {
 
   def passesTriplePointObstruction_? = {
     val obstructedTriplePointOption = triplePointConfigurations.value.find({ conf =>
-      val vertexClumps = verticesByDimension.value
       conf.bijection.forall({
         case (v1, v2) =>
-          vertexClumps(v1.graph)(v1.depth)(v1.index) == vertexClumps(v2.graph)(v2.depth)(v2.index)
+          updatedVerticesByDimension(v1.graph)(v1.depth)(v1.index) == updatedVerticesByDimension(v2.graph)(v2.depth)(v2.index)
       })
     })
     for (c <- obstructedTriplePointOption) {
@@ -53,18 +52,18 @@ trait PairOfBigraphsWithDuals {
       Seq.empty
     } else {
       val d = depth - 2
-//      println(s"looking for new triple point configurations at depth = $depth")
+      //      println(s"looking for new triple point configurations at depth = $depth")
       for (
         i <- 0 until g0.bigraph.rankAtDepth(d);
         j <- 0 until g1.bigraph.rankAtDepth(d);
-//        _ = println(s"i = $i, j = $j"); 
+        //        _ = println(s"i = $i, j = $j"); 
         if g0.bigraph.valence(d, i) == 3;
         if g1.bigraph.valence(d, j) == 3;
-//        _ = println("valences look ok!");
+        //        _ = println("valences look ok!");
         if connectionsBetween((d, i), (d, j)) == 3;
         ni = g0.bigraph.neighbours(d, i);
         nj = g1.bigraph.neighbours(d, j);
-//        _ = println(s"ni = $ni, nj = $nj");
+        //        _ = println(s"ni = $ni, nj = $nj");
         p <- Permutations.of(3);
         pnj = p.permute(nj);
         if Seq((0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)).forall(q => connectionsBetween(ni(q._1), pnj(q._2)) == 1)
@@ -73,21 +72,58 @@ trait PairOfBigraphsWithDuals {
       }
     }
   }
+  private def rightNeighbours(v: Vertex) = {
+    graph(v.graph).bigraph.neighbours(v.depth, v.index).map(p => Vertex(v.graph, p._1, p._2))
+  }
+  private def leftNeighbours(v: Vertex) = {
+    rightNeighbours(dual(v)).map(dual)
+  }
   private def connectionsBetween(vertex0: (Int, Int), vertex1: (Int, Int)): Int = {
-    def rightNeighbours(v: Vertex) = {
-      graph(v.graph).bigraph.neighbours(v.depth, v.index).map(p => Vertex(v.graph, p._1, p._2))
-    }
-    def leftNeighbours(v: Vertex) = {
-      rightNeighbours(dual(v)).map(dual)
-    }
     val rn = rightNeighbours(Vertex(0, vertex0._1, vertex0._2))
     val ln = leftNeighbours(Vertex(1, vertex1._1, vertex1._2))
     rn.intersect(ln).size
   }
 
-  protected def updateVerticesByDimensions(vertexClumps: Seq[Seq[Seq[Clump]]]): Seq[Seq[Seq[Clump]]] = {
+  lazy val updatedVerticesByDimension: Seq[Seq[Seq[Clump]]] = {
     // this should recursively re-clump vertices, solely on the basis of having clump-preserving neighbour bijections
-    ???
+    // TODO if graphs are surviving this implementation of the triple obstruction, but shouldn't be, consider also calling nauty to obtain graph automorphisms
+
+    def oneStepUpdate(vertexClumps: Seq[Seq[Seq[Clump]]]): Seq[Seq[Seq[Clump]]] = {
+
+      for (g <- 0 to 1; d <- 0 to depth) {
+        require(vertexClumps(g)(d).size == graph(g).bigraph.rankAtDepth(d))
+      }
+
+      def vertexClump(v: Vertex) = vertexClumps(v.graph)(v.depth)(v.index)
+
+      (for (
+        ga <- (0 to 1).iterator;
+        da <- (0 until depth - 1).iterator;
+        ka <- (0 until graph(ga).bigraph.rankAtDepth(da)).iterator;
+        gb <- (0 to 1).iterator;
+        db <- (0 until depth - 1).iterator;
+        kb <- (0 until graph(gb).bigraph.rankAtDepth(db)).iterator;
+        if vertexClumps(ga)(da)(ka) != vertexClumps(gb)(db)(kb);
+        na = rightNeighbours(Vertex(ga, da, ka));
+        nb = rightNeighbours(Vertex(gb, db, kb));
+        if na.size == nb.size;
+        p <- Permutations.of(na.size);
+        if p.zipWithIndex.forall({ case (mb, ma) => vertexClump(na(ma)) == vertexClump(nb(mb)) })
+      ) yield {
+        (Vertex(ga, da, ka), Vertex(gb, db, kb))
+      }).toStream.headOption match {
+        case None => vertexClumps
+        case Some((va, vb)) => {
+          val oldClump = vertexClump(vb)
+          val newClump = vertexClump(va)
+          val relabelledVertexClumps = vertexClumps.map(_.map(_.map({ case x if x == oldClump => newClump; case x => x })))
+          oneStepUpdate(relabelledVertexClumps)
+        }
+      }
+    }
+
+    oneStepUpdate(verticesByDimension.value)
+
   }
 
   override def toString = s"{ $g0, $g1 }"
@@ -268,7 +304,7 @@ case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: E
         }
       }
     }
-    def vertexClumps = ???
+    def vertexClumps = updatedVerticesByDimension.map(_ :+ Seq.empty)
     OddDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth, Memo(defects), Memo(vertexClumps), triplePointConfigurations.map(_ ++ newTriplePointConfigurations))
   }
 
@@ -287,15 +323,15 @@ case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: E
         }
       }
     })
-    def vertexClumps = verticesByDimension.map({ oldClumps =>
-      updateVerticesByDimensions({
-        ???
-      })
-    })
+    def vertexClumps = {
+      val oldClumps = updatedVerticesByDimension
+      val z = oldClumps.flatten.flatten.max + 1
+      oldClumps.updated(graph, oldClumps(graph).updated(oldClumps(graph).size - 1, oldClumps(graph).last :+ z))
+    }
     (apply(1 - graph).rowAllowed_?(row) && checkDefect(graph, defects.value)) option {
       graph match {
-        case 0 => EvenDepthPairOfBigraphsWithDuals(g0.addSelfDualVertex(row), g1, defects, vertexClumps, triplePointConfigurations)
-        case 1 => EvenDepthPairOfBigraphsWithDuals(g0, g1.addSelfDualVertex(row), defects, vertexClumps, triplePointConfigurations)
+        case 0 => EvenDepthPairOfBigraphsWithDuals(g0.addSelfDualVertex(row), g1, defects, Memo(vertexClumps), triplePointConfigurations)
+        case 1 => EvenDepthPairOfBigraphsWithDuals(g0, g1.addSelfDualVertex(row), defects, Memo(vertexClumps), triplePointConfigurations)
       }
     }
   }
@@ -308,16 +344,15 @@ case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: E
         }
       }
     })
-    def vertexClumps = verticesByDimension.map({ oldClumps =>
-      updateVerticesByDimensions({
-        val z = ???
-        oldClumps.updated(graph, oldClumps(graph).updated(depth, oldClumps(graph)(depth) ++ Seq(z, z)))
-      })
-    })
+    def vertexClumps = {
+      val oldClumps = updatedVerticesByDimension
+      val z = oldClumps.flatten.flatten.max + 1
+      oldClumps.updated(graph, oldClumps(graph).updated(depth, oldClumps(graph)(depth) ++ Seq(z, z)))
+    }
     (apply(1 - graph).rowsAllowed_?(row0, row1) && checkDefect(graph, defects.value)) option {
       graph match {
-        case 0 => EvenDepthPairOfBigraphsWithDuals(g0.addDualPairOfVertices(row0, row1), g1, defects, vertexClumps, triplePointConfigurations)
-        case 1 => EvenDepthPairOfBigraphsWithDuals(g0, g1.addDualPairOfVertices(row0, row1), defects, vertexClumps, triplePointConfigurations)
+        case 0 => EvenDepthPairOfBigraphsWithDuals(g0.addDualPairOfVertices(row0, row1), g1, defects, Memo(vertexClumps), triplePointConfigurations)
+        case 1 => EvenDepthPairOfBigraphsWithDuals(g0, g1.addDualPairOfVertices(row0, row1), defects, Memo(vertexClumps), triplePointConfigurations)
       }
     }
   }
@@ -361,7 +396,7 @@ case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: Odd
         }
       }
     }
-    def vertexClumps = updateVerticesByDimensions(verticesByDimension.value)
+    def vertexClumps = updatedVerticesByDimension.map(_ :+ Seq.empty)
     EvenDepthPairOfBigraphsWithDuals(g0.increaseDepth, g1.increaseDepth, Memo(defects), Memo(vertexClumps), triplePointConfigurations.map(_ ++ newTriplePointConfigurations))
   }
 
@@ -390,13 +425,13 @@ case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: Odd
         }
       }
     })
-    def vertexClumps = verticesByDimension.map({ oldClumps =>
-      updateVerticesByDimensions({
-        ???
-      })
-    })
+    def vertexClumps = {
+      val oldClumps = updatedVerticesByDimension
+      val z = oldClumps.flatten.flatten.max + 1
+      oldClumps.map(cg => cg.updated(cg.size - 1, cg(cg.size - 1) :+ z))
+    }
     allowed option
-      OddDepthPairOfBigraphsWithDuals(g0.addOddVertex(row0), g1.addOddVertex(row1), associativityDefects = defects, verticesByDimension = vertexClumps, triplePointConfigurations)
+      OddDepthPairOfBigraphsWithDuals(g0.addOddVertex(row0), g1.addOddVertex(row1), associativityDefects = defects, verticesByDimension = Memo(vertexClumps), triplePointConfigurations)
   }
   def deleteDualPairAtOddDepth(index: Int) = OddDepthPairOfBigraphsWithDuals(g0.deleteOddVertex(index), g1.deleteOddVertex(index))
 }
