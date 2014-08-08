@@ -232,7 +232,8 @@ object Bigraph {
   
   def apply(string: String): Bigraph = {
     require(string.startsWith("gbg"))
-    val inclusions = string.stripPrefix("gbg").split("v").map(_.split("p").map(_.split("x").map(_.toInt).toSeq).toSeq).toSeq
+    val inclusions = string.stripPrefix("gbg").split_!("v").map(_.split_!("p").map(_.split_!("x").map(_.toInt)))
+    println(inclusions)
     val rankAtDepthZero = inclusions(0)(0).size
     apply(rankAtDepthZero, inclusions)
   }
