@@ -28,6 +28,7 @@ object Toolkit extends Build {
         `algebra-mathematica`,
         `algebra-spiders`,
         `algebra-principalgraphs`,
+        `algebra-enumeration`,
         `algebra-experimental`, 
         functions, 
         eval, 
@@ -105,13 +106,17 @@ object Toolkit extends Build {
     base = file("algebra-bugs"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (mathematica, `algebra-mathematica`)
 
+  lazy val `algebra-enumeration` = Project(id = "toolkit-algebra-enumeration",
+    base = file("algebra-enumeration"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (`algebra-graphs`)
+
   lazy val `algebra-principalgraphs` = Project(id = "toolkit-algebra-principalgraphs",
     base = file("algebra-principalgraphs"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (`algebra-graphs`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (`algebra-enumeration`)
 
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),
