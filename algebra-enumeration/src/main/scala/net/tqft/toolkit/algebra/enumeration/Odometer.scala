@@ -9,7 +9,7 @@ trait Odometer[O] {
   def reset(o: O): O
 }
 
-object Odometer extends Object with Logging {
+object Odometer extends Logging {
   //  var counter = 0;
 
   def apply[O: Odometer](limit: O => Boolean)(initial: O): Iterator[O] = {

@@ -29,12 +29,12 @@ object Permutations {
       case None => Iterator.empty
     }
   }
-  //  def mappingCached[A](list1: Seq[A], list2: Seq[A]): Iterator[Permutation] = {
-  //    findOneMapping(list1, list2) match {
-  //      case Some(q) => preservingCached(list2) map { (p: Permutation) => p permute q }
-  //      case None => Iterator.empty
-  //    }
-  //  }
+  def mappingCached[A](list1: Seq[A], list2: Seq[A]): Iterator[Permutation] = {
+    findOneMapping(list1, list2) match {
+      case Some(q) => preservingCached(list2) map { (p: Permutation) => p permute q }
+      case None => Iterator.empty
+    }
+  }
 
   def findOneMapping[A](list1: GenSeq[A], list2: GenSeq[A]): Option[Permutation] = findOneMappingWithSameTest(list1, list2)({ case (a, b) => a == b })
 
@@ -86,23 +86,27 @@ object Permutations {
     of(l.size) map (_ permute l)
   }
 
-  //  def preservingCached[A](list: Seq[A]) = {
-  //    val map = scala.collection.mutable.Map[A, Int]()
-  //    val bf = new scala.collection.mutable.ListBuffer[Int]
-  //    var counter = -1
-  //    for(a <- list) {
-  //      bf += (map.get(a) match {
-  //        case Some(k) => k
-  //        case None => {
-  //          counter = counter + 1
-  //          map += ((a, counter))
-  //          counter
-  //        }
-  //      })
-  //    }
-  //    preservingIntCached(bf.toList)
-  //  }
-  //  private val preservingIntCached = Memo({ l: List[Int] => NonStrictIterable.from(preserving(l).toList) })
+  def preservingCached[A](list: Seq[A]) = {
+    val map = scala.collection.mutable.Map[A, Int]()
+    val bf = new scala.collection.mutable.ListBuffer[Int]
+    var counter = -1
+    for (a <- list) {
+      bf += (map.get(a) match {
+        case Some(k) => k
+        case None => {
+          counter = counter + 1
+          map += ((a, counter))
+          counter
+        }
+      })
+    }
+    preservingIntCached(bf.toList)
+  }
+  private val preservingIntCached = {
+    val cache = scala.collection.mutable.Map[Seq[Int], Seq[Permutation]]()
+
+    { l: List[Int] => cache.getOrElseUpdate(l, preserving(l).toList).iterator }
+  }
 
   def preserving[A](list: Seq[A]): Iterator[Permutation] = {
     val positions = list.zipWithIndex.groupBy(_._1).mapValues(_.map(_._2)).values.toIndexedSeq

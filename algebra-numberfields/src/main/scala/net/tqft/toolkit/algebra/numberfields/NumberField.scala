@@ -42,8 +42,8 @@ abstract class NumberField[A: Field] extends PolynomialQuotientRing[A] with Fiel
 }
 
 object NumberField {
-  def apply[A: GCDRing](p: Polynomial[A]): NumberField[Fraction[A]] = new NumberField[Fraction[A]] {
-    override val generator = p.mapValues(x => x: Fraction[A])
+  def apply[A: GCDRing](p: Polynomial[Fraction[A]]): NumberField[Fraction[A]] = new NumberField[Fraction[A]] {
+    override val generator = p
   }
 
   def cyclotomic[A: GCDRing](n: Int): CyclotomicNumberField[Fraction[A]] = new CyclotomicNumberField[Fraction[A]] {
