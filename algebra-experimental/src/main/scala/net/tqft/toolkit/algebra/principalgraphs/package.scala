@@ -9,7 +9,7 @@ package object principalgraphs extends PackageImplicits {
         Seq.empty
       } else {
         if (s.endsWith(delimiter)) {
-          split_!(s.stripSuffix(delimiter)) :+ ""
+          s.stripSuffix(delimiter).split_!(delimiter) :+ ""
         } else {
           s.split(delimiter).toSeq
         }

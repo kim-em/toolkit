@@ -8,6 +8,8 @@ trait BigraphWithDuals {
   def bigraph: Bigraph
   def dualData: Seq[Involution]
 
+  def supertransitivity = bigraph.supertransitivity
+  
   override def toString = "bwd" + bigraph.toString.stripPrefix("gbg") + "duals" + dualData.map(_.map(_ + 1).mkString("x")).mkString("v")
 
   def truncate: BigraphWithDuals
@@ -37,6 +39,8 @@ case class EvenDepthBigraphWithDuals(bigraph: Bigraph, dualData: Seq[Involution]
   require(bigraph.depth % 2 == 0)
   require(bigraph.depth / 2 + 1 == dualData.size)
 
+  def numberOfSelfDualObjectsAtMaximalDepth = dualData.last.zipWithIndex.count(p => p._1 == p._2)
+  
   def addSelfDualVertex(row: Seq[Int]): EvenDepthBigraphWithDuals = {
     require(bigraph.depth % 2 == 0)
     EvenDepthBigraphWithDuals(bigraph.addRow(row), dualData.most :+ (dualData.last :+ bigraph.rankAtMaximalDepth))
