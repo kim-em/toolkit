@@ -27,6 +27,8 @@ trait PairOfBigraphsWithDuals {
     }
   }
 
+  def supertransitivity = Seq(g0.supertransitivity, g1.supertransitivity).min
+
   type Clump = Int
 
   def associativityDefects: Memo[Seq[Seq[Int]]]
@@ -406,10 +408,10 @@ case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: Odd
       g0.bigraph.depth == 1 ||
         (for (i /* indexing vertices at the previous odd depth */ <- (0 until g0.bigraph.rankAtDepth(-3)).iterator) yield {
           val RL = (for (j <- 0 until g0.bigraph.rankAtDepth(-2)) yield {
-            g0.bigraph.inclusions.secondLast(j)(i) * row1(g0.dualData.last(j))
+            g0.bigraph.inclusions.secondLast(j)(i) * row0(g0.dualData.last(j))
           }).sum
           val LR = (for (j <- 0 until g1.bigraph.rankAtDepth(-2)) yield {
-            g1.bigraph.inclusions.secondLast(j)(i) * row0(g1.dualData.last(j))
+            g1.bigraph.inclusions.secondLast(j)(i) * row1(g1.dualData.last(j))
           }).sum
           RL - LR
         }).forall(_ == 0)
