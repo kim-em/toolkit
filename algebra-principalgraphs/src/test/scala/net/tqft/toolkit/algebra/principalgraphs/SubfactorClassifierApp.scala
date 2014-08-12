@@ -3,10 +3,8 @@ package net.tqft.toolkit.algebra.principalgraphs
 import scala.IndexedSeq
 
 object SubfactorClassifierApp extends App {
-	val A2 = SubfactorWeed(4.1, PairOfBigraphsWithDuals(BigraphWithDuals("bwd1vduals1"), BigraphWithDuals("bwd1vduals1")))
-	require(Bigraph("gbg1v").depth == 2)
-	require(BigraphWithDuals("bwd1vduals1").bigraph.depth == 2)
-	require(A2.pair.depth == 2)
+	val A3 = SubfactorWeed(4.4, PairOfBigraphsWithDuals(BigraphWithDuals("bwd1v1vduals1v1"), BigraphWithDuals("bwd1v1vduals1v1")))
+	require(A3.pair.depth == 3)
 	
 	def p(w: SubfactorWeed) = {
 	  println(w)
@@ -14,7 +12,11 @@ object SubfactorClassifierApp extends App {
 	  println(w.pair(1).bigraph.estimateEigenvalue(10))
 	}
 
-	for(d <- A2.descendantsWithSupertransitivityAtMost(2); if d.pair.g0.bigraph.rankAtMaximalDepth == 0 && d.pair.g1.bigraph.rankAtMaximalDepth == 0) {
-	  p(d)
+	for(d <- A3.descendantsWithSupertransitivityAtMost(3)) {
+	  if(d.pair.g0.bigraph.rankAtMaximalDepth == 0 && d.pair.g1.bigraph.rankAtMaximalDepth == 0) {
+		p(d.DecreaseDepth.result)
+	  } else if(d.upperObjects.elements.isEmpty) {
+	    p(d)
+	  }
 	}
 }

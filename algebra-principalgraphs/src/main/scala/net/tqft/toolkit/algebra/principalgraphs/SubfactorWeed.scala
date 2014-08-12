@@ -21,9 +21,10 @@ sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permu
 
   override def toString = s"weed[$indexLimit, $pair]"
 
-  def supertransitivity = pair(0).bigraph.supertransitivity
+  def supertransitivity = pair.supertransitivity
 
-  def descendantsWithSupertransitivityAtMost(k: Int) = descendants(w => if (k >= w.supertransitivity) 1 else -1)
+  def descendantsWithSupertransitivityAtMost(k: Int) = descendantsTreeWithSupertransitivityAtMost(k).map(_._1)
+  def descendantsTreeWithSupertransitivityAtMost(k: Int) = descendantsTree(w => if (w.supertransitivity <= k || w.supertransitivity == w.depth && w.depth == k + 1) 1 else -1)
 
   override def findIsomorphismTo(other: SubfactorWeed) = ???
   def isomorphs = ???
@@ -227,7 +228,10 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
               .map(p => AddDualPairAtEvenDepth(graph, p._1, p._2))
           }
 
-          ((pair.g0.bigraph.rankAtMaximalDepth > 0 && pair.g1.bigraph.rankAtMaximalDepth > 0) option IncreaseDepth).iterator ++
+          val dualDataAllowed = depth > supertransitivity + 1 || pair.g0.numberOfSelfDualObjectsAtMaximalDepth == pair.g1.numberOfSelfDualObjectsAtMaximalDepth
+          val increaseDepthAllowed = (pair.g0.bigraph.rankAtMaximalDepth > 0 && pair.g1.bigraph.rankAtMaximalDepth > 0) && dualDataAllowed
+          
+          (increaseDepthAllowed option IncreaseDepth).iterator ++
             uppersAddingVerticesToGraph(0) ++
             uppersAddingVerticesToGraph(1)
         }
