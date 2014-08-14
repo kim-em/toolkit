@@ -5,6 +5,8 @@ import net.tqft.toolkit.algebra._
 trait MultivariablePolynomialAlgebraOverGCDRing[A, V] extends MultivariablePolynomialAlgebra[A, V] with GCDRing[MultivariablePolynomial[A, V]] {
   override implicit def ring: GCDRing[A]
 
+  override def toString = s"MultivariablePolynomialAlgebraOverGCDRing.over($ring, $variableOrdering)"
+  
   def scalarExactQuotient(p: MultivariablePolynomial[A, V], a: A): MultivariablePolynomial[A, V] = p.mapValues(x => ring.exactQuotient(x, a))
   def content(p: MultivariablePolynomial[A, V]): A = {
     ring.gcd(p.coefficients.values.toSeq: _*)

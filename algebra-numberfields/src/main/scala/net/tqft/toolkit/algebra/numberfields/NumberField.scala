@@ -9,9 +9,21 @@ abstract class PolynomialQuotientRing[A: Field] extends PolynomialsOverField[A] 
   def generator: Polynomial[A]
   lazy val degree = maximumDegree(generator).get
 
+  private def check(p: Polynomial[A]) {
+    require(p.maximumDegree.getOrElse(0) < generator.maximumDegree.get)
+  }
   
-  override def multiply(a: Polynomial[A], b: Polynomial[A]) = polynomials.remainder(polynomials.multiply(a, b), generator)
-  def normalForm(p: Polynomial[A]) = polynomials.remainder(p, generator)
+  override def add(a: Polynomial[A], b: Polynomial[A]) = {
+    check(a)
+    check(b)
+    super.add(a, b)
+  }
+  override def multiply(a: Polynomial[A], b: Polynomial[A]) = {
+    check(a)
+    check(b)
+    normalForm(polynomials.multiply(a, b))
+  }
+  def normalForm(p: Polynomial[A]) = polynomials.remainder(p, generator).ensuring(_.maximumDegree.getOrElse(0) < generator.maximumDegree.get)
   
   override def toString = s"PolynomialQuotientRing($generator)(${implicitly[Field[A]]})"
 }
