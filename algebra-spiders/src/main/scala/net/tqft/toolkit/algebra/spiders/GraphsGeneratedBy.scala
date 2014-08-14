@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra.spiders
 
 import scala.language.implicitConversions
+import net.tqft.toolkit.algebra.enumeration.Odometer
 
 case class VertexType(perimeter: Int, allowedRotationStep: Int)
 
@@ -15,7 +16,12 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
 
   case class avoiding(faces: Seq[PlanarGraph]) {
 
-    def byNumberOfFaces(numberOfBoundaryPoints: Int, numberOfFaces: Int): Stream[PlanarGraph] = ???
+    def byNumberOfFaces(numberOfBoundaryPoints: Int, numberOfFaces: Int): Stream[PlanarGraph] = {
+      // let f denote the number of internal faces, n the number of boundary points
+      // then 2 f <= \sum_v (degree(v) - 2) <= n - 2 + 2f
+      val limit = { k: List[Int] => k.zip(vertexTypes.map(_.perimeter - 2)).map(p => p._1 * p._2).sum <= numberOfBoundaryPoints - 2 + 2 * numberOfFaces}
+      Odometer(limit)(List.fill(vertexTypes.size)(0)).toStream.flatMap(k => byNumberOfVertices(numberOfBoundaryPoints, vertexTypes.zip(k).toMap))
+    }
 
     private var stackDepth = 0
 

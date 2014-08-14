@@ -89,19 +89,19 @@ trait FunctionSpider[A, F] extends PlanarGraphReductionSpider[F] {
 }
 
 trait MultivariablePolynomialSpider[A] extends FunctionSpider[A, MultivariablePolynomial[A, String]] {
-  override def ring = implicitly[Ring[MultivariablePolynomial[A, String]]]
+  override final lazy val ring = implicitly[Ring[MultivariablePolynomial[A, String]]]
 }
 
 trait BigIntMultivariablePolynomialSpider extends MultivariablePolynomialSpider[Fraction[BigInt]] {
-  override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
+  override final lazy val coefficientRing = implicitly[Field[Fraction[BigInt]]]
 }
 trait MultivariableRationalFunctionSpider[A] extends PlanarGraphReductionSpiderOverField[MultivariableRationalFunction[A, String]] with FunctionSpider[A, MultivariableRationalFunction[A, String]]  {
   override implicit def coefficientRing: Field[A]
-  override def ring = implicitly[Field[MultivariableRationalFunction[A, String]]]
+  override final lazy val ring = implicitly[Field[MultivariableRationalFunction[A, String]]]
 }
 
 trait BigIntMultivariableRationalFunctionSpider extends MultivariableRationalFunctionSpider[Fraction[BigInt]] {
-  override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
+  override final lazy val coefficientRing = implicitly[Field[Fraction[BigInt]]]
 }
 
 

@@ -34,13 +34,13 @@ trait MultivariableRationalFunctionTrivalentSpider[A] extends TrivalentSpider[Mu
 
 trait IntegerMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[Fraction[BigInt]] {
   override def omega = 1
-  override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
+  override final lazy val coefficientRing = implicitly[Field[Fraction[BigInt]]]
 }
-trait TwistedMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[Polynomial[Fraction[Int]]] {
+trait TwistedMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[Polynomial[Fraction[BigInt]]] {
   override def t = ring.zero
   // TODO improve implicits here?:
-  override def omega = MultivariablePolynomial.constant[Polynomial[Fraction[Int]], String](Polynomial[Fraction[Int]](Map(1 -> Fraction.whole(1))))
-  override def coefficientRing: Field[Polynomial[Fraction[Int]]] = NumberField.cyclotomic[Int](3)
+  override def omega = MultivariablePolynomial.constant[Polynomial[Fraction[BigInt]], String](Polynomial[Fraction[BigInt]](Map(1 -> Fraction.whole[BigInt](1))))
+  override final lazy val coefficientRing: Field[Polynomial[Fraction[BigInt]]] = NumberField.cyclotomic[BigInt](3)
 }
 
 object TrivalentSpider extends IntegerMultivariableRationalFunctionTrivalentSpider
