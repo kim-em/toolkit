@@ -14,6 +14,8 @@ object ModuleOverRig {
     override def zero = rig.zero
     override def add(b1: B, b2: B) = rig.add(b1, b2)
     override def scalarMultiply(b1: B, b2: B) = rig.multiply(b1, b2)
+
+    override def toString = s"ModuleOverRig.moduleOverItself($rig)"
   }
 
   implicit def moduleOverItself[B: Rig]: ModuleOverRig[B, B] = new ModuleOverItself[B]
@@ -38,6 +40,8 @@ object Module {
   protected class ModuleOverItself[B: Ring] extends ModuleOverRig.ModuleOverItself[B] with Module[B, B] {
     private val ring = implicitly[Ring[B]]
     override def negate(b: B) = ring.negate(b)
+
+    override def toString = s"Module.moduleOverItself($ring)"
   }
 
   implicit def moduleOverItself[B: Ring]: Module[B, B] = new ModuleOverItself[B]

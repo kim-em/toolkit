@@ -4,6 +4,7 @@ import net.tqft.toolkit.algebra._
 
 trait PolynomialAlgebraOverOrderedField[A, P] extends PolynomialAlgebraOverField[A, P] with OrderedEuclideanRing[P] {
   override def ring: OrderedField[A]
+  override def toString = "PolynomialsOverOrderedField.over(" + ring + ")"
 
   override def compare(p: P, q: P): Int = {
     implicitly[Ordering[Option[Int]]].compare(maximumDegree(p), maximumDegree(q)) match {
@@ -36,10 +37,12 @@ object PolynomialAlgebraOverOrderedField {
   implicit def over[A: OrderedField]: PolynomialAlgebraOverOrderedField[A, Polynomial[A]] = PolynomialsOverOrderedField.over[A]
 }
 
-abstract class PolynomialsOverOrderedField[A:OrderedField] extends PolynomialsOverField[A] with PolynomialAlgebraOverOrderedField[A, Polynomial[A]]
+abstract class PolynomialsOverOrderedField[A: OrderedField] extends PolynomialsOverField[A] with PolynomialAlgebraOverOrderedField[A, Polynomial[A]]
 object PolynomialsOverOrderedField {
-  implicit def over[A: OrderedField]: PolynomialsOverOrderedField[A] = new PolynomialsOverOrderedField[A] { 
-    override def ring: OrderedField[A] = implicitly[OrderedField[A]]
+  implicit def over[A: OrderedField]: PolynomialsOverOrderedField[A] = {
+    new PolynomialsOverOrderedField[A] {
+      override def ring: OrderedField[A] = implicitly[OrderedField[A]]
+    }
   }
 }
 

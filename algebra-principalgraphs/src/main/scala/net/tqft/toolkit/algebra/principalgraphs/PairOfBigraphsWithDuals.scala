@@ -28,6 +28,10 @@ trait PairOfBigraphsWithDuals {
   }
 
   def supertransitivity = Seq(g0.supertransitivity, g1.supertransitivity).min
+  def cylindrical_? = g0.bigraph.cylindrical_? || g1.bigraph.cylindrical_? || {
+    supertransitivity < depth &&
+      (g0.bigraph.inclusions.last ++ g0.bigraph.inclusions.last.transpose ++ g1.bigraph.inclusions.last ++ g1.bigraph.inclusions.last.transpose).map(_.sum).forall(_ <= 1)
+  }
 
   type Clump = Int
 
@@ -43,9 +47,9 @@ trait PairOfBigraphsWithDuals {
           updatedVerticesByDimension(v1.graph)(v1.depth)(v1.index) == updatedVerticesByDimension(v2.graph)(v2.depth)(v2.index)
       })
     })
-    for (c <- obstructedTriplePointOption) {
-      Logging.info(s"   the triple point obstruction applies at depth ${c.depth}, vertices ${c.index0} and ${c.index1}")
-    }
+//    for (c <- obstructedTriplePointOption) {
+//      Logging.info(s"   the triple point obstruction applies at depth ${c.depth}, vertices ${c.index0} and ${c.index1}")
+//    }
     obstructedTriplePointOption.isEmpty
   }
 
@@ -148,11 +152,7 @@ trait PairOfBigraphsWithDuals {
   def increaseDepth: PairOfBigraphsWithDuals
 
   protected def defectsZero_?(defects: Seq[Seq[Int]]) = {
-    val result = defects.forall(_.forall(_ == 0))
-    if (!result) {
-      Logging.info("   fails associativity test")
-    }
-    result
+    defects.forall(_.forall(_ == 0))
   }
 
   lazy val rankPartialSums = (for (graph <- 0 to 1; d <- 0 to apply(graph).bigraph.depth) yield apply(graph).bigraph.rankAtDepth(d)).scanLeft(0)(_ + _)
@@ -225,29 +225,29 @@ object PairOfBigraphsWithDuals {
     var evenDepthScratch: EvenDepthPairOfBigraphsWithDuals = PairOfBigraphsWithDuals.empty(g0.dualData(0), g1.dualData(0))
     var oddDepthScratch: OddDepthPairOfBigraphsWithDuals = null
     for (workingDepth <- 1 to g0.bigraph.depth) {
-      println(s"workingDepth = $workingDepth")
+      //      println(s"workingDepth = $workingDepth")
       if (workingDepth % 2 == 1) {
         oddDepthScratch = evenDepthScratch.increaseDepth
-        println(s"oddDepthScratch = $oddDepthScratch")
+        //        println(s"oddDepthScratch = $oddDepthScratch")
 
         for (i <- 0 until g0.bigraph.rankAtDepth(workingDepth)) {
-          println(s" adding dual pair $i")
+          //          println(s" adding dual pair $i")
           oddDepthScratch = oddDepthScratch.addDualPairAtOddDepth(g0.bigraph.inclusions(workingDepth - 1)(i), g1.bigraph.inclusions(workingDepth - 1)(i)).get
-          println(s"oddDepthScratch = $oddDepthScratch")
+          //          println(s"oddDepthScratch = $oddDepthScratch")
         }
       } else {
         evenDepthScratch = oddDepthScratch.increaseDepth
-        println(s"evenDepthScratch = $evenDepthScratch")
+        //        println(s"evenDepthScratch = $evenDepthScratch")
         for (graph <- 0 to 1; i <- 0 until graphs(graph).bigraph.rankAtDepth(workingDepth)) {
           val j = graphs(graph).dualData(workingDepth / 2)(i)
           if (i == j) {
-            println(s" adding a self dual vertex to graph $graph")
+            //            println(s" adding a self dual vertex to graph $graph")
             evenDepthScratch = evenDepthScratch.addSelfDualVertex(graph, graphs(graph).bigraph.inclusions(workingDepth - 1)(i)).get
-            println(s"evenDepthScratch = $evenDepthScratch")
+            //            println(s"evenDepthScratch = $evenDepthScratch")
           } else if (j == i + 1) {
-            println(s" adding a pair of dual vertices to graph $graph")
+            //            println(s" adding a pair of dual vertices to graph $graph")
             evenDepthScratch = evenDepthScratch.addDualPairAtEvenDepth(graph, graphs(graph).bigraph.inclusions(workingDepth - 1)(i), graphs(graph).bigraph.inclusions(workingDepth - 1)(i + 1)).get
-            println(s"evenDepthScratch = $evenDepthScratch")
+            //            println(s"evenDepthScratch = $evenDepthScratch")
           } else if (j == i - 1) {
             // do nothing, the previous case has already added this row
           } else {

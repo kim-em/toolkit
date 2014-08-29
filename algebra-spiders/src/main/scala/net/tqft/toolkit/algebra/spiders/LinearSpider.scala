@@ -28,7 +28,7 @@ trait CachingEvaluableSpider[R, A] extends EvaluableSpider[R, A] {
 object LinearSpider {
   abstract class MapLinearSpider[A: DiagramSpider, R: Ring] extends Module.ModuleMap[R, A, R] with LinearSpider[R, Map[A, R]] with EvaluableSpider[R, Map[A, R]] {
     val diagramSpider = implicitly[DiagramSpider[A]]
-    override val coefficients = implicitly[Module[R, R]]
+    override lazy val coefficients = Module.moduleOverItself(ring)
 
     override def empty = Map(diagramSpider.empty -> implicitly[Ring[R]].one)
 

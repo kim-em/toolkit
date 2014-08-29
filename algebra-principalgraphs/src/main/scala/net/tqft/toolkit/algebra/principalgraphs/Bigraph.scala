@@ -60,10 +60,10 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
     }
   }
   def valence(d: Int, index: Int) = {
-//    require(d >= 0)
-//    require(d <= depth)
-//    require(index >= 0)
-//    require(index < rankAtDepth(d))
+    //    require(d >= 0)
+    //    require(d <= depth)
+    //    require(index >= 0)
+    //    require(index < rankAtDepth(d))
     if (d == 0) {
       inclusions.head.map(_(index)).sum
     } else if (d == depth) {
@@ -91,9 +91,14 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
   lazy val totalRank: Int = (for (k <- 0 to depth) yield rankAtDepth(k)).sum
   lazy val totalEvenRank: Int = (for (k <- 0 to depth by 2) yield rankAtDepth(k)).sum
   def depth: Int = inclusions.size
-  lazy val supertransitivity = inclusions.indexWhere(_ != Seq(Seq(1))) match {
+
+  lazy val supertransitivity = inclusions.indexWhere(i => i != Seq(Seq(1)) && i != Seq.empty) match {
     case -1 => depth
     case k => k
+  }
+  lazy val cylindrical_? = {
+    supertransitivity < depth &&
+    (inclusions.last ++ inclusions.secondLast ++ inclusions.last.transpose ++ inclusions.secondLast.transpose).map(_.sum).forall(_ <= 1)
   }
 
   def truncate: Bigraph = Bigraph(rankAtDepthZero, inclusions.most)
@@ -131,7 +136,7 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
       true
     } else {
 
-      var m = 5
+      var m = 20
       var last = 0.0
       var cur = estimateEigenvalueWithRow(row)
       def close = {
@@ -153,6 +158,7 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
       (for (j <- 0 until k) yield estimateEigenvalueWithRow(row, 1)).last
     } else {
       // TODO consider trying out Brendan's estimates
+      // (in fact, they should be used in generating children, not here)
 
       switchApproximateEigenvectors
       val x = approximateEigenvectors(0)
@@ -229,15 +235,14 @@ object Bigraph {
   def apply(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]]): Bigraph = {
     inclusions.foldLeft(empty(rankAtDepthZero))({ (b, i) => i.foldLeft(b.increaseDepth)({ (b, r) => b.addRow(r) }) })
   }
-  
+
   def apply(string: String): Bigraph = {
     require(string.startsWith("gbg"))
     val inclusions = string.stripPrefix("gbg").split_!("v").map(_.split_!("p").map(_.split_!("x").map(_.toInt)))
-    println(inclusions)
     val rankAtDepthZero = inclusions(0)(0).size
     apply(rankAtDepthZero, inclusions)
   }
-  
+
   object Examples {
     val Haagerup = apply("gbg1v1v1v1p1v1x0p0x1v1x0p0x1")
     val dualHaagerup = apply("gbg1v1v1v1p1v1x0p1x0")
