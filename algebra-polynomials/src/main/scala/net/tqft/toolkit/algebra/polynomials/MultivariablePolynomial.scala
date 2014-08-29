@@ -9,13 +9,10 @@ case class MultivariablePolynomial[A, V](coefficients: Map[Map[V, Int], A]) {
   //  require(coefficients.valuesIterator.forall(_.toString != "0"))
   //  require(coefficients.valuesIterator.forall(_.toString != "Fraction(0, 1)"))
   //  require(coefficients.keysIterator.forall(_.valuesIterator.forall(_ >= 0)))
-   require(MultivariablePolynomial.latch || coefficients.valuesIterator.forall(v => !v.isInstanceOf[SeqPolynomial[_]] || v.asInstanceOf[SeqPolynomial[_]].coefficients.size < 3))
   def mapValues[B](f: A => B) = MultivariablePolynomial(coefficients.mapValues(f))
 }
 
 object MultivariablePolynomial {
-  var latch = true
-  
   implicit def lift[A, V](coefficients: Map[Map[V, Int], A]) = MultivariablePolynomial[A, V](coefficients)
 
   implicit def liftCoefficientsToFractions[A: Rig, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(coefficients.mapValues(a => a))

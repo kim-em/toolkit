@@ -9,6 +9,7 @@ trait BigraphWithDuals {
   def dualData: Seq[Involution]
 
   def supertransitivity = bigraph.supertransitivity
+
   
   override def toString = "bwd" + bigraph.toString.stripPrefix("gbg") + "duals" + dualData.map(_.map(_ + 1).mkString("x")).mkString("v")
 

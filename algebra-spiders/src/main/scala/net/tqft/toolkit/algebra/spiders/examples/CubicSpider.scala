@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.spiders.examples
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.algebra.spiders._
+import net.tqft.toolkit.algebra.numberfields.NumberField
 
 abstract class CubicSpider[R: Field] extends TrivalentSpider[R] { cs =>
   lazy val squareReduction: Reduction[PlanarGraph, R] = {
@@ -13,6 +14,8 @@ abstract class CubicSpider[R: Field] extends TrivalentSpider[R] { cs =>
       override def b = cs.b
       override def t = cs.t
     }
+    println("PreCubicSpider.ring = " + PreCubicSpider.ring)
+    println("PreCubicSpider.coefficients = " + PreCubicSpider.coefficients)
     PreCubicSpider.basis(4, PreCubicSpider.reducedDiagrams(4, 0) ++ PreCubicSpider.reducedDiagrams(4, 2)).deriveNewRelations(4).next
   }
   override def reductions = super.reductions :+ squareReduction
@@ -27,7 +30,11 @@ object CubicSpider extends CubicSpider[MultivariableRationalFunction[Fraction[Bi
   //  override def beta = ring.multiply(z, Map(Map("b" -> 2) -> -1, Map("t" -> 2) -> 1, Map("d" -> 1, "t" -> 2) -> 1)) // -b^2 + t^2 + d t^2
 }
 
-object TwistedCubicSpider extends CubicSpider[MultivariableRationalFunction[Polynomial[Fraction[BigInt]], String]] with TwistedMultivariableRationalFunctionTrivalentSpider {
+object TwistedCubicSpider extends CubicSpider[MultivariableRationalFunction[Polynomial[Fraction[BigInt]], String]]()({
+  // We need to make sure the right polynomial ring is summoned here.
+  implicit val `Q(w)` = NumberField.cyclotomic[BigInt](3)
+  implicitly
+}) with TwistedMultivariableRationalFunctionTrivalentSpider {
   //  def `d^(-1)`: MultivariableRationalFunction[Polynomial[Fraction[Int]], String] = Map(Map("(d^(-1))" -> 1) -> 1)
   //  override def alpha = ring.multiply(`d^(-1)`, Map(Map("b" -> 2) -> 1))
   //  override def beta = ring.multiply(`d^(-1)`, Map(Map("b" -> 1) -> -1))
