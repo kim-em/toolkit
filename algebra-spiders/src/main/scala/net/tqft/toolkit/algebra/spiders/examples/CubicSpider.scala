@@ -14,8 +14,6 @@ abstract class CubicSpider[R: Field] extends TrivalentSpider[R] { cs =>
       override def b = cs.b
       override def t = cs.t
     }
-    println("PreCubicSpider.ring = " + PreCubicSpider.ring)
-    println("PreCubicSpider.coefficients = " + PreCubicSpider.coefficients)
     PreCubicSpider.basis(4, PreCubicSpider.reducedDiagrams(4, 0) ++ PreCubicSpider.reducedDiagrams(4, 2)).deriveNewRelations(4).next
   }
   override def reductions = super.reductions :+ squareReduction

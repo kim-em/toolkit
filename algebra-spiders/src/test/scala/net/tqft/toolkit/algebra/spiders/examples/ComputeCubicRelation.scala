@@ -15,8 +15,26 @@ object ComputeCubicRelation extends App {
 
   import MathematicaForm._
 
+  println("The cubic relation: ")
+
   println("matrix: ")
   println(m.entries.toIndexedSeq.toMathematicaInputString)
   println("nullspace: ")
   println(m.nullSpace.toMathematicaInputString)
+
+  println("The twisted cubic relation: ")
+
+  val m2 = Matrix(5, TwistedCubicSpider.innerProductMatrix(`D(4,0)`, `D(4,1)`))
+  implicit val polynomialForm = MathematicaForm.polynomialMathematicaForm[Fraction[BigInt]]("w")
+
+  println(TwistedCubicSpider.squareReduction.big)
+  for ((d, x) <- TwistedCubicSpider.squareReduction.small) {
+    println(d)
+    println(x.toMathematicaInputString)
+  }
+
+  println("matrix: ")
+  println(m2.entries.toIndexedSeq.toMathematicaInputString)
+  println("nullspace: ")
+  println(m2.nullSpace(TwistedCubicSpider.ring).toMathematicaInputString)
 }
