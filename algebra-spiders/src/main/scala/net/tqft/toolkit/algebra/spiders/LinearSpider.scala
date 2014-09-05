@@ -38,10 +38,11 @@ object LinearSpider {
         val s = f(a)
         newMap(s) = newMap.get(s).map(v => ring.add(v, r)).getOrElse(r)
       }
-      Map() ++ newMap.filter(x => !ring.zero_?(x._2))
+      canonicalForm(Map() ++ newMap.filter(x => !ring.zero_?(x._2)))
     }
 
-    override def rotate(map: Map[A, R], k: Int) = map.map(p => (diagramSpider.rotate(p._1, k), p._2))
+    override def rotate(map: Map[A, R], k: Int) = mapKeys(d => diagramSpider.rotate(d, k))(map) 
+    override def stitch(map: Map[A, R]) = mapKeys(diagramSpider.stitch)(map)
     override def tensor(map1: Map[A, R], map2: Map[A, R]) = {
       val newMap = scala.collection.mutable.Map[A, R]()
       for ((a, r) <- map1; (b, s) <- map2) {
@@ -49,9 +50,8 @@ object LinearSpider {
         val p = ring.multiply(r, s)
         newMap(t) = newMap.get(t).map(v => ring.add(v, p)).getOrElse(p)
       }
-      Map() ++ newMap.filter(x => !ring.zero_?(x._2))
+      canonicalForm(Map() ++ newMap.filter(x => !ring.zero_?(x._2)))
     }
-    override def stitch(map: Map[A, R]) = mapKeys(diagramSpider.stitch)(map)
     override def canonicalForm(map: Map[A, R]) = {
       val newMap = scala.collection.mutable.Map[A, R]()
       for ((a, r) <- map) {

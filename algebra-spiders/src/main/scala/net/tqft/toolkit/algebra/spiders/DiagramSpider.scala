@@ -92,65 +92,7 @@ object DiagramSpider {
       }
 
       override def canonicalFormWithDefect(graph: PlanarGraph) = {
-        val packed = graph.relabelEdgesAndFaces
-        val nautyGraph = packed.nautyGraph
-        val labelling = Dreadnaut.canonicalLabelling(nautyGraph)
-
-        require(labelling(0) == 0)
-
-        import net.tqft.toolkit.permutations.Permutations._
-        import net.tqft.toolkit.collections.Rotate._
-        import Ordering.Implicits._
-        val inv = labelling.inverse
-
-        val resultFlags = labelling.take(packed.numberOfVertices).permute(packed.vertexFlags.map(_.map(p => (inv(p._1), inv(p._2))).leastRotation))
-        val newOuterFace = if (graph.numberOfBoundaryPoints == 0) {
-          inv(packed.outerFace)
-        } else {
-          resultFlags(0)(0)._2
-        }
-        val result = PlanarGraph(newOuterFace, resultFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
-
-        val vertexRotations = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
-
-        def identifyRotation[A](x: Seq[A], y: Seq[A]) = {
-          if (x.isEmpty) {
-            0
-          } else {
-            import net.tqft.toolkit.collections.Rotate._
-            (0 until x.size).find(j => x.rotateLeft(j) == y).get
-          }
-        }
-
-        import net.tqft.toolkit.arithmetic.Mod._
-
-        val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(0))
-
-        // Now, we check all the vertex rotations, fixing any that were rotated by an forbidden amount... This is a hack.
-        val fixedFlags = for (i <- 1 until graph.numberOfVertices) yield {
-          val k = packed.vertexFlags(i).size
-          val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
-          
-          val j0 = j mod packed.labels(i - 1)
-          
-          vertexRotations(k) = (vertexRotations(k) + j - j0) mod k
-          
-          result.vertexFlags(i).rotateLeft(-j0)
-        }
-
-        val fixedResult = result.copy(vertexFlags = result.vertexFlags.head +: fixedFlags)
-        
-        val finalResult = rotate(fixedResult, -boundaryRotation)
-        val rotation = Rotation(Map() ++ vertexRotations)
-        
-        // verify canonicalFormWithDefect is idempotent
-//        if(finalResult != graph) {
-//          val iterated = canonicalFormWithDefect(finalResult)
-//          require(iterated._1 == finalResult)
-//          require(iterated._2.vertexRotations.values.forall(_ == 0))
-//        }
-        
-        (finalResult, rotation)
+    	  graph.canonicalFormWithDefect
       }
     }
   }
