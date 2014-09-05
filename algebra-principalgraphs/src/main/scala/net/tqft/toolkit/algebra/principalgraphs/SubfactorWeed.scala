@@ -23,7 +23,10 @@ sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permu
 
   def descendantsFiltered(supertransitivityBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty) = descendantsTreeFiltered(supertransitivityBound, rankBound, avoiding).map(_._1)
   def descendantsTreeFiltered(supertransitivityBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty) = {
-    val canonicalAvoiding = avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.nautyGraph))
+    val canonicalAvoiding = {
+     avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.nautyGraph)) ++ 
+     avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.switch.nautyGraph))
+    }
     descendantsTree(w => {
       if (supertransitivityBound <= 0 || w.supertransitivity <= supertransitivityBound || w.supertransitivity == w.depth && w.depth == supertransitivityBound + 1) {
         if (rankBound <= 0 || w.pair.totalRank <= rankBound) {

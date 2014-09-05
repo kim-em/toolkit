@@ -14,6 +14,9 @@ case class TriplePointConfiguration(depth: Int, index0: Int, index1: Int, biject
 trait PairOfBigraphsWithDuals {
   def g0: BigraphWithDuals
   def g1: BigraphWithDuals
+  
+  def switch = PairOfBigraphsWithDuals(g1, g0)
+  
   def graph(g: Int): BigraphWithDuals = {
     g match {
       case 0 => g0
