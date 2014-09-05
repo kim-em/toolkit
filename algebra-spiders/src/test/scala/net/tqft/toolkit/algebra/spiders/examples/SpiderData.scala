@@ -7,13 +7,12 @@ import net.tqft.toolkit.algebra.polynomials._
 import net.tqft.toolkit.collections.KSubsets
 import net.tqft.toolkit.algebra.matrices.Matrix
 import MathematicaForm._
-import net.tqft.toolkit.amazon.S3
 import net.tqft.toolkit.Logging
 
 case class SpiderData(
   spider: QuotientSpider,
   groebnerBasis: Seq[MultivariablePolynomial[Fraction[BigInt], String]],
-  relations: Seq[Seq[Seq[MultivariablePolynomial[Fraction[BigInt], String]]]], // given as linear combinations of the considered diagrams
+  nonReducingRelations: Seq[Seq[Seq[MultivariablePolynomial[Fraction[BigInt], String]]]], // given as linear combinations of the considered diagrams
   dimensionBounds: Seq[Int],
   consideredDiagramsVertexBound: Seq[Int],
   consideredDiagrams: Seq[Seq[PlanarGraph]],
@@ -52,7 +51,7 @@ case class SpiderData(
   def allPolyhedra: Seq[String] =
     (groebnerBasis.flatMap(_.variables) ++
       spider.reductions.flatMap(_.small.values.flatMap(r => r.variables)) ++
-      relations.flatMap(_.flatMap(_.flatMap(_.variables)))).distinct.filter(!_.contains("^(-1)"))
+      nonReducingRelations.flatMap(_.flatMap(_.flatMap(_.variables)))).distinct.filter(!_.contains("^(-1)"))
 
   val complexity: Ordering[PlanarGraph] = {
     Ordering.by(_.numberOfInternalVertices)
@@ -136,7 +135,8 @@ case class SpiderData(
       }
       val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
       val paddedVisiblyIndependentDiagrams = visiblyIndependentDiagrams.padTo(boundary + 1, Seq.empty)
-      val padded = copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams)
+      val paddedNonReducingRelations = nonReducingRelations.padTo(boundary + 1, Seq.empty)
+      val padded = copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams, nonReducingRelations = paddedNonReducingRelations, consideredDiagrams = newConsideredDiagrams)
 
       val addDependent = padded.addDependentDiagram(p)
       val addIndependent = if (padded.independentDiagrams(boundary).size < dimensionBounds(boundary)) {
@@ -145,7 +145,7 @@ case class SpiderData(
         Seq.empty
       }
 
-      (addDependent ++ addIndependent).map(_.copy(consideredDiagrams = newConsideredDiagrams))
+      addDependent ++ addIndependent
     }
   }
 
@@ -190,6 +190,12 @@ case class SpiderData(
   }
 
   def addRelation(size: Int, relation: Seq[(PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String])]): Seq[SpiderData] = {
+    // TODO remove these checks
+    for (tail <- relation.map(_._1).tails; if tail.nonEmpty) {
+      for (y <- tail.tail) {
+        require(tail.head.canonicalFormWithDefect._1 != y.canonicalFormWithDefect._1)
+      }
+    }
     addRelations(size - 2, for (
       i <- 0 until size;
       c = spider.stitchAt(relation.toMap, i);
@@ -197,9 +203,11 @@ case class SpiderData(
     ) yield c.toSeq).flatMap(_._addRelation(size, relation))
   }
 
-  private def _addRelation(size: Int, relation: Seq[(PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String])]): Seq[SpiderData] = {
-    if (relation.size == 1) {
-      require(size == 0)
+  private def _addRelation(size: Int, relation0: Seq[(PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String])]): Seq[SpiderData] = {
+    val relation = relation0.map(p => (p._1, polynomials.normalForm(p._2))).filter(p => !polynomials.zero_?(p._2))
+    if (relation.size == 0) {
+      Seq(this)
+    } else if (relation.size == 1 && size == 0) {
       if (relation.head._1 == PlanarGraph.empty) {
         declarePolynomialZero(relation.head._2)
       } else {
@@ -212,11 +220,14 @@ case class SpiderData(
 
       if (px != polynomials.one) {
         ((for (s <- declarePolynomialZero(px)) yield {
-          s._addRelation(size, relation.map(q => (q._1, s.polynomials.normalForm(q._2))).filter(q => !s.polynomials.zero_?(q._2)))
+          require(s.polynomials.zero_?(px))
+          val newRelation = relation.map(q => (q._1, s.polynomials.normalForm(q._2))).filter(q => !s.polynomials.zero_?(q._2))
+          require(newRelation.size < relation.size)
+          s._addRelation(size, newRelation)
         }) ++
-        (for ((s, i) <- invertPolynomial(px)) yield {
-          s._addRelation(size, relation.map(q => (q._1, s.polynomials.multiply(q._2, i))))
-        })).flatten
+          (for ((s, i) <- invertPolynomial(px)) yield {
+            s._addRelation(size, relation.map(q => (q._1, s.polynomials.multiply(q._2, i))))
+          })).flatten
       } else {
         val pairings =
           for (i <- 0 until size) yield {
@@ -224,7 +235,7 @@ case class SpiderData(
           }
 
         // is it a reducing relation?
-        val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case ((d, x), i) if !rationalFunctions.zero_?(x) => i })
+        val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case ((d, x), i) if !polynomials.zero_?(x) => i })
         val reducing = relation.size > 1 && nonzeroPositions.forall({ i => complexity.lt(relation(i)._1, relation.last._1) })
         println(s"reducing: $reducing")
 
@@ -250,8 +261,24 @@ case class SpiderData(
             val newReduction = Reduction(p, relation.dropRight(1).map(q => (q._1, s.polynomials.negate(q._2))).toMap)
             s.addReduction(newReduction)
           } else {
-            // TODO record non-reducing relations!
-            Seq(s)
+            // record non-reducing relations
+            val coefficients = {
+              var found = 0
+              val result = Seq.tabulate(consideredDiagrams(size).size)({ k =>
+                val option = relation.find(_._1 == consideredDiagrams(size)(k))
+                option match {
+                  case Some((d, x)) => {
+                    found = found + 1
+                    x
+                  }
+                  case None => polynomials.zero
+                }
+              })
+              require(found == relation.size)
+              result
+            }
+            // TODO row-reduce them! (safely; keeping track of denominators)
+            Seq(s.copy(nonReducingRelations = nonReducingRelations.updated(size, nonReducingRelations(size) :+ coefficients)))
           }
         }).flatten
       }
@@ -404,35 +431,45 @@ case class SpiderData(
         println("Factoring something we're going to set to zero: " + r.toMathematicaInputString)
         normalizePolynomial(r).factor.filter(_._2 > 0).keys.toSeq
       }
-      factors.flatMap(f => { require(!f.toMathematicaInputString.contains("^(-1)")); declareIrreduciblePolynomialZero(f) })
+      val result = factors.flatMap(f => { require(!f.toMathematicaInputString.contains("^(-1)")); declareIrreduciblePolynomialZero(f) })
+      for (s <- result) {
+        require(s.polynomials.zero_?(r))
+      }
+      result
     }
   }
 
   def declareIrreduciblePolynomialZero(r: P): Option[SpiderData] = {
-
-    val newGroebnerBasis = {
-      import mathematica.GroebnerBasis._
-      println("Computing Groebner basis for " + (groebnerBasis :+ r).toMathematicaInputString)
-
-      val result = (groebnerBasis :+ r).computeGroebnerBasis
-      println(" ... result: " + result.toMathematicaInputString)
-      result
-    }
-
-    // has everything collapsed?
-    if (newGroebnerBasis.contains(polynomials.one)) {
-      None
+    if (polynomials.zero_?(r)) {
+      Some(this)
     } else {
-      val newPolynomials = MultivariablePolynomialAlgebras.quotient(newGroebnerBasis)
-      // TODO if we have non-reducing relations, these will have to be updated as well
-      val newExtraReductions = spider.extraReductions.map({
-        case Reduction(big, small) => Reduction(big, small.map({ p => (p._1, newPolynomials.normalForm(p._2)) }))
-      })
-      Some(copy(
-        spider = spider.copy(extraReductions = newExtraReductions),
-        groebnerBasis = newGroebnerBasis))
-    }
+      val newGroebnerBasis = {
+        import mathematica.GroebnerBasis._
+        println("Computing Groebner basis for " + (groebnerBasis :+ r).toMathematicaInputString)
 
+        val result = (groebnerBasis :+ r).computeGroebnerBasis
+        println(" ... result: " + result.toMathematicaInputString)
+        result
+      }
+
+      // has everything collapsed?
+      if (newGroebnerBasis.contains(polynomials.one)) {
+        None
+      } else {
+        val newPolynomials = MultivariablePolynomialAlgebras.quotient(newGroebnerBasis)
+        // TODO if we have non-reducing relations, these will have to be updated as well
+        val newExtraReductions = spider.extraReductions.map({
+          case Reduction(big, small) => Reduction(big, small.map({ p => (p._1, newPolynomials.normalForm(p._2)) }))
+        })
+        val result = Some(copy(
+          spider = spider.copy(extraReductions = newExtraReductions),
+          groebnerBasis = newGroebnerBasis))
+        for (s <- result) {
+          require(s.polynomials.zero_?(r))
+        }
+        result
+      }
+    }
   }
 
   def considerDiagrams(boundary: Int, vertices: Int): Seq[SpiderData] = {
@@ -460,43 +497,3 @@ case class SpiderData(
   }
 }
 
-object InvestigateTetravalentSpiders extends App {
-
-  Determinant.cache = S3("determinants")
-
-  val lowestWeightTetravalentSpider = (new LowestWeightSpider {
-    override def generators = Seq((VertexType(4, 1), ring.one))
-  }).asQuotientSpider
-
-  val invertible = Seq(MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-    MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1))),
-    MultivariablePolynomial(Map(Map[String, Int]() -> Fraction[BigInt](1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-    MultivariablePolynomial(Map(Map[String, Int]() -> Fraction[BigInt](-1, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-    MultivariablePolynomial(Map(Map[String, Int]() -> Fraction[BigInt](-2, 1), Map("p1" -> 2) -> Fraction[BigInt](1, 1))) //,
-    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 1) -> Fraction[BigInt](1, 1))),
-    //      MultivariablePolynomial(Map(Map() -> Fraction[BigInt](-2, 1), Map("p1" -> 2) -> Fraction[BigInt](1, 1))) //
-    )
-
-  val initialData = invertible.foldLeft(SpiderData(
-    lowestWeightTetravalentSpider,
-    Seq.empty,
-    Seq.empty,
-    dimensionBounds = Seq(1, 0, 1, 0, 3, 0, 14),
-    Seq.empty,
-    Seq.empty,
-    Seq.empty,
-    Seq.empty))(_.invertPolynomial(_).get._1)
-
-  val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2, 3), (4, 0), (4, 1), (4, 2), (4, 3) /**/ , (6, 0), (6, 1) /**/ , (6, 2) /**/ )
-
-  // TODO start computing relations, also
-
-  val results = initialData.considerDiagrams(steps)
-
-  //  for (r <- results) {
-  //    println(r.innerProducts(r.consideredDiagrams(6)).toMathematicaInputString)
-  //  }
-
-  println(results.size)
-}

@@ -8,7 +8,7 @@ import net.tqft.toolkit.Logging
 // flags veer to the left
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
-//  verify
+  //  verify
 
   def verify = {
     // There are many things we might check here!
@@ -210,6 +210,61 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     geodesics_(initialFace)
   }
 
+  lazy val canonicalFormWithDefect = {
+    val packed = relabelEdgesAndFaces
+    val labelling = Dreadnaut.canonicalLabelling(packed.nautyGraph)
+
+    require(labelling(0) == 0)
+
+    import net.tqft.toolkit.permutations.Permutations._
+    import net.tqft.toolkit.collections.Rotate._
+    import Ordering.Implicits._
+    val inv = labelling.inverse
+
+    val resultFlags = labelling.take(packed.numberOfVertices).permute(packed.vertexFlags.map(_.map(p => (inv(p._1), inv(p._2))).leastRotation))
+    val newOuterFace = if (graph.numberOfBoundaryPoints == 0) {
+      inv(packed.outerFace)
+    } else {
+      resultFlags(0)(0)._2
+    }
+    val result = PlanarGraph(newOuterFace, resultFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
+
+    val vertexRotations = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
+
+    def identifyRotation[A](x: Seq[A], y: Seq[A]) = {
+      if (x.isEmpty) {
+        0
+      } else {
+        import net.tqft.toolkit.collections.Rotate._
+        (0 until x.size).find(j => x.rotateLeft(j) == y).get
+      }
+    }
+
+    import net.tqft.toolkit.arithmetic.Mod._
+
+    val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(0))
+
+    // Now, we check all the vertex rotations, fixing any that were rotated by an forbidden amount... This is a hack.
+    val fixedFlags = for (i <- 1 until graph.numberOfVertices) yield {
+      val k = packed.vertexFlags(i).size
+      val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
+
+      val j0 = j mod packed.labels(i - 1)
+
+      vertexRotations(k) = (vertexRotations(k) + j - j0) mod k
+
+      result.vertexFlags(i).rotateLeft(-j0)
+    }
+
+    val fixedResult = result.copy(vertexFlags = result.vertexFlags.head +: fixedFlags)
+
+    val finalResult = DiagramSpider.graphSpider.rotate(fixedResult, -boundaryRotation)
+    val rotation = Rotation(Map() ++ vertexRotations)
+
+    (finalResult, rotation)
+
+  }
+
   lazy val relabelEdgesAndFaces: PlanarGraph = {
     val edgeMap = (for ((e, ei) <- edgeSet.zipWithIndex) yield (e, numberOfVertices + ei)).toMap
     val faceMap = (for ((f, fi) <- faceSet.zipWithIndex) yield (f, numberOfVertices + edgeMap.size + fi)).toMap
@@ -221,7 +276,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     }
   }
 
-  def nautyGraph: ColouredGraph[Int] = {
+  lazy val nautyGraph: ColouredGraph[Int] = {
     require(edgeSet == (numberOfVertices until numberOfVertices + edgeSet.size))
     require(faceSet == (numberOfVertices + edgeSet.size until numberOfVertices + edgeSet.size + faceSet.size))
 
@@ -341,7 +396,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       }
     } else if (verticesToDelete.size == vertices.size - 1 && boundaryEdgesAndFacesToDelete.isEmpty) {
       PlanarGraph(outerFace, vertexFlags.headOption.toIndexedSeq, Seq.empty, loops - loopsToDelete)
-//      PlanarGraph.empty.copy(loops = loops - loopsToDelete)
+      //      PlanarGraph.empty.copy(loops = loops - loopsToDelete)
     } else {
 
       val boundaryEdgesToDelete = boundaryEdgesAndFacesToDelete.map(_._1)
@@ -421,7 +476,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     private val packedShape = shape.relabelEdgesAndFaces
 
     case class Excision(cut: PlanarGraph, depth: Int, rotations: Rotation) {
-//      verify
+      //      verify
 
       private def verify = {
         require(cut.numberOfBoundaryPoints - 2 * depth - shape.numberOfBoundaryPoints == graph.numberOfBoundaryPoints)

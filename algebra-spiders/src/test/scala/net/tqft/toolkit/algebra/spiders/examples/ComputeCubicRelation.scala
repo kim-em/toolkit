@@ -22,15 +22,17 @@ object ComputeCubicRelation extends App {
   println("nullspace: ")
   println(m.nullSpace.toMathematicaInputString)
 
-  println("The twisted cubic relation: ")
+  println("The relations in the twisted cubic category: ")
 
   val m2 = Matrix(5, TwistedCubicSpider.innerProductMatrix(`D(4,0)`, `D(4,1)`))
   implicit val polynomialForm = MathematicaForm.polynomialMathematicaForm[Fraction[BigInt]]("w")
 
-  println(TwistedCubicSpider.squareReduction.big)
-  for ((d, x) <- TwistedCubicSpider.squareReduction.small) {
-    println(d)
-    println(x.toMathematicaInputString)
+  for (r <- TwistedCubicSpider.reductions) {
+    println(r.big)
+    for ((d, x) <- r.small) {
+      println(d)
+      println(x.toMathematicaInputString)
+    }
   }
 
   println("matrix: ")
