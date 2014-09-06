@@ -16,8 +16,6 @@ object InvestigateTetravalentSpiders extends App {
 
   implicit val ring = lowestWeightTetravalentSpider.ring
   
-  implicitly[AdditiveMonoid[MultivariablePolynomial[Fraction[BigInt], String]]]
-  
   val p1 = MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1)))
   val p2 = MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1)))
   

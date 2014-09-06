@@ -431,7 +431,28 @@ case class SpiderData(
         println("Factoring something we're going to set to zero: " + r.toMathematicaInputString)
         normalizePolynomial(r).factor.filter(_._2 > 0).keys.toSeq
       }
-      val result = factors.flatMap(f => { require(!f.toMathematicaInputString.contains("^(-1)")); declareIrreduciblePolynomialZero(f) })
+      val result = factors.flatMap(f => {
+        require(!f.toMathematicaInputString.contains("^(-1)"));
+        val result = declareIrreduciblePolynomialZero(f)
+        for (s <- result; if !s.polynomials.zero_?(r)) {
+          implicit val mf = MathematicaForm.multivariablePolynomialMathematicaForm(implicitly[MathematicaForm[Fraction[BigInt]]], MathematicaForm.StringMathematicaForm)
+          println("declarePolynomialZero experienced a problem!")
+          println("Groebner basis:")
+          for (p <- groebnerBasis) {
+            println(p.toMathematicaInputString)
+          }
+          println("Polynomial:")
+          println(r.toMathematicaInputString)
+          println("Factor:")
+          println(f.toMathematicaInputString)
+          println("New Groebner basis:")
+          for (p <- s.groebnerBasis) {
+            println(p.toMathematicaInputString)
+          }
+          require(false)
+        }
+        result
+      })
       for (s <- result) {
         require(s.polynomials.zero_?(r))
       }
