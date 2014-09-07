@@ -6,13 +6,13 @@ import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 
-abstract class FreeSpider extends BigIntMultivariablePolynomialSpider with PolynomialPolyhedronNamer[Fraction[BigInt]] {
-  def generators: Seq[(VertexType, MultivariablePolynomial[Fraction[BigInt], String])]
+abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
+  def generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])]
   override lazy val vertexTypes = generators.map(_._1)
-  override def eigenvalue(label: Int): MultivariablePolynomial[Fraction[BigInt], String] = {
+  override def eigenvalue(label: Int): MultivariableRationalFunction[Fraction[BigInt], String] = {
     generators.filter(_._1.perimeter == label).ensuring(_.size == 1).head._2
   }
-  override def reductions: Seq[Reduction[PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String]]] = polyhedronReductions
+  override def reductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = polyhedronReductions
 
   override def toString = "FreeSpider(...)"
 }
@@ -24,7 +24,7 @@ abstract class LowestWeightSpider extends FreeSpider {
     d = diagramSpider.stitchAt(PlanarGraph.star(v.perimeter, v.allowedRotationStep), k)
   ) yield {
     //    println(s"Adding reduction formula so $v is lowest weight: $d")
-    Reduction(d, Map.empty[PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String]])
+    Reduction(d, Map.empty[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]])
   }
 
   override def reductions = super.reductions ++ lowestWeightReductions
@@ -36,11 +36,13 @@ abstract class LowestWeightSpider extends FreeSpider {
 }
 
 case class QuotientSpider(
-  generators: Seq[(VertexType, MultivariablePolynomial[Fraction[BigInt], String])],
-  extraReductions: Seq[Reduction[PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String]]] = Seq.empty) extends LowestWeightSpider {
+  generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])],
+  extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty) extends LowestWeightSpider {
   override def reductions = super.reductions ++ extraReductions
 
-  def addReduction(reduction: Reduction[PlanarGraph, MultivariablePolynomial[Fraction[BigInt], String]]) = copy(extraReductions = extraReductions :+ reduction)
+  def addReduction(reduction: Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]) = {
+    copy(extraReductions = extraReductions :+ reduction)
+  }
 
   def reducibleDiagram_?(p: PlanarGraph): Boolean = {
     reductions.exists(r => p.Subgraphs(r.big).excisions.nonEmpty)

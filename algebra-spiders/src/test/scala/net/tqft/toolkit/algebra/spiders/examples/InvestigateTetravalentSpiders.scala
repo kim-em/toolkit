@@ -14,14 +14,12 @@ object InvestigateTetravalentSpiders extends App {
     override def generators = Seq((VertexType(4, 1), ring.one))
   }).asQuotientSpider
 
-  implicit val ring = lowestWeightTetravalentSpider.ring
-  
-  implicitly[AdditiveMonoid[MultivariablePolynomial[Fraction[BigInt], String]]]
+  val ring: Ring[MultivariablePolynomial[Fraction[BigInt], String]] = implicitly
   
   val p1 = MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1)))
   val p2 = MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1)))
   
-  val invertible = Seq(p1,
+  val invertible: Seq[MultivariablePolynomial[Fraction[BigInt], String]] = Seq(p1,
     p2,
     ring.add(p1, 1), ring.add(p1, -1),
     ring.add(p2, -2) //,
