@@ -11,8 +11,8 @@ object NullSpace {
         implicit def vmf = MathematicaForm.BareStringMathematicaForm
         import Polynomials._
         import Mathematica._
-        val input = FullFormExpression(SymbolExpression("NullSpace"),
-          Seq(m.map(r => r.map({ x: MultivariableRationalFunction[Fraction[I], String] => x: Expression }))))
+        val input = FullFormExpression(SymbolExpression("Together"), Seq(FullFormExpression(SymbolExpression("NullSpace"),
+          Seq(m.map(r => r.map({ x: MultivariableRationalFunction[Fraction[I], String] => x: Expression }))))))
 
         input.evaluate match {
           case Symbols.List(rows @ _*) => rows.map(r => r match {

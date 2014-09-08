@@ -22,10 +22,16 @@ object ComputeInnerProducts extends App {
   }
 
   import mathematica.MathematicaForm._
+
+  for ((n, k) <- Seq((8,0), (8,1), (9,0), (9,1), (10,0), (11,0))) {
+    println(s"M($n, $k)")
+    println(M(n, k).toMathematicaInputString)
+  }
+
   implicit val polynomialForm = MathematicaForm.polynomialMathematicaForm[Fraction[BigInt]]("w")
 
-  for ((n, k) <- Seq((4, 0), (4, 1), (5, 0), (5, 1), /*(5,6),*/ (6, 0), (6, 1), (6, 2)/*, (7, 0), (7,1), (7,2)*//*(8,0), (8,1), (9,0)*/)) {
-    println(s"twisted M($n, $k)")
-    println(Mw(n, k).toMathematicaInputString)
-  }
+//  for ((n, k) <- Seq((4, 0), (4, 1), (5, 0), (5, 1), /*(5,6),*/ (6, 0), (6, 1), (6, 2)/*, (7, 0), (7,1), (7,2)*//*(8,0), (8,1), (9,0)*/)) {
+//    println(s"twisted M($n, $k)")
+//    println(Mw(n, k).toMathematicaInputString)
+//  }
 }

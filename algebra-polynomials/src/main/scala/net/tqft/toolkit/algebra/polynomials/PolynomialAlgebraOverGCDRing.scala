@@ -71,6 +71,14 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
 
   def pseudoRemainder(f: P, g: P): P = pseudoQuotientRemainder(f, g)._2
 
+  def resultant(f0: P, f1: P): A = {
+    if (maximumDegree(f0).getOrElse(0) < maximumDegree(f1).getOrElse(0)) {
+      resultant(f1, f0)
+    } else {
+      constantTerm(subresultantSequence(f0, f1).find(p => maximumDegree(p).getOrElse(0) == 0).get)
+    }
+  }
+
   def subresultantSequence(f0: P, f1: P): Stream[P] = {
     require(maximumDegree(f0).getOrElse(0) >= maximumDegree(f1).getOrElse(0))
     lazy val f: Stream[P] = f0 #:: f1 #:: (Stream.from(2).map({ i =>
@@ -138,7 +146,7 @@ trait PolynomialAlgebraOverGCDRing[A, P] extends PolynomialAlgebra[A, P] with GC
           val ax = leadingCoefficient(x).get
           val ay = leadingCoefficient(y).get
 
-          require(!ring.zero_?(ax) )
+          require(!ring.zero_?(ax))
           require(!ring.zero_?(ay))
 
           ring.exactQuotientOption(ax, ay) match {

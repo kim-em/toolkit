@@ -18,7 +18,7 @@ object FactorWrapped extends FactorizationAlgorithm {
   implicit def algorithm[I: IntegerModel]: Factorization[MultivariablePolynomial[Fraction[I], String]] = new Factorization[MultivariablePolynomial[Fraction[I], String]] {
     implicit object WrappingMathematicaForm extends MathematicaForm[String] {
       override def toMathematicaInputString(s: String) = "a[\"" + s + "\"]"
-      override def toString = "GroebnerBasis.algorithm.WrappingMathematicaForm"
+      override def toString = "FactorWrapped.algorithm.WrappingMathematicaForm"
     }
     override def factor(polynomial: MultivariablePolynomial[Fraction[I], String]) = {
       import Polynomials._
