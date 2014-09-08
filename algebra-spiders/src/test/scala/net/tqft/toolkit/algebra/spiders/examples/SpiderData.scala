@@ -48,7 +48,7 @@ case class SpiderData(
   consideredDiagramsVertexBound = $consideredDiagramsVertexBound
 )"""
   }
-  
+
   def allPolyhedra: Seq[String] =
     (groebnerBasis.flatMap(_.variables) ++
       spider.reductions.flatMap(_.small.values.flatMap(r => r.variables)) ++
@@ -73,7 +73,7 @@ case class SpiderData(
 
   lazy val polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
   lazy val rationalFunctions: Ring[R] = Field.fieldOfFractions(polynomials)
-  
+
   private def normalForm(r: R): R = Fraction(polynomials.normalForm(r.numerator), polynomials.normalForm(r.denominator))
 
   def addReduction(r: Reduction[PlanarGraph, R]): Seq[SpiderData] = {
@@ -177,11 +177,13 @@ case class SpiderData(
 
     // are there denominators? we better ensure they are invertible
     val denominators = relation.map(_.denominator)
+    
+    require(denominators.forall(p => !polynomials.zero_?(p)))
 
-    val whenDenominatorsVanish = declareAtLeastOnePolynomialZero(denominators).flatMap(_.addDependentDiagram(p))
+    val whenDenominatorsVanish = declareAtLeastOnePolynomialZero(denominators).flatMap(_.ensuring(_.groebnerBasis != groebnerBasis).addDependentDiagram(p))
     val whenDenominatorsNonzero = for (
       (s, _) <- invertPolynomials(denominators).toSeq;
-//      liftedRelation = relation.map(s.liftDenominators);
+      //      liftedRelation = relation.map(s.liftDenominators);
       t <- s.addRelation(p.numberOfBoundaryPoints, (independentDiagrams(p.numberOfBoundaryPoints) :+ p).zip(relation))
     ) yield t
 
@@ -361,37 +363,43 @@ case class SpiderData(
 
   }
 
-//  def liftDenominators(p: R): P = polynomials.multiply(p.numerator, invertPolynomial(p.denominator).get._2)
+  //  def liftDenominators(p: R): P = polynomials.multiply(p.numerator, invertPolynomial(p.denominator).get._2)
 
   def invertRationalFunction(p: R): Option[(SpiderData, R)] = {
     invertPolynomial(p.numerator).map(q => (q._1, rationalFunctions.multiply(q._2, p.denominator)))
   }
-  
+
   def invertPolynomial(p: P): Option[(SpiderData, R)] = {
-    import mathematica.Factor._
-    println("Factoring something we're inverting: " + p.toMathematicaInputString)
-    val factors = p.factor
-    println("Factors: ")
-    for (f <- factors) println(f._1.toMathematicaInputString + "   ^" + f._2)
+    if (polynomials.zero_?(p)) {
+      None
+    } else if (p.totalDegree.get == 0) {
+      Some((this, Fraction(polynomials.one, p)))
+    } else {
+      import mathematica.Factor._
+      println("Factoring something we're inverting: " + p.toMathematicaInputString)
+      val factors = p.factor
+      println("Factors: ")
+      for (f <- factors) println(f._1.toMathematicaInputString + "   ^" + f._2)
 
-    val result = factors.foldLeft[Option[(SpiderData, R)]](Some(this, rationalFunctions.one))({ (s: Option[(SpiderData, R)], q: (P, Int)) =>
-      s.flatMap({
-        z: (SpiderData, R) =>
-          if (q._2 > 0) {
-            z._1.invertIrreduciblePolynomial(q._1).map({ w =>
-              (w._1, rationalFunctions.multiply(rationalFunctions.power(w._2, q._2), z._2))
-            })
-          } else {
-            Some((z._1, rationalFunctions.multiply(rationalFunctions.power(q._1, -q._2), z._2)))
-          }
+      val result = factors.foldLeft[Option[(SpiderData, R)]](Some(this, rationalFunctions.one))({ (s: Option[(SpiderData, R)], q: (P, Int)) =>
+        s.flatMap({
+          z: (SpiderData, R) =>
+            if (q._2 > 0) {
+              z._1.invertIrreduciblePolynomial(q._1).map({ w =>
+                (w._1, rationalFunctions.multiply(rationalFunctions.power(w._2, q._2), z._2))
+              })
+            } else {
+              Some((z._1, rationalFunctions.multiply(rationalFunctions.power(q._1, -q._2), z._2)))
+            }
+        })
       })
-    })
 
-    if (polynomials.totalDegree(p) > 0) {
-      require(result.isEmpty || result.get._1.groebnerBasis.nonEmpty)
+      if (polynomials.totalDegree(p) > 0) {
+        require(result.isEmpty || result.get._1.groebnerBasis.nonEmpty)
+      }
+
+      result
     }
-
-    result
   }
 
   def invertPolynomials(ps: Seq[P]): Option[(SpiderData, Seq[R])] = {
