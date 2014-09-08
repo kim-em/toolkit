@@ -19,8 +19,10 @@ case class SpiderData(
   independentDiagrams: Seq[Seq[PlanarGraph]],
   visiblyIndependentDiagrams: Seq[Seq[PlanarGraph]]) {
 
-  // verify
+  verify
   def verify {
+    println(s"Beginning verification for $this")
+
     for ((n, (k, j)) <- dimensionBounds.zip(independentDiagrams.map(_.size).zip(visiblyIndependentDiagrams.map(_.size)))) {
       require(k <= n)
       require(j >= 2 * k - n)
@@ -30,6 +32,10 @@ case class SpiderData(
       // the determinants of visibly independent vectors must be invertible
       val det = calculateDeterminant(visiblyIndependent)
       require(declarePolynomialZero(det.numerator).isEmpty)
+    }
+    for ((visiblyIndependent, independent) <- visiblyIndependentDiagrams.zip(independentDiagrams); D <- independent.toSet -- visiblyIndependent) {
+      val det = calculateDeterminant(visiblyIndependent :+ D)
+      require(rationalFunctions.zero_?(det))
     }
   }
 
@@ -48,7 +54,7 @@ case class SpiderData(
   consideredDiagramsVertexBound = $consideredDiagramsVertexBound
 )"""
   }
-  
+
   def allPolyhedra: Seq[String] =
     (groebnerBasis.flatMap(_.variables) ++
       spider.reductions.flatMap(_.small.values.flatMap(r => r.variables)) ++
@@ -73,7 +79,7 @@ case class SpiderData(
 
   lazy val polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
   lazy val rationalFunctions: Ring[R] = Field.fieldOfFractions(polynomials)
-  
+
   private def normalForm(r: R): R = Fraction(polynomials.normalForm(r.numerator), polynomials.normalForm(r.denominator))
 
   def addReduction(r: Reduction[PlanarGraph, R]): Seq[SpiderData] = {
@@ -178,10 +184,19 @@ case class SpiderData(
     // are there denominators? we better ensure they are invertible
     val denominators = relation.map(_.denominator)
 
-    val whenDenominatorsVanish = declareAtLeastOnePolynomialZero(denominators).flatMap(_.addDependentDiagram(p))
+    if (!denominators.forall(p => !polynomials.zero_?(p))) {
+      println("something went wrong!")
+      println(this)
+      println(p)
+      println(independentDiagrams(p.numberOfBoundaryPoints))
+      println(visiblyIndependentDiagrams(p.numberOfBoundaryPoints))
+      require(false)
+    }
+
+    val whenDenominatorsVanish = declareAtLeastOnePolynomialZero(denominators).flatMap(_ /*.ensuring(_.groebnerBasis != groebnerBasis)*/ .addDependentDiagram(p))
     val whenDenominatorsNonzero = for (
       (s, _) <- invertPolynomials(denominators).toSeq;
-//      liftedRelation = relation.map(s.liftDenominators);
+      //      liftedRelation = relation.map(s.liftDenominators);
       t <- s.addRelation(p.numberOfBoundaryPoints, (independentDiagrams(p.numberOfBoundaryPoints) :+ p).zip(relation))
     ) yield t
 
@@ -291,8 +306,7 @@ case class SpiderData(
   def addIndependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
     println(" adding an independent diagram: " + p)
 
-    val newIndependentDiagrams = independentDiagrams.updated(p.numberOfBoundaryPoints, independentDiagrams(p.numberOfBoundaryPoints) :+ p)
-
+    // TODO verify these inequalities are sane
     val addVisibly = addVisiblyIndependentDiagram(p).filter({ s =>
       s.visiblyIndependentDiagrams(p.numberOfBoundaryPoints).size >= 2 * independentDiagrams(p.numberOfBoundaryPoints).size + 2 - dimensionBounds(p.numberOfBoundaryPoints)
     })
@@ -302,7 +316,7 @@ case class SpiderData(
       Seq.empty
     }
 
-    (addVisibly ++ addInvisibly).map(_.copy(independentDiagrams = newIndependentDiagrams))
+    addVisibly ++ addInvisibly
   }
 
   def addVisiblyIndependentDiagram(p: PlanarGraph): Seq[SpiderData] = {
@@ -310,10 +324,12 @@ case class SpiderData(
 
     val invisibleDiagrams = independentDiagrams(p.numberOfBoundaryPoints).filterNot(visiblyIndependentDiagrams(p.numberOfBoundaryPoints).contains)
     println("there are currently " + invisibleDiagrams.size + " invisible diagrams")
-    val invisibleSubsets = {
-      import net.tqft.toolkit.collections.Subsets._
-      invisibleDiagrams.subsets.map(_.toSeq).toSeq.ensuring(s => s.size == 1 << invisibleDiagrams.size)
-    }
+//    val invisibleSubsets = {
+//      import net.tqft.toolkit.collections.Subsets._
+//      invisibleDiagrams.subsets.map(_.toSeq).toSeq.ensuring(s => s.size == 1 << invisibleDiagrams.size)
+//    }
+    // actually we only need to consider subsets of size one
+    val invisibleSubsets = invisibleDiagrams.map(Seq(_)) :+ Seq.empty
     println("there are " + invisibleSubsets.size + " subsets of formerly invisible diagrams, which we need to reconsider.")
     val determinants = {
       (for (s <- invisibleSubsets) yield {
@@ -328,10 +344,12 @@ case class SpiderData(
       })
     }
 
+    val newIndependentDiagrams = independentDiagrams.updated(p.numberOfBoundaryPoints, independentDiagrams(p.numberOfBoundaryPoints) :+ p)
+
     (for ((s, (nonzero, allZero)) <- determinantsWithBiggerDeterminants) yield {
       val newVisiblyIndependentDiagrams = visiblyIndependentDiagrams.updated(p.numberOfBoundaryPoints, visiblyIndependentDiagrams(p.numberOfBoundaryPoints) ++ s :+ p)
 
-      invertRationalFunction(nonzero).map(_._1).toSeq.flatMap(_.declareAllPolynomialsZero(allZero.map(_.numerator))).map(_.copy(visiblyIndependentDiagrams = newVisiblyIndependentDiagrams))
+      invertRationalFunction(nonzero).map(_._1).toSeq.flatMap(_.declareAllPolynomialsZero(allZero.map(_.numerator))).map(_.copy(independentDiagrams = newIndependentDiagrams, visiblyIndependentDiagrams = newVisiblyIndependentDiagrams))
     }).flatten
   }
 
@@ -345,11 +363,13 @@ case class SpiderData(
     }
     val determinants = {
       for (s <- invisibleSubsets) yield {
-        calculateDeterminant(independentDiagrams(p.numberOfBoundaryPoints) ++ s :+ p)
+        calculateDeterminant(visiblyIndependentDiagrams(p.numberOfBoundaryPoints) ++ s :+ p)
       }
     }
 
-    declareAllPolynomialsZero(determinants.map(_.numerator))
+    val newIndependentDiagrams = independentDiagrams.updated(p.numberOfBoundaryPoints, independentDiagrams(p.numberOfBoundaryPoints) :+ p)
+
+    declareAllPolynomialsZero(determinants.map(_.numerator)).map(_.copy(independentDiagrams = newIndependentDiagrams))
   }
 
   def normalizePolynomial(p: P) = {
@@ -361,37 +381,43 @@ case class SpiderData(
 
   }
 
-//  def liftDenominators(p: R): P = polynomials.multiply(p.numerator, invertPolynomial(p.denominator).get._2)
+  //  def liftDenominators(p: R): P = polynomials.multiply(p.numerator, invertPolynomial(p.denominator).get._2)
 
   def invertRationalFunction(p: R): Option[(SpiderData, R)] = {
     invertPolynomial(p.numerator).map(q => (q._1, rationalFunctions.multiply(q._2, p.denominator)))
   }
-  
+
   def invertPolynomial(p: P): Option[(SpiderData, R)] = {
-    import mathematica.Factor._
-    println("Factoring something we're inverting: " + p.toMathematicaInputString)
-    val factors = p.factor
-    println("Factors: ")
-    for (f <- factors) println(f._1.toMathematicaInputString + "   ^" + f._2)
+    if (polynomials.zero_?(p)) {
+      None
+    } else if (p.totalDegree.get == 0) {
+      Some((this, Fraction(polynomials.one, p)))
+    } else {
+      import mathematica.Factor._
+      println("Factoring something we're inverting: " + p.toMathematicaInputString)
+      val factors = p.factor
+      println("Factors: ")
+      for (f <- factors) println(f._1.toMathematicaInputString + "   ^" + f._2)
 
-    val result = factors.foldLeft[Option[(SpiderData, R)]](Some(this, rationalFunctions.one))({ (s: Option[(SpiderData, R)], q: (P, Int)) =>
-      s.flatMap({
-        z: (SpiderData, R) =>
-          if (q._2 > 0) {
-            z._1.invertIrreduciblePolynomial(q._1).map({ w =>
-              (w._1, rationalFunctions.multiply(rationalFunctions.power(w._2, q._2), z._2))
-            })
-          } else {
-            Some((z._1, rationalFunctions.multiply(rationalFunctions.power(q._1, -q._2), z._2)))
-          }
+      val result = factors.foldLeft[Option[(SpiderData, R)]](Some(this, rationalFunctions.one))({ (s: Option[(SpiderData, R)], q: (P, Int)) =>
+        s.flatMap({
+          z: (SpiderData, R) =>
+            if (q._2 > 0) {
+              z._1.invertIrreduciblePolynomial(q._1).map({ w =>
+                (w._1, rationalFunctions.multiply(rationalFunctions.power(w._2, q._2), z._2))
+              })
+            } else {
+              Some((z._1, rationalFunctions.multiply(rationalFunctions.power(q._1, -q._2), z._2)))
+            }
+        })
       })
-    })
 
-    if (polynomials.totalDegree(p) > 0) {
-      require(result.isEmpty || result.get._1.groebnerBasis.nonEmpty)
+      if (polynomials.totalDegree(p) > 0) {
+        require(result.isEmpty || result.get._1.groebnerBasis.nonEmpty)
+      }
+
+      result
     }
-
-    result
   }
 
   def invertPolynomials(ps: Seq[P]): Option[(SpiderData, Seq[R])] = {

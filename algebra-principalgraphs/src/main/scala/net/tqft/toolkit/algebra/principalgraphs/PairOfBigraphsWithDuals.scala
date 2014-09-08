@@ -31,10 +31,11 @@ trait PairOfBigraphsWithDuals {
   }
 
   def supertransitivity = Seq(g0.supertransitivity, g1.supertransitivity).min
-  def cylindrical_? = g0.bigraph.cylindrical_? || g1.bigraph.cylindrical_? || {
+  lazy val cylindrical_? = g0.bigraph.cylindrical_? || g1.bigraph.cylindrical_? || {
     supertransitivity < depth &&
       (g0.bigraph.inclusions.last ++ g0.bigraph.inclusions.last.transpose ++ g1.bigraph.inclusions.last ++ g1.bigraph.inclusions.last.transpose).map(_.sum).forall(_ <= 1)
   }
+  def persistentlyCylindrical_? = cylindrical_? && depth > 12 && (-10 to -1).forall(i => truncateTo(i).cylindrical_?)
 
   type Clump = Int
 
@@ -152,6 +153,15 @@ trait PairOfBigraphsWithDuals {
   }
 
   def truncate: PairOfBigraphsWithDuals
+  def truncateTo(d: Int): PairOfBigraphsWithDuals = {
+    if(d >= depth) {
+      this
+    } else if(d < 0) {
+      truncateTo(depth + d)
+    } else {
+      truncate.truncateTo(d)
+    } 
+  }
   def increaseDepth: PairOfBigraphsWithDuals
 
   protected def defectsZero_?(defects: Seq[Seq[Int]]) = {
@@ -284,7 +294,7 @@ case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: E
     defectsZero_?(associativityDefects.value)
   }
 
-  override def truncate = OddDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
+  override lazy val truncate = OddDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
   override def increaseDepth = {
     def defects = {
       if (depth == 0) {
@@ -378,7 +388,7 @@ case class OddDepthPairOfBigraphsWithDuals(g0: OddDepthBigraphWithDuals, g1: Odd
     case 1 => g1
   }
 
-  override def truncate = EvenDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
+  override lazy val truncate = EvenDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
   override def increaseDepth = {
     def defects = {
       for (i <- 0 until g0.bigraph.rankAtMaximalDepth) yield {

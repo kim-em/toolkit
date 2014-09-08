@@ -31,7 +31,10 @@ object SubfactorClassifierApp extends App {
   //	    p(d)
   //	  }
   //	}
+  var count = 0
   for ((g, children) <- A3(5.25).descendantsTreeFiltered(3, -1, ignoring)) {
+    count = count + 1
     p(g)
   } 
+  println(s"saw $count graphs")
 }
