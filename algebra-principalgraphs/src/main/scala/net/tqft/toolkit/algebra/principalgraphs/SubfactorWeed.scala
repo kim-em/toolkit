@@ -21,19 +21,23 @@ sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permu
 
   def supertransitivity = pair.supertransitivity
 
-  def descendantsFiltered(supertransitivityBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty) = descendantsTreeFiltered(supertransitivityBound, rankBound, avoiding).map(_._1)
-  def descendantsTreeFiltered(supertransitivityBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty) = {
+  def descendantsFiltered(supertransitivityBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = descendantsTreeFiltered(supertransitivityBound, rankBound, avoiding, stopWhenPersistentlyCylindrical).map(_._1)
+  def descendantsTreeFiltered(supertransitivityBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = {
     val canonicalAvoiding = {
-     avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.nautyGraph)) ++ 
-     avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.switch.nautyGraph))
+      avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.nautyGraph)) ++
+        avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.switch.nautyGraph))
     }
     descendantsTree(w => {
-      if (supertransitivityBound <= 0 || w.supertransitivity <= supertransitivityBound || w.supertransitivity == w.depth && w.depth == supertransitivityBound + 1) {
-        if (rankBound <= 0 || w.pair.totalRank <= rankBound) {
-          if (canonicalAvoiding.contains(w.pair.nautyGraph) || canonicalAvoiding.contains(Dreadnaut.canonicalizeColouredGraph(w.pair.nautyGraph))) {
-            -1
+      if (!stopWhenPersistentlyCylindrical || !w.pair.persistentlyCylindrical_?) {
+        if (supertransitivityBound <= 0 || w.supertransitivity <= supertransitivityBound || w.supertransitivity == w.depth && w.depth == supertransitivityBound + 1) {
+          if (rankBound <= 0 || w.pair.totalRank <= rankBound) {
+            if (canonicalAvoiding.contains(w.pair.nautyGraph) || canonicalAvoiding.contains(Dreadnaut.canonicalizeColouredGraph(w.pair.nautyGraph))) {
+              -1
+            } else {
+              1
+            }
           } else {
-            1
+            -1
           }
         } else {
           -1
@@ -194,13 +198,13 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
               val limit = { row: List[Int] =>
                 // FIXME we're only doing the simply laced case for now
-                val result = row.forall(_ <= 1) &&
+                val result = row.forall(_ <= 1) && (!pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
                   pair(graph).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
-//                if (result) {
-//                  Logging.info(s"  considering new row (on graph $graph): " + row.mkString("x"))
-//                } else {
-//                  Logging.info(s"  rejecting   new row on $graph: " + row.mkString("x"))
-//                }
+                //                if (result) {
+                //                  Logging.info(s"  considering new row (on graph $graph): " + row.mkString("x"))
+                //                } else {
+                //                  Logging.info(s"  rejecting   new row on $graph: " + row.mkString("x"))
+                //                }
                 result
               }
 
@@ -213,16 +217,16 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
           def uppersAddingDualPairVerticesToGraph(graph: Int): Iterator[Upper] = {
             def limit(bigraph: Bigraph) = { row: List[Int] =>
               // FIXME we're only doing the simply laced case for now
-              row.forall(_ <= 1) &&
+              row.forall(_ <= 1) && (!pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
                 bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
             }
             val firstLimit = { row0: List[Int] =>
               val result = limit(pair(graph).bigraph)(row0)
-//              if (result) {
-//                Logging.info(s"  considering new row 0 (on graph $graph): " + row0.mkString("x"))
-//              } else {
-//                Logging.info(s"  rejecting   new row 0 (on graph $graph): " + row0.mkString("x"))
-//              }
+              //              if (result) {
+              //                Logging.info(s"  considering new row 0 (on graph $graph): " + row0.mkString("x"))
+              //              } else {
+              //                Logging.info(s"  rejecting   new row 0 (on graph $graph): " + row0.mkString("x"))
+              //              }
               result
             }
             def secondLimit(row0: List[Int], bigraph: Bigraph) = { row1: List[Int] =>
@@ -230,11 +234,11 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
               import Ordering.Implicits._
 
               val result = row1 <= row0 && limit(bigraph)(row1)
-//              if (result) {
-//                Logging.info(s"  considering new row 1 (on graph $graph): " + row1.mkString("x") + " (with row 0: " + row0.mkString("x") + ")")
-//              } else {
-//                Logging.info(s"  rejecting   new row 1 (on graph $graph): " + row1.mkString("x") + " (with row 0: " + row0.mkString("x") + ")")
-//              }
+              //              if (result) {
+              //                Logging.info(s"  considering new row 1 (on graph $graph): " + row1.mkString("x") + " (with row 0: " + row0.mkString("x") + ")")
+              //              } else {
+              //                Logging.info(s"  rejecting   new row 1 (on graph $graph): " + row1.mkString("x") + " (with row 0: " + row0.mkString("x") + ")")
+              //              }
               result
             }
 
@@ -248,7 +252,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
           }
 
           val dualDataAllowed = depth > supertransitivity + 1 || pair.g0.numberOfSelfDualObjectsAtMaximalDepth == pair.g1.numberOfSelfDualObjectsAtMaximalDepth
-          val increaseDepthAllowed = (pair.g0.bigraph.rankAtMaximalDepth > 0 && pair.g1.bigraph.rankAtMaximalDepth > 0) && dualDataAllowed && !pair.cylindrical_?
+          val increaseDepthAllowed = (pair.g0.bigraph.rankAtMaximalDepth > 0 && pair.g1.bigraph.rankAtMaximalDepth > 0) && dualDataAllowed
 
           (increaseDepthAllowed option IncreaseDepth).iterator ++
             uppersAddingVerticesToGraph(0) ++
@@ -328,13 +332,13 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
         def uppersAddingVerticesToGraph: Iterator[Upper] = {
 
           def limit(graph: Int) = { row: List[Int] =>
-            row.forall(_ <= 1) && {
+            row.forall(_ <= 1) && (!pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) && {
               val result = pair(graph).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
-//              if (result) {
-//                Logging.info(s"  considering new row $graph: " + row.mkString("x"))
-//              } else {
-//                Logging.info(s"  rejecting   new row $graph: " + row.mkString("x"))
-//              }
+              //              if (result) {
+              //                Logging.info(s"  considering new row $graph: " + row.mkString("x"))
+              //              } else {
+              //                Logging.info(s"  rejecting   new row $graph: " + row.mkString("x"))
+              //              }
               result
             }
           }
@@ -345,7 +349,7 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
             .map({ rows => AddDualPairAtOddDepth(rows._1, rows._2) })
         }
 
-        val allUppers: Iterator[Upper] = ((pair.g0.bigraph.rankAtMaximalDepth > 0 && !pair.cylindrical_?) option IncreaseDepth).iterator ++ uppersAddingVerticesToGraph
+        val allUppers: Iterator[Upper] = ((pair.g0.bigraph.rankAtMaximalDepth > 0) option IncreaseDepth).iterator ++ uppersAddingVerticesToGraph
 
         allUppers.filter(_.associative_?).filter(_.result.pair.passesTriplePointObstruction_?)
       }

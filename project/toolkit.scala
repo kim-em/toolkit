@@ -153,7 +153,7 @@ object BuildSettings {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
+//    publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
     resolvers := sonatypeResolvers ++ tqftResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.4" % "test",
     //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
