@@ -35,7 +35,7 @@ trait PairOfBigraphsWithDuals {
     supertransitivity < depth &&
       (g0.bigraph.inclusions.last ++ g0.bigraph.inclusions.last.transpose ++ g1.bigraph.inclusions.last ++ g1.bigraph.inclusions.last.transpose).map(_.sum).forall(_ <= 1)
   }
-  def persistentlyCylindrical_? = depth > 12 && (-10 to -1).forall(i => truncateTo(i).cylindrical_?)
+  def persistentlyCylindrical_? = cylindrical_? && depth > 12 && (-10 to -1).forall(i => truncateTo(i).cylindrical_?)
 
   type Clump = Int
 
