@@ -147,7 +147,7 @@ object BuildSettings {
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.18-SNAPSHOT"
  // val buildScalaVersion = "2.10.4"
-  val buildScalaVersion = "2.11.1"
+  val buildScalaVersion = "2.11.2"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -242,7 +242,7 @@ object Dependencies {
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
 	val mapdb = "org.mapdb" % "mapdb" % "0.9.9"
-	val slick = "com.typesafe.slick" % "slick_2.11.0-RC4" % "2.1.0-M1"
+	val slick = "com.typesafe.slick" %% "slick" % "2.1.0"
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0-M6"
 	val spire = "org.spire-math" %% "spire" % "0.7.1"
 	object omath {

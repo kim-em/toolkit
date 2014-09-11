@@ -19,7 +19,7 @@ case class SpiderData(
   independentDiagrams: Seq[Seq[PlanarGraph]],
   visiblyIndependentDiagrams: Seq[Seq[PlanarGraph]]) {
 
-  verify
+  //  verify
   def verify {
     println(s"Beginning verification for $this")
 
@@ -80,6 +80,7 @@ case class SpiderData(
   lazy val polynomials = MultivariablePolynomialAlgebras.quotient(groebnerBasis)
   lazy val rationalFunctions: Ring[R] = Field.fieldOfFractions(polynomials)
 
+  private def normalForm(p: P): P = polynomials.normalForm(p)
   private def normalForm(r: R): R = Fraction(polynomials.normalForm(r.numerator), polynomials.normalForm(r.denominator))
 
   def addReduction(r: Reduction[PlanarGraph, R]): Seq[SpiderData] = {
@@ -138,23 +139,32 @@ case class SpiderData(
       println("for: " + this)
 
       val boundary = p.numberOfBoundaryPoints
-      val newConsideredDiagrams = {
-        val padded = consideredDiagrams.padTo(boundary + 1, Seq.empty)
-        padded.updated(boundary, (padded(boundary) :+ p).distinct)
-      }
-      val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
-      val paddedVisiblyIndependentDiagrams = visiblyIndependentDiagrams.padTo(boundary + 1, Seq.empty)
-      val paddedNonReducingRelations = nonReducingRelations.padTo(boundary + 1, Seq.empty)
-      val padded = copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams, nonReducingRelations = paddedNonReducingRelations, consideredDiagrams = newConsideredDiagrams)
 
-      val addDependent = padded.addDependentDiagram(p)
-      val addIndependent = if (padded.independentDiagrams(boundary).size < dimensionBounds(boundary)) {
-        padded.addIndependentDiagram(p)
+      val pairingsWithNonReducingRelations = for (r <- nonReducingRelations.applyOrElse(boundary, { i: Int => Seq.empty })) yield {
+        normalForm(spider.evaluate(spider.multiply(consideredDiagrams(boundary).zip(r).toMap, Map(p -> polynomials.one), boundary))).numerator
+      }
+
+      if (pairingsWithNonReducingRelations.forall(polynomials.zero_?)) {
+        val newConsideredDiagrams = {
+          val padded = consideredDiagrams.padTo(boundary + 1, Seq.empty)
+          padded.updated(boundary, (padded(boundary) :+ p).distinct)
+        }
+        val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
+        val paddedVisiblyIndependentDiagrams = visiblyIndependentDiagrams.padTo(boundary + 1, Seq.empty)
+        val paddedNonReducingRelations = nonReducingRelations.padTo(boundary + 1, Seq.empty)
+        val padded = copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams, nonReducingRelations = paddedNonReducingRelations, consideredDiagrams = newConsideredDiagrams)
+
+        val addDependent = padded.addDependentDiagram(p)
+        val addIndependent = if (padded.independentDiagrams(boundary).size < dimensionBounds(boundary)) {
+          padded.addIndependentDiagram(p)
+        } else {
+          Seq.empty
+        }
+
+        addDependent ++ addIndependent
       } else {
-        Seq.empty
+        declareAllPolynomialsZero(pairingsWithNonReducingRelations).flatMap(_.considerDiagram(p))
       }
-
-      addDependent ++ addIndependent
     }
   }
 
@@ -168,8 +178,8 @@ case class SpiderData(
     import mathematica.NullSpace.ofMultivariableRationalFunctionMatrix._
 
     val nullSpace = {
-      if (independentDiagrams(p.numberOfBoundaryPoints).size == 0) {
-        Seq(Seq(rationalFunctions.one))
+      if (visiblyIndependentDiagrams(p.numberOfBoundaryPoints).size == 0) {
+        Seq.tabulate(independentDiagrams(p.numberOfBoundaryPoints).size + 1, independentDiagrams(p.numberOfBoundaryPoints).size + 1)({ case (i, j) => if (i == j) rationalFunctions.one else rationalFunctions.zero }).reverse
       } else {
         rectangularMatrix.nullSpace
       }
@@ -208,12 +218,12 @@ case class SpiderData(
   }
 
   def addRelation(size: Int, relation: Seq[(PlanarGraph, R)]): Seq[SpiderData] = {
-    // TODO remove these checks
-    for (tail <- relation.map(_._1).tails; if tail.nonEmpty) {
-      for (y <- tail.tail) {
-        require(tail.head.canonicalFormWithDefect._1 != y.canonicalFormWithDefect._1)
-      }
-    }
+    //    // TODO remove these checks
+    //    for (tail <- relation.map(_._1).tails; if tail.nonEmpty) {
+    //      for (y <- tail.tail) {
+    //        require(tail.head.canonicalFormWithDefect._1 != y.canonicalFormWithDefect._1)
+    //      }
+    //    }
     addRelations(size - 2, for (
       i <- 0 until size;
       c = spider.stitchAt(relation.toMap, i);
@@ -254,7 +264,7 @@ case class SpiderData(
 
         // is it a reducing relation?
         val nonzeroPositions = relation.dropRight(1).zipWithIndex.collect({ case ((d, x), i) if !rationalFunctions.zero_?(normalForm(x)) => i })
-        val reducing = relation.size > 1 && nonzeroPositions.forall({ i => complexity.lt(relation(i)._1, relation.last._1) })
+        val reducing = nonzeroPositions.forall({ i => complexity.lt(relation(i)._1, relation.last._1) })
         println(s"reducing: $reducing")
 
         // There's a lemma here. If b \in span{a1, ..., an}, and {a1, ..., ak} is maximally visibly independent,
@@ -324,10 +334,10 @@ case class SpiderData(
 
     val invisibleDiagrams = independentDiagrams(p.numberOfBoundaryPoints).filterNot(visiblyIndependentDiagrams(p.numberOfBoundaryPoints).contains)
     println("there are currently " + invisibleDiagrams.size + " invisible diagrams")
-//    val invisibleSubsets = {
-//      import net.tqft.toolkit.collections.Subsets._
-//      invisibleDiagrams.subsets.map(_.toSeq).toSeq.ensuring(s => s.size == 1 << invisibleDiagrams.size)
-//    }
+    //    val invisibleSubsets = {
+    //      import net.tqft.toolkit.collections.Subsets._
+    //      invisibleDiagrams.subsets.map(_.toSeq).toSeq.ensuring(s => s.size == 1 << invisibleDiagrams.size)
+    //    }
     // actually we only need to consider subsets of size one
     val invisibleSubsets = invisibleDiagrams.map(Seq(_)) :+ Seq.empty
     println("there are " + invisibleSubsets.size + " subsets of formerly invisible diagrams, which we need to reconsider.")
