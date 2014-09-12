@@ -207,18 +207,18 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
   }
 
   override lazy val lowerObjects = new automorphisms.Action[Lower] {
-    override def elements = {
+    override val elements = {
       if (ring.rank > 1) {
         if (depth == depths.max) {
-          depths.zipWithIndex.iterator.collect({
+          depths.zipWithIndex.collect({
             case (d, i) if d == depth && ring.duality(i) == i => DeleteSelfDualObject(i)
             case (d, i) if d == depth && ring.duality(i) > i => DeleteDualPairOfObjects(i, ring.duality(i))
           })
         } else {
-          Iterator(ReduceDepth)
+          Seq(ReduceDepth)
         }
       } else {
-        Iterator.empty
+        Seq.empty
       }
     }
     override def act(a: IndexedSeq[Int], b: Lower): Lower = {
@@ -268,11 +268,11 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
       super.orbits
     }
 
-    override lazy val elements: Iterator[Upper] = {
+    override lazy val elements: Seq[Upper] = {
       (if (depth == depths.max && ring.partialAssociativityConstraints(depth + 1, depths).forall(p => p._1 == p._2)) {
-        Iterator(IncreaseDepth)
+        Seq(IncreaseDepth)
       } else {
-        Iterator.empty
+        Seq.empty
       }) ++ (if (depth > 0) {
 
         // FIXME independence should really be done as equations in withAnother...
@@ -321,9 +321,9 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
         println("self-dual: " + extraSelfDual.size + " ---> " + extraSelfDual2.size + " ---> " + extraSelfDualReps.size)
         val extraPairsReps = chooseRepresentatives(extraPairs.map(AddDualPairOfObjects))
         println("pairs: " + extraPairs.size + " ---> " + extraPairs2.size + " ---> " + extraPairsReps.size)
-        (extraSelfDualReps ++ extraPairsReps).iterator
+        (extraSelfDualReps ++ extraPairsReps)
       } else {
-        Iterator.empty
+        Seq.empty
       })
     }
     override def act(a: IndexedSeq[Int], b: Upper): Upper = {

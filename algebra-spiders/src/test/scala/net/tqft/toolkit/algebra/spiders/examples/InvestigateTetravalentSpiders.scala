@@ -33,7 +33,8 @@ object InvestigateTetravalentSpiders extends App {
     Seq.empty,
     Seq.empty,
     Seq.empty,
-    Seq.empty))(_.invertPolynomial(_).get._1)
+    Seq.empty,
+    Set.empty))(_.invertPolynomial(_).get._1)
 
   val steps = Seq((0, 0), (2, 0), (0, 1), (0, 2), (2, 1), (2, 2), (2, 3), (4, 0), (4, 1), (4, 2), (4, 3) /**/ , (6, 0), (6, 1) /**/ , (6, 2) /**/ )
 

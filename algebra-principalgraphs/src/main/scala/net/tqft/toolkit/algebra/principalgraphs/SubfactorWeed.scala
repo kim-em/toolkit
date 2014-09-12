@@ -18,6 +18,10 @@ sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permu
   def pair: PairOfBigraphsWithDuals
 
   override def toString = s"weed[$indexLimit, $pair]"
+  override def isomorphicTo_?(other: SubfactorWeed) = {
+    indexLimit == other.indexLimit &&
+    pair.canonicalNautyGraph == other.pair.canonicalNautyGraph
+  }
 
   def supertransitivity = pair.supertransitivity
 
@@ -98,7 +102,7 @@ sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permu
     override def associative_? = pair.associativeAtPenultimateDepth_?
   }
 
-  def decreaseDepthSet: Option[Iterator[Lower]] = (pair.g0.bigraph.rankAtMaximalDepth == 0 && pair.g1.bigraph.rankAtMaximalDepth == 0) option Iterator(DecreaseDepth)
+  def decreaseDepthSet: Option[Stream[Lower]] = (pair.depth > 1 && pair.g0.bigraph.rankAtMaximalDepth == 0 && pair.g1.bigraph.rankAtMaximalDepth == 0) option Stream(DecreaseDepth)
 
   sealed trait Lower {
     def result: SubfactorWeed
@@ -121,9 +125,9 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
   override lazy val lowerObjects = {
     new automorphisms.Action[Lower] {
-      override val elements: Iterator[Lower] =
+      override val elements: Stream[Lower] =
         decreaseDepthSet.getOrElse(
-          (for (i <- (0 to 1).iterator; k <- 0 until pair(i).bigraph.rankAtMaximalDepth; if pair(i).dualData.last(k) != k - 1) yield {
+          (for (i <- (0 to 1).toStream; k <- 0 until pair(i).bigraph.rankAtMaximalDepth; if pair(i).dualData.last(k) != k - 1) yield {
             if (pair(i).dualData.last(k) == k) {
               DeleteSelfDualVertex(i, k)
             } else {
@@ -169,7 +173,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
   override def upperObjects = {
     new automorphisms.Action[Upper] {
-      override val elements: Iterator[Upper] = {
+      override val elements: Stream[Upper] = {
         val allUppers: Iterator[Upper] = {
           def uppersAddingVerticesToGraph(graph: Int): Iterator[Upper] = {
             if (graph == 0 && pair.g1.bigraph.rankAtMaximalDepth > 0) {
@@ -198,7 +202,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
               val limit = { row: List[Int] =>
                 // FIXME we're only doing the simply laced case for now
-                val result = row.forall(_ <= 1) && (!pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
+                val result = row.forall(_ <= 1) && (pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
                   pair(graph).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
                 //                if (result) {
                 //                  Logging.info(s"  considering new row (on graph $graph): " + row.mkString("x"))
@@ -217,7 +221,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
           def uppersAddingDualPairVerticesToGraph(graph: Int): Iterator[Upper] = {
             def limit(bigraph: Bigraph) = { row: List[Int] =>
               // FIXME we're only doing the simply laced case for now
-              row.forall(_ <= 1) && (!pair.truncate.cylindrical_? || (row.sum <= 1 && !bigraph.inclusions.last.contains(row))) &&
+              row.forall(_ <= 1) && (pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !bigraph.inclusions.last.contains(row))) &&
                 bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
             }
             val firstLimit = { row0: List[Int] =>
@@ -259,7 +263,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
             uppersAddingVerticesToGraph(1)
         }
 
-        allUppers.filter(_.associative_?).filter(_.result.pair.passesTriplePointObstruction_?)
+        allUppers.filter(_.associative_?).filter(_.result.pair.passesTriplePointObstruction_?).toStream
       }
       override def act(g: Seq[(Permutation, Permutation)], x: Upper): Upper = x match {
         case IncreaseDepth => x
@@ -300,9 +304,9 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
 
   override lazy val lowerObjects = {
     new automorphisms.Action[Lower] {
-      val elements: Iterator[Lower] =
+      override val elements: Stream[Lower] =
         decreaseDepthSet.getOrElse(
-          for (k <- (0 until pair.g0.bigraph.rankAtMaximalDepth).iterator) yield DeleteDualPairAtOddDepth(k))
+          for (k <- (0 until pair.g0.bigraph.rankAtMaximalDepth).iterator.toStream) yield DeleteDualPairAtOddDepth(k))
 
       def act(g: Seq[(Permutation, Permutation)], x: Lower): Lower = x match {
         case DecreaseDepth => x
@@ -328,7 +332,7 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
 
   override def upperObjects: automorphisms.Action[Upper] = {
     new automorphisms.Action[Upper] {
-      override val elements: Iterator[Upper] = {
+      override val elements: Stream[Upper] = {
         def uppersAddingVerticesToGraph: Iterator[Upper] = {
 
           def limit(graph: Int) = { row: List[Int] =>
@@ -351,7 +355,7 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
 
         val allUppers: Iterator[Upper] = ((pair.g0.bigraph.rankAtMaximalDepth > 0) option IncreaseDepth).iterator ++ uppersAddingVerticesToGraph
 
-        allUppers.filter(_.associative_?).filter(_.result.pair.passesTriplePointObstruction_?)
+        allUppers.filter(_.associative_?).filter(_.result.pair.passesTriplePointObstruction_?).toStream
       }
       override def act(g: Seq[(Permutation, Permutation)], x: Upper): Upper = x match {
         case IncreaseDepth => x

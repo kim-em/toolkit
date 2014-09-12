@@ -23,7 +23,7 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
   }
 
   trait Action[B] extends super.Action[B] { action =>
-    def elements: Iterator[B]
+    def elements: Seq[B]
 
     trait Orbit extends net.tqft.toolkit.algebra.grouptheory.Orbit[A, B]
 
