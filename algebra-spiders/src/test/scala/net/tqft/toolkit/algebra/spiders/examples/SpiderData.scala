@@ -17,9 +17,14 @@ case class SpiderData(
   consideredDiagramsVertexBound: Seq[Int],
   consideredDiagrams: Seq[Seq[PlanarGraph]],
   independentDiagrams: Seq[Seq[PlanarGraph]],
-  visiblyIndependentDiagrams: Seq[Seq[PlanarGraph]]) {
+  visiblyIndependentDiagrams: Seq[Seq[PlanarGraph]],
+  observedPolyhedra: Set[String]) {
 
-  //  verify
+  val complexity: Ordering[PlanarGraph] = {
+    Ordering.by(_.numberOfInternalVertices)
+  }
+
+  //    verify
   def verify {
     println(s"Beginning verification for $this")
 
@@ -28,6 +33,10 @@ case class SpiderData(
       require(j >= 2 * k - n)
     }
 
+    for ((relations, k) <- nonReducingRelations.zipWithIndex; relation <- relations) {
+      val i = relation.lastIndexWhere(x => !rationalFunctions.zero_?(x))
+      require(consideredDiagrams(k).take(i).exists(d => complexity.gteq(d, consideredDiagrams(k)(i))))
+    }
     for (visiblyIndependent <- visiblyIndependentDiagrams) {
       // the determinants of visibly independent vectors must be invertible
       val det = calculateDeterminant(visiblyIndependent)
@@ -49,7 +58,7 @@ case class SpiderData(
   independentDiagrams.sizes: ${independentDiagrams.map(_.size)},
   visiblyIndependentDiagrams.sizes: ${visiblyIndependentDiagrams.map(_.size)},
   consideredDiagrams.sizes: ${consideredDiagrams.map(_.size)},
-  allPolyhedra: $allPolyhedra,
+  observedPolyhedra: $observedPolyhedra,
   reducibleDiagrams: ${spider.extraReductions.map(_.big)},
   consideredDiagramsVertexBound = $consideredDiagramsVertexBound
 )"""
@@ -59,10 +68,6 @@ case class SpiderData(
     (groebnerBasis.flatMap(_.variables) ++
       spider.reductions.flatMap(_.small.values.flatMap(r => r.variables)) ++
       nonReducingRelations.flatMap(_.flatMap(_.flatMap(_.variables)))).distinct.filter(!_.contains("^(-1)"))
-
-  val complexity: Ordering[PlanarGraph] = {
-    Ordering.by(_.numberOfInternalVertices)
-  }
 
   // This forces all the formal inverses to come last in the variable ordering, which seems to help the Groebner bases a bit.
   implicit object stringOrdering extends Ordering[String] {
@@ -83,19 +88,34 @@ case class SpiderData(
   private def normalForm(p: P): P = polynomials.normalForm(p)
   private def normalForm(r: R): R = Fraction(polynomials.normalForm(r.numerator), polynomials.normalForm(r.denominator))
 
-  def addReduction(r: Reduction[PlanarGraph, R]): Seq[SpiderData] = {
-    val newSpider = spider.addReduction(r)
-
-    def reevaluateAllPolyhedra: Seq[SpiderData] = {
-      val differences = (for (p <- allPolyhedra.iterator; g <- PolyhedronNamer.byName(p).iterator; r <- newSpider.allEvaluations(g)) yield {
-        rationalFunctions.subtract(Fraction.whole(polynomials.monomial(p)), r).numerator
-      }).toSeq.distinct
-
-      println("reevaluateAllPolyhedra found differences: " + differences.toMathematicaInputString)
-
-      differences.foldLeft(Seq(this))({ (s, d) => s.flatMap(r => r.declarePolynomialZero(d)) })
+  def allPolyhedronIdentities(s: String): Seq[R] = {
+    def allPolyhedronReducingIdentities(s: String): Seq[R] = {
+      for (g <- PolyhedronNamer.byName(s).toSeq; r <- spider.allEvaluations(g)) yield {
+        rationalFunctions.subtract(Fraction.whole(polynomials.monomial(s)), r)
+      }
     }
-    reevaluateAllPolyhedra.map(_.copy(spider = newSpider).simplifyReductions)
+    def allPolyhedronNonReducingIdentities(s: String): Seq[R] = {
+      (for (g <- PolyhedronNamer.byName(s).toSeq; (relations, k) <- nonReducingRelations.zipWithIndex; relation <- relations; diagrams = consideredDiagrams(k)) yield {
+        require(relation.last == rationalFunctions.one)
+        val bigDiagram = diagrams(relation.size - 1)
+        for (e <- g.Subgraphs(bigDiagram).excisions) yield {
+          rationalFunctions.sum(for ((x, d) <- relation.zip(diagrams)) yield {
+            rationalFunctions.multiply(spider.evaluate(spider.replaceRepeatedly(spider.reductions)(Map(e.replace(d) -> rationalFunctions.one))), x)
+          })
+        }
+      }).flatten
+    }
+    allPolyhedronReducingIdentities(s) ++ allPolyhedronNonReducingIdentities(s)
+  }
+  def observePolyhedron(s: String): Seq[SpiderData] = {
+    copy(observedPolyhedra = observedPolyhedra + s).declareAllPolynomialsZero(allPolyhedronIdentities(s).map(_.numerator))
+  }
+  def observePolyhedra(ss: Set[String]): Seq[SpiderData] = {
+    ss.foldLeft(Seq(this))({ (p: Seq[SpiderData], s: String) => p.flatMap(_.observePolyhedron(s)) })
+  }
+
+  def addReduction(r: Reduction[PlanarGraph, R]): Seq[SpiderData] = {
+    copy(spider = spider.addReduction(r)).observePolyhedra(allPolyhedra.toSet).map(_.simplifyReductions)
   }
 
   def simplifyReductions: SpiderData = {
@@ -141,27 +161,29 @@ case class SpiderData(
       val boundary = p.numberOfBoundaryPoints
 
       val pairingsWithNonReducingRelations = for (r <- nonReducingRelations.applyOrElse(boundary, { i: Int => Seq.empty })) yield {
-        normalForm(spider.evaluate(spider.multiply(consideredDiagrams(boundary).zip(r).toMap, Map(p -> polynomials.one), boundary))).numerator
+        normalForm(spider.evaluate(spider.innerProduct(consideredDiagrams(boundary).zip(r).toMap, Map(p -> polynomials.one)))).numerator
       }
 
       if (pairingsWithNonReducingRelations.forall(polynomials.zero_?)) {
-        val newConsideredDiagrams = {
-          val padded = consideredDiagrams.padTo(boundary + 1, Seq.empty)
-          padded.updated(boundary, (padded(boundary) :+ p).distinct)
-        }
-        val paddedIndependentDiagrams = independentDiagrams.padTo(boundary + 1, Seq.empty)
-        val paddedVisiblyIndependentDiagrams = visiblyIndependentDiagrams.padTo(boundary + 1, Seq.empty)
-        val paddedNonReducingRelations = nonReducingRelations.padTo(boundary + 1, Seq.empty)
-        val padded = copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams, nonReducingRelations = paddedNonReducingRelations, consideredDiagrams = newConsideredDiagrams)
+        (for (s <- observePolyhedra(polynomials.variables(spider.evaluate(spider.innerProduct(Map(p -> polynomials.one), Map(p -> polynomials.one))).numerator))) yield {
+          val newConsideredDiagrams = {
+            val padded = s.consideredDiagrams.padTo(boundary + 1, Seq.empty)
+            padded.updated(boundary, (padded(boundary) :+ p).distinct)
+          }
+          val paddedIndependentDiagrams = s.independentDiagrams.padTo(boundary + 1, Seq.empty)
+          val paddedVisiblyIndependentDiagrams = s.visiblyIndependentDiagrams.padTo(boundary + 1, Seq.empty)
+          val paddedNonReducingRelations = s.nonReducingRelations.padTo(boundary + 1, Seq.empty)
+          val padded = s.copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams, nonReducingRelations = paddedNonReducingRelations, consideredDiagrams = newConsideredDiagrams)
 
-        val addDependent = padded.addDependentDiagram(p)
-        val addIndependent = if (padded.independentDiagrams(boundary).size < dimensionBounds(boundary)) {
-          padded.addIndependentDiagram(p)
-        } else {
-          Seq.empty
-        }
+          val addDependent = padded.addDependentDiagram(p)
+          val addIndependent = if (padded.independentDiagrams(boundary).size < dimensionBounds(boundary)) {
+            padded.addIndependentDiagram(p)
+          } else {
+            Seq.empty
+          }
+          addDependent ++ addIndependent
+        }).flatten
 
-        addDependent ++ addIndependent
       } else {
         declareAllPolynomialsZero(pairingsWithNonReducingRelations).flatMap(_.considerDiagram(p))
       }
@@ -525,8 +547,10 @@ case class SpiderData(
         val newExtraReductions = spider.extraReductions.map({
           case Reduction(big, small) => Reduction(big, small.map({ p => (p._1, Fraction(newPolynomials.normalForm(p._2.numerator), newPolynomials.normalForm(p._2.denominator))) }))
         })
+        val newNonReducingRelations = nonReducingRelations.map(_.map(_.map(p => Fraction(newPolynomials.normalForm(p.numerator), newPolynomials.normalForm(p.denominator)))))
         val result = Some(copy(
           spider = spider.copy(extraReductions = newExtraReductions),
+          nonReducingRelations = newNonReducingRelations,
           groebnerBasis = newGroebnerBasis))
         for (s <- result) {
           require(s.polynomials.zero_?(r))

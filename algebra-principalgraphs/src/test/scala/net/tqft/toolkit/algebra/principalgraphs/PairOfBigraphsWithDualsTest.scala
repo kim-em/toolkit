@@ -17,5 +17,11 @@ class PairOfBigraphsWithDualsTest extends FlatSpec with Matchers {
     selfDualHaagerup.triplePointConfigurations.value.size should equal(1)
     selfDualHaagerup.passesTriplePointObstruction_? should equal(false)
   }
+  
+  "isomorphicTo_?" should "work" in {
+    val g0 = PairOfBigraphsWithDuals("bwd1v1v1v1p1p1v1x0x0p1x0x0p0x1x0v0x0x1duals1v1v1x2x3v1", "bwd1v1v1v1p1p1v1x0x0p0x1x0p0x0x1v0x0x1p1x0x0p0x1x0duals1v1v1x2x3v1x3x2")
+    val g1 = PairOfBigraphsWithDuals("bwd1v1v1v1p1p1v1x0x0p1x0x0p0x1x0v0x0x1duals1v1v1x2x3v1", "bwd1v1v1v1p1p1v1x0x0p0x1x0p0x0x1v0x0x1p0x1x0p1x0x0duals1v1v1x2x3v1x3x2")
+    g0.canonicalNautyGraph should equal(g1.canonicalNautyGraph)
+  }
 
 }

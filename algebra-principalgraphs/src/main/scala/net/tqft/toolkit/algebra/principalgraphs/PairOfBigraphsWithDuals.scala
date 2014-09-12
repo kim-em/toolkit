@@ -7,6 +7,7 @@ import net.tqft.toolkit.permutations.Involutions
 import net.tqft.toolkit.permutations.Involutions._
 import net.tqft.toolkit.algebra.graphs.Graph
 import net.tqft.toolkit.algebra.graphs.ColouredGraph
+import net.tqft.toolkit.algebra.graphs.Dreadnaut
 
 case class Vertex(graph: Int, depth: Int, index: Int)
 case class TriplePointConfiguration(depth: Int, index0: Int, index1: Int, bijection: Seq[(Vertex, Vertex)])
@@ -176,6 +177,7 @@ trait PairOfBigraphsWithDuals {
     result
   }
 
+  lazy val canonicalNautyGraph = Dreadnaut.canonicalizeColouredGraph(nautyGraph)
   lazy val nautyGraph: ColouredGraph[(Int, Int)] = {
     // FIXME this ignores edge multiplicities!
     val adjacencies = (
@@ -231,6 +233,7 @@ object PairOfBigraphsWithDuals {
       triplePointConfigurations = Memo(Seq.empty[TriplePointConfiguration]))
   }
 
+  def apply(g0: String, g1: String): PairOfBigraphsWithDuals = apply(BigraphWithDuals(g0), BigraphWithDuals(g1))
   def apply(g0: BigraphWithDuals, g1: BigraphWithDuals): PairOfBigraphsWithDuals = {
     require(g0.bigraph.depth == g1.bigraph.depth)
     val graphs = List(g0, g1)

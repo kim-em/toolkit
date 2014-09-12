@@ -67,7 +67,7 @@ trait Graph {
   lazy val automorphismAction: automorphismGroup.Action[Int] = new automorphismGroup.Action[Int] {
     override def act(g: IndexedSeq[Int], x: Int) = g(x)
 
-    override def elements = (0 until numberOfVertices).iterator
+    override val elements = (0 until numberOfVertices)
     override lazy val orbits: Set[this.Orbit] = automorphismGroupAndOrbits._2.map({ orbit: Seq[Int] =>
       new this.Orbit {
         override val representative = orbit.head

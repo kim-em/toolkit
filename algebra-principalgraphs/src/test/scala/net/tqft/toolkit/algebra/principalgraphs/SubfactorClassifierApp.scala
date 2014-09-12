@@ -20,6 +20,7 @@ object SubfactorClassifierApp extends App {
     val d0 = w.pair(0).bigraph.estimateEigenvalue(10)
     val d1 = w.pair(1).bigraph.estimateEigenvalue(10)
     println((d0, d1))
+    require(w.verifyParent)
     require(d0 < 5.26)
     require(d1 < 5.26)
   }
