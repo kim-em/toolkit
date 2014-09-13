@@ -3,7 +3,7 @@ package net.tqft.toolkit.algebra.enumeration
 import net.tqft.toolkit.algebra.graphs.Graph
 import net.tqft.toolkit.permutations.Permutations
 
-case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[Int]]) extends Graph with CanonicalGeneration[TriangleFreeGraph, IndexedSeq[Int]] { tfg =>
+case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[Int]]) extends Graph with CanonicalGenerationWithIsomorphism[TriangleFreeGraph, IndexedSeq[Int]] { tfg =>
   import net.tqft.toolkit.permutations.Permutations._
   import net.tqft.toolkit.algebra.graphs._
 

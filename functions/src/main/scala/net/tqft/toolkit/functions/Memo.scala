@@ -3,6 +3,7 @@ package net.tqft.toolkit.functions
 import scala.language.implicitConversions
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.CacheBuilder
+import scala.concurrent.Future
 
 trait Memo {
 
@@ -24,6 +25,28 @@ trait Memo {
     { a: A => cache.getUnchecked(a.asInstanceOf[A with Object]) }
   }
 
+  def inBackground[A, B](f: A => B, backgroundCache: scala.collection.mutable.Map[A, B], foregroundCache: scala.collection.mutable.Map[A, B] = scala.collection.mutable.Map[A, B]()): A => B = new (A => B) {
+    override def apply(a: A): B = {
+      import scala.concurrent.ExecutionContext.Implicits.global
+      if(foregroundCache.contains(a)) {
+        foregroundCache(a)
+      } else {
+        if(backgroundCache.contains(a)) {
+          val b = backgroundCache(a)
+          foregroundCache.put(a, b)
+          b
+        } else {
+          val b = f(a)
+          foregroundCache.put(a, b)
+          Future {
+            backgroundCache.put(a, b)
+          }
+          b
+        }
+      }
+    }
+  }
+  
   def apply[A, B](f: A => B, cache: scala.collection.mutable.Map[A, B]): A => B = new (A => B) {
     def apply(a: A) = {
       cache.getOrElseUpdate(a, f(a))

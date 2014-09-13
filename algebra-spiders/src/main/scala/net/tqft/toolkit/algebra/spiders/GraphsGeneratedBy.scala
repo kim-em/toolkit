@@ -2,6 +2,13 @@ package net.tqft.toolkit.algebra.spiders
 
 import scala.language.implicitConversions
 import net.tqft.toolkit.algebra.enumeration.Odometer
+import net.tqft.toolkit.amazon.S3
+import org.apache.commons.io.IOUtils
+import java.io.ByteArrayOutputStream
+import java.io.ObjectOutput
+import java.io.ObjectOutputStream
+import java.io.ByteArrayInputStream
+import java.io.ObjectInputStream
 
 case class VertexType(perimeter: Int, allowedRotationStep: Int)
 
@@ -19,15 +26,15 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
     def byNumberOfFaces(numberOfBoundaryPoints: Int, numberOfFaces: Int): Stream[PlanarGraph] = {
       // let f denote the number of internal faces, n the number of boundary points
       // then 2 f <= \sum_v (degree(v) - 2) <= n - 2 + 2f
-      val limit = { k: List[Int] => k.zip(vertexTypes.map(_.perimeter - 2)).map(p => p._1 * p._2).sum <= numberOfBoundaryPoints - 2 + 2 * numberOfFaces}
-      Odometer(limit)(List.fill(vertexTypes.size)(0)).toStream.flatMap(k => byNumberOfVertices(numberOfBoundaryPoints, vertexTypes.zip(k).toMap))
+      val limit = { k: List[Int] => k.zip(vertexTypes.map(_.perimeter - 2)).map(p => p._1 * p._2).sum <= numberOfBoundaryPoints - 2 + 2 * numberOfFaces }
+      Odometer(limit)(List.fill(vertexTypes.size)(0)).toStream.flatMap(k => byNumberOfVertices(numberOfBoundaryPoints, vertexTypes.zip(k).toMap).filter(_.numberOfInternalFaces == numberOfFaces))
     }
 
     private var stackDepth = 0
 
     private def byNumberOfVertices_(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = {
       stackDepth = stackDepth + 1
-      //      print("\n" + List.fill(stackDepth)(' ').mkString + " " + numberOfBoundaryPoints + " " + numberOfVertices)
+      println(List.fill(stackDepth)(' ').mkString + " " + numberOfBoundaryPoints + " " + numberOfVertices)
 
       if (numberOfBoundaryPoints < 0 || numberOfVertices.values.exists(_ < 0)) {
         //        print(".")
@@ -64,7 +71,8 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
                 spider.rotate(PlanarGraph.star(v.perimeter, v.allowedRotationStep), k),
                 connectivity),
               -j);
-            if c.dangle == v.perimeter - connectivity
+            if c.dangle == v.perimeter - connectivity;
+            if c.loops == 0 && faces.forall(f => c.Subgraphs(f).excisions.isEmpty)
           ) yield {
             c
           }
@@ -89,9 +97,11 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
               if numberOfVertices(v) > 0;
               newNumberOfVertices = numberOfVertices.updated(v, numberOfVertices(v) - 1);
               connectivity <- 0 to (if (numberOfBoundaryPoints == 0) v.perimeter else v.perimeter - 1);
-              // TODO this line seems to be wrong --- verify and delete?
-              //              if newNumberOfVertices.map(p => p._1.perimeter * p._2).sum >= connectivity;
-              p <- byNumberOfVerticesCache(numberOfBoundaryPoints - v.perimeter + 2 * connectivity, newNumberOfVertices).iterator;
+              //              _ = { println(List.fill(stackDepth)(' ').mkString + s" adding $v with connectivity $connectivity") };
+              newPerimeter = numberOfBoundaryPoints - v.perimeter + 2 * connectivity;
+              p <- byNumberOfVerticesCache(newPerimeter, newNumberOfVertices).iterator;
+              // if the connectivity is too low we can't possibly end up with no boundary strands
+              if (connectivity >= 2 * numberOfBoundaryStrands(p) - 2);
               c <- addVertex(v, connectivity)(p).iterator;
               if numberOfBoundaryStrands(c) == 0
             ) yield {
@@ -104,10 +114,9 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
 
         val distinct = Set() ++ candidates.map(spider.canonicalFormWithDefect).map(_._1)
 
-        val result = distinct.filter(g => g.loops == 0 && faces.forall(f => g.Subgraphs(f).excisions.isEmpty))
         //        print(".")
         stackDepth = stackDepth - 1
-        result.toSeq.sortBy(_.numberOfInternalFaces)
+        distinct.toSeq.sortBy(_.numberOfInternalFaces)
 
       }
 
@@ -138,9 +147,29 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
       //        }
       //      }
 
-      import net.tqft.toolkit.functions.Memo._
-      val cached = ({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }).memo;
-      { (n: Int, k: Map[VertexType, Int]) => cached((n, k)) }
+      val s3cache = {
+        def pickle(x: Any): String = {
+          import org.apache.commons.codec.binary.Base64
+          val baos = new ByteArrayOutputStream()
+          new ObjectOutputStream(baos).writeObject(x)
+          new String(Base64.encodeBase64(baos.toByteArray()))
+        }
+        def unpickle[A](x: String) = {
+          import org.apache.commons.codec.binary.Base64
+          new ObjectInputStream(new ByteArrayInputStream(Base64.decodeBase64(x))).readObject().asInstanceOf[A]
+        }
+
+        import net.tqft.toolkit.collections.MapTransformer._
+        S3("planar-graphs")
+          .transformKeys({ t: (Int, Map[VertexType, Int]) => (vertexTypes, faces, t).hashCode.toString })
+          .transformValues(unpickle[Seq[PlanarGraph]], pickle)
+
+      }
+
+      import net.tqft.toolkit.functions.Memo
+      Memo.inBackground({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }, s3cache)
+//      import net.tqft.toolkit.functions.Memo._
+//      ({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }).memoUsing(s3cache).memo
     }
 
     def byNumberOfVertices(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = byNumberOfVerticesCache(numberOfBoundaryPoints, numberOfVertices)

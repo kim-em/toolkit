@@ -36,9 +36,7 @@ case class FusionGraph(
 }
 
 case class FusionWeed(depth: Int, graph: FusionGraph) extends CanonicalGeneration[FusionWeed, Seq[Permutation]] { weed =>
-  override def findIsomorphismTo(other: FusionWeed) = ???
-  def isomorphs = ???
-
+  
   override val automorphisms: FinitelyGeneratedFiniteGroup[Seq[Permutation]] = ???
 
   override lazy val lowerObjects = {

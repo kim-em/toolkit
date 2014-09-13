@@ -12,8 +12,9 @@ import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import scala.collection.mutable.ListBuffer
 import net.tqft.toolkit.permutations.Permutations
 import net.tqft.toolkit.Logging
+import net.tqft.toolkit.algebra.enumeration.CanonicalGenerationWithIsomorphism
 
-sealed trait SubfactorWeed extends CanonicalGeneration[SubfactorWeed, Seq[(Permutation, Permutation)]] { weed =>
+sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorWeed, Seq[(Permutation, Permutation)]] { weed =>
   def indexLimit: Double
   def pair: PairOfBigraphsWithDuals
 

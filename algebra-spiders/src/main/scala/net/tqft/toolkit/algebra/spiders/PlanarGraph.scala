@@ -7,7 +7,7 @@ import net.tqft.toolkit.Logging
 
 // flags veer to the left
 // edges are ordered clockwise around each vertex
-case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
+case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) extends Serializable { graph =>
   //  verify
 
   def verify = {
