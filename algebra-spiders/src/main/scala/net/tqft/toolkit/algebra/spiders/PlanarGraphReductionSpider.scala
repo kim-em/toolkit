@@ -24,5 +24,7 @@ abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.Pl
     require(vertexTypes.size == 1)
     reducedDiagrams(numberOfBoundaryPoints, Map(vertexTypes.head -> numberOfVertices))
   }
-  def reducedDiagrams(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = graphs.avoiding(reductions.map(_.big)).byNumberOfVertices(numberOfBoundaryPoints, numberOfVertices)
+  def reducedDiagrams(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = {
+    graphs.avoiding(reductions.map(_.big)).byNumberOfVertices(numberOfBoundaryPoints, numberOfVertices)
+  }
 }

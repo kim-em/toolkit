@@ -10,10 +10,9 @@ import net.tqft.toolkit.algebra.Longs
 import net.tqft.toolkit.algebra.Integers
 import net.tqft.toolkit.algebra.grouptheory.Orbit
 import net.tqft.toolkit.permutations.Permutations.Permutation
-
 import scala.language.implicitConversions
-
 import scala.language.implicitConversions
+import net.tqft.toolkit.algebra.enumeration.CanonicalGenerationWithIsomorphism
 
 object PartialFusionRing {
   implicit def fromFusionRing(ring: FusionRing[Int]): PartialFusionRing = {
@@ -55,7 +54,7 @@ object PartialFusionRingMeasurement {
 
 }
 
-case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
+case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[Int], globalDimensionLimit: Double) extends CanonicalGenerationWithIsomorphism[PartialFusionRing, IndexedSeq[Int]] { pfr =>
   require(ring.independent_?(generators))
 
   override lazy val hashCode = (depth, generators, ring, globalDimensionLimit).hashCode

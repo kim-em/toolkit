@@ -125,7 +125,11 @@ class GraphsGeneratedByTest extends FlatSpec with Matchers with IsomorphismMatch
     withoutSmallFaces.byNumberOfFaces(6, 3).size should equal(46)
   }
   "byNumberOfFaces" should "find 112 diagrams in D[7,0]" in {
-    withoutSmallFaces.byNumberOfFaces(7, 0).size should equal(112)
+    val graphs = withoutSmallFaces.byNumberOfFaces(7, 0)
+    for(g <- graphs) {
+      g.numberOfInternalFaces should equal (0)
+    }
+    graphs.size should equal(112)
   }
   "byNumberOfFaces" should "find 155 diagrams in D[7,1]" in {
     withoutSmallFaces.byNumberOfFaces(7, 1).size should equal(155)
