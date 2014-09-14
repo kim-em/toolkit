@@ -6,7 +6,7 @@ import org.scalatest.junit.JUnitRunner
 import net.tqft.toolkit.algebra.spiders._
 
 @RunWith(classOf[JUnitRunner])
-class TetravalentDiagramsTest extends FlatSpec with Matchers with IsomorphismMatchers {
+class TetravalentGraphsTest extends FlatSpec with Matchers with IsomorphismMatchers {
   val tetravalentEnumerator = GraphsGeneratedBy(Seq((4, 1)))
   val tetravalentDiagrams = tetravalentEnumerator.avoiding(TetravalentSpider.reductions.map(_.big))
 
