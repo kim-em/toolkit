@@ -9,5 +9,8 @@ object GraphsGeneratedByProfiler extends App {
   import Profiler._
   for(t <- successiveTimingAverages({
     withoutSmallFaces.byNumberOfFaces(9, 1).size
+    withoutSmallFaces.byNumberOfFaces(10, 2).size
+    withoutSmallFaces.byNumberOfFaces(11, 3).size
+    withoutSmallFaces.byNumberOfFaces(12, 4).size
   })) println(t)
 }
