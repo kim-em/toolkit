@@ -25,28 +25,32 @@ trait Memo {
     { a: A => cache.getUnchecked(a.asInstanceOf[A with Object]) }
   }
 
-  def inBackground[A, B](f: A => B, backgroundCache: scala.collection.mutable.Map[A, B], foregroundCache: scala.collection.mutable.Map[A, B] = scala.collection.mutable.Map[A, B]()): A => B = new (A => B) {
-    override def apply(a: A): B = {
-      import scala.concurrent.ExecutionContext.Implicits.global
-      if(foregroundCache.contains(a)) {
-        foregroundCache(a)
-      } else {
-        if(backgroundCache.contains(a)) {
-          val b = backgroundCache(a)
-          foregroundCache.put(a, b)
-          b
-        } else {
-          val b = f(a)
-          foregroundCache.put(a, b)
-          Future {
-            backgroundCache.put(a, b)
-          }
-          b
+  def inBackground[A, B](f: A => B, backgroundCache: scala.collection.mutable.Map[A, B]): A => B = new (A => B) {
+    val loader =
+      new CacheLoader[A with Object, B with Object]() {
+        override def load(a: A with Object) = {
+          (backgroundCache.get(a) match {
+            case Some(b) => b
+            case None => {
+              val b = f(a)
+              import scala.concurrent.ExecutionContext.Implicits.global
+              Future {
+                backgroundCache.put(a, b)
+              }
+              b
+            }
+          }).asInstanceOf[B with Object]
         }
       }
+
+    val cache = CacheBuilder.newBuilder().softValues()
+      .build[A with Object, B with Object](loader)
+
+    override def apply(a: A): B = {
+      cache.getUnchecked(a.asInstanceOf[A with Object])
     }
   }
-  
+
   def apply[A, B](f: A => B, cache: scala.collection.mutable.Map[A, B]): A => B = new (A => B) {
     def apply(a: A) = {
       cache.getOrElseUpdate(a, f(a))

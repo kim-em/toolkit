@@ -30,6 +30,10 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
       Odometer(limit)(List.fill(vertexTypes.size)(0)).toStream.flatMap(k => byNumberOfVertices(numberOfBoundaryPoints, vertexTypes.zip(k).toMap).filter(_.numberOfInternalFaces == numberOfFaces))
     }
 
+    def withAtMostNumberOfFaces(numberOfBoundaryPoints: Int, numberOfFaces: Int): Stream[PlanarGraph] = {
+      for(k <- (0 to numberOfFaces).toStream; d <- byNumberOfFaces(numberOfBoundaryPoints, k)) yield d
+    }
+    
     private var stackDepth = 0
 
     private def byNumberOfVertices_(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = {
