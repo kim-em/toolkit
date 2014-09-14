@@ -167,7 +167,8 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
       }
 
       import net.tqft.toolkit.functions.Memo
-      Memo.inBackground({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }, s3cache)
+      val cache = Memo.inBackground({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }, s3cache)
+      cache
 //      import net.tqft.toolkit.functions.Memo._
 //      ({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }).memoUsing(s3cache).memo
     }

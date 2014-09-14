@@ -13,3 +13,4 @@ project/boot
 bin
 
 *.out
+*/.tmpBin
