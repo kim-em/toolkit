@@ -33,12 +33,15 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
         avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.switch.nautyGraph))
     }
     descendantsTree(w => {
+//      println(s"beginning filtering for $w")
       if (!stopWhenPersistentlyCylindrical || !w.pair.persistentlyCylindrical_?) {
         if (supertransitivityBound <= 0 || w.supertransitivity <= supertransitivityBound || w.supertransitivity == w.depth && w.depth == supertransitivityBound + 1) {
           if (rankBound <= 0 || w.pair.totalRank <= rankBound) {
-            if (canonicalAvoiding.contains(w.pair.nautyGraph) || canonicalAvoiding.contains(Dreadnaut.canonicalizeColouredGraph(w.pair.nautyGraph))) {
+            if (canonicalAvoiding.contains(w.pair.nautyGraph) || canonicalAvoiding.contains(w.pair.canonicalNautyGraph)) {
+//              println(s"  rejected, as it's on the ignoring list: ${w.pair.canonicalNautyGraph}")
               -1
             } else {
+//              println("  accepted!")
               1
             }
           } else {
@@ -238,6 +241,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
               /* FIXME be careful; the odometer is working in backwards lexicographic order!!! */
               import Ordering.Implicits._
 
+              // 
               val result = row1 <= row0 && limit(bigraph)(row1)
               //              if (result) {
               //                Logging.info(s"  considering new row 1 (on graph $graph): " + row1.mkString("x") + " (with row 0: " + row0.mkString("x") + ")")

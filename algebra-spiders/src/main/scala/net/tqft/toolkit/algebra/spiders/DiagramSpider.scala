@@ -14,6 +14,7 @@ object DiagramSpider {
   implicit val graphSpider: DiagramSpider[PlanarGraph] = {
     new DiagramSpider[PlanarGraph] {
       override def empty = PlanarGraph.empty
+      override def strand = PlanarGraph.strand
       override def circumference(graph: PlanarGraph) = graph.numberOfBoundaryPoints
       override def rotate(graph: PlanarGraph, k: Int) = {
         import net.tqft.toolkit.collections.Rotate._
