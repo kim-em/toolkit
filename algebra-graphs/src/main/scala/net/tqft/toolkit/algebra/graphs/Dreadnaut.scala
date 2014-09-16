@@ -40,8 +40,15 @@ trait Dreadnaut extends Logging {
   }
 
   def automorphismGroupAndOrbits(g: Graph): (FinitelyGeneratedFiniteGroup[IndexedSeq[Int]], Seq[Seq[Int]]) = {
+//    println("invoking dreadnaut: ")
+//    println(g.toDreadnautString + "cxo\n")
     val output = invokeDreadnaut(g.toDreadnautString + "cxo\n")
-    val generatorsString = output.filter(_.startsWith("("))
+//    println("output: ")
+//    println(output.mkString("\n"))
+    val generatorsString = {
+      import net.tqft.toolkit.collections.Split._
+      output.takeWhile(l => !l.startsWith("level")).filter(_.trim.startsWith("(")).iterator.splitBefore(_.startsWith("(")).filter(_.nonEmpty).map(_.map(_.trim).mkString(""))
+    }
     def permutationFromCycles(cycles: Array[Array[Int]]): IndexedSeq[Int] = {
       for (i <- 0 until g.numberOfVertices) yield {
         cycles.find(_.contains(i)) match {
@@ -50,7 +57,10 @@ trait Dreadnaut extends Logging {
         }
       }
     }
-    val generators = generatorsString.map(line => permutationFromCycles(line.split('(').filter(_.nonEmpty).map(_.stripSuffix(")").split(" ").map(_.toInt)))).toSet
+    val generators = generatorsString.map(line => permutationFromCycles(line.trim.split('(').filter(_.nonEmpty).map(_.stripSuffix(")").split(" ").map(_.toInt)))).toSet
+//    for(x <- generators) {
+//      require(g.relabel(x) == g.relabel(IndexedSeq.range(0, g.numberOfVertices)))
+//    }
     val automorphismGroup = FiniteGroups.symmetricGroup(g.numberOfVertices).subgroupGeneratedBy(generators)
     val orbits = output.last.split(";").toSeq.map(_.trim).filter(_.nonEmpty).map({ orbitString =>
       orbitString.split(" ").toSeq.map(_.trim).filter(_.nonEmpty).filter(!_.startsWith("(")).flatMap({ s =>
