@@ -58,11 +58,11 @@ trait Dreadnaut extends Logging {
       }
     }
     val generators = generatorsString.map(line => permutationFromCycles(line.trim.split('(').filter(_.nonEmpty).map(_.stripSuffix(")").split(" ").map(_.toInt)))).toSet
-//    for(x <- generators) {
-//      require(g.relabel(x) == g.relabel(IndexedSeq.range(0, g.numberOfVertices)))
-//    }
+    for(x <- generators) {
+      require(g.relabel(x) == g.relabel(IndexedSeq.range(0, g.numberOfVertices)), "something went wrong while calling dreadnaut '" + g.toDreadnautString + "cxo':\ngenerators:\n" + generators.mkString("\n") + "\noutput:\n" + output.mkString("\n"))
+    }
     val automorphismGroup = FiniteGroups.symmetricGroup(g.numberOfVertices).subgroupGeneratedBy(generators)
-    val orbits = output.last.split(";").toSeq.map(_.trim).filter(_.nonEmpty).map({ orbitString =>
+    val orbits = output.dropWhile(l => !l.startsWith("canupdates")).tail.mkString("").split(";").toSeq.map(_.trim).filter(_.nonEmpty).map({ orbitString =>
       orbitString.split(" ").toSeq.map(_.trim).filter(_.nonEmpty).filter(!_.startsWith("(")).flatMap({ s =>
         if (s.contains(":")) {
           val a = s.split(":").map(_.toInt)
@@ -72,6 +72,7 @@ trait Dreadnaut extends Logging {
         }
       })
     })
+    require(orbits.flatten.sorted == (0 until g.numberOfVertices), "something went wrong while calling dreadnaut '" + g.toDreadnautString + s"cxo':\norbits: $orbits\noutput:\n" + output.mkString("\n"))
     (automorphismGroup, orbits)
   }
   def automorphismGroup(g: Graph) = automorphismGroupAndOrbits(g)._1

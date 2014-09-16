@@ -39,8 +39,8 @@ PairOfBigraphsWithDuals(BigraphWithDuals("bwd1v1v1v1p1v1x0p1x0v1x0v1p1vduals1v1v
     val d1 = w.pair(1).bigraph.estimateEigenvalue(10)
     println((d0, d1))
     require(w.verifyParent)
-    require(d0 < 5.26)
-    require(d1 < 5.26)
+    require(d0 < 5.27)
+    require(d1 < 5.27)
   }
 
   //	for(d <- A3.descendantsFiltered(3)) {
@@ -51,7 +51,7 @@ PairOfBigraphsWithDuals(BigraphWithDuals("bwd1v1v1v1p1v1x0p1x0v1x0v1p1vduals1v1v
   //	  }
   //	}
   var count = 0
-  for ((g, children) <- broom(5.25).descendantsTreeFiltered(3, -1, ignoring)) {
+  for ((g, children) <- A3(5.25).descendantsTreeFiltered(3, -1, ignoring)) {
     count = count + 1
     p(g)
   } 
