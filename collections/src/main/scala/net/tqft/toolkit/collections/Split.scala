@@ -80,6 +80,11 @@ object Split {
         def iterator: Iterator[List[A]] = new SplittableIterator(x.iterator).splitAfter(p)
       }
     }
+    def splitBefore(p: A => Boolean): Iterable[List[A]] = {
+      new NonStrictIterable[List[A]] {
+        def iterator: Iterator[List[A]] = new SplittableIterator(x.iterator).splitBefore(p)
+      }
+    }
 
     def splitOn(p: A => Boolean) = splitAfter(p).map(s => if (p(s.last)) s.init else s)
   }

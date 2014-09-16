@@ -6,7 +6,7 @@ import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 trait Graph {
   def numberOfVertices: Int
   def adjacencies: IndexedSeq[Seq[Int]]
-
+  
   //  for(i <- 0 until numberOfVertices; j <- adjacencies(i)) {
   //    require(adjacencies(j).contains(i))
   //  }
