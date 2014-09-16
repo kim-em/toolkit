@@ -65,8 +65,12 @@ object Polynomial {
   implicit def wholeCoefficients[A: EuclideanRing](p: Polynomial[A]): Polynomial[Fraction[A]] = p.mapValues(x => x: Fraction[A])
   implicit def liftToBigInts(m: Map[Int, Int]): Polynomial[BigInt] = Polynomial(m.mapValues(a => a: BigInt))
   implicit def liftSeqToBigInts(m: Seq[Int]): Polynomial[BigInt] = Polynomial(m.map(a => a: BigInt))
+  implicit def liftSeqToBigIntFractions(m: Seq[Int]): Polynomial[Fraction[BigInt]] = Polynomial(m.map(a => (a: BigInt): Fraction[BigInt]))
+  implicit def liftSeqFractionToBigIntFractions(m: Seq[Fraction[Int]]): Polynomial[Fraction[BigInt]] = Polynomial(m.map(a => a: Fraction[BigInt]))
   implicit def intCoefficientsToBigInts(p: Polynomial[Int]) = p.mapValues(BigInt.apply)
 
+  implicit def intPolynomialToRationalFunction(p: Polynomial[Int]): RationalFunction[BigInt] = p.mapValues(BigInt.apply)
+  
   implicit def polynomialAlgebraAsRing[A: Ring]: Ring[Polynomial[A]] = implicitly[PolynomialAlgebra[A, Polynomial[A]]]
   implicit def polynomialAlgebraAsGCDRing[A: GCDRing]: GCDRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverGCDRing[A, Polynomial[A]]]
   implicit def polynomialAlgebraAsEuclideanRing[A: Field]: EuclideanRing[Polynomial[A]] = implicitly[PolynomialAlgebraOverField[A, Polynomial[A]]]

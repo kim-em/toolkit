@@ -158,23 +158,27 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
           new ObjectOutputStream(baos).writeObject(x)
           new String(Base64.encodeBase64(baos.toByteArray()))
         }
-        def unpickle[A](x: String) = {
+        def unpickle[A](x: String): A = {
           import org.apache.commons.codec.binary.Base64
           new ObjectInputStream(new ByteArrayInputStream(Base64.decodeBase64(x))).readObject().asInstanceOf[A]
+        }
+        def pickleGraphs(x: Seq[PlanarGraph]): String = {
+          x.map(d => pickle((d.outerFace, d.vertexFlags, d.labels, d.loops))).mkString("--->><<---\n")          
+        }
+        def unpickleGraphs(x: String): Seq[PlanarGraph] = {
+          x.split("--->><<---\n").map(t => unpickle[(Int, IndexedSeq[Seq[(Int, Int)]], Seq[Int],  Int)](t)).map(t => PlanarGraph(t._1, t._2, t._3, t._4))
         }
 
         import net.tqft.toolkit.collections.MapTransformer._
         S3("planar-graphs")
           .transformKeys({ t: (Int, Map[VertexType, Int]) => (vertexTypes, faces, t).hashCode.toString })
-          .transformValues(unpickle[Seq[PlanarGraph]], pickle)
+          .transformValues(unpickleGraphs, pickleGraphs)
 
       }
 
       import net.tqft.toolkit.functions.Memo
-      val cache = Memo.inBackground({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }, s3cache)
-      cache
-//      import net.tqft.toolkit.functions.Memo._
-//      ({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }).memoUsing(s3cache).memo
+//      Memo.inBackground({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }, s3cache)
+      Memo({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) })
     }
 
     def byNumberOfVertices(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = byNumberOfVerticesCache(numberOfBoundaryPoints, numberOfVertices)

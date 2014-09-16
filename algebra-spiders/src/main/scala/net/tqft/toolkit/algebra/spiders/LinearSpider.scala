@@ -12,7 +12,9 @@ trait LinearSpider[R, M] extends Spider[M] with CanonicalLabelling[M] with Modul
     ring.product(rotations.vertexRotations.map({ case (v, p) => ring.power(eigenvalue(v), p) }))
   }
   def ring: Ring[R]
-  override def innerProduct(a: M, b: M) = canonicalForm(super.innerProduct(a, b))
+  override def innerProduct(a: M, b: M) = {
+    canonicalForm(super.innerProduct(a, b))
+  }
 }
 
 trait EvaluableSpider[R, A] extends Spider[A] {
@@ -31,6 +33,7 @@ object LinearSpider {
     override lazy val coefficients = Module.moduleOverItself(ring)
 
     override def empty = Map(diagramSpider.empty -> implicitly[Ring[R]].one)
+    override def strand = Map(diagramSpider.strand -> implicitly[Ring[R]].one)
 
     private def mapKeys(f: A => A)(map: TraversableOnce[(A, R)]) = {
       val newMap = scala.collection.mutable.Map[A, R]()
@@ -80,6 +83,14 @@ object LinearSpider {
         }
       }
     }
+     override def evaluatedInnerProduct(map1: Map[A, R], map2: Map[A, R]) = {
+       if(map1.isEmpty || map2.isEmpty) {
+         ring.zero
+       } else {
+         super.evaluatedInnerProduct(map1, map2)
+       }
+     }
+
   }
 
   implicit def diskLinearSpider[A, R, M](implicit spider: LinearSpider[R, M]): LinearSpider[R, Disk[M]] = new Spider.DiskSpider(spider) with LinearSpider[R, Disk[M]] {

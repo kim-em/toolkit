@@ -18,6 +18,9 @@ object MultivariablePolynomial {
   implicit def liftCoefficientsToFractions[A: Rig, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Fraction[A], V] = MultivariablePolynomial(coefficients.mapValues(a => a))
   implicit def liftCoefficientsToBigInts[V](coefficients: Map[Map[V, Int], Int]): MultivariablePolynomial[BigInt, V] = MultivariablePolynomial(coefficients.mapValues(a => a))
   implicit def liftCoefficientsToPolynomials[A: Rig, V](coefficients: Map[Map[V, Int], A]): MultivariablePolynomial[Polynomial[A], V] = lift(coefficients.mapValues(a => a))
+  
+  implicit def liftVariable[A: Rig, V: Ordering](v: V): MultivariablePolynomial[A, V] = implicitly[MultivariablePolynomialAlgebraOverRig[A, V]].monomial(v)
+  
   implicit def constant[A: Rig, V](a: A): MultivariablePolynomial[A, V] = {
     if (implicitly[Rig[A]].zero_?(a)) {
       MultivariablePolynomial(Map.empty)

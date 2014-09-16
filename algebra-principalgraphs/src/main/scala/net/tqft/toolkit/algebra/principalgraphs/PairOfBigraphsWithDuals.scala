@@ -213,7 +213,7 @@ trait PairOfBigraphsWithDuals {
       graph <- 0 to 1;
       d <- 0 to depth;
       i <- 0 until apply(graph).bigraph.rankAtDepth(d)
-    ) yield (graph, d)
+    ) yield (graph, depth - d)
     Graph(totalRank, adjacencies).colour(colours)
   }
 
