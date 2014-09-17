@@ -35,12 +35,12 @@ PairOfBigraphsWithDuals(BigraphWithDuals("bwd1v1v1v1p1v1x0p1x0v1x0v1p1vduals1v1v
 
   def p(w: SubfactorWeed) = {
     println(w)
-    val d0 = w.pair(0).bigraph.estimateEigenvalue(10)
-    val d1 = w.pair(1).bigraph.estimateEigenvalue(10)
-    println((d0, d1))
+//    val d0 = w.pair(0).bigraph.estimateEigenvalue(10)
+//    val d1 = w.pair(1).bigraph.estimateEigenvalue(10)
+//    println((d0, d1))
     require(w.verifyParent)
-    require(d0 < 5.27)
-    require(d1 < 5.27)
+//    require(d0 < 5.27)
+//    require(d1 < 5.27)
   }
 
   //	for(d <- A3.descendantsFiltered(3)) {

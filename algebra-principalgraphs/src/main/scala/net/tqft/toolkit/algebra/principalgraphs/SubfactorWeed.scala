@@ -59,6 +59,23 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
   override def findIsomorphismTo(other: SubfactorWeed) = ???
   def isomorphs = ???
 
+  override def verifyParent = {
+     val r = super.verifyParent
+     if(!r) {
+       println(s"Parent verification failed for:\n$this")
+       println(s"Parent:\n${parent.get}")
+       println("Children of parent:")
+       for(c <- parent.get.children) {
+         println("  " + c)
+       }
+       println("Nauty graph:")
+       println(pair.nautyGraph)
+       println("Dreadnaut output:")
+       println(Dreadnaut.invokeDreadnaut(pair.nautyGraph.toDreadnautString + " cxo\n").mkString("\n"))
+     }
+     r
+  }
+  
   protected def depth = pair(0).bigraph.depth
 
   override lazy val automorphisms: FinitelyGeneratedFiniteGroup[Seq[(Permutation, Permutation)]] = {
