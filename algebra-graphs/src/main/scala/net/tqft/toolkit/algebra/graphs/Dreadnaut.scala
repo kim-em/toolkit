@@ -26,7 +26,7 @@ trait Dreadnaut extends Logging {
   }
 
   // TODO make it possible to access dreadnaut in parallel?
-  protected def invokeDreadnaut(cmd: String): Seq[String] = {
+  def invokeDreadnaut(cmd: String): Seq[String] = {
     synchronized {
       initializeDreadnaut
 
@@ -47,7 +47,7 @@ trait Dreadnaut extends Logging {
 //    println(output.mkString("\n"))
     val generatorsString = {
       import net.tqft.toolkit.collections.Split._
-      output.takeWhile(l => !l.startsWith("level")).filter(_.trim.startsWith("(")).iterator.splitBefore(_.startsWith("(")).filter(_.nonEmpty).map(_.map(_.trim).mkString(""))
+      output.takeWhile(l => !l.startsWith("canupdates")).filter(_.trim.startsWith("(")).iterator.splitBefore(_.startsWith("(")).filter(_.nonEmpty).map(_.map(_.trim).mkString(""))
     }
     def permutationFromCycles(cycles: Array[Array[Int]]): IndexedSeq[Int] = {
       for (i <- 0 until g.numberOfVertices) yield {
@@ -59,7 +59,13 @@ trait Dreadnaut extends Logging {
     }
     val generators = generatorsString.map(line => permutationFromCycles(line.trim.split('(').filter(_.nonEmpty).map(_.stripSuffix(")").split(" ").map(_.toInt)))).toSet
     for(x <- generators) {
-      require(g.relabel(x) == g.relabel(IndexedSeq.range(0, g.numberOfVertices)), "something went wrong while calling dreadnaut '" + g.toDreadnautString + "cxo':\ngenerators:\n" + generators.mkString("\n") + "\noutput:\n" + output.mkString("\n"))
+      require(g.relabel(x) == g.relabel(IndexedSeq.range(0, g.numberOfVertices)), 
+          "something went wrong while calling dreadnaut '" + g.toDreadnautString + "cxo':\n" + 
+          "generators:\n" + generators.mkString("\n") + "\n"+
+          "output:\n" + output.mkString("\n") +
+          s"looking at generator x = $x we have:\n" +
+          s"g.relabel(x) = ${g.relabel(x)} != ${g.relabel(IndexedSeq.range(0, g.numberOfVertices))} = g.relabel(IndexedSeq.range(0, g.numberOfVertices)"
+      )    
     }
     val automorphismGroup = FiniteGroups.symmetricGroup(g.numberOfVertices).subgroupGeneratedBy(generators)
     val orbits = output.dropWhile(l => !l.startsWith("canupdates")).tail.mkString("").split(";").toSeq.map(_.trim).filter(_.nonEmpty).map({ orbitString =>

@@ -20,7 +20,7 @@ trait Graph {
 
   override def equals(other: Any) = {
     other match {
-      case other: Graph => numberOfVertices == other.numberOfVertices && adjacencies == other.adjacencies
+      case other: Graph => numberOfVertices == other.numberOfVertices && edges == other.edges
       case _ => false
     }
   }
@@ -127,7 +127,7 @@ trait ColouredGraph[V] extends Graph {
   override def hashCode = (numberOfVertices, adjacencies, vertices).hashCode
   override def equals(other: Any) = {
     other match {
-      case other: ColouredGraph[_] => numberOfVertices == other.numberOfVertices && adjacencies == other.adjacencies && vertices == other.vertices
+      case other: ColouredGraph[_] => numberOfVertices == other.numberOfVertices && edges == other.edges && vertices == other.vertices
       case _ => false
     }
   }
