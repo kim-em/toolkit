@@ -5,6 +5,7 @@ import scala.collection.GenTraversableOnce
 trait AdditiveSemigroup[@specialized(Int, Long, Float, Double) A] {
   def add(x: A, y: A): A
   final def add(x0: A, x1: A, x2: A*): A = x2.fold(add(x0, x1))(add _)
+  def sum(xs: GenTraversableOnce[A]): A = xs.reduceOption(add _).get
 }
 
 
@@ -18,7 +19,7 @@ object Zero {
 }
 
 trait AdditiveMonoid[@specialized(Int, Long, Float, Double) A] extends AdditiveSemigroup[A] with Zero[A] {
-  def sum(xs: GenTraversableOnce[A]): A = xs.reduceOption(add _).getOrElse(zero)
+  override def sum(xs: GenTraversableOnce[A]): A = xs.reduceOption(add _).getOrElse(zero)
 }
 
 trait AdditiveMonoidLowPriorityImplicits {
