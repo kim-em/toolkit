@@ -31,9 +31,9 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
     }
 
     def withAtMostNumberOfFaces(numberOfBoundaryPoints: Int, numberOfFaces: Int): Stream[PlanarGraph] = {
-      for(k <- (0 to numberOfFaces).toStream; d <- byNumberOfFaces(numberOfBoundaryPoints, k)) yield d
+      for (k <- (0 to numberOfFaces).toStream; d <- byNumberOfFaces(numberOfBoundaryPoints, k)) yield d
     }
-    
+
     private var stackDepth = 0
 
     private def byNumberOfVertices_(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = {
@@ -152,33 +152,64 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
       //      }
 
       val s3cache = {
-        def pickle(x: Any): String = {
-          import org.apache.commons.codec.binary.Base64
-          val baos = new ByteArrayOutputStream()
-          new ObjectOutputStream(baos).writeObject(x)
-          new String(Base64.encodeBase64(baos.toByteArray()))
+        import scala.util.parsing.combinator._
+        import scala.util.matching.Regex
+
+        def pickleGraphSeq(graphs: Seq[PlanarGraph]): String = {
+          val result = graphs.map(pickleGraph).mkString("Seq(\n  ", "\n  ", "\n)")
+          require(unpickleGraphSeq(result) == graphs, "pickling failed on:\n" + graphs + "\nresults:\n" + unpickleGraphSeq(result))
+          result
         }
-        def unpickle[A](x: String): A = {
-          import org.apache.commons.codec.binary.Base64
-          new ObjectInputStream(new ByteArrayInputStream(Base64.decodeBase64(x))).readObject().asInstanceOf[A]
+        def pickleGraph(graph: PlanarGraph): String = {
+          graph.toString
         }
-        def pickleGraphs(x: Seq[PlanarGraph]): String = {
-          x.map(d => pickle((d.outerFace, d.vertexFlags, d.labels, d.loops))).mkString("--->><<---\n")          
-        }
-        def unpickleGraphs(x: String): Seq[PlanarGraph] = {
-          x.split("--->><<---\n").map(t => unpickle[(Int, IndexedSeq[Seq[(Int, Int)]], Seq[Int],  Int)](t)).map(t => PlanarGraph(t._1, t._2, t._3, t._4))
+        def unpickleGraphSeq(string: String): Seq[PlanarGraph] = {
+
+          object PickleParser extends RegexParsers with JavaTokenParsers {
+            val sequenceTypes = "Seq" | "List" | "Vector"
+
+            def list[A](parsable: Parser[A]): Parser[Seq[A]] = sequenceTypes ~> "(" ~> whitespace ~> repsep(parsable, "," ~ whitespace) <~ whitespace <~ ")"
+            def seq[A](parsable: Parser[A]): Parser[Seq[A]] = list(parsable) ^^ { _.toSeq }
+            def indexedSeq[A](parsable: Parser[A]): Parser[IndexedSeq[A]] = list(parsable) ^^ { _.toIndexedSeq }
+
+            def pair[A](parsable: Parser[A]): Parser[(A, A)] = "(" ~> whitespace ~> parsable ~ "," ~ whitespace ~ parsable <~ ")" ^^ {
+              case a1 ~ "," ~ whitespace ~ a2 => (a1, a2)
+            }
+
+            def whitespaceCharacter: Parser[String] = " " | "\n" | "\t"
+            def whitespace = whitespaceCharacter.*
+
+            def int = wholeNumber ^^ { _.toInt }
+
+            def planarGraph: Parser[PlanarGraph] = ("PlanarGraph(" ~> whitespace ~>
+              (int <~ "," <~ whitespace) ~
+              (indexedSeq(seq(pair(int))) <~ "," <~ whitespace) ~
+              (seq(int) <~ "," <~ whitespace) ~
+              int <~ whitespace <~ ")") ^^ {
+                case outerFace ~ vertexFlags ~ labels ~ loops => PlanarGraph(outerFace, vertexFlags, labels, loops)
+              }
+
+          }
+
+          import PickleParser._
+          parseAll(seq(planarGraph), string).get
         }
 
+        require({
+          val graphs = Seq(PlanarGraph.dodecahedron)
+          unpickleGraphSeq(pickleGraphSeq(graphs)) == graphs
+        })
+        
         import net.tqft.toolkit.collections.MapTransformer._
         S3("planar-graphs")
           .transformKeys({ t: (Int, Map[VertexType, Int]) => (vertexTypes, faces, t).hashCode.toString })
-          .transformValues(unpickleGraphs, pickleGraphs)
+          .transformValues(unpickleGraphSeq, pickleGraphSeq)
 
       }
 
       import net.tqft.toolkit.functions.Memo
-//      Memo.inBackground({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }, s3cache)
-      Memo({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) })
+            Memo.inBackground({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }, s3cache)
+//      Memo({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) })
     }
 
     def byNumberOfVertices(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = byNumberOfVerticesCache(numberOfBoundaryPoints, numberOfVertices)

@@ -100,7 +100,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-spiders` = Project(id = "toolkit-algebra-spiders",
     base = file("algebra-spiders"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(mapdb))) dependsOn (algebra, mathematica, amazon, `algebra-mathematica`, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(scala.parser, mapdb))) dependsOn (algebra, mathematica, amazon, `algebra-mathematica`, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
 
   lazy val `algebra-bugs` = Project(id = "toolkit-algebra-bugs",
     base = file("algebra-bugs"),
@@ -227,6 +227,7 @@ object Dependencies {
 	}
 	object scala {
 		val xml = "org.scala-lang.modules" %% "scala-xml" % "1.0.1"
+    val parser = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1"
 	}
 	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.3.2"
 	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
