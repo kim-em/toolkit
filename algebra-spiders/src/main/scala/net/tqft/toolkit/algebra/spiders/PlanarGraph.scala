@@ -48,6 +48,14 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     require(vertexFlags.head.distinct.size == vertexFlags.head.size)
   }
 
+  override def equals(other: Any) = {
+    other match {
+      case other: PlanarGraph => {
+        other.outerFace == outerFace && other.vertexFlags == vertexFlags && other.labels == labels && other.loops == loops
+      }
+    }
+  }
+
   def numberOfBoundaryPoints = vertexFlags(0).size
 
   def numberOfVertices = vertexFlags.size
