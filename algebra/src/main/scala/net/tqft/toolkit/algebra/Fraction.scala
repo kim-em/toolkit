@@ -19,6 +19,10 @@ sealed trait Fraction[@specialized(Int, Long) A] extends Serializable {
 object Fraction {
 
   implicit def whole[@specialized(Int, Long) A: Rig](x: A): Fraction[A] = FractionWhole(x)
+  implicit def liftWholeIntegers[I: IntegerModel](x: Int): Fraction[I] = {
+    val integers = implicitly[IntegerModel[I]]
+    whole(integers.from(x))
+  }
   implicit def liftIntegers[I: IntegerModel](f: Fraction[Int]) = {
     val integers = implicitly[IntegerModel[I]]
     alreadyReduced(integers.from(f.numerator), integers.from(f.denominator))
