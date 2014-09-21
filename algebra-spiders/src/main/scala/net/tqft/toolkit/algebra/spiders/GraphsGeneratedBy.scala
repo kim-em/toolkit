@@ -156,7 +156,7 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
         import scala.util.matching.Regex
 
         def pickleGraphSeq(graphs: Seq[PlanarGraph]): String = {
-          val result = graphs.map(pickleGraph).mkString("Seq(\n  ", "\n  ", "\n)")
+          val result = graphs.map(pickleGraph).mkString("Seq(\n  ", ",\n  ", "\n)")
           require(unpickleGraphSeq(result) == graphs, "pickling failed on:\n" + graphs + "\nresults:\n" + unpickleGraphSeq(result))
           result
         }
