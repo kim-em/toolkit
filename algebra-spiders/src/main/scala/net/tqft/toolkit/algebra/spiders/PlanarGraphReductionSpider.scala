@@ -8,7 +8,7 @@ abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.Pl
   def innerProductMatrix(diagrams1: Seq[PlanarGraph], diagrams2: Seq[PlanarGraph]): Seq[Seq[R]] = {
     def ring = implicitly[Ring[R]]
 
-    val result = (for (x <- diagrams1) yield {
+    val result = (for (x <- diagrams1.par) yield {
       //      println("computing inner products: x = " + x)
       print(".")
       (for (y <- diagrams2) yield {
@@ -19,7 +19,7 @@ abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.Pl
       })
     })
     println("")
-    result
+    result.seq
   }
   def innerProductMatrix(diagrams: Seq[PlanarGraph]): Seq[Seq[R]] = innerProductMatrix(diagrams, diagrams)
 

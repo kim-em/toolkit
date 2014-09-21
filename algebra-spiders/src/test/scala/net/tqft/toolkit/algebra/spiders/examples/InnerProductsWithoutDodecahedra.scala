@@ -8,7 +8,13 @@ object InnerProductsWithoutDodecahedra extends App {
     (for (k <- Iterator.from(0)) yield {
       println(s"Computing inner products for D($n, $k)")
       try {
-        val set = CubicSpider.innerProductMatrix(TrivalentGraphs.withoutSmallFaces.withAtMostNumberOfFaces(n, k)).flatten.flatMap(_.variables).toSet -- Seq("d", "b", "t")
+        val graphs = TrivalentGraphs.withoutSmallFaces.withAtMostNumberOfFaces(n, k).reverse
+        val someGraphs = {
+          val max = graphs.map(_.numberOfInternalVertices).max
+          graphs.filter(g => g.numberOfInternalVertices + max >= 20)
+        }
+        val matrix = CubicSpider.innerProductMatrix(someGraphs)
+        val set = matrix.flatten.flatMap(_.variables).toSet -- Seq("d", "b", "t")
         println(set)
         set
       } catch {
