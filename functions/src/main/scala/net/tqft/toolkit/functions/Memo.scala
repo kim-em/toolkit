@@ -34,9 +34,9 @@ trait Memo {
             case None => {
               val b = f(a)
               import scala.concurrent.ExecutionContext.Implicits.global
-              Future {
+//              Future {
                 backgroundCache.put(a, b)
-              }
+//              }
               b
             }
           }).asInstanceOf[B with Object]

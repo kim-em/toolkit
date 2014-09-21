@@ -166,7 +166,7 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
         def unpickleGraphSeq(string: String): Seq[PlanarGraph] = {
 
           object PickleParser extends RegexParsers with JavaTokenParsers {
-            val sequenceTypes = "Seq" | "List" | "Vector"
+            val sequenceTypes = "Seq" | "List" | "Vector" | "ArrayBuffer"
 
             def list[A](parsable: Parser[A]): Parser[Seq[A]] = sequenceTypes ~> "(" ~> whitespace ~> repsep(parsable, "," ~ whitespace) <~ whitespace <~ ")"
             def seq[A](parsable: Parser[A]): Parser[Seq[A]] = list(parsable) ^^ { _.toSeq }
@@ -192,14 +192,17 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
           }
 
           import PickleParser._
-          parseAll(seq(planarGraph), string).get
+
+          val parse = parseAll(seq(planarGraph), string)
+          require(parse.successful, "Parsing failed:\n" + string)
+          parse.get
         }
 
         require({
           val graphs = Seq(PlanarGraph.dodecahedron)
           unpickleGraphSeq(pickleGraphSeq(graphs)) == graphs
         })
-        
+
         import net.tqft.toolkit.collections.MapTransformer._
         S3("planar-graphs")
           .transformKeys({ t: (Int, Map[VertexType, Int]) => (vertexTypes, faces, t).hashCode.toString })
@@ -208,8 +211,8 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
       }
 
       import net.tqft.toolkit.functions.Memo
-            Memo.inBackground({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }, s3cache)
-//      Memo({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) })
+      Memo.inBackground({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) }, s3cache)
+      //      Memo({ t: (Int, Map[VertexType, Int]) => byNumberOfVertices_(t._1, t._2) })
     }
 
     def byNumberOfVertices(numberOfBoundaryPoints: Int, numberOfVertices: Map[VertexType, Int]): Seq[PlanarGraph] = byNumberOfVerticesCache(numberOfBoundaryPoints, numberOfVertices)
