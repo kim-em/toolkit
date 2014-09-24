@@ -58,8 +58,12 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
   case class Braid(width: Int, crossings: Seq[(Int, Int)])
 
   trait Basis extends super.Basis {
+    lazy val crossingInnerProducts = {
+      val diagramsWithCrossing = diagrams.map(x => diagramSpider.multiply(x, crossing, 2))
+      innerProductMatrix(diagrams, diagramsWithCrossing)
+    }
     lazy val actionOfBraiding = {
-      val m1 = Matrix(diagrams.size, innerProductMatrix(diagrams, diagrams.map(x => diagramSpider.multiply(x, crossing, 2))))
+      val m1 = Matrix(diagrams.size, crossingInnerProducts)
       val matrices = Matrices.matricesOver(diagrams.size)(ring)
       matrices.multiply(m1, Matrix(diagrams.size, inverseInnerProducts)).entries.seq
     }
