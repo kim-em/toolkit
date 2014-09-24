@@ -24,7 +24,10 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
   }
 
   trait LinearlyIndependentDiagrams extends CollectionOfDiagrams {
-    lazy val inverseInnerProducts = Matrix(diagrams.size, innerProducts).inverse.get.entries.seq
+    lazy val inverseInnerProducts = {
+    	import net.tqft.toolkit.algebra.mathematica.Inverse.ofMultivariableRationalFunctionMatrix._
+    	innerProducts.asInstanceOf[Seq[Seq[MultivariableRationalFunction[Fraction[BigInt],String]]]].inverse.asInstanceOf[Seq[Seq[R]]]
+    }
     lazy val actionOfRotation: Seq[Seq[R]] = {
       val m1 = Matrix(diagrams.size, innerProductMatrix(diagrams, diagrams.map(x => diagramSpider.rotate(x, 1))))
       val matrices = Matrices.matricesOver(diagrams.size)(ring)
