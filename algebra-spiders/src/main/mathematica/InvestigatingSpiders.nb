@@ -1,0 +1,1124 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     55446,       1115]
+NotebookOptionsPosition[     53638,       1051]
+NotebookOutlinePosition[     53994,       1067]
+CellTagsIndexPosition[     53951,       1064]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"<<", "JLink`"}]], "Input",
+ CellChangeTimes->{{3.6206146301899137`*^9, 3.620614636801032*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"SpidersDirectory", "=", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<..\>\"", ",", 
+      "\"\<..\>\"", ",", "\"\<..\>\""}], "}"}], "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.620615134091938*^9, 3.6206151457129593`*^9}, 
+   3.620615239685563*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ScalaMajorVersion", "=", "\"\<2.11\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.6206151682519627`*^9, 3.6206151702992373`*^9}, 
+   3.620615238961542*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"SpidersDirectory", ",", "\"\<target\>\"", ",", 
+        RowBox[{"\"\<scala-\>\"", "<>", "ScalaMajorVersion"}], ",", 
+        "\"\<classes\>\""}], "}"}], ",", "\"\<log4j.xml\>\""}], "]"}], "]"}], 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"SpidersDirectory", ",", "\"\<..\>\""}], "}"}], ",", 
+      RowBox[{
+      "\"\<*/target/scala-\>\"", "<>", "ScalaMajorVersion", "<>", 
+       "\"\</*.jar\>\""}]}], "]"}], "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "SpidersDirectory", ",", "\"\<..\>\"", ",", "\"\<lib_managed\>\"", 
+        ",", "\"\<jars\>\""}], "}"}], ",", "\"\<*/*/*.jar\>\""}], "]"}], 
+    "]"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "SpidersDirectory", ",", "\"\<..\>\"", ",", "\"\<lib_managed\>\"", 
+        ",", "\"\<bundles\>\""}], "}"}], ",", "\"\<*/*/*.jar\>\""}], "]"}], 
+    "]"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"{", 
+     RowBox[{"ToFileName", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"SpidersDirectory", ",", "\"\<target\>\"", ",", 
+         RowBox[{"\"\<scala-\>\"", "<>", "ScalaMajorVersion"}]}], "}"}], ",", 
+       "\"\<*.jar\>\""}], "]"}], "}"}], "]"}], "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.62061515077351*^9, 3.62061515663029*^9}, {
+  3.6206152019928713`*^9, 3.620615232387548*^9}, {3.620615357968029*^9, 
+  3.62061536473571*^9}, {3.620615432590061*^9, 3.6206154814738703`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"LoadJavaClass", "[", 
+  "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries$\>\"\
+", "]"}]], "Input",
+ CellChangeTimes->{{3.620615052411797*^9, 3.6206150552332697`*^9}, {
+   3.6206152540202723`*^9, 3.62061528571008*^9}, 3.620615561689046*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"JavaClass", "[", 
+   RowBox[{
+   "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
+    "examples", ".", "QuantumExceptionalSeries$"}], ",", "<>", "]"}],
+  JLink`JavaClass[
+  "net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries$", 4, {
+    JLink`JVM["vm1"]}, 5, 
+   "net`tqft`toolkit`algebra`spiders`examples`QuantumExceptionalSeries$`", 
+   False, True]]], "Output",
+ CellChangeTimes->{3.620615286984029*^9, 3.620615369252757*^9, 
+  3.620615484938859*^9, 3.620615562263587*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ScalaSingleton", "[", "className_String", "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"LoadJavaClass", "[", 
+      RowBox[{"className", "<>", "\"\<$\>\""}], "]"}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"Symbol", "[", 
+      RowBox[{
+       RowBox[{"StringReplace", "[", 
+        RowBox[{"className", ",", 
+         RowBox[{"\"\<.\>\"", "\[Rule]", "\"\<`\>\""}]}], "]"}], "<>", 
+       "\"\<$`MODULE$\>\""}], "]"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.620615680466634*^9, 3.620615719606987*^9}, {
+  3.620615752979535*^9, 3.6206157658834877`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ScalaCaseClass", "[", 
+   RowBox[{"className_String", ",", "arguments___"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"o", ",", "applyTypes", ",", "a"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"LoadJavaClass", "[", 
+      RowBox[{"className", "<>", "\"\<$\>\""}], "]"}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"o", "=", 
+      RowBox[{"Symbol", "[", 
+       RowBox[{
+        RowBox[{"StringReplace", "[", 
+         RowBox[{"className", ",", 
+          RowBox[{"\"\<.\>\"", "\[Rule]", "\"\<`\>\""}]}], "]"}], "<>", 
+        "\"\<$`MODULE$\>\""}], "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"applyTypes", "=", 
+      RowBox[{"Flatten", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"StringCases", "[", 
+           RowBox[{"#", ",", 
+            RowBox[{
+             RowBox[{
+             "className", "~~", "\"\< apply(\>\"", "~~", "types__", "~~", 
+              "\"\<)\>\""}], "\[RuleDelayed]", " ", 
+             RowBox[{"StringSplit", "[", 
+              RowBox[{"types", ",", "\"\<, \>\""}], "]"}]}]}], "]"}], "&"}], "/@", 
+         RowBox[{"StringSplit", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"o", "//", "Methods"}], "//", "ToString"}], ",", 
+           "\"\<\\n\>\""}], "]"}]}], ",", "1"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"a", "=", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Length", "[", "applyTypes", "]"}], "\[Equal]", "1"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"AsScalaObject", "@@", "#"}], "&"}], "/@", 
+         RowBox[{"Transpose", "[", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", "arguments", "}"}], ",", 
+            RowBox[{
+            "applyTypes", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}]}], "}"}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"AsScalaObject", "/@", "arguments"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"oo", "=", "o"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"o", "@", 
+      RowBox[{"apply", "[", 
+       RowBox[{"Sequence", "@@", "a"}], "]"}]}]}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.620616049511447*^9, 3.62061612779088*^9}, {
+  3.620616199220964*^9, 3.62061620208167*^9}, {3.620616284445912*^9, 
+  3.6206163705023518`*^9}, {3.620616466135068*^9, 3.620616466446186*^9}, {
+  3.620616515026765*^9, 3.620616520866987*^9}, {3.620616611028926*^9, 
+  3.620616678441863*^9}, {3.620616914384459*^9, 3.62061695311658*^9}, {
+  3.620617379356743*^9, 3.62061739933346*^9}, {3.620617613578689*^9, 
+  3.6206177347186937`*^9}, {3.6206178319915333`*^9, 3.620617832351356*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Flatten", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"StringCases", "[", 
+      RowBox[{"#", ",", 
+       RowBox[{
+        RowBox[{
+        "\"\<net.tqft.toolkit.algebra.spiders.VertexType apply(\>\"", "~~", 
+         "types__", "~~", "\"\<)\>\""}], "\[RuleDelayed]", " ", 
+        RowBox[{"StringSplit", "[", 
+         RowBox[{"types", ",", "\"\<, \>\""}], "]"}]}]}], "]"}], "&"}], "/@", 
+    
+    RowBox[{"StringSplit", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"oo", "//", "Methods"}], "//", "ToString"}], ",", 
+      "\"\<\\n\>\""}], "]"}]}], ",", "1"}], "]"}]], "Input",
+ CellChangeTimes->{{3.620617385670309*^9, 3.620617387239025*^9}, {
+  3.620617458049837*^9, 3.6206175920472383`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.collection.immutable.List$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.collection.immutable.Set$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.collection.immutable.Map$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.Some$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.None$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<java.util.Arrays\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.collection.JavaConversions\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.6206171377083406`*^9, 3.620617142109476*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"list", ":", 
+    RowBox[{"{", 
+     RowBox[{"__Integer", "|", "__Real"}], "}"}]}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"scala`collection`JavaConversions`asScalaBuffer", "[", 
+    RowBox[{"java`util`Arrays`asList", "[", 
+     RowBox[{"MakeJavaObject", "/@", "list"}], "]"}], "]"}], "@", 
+   RowBox[{"toList", "[", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"list", ":", 
+    RowBox[{"{", "__List", "}"}]}], "]"}], ":=", 
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"AsScalaList", "/@", "list"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", "list_List", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"scala`collection`JavaConversions`asScalaBuffer", "[", 
+    RowBox[{"java`util`Arrays`asList", "[", 
+     RowBox[{"MakeJavaObject", "[", "list", "]"}], "]"}], "]"}], "@", 
+   RowBox[{"toList", "[", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"{", "}"}], "]"}], ":=", 
+  RowBox[{"scala`collection`immutable`List$`MODULE$", "@", 
+   RowBox[{"empty", "[", "]"}]}]}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.567720614334144*^9, 3.567720621410693*^9}, {
+  3.567720654523664*^9, 3.567720676011091*^9}, {3.567720731822373*^9, 
+  3.5677207326500893`*^9}, {3.5677247654667683`*^9, 3.567724771552896*^9}, {
+  3.5677269994289722`*^9, 3.567727075733775*^9}, {3.567804777400037*^9, 
+  3.5678048076200457`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Clear", "[", "AsScalaObject", "]"}]], "Input",
+ CellChangeTimes->{{3.620617808659605*^9, 3.6206178129491177`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", "x_", "]"}], ":=", 
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"x", ",", "\"\<Object\>\""}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.6206177943869257`*^9, 3.620617806425729*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"i_Integer", ",", "\"\<Object\>\""}], "]"}], ":=", 
+  RowBox[{"MakeJavaObject", "[", "i", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"i_Integer", ",", "\"\<int\>\""}], "]"}], ":=", "i"}]}], "Input",
+ CellChangeTimes->{{3.620616137795076*^9, 3.620616171698071*^9}, {
+  3.620617760222375*^9, 3.6206177928254547`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    RowBox[{"o_", "?", "JavaObjectQ"}], ",", "_"}], "]"}], ":=", 
+  "o"}]], "Input",
+ CellChangeTimes->{{3.620617184745891*^9, 3.6206171924730053`*^9}, {
+  3.620617771063404*^9, 3.620617771503463*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    RowBox[{"rules", ":", 
+     RowBox[{"{", "__Rule", "}"}]}], ",", "\"\<Object\>\""}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"ScalaCaseClass", "[", 
+    RowBox[{"\"\<scala.collection.immutable.Map\>\"", ",", 
+     RowBox[{"AsScalaList", "[", 
+      RowBox[{"{", "}"}], "]"}]}], "]"}], "@", 
+   RowBox[{"$plus$plus", "[", 
+    RowBox[{"AsScalaList", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"ScalaCaseClass", "[", 
+        RowBox[{"\"\<scala.Tuple2\>\"", ",", 
+         RowBox[{"Sequence", "@@", "#"}]}], "]"}], "&"}], "/@", "rules"}], 
+     "]"}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.62061696816663*^9, 3.620617029772686*^9}, {
+   3.620617062733923*^9, 3.620617064885275*^9}, {3.620617095409789*^9, 
+   3.6206170967028437`*^9}, 3.620617130508194*^9, {3.620617266650272*^9, 
+   3.620617268825653*^9}, {3.6206177802090197`*^9, 3.620617783193287*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"{", 
+    RowBox[{"1", "\[Rule]", "2"}], "}"}], "]"}], "@", 
+  RowBox[{"toString", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.620617031273302*^9, 3.620617038514401*^9}, {
+  3.620617089176261*^9, 3.6206170904483747`*^9}}],
+
+Cell[BoxData["\<\"Map(1 -> 2)\"\>"], "Output",
+ CellChangeTimes->{{3.6206170389654703`*^9, 3.620617097824974*^9}, {
+  3.62061724620831*^9, 3.62061727156709*^9}, {3.620617816946751*^9, 
+  3.620617834864687*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ScalaCaseClass", "[", 
+  RowBox[{
+  "\"\<net.tqft.toolkit.algebra.spiders.VertexType\>\"", ",", "3", ",", "1"}],
+   "]"}]], "Input",
+ CellChangeTimes->{{3.620617307552579*^9, 3.6206173422791853`*^9}, {
+  3.620617839318928*^9, 3.620617846791527*^9}}],
+
+Cell[BoxData["\<\"VertexType(3,1)\"\>"], "Output",
+ CellChangeTimes->{
+  3.62061734276021*^9, {3.620617384620411*^9, 3.620617402594387*^9}, 
+   3.62061765656046*^9, 3.62061773982228*^9, {3.620617837212452*^9, 
+   3.620617843611237*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QES", "=", 
+  RowBox[{
+  "ScalaSingleton", "[", 
+   "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\>\"\
+", "]"}]}]], "Input",
+ CellChangeTimes->{{3.620615724074917*^9, 3.6206157397366543`*^9}, {
+  3.620615771243806*^9, 3.620615772051776*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{
+    "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
+     "examples", ".", "QuantumExceptionalSeries$"}], "]"}], 
+   "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject29637370739425281]], "Output",
+ CellChangeTimes->{{3.620615740186701*^9, 3.620615772915757*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"AsScalaObject", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"ScalaCaseClass", "[", 
+     RowBox[{
+     "\"\<net.tqft.toolkit.algebra.spiders.VertexType\>\"", ",", "3", ",", 
+      "1"}], "]"}], "\[Rule]", "2"}], "}"}], "]"}]], "Input",
+ CellChangeTimes->{{3.6206178816429*^9, 3.620617884066184*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{"scala", ".", "collection", ".", "immutable", ".", "Map$Map1"}], 
+    "]"}], "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject32876417440022529]], "Output",
+ CellChangeTimes->{3.620617884493453*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"diagrams", "=", 
+  RowBox[{"QES", "@", 
+   RowBox[{"reducedDiagrams", "[", 
+    RowBox[{"2", ",", 
+     RowBox[{"AsScalaObject", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"ScalaCaseClass", "[", 
+         RowBox[{
+         "\"\<net.tqft.toolkit.algebra.spiders.VertexType\>\"", ",", "4", ",",
+           "2"}], "]"}], "\[Rule]", "2"}], "}"}], "]"}]}], "]"}]}]}]], "Input",\
+
+ CellChangeTimes->{{3.6206158212947206`*^9, 3.620615858075735*^9}, {
+  3.620617855303269*^9, 3.620617893715006*^9}, {3.620617924942369*^9, 
+  3.6206179258621807`*^9}, {3.620618063260663*^9, 3.620618063930974*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{
+    "scala", ".", "collection", ".", "immutable", ".", "$colon$colon"}], 
+    "]"}], "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject15953920950009858]], "Output",
+ CellChangeTimes->{3.620615837016811*^9, 3.620617868236783*^9, 
+  3.6206178992007437`*^9, 3.620617935456181*^9, 3.620618067768978*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QES", "@", 
+  RowBox[{"innerProductMatrix", "[", "diagrams", "]"}]}]], "Input",
+ CellChangeTimes->{{3.620618091680089*^9, 3.620618097871675*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{"scala", ".", "collection", ".", "immutable", ".", "Vector"}], 
+    "]"}], "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject13412321003044865]], "Output",
+ CellChangeTimes->{3.620618288403048*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"%", "@", 
+  RowBox[{"toString", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.620618105518107*^9, 3.620618107936129*^9}}],
+
+Cell[BoxData["\<\"Vector(List(Fraction(MultivariablePolynomial(Map(Map(w -> \
+31, v -> 4) -> Fraction(-9, 1), Map(w -> 21) -> Fraction(-1, 1), Map(v -> 6) \
+-> Fraction(1, 1), Map(w -> 7, v -> 4) -> Fraction(-9, 1), Map(w -> 18, v -> \
+4) -> Fraction(-27, 1), Map(w -> 30, v -> 8) -> Fraction(-9, 1), Map(w -> 17, \
+v -> 8) -> Fraction(-9, 1), Map(w -> 17) -> Fraction(-3, 1), Map(w -> 24, v \
+-> 6) -> Fraction(27, 1), Map(w -> 22, v -> 4) -> Fraction(-9, 1), Map(w -> \
+26, v -> 6) -> Fraction(27, 1), Map(w -> 12, v -> 2) -> Fraction(9, 1), Map(w \
+-> 18, v -> 10) -> Fraction(3, 1), Map(w -> 17, v -> 6) -> Fraction(9, 1), \
+Map(w -> 34, v -> 8) -> Fraction(-3, 1), Map(w -> 29, v -> 4) -> Fraction(-9, \
+1), Map(w -> 27, v -> 2) -> Fraction(3, 1), Map(w -> 19, v -> 8) -> \
+Fraction(-27, 1), Map(w -> 20, v -> 12) -> Fraction(-3, 1), Map(w -> 20, v -> \
+4) -> Fraction(-27, 1), Map(w -> 16, v -> 2) -> Fraction(3, 1), Map(w -> 19) \
+-> Fraction(-3, 1), Map(w -> 23, v -> 8) -> Fraction(-9, 1), Map(w -> 10, v \
+-> 8) -> Fraction(-9, 1), Map(w -> 39, v -> 6) -> Fraction(1, 1), Map(w -> \
+22, v -> 6) -> Fraction(9, 1), Map(w -> 16, v -> 4) -> Fraction(-9, 1), Map(w \
+-> 13, v -> 6) -> Fraction(27, 1), Map(w -> 29, v -> 10) -> Fraction(3, 1), \
+Map(w -> 23, v -> 10) -> Fraction(3, 1), Map(w -> 4, v -> 6) -> Fraction(3, \
+1), Map(w -> 23, v -> 2) -> Fraction(9, 1), Map(w -> 27, v -> 4) -> \
+Fraction(-3, 1), Map(w -> 24, v -> 12) -> Fraction(-1, 1), Map(w -> 5, v -> \
+4) -> Fraction(-3, 1), Map(w -> 28, v -> 8) -> Fraction(-3, 1), Map(w -> 37, \
+v -> 6) -> Fraction(3, 1), Map(w -> 18, v -> 12) -> Fraction(-1, 1), Map(w -> \
+6, v -> 8) -> Fraction(-3, 1), Map(w -> 21, v -> 2) -> Fraction(3, 1), Map(w \
+-> 27, v -> 10) -> Fraction(9, 1), Map(w -> 11, v -> 6) -> Fraction(9, 1), \
+Map(w -> 14, v -> 10) -> Fraction(9, 1), Map(w -> 33, v -> 6) -> Fraction(1, \
+1), Map(w -> 12, v -> 10) -> Fraction(3, 1), Map(w -> 9, v -> 4) -> \
+Fraction(-9, 1), Map(w -> 32, v -> 8) -> Fraction(-9, 1), Map(w -> 8, v -> 8) \
+-> Fraction(-9, 1), Map(w -> 11, v -> 4) -> Fraction(-3, 1), Map(w -> 16, v \
+-> 10) -> Fraction(9, 1), Map(w -> 12, v -> 8) -> Fraction(-3, 1), Map(w -> \
+2, v -> 6) -> Fraction(3, 1), Map(w -> 15) -> Fraction(-1, 1), Map(w -> 22, v \
+-> 12) -> Fraction(-3, 1), Map(w -> 33, v -> 4) -> Fraction(-3, 1), Map(w -> \
+14, v -> 2) -> Fraction(9, 1), Map(w -> 28, v -> 6) -> Fraction(9, 1), Map(w \
+-> 21, v -> 8) -> Fraction(-27, 1), Map(w -> 10, v -> 2) -> Fraction(3, 1), \
+Map(w -> 6, v -> 6) -> Fraction(1, 1), Map(w -> 35, v -> 6) -> Fraction(3, \
+1), Map(w -> 25, v -> 10) -> Fraction(9, 1), Map(w -> 15, v -> 6) -> \
+Fraction(27, 1), Map(w -> 25, v -> 2) -> Fraction(9, 1))), \
+MultivariablePolynomial(Map(Map(w -> 21) -> Fraction(1, 1), Map(w -> 22, v -> \
+2) -> Fraction(-3, 1), Map(w -> 23, v -> 4) -> Fraction(3, 1), Map(w -> 21, v \
+-> 4) -> Fraction(3, 1), Map(w -> 24, v -> 6) -> Fraction(-1, 1), Map(w -> \
+22, v -> 4) -> Fraction(9, 1), Map(w -> 24, v -> 10) -> Fraction(-3, 1), \
+Map(w -> 23, v -> 8) -> Fraction(9, 1), Map(w -> 22, v -> 6) -> Fraction(-9, \
+1), Map(w -> 23, v -> 10) -> Fraction(-3, 1), Map(w -> 24, v -> 8) -> \
+Fraction(3, 1), Map(w -> 24, v -> 12) -> Fraction(1, 1), Map(w -> 21, v -> 2) \
+-> Fraction(-3, 1), Map(w -> 23, v -> 6) -> Fraction(-9, 1), Map(w -> 22, v \
+-> 8) -> Fraction(3, 1), Map(w -> 21, v -> 6) -> Fraction(-1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 31, v -> 4) -> Fraction(-9, 1), \
+Map(w -> 21) -> Fraction(-1, 1), Map(v -> 6) -> Fraction(1, 1), Map(w -> 7, v \
+-> 4) -> Fraction(-9, 1), Map(w -> 18, v -> 4) -> Fraction(-27, 1), Map(w -> \
+30, v -> 8) -> Fraction(-9, 1), Map(w -> 17, v -> 8) -> Fraction(-9, 1), \
+Map(w -> 17) -> Fraction(-3, 1), Map(w -> 24, v -> 6) -> Fraction(27, 1), \
+Map(w -> 22, v -> 4) -> Fraction(-9, 1), Map(w -> 26, v -> 6) -> Fraction(27, \
+1), Map(w -> 12, v -> 2) -> Fraction(9, 1), Map(w -> 18, v -> 10) -> \
+Fraction(3, 1), Map(w -> 17, v -> 6) -> Fraction(9, 1), Map(w -> 34, v -> 8) \
+-> Fraction(-3, 1), Map(w -> 29, v -> 4) -> Fraction(-9, 1), Map(w -> 27, v \
+-> 2) -> Fraction(3, 1), Map(w -> 19, v -> 8) -> Fraction(-27, 1), Map(w -> \
+20, v -> 12) -> Fraction(-3, 1), Map(w -> 20, v -> 4) -> Fraction(-27, 1), \
+Map(w -> 16, v -> 2) -> Fraction(3, 1), Map(w -> 19) -> Fraction(-3, 1), \
+Map(w -> 23, v -> 8) -> Fraction(-9, 1), Map(w -> 10, v -> 8) -> Fraction(-9, \
+1), Map(w -> 39, v -> 6) -> Fraction(1, 1), Map(w -> 22, v -> 6) -> \
+Fraction(9, 1), Map(w -> 16, v -> 4) -> Fraction(-9, 1), Map(w -> 13, v -> 6) \
+-> Fraction(27, 1), Map(w -> 29, v -> 10) -> Fraction(3, 1), Map(w -> 23, v \
+-> 10) -> Fraction(3, 1), Map(w -> 4, v -> 6) -> Fraction(3, 1), Map(w -> 23, \
+v -> 2) -> Fraction(9, 1), Map(w -> 27, v -> 4) -> Fraction(-3, 1), Map(w -> \
+24, v -> 12) -> Fraction(-1, 1), Map(w -> 5, v -> 4) -> Fraction(-3, 1), \
+Map(w -> 28, v -> 8) -> Fraction(-3, 1), Map(w -> 37, v -> 6) -> Fraction(3, \
+1), Map(w -> 18, v -> 12) -> Fraction(-1, 1), Map(w -> 6, v -> 8) -> \
+Fraction(-3, 1), Map(w -> 21, v -> 2) -> Fraction(3, 1), Map(w -> 27, v -> \
+10) -> Fraction(9, 1), Map(w -> 11, v -> 6) -> Fraction(9, 1), Map(w -> 14, v \
+-> 10) -> Fraction(9, 1), Map(w -> 33, v -> 6) -> Fraction(1, 1), Map(w -> \
+12, v -> 10) -> Fraction(3, 1), Map(w -> 9, v -> 4) -> Fraction(-9, 1), Map(w \
+-> 32, v -> 8) -> Fraction(-9, 1), Map(w -> 8, v -> 8) -> Fraction(-9, 1), \
+Map(w -> 11, v -> 4) -> Fraction(-3, 1), Map(w -> 16, v -> 10) -> Fraction(9, \
+1), Map(w -> 12, v -> 8) -> Fraction(-3, 1), Map(w -> 2, v -> 6) -> \
+Fraction(3, 1), Map(w -> 15) -> Fraction(-1, 1), Map(w -> 22, v -> 12) -> \
+Fraction(-3, 1), Map(w -> 33, v -> 4) -> Fraction(-3, 1), Map(w -> 14, v -> \
+2) -> Fraction(9, 1), Map(w -> 28, v -> 6) -> Fraction(9, 1), Map(w -> 21, v \
+-> 8) -> Fraction(-27, 1), Map(w -> 10, v -> 2) -> Fraction(3, 1), Map(w -> \
+6, v -> 6) -> Fraction(1, 1), Map(w -> 35, v -> 6) -> Fraction(3, 1), Map(w \
+-> 25, v -> 10) -> Fraction(9, 1), Map(w -> 15, v -> 6) -> Fraction(27, 1), \
+Map(w -> 25, v -> 2) -> Fraction(9, 1))), MultivariablePolynomial(Map(Map(w \
+-> 21) -> Fraction(1, 1), Map(w -> 22, v -> 2) -> Fraction(-3, 1), Map(w -> \
+23, v -> 4) -> Fraction(3, 1), Map(w -> 21, v -> 4) -> Fraction(3, 1), Map(w \
+-> 24, v -> 6) -> Fraction(-1, 1), Map(w -> 22, v -> 4) -> Fraction(9, 1), \
+Map(w -> 24, v -> 10) -> Fraction(-3, 1), Map(w -> 23, v -> 8) -> Fraction(9, \
+1), Map(w -> 22, v -> 6) -> Fraction(-9, 1), Map(w -> 23, v -> 10) -> \
+Fraction(-3, 1), Map(w -> 24, v -> 8) -> Fraction(3, 1), Map(w -> 24, v -> \
+12) -> Fraction(1, 1), Map(w -> 21, v -> 2) -> Fraction(-3, 1), Map(w -> 23, \
+v -> 6) -> Fraction(-9, 1), Map(w -> 22, v -> 8) -> Fraction(3, 1), Map(w -> \
+21, v -> 6) -> Fraction(-1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1))))), \
+List(Fraction(MultivariablePolynomial(Map(Map(w -> 31, v -> 4) -> \
+Fraction(-9, 1), Map(w -> 21) -> Fraction(-1, 1), Map(v -> 6) -> Fraction(1, \
+1), Map(w -> 7, v -> 4) -> Fraction(-9, 1), Map(w -> 18, v -> 4) -> \
+Fraction(-27, 1), Map(w -> 30, v -> 8) -> Fraction(-9, 1), Map(w -> 17, v -> \
+8) -> Fraction(-9, 1), Map(w -> 17) -> Fraction(-3, 1), Map(w -> 24, v -> 6) \
+-> Fraction(27, 1), Map(w -> 22, v -> 4) -> Fraction(-9, 1), Map(w -> 26, v \
+-> 6) -> Fraction(27, 1), Map(w -> 12, v -> 2) -> Fraction(9, 1), Map(w -> \
+18, v -> 10) -> Fraction(3, 1), Map(w -> 17, v -> 6) -> Fraction(9, 1), Map(w \
+-> 34, v -> 8) -> Fraction(-3, 1), Map(w -> 29, v -> 4) -> Fraction(-9, 1), \
+Map(w -> 27, v -> 2) -> Fraction(3, 1), Map(w -> 19, v -> 8) -> Fraction(-27, \
+1), Map(w -> 20, v -> 12) -> Fraction(-3, 1), Map(w -> 20, v -> 4) -> \
+Fraction(-27, 1), Map(w -> 16, v -> 2) -> Fraction(3, 1), Map(w -> 19) -> \
+Fraction(-3, 1), Map(w -> 23, v -> 8) -> Fraction(-9, 1), Map(w -> 10, v -> \
+8) -> Fraction(-9, 1), Map(w -> 39, v -> 6) -> Fraction(1, 1), Map(w -> 22, v \
+-> 6) -> Fraction(9, 1), Map(w -> 16, v -> 4) -> Fraction(-9, 1), Map(w -> \
+13, v -> 6) -> Fraction(27, 1), Map(w -> 29, v -> 10) -> Fraction(3, 1), \
+Map(w -> 23, v -> 10) -> Fraction(3, 1), Map(w -> 4, v -> 6) -> Fraction(3, \
+1), Map(w -> 23, v -> 2) -> Fraction(9, 1), Map(w -> 27, v -> 4) -> \
+Fraction(-3, 1), Map(w -> 24, v -> 12) -> Fraction(-1, 1), Map(w -> 5, v -> \
+4) -> Fraction(-3, 1), Map(w -> 28, v -> 8) -> Fraction(-3, 1), Map(w -> 37, \
+v -> 6) -> Fraction(3, 1), Map(w -> 18, v -> 12) -> Fraction(-1, 1), Map(w -> \
+6, v -> 8) -> Fraction(-3, 1), Map(w -> 21, v -> 2) -> Fraction(3, 1), Map(w \
+-> 27, v -> 10) -> Fraction(9, 1), Map(w -> 11, v -> 6) -> Fraction(9, 1), \
+Map(w -> 14, v -> 10) -> Fraction(9, 1), Map(w -> 33, v -> 6) -> Fraction(1, \
+1), Map(w -> 12, v -> 10) -> Fraction(3, 1), Map(w -> 9, v -> 4) -> \
+Fraction(-9, 1), Map(w -> 32, v -> 8) -> Fraction(-9, 1), Map(w -> 8, v -> 8) \
+-> Fraction(-9, 1), Map(w -> 11, v -> 4) -> Fraction(-3, 1), Map(w -> 16, v \
+-> 10) -> Fraction(9, 1), Map(w -> 12, v -> 8) -> Fraction(-3, 1), Map(w -> \
+2, v -> 6) -> Fraction(3, 1), Map(w -> 15) -> Fraction(-1, 1), Map(w -> 22, v \
+-> 12) -> Fraction(-3, 1), Map(w -> 33, v -> 4) -> Fraction(-3, 1), Map(w -> \
+14, v -> 2) -> Fraction(9, 1), Map(w -> 28, v -> 6) -> Fraction(9, 1), Map(w \
+-> 21, v -> 8) -> Fraction(-27, 1), Map(w -> 10, v -> 2) -> Fraction(3, 1), \
+Map(w -> 6, v -> 6) -> Fraction(1, 1), Map(w -> 35, v -> 6) -> Fraction(3, \
+1), Map(w -> 25, v -> 10) -> Fraction(9, 1), Map(w -> 15, v -> 6) -> \
+Fraction(27, 1), Map(w -> 25, v -> 2) -> Fraction(9, 1))), \
+MultivariablePolynomial(Map(Map(w -> 21) -> Fraction(1, 1), Map(w -> 22, v -> \
+2) -> Fraction(-3, 1), Map(w -> 23, v -> 4) -> Fraction(3, 1), Map(w -> 21, v \
+-> 4) -> Fraction(3, 1), Map(w -> 24, v -> 6) -> Fraction(-1, 1), Map(w -> \
+22, v -> 4) -> Fraction(9, 1), Map(w -> 24, v -> 10) -> Fraction(-3, 1), \
+Map(w -> 23, v -> 8) -> Fraction(9, 1), Map(w -> 22, v -> 6) -> Fraction(-9, \
+1), Map(w -> 23, v -> 10) -> Fraction(-3, 1), Map(w -> 24, v -> 8) -> \
+Fraction(3, 1), Map(w -> 24, v -> 12) -> Fraction(1, 1), Map(w -> 21, v -> 2) \
+-> Fraction(-3, 1), Map(w -> 23, v -> 6) -> Fraction(-9, 1), Map(w -> 22, v \
+-> 8) -> Fraction(3, 1), Map(w -> 21, v -> 6) -> Fraction(-1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 31, v -> 4) -> Fraction(-9, 1), \
+Map(w -> 21) -> Fraction(-1, 1), Map(v -> 6) -> Fraction(1, 1), Map(w -> 7, v \
+-> 4) -> Fraction(-9, 1), Map(w -> 18, v -> 4) -> Fraction(-27, 1), Map(w -> \
+30, v -> 8) -> Fraction(-9, 1), Map(w -> 17, v -> 8) -> Fraction(-9, 1), \
+Map(w -> 17) -> Fraction(-3, 1), Map(w -> 24, v -> 6) -> Fraction(27, 1), \
+Map(w -> 22, v -> 4) -> Fraction(-9, 1), Map(w -> 26, v -> 6) -> Fraction(27, \
+1), Map(w -> 12, v -> 2) -> Fraction(9, 1), Map(w -> 18, v -> 10) -> \
+Fraction(3, 1), Map(w -> 17, v -> 6) -> Fraction(9, 1), Map(w -> 34, v -> 8) \
+-> Fraction(-3, 1), Map(w -> 29, v -> 4) -> Fraction(-9, 1), Map(w -> 27, v \
+-> 2) -> Fraction(3, 1), Map(w -> 19, v -> 8) -> Fraction(-27, 1), Map(w -> \
+20, v -> 12) -> Fraction(-3, 1), Map(w -> 20, v -> 4) -> Fraction(-27, 1), \
+Map(w -> 16, v -> 2) -> Fraction(3, 1), Map(w -> 19) -> Fraction(-3, 1), \
+Map(w -> 23, v -> 8) -> Fraction(-9, 1), Map(w -> 10, v -> 8) -> Fraction(-9, \
+1), Map(w -> 39, v -> 6) -> Fraction(1, 1), Map(w -> 22, v -> 6) -> \
+Fraction(9, 1), Map(w -> 16, v -> 4) -> Fraction(-9, 1), Map(w -> 13, v -> 6) \
+-> Fraction(27, 1), Map(w -> 29, v -> 10) -> Fraction(3, 1), Map(w -> 23, v \
+-> 10) -> Fraction(3, 1), Map(w -> 4, v -> 6) -> Fraction(3, 1), Map(w -> 23, \
+v -> 2) -> Fraction(9, 1), Map(w -> 27, v -> 4) -> Fraction(-3, 1), Map(w -> \
+24, v -> 12) -> Fraction(-1, 1), Map(w -> 5, v -> 4) -> Fraction(-3, 1), \
+Map(w -> 28, v -> 8) -> Fraction(-3, 1), Map(w -> 37, v -> 6) -> Fraction(3, \
+1), Map(w -> 18, v -> 12) -> Fraction(-1, 1), Map(w -> 6, v -> 8) -> \
+Fraction(-3, 1), Map(w -> 21, v -> 2) -> Fraction(3, 1), Map(w -> 27, v -> \
+10) -> Fraction(9, 1), Map(w -> 11, v -> 6) -> Fraction(9, 1), Map(w -> 14, v \
+-> 10) -> Fraction(9, 1), Map(w -> 33, v -> 6) -> Fraction(1, 1), Map(w -> \
+12, v -> 10) -> Fraction(3, 1), Map(w -> 9, v -> 4) -> Fraction(-9, 1), Map(w \
+-> 32, v -> 8) -> Fraction(-9, 1), Map(w -> 8, v -> 8) -> Fraction(-9, 1), \
+Map(w -> 11, v -> 4) -> Fraction(-3, 1), Map(w -> 16, v -> 10) -> Fraction(9, \
+1), Map(w -> 12, v -> 8) -> Fraction(-3, 1), Map(w -> 2, v -> 6) -> \
+Fraction(3, 1), Map(w -> 15) -> Fraction(-1, 1), Map(w -> 22, v -> 12) -> \
+Fraction(-3, 1), Map(w -> 33, v -> 4) -> Fraction(-3, 1), Map(w -> 14, v -> \
+2) -> Fraction(9, 1), Map(w -> 28, v -> 6) -> Fraction(9, 1), Map(w -> 21, v \
+-> 8) -> Fraction(-27, 1), Map(w -> 10, v -> 2) -> Fraction(3, 1), Map(w -> \
+6, v -> 6) -> Fraction(1, 1), Map(w -> 35, v -> 6) -> Fraction(3, 1), Map(w \
+-> 25, v -> 10) -> Fraction(9, 1), Map(w -> 15, v -> 6) -> Fraction(27, 1), \
+Map(w -> 25, v -> 2) -> Fraction(9, 1))), MultivariablePolynomial(Map(Map(w \
+-> 21) -> Fraction(1, 1), Map(w -> 22, v -> 2) -> Fraction(-3, 1), Map(w -> \
+23, v -> 4) -> Fraction(3, 1), Map(w -> 21, v -> 4) -> Fraction(3, 1), Map(w \
+-> 24, v -> 6) -> Fraction(-1, 1), Map(w -> 22, v -> 4) -> Fraction(9, 1), \
+Map(w -> 24, v -> 10) -> Fraction(-3, 1), Map(w -> 23, v -> 8) -> Fraction(9, \
+1), Map(w -> 22, v -> 6) -> Fraction(-9, 1), Map(w -> 23, v -> 10) -> \
+Fraction(-3, 1), Map(w -> 24, v -> 8) -> Fraction(3, 1), Map(w -> 24, v -> \
+12) -> Fraction(1, 1), Map(w -> 21, v -> 2) -> Fraction(-3, 1), Map(w -> 23, \
+v -> 6) -> Fraction(-9, 1), Map(w -> 22, v -> 8) -> Fraction(3, 1), Map(w -> \
+21, v -> 6) -> Fraction(-1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1))))), \
+List(Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1))))), \
+List(Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1))))), \
+List(Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1))))), \
+List(Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(p1 -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1)))), \
+Fraction(MultivariablePolynomial(Map(Map(w -> 5, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 8, v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(v -> 2, p1 -> 1) -> \
+Fraction(1, 1), Map(w -> 13, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 6, \
+v -> 4, p1 -> 1) -> Fraction(-1, 1), Map(w -> 7, p1 -> 1) -> Fraction(-1, 1), \
+Map(w -> 11, v -> 2, p1 -> 1) -> Fraction(1, 1), Map(w -> 2, v -> 2, p1 -> 1) \
+-> Fraction(1, 1))), MultivariablePolynomial(Map(Map(w -> 8, v -> 4) -> \
+Fraction(1, 1), Map(w -> 8, v -> 2) -> Fraction(-1, 1), Map(w -> 7, v -> 2) \
+-> Fraction(-1, 1), Map(w -> 7) -> Fraction(1, 1))))))\"\>"], "Output",
+ CellChangeTimes->{3.620618288646985*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QES", "//", "Methods"}]], "Input",
+ CellChangeTimes->{{3.6206180746901007`*^9, 3.620618079752243*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {"\<\"scala.collection.Seq actionOfBraiding(scala.collection.Seq)\"\>"},
+     {"\<\"Object add(Object, Object)\"\>"},
+     {"\<\"Object add(Object, Object, scala.collection.Seq)\"\>"},
+     {"\<\"scala.collection.immutable.Map add(scala.collection.immutable.Map, \
+scala.collection.immutable.Map)\"\>"},
+     {"\<\"double add$mcD$sp(double, double)\"\>"},
+     {"\<\"double add$mcD$sp(double, double, scala.collection.Seq)\"\>"},
+     {"\<\"float add$mcF$sp(float, float)\"\>"},
+     {"\<\"float add$mcF$sp(float, float, scala.collection.Seq)\"\>"},
+     {"\<\"int add$mcI$sp(int, int)\"\>"},
+     {"\<\"int add$mcI$sp(int, int, scala.collection.Seq)\"\>"},
+     {"\<\"long add$mcJ$sp(long, long)\"\>"},
+     {"\<\"long add$mcJ$sp(long, long, scala.collection.Seq)\"\>"},
+     {"\<\"scala.collection.Iterator allEvaluations(Object)\"\>"},
+     {"\<\"scala.collection.Iterator \
+allReplacements(net.tqft.toolkit.algebra.spiders.Reduction, \
+net.tqft.toolkit.algebra.spiders.PlanarGraph)\"\>"},
+     {"\<\"scala.collection.Iterator \
+allReplacements(net.tqft.toolkit.algebra.spiders.Reduction, Object)\"\>"},
+     {"\<\"scala.collection.Iterator \
+allReplacementsRepeated(scala.collection.Seq, scala.collection.immutable.Map)\
+\"\>"},
+     {"\<\"scala.collection.Iterator allReplacements(scala.collection.Seq, \
+scala.collection.immutable.Map)\"\>"},
+     {"\<\"Object b()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction b()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider$\
+Basis basisFor3Boxes()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider$\
+BasisWithPlatElement basisFor4Boxes()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider$\
+Basis basisFor5Boxes()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider$\
+BasisWithPlatElement basisFor6Boxes()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider$\
+Basis basis(int, scala.collection.Seq)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.\
+PlanarGraphReductionSpiderOverField$Basis basis(int, \
+scala.collection.Seq)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider$\
+BasisWithPlatElement basisWithPlatElement(int, scala.collection.Seq)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction brace(int, int)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction bracket(int, int)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider$\
+Braid$ Braid()\"\>"},
+     {"\<\"Object canonicalForm(Object)\"\>"},
+     {"\<\"scala.collection.immutable.Map \
+canonicalForm(scala.collection.immutable.Map)\"\>"},
+     {"\<\"int circumference(Object)\"\>"},
+     {"\<\"int circumference(scala.collection.immutable.Map)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Field coefficientRing()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Ring coefficientRing()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.AdditiveMonoid coefficients()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Module coefficients()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.ModuleOverRig coefficients()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.PlanarGraph crossing()\"\>"},
+     {"\<\"Object d()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction d()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.DiagramSpider \
+diagramSpider()\"\>"},
+     {"\<\"Object eigenvalue(int)\"\>"},
+     {"\<\"Object \
+eigenvalue(net.tqft.toolkit.algebra.spiders.Rotation)\"\>"},
+     {"\<\"Object empty()\"\>"},
+     {"\<\"scala.collection.immutable.Map empty()\"\>"},
+     {"\<\"boolean equals(Object)\"\>"},
+     {"\<\"Object evaluatedInnerProduct(Object, Object)\"\>"},
+     {"\<\"Object evaluatedInnerProduct(scala.collection.immutable.Map, \
+scala.collection.immutable.Map)\"\>"},
+     {"\<\"Object evaluate(Object)\"\>"},
+     {"\<\"Object evaluate(scala.collection.immutable.Map)\"\>"},
+     {"\<\"Class getClass()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.GraphsGeneratedBy graphs()\"\>"},
+     {"\<\"int hashCode()\"\>"},
+     {"\<\"scala.collection.Seq innerProductMatrix(scala.collection.Seq)\"\>"},
+     {"\<\"scala.collection.Seq innerProductMatrix(scala.collection.Seq, \
+scala.collection.Seq)\"\>"},
+     {"\<\"Object innerProduct(Object, Object)\"\>"},
+     {"\<\"Object multiply(Object, Object, int)\"\>"},
+     {"\<\"Object negate(Object)\"\>"},
+     {"\<\"scala.collection.immutable.Map \
+negate(scala.collection.immutable.Map)\"\>"},
+     {"\<\"double negate$mcD$sp(double)\"\>"},
+     {"\<\"float negate$mcF$sp(float)\"\>"},
+     {"\<\"int negate$mcI$sp(int)\"\>"},
+     {"\<\"long negate$mcJ$sp(long)\"\>"},
+     {"\<\"void \
+net$tqft$toolkit$algebra$spiders$CachingEvaluableSpider$_setter_$net$tqft$\
+toolkit$algebra$spiders$CachingEvaluableSpider$$cache_$eq(scala.collection.\
+mutable.Map)\"\>"},
+     {"\<\"scala.collection.mutable.Map \
+net$tqft$toolkit$algebra$spiders$CachingEvaluableSpider$$cache()\"\>"},
+     {"\<\"Object \
+net$tqft$toolkit$algebra$spiders$CachingEvaluableSpider$$super$\
+evaluatedInnerProduct(Object, Object)\"\>"},
+     {"\<\"Object \
+net$tqft$toolkit$algebra$spiders$LinearSpider$$super$innerProduct(Object, \
+Object)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Ring \
+net$tqft$toolkit$algebra$spiders$PlanarGraphReductionSpider$$ring$1()\"\>"},
+     {"\<\"void \
+net$tqft$toolkit$algebra$spiders$PolyhedronNamer$_setter_$polyhedronOrdering_$\
+eq(scala.math.Ordering)\"\>"},
+     {"\<\"void \
+net$tqft$toolkit$algebra$spiders$PolyhedronNamer$_setter_$\
+sphericalEquivalents_$eq(scala.Function1)\"\>"},
+     {"\<\"scala.collection.immutable.Map \
+net$tqft$toolkit$algebra$spiders$ReductionSpider$$super$canonicalForm(scala.\
+collection.immutable.Map)\"\>"},
+     {"\<\"scala.collection.immutable.Map \
+net$tqft$toolkit$algebra$spiders$ReductionSpider$$super$stitch(scala.\
+collection.immutable.Map)\"\>"},
+     {"\<\"Object normSquared(Object)\"\>"},
+     {"\<\"void notify()\"\>"},
+     {"\<\"void notifyAll()\"\>"},
+     {"\<\"Object omega()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction omega()\"\>"},
+     {"\<\"scala.math.Ordering polyhedronOrdering()\"\>"},
+     {"\<\"scala.collection.Seq polyhedronReductions()\"\>"},
+     {"\<\"scala.collection.Seq reducedDiagrams(int, int)\"\>"},
+     {"\<\"scala.collection.Seq reducedDiagrams(int, \
+scala.collection.immutable.Map)\"\>"},
+     {"\<\"scala.collection.Seq reductions()\"\>"},
+     {"\<\"scala.collection.immutable.Map \
+replace(net.tqft.toolkit.algebra.spiders.Reduction, \
+scala.collection.immutable.Map)\"\>"},
+     {"\<\"scala.collection.immutable.Map \
+replaceRepeatedly(scala.collection.Seq, \
+scala.collection.immutable.Map)\"\>"},
+     {"\<\"scala.collection.immutable.Map replace(scala.collection.Seq, \
+scala.collection.immutable.Map)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Field ring()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Ring ring()\"\>"},
+     {"\<\"Object rotate(Object, int)\"\>"},
+     {"\<\"scala.collection.immutable.Map \
+rotate(scala.collection.immutable.Map, int)\"\>"},
+     {"\<\"Object scalarMultiply(Object, Object)\"\>"},
+     {"\<\"scala.collection.immutable.Map scalarMultiply(Object, \
+scala.collection.immutable.Map)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.PlanarGraph \
+sphericalCanonicalForm(net.tqft.toolkit.algebra.spiders.PlanarGraph)\"\>"},
+     {"\<\"scala.Function1 sphericalEquivalents()\"\>"},
+     {"\<\"Object stitchAt(Object, int)\"\>"},
+     {"\<\"Object stitchesAt(Object, int, int)\"\>"},
+     {"\<\"Object stitch(Object)\"\>"},
+     {"\<\"scala.collection.immutable.Map \
+stitch(scala.collection.immutable.Map)\"\>"},
+     {"\<\"Object strand()\"\>"},
+     {"\<\"scala.collection.immutable.Map strand()\"\>"},
+     {"\<\"Object subtract(Object, Object)\"\>"},
+     {"\<\"double subtract$mcD$sp(double, double)\"\>"},
+     {"\<\"float subtract$mcF$sp(float, float)\"\>"},
+     {"\<\"int subtract$mcI$sp(int, int)\"\>"},
+     {"\<\"long subtract$mcJ$sp(long, long)\"\>"},
+     {"\<\"Object sum(scala.collection.GenTraversableOnce)\"\>"},
+     {"\<\"double sum$mcD$sp(scala.collection.GenTraversableOnce)\"\>"},
+     {"\<\"float sum$mcF$sp(scala.collection.GenTraversableOnce)\"\>"},
+     {"\<\"int sum$mcI$sp(scala.collection.GenTraversableOnce)\"\>"},
+     {"\<\"long sum$mcJ$sp(scala.collection.GenTraversableOnce)\"\>"},
+     {"\<\"Object t()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction t()\"\>"},
+     {"\<\"Object tensor(Object, Object)\"\>"},
+     {"\<\"Object tensorProduct(scala.collection.Seq)\"\>"},
+     {"\<\"scala.collection.immutable.Map \
+tensor(scala.collection.immutable.Map, scala.collection.immutable.Map)\"\>"},
+     {"\<\"String toString()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction v()\"\>"},
+     {"\<\"Object variableToPolynomial(String)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction \
+variableToPolynomial(String)\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.spiders.PlanarGraph vertex()\"\>"},
+     {"\<\"scala.collection.Seq vertexTypes()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction w()\"\>"},
+     {"\<\"void wait(long, int) throws InterruptedException\"\>"},
+     {"\<\"void wait(long) throws InterruptedException\"\>"},
+     {"\<\"void wait() throws InterruptedException\"\>"},
+     {"\<\"Object z()\"\>"},
+     {"\<\"net.tqft.toolkit.algebra.Fraction z()\"\>"},
+     {"\<\"Object zero()\"\>"},
+     {"\<\"scala.collection.immutable.Map zero()\"\>"},
+     {"\<\"double zero$mcD$sp()\"\>"},
+     {"\<\"float zero$mcF$sp()\"\>"},
+     {"\<\"int zero$mcI$sp()\"\>"},
+     {"\<\"long zero$mcJ$sp()\"\>"},
+     {"\<\"boolean zero_$qmark(Object)\"\>"},
+     {"\<\"boolean zero_$qmark$mcD$sp(double)\"\>"},
+     {"\<\"boolean zero_$qmark$mcF$sp(float)\"\>"},
+     {"\<\"boolean zero_$qmark$mcI$sp(int)\"\>"},
+     {"\<\"boolean zero_$qmark$mcJ$sp(long)\"\>"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.5599999999999999]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}],
+   Column],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{3.620618080102709*^9}]
+}, Open  ]]
+},
+WindowSize->{995, 682},
+WindowMargins->{{Automatic, 19}, {Automatic, 41}},
+FrontEndVersion->"9.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (January 25, \
+2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[557, 20, 118, 2, 28, "Input"],
+Cell[678, 24, 364, 9, 28, "Input"],
+Cell[1045, 35, 190, 4, 28, "Input"],
+Cell[1238, 41, 2081, 54, 131, "Input"],
+Cell[CellGroupData[{
+Cell[3344, 99, 286, 5, 28, "Input"],
+Cell[3633, 106, 561, 12, 28, "Output"]
+}, Open  ]],
+Cell[4209, 121, 713, 18, 80, "Input"],
+Cell[4925, 141, 2824, 69, 199, "Input"],
+Cell[7752, 212, 736, 20, 63, "Input"],
+Cell[8491, 234, 1479, 36, 131, "Input"],
+Cell[9973, 272, 1487, 34, 115, "Input",
+ InitializationCell->True],
+Cell[11463, 308, 138, 2, 28, "Input"],
+Cell[11604, 312, 236, 5, 28, "Input"],
+Cell[11843, 319, 428, 9, 46, "Input"],
+Cell[12274, 330, 270, 7, 28, "Input"],
+Cell[12547, 339, 933, 22, 63, "Input"],
+Cell[CellGroupData[{
+Cell[13505, 365, 291, 7, 28, "Input"],
+Cell[13799, 374, 210, 3, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14046, 382, 273, 6, 28, "Input"],
+Cell[14322, 390, 236, 4, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14595, 399, 291, 7, 28, "Input"],
+Cell[14889, 408, 400, 9, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15326, 422, 325, 8, 28, "Input"],
+Cell[15654, 432, 310, 7, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16001, 444, 627, 15, 46, "Input"],
+Cell[16631, 461, 412, 9, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17080, 475, 169, 3, 28, "Input"],
+Cell[17252, 480, 308, 7, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17597, 492, 145, 3, 28, "Input"],
+Cell[17745, 497, 25301, 336, 4296, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[43083, 838, 126, 2, 28, "Input"],
+Cell[43212, 842, 10410, 206, 2370, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

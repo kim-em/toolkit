@@ -12,9 +12,9 @@ import net.tqft.toolkit.Logging
 case class SpiderData(
   spider: QuotientSpider,
   groebnerBasis: Seq[MultivariablePolynomial[Fraction[BigInt], String]],
+  nonzeroPolynomials: Seq[MultivariablePolynomial[Fraction[BigInt], String]],
   nonReducingRelations: Seq[Seq[Seq[MultivariableRationalFunction[Fraction[BigInt], String]]]], // given as linear combinations of the considered diagrams
   dimensionBounds: Seq[Int],
-  consideredDiagramsVertexBound: Seq[Int],
   consideredDiagrams: Seq[Seq[PlanarGraph]],
   independentDiagrams: Seq[Seq[PlanarGraph]],
   visiblyIndependentDiagrams: Seq[Seq[PlanarGraph]],
@@ -59,8 +59,7 @@ case class SpiderData(
   visiblyIndependentDiagrams.sizes: ${visiblyIndependentDiagrams.map(_.size)},
   consideredDiagrams.sizes: ${consideredDiagrams.map(_.size)},
   observedPolyhedra: $observedPolyhedra,
-  reducibleDiagrams: ${spider.extraReductions.map(_.big)},
-  consideredDiagramsVertexBound = $consideredDiagramsVertexBound
+  reducibleDiagrams: ${spider.extraReductions.map(_.big)}
 )"""
   }
 
@@ -86,7 +85,15 @@ case class SpiderData(
   lazy val rationalFunctions: Ring[R] = Field.fieldOfFractions(polynomials)
 
   private def normalForm(p: P): P = polynomials.normalForm(p)
-  private def normalForm(r: R): R = Fraction(polynomials.normalForm(r.numerator), polynomials.normalForm(r.denominator))
+  private def normalForm(r: R): R = {
+    val nn = polynomials.normalForm(r.numerator)
+    val nd = polynomials.normalForm(r.denominator)
+    if (nn == r.numerator && nd == r.denominator) {
+      r
+    } else {
+      normalForm(Fraction(nn, nd))
+    }
+  }
 
   def allPolyhedronIdentities(s: String): Seq[R] = {
     def allPolyhedronReducingIdentities(s: String): Seq[R] = {
@@ -150,7 +157,7 @@ case class SpiderData(
     result
   }
 
-  def considerDiagram(p: PlanarGraph): Seq[SpiderData] = {
+  def considerDiagram(p: PlanarGraph, independent_? : Boolean = false): Seq[SpiderData] = {
     if (spider.reducibleDiagram_?(p)) {
       println("ignoring a diagram that is now reducible: " + p)
       Seq(this)
@@ -175,7 +182,11 @@ case class SpiderData(
           val paddedNonReducingRelations = s.nonReducingRelations.padTo(boundary + 1, Seq.empty)
           val padded = s.copy(independentDiagrams = paddedIndependentDiagrams, visiblyIndependentDiagrams = paddedVisiblyIndependentDiagrams, nonReducingRelations = paddedNonReducingRelations, consideredDiagrams = newConsideredDiagrams)
 
-          val addDependent = padded.addDependentDiagram(p)
+          val addDependent = if (!independent_?) {
+            padded.addDependentDiagram(p)
+          } else {
+            Seq.empty
+          }
           val addIndependent = if (padded.independentDiagrams(boundary).size < dimensionBounds(boundary)) {
             padded.addIndependentDiagram(p)
           } else {
@@ -185,7 +196,7 @@ case class SpiderData(
         }).flatten
 
       } else {
-        declareAllPolynomialsZero(pairingsWithNonReducingRelations).flatMap(_.considerDiagram(p))
+        declareAllPolynomialsZero(pairingsWithNonReducingRelations).flatMap(_.considerDiagram(p, independent_?))
       }
     }
   }
@@ -444,10 +455,10 @@ case class SpiderData(
         })
       })
 
-      if (polynomials.totalDegree(p) > 0) {
-        require(result.isEmpty || result.get._1.groebnerBasis.nonEmpty)
-      }
-
+//      if (polynomials.totalDegree(p) > 0) {
+//        require(result.isEmpty || result.get._1.groebnerBasis.nonEmpty, result.map(_._1.groebnerBasis))
+//      }
+//
       result
     }
   }
@@ -456,24 +467,25 @@ case class SpiderData(
     ps.foldLeft[Option[(SpiderData, Seq[R])]](Some((this, Seq.empty)))({ (o, p) => o.flatMap(q => q._1.invertPolynomial(p).map(r => (r._1, q._2 :+ r._2))) })
   }
 
-  def invertibilityWitness(p: P): P = {
-    if (polynomials.totalDegree(p) == 0) {
-      polynomials.ring.inverse(polynomials.constantTerm(p))
-    } else {
-      p.toMathematicaInputString match {
-        case s if s.startsWith("(") && s.endsWith("^(-1)") => polynomials.monomial(s.stripPrefix("(").stripSuffix("^(-1)"))
-        case s if s.contains("^(-1)") => ???
-        case s => polynomials.monomial("(" + s + ")^(-1)")
-      }
-    }
-  }
+  //  def invertibilityWitness(p: P): P = {
+  //    if (polynomials.totalDegree(p) == 0) {
+  //      polynomials.ring.inverse(polynomials.constantTerm(p))
+  //    } else {
+  //      p.toMathematicaInputString match {
+  //        case s if s.startsWith("(") && s.endsWith("^(-1)") => polynomials.monomial(s.stripPrefix("(").stripSuffix("^(-1)"))
+  //        case s if s.contains("^(-1)") => ???
+  //        case s => polynomials.monomial("(" + s + ")^(-1)")
+  //      }
+  //    }
+  //  }
   def invertIrreduciblePolynomial(p: P): Option[(SpiderData, R)] = {
     println("inverting " + p.toMathematicaInputString)
     if (polynomials.zero_?(p)) {
       None
     } else {
-      val i = invertibilityWitness(p)
-      declareIrreduciblePolynomialZero(polynomials.subtract(polynomials.multiply(i, p), polynomials.one)).map(s => (s, Fraction(polynomials.one, p)))
+      Some((copy(nonzeroPolynomials = nonzeroPolynomials :+ p), Fraction(polynomials.one, p)))
+      //      val i = invertibilityWitness(p)
+      //      declareIrreduciblePolynomialZero(polynomials.subtract(polynomials.multiply(i, p), polynomials.one)).map(s => (s, Fraction(polynomials.one, p)))
     }
   }
 
@@ -539,31 +551,41 @@ case class SpiderData(
       }
 
       // has everything collapsed?
-      if (newGroebnerBasis.contains(polynomials.one)) {
+      if (newGroebnerBasis.contains(polynomials.one) || newGroebnerBasis.contains(polynomials.negativeOne)) {
         None
       } else {
         val newPolynomials = MultivariablePolynomialAlgebras.quotient(newGroebnerBasis)
         // TODO if we have non-reducing relations, these will have to be updated as well
-        val newExtraReductions = spider.extraReductions.map({
-          case Reduction(big, small) => Reduction(big, small.map({ p => (p._1, Fraction(newPolynomials.normalForm(p._2.numerator), newPolynomials.normalForm(p._2.denominator))) }))
-        })
-        val newNonReducingRelations = nonReducingRelations.map(_.map(_.map(p => Fraction(newPolynomials.normalForm(p.numerator), newPolynomials.normalForm(p.denominator)))))
-        val result = Some(copy(
-          spider = spider.copy(extraReductions = newExtraReductions),
-          nonReducingRelations = newNonReducingRelations,
-          groebnerBasis = newGroebnerBasis))
-        for (s <- result) {
-          require(s.polynomials.zero_?(r))
+        val newNonzeroPolynomials = nonzeroPolynomials.map(newPolynomials.normalForm)
+        if (newNonzeroPolynomials.contains(newPolynomials.zero)) {
+          None
+        } else {
+          val newExtraReductions = spider.extraReductions.map({
+            case Reduction(big, small) => Reduction(big, small.map({ p => (p._1, Fraction(newPolynomials.normalForm(p._2.numerator), newPolynomials.normalForm(p._2.denominator))) }))
+          })
+          val newNonReducingRelations = nonReducingRelations.map(_.map(_.map(p => Fraction(newPolynomials.normalForm(p.numerator), newPolynomials.normalForm(p.denominator)))))
+          val result = Some(copy(
+            spider = spider.copy(extraReductions = newExtraReductions),
+            nonReducingRelations = newNonReducingRelations,
+            groebnerBasis = newGroebnerBasis,
+            nonzeroPolynomials = newNonzeroPolynomials))
+          for (s <- result) {
+            require(s.polynomials.zero_?(r))
+          }
+          result
         }
-        result
       }
     }
   }
 
   def considerDiagrams(boundary: Int, vertices: Int): Seq[SpiderData] = {
+    require(spider.generators.size == 1)
+    considerDiagrams(boundary, Map(spider.generators.head._1 -> vertices))
+  }
+
+  def considerDiagrams(boundary: Int, vertices: Map[VertexType, Int]): Seq[SpiderData] = {
     println(s"Considering diagrams with $boundary boundary points and $vertices vertices...")
 
-    val newConsideredDiagramsVertexBound = consideredDiagramsVertexBound.padTo(boundary + 1, 0).updated(boundary, vertices)
     val diagramsToConsider = spider.reducedDiagrams(boundary, vertices)
     for (d <- diagramsToConsider) println("   " + d)
 
@@ -573,7 +595,6 @@ case class SpiderData(
       (s: Seq[SpiderData], p: PlanarGraph) =>
         s.flatMap(d => d.considerDiagram(p))
     })
-      .map(_.copy(consideredDiagramsVertexBound = newConsideredDiagramsVertexBound))
   }
 
   def considerDiagrams(diagramSizes: Seq[(Int, Int)]): Seq[SpiderData] = {
