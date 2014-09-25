@@ -14,30 +14,28 @@ abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with
   }
   override def reductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = polyhedronReductions
 
-  override def toString = "FreeSpider(...)"
+  override def toString = "new FreeSpider(...)"
 }
 
-abstract class LowestWeightSpider extends FreeSpider {
-  val lowestWeightReductions = for (
-    (v, _) <- generators;
-    k <- 0 until v.allowedRotationStep;
-    d = diagramSpider.stitchAt(PlanarGraph.star(v.perimeter, v.allowedRotationStep), k)
-  ) yield {
-    //    println(s"Adding reduction formula so $v is lowest weight: $d")
-    Reduction(d, Map.empty[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]])
+object QuotientSpider {
+  def withLowestWeightGenerators(generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])]) = {
+    val diagramSpider = implicitly[Spider[PlanarGraph]]
+    val lowestWeightReductions = for (
+      (v, _) <- generators;
+      k <- 0 until v.allowedRotationStep;
+      d = diagramSpider.stitchAt(PlanarGraph.star(v.perimeter, v.allowedRotationStep), k)
+    ) yield {
+      //    println(s"Adding reduction formula so $v is lowest weight: $d")
+      Reduction(d, Map.empty[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]])
+    }
+
+    QuotientSpider(generators, lowestWeightReductions)
   }
-
-  override def reductions = super.reductions ++ lowestWeightReductions
-
-  def asQuotientSpider = QuotientSpider(generators)
-
-  override def toString = "LowestWeightSpider(...)"
-
 }
 
 case class QuotientSpider(
   generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])],
-  extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty) extends LowestWeightSpider {
+  extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty) extends FreeSpider {
   override def reductions = super.reductions ++ extraReductions
 
   def addReduction(reduction: Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]) = {
@@ -47,7 +45,7 @@ case class QuotientSpider(
   def reducibleDiagram_?(p: PlanarGraph): Boolean = {
     reductions.exists(r => p.Subgraphs(r.big).excisions.nonEmpty)
   }
-  
+
   override def toString = {
     import MathematicaForm._
     val extraReductionsString = extraReductions.map({
