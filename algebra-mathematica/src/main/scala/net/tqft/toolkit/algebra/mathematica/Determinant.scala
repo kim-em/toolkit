@@ -31,13 +31,12 @@ object Determinant {
           Seq(m.map(r => r.map(toExpression))))
         val unwrappedInput = FullFormExpression(SymbolExpression("ReplaceAll"), Seq(input, Expression.expression.fromInputForm("a[x_] :> x")))
         val output = unwrappedInput.evaluate
-        println(output.toInputForm)
         fromExpression(output)
       }
     }
 
     def cachedDeterminant: R = {
-      if (m.size < 10) {
+      if (m.toString.size < 250) {
         determinant
       } else {
         import MathematicaForm._
