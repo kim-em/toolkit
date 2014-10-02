@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[    112726,       3077]
-NotebookOptionsPosition[    109368,       2971]
-NotebookOutlinePosition[    109724,       2987]
-CellTagsIndexPosition[    109681,       2984]
+NotebookDataLength[    225714,       5374]
+NotebookOptionsPosition[    218092,       5159]
+NotebookOutlinePosition[    218448,       5175]
+CellTagsIndexPosition[    218405,       5172]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -224,41 +224,6 @@ Cell[BoxData[{
   ";"}]}], "Input",
  CellChangeTimes->{{3.6206171377083406`*^9, 3.620617142109476*^9}}],
 
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"AsScalaList", "[", 
-   RowBox[{"list", ":", 
-    RowBox[{"{", 
-     RowBox[{"__Integer", "|", "__Real"}], "}"}]}], "]"}], ":=", 
-  RowBox[{
-   RowBox[{"scala`collection`JavaConversions`asScalaBuffer", "[", 
-    RowBox[{"java`util`Arrays`asList", "[", 
-     RowBox[{"MakeJavaObject", "/@", "list"}], "]"}], "]"}], "@", 
-   RowBox[{"toList", "[", "]"}]}]}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"AsScalaList", "[", 
-   RowBox[{"list", ":", 
-    RowBox[{"{", "__List", "}"}]}], "]"}], ":=", 
-  RowBox[{"AsScalaList", "[", 
-   RowBox[{"AsScalaList", "/@", "list"}], "]"}]}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"AsScalaList", "[", "list_List", "]"}], ":=", 
-  RowBox[{
-   RowBox[{"scala`collection`JavaConversions`asScalaBuffer", "[", 
-    RowBox[{"java`util`Arrays`asList", "[", 
-     RowBox[{"MakeJavaObject", "[", "list", "]"}], "]"}], "]"}], "@", 
-   RowBox[{"toList", "[", "]"}]}]}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"AsScalaList", "[", 
-   RowBox[{"{", "}"}], "]"}], ":=", 
-  RowBox[{"scala`collection`immutable`List$`MODULE$", "@", 
-   RowBox[{"empty", "[", "]"}]}]}]}], "Input",
- CellChangeTimes->{{3.567720614334144*^9, 3.567720621410693*^9}, {
-  3.567720654523664*^9, 3.567720676011091*^9}, {3.567720731822373*^9, 
-  3.5677207326500893`*^9}, {3.5677247654667683`*^9, 3.567724771552896*^9}, {
-  3.5677269994289722`*^9, 3.567727075733775*^9}, {3.567804777400037*^9, 
-  3.5678048076200457`*^9}}],
-
 Cell[BoxData[
  RowBox[{"Clear", "[", "FromScalaObject", "]"}]], "Input",
  CellChangeTimes->{{3.62107136398026*^9, 3.621071366766077*^9}}],
@@ -363,14 +328,29 @@ Cell[BoxData[
 ], "]"}]}], ",", 
     RowBox[{"depth", ":", 
      RowBox[{"_", "?", "Positive"}], ":", "\[Infinity]"}]}], "]"}], ":=", 
-  RowBox[{"ToExpression", "[", 
-   RowBox[{"multivariablePolynomialMathematicaForm", "@", 
-    RowBox[{"toMathematicaInputString", "[", "o", "]"}]}], "]"}]}]], "Input",
+  RowBox[{
+   RowBox[{"ToExpression", "[", 
+    RowBox[{"multivariablePolynomialMathematicaForm", "@", 
+     RowBox[{"toMathematicaInputString", "[", "o", "]"}]}], "]"}], "/.", 
+   RowBox[{
+    RowBox[{"q_Symbol", "/;", 
+     RowBox[{"StringMatchQ", "[", 
+      RowBox[{
+       RowBox[{"SymbolName", "[", "q", "]"}], ",", 
+       RowBox[{"\"\<p\>\"", "~~", 
+        RowBox[{"DigitCharacter", ".."}]}]}], "]"}]}], "\[RuleDelayed]", 
+    SubscriptBox["p", 
+     RowBox[{"ToExpression", "[", 
+      RowBox[{"StringDrop", "[", 
+       RowBox[{
+        RowBox[{"SymbolName", "[", "q", "]"}], ",", "1"}], "]"}], 
+      "]"}]]}]}]}]], "Input",
  CellChangeTimes->{{3.6206861496678267`*^9, 3.620686158667761*^9}, 
    3.620686215481686*^9, {3.620686535145565*^9, 3.620686553200324*^9}, {
    3.620686594021265*^9, 3.6206865964043913`*^9}, {3.621071334167357*^9, 
    3.621071334459256*^9}, 3.621071448046927*^9, {3.621071490004142*^9, 
-   3.621071490365494*^9}, 3.6210715412296553`*^9}],
+   3.621071490365494*^9}, 3.6210715412296553`*^9, {3.621212792813389*^9, 
+   3.621212945787644*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -432,6 +412,41 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{"Clear", "[", "AsScalaObject", "]"}]], "Input",
  CellChangeTimes->{{3.620617808659605*^9, 3.6206178129491177`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"list", ":", 
+    RowBox[{"{", 
+     RowBox[{"__Integer", "|", "__Real"}], "}"}]}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"scala`collection`JavaConversions`asScalaBuffer", "[", 
+    RowBox[{"java`util`Arrays`asList", "[", 
+     RowBox[{"MakeJavaObject", "/@", "list"}], "]"}], "]"}], "@", 
+   RowBox[{"toList", "[", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"list", ":", 
+    RowBox[{"{", "__List", "}"}]}], "]"}], ":=", 
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"AsScalaList", "/@", "list"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", "list_List", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"scala`collection`JavaConversions`asScalaBuffer", "[", 
+    RowBox[{"java`util`Arrays`asList", "[", 
+     RowBox[{"MakeJavaObject", "[", "list", "]"}], "]"}], "]"}], "@", 
+   RowBox[{"toList", "[", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"{", "}"}], "]"}], ":=", 
+  RowBox[{"scala`collection`immutable`List$`MODULE$", "@", 
+   RowBox[{"empty", "[", "]"}]}]}]}], "Input",
+ CellChangeTimes->{{3.567720614334144*^9, 3.567720621410693*^9}, {
+  3.567720654523664*^9, 3.567720676011091*^9}, {3.567720731822373*^9, 
+  3.5677207326500893`*^9}, {3.5677247654667683`*^9, 3.567724771552896*^9}, {
+  3.5677269994289722`*^9, 3.567727075733775*^9}, {3.567804777400037*^9, 
+  3.5678048076200457`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -503,9 +518,9 @@ Cell[BoxData[
     "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
      "examples", ".", "QuantumExceptionalSeries$"}], "]"}], 
    "\[RightGuillemet]"}],
-  JLink`Objects`vm1`JavaObject10546938688569345]], "Output",
+  JLink`Objects`vm1`JavaObject9128427743346689]], "Output",
  CellChangeTimes->{{3.620615740186701*^9, 3.620615772915757*^9}, 
-   3.621066550545342*^9}]
+   3.621066550545342*^9, 3.621209636556823*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -551,8 +566,9 @@ Cell[BoxData[
     RowBox[{
     "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
      "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
-  JLink`Objects`vm1`JavaObject10535021580386306]], "Output",
- CellChangeTimes->{{3.621068770667886*^9, 3.621068823139434*^9}}]
+  JLink`Objects`vm1`JavaObject10535021580386305]], "Output",
+ CellChangeTimes->{{3.621068770667886*^9, 3.621068823139434*^9}, 
+   3.6212096373506002`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -575,10 +591,10 @@ Cell[BoxData[
    RowBox[{"JavaObject", "[", 
     RowBox[{"scala", ".", "collection", ".", "immutable", ".", "Map$Map1"}], 
     "]"}], "\[RightGuillemet]"}],
-  JLink`Objects`vm1`JavaObject32876417440022530]], "Output",
+  JLink`Objects`vm1`JavaObject32876417440022529]], "Output",
  CellChangeTimes->{
   3.620617884493453*^9, 3.621066552240961*^9, {3.621068750279607*^9, 
-   3.621068760188841*^9}, 3.621068810859003*^9}]
+   3.621068760188841*^9}, 3.621068810859003*^9, 3.62120963742102*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -604,12 +620,13 @@ Cell[BoxData[
  InterpretationBox[
   RowBox[{"\[LeftGuillemet]", 
    RowBox[{"JavaObject", "[", 
-    RowBox[{"scala", ".", "collection", ".", "mutable", ".", "ArrayBuffer"}], 
+    RowBox[{
+    "scala", ".", "collection", ".", "immutable", ".", "$colon$colon"}], 
     "]"}], "\[RightGuillemet]"}],
-  JLink`Objects`vm1`JavaObject15953920950009858]], "Output",
+  JLink`Objects`vm1`JavaObject15953920950009857]], "Output",
  CellChangeTimes->{3.620615837016811*^9, 3.620617868236783*^9, 
   3.6206178992007437`*^9, 3.620617935456181*^9, 3.620618067768978*^9, 
-  3.621066561775518*^9, 3.621068858192748*^9}]
+  3.621066561775518*^9, 3.621068858192748*^9, 3.6212096420483027`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -623,7 +640,7 @@ Cell[BoxData[
   3.621068988946957*^9, 3.6210690019623833`*^9}}],
 
 Cell[BoxData["False"], "Output",
- CellChangeTimes->{3.621069115201523*^9}]
+ CellChangeTimes->{3.621069115201523*^9, 3.621209642265545*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1112,8 +1129,11 @@ Cell[BoxData[
          SuperscriptBox["w", "24"]}], "+", 
         RowBox[{
          SuperscriptBox["v", "12"], " ", 
-         SuperscriptBox["w", "24"]}]}], ")"}]}], ",", "p3", ",", "p2", ",", 
-     "p2", ",", "p2"}], "}"}], ",", 
+         SuperscriptBox["w", "24"]}]}], ")"}]}], ",", 
+     SubscriptBox["p", "2"], ",", 
+     SubscriptBox["p", "1"], ",", 
+     SubscriptBox["p", "1"], ",", 
+     SubscriptBox["p", "1"]}], "}"}], ",", 
    RowBox[{"{", 
     RowBox[{
      RowBox[{
@@ -1585,33 +1605,46 @@ Cell[BoxData[
          SuperscriptBox["w", "24"]}], "+", 
         RowBox[{
          SuperscriptBox["v", "12"], " ", 
-         SuperscriptBox["w", "24"]}]}], ")"}]}], ",", "p2", ",", "p2", ",", 
-     "p2", ",", "p2"}], "}"}], ",", 
+         SuperscriptBox["w", "24"]}]}], ")"}]}], ",", 
+     SubscriptBox["p", "1"], ",", 
+     SubscriptBox["p", "1"], ",", 
+     SubscriptBox["p", "1"], ",", 
+     SubscriptBox["p", "1"]}], "}"}], ",", 
    RowBox[{"{", 
-    RowBox[{"p3", ",", "p2", ",", 
+    RowBox[{
+     SubscriptBox["p", "2"], ",", 
+     SubscriptBox["p", "1"], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1625,27 +1658,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1659,27 +1700,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1693,27 +1742,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1726,30 +1783,40 @@ Cell[BoxData[
         SuperscriptBox["v", "4"], " ", 
         SuperscriptBox["w", "8"]}]}]]}], "}"}], ",", 
    RowBox[{"{", 
-    RowBox[{"p2", ",", "p2", ",", 
+    RowBox[{
+     SubscriptBox["p", "1"], ",", 
+     SubscriptBox["p", "1"], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1763,27 +1830,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1797,27 +1872,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p3", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p3", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p3", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p3", " ", 
+        SubscriptBox["p", "2"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "2"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "2"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p3", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p3", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "2"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "2"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p3", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "2"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p3", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "2"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "2"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1831,27 +1914,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1864,30 +1955,40 @@ Cell[BoxData[
         SuperscriptBox["v", "4"], " ", 
         SuperscriptBox["w", "8"]}]}]]}], "}"}], ",", 
    RowBox[{"{", 
-    RowBox[{"p2", ",", "p2", ",", 
+    RowBox[{
+     SubscriptBox["p", "1"], ",", 
+     SubscriptBox["p", "1"], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1901,27 +2002,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p3", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p3", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p3", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p3", " ", 
+        SubscriptBox["p", "2"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "2"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "2"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p3", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p3", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "2"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "2"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p3", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "2"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p3", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "2"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "2"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1935,27 +2044,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -1969,27 +2086,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -2002,30 +2127,40 @@ Cell[BoxData[
         SuperscriptBox["v", "4"], " ", 
         SuperscriptBox["w", "8"]}]}]]}], "}"}], ",", 
    RowBox[{"{", 
-    RowBox[{"p2", ",", "p2", ",", 
+    RowBox[{
+     SubscriptBox["p", "1"], ",", 
+     SubscriptBox["p", "1"], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -2039,27 +2174,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -2073,27 +2216,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -2107,27 +2258,35 @@ Cell[BoxData[
         SuperscriptBox["w", "8"]}]}]], ",", 
      FractionBox[
       RowBox[{
-       RowBox[{"p2", " ", 
-        SuperscriptBox["v", "2"]}], "+", 
-       RowBox[{"p2", " ", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "2"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "5"]}], "-", 
-       RowBox[{"p2", " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
+        SuperscriptBox["v", "2"], " ", 
+        SuperscriptBox["w", "2"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "5"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "6"]}], "-", 
-       RowBox[{"p2", " ", 
-        SuperscriptBox["w", "7"]}], "-", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "6"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
+        SuperscriptBox["w", "7"], " ", 
+        SubscriptBox["p", "1"]}], "-", 
+       RowBox[{
         SuperscriptBox["v", "4"], " ", 
-        SuperscriptBox["w", "8"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "8"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "11"]}], "+", 
-       RowBox[{"p2", " ", 
+        SuperscriptBox["w", "11"], " ", 
+        SubscriptBox["p", "1"]}], "+", 
+       RowBox[{
         SuperscriptBox["v", "2"], " ", 
-        SuperscriptBox["w", "13"]}]}], 
+        SuperscriptBox["w", "13"], " ", 
+        SubscriptBox["p", "1"]}]}], 
       RowBox[{
        SuperscriptBox["w", "7"], "-", 
        RowBox[{
@@ -2140,26 +2299,8 @@ Cell[BoxData[
         SuperscriptBox["v", "4"], " ", 
         SuperscriptBox["w", "8"]}]}]]}], "}"}]}], "}"}]], "Output",
  CellChangeTimes->{3.620618288403048*^9, 3.620686004721492*^9, 
-  3.620686771422935*^9, 3.621066835816039*^9, 3.621069115001751*^9}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"Cases", "[", 
-   RowBox[{
-    RowBox[{"FromScalaObject", "[", "matrix", "]"}], ",", "_Symbol", ",", 
-    "\[Infinity]"}], "]"}], "//", "Union"}]], "Input",
- CellChangeTimes->{{3.620686007065674*^9, 3.620686009303225*^9}, {
-  3.6206866114302597`*^9, 3.620686623707233*^9}}],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{"p2", ",", "p3", ",", "v", ",", "w"}], "}"}]], "Output",
- CellChangeTimes->{{3.620686010916564*^9, 3.620686021540328*^9}, 
-   3.620686090110026*^9, 3.620686136286151*^9, {3.620686578247308*^9, 
-   3.620686624182781*^9}, 3.6210668359243298`*^9}]
+  3.620686771422935*^9, 3.621066835816039*^9, 3.621069115001751*^9, 
+  3.6212098344922743`*^9, 3.62121290580818*^9, 3.621212949382824*^9}]
 }, Open  ]],
 
 Cell[BoxData[{
@@ -2175,12 +2316,15 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
    RowBox[{"withoutMultiplicity", "[", 
-    SuperscriptBox["X_", "k_"], "]"}], ":=", "X"}], 
-  ";"}], "\[IndentingNewLine]", 
+    SuperscriptBox["X_", "k_"], "]"}], ":=", 
+   RowBox[{"{", 
+    RowBox[{"X", ",", "k"}], "}"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"withoutMultiplicity", "[", "X_", "]"}], ":=", "X"}], 
-  ";"}]}], "Input"],
+   RowBox[{"withoutMultiplicity", "[", "X_", "]"}], ":=", 
+   RowBox[{"{", 
+    RowBox[{"X", ",", "1"}], "}"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.6212224769249983`*^9, 3.621222482269302*^9}}],
 
 Cell[BoxData[
  RowBox[{"Clear", "[", "text", "]"}]], "Input",
@@ -2211,7 +2355,20 @@ Cell[BoxData[{
   3.6210667865970592`*^9, 3.621066816623557*^9}, {3.621066853271764*^9, 
   3.6210668907271214`*^9}, {3.6210670037502937`*^9, 3.621067005039667*^9}, {
   3.621067040951891*^9, 3.621067101007056*^9}, {3.6210701847663918`*^9, 
-  3.621070202827035*^9}}],
+  3.621070202827035*^9}, {3.6212126730811577`*^9, 3.621212756897361*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "m_Manifold", ")"}], "[", 
+   RowBox[{"declarePolynomialsZero", "[", "p_", "]"}], "]"}], ":=", 
+  RowBox[{"Fold", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"#1", "[", 
+      RowBox[{"declarePolynomialZero", "[", "#2", "]"}], "]"}], "&"}], ",", 
+    RowBox[{"{", "m", "}"}], ",", "p"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.621213144724956*^9, 3.621213172415187*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -2223,9 +2380,16 @@ Cell[BoxData[
     RowBox[{"{", "factors", "}"}], ",", "\[IndentingNewLine]", 
     RowBox[{
      RowBox[{"factors", "=", 
-      RowBox[{"withoutMultiplicity", "/@", 
-       RowBox[{"timesToList", "[", 
-        RowBox[{"Factor", "[", "p", "]"}], "]"}]}]}], ";", 
+      RowBox[{"Cases", "[", 
+       RowBox[{
+        RowBox[{"withoutMultiplicity", "/@", 
+         RowBox[{"timesToList", "[", 
+          RowBox[{"Factor", "[", "p", "]"}], "]"}]}], ",", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"f_", ",", "k_"}], "}"}], "/;", 
+          RowBox[{"k", ">", "0"}]}], "\[RuleDelayed]", "f"}]}], "]"}]}], ";", 
      "\[IndentingNewLine]", 
      RowBox[{"If", "[", 
       RowBox[{
@@ -2234,15 +2398,15 @@ Cell[BoxData[
        "\[IndentingNewLine]", 
        RowBox[{"text", "[", 
         RowBox[{
-        "\"\<Factoring \>\"", ",", "p", ",", "\"\< we find the factors \>\"", 
-         " ", ",", "factors", ",", 
-         "\"\< and then require that at least one is zero.\>\""}], "]"}], ",",
-        "\[IndentingNewLine]", 
+        "\"\<We find the factors \>\"", " ", ",", "factors", ",", 
+         "\"\< and then require that at least one is zero.\>\""}], "]"}], 
+       ","}], "\[IndentingNewLine]", 
+      RowBox[{"(*", 
        RowBox[{"text", "[", 
         RowBox[{
         "\"\<We observe that \>\"", ",", " ", "p", ",", 
-         "\"\< is irreducible, and require that it it zero.\>\""}], "]"}]}], 
-      "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+         "\"\< is irreducible, and require that it it zero.\>\""}], "]"}], 
+       "*)"}], "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
      RowBox[{"Flatten", "[", 
       RowBox[{
        RowBox[{
@@ -2257,7 +2421,9 @@ Cell[BoxData[
    3.620688252258073*^9, 3.6206882962474117`*^9}, {3.620690462994953*^9, 
    3.620690471603466*^9}, 3.621037605612302*^9, {3.621038081031516*^9, 
    3.621038085110836*^9}, {3.6210672134802637`*^9, 3.621067230238785*^9}, {
-   3.621067302279681*^9, 3.6210673705942097`*^9}, 3.621067406200392*^9}],
+   3.621067302279681*^9, 3.6210673705942097`*^9}, 3.621067406200392*^9, {
+   3.62121870704679*^9, 3.621218709902493*^9}, {3.621222486815775*^9, 
+   3.621222502888832*^9}, {3.621222918808002*^9, 3.6212229210158167`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -2280,7 +2446,9 @@ Cell[BoxData[
      RowBox[{"If", "[", 
       RowBox[{
        RowBox[{"MemberQ", "[", 
-        RowBox[{"newGroebnerBasis", ",", "_Integer"}], "]"}], ",", 
+        RowBox[{"newGroebnerBasis", ",", 
+         RowBox[{"1", "|", 
+          RowBox[{"-", "1"}]}]}], "]"}], ",", 
        RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{"newNonzeroPolynomials", "=", 
@@ -2305,14 +2473,16 @@ reject this possibility.\>\""}], "]"}], ";", "\[IndentingNewLine]",
            RowBox[{"{", "}"}]}], ",", "\[IndentingNewLine]", 
           RowBox[{
            RowBox[{"newNonzeroPolynomials", "=", 
-            RowBox[{"DeleteCases", "[", 
-             RowBox[{"newNonzeroPolynomials", ",", 
-              RowBox[{"_", "?", "NumericQ"}]}], "]"}]}], ";", 
+            RowBox[{"Union", "[", 
+             RowBox[{"DeleteCases", "[", 
+              RowBox[{"newNonzeroPolynomials", ",", 
+               RowBox[{"1", "|", 
+                RowBox[{"-", "1"}]}]}], "]"}], "]"}]}], ";", 
            "\[IndentingNewLine]", 
            RowBox[{"text", "[", 
             RowBox[{
-            "\"\<Adding \>\"", ",", "p", ",", 
-             "\"\< we obtain a new Groebner basis \>\"", ",", 
+            "\"\<Adjoining \>\"", ",", "p", ",", 
+             "\"\< the ideal we obtain a new Groebner basis \>\"", ",", 
              "newGroebnerBasis", ",", " ", 
              "\"\< with respect to which the nonzero quantities reduce to \
 \>\"", ",", "newNonzeroPolynomials", ",", "\"\<.\>\""}], "]"}], ";", 
@@ -2329,7 +2499,9 @@ reject this possibility.\>\""}], "]"}], ";", "\[IndentingNewLine]",
   3.620690471603466*^9}, {3.621037605612302*^9, 3.621037617162682*^9}, {
   3.621038208643729*^9, 3.621038256008492*^9}, {3.621066743392267*^9, 
   3.621066779330867*^9}, {3.62106689774835*^9, 3.62106698270452*^9}, {
-  3.6210671069501743`*^9, 3.621067109595055*^9}}],
+  3.6210671069501743`*^9, 3.621067109595055*^9}, {3.621218686487599*^9, 
+  3.6212186959586763`*^9}, {3.6212201431019487`*^9, 3.6212201441019297`*^9}, {
+  3.6212216016943197`*^9, 3.621221615238813*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -2341,9 +2513,16 @@ Cell[BoxData[
     RowBox[{"{", "factors", "}"}], ",", "\[IndentingNewLine]", 
     RowBox[{
      RowBox[{"factors", "=", 
-      RowBox[{"withoutMultiplicity", "/@", 
-       RowBox[{"timesToList", "[", 
-        RowBox[{"Factor", "[", "p", "]"}], "]"}]}]}], ";", 
+      RowBox[{"Cases", "[", 
+       RowBox[{
+        RowBox[{"withoutMultiplicity", "/@", 
+         RowBox[{"timesToList", "[", 
+          RowBox[{"Factor", "[", "p", "]"}], "]"}]}], ",", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"f_", ",", "k_"}], "}"}], "/;", 
+          RowBox[{"k", ">", "0"}]}], "\[RuleDelayed]", "f"}]}], "]"}]}], ";", 
      "\[IndentingNewLine]", 
      RowBox[{"If", "[", 
       RowBox[{
@@ -2353,8 +2532,7 @@ Cell[BoxData[
        RowBox[{
         RowBox[{"text", "[", 
          RowBox[{
-         "\"\<Factoring \>\"", ",", "p", ",", "\"\< we find the factors \>\"",
-           " ", ",", "factors", ",", 
+         "\"\<We find the factors \>\"", " ", ",", "factors", ",", 
           "\"\< and then require that each is nonzero.\>\""}], "]"}], ";", 
         "\[IndentingNewLine]", 
         RowBox[{"Fold", "[", 
@@ -2372,13 +2550,14 @@ Cell[BoxData[
       "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
  CellChangeTimes->{{3.62068694287613*^9, 3.620686974838972*^9}, {
-  3.620687311310376*^9, 3.620687319287264*^9}, {3.62068736563314*^9, 
-  3.62068751170623*^9}, {3.620687591458665*^9, 3.6206878838875713`*^9}, {
-  3.620688252258073*^9, 3.6206882962474117`*^9}, {3.620690462994953*^9, 
-  3.620690471603466*^9}, {3.621037605612302*^9, 3.621037621563476*^9}, {
-  3.621037700451891*^9, 3.621037745998996*^9}, {3.621037808174513*^9, 
-  3.621037904670384*^9}, {3.621037940593836*^9, 3.6210380695587263`*^9}, {
-  3.6210671148994837`*^9, 3.621067126739744*^9}}],
+   3.620687311310376*^9, 3.620687319287264*^9}, {3.62068736563314*^9, 
+   3.62068751170623*^9}, {3.620687591458665*^9, 3.6206878838875713`*^9}, {
+   3.620688252258073*^9, 3.6206882962474117`*^9}, {3.620690462994953*^9, 
+   3.620690471603466*^9}, {3.621037605612302*^9, 3.621037621563476*^9}, {
+   3.621037700451891*^9, 3.621037745998996*^9}, {3.621037808174513*^9, 
+   3.621037904670384*^9}, {3.621037940593836*^9, 3.6210380695587263`*^9}, {
+   3.6210671148994837`*^9, 3.621067126739744*^9}, 3.621222526413845*^9, 
+   3.6212230494289207`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -2406,28 +2585,31 @@ Cell[BoxData[
           "\"\< is zero modulo the ideal, we terminate the analysis \
 here.\>\""}], "]"}], ";", "\[IndentingNewLine]", 
         RowBox[{"{", "}"}]}], ",", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"text", "[", 
-         RowBox[{
-         "\"\<We add \>\"", ",", "reduced", ",", 
-          "\"\< to the list of nonzero quantities.\>\""}], "]"}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"{", 
-         RowBox[{"Manifold", "[", 
-          RowBox[{"groebnerBasis", ",", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"text", "[", 
+          RowBox[{
+          "\"\<We add \>\"", ",", "reduced", ",", 
+           "\"\< to the list of nonzero quantities.\>\""}], "]"}], ";"}], 
+        "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{"Manifold", "[", 
+         RowBox[{"groebnerBasis", ",", 
+          RowBox[{"Union", "[", 
            RowBox[{"nonzeroPolynomials", "~", "Join", "~", 
             RowBox[{"DeleteCases", "[", 
              RowBox[{
               RowBox[{"{", "reduced", "}"}], ",", 
-              RowBox[{"_", "?", "NumericQ"}]}], "]"}]}]}], "]"}], "}"}]}]}], 
-      "]"}]}]}], "\[IndentingNewLine]", "]"}]}]], "Input",
+              RowBox[{"_", "?", "NumericQ"}]}], "]"}]}], "]"}]}], "]"}], 
+        "}"}]}], "]"}]}]}], "\[IndentingNewLine]", "]"}]}]], "Input",
  CellChangeTimes->{{3.62068694287613*^9, 3.620686974838972*^9}, {
    3.620687311310376*^9, 3.620687319287264*^9}, {3.62068736563314*^9, 
    3.62068751170623*^9}, {3.620687591458665*^9, 3.6206878838875713`*^9}, {
    3.620688252258073*^9, 3.6206882962474117`*^9}, {3.620690462994953*^9, 
    3.620690471603466*^9}, {3.621037605612302*^9, 3.621037621563476*^9}, {
    3.621038149102412*^9, 3.621038180920744*^9}, 3.621067131711853*^9, {
-   3.6210671665262423`*^9, 3.6210671938995934`*^9}}],
+   3.6210671665262423`*^9, 3.6210671938995934`*^9}, {3.6212097200139217`*^9, 
+   3.621209721718713*^9}, {3.621221581947818*^9, 3.621221585802703*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -2436,7 +2618,7 @@ Cell[BoxData[
    RowBox[{"f", "/:", 
     RowBox[{
      RowBox[{"(", "X_List", ")"}], "[", 
-     RowBox[{"f", "[", "p_", "]"}], "]"}], ":=", 
+     RowBox[{"f", "[", "p__", "]"}], "]"}], ":=", 
     RowBox[{"Flatten", "[", 
      RowBox[{
       RowBox[{
@@ -2444,17 +2626,20 @@ Cell[BoxData[
         RowBox[{"#", "[", 
          RowBox[{"f", "[", "p", "]"}], "]"}], "&"}], "/@", "X"}], ",", "1"}], 
      "]"}]}], ")"}]}]], "Input",
- CellChangeTimes->{{3.620688164125411*^9, 3.6206881829282207`*^9}}],
+ CellChangeTimes->{{3.620688164125411*^9, 3.6206881829282207`*^9}, 
+   3.621222094490674*^9}],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{"automaticFlatMap", "/@", 
    RowBox[{"{", 
     RowBox[{
-    "declarePolynomialZero", ",", "declarePolynomialNonZero", ",", 
-     "declareIrreduciblePolynomialNonZero"}], "}"}]}], ";"}]], "Input",
+    "declarePolynomialsZero", ",", "declarePolynomialZero", ",", 
+     "declarePolynomialNonZero", ",", "declareIrreduciblePolynomialNonZero"}],
+     "}"}]}], ";"}]], "Input",
  CellChangeTimes->{{3.620688203498723*^9, 3.620688228220294*^9}, {
-  3.621037774354138*^9, 3.621037774538066*^9}}],
+  3.621037774354138*^9, 3.621037774538066*^9}, {3.621213181785121*^9, 
+  3.621213182060973*^9}}],
 
 Cell[CellGroupData[{
 
@@ -2489,15 +2674,6 @@ Cell[BoxData[
 
 Cell[CellGroupData[{
 
-Cell[BoxData["\<\"We add \\(x-1\\) to the list of nonzero quantities.\"\>"], \
-"Print",
- CellChangeTimes->{
-  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
-   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
-   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
-   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.621067409823371*^9}],
-
 Cell[BoxData["\<\"Factoring \\(\\\\left(x^2-1\\\\right)^3\\) we find the \
 factors \\(\\\\{x-1,x+1\\\\}\\) and then require that at least one is zero.\"\
 \>"], "Print",
@@ -2506,7 +2682,7 @@ factors \\(\\\\{x-1,x+1\\\\}\\) and then require that at least one is zero.\"\
    3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
    3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
    3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.6210674098256617`*^9}],
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9}],
 
 Cell[BoxData["\<\"Adding \\(x-1\\) to the ideal would render a nonzero \
 quantity zero, so we reject this possibility.\"\>"], "Print",
@@ -2515,17 +2691,17 @@ quantity zero, so we reject this possibility.\"\>"], "Print",
    3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
    3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
    3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.621067409827608*^9}],
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.621218715170927*^9}],
 
-Cell[BoxData["\<\"Adding \\(x+1\\) we obtain a new Groebner basis \\(\\\\{x+1\
-\\\\}\\) with respect to which the nonzero quantities reduce to \\(\\\\{\\\\}\
-\\).\"\>"], "Print",
+Cell[BoxData["\<\"Adjoining \\(x+1\\) the ideal we obtain a new Groebner \
+basis \\(\\\\{x+1\\\\}\\) with respect to which the nonzero quantities reduce \
+to \\(\\\\{\\\\}\\).\"\>"], "Print",
  CellChangeTimes->{
   3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
    3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
    3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
    3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.6210674098295517`*^9}],
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.621218715172791*^9}],
 
 Cell[BoxData["\<\"Factoring \\(\\\\left(4-y^4\\\\right)^2\\) we find the \
 factors \\(\\\\left\\\\{y^2-2,y^2+2\\\\right\\\\}\\) and then require that \
@@ -2535,25 +2711,7 @@ each is nonzero.\"\>"], "Print",
    3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
    3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
    3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.621067409831106*^9}],
-
-Cell[BoxData["\<\"We add \\(y^2-2\\) to the list of nonzero \
-quantities.\"\>"], "Print",
- CellChangeTimes->{
-  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
-   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
-   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
-   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.621067409832691*^9}],
-
-Cell[BoxData["\<\"We add \\(y^2+2\\) to the list of nonzero \
-quantities.\"\>"], "Print",
- CellChangeTimes->{
-  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
-   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
-   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
-   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.621067409834283*^9}]
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.621218715174634*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -2580,8 +2738,25 @@ Cell[BoxData[
    3.6210382428145742`*^9, 3.6210382582374287`*^9}, 3.621066906118433*^9, {
    3.621066991920648*^9, 3.621067008164126*^9}, 3.621067072459331*^9, 
    3.6210671408283377`*^9, 3.6210671971040163`*^9, 3.6210672760510798`*^9, 
-   3.6210673761115847`*^9, 3.62106740983578*^9}]
+   3.6210673761115847`*^9, 3.62106740983578*^9, 3.6212098351071863`*^9, 
+   3.621218715176608*^9}]
 }, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Diagram", "=", 
+   RowBox[{"_", "?", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"JavaObjectQ", "[", "#", "]"}], "\[And]", 
+       RowBox[{"InstanceOf", "[", 
+        RowBox[{
+        "#", ",", "\"\<net.tqft.toolkit.algebra.spiders.PlanarGraph\>\""}], 
+        "]"}]}], "&"}], ")"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.621210559679555*^9, 3.621210570964134*^9}, {
+  3.6212106106958523`*^9, 3.621210635825304*^9}, {3.621210997844269*^9, 
+  3.621210998915182*^9}}],
 
 Cell[BoxData[{
  RowBox[{"Clear", "[", "buildSpiderAnalysis", "]"}], "\[IndentingNewLine]", 
@@ -2596,60 +2771,195 @@ Cell[BoxData[{
        "\"\<net.tqft.toolkit.algebra.spiders.examples.QuotientSpider\>\""}], 
       "]"}]}], ",", "\[IndentingNewLine]", "manifold_Manifold", ",", 
     "\[IndentingNewLine]", 
+    RowBox[{"dimensionBounds", ":", 
+     RowBox[{"{", "__Integer", "}"}]}], ",", "\[IndentingNewLine]", 
     RowBox[{"visiblyIndependentDiagrams", ":", 
      RowBox[{"{", 
-      RowBox[{
-       RowBox[{"{", "___Diagram", "}"}], "..."}], "}"}]}], ",", 
-    "\[IndentingNewLine]", 
+      RowBox[{"Diagram", "..."}], "}"}]}], ",", "\[IndentingNewLine]", 
     RowBox[{"invisiblyIndependentDiagrams", ":", 
      RowBox[{"{", 
-      RowBox[{
-       RowBox[{"{", "___Diagram", "}"}], "..."}], "}"}]}], ",", 
-    "\[IndentingNewLine]", 
+      RowBox[{"Diagram", "..."}], "}"}]}], ",", "\[IndentingNewLine]", 
     RowBox[{"dependentDiagrams", ":", 
      RowBox[{"{", 
-      RowBox[{
-       RowBox[{"{", "___Diagram", "}"}], "..."}], "}"}]}], ",", 
-    "\[IndentingNewLine]", 
+      RowBox[{"Diagram", "..."}], "}"}]}], ",", "\[IndentingNewLine]", 
     RowBox[{"reducingRelations", ":", 
      RowBox[{"{", 
       RowBox[{
-       RowBox[{"{", 
-        RowBox[{
-         RowBox[{"(", 
-          RowBox[{"_Diagram", "\[Rule]", "_"}], ")"}], ".."}], "}"}], "..."}],
-       "}"}]}], ",", "\[IndentingNewLine]", 
+       RowBox[{"(", 
+        RowBox[{"Diagram", "\[Rule]", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"Diagram", "\[Rule]", "_"}], ")"}], "..."}], "}"}]}], 
+        ")"}], "..."}], "}"}]}], ",", "\[IndentingNewLine]", 
     RowBox[{"nonReducingRelations", ":", 
      RowBox[{"{", 
       RowBox[{
        RowBox[{"{", 
         RowBox[{
          RowBox[{"(", 
-          RowBox[{"_Diagram", "\[Rule]", "_"}], ")"}], ".."}], "}"}], "..."}],
-       "}"}]}]}], "]"}], ":=", 
+          RowBox[{"Diagram", "\[Rule]", "_"}], ")"}], ".."}], "}"}], "..."}], 
+      "}"}]}]}], "]"}], ":=", 
   RowBox[{"SpiderAnalysis", "[", 
    RowBox[{
-   "spider", ",", "manifold", ",", "visiblyIndependentDiagrams", ",", 
-    "invisiblyIndependentDiagrams", ",", "dependentDiagrams", ",", 
-    "reducingRelations", ",", "nonReducingRelations"}], "]"}]}]}], "Input",
+   "spider", ",", "manifold", ",", "dimensionBounds", ",", 
+    "visiblyIndependentDiagrams", ",", "invisiblyIndependentDiagrams", ",", 
+    "dependentDiagrams", ",", "reducingRelations", ",", 
+    "nonReducingRelations"}], "]"}]}]}], "Input",
  CellChangeTimes->{{3.620686834670459*^9, 3.620686885654628*^9}, {
   3.6206869327631817`*^9, 3.6206869404999533`*^9}, {3.620686978831314*^9, 
   3.6206869819675417`*^9}, {3.620687016059319*^9, 3.620687258507056*^9}, {
-  3.621070286747486*^9, 3.6210703001813507`*^9}}],
+  3.621070286747486*^9, 3.6210703001813507`*^9}, {3.621210406533744*^9, 
+  3.6212105438578167`*^9}, {3.6212204884690657`*^9, 3.6212205000619917`*^9}, {
+  3.621220609217463*^9, 3.621220623567325*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"dimensionBounds", "[", "]"}], "]"}], ":=", 
+  RowBox[{
+  "s", "\[LeftDoubleBracket]", "3", "\[RightDoubleBracket]"}]}]], "Input",
+ CellChangeTimes->{{3.6212212012145653`*^9, 3.621221208168165*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"visiblyIndependentDiagrams", "[", "k_Integer", "]"}], "]"}], ":=", 
+  RowBox[{"Cases", "[", 
+   RowBox[{
+    RowBox[{"s", "\[LeftDoubleBracket]", "4", "\[RightDoubleBracket]"}], ",", 
+    
+    RowBox[{"d_", "/;", 
+     RowBox[{
+      RowBox[{"d", "@", 
+       RowBox[{"numberOfBoundaryPoints", "[", "]"}]}], "\[Equal]", "k"}]}]}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"invisiblyIndependentDiagrams", "[", "k_Integer", "]"}], "]"}], ":=", 
+  RowBox[{"Cases", "[", 
+   RowBox[{
+    RowBox[{"s", "\[LeftDoubleBracket]", "5", "\[RightDoubleBracket]"}], ",", 
+    
+    RowBox[{"d_", "/;", 
+     RowBox[{
+      RowBox[{"d", "@", 
+       RowBox[{"numberOfBoundaryPoints", "[", "]"}]}], "\[Equal]", "k"}]}]}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"dependentDiagrams", "[", "k_Integer", "]"}], "]"}], ":=", 
+  RowBox[{"Cases", "[", 
+   RowBox[{
+    RowBox[{"s", "\[LeftDoubleBracket]", "6", "\[RightDoubleBracket]"}], ",", 
+    
+    RowBox[{"d_", "/;", 
+     RowBox[{
+      RowBox[{"d", "@", 
+       RowBox[{"numberOfBoundaryPoints", "[", "]"}]}], "\[Equal]", "k"}]}]}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"nonReducingRelations", "[", "k_Integer", "]"}], "]"}], ":=", 
+  RowBox[{"Cases", "[", 
+   RowBox[{
+    RowBox[{"s", "\[LeftDoubleBracket]", "8", "\[RightDoubleBracket]"}], ",", 
+    
+    RowBox[{"l_", "/;", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"l", "\[LeftDoubleBracket]", 
+        RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], "@", 
+       RowBox[{"numberOfBoundaryPoints", "[", "]"}]}], "\[Equal]", "k"}]}]}], 
+   "]"}]}]}], "Input",
+ CellChangeTimes->{{3.6212103481196213`*^9, 3.621210387249819*^9}, {
+  3.621210659203514*^9, 3.621210674508813*^9}, {3.621211458007388*^9, 
+  3.621211530189834*^9}, {3.6212205099114103`*^9, 3.621220519183495*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"considerDiagrams", "[", 
+    RowBox[{
+     RowBox[{"diagrams", ":", 
+      RowBox[{"{", 
+       RowBox[{"Diagram", "..."}], "}"}]}], ",", 
+     RowBox[{"options", ":", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"_String", "\[Rule]", 
+         RowBox[{"(", 
+          RowBox[{"True", "|", "False"}], ")"}]}], ")"}], "..."}]}]}], "]"}], 
+   "]"}], ":=", 
+  RowBox[{"Fold", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"#1", "[", 
+      RowBox[{"considerDiagram", "[", 
+       RowBox[{"#2", ",", "options"}], "]"}], "]"}], "&"}], ",", 
+    RowBox[{"{", "s", "}"}], ",", "diagrams"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.621221785013006*^9, 3.62122182746987*^9}}],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{
    RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
    RowBox[{"considerDiagram", "[", 
-    RowBox[{"d_", ",", 
-     RowBox[{"firstPass", ":", 
-      RowBox[{"(", 
-       RowBox[{"True", "|", "False"}], ")"}], ":", "True"}]}], "]"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"d", ":", "Diagram"}], ",", 
+     RowBox[{"options", ":", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"_String", "\[Rule]", 
+         RowBox[{"(", 
+          RowBox[{"True", "|", "False"}], ")"}]}], ")"}], "..."}]}]}], "]"}], 
+   "]"}], ":=", 
   RowBox[{"Module", "[", 
    RowBox[{
-    RowBox[{"{", "pairings", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+     "k", ",", "pairings", ",", "secondPass", ",", "insistIndependent", ",", 
+      "insistDependent", ",", "considerInvisible"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
     RowBox[{
+     RowBox[{"k", "=", 
+      RowBox[{"d", "@", 
+       RowBox[{"numberOfBoundaryPoints", "[", "]"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"secondPass", "=", 
+      RowBox[{
+       RowBox[{"\"\<SecondPass\>\"", "/.", 
+        RowBox[{"{", "options", "}"}]}], "/.", 
+       RowBox[{"\"\<SecondPass\>\"", "\[Rule]", "False"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"insistIndependent", "=", 
+      RowBox[{
+       RowBox[{"\"\<InsistIndependent\>\"", "/.", 
+        RowBox[{"{", "options", "}"}]}], "/.", 
+       RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "False"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"insistDependent", "=", 
+      RowBox[{
+       RowBox[{"\"\<InsistDependent\>\"", "/.", 
+        RowBox[{"{", "options", "}"}]}], "/.", 
+       RowBox[{"\"\<InsistDependent\>\"", "\[Rule]", "False"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"insistentIndependent", "\[And]", "insistDependent"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+        "Print", "[", 
+         "\"\<ERROR: It doesn't make sense to insist that this diagram is \
+both independent and dependent!\>\"", "]"}], ";", 
+        RowBox[{"Abort", "[", "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
      RowBox[{"If", "[", 
       RowBox[{
        RowBox[{
@@ -2660,15 +2970,23 @@ Cell[BoxData[
        RowBox[{
         RowBox[{
         "Print", "[", 
-         "\"\<I shouldn't ever be asked to consider a reducible diagram!\>\"",
-          "]"}], ";", 
+         "\"\<ERROR: I shouldn't ever be asked to consider a reducible \
+diagram!\>\"", "]"}], ";", 
         RowBox[{"Abort", "[", "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
      RowBox[{"If", "[", 
-      RowBox[{"firstPass", ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"!", "secondPass"}], ",", "\[IndentingNewLine]", 
        RowBox[{"text", "[", 
-        RowBox[{
-        "\"\<We now consider the diagram \>\"", ",", "d", ",", "\"\<.\>\""}], 
-        "]"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"\"\<We now consider the diagram \>\"", ",", "d", ",", 
+         RowBox[{"If", "[", 
+          RowBox[{
+          "insistIndependent", ",", 
+           "\"\<, insisting that it is independent.\>\"", ",", 
+           RowBox[{"If", "[", 
+            RowBox[{
+            "insistDependent", ",", 
+             "\"\<, insisting that it is dependent.\>\"", ",", "\"\<.\>\""}], 
+            "]"}]}], "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
        RowBox[{"text", "[", 
         RowBox[{
         "\"\<We return to considering the diagram \>\"", ",", "d", ",", 
@@ -2695,32 +3013,531 @@ non-reducing relations to give the new identities: \>\"", ",", "pairings"}],
            RowBox[{"declarePolynomialsZero", "[", "pairings", "]"}], "]"}], 
           ")"}], "@", 
          RowBox[{"considerDiagram", "[", 
-          RowBox[{"d", ",", "False"}], "]"}]}]}], ",", "\[IndentingNewLine]", 
-       
+          RowBox[{"d", ",", 
+           RowBox[{"\"\<SecondPass\>\"", "\[Rule]", "True"}], ",", 
+           RowBox[{
+           "\"\<InsistIndependent\>\"", "\[Rule]", "insistIndependent"}], ",", 
+           RowBox[{
+           "\"\<InsistDependent\>\"", "\[Rule]", "insistDependent"}]}], 
+          "]"}]}]}], ",", "\[IndentingNewLine]", 
        RowBox[{
-        RowBox[{
-        "text", "[", 
-         "\"\<We separately consider the possibilities that it is visibly \
-independent of previously considered diagrams, invisibly independent, or \
-linearly dependent.\>\"", "]"}], ";", "\[IndentingNewLine]", 
-        RowBox[{
-         RowBox[{"s", "[", 
-          RowBox[{"considerVisiblyIndependentDiagram", "[", "d", "]"}], "]"}],
-          "~", "Join", "~", 
-         RowBox[{"s", "[", 
-          RowBox[{"considerInvisiblyIndependentDiagram", "[", "d", "]"}], 
-          "]"}], "~", "Join", "~", 
-         RowBox[{"s", "[", 
-          RowBox[{"considerDependentDiagram", "[", "d", "]"}], "]"}]}]}]}], 
-      "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", 
-   "]"}]}]], "Input",
+        RowBox[{"considerInvisible", "=", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"s", "[", 
+             RowBox[{"dimensionBounds", "[", "]"}], "]"}], 
+            "\[LeftDoubleBracket]", 
+            RowBox[{"k", "+", "1"}], "\[RightDoubleBracket]"}], "-", 
+           RowBox[{"Length", "[", 
+            RowBox[{"s", "[", 
+             RowBox[{"visiblyIndependentDiagrams", "[", "k", "]"}], "]"}], 
+            "]"}]}], "\[GreaterEqual]", 
+          RowBox[{"2", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"Length", "[", 
+              RowBox[{"s", "[", 
+               RowBox[{"invisiblyIndependentDiagrams", "[", "k", "]"}], "]"}],
+               "]"}], "+", "1"}], ")"}]}]}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"!", "insistDependent"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"!", "considerInvisible"}], ",", "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{
+             "text", "[", 
+              "\"\<There's not enough room for this diagram to be invisibly \
+independent.\>\"", "]"}], ";", "\[IndentingNewLine]", 
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{"!", "insistIndependent"}], ",", "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{
+                "text", "[", 
+                 "\"\<We consider separately the possibilities that it is \
+visibily independent or dependent.\>\"", "]"}], ";", "\[IndentingNewLine]", 
+                RowBox[{
+                 RowBox[{"s", "[", 
+                  RowBox[{
+                  "considerVisiblyIndependentDiagram", "[", "d", "]"}], "]"}],
+                  "~", "Join", "~", 
+                 RowBox[{"s", "[", 
+                  RowBox[{"considerDependentDiagram", "[", "d", "]"}], 
+                  "]"}]}]}], ",", "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{
+                "text", "[", 
+                 "\"\<We thus only consider the possibility that it is \
+visibly independent.\>\"", "]"}], ";", "\[IndentingNewLine]", 
+                RowBox[{"s", "[", 
+                 RowBox[{"considerVisiblyIndependentDiagram", "[", "d", "]"}],
+                  "]"}]}]}], "\[IndentingNewLine]", "]"}]}], ",", 
+            "\[IndentingNewLine]", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{"!", "insistIndependent"}], ",", "\[IndentingNewLine]", 
+              
+              RowBox[{
+               RowBox[{
+               "text", "[", 
+                "\"\<We consider separately the possibilities that it is \
+visibly independent, invisibly independent, or linearly dependent.\>\"", 
+                "]"}], ";", "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"s", "[", 
+                 RowBox[{"considerVisiblyIndependentDiagram", "[", "d", "]"}],
+                  "]"}], "~", "Join", "~", 
+                RowBox[{"s", "[", 
+                 RowBox[{
+                 "considerInvisiblyIndependentDiagram", "[", "d", "]"}], 
+                 "]"}], "~", "Join", "~", 
+                RowBox[{"s", "[", 
+                 RowBox[{"considerDependentDiagram", "[", "d", "]"}], 
+                 "]"}]}]}], ",", "\[IndentingNewLine]", 
+              RowBox[{
+               RowBox[{
+               "text", "[", 
+                "\"\<We consider separately the possibilities that it is \
+visibly independent or invisibly independent.\>\"", "]"}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"s", "[", 
+                 RowBox[{"considerVisiblyIndependentDiagram", "[", "d", "]"}],
+                  "]"}], "~", "Join", "~", 
+                RowBox[{"s", "[", 
+                 RowBox[{
+                 "considerInvisiblyIndependentDiagram", "[", "d", "]"}], 
+                 "]"}]}]}]}], "\[IndentingNewLine]", "]"}]}], 
+           "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"s", "[", 
+           RowBox[{"considerDependentDiagram", "[", "d", "]"}], "]"}]}], 
+         "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", "]"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",
  CellChangeTimes->{{3.621068196430439*^9, 3.6210682301294727`*^9}, {
    3.6210694056502666`*^9, 3.621069575852037*^9}, {3.621069617289014*^9, 
    3.6210696204062233`*^9}, 3.6210696823972597`*^9, {3.621069728519867*^9, 
    3.621069835434147*^9}, {3.621069905439932*^9, 3.621069943614794*^9}, {
    3.6210699807711697`*^9, 3.621070034429183*^9}, {3.62107013076266*^9, 
    3.621070171516594*^9}, {3.621070210641602*^9, 3.621070241257526*^9}, 
-   3.621071655603436*^9}],
+   3.621071655603436*^9, {3.621209737192374*^9, 3.6212097382003613`*^9}, {
+   3.62120994041186*^9, 3.621210188620388*^9}, {3.621210238882011*^9, 
+   3.621210261529521*^9}, {3.621211071832605*^9, 3.6212110947128077`*^9}, {
+   3.621220266228983*^9, 3.6212203010396233`*^9}, {3.621220373358019*^9, 
+   3.621220407750991*^9}, {3.6212206731471786`*^9, 3.62122116500191*^9}, {
+   3.6212212429694767`*^9, 3.621221252881797*^9}, {3.6212212881893578`*^9, 
+   3.621221289103297*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"automaticFlatMap", "/@", 
+   RowBox[{"{", 
+    RowBox[{"considerDiagram", ",", "considerDiagrams"}], "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.621222038396456*^9, 3.621222049700859*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"reducePolynomials", "[", "X_List", "]"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"s", "[", 
+     RowBox[{"reducePolynomials", "[", "#", "]"}], "]"}], "&"}], "/@", 
+   "X"}]}]], "Input",
+ CellChangeTimes->{{3.621212098330963*^9, 3.621212111707547*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"reducePolynomials", "[", "X_", "]"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"PolynomialReduce", "[", 
+    RowBox[{"X", ",", 
+     RowBox[{"s", "\[LeftDoubleBracket]", 
+      RowBox[{"2", ",", "1"}], "\[RightDoubleBracket]"}]}], "]"}], 
+   "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}]], "Input",
+ CellChangeTimes->{{3.621212019067363*^9, 3.621212047798473*^9}, {
+  3.621212183650423*^9, 3.621212184554632*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"computePairingsWithNonReducingRelations", "[", 
+    RowBox[{"d", ":", "Diagram"}], "]"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "relations", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"relations", "=", 
+      RowBox[{"s", "[", 
+       RowBox[{"nonReducingRelations", "[", 
+        RowBox[{"d", "@", 
+         RowBox[{"numberOfBoundaryPoints", "[", "]"}]}], "]"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Plus", "@@", "#"}], "&"}], "/@", 
+      RowBox[{"(", 
+       RowBox[{"relations", "/.", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"c", ":", "Diagram"}], "\[Rule]", "z_"}], ")"}], 
+         "\[RuleDelayed]", 
+         RowBox[{"z", " ", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{
+            "s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "@", 
+            
+            RowBox[{"evaluatedInnerProduct", "[", 
+             RowBox[{"c", ",", "d"}], "]"}]}], ")"}]}]}]}], ")"}]}]}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellChangeTimes->{{3.62121027345573*^9, 3.6212103157002163`*^9}, {
+   3.621210708455922*^9, 3.6212108605189333`*^9}, 3.621210941864338*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"considerVisiblyIndependentDiagram", "[", 
+    RowBox[{"d", ":", "Diagram"}], "]"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+     "k", ",", "v", ",", "i", ",", "ddeterminant", ",", "ideterminants"}], 
+     "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"k", "=", 
+      RowBox[{"d", "@", 
+       RowBox[{"numberOfBoundaryPoints", "[", "]"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"v", "=", 
+      RowBox[{"s", "@", 
+       RowBox[{"visiblyIndependentDiagrams", "[", "k", "]"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"i", "=", 
+      RowBox[{"s", "@", 
+       RowBox[{"invisiblyIndependentDiagrams", "[", "k", "]"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"ddeterminant", "=", 
+      RowBox[{"Factor", "[", 
+       RowBox[{"Det", "[", 
+        RowBox[{"FromScalaObject", "[", 
+         RowBox[{
+          RowBox[{"s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+           "@", 
+          RowBox[{"innerProductMatrix", "[", 
+           RowBox[{"AsScalaList", "[", 
+            RowBox[{"v", "~", "Join", "~", 
+             RowBox[{"{", "d", "}"}]}], "]"}], "]"}]}], "]"}], "]"}], "]"}]}],
+      ";", "\[IndentingNewLine]", 
+     RowBox[{"ideterminants", "=", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Factor", "[", 
+         RowBox[{"Det", "[", 
+          RowBox[{"FromScalaObject", "[", 
+           RowBox[{
+            RowBox[{
+            "s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "@", 
+            
+            RowBox[{"innerProductMatrix", "[", 
+             RowBox[{"AsScalaList", "[", 
+              RowBox[{"v", "~", "Join", "~", 
+               RowBox[{"{", 
+                RowBox[{"d", ",", "#"}], "}"}]}], "]"}], "]"}]}], "]"}], 
+          "]"}], "]"}], "&"}], "/@", "i"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Length", "[", "i", "]"}], ">", "0"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"text", "[", 
+        RowBox[{
+        "\"\<If \>\"", ",", "d", ",", 
+         "\"\< is visibly independent, and does not lift any of the currently \
+invisibly independent diagrams into visibility, we must have that \>\"", ",", 
+         "ddeterminant", ",", "\"\< is nonzero\>\"", ",", "\"\< while \>\"", 
+         ",", "ideterminants", ",", "\"\< are all zero.\>\""}], "]"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"text", "[", 
+        RowBox[{
+        "\"\<If \>\"", ",", "d", ",", 
+         "\"\< is visibly independent, we must have that \>\"", ",", 
+         "ddeterminant", ",", "\"\< is nonzero.\>\""}], "]"}]}], 
+      "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{"TODO", " ", "Do", " ", "the", " ", "other", " ", 
+       RowBox[{"cases", "!"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Length", "[", "i", "]"}], ">", "0"}], ",", 
+       RowBox[{"Print", "[", "\"\<ERROR: unimplemented\>\"", "]"}]}], "]"}], 
+     ";", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"s", "@", 
+          RowBox[{"declarePolynomialsZero", "[", "ideterminants", "]"}]}], 
+         ")"}], "@", 
+        RowBox[{"declarePolynomialNonZero", "[", "ddeterminant", "]"}]}], 
+       ")"}], "@", 
+      RowBox[{"appendVisiblyIndependentDiagram", "[", "d", "]"}]}]}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellChangeTimes->{{3.621211207343486*^9, 3.621211220073881*^9}, {
+  3.62121188985466*^9, 3.6212118934093847`*^9}, {3.6212194108079453`*^9, 
+  3.62121943196255*^9}, {3.621219466100642*^9, 3.6212197311758137`*^9}, {
+  3.621219839802692*^9, 3.621219857611624*^9}, {3.621220337521693*^9, 
+  3.621220337983882*^9}, {3.621221324292845*^9, 3.621221343302621*^9}, {
+  3.62122137695466*^9, 3.6212214294551086`*^9}, {3.621222956397656*^9, 
+  3.621222965326921*^9}, {3.6212230227809563`*^9, 3.621223023458712*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"considerInvisiblyIndependentDiagram", "[", 
+    RowBox[{"d", ":", "Diagram"}], "]"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+     "k", ",", "v", ",", "subsets", ",", "matrices", ",", "determinants", ",",
+       "zeroed"}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"text", "[", 
+      RowBox[{
+      "\"\<We now consider the possibility that \>\"", ",", "d", ",", " ", 
+       "\"\< is invisibly independent of the previously considered \
+diagrams.\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"k", "=", 
+      RowBox[{"d", "@", 
+       RowBox[{"numberOfBoundaryPoints", "[", "]"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"v", "=", 
+      RowBox[{"s", "@", 
+       RowBox[{"visiblyIndependentDiagrams", "[", "k", "]"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"subsets", "=", 
+      RowBox[{"Subsets", "[", 
+       RowBox[{"s", "@", 
+        RowBox[{"invisiblyIndependentDiagrams", "[", "k", "]"}]}], "]"}]}], 
+     ";", "\[IndentingNewLine]", 
+     RowBox[{"matrices", "=", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"FromScalaObject", "[", 
+         RowBox[{
+          RowBox[{"s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+           "@", 
+          RowBox[{"innerProductMatrix", "[", 
+           RowBox[{"AsScalaList", "[", 
+            RowBox[{"v", "~", "Join", "~", "#", "~", "Join", "~", 
+             RowBox[{"{", "d", "}"}]}], "]"}], "]"}]}], "]"}], "&"}], "/@", 
+       "subsets"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"determinants", "=", 
+      RowBox[{"DeleteCases", "[", 
+       RowBox[{
+        RowBox[{"Union", "[", 
+         RowBox[{"Factor", "[", 
+          RowBox[{"s", "@", 
+           RowBox[{"reducePolynomials", "[", 
+            RowBox[{"Det", "/@", 
+             RowBox[{"(", 
+              RowBox[{"s", "@", 
+               RowBox[{"reducePolynomials", "[", "matrices", "]"}]}], ")"}]}],
+             "]"}]}], "]"}], "]"}], ",", "0"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"text", "[", 
+      RowBox[{
+      "\"\<We compute all the determinants of matrices of inner products of \
+the visibly independent diagrams along with some subset of the invisibly \
+independent diagrams, finding \>\"", ",", "determinants", ",", "\"\<.\>\""}], 
+      "]"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"zeroed", "=", 
+      RowBox[{"s", "@", 
+       RowBox[{"declarePolynomialsZero", "[", "determinants", "]"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"text", "[", 
+      RowBox[{
+      "\"\<Finally we append \>\"", ",", "d", ",", 
+       "\"\< to the list of invisibly independent diagrams.\>\""}], "]"}], 
+     ";", "\[IndentingNewLine]", 
+     RowBox[{"zeroed", "@", 
+      RowBox[{"appendInvisiblyIndependentDiagram", "[", "d", "]"}]}]}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellChangeTimes->{
+  3.621211222617874*^9, {3.6212115575835037`*^9, 3.621211608861052*^9}, {
+   3.621211693254159*^9, 3.621211736121397*^9}, {3.621211873473946*^9, 
+   3.621211980640889*^9}, {3.621212055192608*^9, 3.621212080124404*^9}, {
+   3.621212130879274*^9, 3.621212134456518*^9}, {3.621212193541832*^9, 
+   3.6212123917286053`*^9}, {3.621213013219933*^9, 3.6212130161151457`*^9}, {
+   3.621218738219145*^9, 3.621218771173883*^9}, 3.6212188531578913`*^9, {
+   3.621218981218615*^9, 3.621218999019308*^9}, {3.6212192204483013`*^9, 
+   3.621219246449785*^9}, {3.621223009713851*^9, 3.621223014259432*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"considerDependentDiagram", "[", 
+    RowBox[{"d", ":", "Diagram"}], "]"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", "}"}]}], " ", 
+   RowBox[{"(*", " ", "TODO", " ", "*)"}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellChangeTimes->{3.621211225538184*^9, 3.62121189849776*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"declarePolynomialNonZero", "[", "polynomial_", "]"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "newManifolds", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"newManifolds", "=", 
+      RowBox[{
+       RowBox[{"s", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], 
+       "@", 
+       RowBox[{"declarePolynomialNonZero", "[", "polynomial", "]"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"ReplacePart", "[", 
+         RowBox[{"s", ",", 
+          RowBox[{"2", "\[Rule]", "#"}]}], "]"}], "/.", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"d", ":", "Diagram"}], "\[Rule]", "z_"}], ")"}], 
+         "\[RuleDelayed]", 
+         RowBox[{"(", 
+          RowBox[{"d", "\[Rule]", 
+           RowBox[{
+            RowBox[{"PolynomialReduce", "[", 
+             RowBox[{"z", ",", 
+              RowBox[{
+              "#", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}], 
+             "]"}], "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+          ")"}]}]}], "&"}], "/@", "newManifolds"}]}]}], "\[IndentingNewLine]",
+    "]"}]}]], "Input",
+ CellChangeTimes->{{3.621219762713732*^9, 3.621219785675132*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"declarePolynomialsZero", "[", "polynomials_", "]"}], "]"}], ":=", 
+  
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "newManifolds", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"newManifolds", "=", 
+      RowBox[{
+       RowBox[{"s", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], 
+       "@", 
+       RowBox[{"declarePolynomialsZero", "[", "polynomials", "]"}]}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{
+       "TODO", " ", "should", " ", "we", " ", "look", " ", "at", " ", "the", 
+        " ", "non"}], "-", 
+       RowBox[{
+       "reducing", " ", "relations", " ", "and", " ", "see", " ", "if", " ", 
+        "any", " ", "became", " ", 
+        RowBox[{"reducing", "?", "!"}]}]}], " ", "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"ReplacePart", "[", 
+         RowBox[{"s", ",", 
+          RowBox[{"2", "\[Rule]", "#"}]}], "]"}], "/.", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"d", ":", "Diagram"}], "\[Rule]", "z_"}], ")"}], 
+         "\[RuleDelayed]", 
+         RowBox[{"(", 
+          RowBox[{"d", "\[Rule]", 
+           RowBox[{
+            RowBox[{"PolynomialReduce", "[", 
+             RowBox[{"z", ",", 
+              RowBox[{
+              "#", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}], 
+             "]"}], "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+          ")"}]}]}], "&"}], "/@", "newManifolds"}]}]}], "\[IndentingNewLine]",
+    "]"}]}]], "Input",
+ CellChangeTimes->{{3.621212471765955*^9, 3.6212125112252693`*^9}, {
+  3.621212551085021*^9, 3.62121262049223*^9}, {3.621213220164653*^9, 
+  3.6212132342120247`*^9}, {3.621219026588146*^9, 3.621219045738554*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"automaticFlatMap", "/@", 
+   RowBox[{"{", 
+    RowBox[{
+    "appendVisiblyIndependentDiagram", ",", 
+     "appendInvisiblyIndependentDiagram", ",", "appendDependentDiagram"}], 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.621219070736085*^9, 3.621219089800869*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"appendVisiblyIndependentDiagram", "[", 
+    RowBox[{"d", ":", "Diagram"}], "]"}], "]"}], ":=", 
+  RowBox[{"ReplacePart", "[", 
+   RowBox[{"s", ",", 
+    RowBox[{"4", "\[Rule]", 
+     RowBox[{
+      RowBox[{"s", "\[LeftDoubleBracket]", "4", "\[RightDoubleBracket]"}], 
+      "~", "Join", "~", 
+      RowBox[{"{", "d", "}"}]}]}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"appendInvisiblyIndependentDiagram", "[", 
+    RowBox[{"d", ":", "Diagram"}], "]"}], "]"}], ":=", 
+  RowBox[{"ReplacePart", "[", 
+   RowBox[{"s", ",", 
+    RowBox[{"5", "\[Rule]", 
+     RowBox[{
+      RowBox[{"s", "\[LeftDoubleBracket]", "5", "\[RightDoubleBracket]"}], 
+      "~", "Join", "~", 
+      RowBox[{"{", "d", "}"}]}]}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", "s_SpiderAnalysis", ")"}], "[", 
+   RowBox[{"appendDependentDiagram", "[", 
+    RowBox[{"d", ":", "Diagram"}], "]"}], "]"}], ":=", 
+  RowBox[{"ReplacePart", "[", 
+   RowBox[{"s", ",", 
+    RowBox[{"6", "\[Rule]", 
+     RowBox[{
+      RowBox[{"s", "\[LeftDoubleBracket]", "6", "\[RightDoubleBracket]"}], 
+      "~", "Join", "~", 
+      RowBox[{"{", "d", "}"}]}]}]}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.621218879166912*^9, 3.621218926402318*^9}, {
+  3.621220534168996*^9, 3.621220541591282*^9}}],
 
 Cell[CellGroupData[{
 
@@ -2732,13 +3549,18 @@ Cell[BoxData[
      RowBox[{
       RowBox[{"{", "}"}], ",", 
       RowBox[{"{", "}"}]}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+     "1", ",", "0", ",", "1", ",", "1", ",", "5", ",", "16", ",", "80"}], 
+     "}"}], ",", 
     RowBox[{"{", "}"}], ",", 
     RowBox[{"{", "}"}], ",", 
     RowBox[{"{", "}"}], ",", 
     RowBox[{"{", "}"}], ",", 
     RowBox[{"{", "}"}]}], "]"}]}]], "Input",
  CellChangeTimes->{{3.621070247421101*^9, 3.621070266683709*^9}, {
-  3.621070311124052*^9, 3.621070313037962*^9}}],
+  3.621070311124052*^9, 3.621070313037962*^9}, {3.621220547273388*^9, 
+  3.621220567050495*^9}}],
 
 Cell[BoxData[
  RowBox[{"SpiderAnalysis", "[", 
@@ -2749,17 +3571,22 @@ Cell[BoxData[
       RowBox[{
       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
         "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject10535021580386306], ",", 
+    JLink`Objects`vm1`JavaObject10535021580386305], ",", 
    RowBox[{"Manifold", "[", 
     RowBox[{
      RowBox[{"{", "}"}], ",", 
      RowBox[{"{", "}"}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "0", ",", "1", ",", "1", ",", "5", ",", "16", ",", "80"}], 
+    "}"}], ",", 
    RowBox[{"{", "}"}], ",", 
    RowBox[{"{", "}"}], ",", 
    RowBox[{"{", "}"}], ",", 
    RowBox[{"{", "}"}], ",", 
    RowBox[{"{", "}"}]}], "]"}]], "Output",
- CellChangeTimes->{{3.621070267310356*^9, 3.6210703141698723`*^9}}]
+ CellChangeTimes->{{3.621070267310356*^9, 3.6210703141698723`*^9}, 
+   3.6212102200099363`*^9, {3.621220568300658*^9, 3.6212206325253363`*^9}}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -2795,17 +3622,340 @@ Cell[BoxData[
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"FromScalaObject", "[", 
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{"{", "strandState", "}"}], "=", 
+    RowBox[{"initialState", "@", 
+     RowBox[{"considerDiagram", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"FromScalaObject", "[", 
+         RowBox[{
+          RowBox[{"initialState", "[", 
+           RowBox[{"reducedDiagrams", "[", 
+            RowBox[{"2", ",", "0", ",", "0"}], "]"}], "]"}], ",", "1"}], 
+         "]"}], "[", 
+        RowBox[{"[", "1", "]"}], "]"}], ",", 
+       RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}]}]}], 
+   ")"}], "//", "TableForm"}]], "Input",
+ CellChangeTimes->{{3.621219981436984*^9, 3.62122000366319*^9}, {
+  3.62122023210786*^9, 3.621220233543405*^9}, {3.621220313195364*^9, 
+  3.621220319233288*^9}, {3.621221457302112*^9, 3.621221503244647*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"We now consider the diagram \
+PlanarGraph(2,Vector(List((1,2), (1,3))),List(),0), insisting that it is \
+independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212200069426537`*^9, {3.6212202130953712`*^9, 3.621220236860631*^9}, {
+   3.6212203096512823`*^9, 3.621220322537023*^9}, 3.621220384652226*^9, 
+   3.621220415708294*^9, 3.621220637559156*^9, 3.621221177629816*^9, 
+   3.621221215636627*^9, {3.621221267354884*^9, 3.6212212968747168`*^9}, 
+   3.621221352305944*^9, {3.621221435911014*^9, 3.621221506379736*^9}, 
+   3.621221636705761*^9, 3.62122254091129*^9}],
+
+Cell[BoxData["\<\"There's not enough room for this diagram to be invisibly \
+independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212200069426537`*^9, {3.6212202130953712`*^9, 3.621220236860631*^9}, {
+   3.6212203096512823`*^9, 3.621220322537023*^9}, 3.621220384652226*^9, 
+   3.621220415708294*^9, 3.621220637559156*^9, 3.621221177629816*^9, 
+   3.621221215636627*^9, {3.621221267354884*^9, 3.6212212968747168`*^9}, 
+   3.621221352305944*^9, {3.621221435911014*^9, 3.621221506379736*^9}, 
+   3.621221636705761*^9, 3.621222540913055*^9}],
+
+Cell[BoxData["\<\"We thus only consider the possibility that it is visibly \
+independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212200069426537`*^9, {3.6212202130953712`*^9, 3.621220236860631*^9}, {
+   3.6212203096512823`*^9, 3.621220322537023*^9}, 3.621220384652226*^9, 
+   3.621220415708294*^9, 3.621220637559156*^9, 3.621221177629816*^9, 
+   3.621221215636627*^9, {3.621221267354884*^9, 3.6212212968747168`*^9}, 
+   3.621221352305944*^9, {3.621221435911014*^9, 3.621221506379736*^9}, 
+   3.621221636705761*^9, 3.621222540915563*^9}],
+
+Cell[BoxData["\<\"If PlanarGraph(2,Vector(List((1,2), (1,3))),List(),0) is \
+visibly independent, we must have that \\(\\\\frac{-v^4 w^8-v^4 w^6+v^2 \
+w^{13}+v^2 w^{11}+v^2 w^2+v^2-w^7-w^5}{v^4 w^8-v^2 w^8-v^2 w^7+w^7}\\) is \
+nonzero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212200069426537`*^9, {3.6212202130953712`*^9, 3.621220236860631*^9}, {
+   3.6212203096512823`*^9, 3.621220322537023*^9}, 3.621220384652226*^9, 
+   3.621220415708294*^9, 3.621220637559156*^9, 3.621221177629816*^9, 
+   3.621221215636627*^9, {3.621221267354884*^9, 3.6212212968747168`*^9}, 
+   3.621221352305944*^9, {3.621221435911014*^9, 3.621221506379736*^9}, 
+   3.621221636705761*^9, 3.621222540918192*^9}],
+
+Cell[BoxData["\<\"Factoring \\(\\\\frac{-v^4 w^8-v^4 w^6+v^2 w^{13}+v^2 \
+w^{11}+v^2 w^2+v^2-w^7-w^5}{v^4 w^8-v^2 w^8-v^2 w^7+w^7}\\) we find the \
+factors \\(\\\\left\\\\{w^2+1,v w^3-1,v w^3+1,w^5-v^2\\\\right\\\\}\\) and \
+then require that each is nonzero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212200069426537`*^9, {3.6212202130953712`*^9, 3.621220236860631*^9}, {
+   3.6212203096512823`*^9, 3.621220322537023*^9}, 3.621220384652226*^9, 
+   3.621220415708294*^9, 3.621220637559156*^9, 3.621221177629816*^9, 
+   3.621221215636627*^9, {3.621221267354884*^9, 3.6212212968747168`*^9}, 
+   3.621221352305944*^9, {3.621221435911014*^9, 3.621221506379736*^9}, 
+   3.621221636705761*^9, 3.62122254101254*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {
+      RowBox[{"SpiderAnalysis", "[", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "examples", ".", "QuotientSpider"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject10535021580386305], ",", 
+        RowBox[{"Manifold", "[", 
+         RowBox[{
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"1", "+", 
+             SuperscriptBox["w", "2"]}], ",", 
+            RowBox[{
+             RowBox[{"-", "1"}], "+", 
+             RowBox[{"v", " ", 
+              SuperscriptBox["w", "3"]}]}], ",", 
+            RowBox[{"1", "+", 
+             RowBox[{"v", " ", 
+              SuperscriptBox["w", "3"]}]}], ",", 
+            RowBox[{
+             RowBox[{"-", 
+              SuperscriptBox["v", "2"]}], "+", 
+             SuperscriptBox["w", "5"]}]}], "}"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+         "1", ",", "0", ",", "1", ",", "1", ",", "5", ",", "16", ",", "80"}], 
+         "}"}], ",", 
+        RowBox[{"{", 
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject7178064790290452], "}"}], ",", 
+        RowBox[{"{", "}"}], ",", 
+        RowBox[{"{", "}"}], ",", 
+        RowBox[{"{", "}"}], ",", 
+        RowBox[{"{", "}"}]}], "]"}]}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.5599999999999999]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}],
+   Column],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{{3.6212199893276463`*^9, 3.621220007150702*^9}, {
+   3.621220213287462*^9, 3.621220237095669*^9}, {3.621220309893886*^9, 
+   3.621220322732506*^9}, 3.621220384864214*^9, 3.621220415917837*^9, 
+   3.6212206377689743`*^9, 3.621221177694603*^9, 3.6212212157095327`*^9, {
+   3.621221267405179*^9, 3.6212212969249067`*^9}, 3.6212213523617487`*^9, {
+   3.62122143596006*^9, 3.621221506436838*^9}, 3.621221636779972*^9, 
+   3.621222541015645*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{"{", "vertexState", "}"}], "=", 
+    RowBox[{"strandState", "@", 
+     RowBox[{"considerDiagram", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"FromScalaObject", "[", 
+         RowBox[{
+          RowBox[{"strandState", "[", 
+           RowBox[{"reducedDiagrams", "[", 
+            RowBox[{"3", ",", "0", ",", "1"}], "]"}], "]"}], ",", "1"}], 
+         "]"}], "[", 
+        RowBox[{"[", "1", "]"}], "]"}], ",", 
+       RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}]}]}], 
+   ")"}], "//", "TableForm"}]], "Input",
+ CellChangeTimes->{{3.621219981436984*^9, 3.62122000366319*^9}, {
+  3.62122023210786*^9, 3.621220233543405*^9}, {3.621220313195364*^9, 
+  3.621220319233288*^9}, {3.621221457302112*^9, 3.62122153121299*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"We now consider the diagram \
+PlanarGraph(5,Vector(List((2,5), (4,6), (3,7)), List((2,6), (3,5), \
+(4,7))),List(1),0), insisting that it is independent.\"\>"], "Print",
+ CellChangeTimes->{3.6212215406434507`*^9, 3.621221640821047*^9, 
+  3.621222545593351*^9}],
+
+Cell[BoxData["\<\"There's not enough room for this diagram to be invisibly \
+independent.\"\>"], "Print",
+ CellChangeTimes->{3.6212215406434507`*^9, 3.621221640821047*^9, 
+  3.6212225455950527`*^9}],
+
+Cell[BoxData["\<\"We thus only consider the possibility that it is visibly \
+independent.\"\>"], "Print",
+ CellChangeTimes->{3.6212215406434507`*^9, 3.621221640821047*^9, 
+  3.621222545596758*^9}],
+
+Cell[BoxData["\<\"If PlanarGraph(5,Vector(List((2,5), (4,6), (3,7)), \
+List((2,6), (3,5), (4,7))),List(1),0) is visibly independent, we must have \
+that \\(\\\\frac{-v^8 w^{13}-v^8 w^{12}-2 v^8 w^{11}-v^8 w^{10}-v^8 w^9+v^6 \
+w^{18}+v^6 w^{17}+2 v^6 w^{16}-2 v^6 w^{13}-v^6 w^{12}-v^6 w^{11}-v^6 \
+w^{10}-v^6 w^9-2 v^6 w^8+2 v^6 w^5+v^6 w^4+v^6 w^3+v^4 w^{20}+v^4 w^{19}+2 \
+v^4 w^{18}+v^4 w^{17}+v^4 w^{16}+v^4 w^{15}+v^4 w^{14}+2 v^4 w^{13}-v^4 \
+w^{12}-v^4 w^{11}-4 v^4 w^{10}-v^4 w^9-v^4 w^8+2 v^4 w^7+v^4 w^6+v^4 w^5+v^4 \
+w^4+v^4 w^3+2 v^4 w^2+v^4 w+v^4+v^2 w^{17}+v^2 w^{16}+2 v^2 w^{15}-2 v^2 \
+w^{12}-v^2 w^{11}-v^2 w^{10}-v^2 w^9-v^2 w^8-2 v^2 w^7+2 v^2 w^4+v^2 w^3+v^2 \
+w^2-w^{11}-w^{10}-2 w^9-w^8-w^7}{v^6 w^{11}-v^4 w^{11}-v^4 w^{10}+v^2 w^{10}}\
+\\) is nonzero.\"\>"], "Print",
+ CellChangeTimes->{3.6212215406434507`*^9, 3.621221640821047*^9, 
+  3.621222545682973*^9}],
+
+Cell[BoxData["\<\"Factoring \\(\\\\frac{-v^8 w^{13}-v^8 w^{12}-2 v^8 \
+w^{11}-v^8 w^{10}-v^8 w^9+v^6 w^{18}+v^6 w^{17}+2 v^6 w^{16}-2 v^6 w^{13}-v^6 \
+w^{12}-v^6 w^{11}-v^6 w^{10}-v^6 w^9-2 v^6 w^8+2 v^6 w^5+v^6 w^4+v^6 w^3+v^4 \
+w^{20}+v^4 w^{19}+2 v^4 w^{18}+v^4 w^{17}+v^4 w^{16}+v^4 w^{15}+v^4 w^{14}+2 \
+v^4 w^{13}-v^4 w^{12}-v^4 w^{11}-4 v^4 w^{10}-v^4 w^9-v^4 w^8+2 v^4 w^7+v^4 \
+w^6+v^4 w^5+v^4 w^4+v^4 w^3+2 v^4 w^2+v^4 w+v^4+v^2 w^{17}+v^2 w^{16}+2 v^2 \
+w^{15}-2 v^2 w^{12}-v^2 w^{11}-v^2 w^{10}-v^2 w^9-v^2 w^8-2 v^2 w^7+2 v^2 \
+w^4+v^2 w^3+v^2 w^2-w^{11}-w^{10}-2 w^9-w^8-w^7}{v^6 w^{11}-v^4 w^{11}-v^4 \
+w^{10}+v^2 w^{10}}\\) we find the factors \
+\\(\\\\left\\\\{-1,w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that each is nonzero.\"\>"], \
+"Print",
+ CellChangeTimes->{3.6212215406434507`*^9, 3.621221640821047*^9, 
+  3.621222545770529*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {
+      RowBox[{"SpiderAnalysis", "[", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "examples", ".", "QuotientSpider"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject10535021580386305], ",", 
+        RowBox[{"Manifold", "[", 
+         RowBox[{
+          RowBox[{"{", "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"1", "+", 
+             SuperscriptBox["w", "2"]}], ",", 
+            RowBox[{
+             SuperscriptBox["v", "2"], "+", 
+             SuperscriptBox["w", "2"]}], ",", 
+            RowBox[{"1", "+", "w", "+", 
+             SuperscriptBox["w", "2"]}], ",", 
+            RowBox[{
+             RowBox[{"-", "1"}], "+", 
+             RowBox[{"v", " ", 
+              SuperscriptBox["w", "3"]}]}], ",", 
+            RowBox[{"1", "+", 
+             RowBox[{"v", " ", 
+              SuperscriptBox["w", "3"]}]}], ",", 
+            RowBox[{"1", "+", 
+             RowBox[{
+              SuperscriptBox["v", "2"], " ", 
+              SuperscriptBox["w", "3"]}]}], ",", 
+            RowBox[{
+             SuperscriptBox["v", "2"], "-", 
+             SuperscriptBox["w", "5"]}], ",", 
+            RowBox[{
+             RowBox[{"-", 
+              SuperscriptBox["v", "2"]}], "+", 
+             SuperscriptBox["w", "5"]}]}], "}"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+         "1", ",", "0", ",", "1", ",", "1", ",", "5", ",", "16", ",", "80"}], 
+         "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          InterpretationBox[
+           RowBox[{"\[LeftGuillemet]", 
+            RowBox[{"JavaObject", "[", 
+             RowBox[{
+             "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+              "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+           JLink`Objects`vm1`JavaObject7178064790290452], ",", 
+          InterpretationBox[
+           RowBox[{"\[LeftGuillemet]", 
+            RowBox[{"JavaObject", "[", 
+             RowBox[{
+             "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+              "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+           JLink`Objects`vm1`JavaObject28817835899748355]}], "}"}], ",", 
+        RowBox[{"{", "}"}], ",", 
+        RowBox[{"{", "}"}], ",", 
+        RowBox[{"{", "}"}], ",", 
+        RowBox[{"{", "}"}]}], "]"}]}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.5599999999999999]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}],
+   Column],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{3.6212215418722878`*^9, 3.621221641006262*^9, 
+  3.621222545773677*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fourBoxBasis", "=", 
   RowBox[{
-   RowBox[{"initialState", "[", 
-    RowBox[{"reducedDiagrams", "[", 
-     RowBox[{"4", ",", "1", ",", "2"}], "]"}], "]"}], ",", "1"}], 
-  "]"}]], "Input",
- CellChangeTimes->{{3.6210703239130077`*^9, 3.62107034059203*^9}, {
-  3.621070437203725*^9, 3.621070460154961*^9}, {3.6210705289053497`*^9, 
-  3.62107055057915*^9}, {3.621071389345798*^9, 3.621071389745204*^9}, {
-  3.621071567415099*^9, 3.621071567510241*^9}, {3.6210716113921423`*^9, 
-  3.621071611471896*^9}}],
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{
+     RowBox[{"vertexState", "[", 
+      RowBox[{"reducedDiagrams", "[", 
+       RowBox[{"4", ",", "0", ",", "0"}], "]"}], "]"}], ",", "1"}], "]"}], 
+   "~", "Join", "~", 
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{
+     RowBox[{"vertexState", "[", 
+      RowBox[{"reducedDiagrams", "[", 
+       RowBox[{"4", ",", "0", ",", "2"}], "]"}], "]"}], ",", "1"}], "]"}], 
+   "~", "Join", "~", 
+   RowBox[{"Take", "[", 
+    RowBox[{
+     RowBox[{"FromScalaObject", "[", 
+      RowBox[{
+       RowBox[{"vertexState", "[", 
+        RowBox[{"reducedDiagrams", "[", 
+         RowBox[{"4", ",", "1", ",", "0"}], "]"}], "]"}], ",", "1"}], "]"}], 
+     ",", "1"}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.621221953207529*^9, 3.621221972838456*^9}}],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -2816,72 +3966,1003 @@ Cell[BoxData[
       RowBox[{
       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
         "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject49326860533767], ",", 
+    JLink`Objects`vm1`JavaObject22091399117668355], ",", 
    InterpretationBox[
     RowBox[{"\[LeftGuillemet]", 
      RowBox[{"JavaObject", "[", 
       RowBox[{
       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
         "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject21998680907186183], ",", 
+    JLink`Objects`vm1`JavaObject7437606996410371], ",", 
    InterpretationBox[
     RowBox[{"\[LeftGuillemet]", 
      RowBox[{"JavaObject", "[", 
       RowBox[{
       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
         "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject22163998107500551], ",", 
+    JLink`Objects`vm1`JavaObject4581793550303234], ",", 
    InterpretationBox[
     RowBox[{"\[LeftGuillemet]", 
      RowBox[{"JavaObject", "[", 
       RowBox[{
       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
         "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject21900740603674631], ",", 
+    JLink`Objects`vm1`JavaObject24676276799275010], ",", 
    InterpretationBox[
     RowBox[{"\[LeftGuillemet]", 
      RowBox[{"JavaObject", "[", 
       RowBox[{
       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
         "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject30419040979648519], ",", 
-   InterpretationBox[
-    RowBox[{"\[LeftGuillemet]", 
-     RowBox[{"JavaObject", "[", 
-      RowBox[{
-      "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
-        "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject30739398429507591], ",", 
-   InterpretationBox[
-    RowBox[{"\[LeftGuillemet]", 
-     RowBox[{"JavaObject", "[", 
-      RowBox[{
-      "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
-        "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject23405287159365639], ",", 
-   InterpretationBox[
-    RowBox[{"\[LeftGuillemet]", 
-     RowBox[{"JavaObject", "[", 
-      RowBox[{
-      "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
-        "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject32396359499776007]}], "}"}]], "Output",
+    JLink`Objects`vm1`JavaObject16593102076641282]}], "}"}]], "Output",
+ CellChangeTimes->{3.621221979228718*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fourBoxState", "=", 
+  RowBox[{
+   RowBox[{"vertexState", "@", 
+    RowBox[{"considerDiagrams", "[", 
+     RowBox[{"fourBoxBasis", ",", 
+      RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}]}], "//",
+    "TableForm"}]}]], "Input",
+ CellChangeTimes->{{3.6212219816148252`*^9, 3.6212220144258327`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"We now consider the diagram \
+PlanarGraph(3,Vector(List((1,3), (1,5), (2,3), (2,4))),List(),0), insisting \
+that it is independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230558077374`*^9}}],
+
+Cell[BoxData["\<\"We consider separately the possibilities that it is visibly \
+independent or invisibly independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223055809164*^9}}],
+
+Cell[BoxData["\<\"If PlanarGraph(3,Vector(List((1,3), (1,5), (2,3), \
+(2,4))),List(),0) is visibly independent, we must have that \
+\\(\\\\frac{\\\\left(w^2+1\\\\right)^2 \\\\left(v w^3-1\\\\right)^2 \
+\\\\left(v w^3+1\\\\right)^2 \\\\left(w^5-v^2\\\\right)^2}{(v-1)^2 (v+1)^2 \
+w^{14} \\\\left(v^2 w-1\\\\right)^2}\\) is nonzero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230558106937`*^9}}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{w^2+1,v w^3-1,v \
+w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that each is nonzero.\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223055812517*^9}}],
+
+Cell[BoxData["\<\"We now consider the possibility that \
+PlanarGraph(3,Vector(List((1,3), (1,5), (2,3), (2,4))),List(),0) is invisibly \
+independent of the previously considered diagrams.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223055814123*^9}}],
+
+Cell[BoxData["\<\"We compute all the determinants of matrices of inner \
+products of the visibly independent diagrams along with some subset of the \
+invisibly independent diagrams, finding \
+\\(\\\\left\\\\{\\\\frac{\\\\left(w^2+1\\\\right)^2 \\\\left(v \
+w^3-1\\\\right)^2 \\\\left(v w^3+1\\\\right)^2 \
+\\\\left(v^2-w^5\\\\right)^2}{(v-1)^2 (v+1)^2 w^{14} \\\\left(v^2 \
+w-1\\\\right)^2}\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223055856106*^9}}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{w^2+1,v w^3-1,v \
+w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that at least one is \
+zero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.62122305585839*^9}}],
+
+Cell[BoxData["\<\"Adding \\(w^2+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230559014273`*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v w^3-1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230559036703`*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v w^3+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223055905642*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v^2-w^5\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230559078074`*^9}}],
+
+Cell[BoxData["\<\"Finally we append PlanarGraph(3,Vector(List((1,3), (1,5), \
+(2,3), (2,4))),List(),0) to the list of invisibly independent \
+diagrams.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223055910075*^9}}],
+
+Cell[BoxData["\<\"We now consider the diagram \
+PlanarGraph(3,Vector(List((1,3), (2,5), (2,4), (1,5))),List(),0), insisting \
+that it is independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223055912331*^9}}],
+
+Cell[BoxData["\<\"We consider separately the possibilities that it is visibly \
+independent or invisibly independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.62122305591453*^9}}],
+
+Cell[BoxData["\<\"If PlanarGraph(3,Vector(List((1,3), (2,5), (2,4), \
+(1,5))),List(),0) is visibly independent, we must have that \
+\\(\\\\frac{\\\\left(w^2+1\\\\right)^2 \\\\left(v w^3-1\\\\right)^2 \
+\\\\left(v w^3+1\\\\right)^2 \\\\left(w^5-v^2\\\\right)^2 \\\\left(-v^4 \
+w^6+v^2 w^{13}+v^2 w^{11}-v^2 w^8-v^2 w^7+v^2 w^2+v^2-w^5\\\\right) \
+\\\\left(-2 v^4 w^8-v^4 w^6+v^2 w^{13}+v^2 w^{11}+v^2 w^8+v^2 w^7+v^2 \
+w^2+v^2-2 w^7-w^5\\\\right)}{(v-1)^4 (v+1)^4 w^{28} \\\\left(v^2 \
+w-1\\\\right)^4}\\) is nonzero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223055951861*^9}}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{w^2+1,v w^3-1,v \
+w^3+1,v^2-w^5,v^4 w^6-v^2 w^{13}-v^2 w^{11}+v^2 w^8+v^2 w^7-v^2 w^2-v^2+w^5,2 \
+v^4 w^8+v^4 w^6-v^2 w^{13}-v^2 w^{11}-v^2 w^8-v^2 w^7-v^2 w^2-v^2+2 w^7+w^5\\\
+\\right\\\\}\\) and then require that each is nonzero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223055999674*^9}}],
+
+Cell[BoxData["\<\"We now consider the possibility that \
+PlanarGraph(3,Vector(List((1,3), (2,5), (2,4), (1,5))),List(),0) is invisibly \
+independent of the previously considered diagrams.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056001936*^9}}],
+
+Cell[BoxData["\<\"We compute all the determinants of matrices of inner \
+products of the visibly independent diagrams along with some subset of the \
+invisibly independent diagrams, finding \
+\\(\\\\left\\\\{\\\\frac{\\\\left(w^2+1\\\\right)^2 \\\\left(v \
+w^3-1\\\\right)^2 \\\\left(v w^3+1\\\\right)^2 \\\\left(v^2-w^5\\\\right)^2 \
+\\\\left(v^4 w^6-v^2 w^{13}-v^2 w^{11}+v^2 w^8+v^2 w^7-v^2 \
+w^2-v^2+w^5\\\\right) \\\\left(2 v^4 w^8+v^4 w^6-v^2 w^{13}-v^2 w^{11}-v^2 \
+w^8-v^2 w^7-v^2 w^2-v^2+2 w^7+w^5\\\\right)}{(v-1)^4 (v+1)^4 w^{28} \
+\\\\left(v^2 w-1\\\\right)^4}\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056634285*^9}}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{w^2+1,v w^3-1,v \
+w^3+1,v^2-w^5,v^4 w^6-v^2 w^{13}-v^2 w^{11}+v^2 w^8+v^2 w^7-v^2 w^2-v^2+w^5,2 \
+v^4 w^8+v^4 w^6-v^2 w^{13}-v^2 w^{11}-v^2 w^8-v^2 w^7-v^2 w^2-v^2+2 w^7+w^5\\\
+\\right\\\\}\\) and then require that at least one is zero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056637257*^9}}],
+
+Cell[BoxData["\<\"Adding \\(w^2+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056639995*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v w^3-1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056684064*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v w^3+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056686686*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v^2-w^5\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056689206*^9}}],
+
+Cell[BoxData["\<\"Adjoining \\(v^4 w^6-v^2 w^{13}-v^2 w^{11}+v^2 w^8+v^2 \
+w^7-v^2 w^2-v^2+w^5\\) the ideal we obtain a new Groebner basis \\(\\\\left\\\
+\\{v^4 w^6-v^2 w^{13}-v^2 w^{11}+v^2 w^8+v^2 w^7-v^2 \
+w^2-v^2+w^5\\\\right\\\\}\\) with respect to which the nonzero quantities \
+reduce to \\(\\\\left\\\\{w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,w^5-v^2\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056692027*^9}}],
+
+Cell[BoxData["\<\"Adjoining \\(2 v^4 w^8+v^4 w^6-v^2 w^{13}-v^2 w^{11}-v^2 \
+w^8-v^2 w^7-v^2 w^2-v^2+2 w^7+w^5\\) the ideal we obtain a new Groebner basis \
+\\(\\\\left\\\\{2 v^4 w^8+v^4 w^6-v^2 w^{13}-v^2 w^{11}-v^2 w^8-v^2 w^7-v^2 \
+w^2-v^2+2 w^7+w^5\\\\right\\\\}\\) with respect to which the nonzero \
+quantities reduce to \\(\\\\left\\\\{w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v \
+w^3+1,v^2 w^3+1,v^2-w^5,w^5-v^2\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056767692*^9}}],
+
+Cell[BoxData["\<\"Finally we append PlanarGraph(3,Vector(List((1,3), (2,5), \
+(2,4), (1,5))),List(),0) to the list of invisibly independent \
+diagrams.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230567703123`*^9}}],
+
+Cell[BoxData["\<\"We now consider the diagram \
+PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), List((4,8), (6,10), \
+(7,9)), List((3,11), (7,8), (5,9))),List(1, 1),0), insisting that it is \
+independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230567730703`*^9}}],
+
+Cell[BoxData["\<\"We consider separately the possibilities that it is visibly \
+independent or invisibly independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223056775635*^9}}],
+
+Cell[BoxData["\<\"If PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), \
+List((4,8), (6,10), (7,9)), List((3,11), (7,8), (5,9))),List(1, 1),0) is \
+visibly independent, we must have that \
+\\(-\\\\frac{\\\\left(w^2+1\\\\right)^3 \\\\left(w^2+w+1\\\\right)^2 \
+\\\\left(v^2+w^2\\\\right)^2 \\\\left(v w^3-1\\\\right)^3 \\\\left(v \
+w^3+1\\\\right)^3 \\\\left(v^2 w^3+1\\\\right)^2 \\\\left(v^2-w^5\\\\right)^3 \
+\\\\left(v^8 w^{16}+3 v^8 w^{14}+v^8 w^{12}-3 v^6 w^{21}-5 v^6 w^{19}-2 v^6 \
+w^{17}+v^6 w^{16}+v^6 w^{15}-v^6 w^{14}-v^6 w^{13}-3 v^6 w^{10}-5 v^6 w^8-2 \
+v^6 w^6+v^4 w^{26}+2 v^4 w^{24}+v^4 w^{22}+v^4 w^{21}+v^4 w^{20}+v^4 \
+w^{19}+v^4 w^{18}-v^4 w^{16}+2 v^4 w^{15}-v^4 w^{14}+10 v^4 w^{13}+4 v^4 \
+w^{11}+v^4 w^{10}+v^4 w^9+v^4 w^8+v^4 w^7+v^4 w^4+2 v^4 w^2+v^4-3 v^2 \
+w^{20}-5 v^2 w^{18}-2 v^2 w^{16}+v^2 w^{15}+v^2 w^{14}-v^2 w^{13}-v^2 \
+w^{12}-3 v^2 w^9-5 v^2 w^7-2 v^2 w^5+w^{14}+3 \
+w^{12}+w^{10}\\\\right)}{(v-1)^5 v^4 (v+1)^5 w^{41} \\\\left(v^2 \
+w-1\\\\right)^5}\\) is nonzero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230569189672`*^9}}],
+
+Cell[BoxData["\<\"We find the factors \
+\\(\\\\left\\\\{-1,w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,v^8 w^{16}+3 v^8 w^{14}+v^8 w^{12}-3 v^6 w^{21}-5 v^6 w^{19}-2 \
+v^6 w^{17}+v^6 w^{16}+v^6 w^{15}-v^6 w^{14}-v^6 w^{13}-3 v^6 w^{10}-5 v^6 \
+w^8-2 v^6 w^6+v^4 w^{26}+2 v^4 w^{24}+v^4 w^{22}+v^4 w^{21}+v^4 w^{20}+v^4 \
+w^{19}+v^4 w^{18}-v^4 w^{16}+2 v^4 w^{15}-v^4 w^{14}+10 v^4 w^{13}+4 v^4 \
+w^{11}+v^4 w^{10}+v^4 w^9+v^4 w^8+v^4 w^7+v^4 w^4+2 v^4 w^2+v^4-3 v^2 \
+w^{20}-5 v^2 w^{18}-2 v^2 w^{16}+v^2 w^{15}+v^2 w^{14}-v^2 w^{13}-v^2 \
+w^{12}-3 v^2 w^9-5 v^2 w^7-2 v^2 w^5+w^{14}+3 w^{12}+w^{10}\\\\right\\\\}\\) \
+and then require that each is nonzero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230569699306`*^9}}],
+
+Cell[BoxData["\<\"We now consider the possibility that \
+PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), List((4,8), (6,10), \
+(7,9)), List((3,11), (7,8), (5,9))),List(1, 1),0) is invisibly independent of \
+the previously considered diagrams.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230569724617`*^9}}],
+
+Cell[BoxData["\<\"We compute all the determinants of matrices of inner \
+products of the visibly independent diagrams along with some subset of the \
+invisibly independent diagrams, finding \
+\\(\\\\left\\\\{-\\\\frac{\\\\left(w^2+1\\\\right)^3 \
+\\\\left(w^2+w+1\\\\right)^2 \\\\left(v^2+w^2\\\\right)^2 \\\\left(v \
+w^3-1\\\\right)^3 \\\\left(v w^3+1\\\\right)^3 \\\\left(v^2 w^3+1\\\\right)^2 \
+\\\\left(v^2-w^5\\\\right)^3 \\\\left(v^8 w^{16}+3 v^8 w^{14}+v^8 w^{12}-3 \
+v^6 w^{21}-5 v^6 w^{19}-2 v^6 w^{17}+v^6 w^{16}+v^6 w^{15}-v^6 w^{14}-v^6 \
+w^{13}-3 v^6 w^{10}-5 v^6 w^8-2 v^6 w^6+v^4 w^{26}+2 v^4 w^{24}+v^4 \
+w^{22}+v^4 w^{21}+v^4 w^{20}+v^4 w^{19}+v^4 w^{18}-v^4 w^{16}+2 v^4 \
+w^{15}-v^4 w^{14}+10 v^4 w^{13}+4 v^4 w^{11}+v^4 w^{10}+v^4 w^9+v^4 w^8+v^4 \
+w^7+v^4 w^4+2 v^4 w^2+v^4-3 v^2 w^{20}-5 v^2 w^{18}-2 v^2 w^{16}+v^2 \
+w^{15}+v^2 w^{14}-v^2 w^{13}-v^2 w^{12}-3 v^2 w^9-5 v^2 w^7-2 v^2 \
+w^5+w^{14}+3 w^{12}+w^{10}\\\\right)}{(v-1)^5 v^4 (v+1)^5 w^{41} \\\\left(v^2 \
+w-1\\\\right)^5}\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.62122305745192*^9}}],
+
+Cell[BoxData["\<\"We find the factors \
+\\(\\\\left\\\\{-1,w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,v^8 w^{16}+3 v^8 w^{14}+v^8 w^{12}-3 v^6 w^{21}-5 v^6 w^{19}-2 \
+v^6 w^{17}+v^6 w^{16}+v^6 w^{15}-v^6 w^{14}-v^6 w^{13}-3 v^6 w^{10}-5 v^6 \
+w^8-2 v^6 w^6+v^4 w^{26}+2 v^4 w^{24}+v^4 w^{22}+v^4 w^{21}+v^4 w^{20}+v^4 \
+w^{19}+v^4 w^{18}-v^4 w^{16}+2 v^4 w^{15}-v^4 w^{14}+10 v^4 w^{13}+4 v^4 \
+w^{11}+v^4 w^{10}+v^4 w^9+v^4 w^8+v^4 w^7+v^4 w^4+2 v^4 w^2+v^4-3 v^2 \
+w^{20}-5 v^2 w^{18}-2 v^2 w^{16}+v^2 w^{15}+v^2 w^{14}-v^2 w^{13}-v^2 \
+w^{12}-3 v^2 w^9-5 v^2 w^7-2 v^2 w^5+w^{14}+3 w^{12}+w^{10}\\\\right\\\\}\\) \
+and then require that at least one is zero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057534981*^9}}],
+
+Cell[BoxData["\<\"Adding \\(w^2+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057536929*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v^2+w^2\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.62122305753903*^9}}],
+
+Cell[BoxData["\<\"Adding \\(w^2+w+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057541079*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v w^3-1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057543242*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v w^3+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057667008*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v^2 w^3+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057669072*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v^2-w^5\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230576710587`*^9}}],
+
+Cell[BoxData["\<\"Adjoining \\(v^8 w^{16}+3 v^8 w^{14}+v^8 w^{12}-3 v^6 \
+w^{21}-5 v^6 w^{19}-2 v^6 w^{17}+v^6 w^{16}+v^6 w^{15}-v^6 w^{14}-v^6 \
+w^{13}-3 v^6 w^{10}-5 v^6 w^8-2 v^6 w^6+v^4 w^{26}+2 v^4 w^{24}+v^4 \
+w^{22}+v^4 w^{21}+v^4 w^{20}+v^4 w^{19}+v^4 w^{18}-v^4 w^{16}+2 v^4 \
+w^{15}-v^4 w^{14}+10 v^4 w^{13}+4 v^4 w^{11}+v^4 w^{10}+v^4 w^9+v^4 w^8+v^4 \
+w^7+v^4 w^4+2 v^4 w^2+v^4-3 v^2 w^{20}-5 v^2 w^{18}-2 v^2 w^{16}+v^2 \
+w^{15}+v^2 w^{14}-v^2 w^{13}-v^2 w^{12}-3 v^2 w^9-5 v^2 w^7-2 v^2 \
+w^5+w^{14}+3 w^{12}+w^{10}\\) the ideal we obtain a new Groebner basis \
+\\(\\\\left\\\\{v^8 w^{16}+3 v^8 w^{14}+v^8 w^{12}-3 v^6 w^{21}-5 v^6 \
+w^{19}-2 v^6 w^{17}+v^6 w^{16}+v^6 w^{15}-v^6 w^{14}-v^6 w^{13}-3 v^6 \
+w^{10}-5 v^6 w^8-2 v^6 w^6+v^4 w^{26}+2 v^4 w^{24}+v^4 w^{22}+v^4 w^{21}+v^4 \
+w^{20}+v^4 w^{19}+v^4 w^{18}-v^4 w^{16}+2 v^4 w^{15}-v^4 w^{14}+10 v^4 \
+w^{13}+4 v^4 w^{11}+v^4 w^{10}+v^4 w^9+v^4 w^8+v^4 w^7+v^4 w^4+2 v^4 \
+w^2+v^4-3 v^2 w^{20}-5 v^2 w^{18}-2 v^2 w^{16}+v^2 w^{15}+v^2 w^{14}-v^2 \
+w^{13}-v^2 w^{12}-3 v^2 w^9-5 v^2 w^7-2 v^2 w^5+w^{14}+3 \
+w^{12}+w^{10}\\\\right\\\\}\\) with respect to which the nonzero quantities \
+reduce to \\(\\\\left\\\\{w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,w^5-v^2,v^4 w^6-v^2 w^{13}-v^2 w^{11}+v^2 w^8+v^2 w^7-v^2 \
+w^2-v^2+w^5,2 v^4 w^8+v^4 w^6-v^2 w^{13}-v^2 w^{11}-v^2 w^8-v^2 w^7-v^2 \
+w^2-v^2+2 w^7+w^5\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057768757*^9}}],
+
+Cell[BoxData["\<\"Finally we append PlanarGraph(8,Vector(List((3,8), (5,11), \
+(6,9), (4,10)), List((4,8), (6,10), (7,9)), List((3,11), (7,8), \
+(5,9))),List(1, 1),0) to the list of invisibly independent diagrams.\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230577722893`*^9}}],
+
+Cell[BoxData["\<\"We now consider the diagram \
+PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), List((4,8), (6,10), \
+(7,9)), List((3,11), (7,8), (5,9))),List(1, 1),0), insisting that it is \
+independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230577745047`*^9}}],
+
+Cell[BoxData["\<\"We consider separately the possibilities that it is visibly \
+independent or invisibly independent.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057776721*^9}}],
+
+Cell[BoxData["\<\"If PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), \
+List((4,8), (6,10), (7,9)), List((3,11), (7,8), (5,9))),List(1, 1),0) is \
+visibly independent, and does not lift any of the currently invisibly \
+independent diagrams into visibility, we must have that \
+\\(-\\\\frac{\\\\left(w^2+1\\\\right)^3 \\\\left(w^2+w+1\\\\right)^2 \
+\\\\left(v^2+w^2\\\\right)^2 \\\\left(v w^3-1\\\\right)^3 \\\\left(v \
+w^3+1\\\\right)^3 \\\\left(v^2 w^3+1\\\\right)^2 \
+\\\\left(v^2-w^5\\\\right)^3}{(v-1)^3 v^4 (v+1)^3 w^{27} \\\\left(v^2 \
+w-1\\\\right)^3}\\) is nonzero while \\(\\\\left\\\\{-\\\\frac{\\\\left(w^2+1\
+\\\\right)^3 \\\\left(w^2+w+1\\\\right)^2 \\\\left(v^2+w^2\\\\right)^2 \
+\\\\left(v w^3-1\\\\right)^3 \\\\left(v w^3+1\\\\right)^3 \\\\left(v^2 \
+w^3+1\\\\right)^2 \\\\left(v^2-w^5\\\\right)^3 \\\\left(v^8 w^{16}+3 v^8 \
+w^{14}+v^8 w^{12}-3 v^6 w^{21}-5 v^6 w^{19}-2 v^6 w^{17}+v^6 w^{16}+v^6 \
+w^{15}-v^6 w^{14}-v^6 w^{13}-3 v^6 w^{10}-5 v^6 w^8-2 v^6 w^6+v^4 w^{26}+2 \
+v^4 w^{24}+v^4 w^{22}+v^4 w^{21}+v^4 w^{20}+v^4 w^{19}+v^4 w^{18}-v^4 \
+w^{16}+2 v^4 w^{15}-v^4 w^{14}+10 v^4 w^{13}+4 v^4 w^{11}+v^4 w^{10}+v^4 \
+w^9+v^4 w^8+v^4 w^7+v^4 w^4+2 v^4 w^2+v^4-3 v^2 w^{20}-5 v^2 w^{18}-2 v^2 \
+w^{16}+v^2 w^{15}+v^2 w^{14}-v^2 w^{13}-v^2 w^{12}-3 v^2 w^9-5 v^2 w^7-2 v^2 \
+w^5+w^{14}+3 w^{12}+w^{10}\\\\right)}{(v-1)^5 v^4 (v+1)^5 w^{41} \\\\left(v^2 \
+w-1\\\\right)^5}\\\\right\\\\}\\) are all zero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057945437*^9}}],
+
+Cell[BoxData["\<\"ERROR: unimplemented\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223057949151*^9}}],
+
+Cell[BoxData["\<\"We find the factors \
+\\(\\\\left\\\\{-1,w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,v^8 w^{16}+3 v^8 w^{14}+v^8 w^{12}-3 v^6 w^{21}-5 v^6 w^{19}-2 \
+v^6 w^{17}+v^6 w^{16}+v^6 w^{15}-v^6 w^{14}-v^6 w^{13}-3 v^6 w^{10}-5 v^6 \
+w^8-2 v^6 w^6+v^4 w^{26}+2 v^4 w^{24}+v^4 w^{22}+v^4 w^{21}+v^4 w^{20}+v^4 \
+w^{19}+v^4 w^{18}-v^4 w^{16}+2 v^4 w^{15}-v^4 w^{14}+10 v^4 w^{13}+4 v^4 \
+w^{11}+v^4 w^{10}+v^4 w^9+v^4 w^8+v^4 w^7+v^4 w^4+2 v^4 w^2+v^4-3 v^2 \
+w^{20}-5 v^2 w^{18}-2 v^2 w^{16}+v^2 w^{15}+v^2 w^{14}-v^2 w^{13}-v^2 \
+w^{12}-3 v^2 w^9-5 v^2 w^7-2 v^2 w^5+w^{14}+3 w^{12}+w^{10}\\\\right\\\\}\\) \
+and then require that at least one is zero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058017782*^9}}],
+
+Cell[BoxData["\<\"Adding \\(w^2+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058055593*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v^2+w^2\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230580577106`*^9}}],
+
+Cell[BoxData["\<\"Adding \\(w^2+w+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.62122305805976*^9}}],
+
+Cell[BoxData["\<\"Adjoining \\(v w^3-1\\) the ideal we obtain a new Groebner \
+basis \\(\\\\left\\\\{w^{11}-w^6-w^5+1,v+w^8-w^3-w^2\\\\right\\\\}\\) with \
+respect to which the nonzero quantities reduce to \
+\\(\\\\left\\\\{w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,w^5-v^2\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058061818*^9}}],
+
+Cell[BoxData["\<\"Adjoining \\(v w^3+1\\) the ideal we obtain a new Groebner \
+basis \\(\\\\left\\\\{w^{11}-w^6-w^5+1,v-w^8+w^3+w^2\\\\right\\\\}\\) with \
+respect to which the nonzero quantities reduce to \
+\\(\\\\left\\\\{w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,w^5-v^2\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058100573*^9}}],
+
+Cell[BoxData["\<\"Adjoining \\(v^2 w^3+1\\) the ideal we obtain a new \
+Groebner basis \
+\\(\\\\left\\\\{w^{13}+w^{11}-w^7+w^3+w^2+1,v^2+w^{12}-w^8-w^6+w^4+w^2+w-1\\\\\
+right\\\\}\\) with respect to which the nonzero quantities reduce to \
+\\(\\\\left\\\\{w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,w^5-v^2\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058102951*^9}}],
+
+Cell[BoxData["\<\"Adding \\(v^2-w^5\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058149699*^9}}],
+
+Cell[BoxData["\<\"Adjoining \\(v^8 w^{16}+3 v^8 w^{14}+v^8 w^{12}-3 v^6 \
+w^{21}-5 v^6 w^{19}-2 v^6 w^{17}+v^6 w^{16}+v^6 w^{15}-v^6 w^{14}-v^6 \
+w^{13}-3 v^6 w^{10}-5 v^6 w^8-2 v^6 w^6+v^4 w^{26}+2 v^4 w^{24}+v^4 \
+w^{22}+v^4 w^{21}+v^4 w^{20}+v^4 w^{19}+v^4 w^{18}-v^4 w^{16}+2 v^4 \
+w^{15}-v^4 w^{14}+10 v^4 w^{13}+4 v^4 w^{11}+v^4 w^{10}+v^4 w^9+v^4 w^8+v^4 \
+w^7+v^4 w^4+2 v^4 w^2+v^4-3 v^2 w^{20}-5 v^2 w^{18}-2 v^2 w^{16}+v^2 \
+w^{15}+v^2 w^{14}-v^2 w^{13}-v^2 w^{12}-3 v^2 w^9-5 v^2 w^7-2 v^2 \
+w^5+w^{14}+3 w^{12}+w^{10}\\) the ideal we obtain a new Groebner basis \
+\\(\\\\left\\\\{w^{40}+2 w^{38}+w^{36}-2 w^{35}-2 w^{34}-4 w^{33}-4 w^{32}-2 \
+w^{31}-w^{30}+4 w^{29}+3 w^{28}+8 w^{27}+3 w^{26}+4 w^{25}-w^{24}-2 w^{23}-4 \
+w^{22}-4 w^{21}-2 w^{20}-2 w^{19}+w^{18}+2 w^{16}+w^{14},-2 w^{39}-w^{38}-3 \
+w^{37}-2 w^{36}-w^{35}+3 w^{34}+6 w^{33}+8 w^{32}+10 w^{31}+6 w^{30}+w^{29}-7 \
+w^{28}-10 w^{27}+v^2 w^{26}-15 w^{26}-12 w^{25}+2 v^2 w^{24}-5 \
+w^{24}+w^{23}+v^2 w^{22}+7 w^{22}-2 v^2 w^{21}+10 w^{21}-2 v^2 w^{20}+10 \
+w^{20}-4 v^2 w^{19}+5 w^{19}-4 v^2 w^{18}-2 v^2 w^{17}-2 w^{17}-v^2 w^{16}-5 \
+w^{16}+4 v^2 w^{15}-4 w^{15}+3 v^2 w^{14}-2 w^{14}+8 v^2 w^{13}+w^{13}+3 v^2 \
+w^{12}+w^{12}+4 v^2 w^{11}+2 w^{11}-v^2 w^{10}+2 w^{10}-2 v^2 w^9-4 v^2 w^8-4 \
+v^2 w^7-w^7-2 v^2 w^6-2 v^2 w^5-w^5+v^2 w^4+2 v^2 w^2+v^2,15 w^{39}+7 \
+w^{38}+19 w^{37}+10 w^{36}-w^{35}-30 w^{34}-47 w^{33}-53 w^{32}-57 w^{31}-17 \
+w^{30}+16 w^{29}+70 w^{28}+69 w^{27}+91 w^{26}+2 v^2 w^{25}+54 w^{25}+v^2 \
+w^{24}+6 w^{24}+4 v^2 w^{23}-26 w^{23}+v^2 w^{22}-49 w^{22}+2 v^2 w^{21}-53 \
+w^{21}-4 v^2 w^{20}-50 w^{20}-6 v^2 w^{19}-14 w^{19}-9 v^2 w^{18}-4 w^{18}-10 \
+v^2 w^{17}+7 w^{17}-5 v^2 w^{16}+8 w^{16}-2 v^2 w^{15}+12 w^{15}+9 v^2 \
+w^{14}+4 w^{14}+8 v^2 w^{13}-w^{13}+16 v^2 w^{12}+8 w^{12}+8 v^2 w^{11}+4 \
+w^{11}+7 v^2 w^{10}+w^{10}-2 v^2 w^9+4 w^9-5 v^2 w^8+w^8-7 v^2 w^7-w^7-8 v^2 \
+w^6-3 w^6-3 v^2 w^5+w^5-3 v^2 w^4+2 v^2 w^3+3 v^2 w+v^4-v^2\\\\right\\\\}\\) \
+with respect to which the nonzero quantities reduce to \
+\\(\\\\left\\\\{w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,w^5-v^2\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058334393*^9}}],
+
+Cell[BoxData["\<\"We find the factors \
+\\(\\\\left\\\\{-1,w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that each is nonzero.\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058338669*^9}}],
+
+Cell[BoxData["\<\"We find the factors \
+\\(\\\\left\\\\{-1,w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that each is nonzero.\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058340823*^9}}],
+
+Cell[BoxData["\<\"We find the factors \
+\\(\\\\left\\\\{-1,w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that each is nonzero.\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.6212230583429193`*^9}}],
+
+Cell[BoxData["\<\"We find the factors \
+\\(\\\\left\\\\{-1,w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that each is nonzero.\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.62122305843404*^9}}],
+
+Cell[BoxData["\<\"We now consider the possibility that \
+PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), List((4,8), (6,10), \
+(7,9)), List((3,11), (7,8), (5,9))),List(1, 1),0) is invisibly independent of \
+the previously considered diagrams.\"\>"], "Print",
+ CellChangeTimes->{
+  3.6212221044677963`*^9, 3.621222558300498*^9, 3.621222934665867*^9, 
+   3.621222970189768*^9, {3.621223028462225*^9, 3.621223058436388*^9}}],
+
+Cell[BoxData["\<\"We compute all the determinants of matrices of inner \
+products of the visibly independent diagrams along with some subset of the \
+invisibly independent diagrams, finding \\(\\\\left\\\\{-\\\\frac{v^2 \
+w^{97}+2 v^2 w^{96}+12 v^2 w^{95}+20 v^2 w^{94}+64 v^2 w^{93}+83 v^2 \
+w^{92}+178 v^2 w^{91}+142 v^2 w^{90}+180 v^2 w^{89}-w^{89}-152 v^2 w^{88}-2 \
+w^{88}-457 v^2 w^{87}-11 w^{87}-1282 v^2 w^{86}-18 w^{86}-1879 v^2 w^{85}-53 \
+w^{85}-2424 v^2 w^{84}-66 w^{84}-1956 v^2 w^{83}-128 w^{83}+12 v^2 w^{82}-89 \
+w^{82}+3388 v^2 w^{81}-81 w^{81}+8701 v^2 w^{80}+170 w^{80}+12642 v^2 \
+w^{79}+419 w^{79}+15297 v^2 w^{78}+919 w^{78}+10216 v^2 w^{77}+1245 \
+w^{77}-334 v^2 w^{76}+1347 w^{76}-20530 v^2 w^{75}+820 w^{75}-41093 v^2 \
+w^{74}-707 w^{74}-57921 v^2 w^{73}-2788 w^{73}-57427 v^2 w^{72}-5659 \
+w^{72}-32326 v^2 w^{71}-7123 w^{71}+17675 v^2 w^{70}-7305 w^{70}+87543 v^2 \
+w^{69}-3112 w^{69}+148211 v^2 w^{68}+3718 w^{68}+182292 v^2 w^{67}+14056 \
+w^{67}+149216 v^2 w^{66}+22910 w^{66}+53879 v^2 w^{65}+27332 w^{65}-107376 \
+v^2 w^{64}+22379 w^{64}-275401 v^2 w^{63}+5580 w^{63}-402038 v^2 w^{62}-19547 \
+w^{62}-413565 v^2 w^{61}-49122 w^{61}-275946 v^2 w^{60}-68296 w^{60}-1524 v^2 \
+w^{59}-71314 w^{59}+354064 v^2 w^{58}-44700 w^{58}+659987 v^2 w^{57}+3722 \
+w^{57}+818616 v^2 w^{56}+68835 w^{56}+706689 v^2 w^{55}+124618 w^{55}+344476 \
+v^2 w^{54}+151968 w^{54}-224694 v^2 w^{53}+131202 w^{53}-802465 v^2 \
+w^{52}+58270 w^{52}-1217435 v^2 w^{51}-48656 w^{51}-1279975 v^2 w^{50}-163985 \
+w^{50}-928500 v^2 w^{49}-239795 w^{49}-231196 v^2 w^{48}-252938 w^{48}+632620 \
+v^2 w^{47}-177151 w^{47}+1365285 v^2 w^{46}-37629 w^{46}+1749009 v^2 \
+w^{45}+137703 w^{45}+1584877 v^2 w^{44}+284101 w^{44}+935391 v^2 \
+w^{43}+356692 w^{43}-67550 v^2 w^{42}+320614 w^{42}-1076368 v^2 w^{41}+179523 \
+w^{41}-1808562 v^2 w^{40}-24440 w^{40}-1999329 v^2 w^{39}-235615 \
+w^{39}-1593831 v^2 w^{38}-377271 w^{38}-711723 v^2 w^{37}-414093 \
+w^{37}+387314 v^2 w^{36}-319633 w^{36}+1342228 v^2 w^{35}-135272 \
+w^{35}+1901116 v^2 w^{34}+94013 w^{34}+1868834 v^2 w^{33}+287042 \
+w^{33}+1322516 v^2 w^{32}+394137 w^{32}+406052 v^2 w^{31}+381281 \
+w^{31}-550112 v^2 w^{30}+259604 w^{30}-1298907 v^2 w^{29}+72817 \
+w^{29}-1614835 v^2 w^{28}-124239 w^{28}-1460852 v^2 w^{27}-266754 \
+w^{27}-919774 v^2 w^{26}-326727 w^{26}-181761 v^2 w^{25}-285869 w^{25}+512535 \
+v^2 w^{24}-176132 w^{24}+992224 v^2 w^{23}-27709 w^{23}+1130899 v^2 \
+w^{22}+105102 w^{22}+961594 v^2 w^{21}+193797 w^{21}+552225 v^2 w^{20}+216041 \
+w^{20}+74099 v^2 w^{19}+178638 w^{19}-350264 v^2 w^{18}+100971 w^{18}-602347 \
+v^2 w^{17}+10575 w^{17}-653645 v^2 w^{16}-64311 w^{16}-526036 v^2 \
+w^{15}-108969 w^{15}-288974 v^2 w^{14}-114811 w^{14}-32907 v^2 w^{13}-91749 \
+w^{13}+168311 v^2 w^{12}-49236 w^{12}+274454 v^2 w^{11}-5848 w^{11}+281552 \
+v^2 w^{10}+27678 w^{10}+212125 v^2 w^9+45060 w^9+112076 v^2 w^8+45426 \
+w^8+18201 v^2 w^7+34240 w^7-44082 v^2 w^6+17931 w^6+41 v^{10} w^5-349 v^8 \
+w^5+802 v^6 w^5+6020 v^4 w^5-75533 v^2 w^5+3180 w^5+30 v^{10} w^4-141 v^8 \
+w^4-547 v^6 w^4+10630 v^4 w^4-79300 v^2 w^4+14 v^{10} w^3-8 v^8 w^3-1181 v^6 \
+w^3+11502 v^4 w^3-63357 v^2 w^3+8 v^{10} w^2+78 v^8 w^2-1332 v^6 w^2+8966 v^4 \
+w^2-37420 v^2 w^2+2 v^{10} w+48 v^8 w-753 v^6 w+4870 v^4 w-17931 v^2 \
+w+v^{10}+57 v^8-556 v^6+2429 v^4-3180 v^2}{(v-1)^3 v^4 (v+1)^3 w^{27} \
+\\\\left(v^2 w-1\\\\right)^3},-\\\\frac{v^2 w^{141}+2 v^2 w^{140}+16 v^2 \
+w^{139}+28 v^2 w^{138}+118 v^2 w^{137}+171 v^2 w^{136}+498 v^2 w^{135}+532 \
+v^2 w^{134}+1155 v^2 w^{133}-w^{133}+446 v^2 w^{132}-2 w^{132}+515 v^2 \
+w^{131}-15 w^{131}-3140 v^2 w^{130}-26 w^{130}-5667 v^2 w^{129}-103 \
+w^{129}-13997 v^2 w^{128}-146 w^{128}-17747 v^2 w^{127}-398 w^{127}-22724 v^2 \
+w^{126}-403 w^{126}-12557 v^2 w^{125}-798 w^{125}+11953 v^2 w^{124}-172 \
+w^{124}+59430 v^2 w^{123}+34 w^{123}+129254 v^2 w^{122}+2769 w^{122}+186607 \
+v^2 w^{121}+4834 w^{121}+224067 v^2 w^{120}+10043 w^{120}+138510 v^2 \
+w^{119}+11971 w^{119}-45210 v^2 w^{118}+12660 w^{118}-436792 v^2 w^{117}+3559 \
+w^{117}-860486 v^2 w^{116}-16523 w^{116}-1288276 v^2 w^{115}-47587 \
+w^{115}-1339054 v^2 w^{114}-89610 w^{114}-850322 v^2 w^{113}-113937 \
+w^{113}+437057 v^2 w^{112}-117786 w^{112}+2433422 v^2 w^{111}-40430 \
+w^{111}+4592400 v^2 w^{110}+93494 w^{110}+6217028 v^2 w^{109}+327224 \
+w^{109}+5850334 v^2 w^{108}+546986 w^{108}+2975749 v^2 w^{107}+708950 \
+w^{107}-3266410 v^2 w^{106}+622204 w^{106}-11200379 v^2 w^{105}+205213 \
+w^{105}-19127303 v^2 w^{104}-586913 w^{104}-22737699 v^2 w^{103}-1652087 \
+w^{103}-19018158 v^2 w^{102}-2589255 w^{102}-5426326 v^2 w^{101}-3042525 \
+w^{101}+16829326 v^2 w^{100}-2314461 w^{100}+42184552 v^2 w^{99}-348832 \
+w^{99}+62347138 v^2 w^{98}+2990296 w^{98}+65527500 v^2 w^{97}+6612719 \
+w^{97}+45348649 v^2 w^{96}+9473498 w^{96}-1736767 v^2 w^{95}+9691120 \
+w^{95}-64665725 v^2 w^{94}+6187501 w^{94}-127357902 v^2 w^{93}-1337928 \
+w^{93}-162675357 v^2 w^{92}-11608993 w^{92}-149881419 v^2 w^{91}-21336379 \
+w^{91}-76570289 v^2 w^{90}-26920420 w^{90}+48067860 v^2 w^{89}-23890070 \
+w^{89}+192053560 v^2 w^{88}-11180191 w^{88}+309376622 v^2 w^{87}+10671461 \
+w^{87}+345836892 v^2 w^{86}+35292312 w^{86}+270955669 v^2 w^{85}+55226544 \
+w^{85}+77872384 v^2 w^{84}+60668491 w^{84}-186660470 v^2 w^{83}+45920518 \
+w^{83}-450776317 v^2 w^{82}+10493714 w^{82}-614779374 v^2 w^{81}-38362250 \
+w^{81}-603948203 v^2 w^{80}-85697281 w^{80}-383418134 v^2 w^{79}-115164109 \
+w^{79}+9711246 v^2 w^{78}-110515855 w^{78}+470100160 v^2 w^{77}-67663429 \
+w^{77}+855203446 v^2 w^{76}+8432145 w^{76}+1015476422 v^2 w^{75}+95754064 \
+w^{75}+869565812 v^2 w^{74}+168091393 w^{74}+412437791 v^2 w^{73}+196244839 \
+w^{73}-236153092 v^2 w^{72}+164236214 w^{72}-895522975 v^2 w^{71}+72885710 \
+w^{71}-1340920059 v^2 w^{70}-56138162 w^{70}-1409818850 v^2 w^{69}-183942047 \
+w^{69}-1036560167 v^2 w^{68}-269650323 w^{68}-301716941 v^2 w^{67}-277629578 \
+w^{67}+588304487 v^2 w^{66}-199405783 w^{66}+1366265737 v^2 w^{65}-48664403 \
+w^{65}+1770006312 v^2 w^{64}+129652842 w^{64}+1658959512 v^2 w^{63}+283350461 \
+w^{63}+1028632731 v^2 w^{62}+359370614 w^{62}+63337846 v^2 w^{61}+330013320 \
+w^{61}-962737443 v^2 w^{60}+197717768 w^{60}-1725237058 v^2 w^{59}-1431411 \
+w^{59}-1992872447 v^2 w^{58}-207231566 w^{58}-1670676779 v^2 w^{57}-358248665 \
+w^{57}-853107565 v^2 w^{56}-404258406 w^{56}+213690769 v^2 w^{55}-332458573 \
+w^{55}+1213575894 v^2 w^{54}-160396860 w^{54}+1842918288 v^2 w^{53}+57053113 \
+w^{53}+1932106989 v^2 w^{52}+257291557 w^{52}+1458653040 v^2 w^{51}+378652987 \
+w^{51}+591049295 v^2 w^{50}+388605989 w^{50}-413066655 v^2 w^{49}+286703642 \
+w^{49}-1247158159 v^2 w^{48}+106941243 w^{48}-1687913330 v^2 w^{47}-94144110 \
+w^{47}-1627790353 v^2 w^{46}-258757982 w^{46}-1120207931 v^2 w^{45}-339726239 \
+w^{45}-342247432 v^2 w^{44}-321841143 w^{44}+467673124 v^2 w^{43}-214980089 \
+w^{43}+1074826783 v^2 w^{42}-59044876 w^{42}+1335215626 v^2 w^{41}+100005543 \
+w^{41}+1203846455 v^2 w^{40}+215541888 w^{40}+766533267 v^2 w^{39}+261212102 \
+w^{39}+170533061 v^2 w^{38}+231238467 w^{38}-395508197 v^2 w^{37}+142887352 \
+w^{37}-786743040 v^2 w^{36}+27879775 w^{36}-916391676 v^2 w^{35}-79755986 \
+w^{35}-787944370 v^2 w^{34}-150721550 w^{34}-472664384 v^2 w^{33}-172522295 \
+w^{33}-81986389 v^2 w^{32}-145267449 w^{32}+266150733 v^2 w^{31}-85419099 \
+w^{31}+489807842 v^2 w^{30}-12932067 w^{30}+547446806 v^2 w^{29}+49752876 \
+w^{29}+457217375 v^2 w^{28}+88727706 w^{28}+265727381 v^2 w^{27}+97630767 \
+w^{27}+45346270 v^2 w^{26}+80167929 w^{26}-144177226 v^2 w^{25}+46133687 \
+w^{25}-258099190 v^2 w^{24}+7483478 w^{24}-284178515 v^2 w^{23}-24445871 \
+w^{23}-234003994 v^2 w^{22}-43482979 w^{22}-136905541 v^2 w^{21}-47111200 \
+w^{21}-28880213 v^2 w^{20}-38583833 w^{20}+61387023 v^2 w^{19}-22438062 \
+w^{19}+113966917 v^2 w^{18}-5069946 w^{18}+126407514 v^2 w^{17}+9180293 \
+w^{17}+104156497 v^2 w^{16}+17359490 w^{16}+63124420 v^2 w^{15}+19130717 \
+w^{15}+17468658 v^2 w^{14}+15825118 w^{14}-19307261 v^2 w^{13}+9606076 \
+w^{13}-39953173 v^2 w^{12}+2994378 w^{12}-45105230 v^2 w^{11}-2375863 \
+w^{11}-36761294 v^2 w^{10}-5348284 w^{10}-22583543 v^2 w^9-6141012 \
+w^9-7464642 v^2 w^8-5068159 w^8+3222810 v^2 w^7-3192172 w^7+8905511 v^2 \
+w^6-1220540 w^6+2 v^{14} w^5+189 v^{12} w^5-3391 v^{10} w^5+20489 v^8 \
+w^5-1070 v^6 w^5-1017011 v^4 w^5+10573599 v^2 w^5+243860 w^5+v^{14} w^4+166 \
+v^{12} w^4-1847 v^{10} w^4+4389 v^8 w^4+89446 v^6 w^4-1273709 v^4 w^4+9333184 \
+v^2 w^4+87 v^{12} w^3-796 v^{10} w^3-4771 v^8 w^3+125879 v^6 w^3-1130887 v^4 \
+w^3+6288699 v^2 w^3+57 v^{12} w^2+11 v^{10} w^2-8806 v^8 w^2+113123 v^6 \
+w^2-782200 v^4 w^2+2948312 v^2 w^2+18 v^{12} w+61 v^{10} w-5388 v^8 w+62786 \
+v^6 w-388636 v^4 w+1220540 v^2 w+10 v^{12}+228 v^{10}-4675 v^8+38930 \
+v^6-157156 v^4-243860 v^2}{(v-1)^5 v^4 (v+1)^5 w^{41} \\\\left(v^2 \
+w-1\\\\right)^5}\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{3.6212221044677963`*^9, 3.621222558300498*^9, 
+  3.621222934665867*^9, 3.621222970189768*^9, 3.621223028462225*^9, 
+  3.621223059732153*^9}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{-1,v^2 w^{97}+2 v^2 \
+w^{96}+12 v^2 w^{95}+20 v^2 w^{94}+64 v^2 w^{93}+83 v^2 w^{92}+178 v^2 \
+w^{91}+142 v^2 w^{90}+180 v^2 w^{89}-w^{89}-152 v^2 w^{88}-2 w^{88}-457 v^2 \
+w^{87}-11 w^{87}-1282 v^2 w^{86}-18 w^{86}-1879 v^2 w^{85}-53 w^{85}-2424 v^2 \
+w^{84}-66 w^{84}-1956 v^2 w^{83}-128 w^{83}+12 v^2 w^{82}-89 w^{82}+3388 v^2 \
+w^{81}-81 w^{81}+8701 v^2 w^{80}+170 w^{80}+12642 v^2 w^{79}+419 w^{79}+15297 \
+v^2 w^{78}+919 w^{78}+10216 v^2 w^{77}+1245 w^{77}-334 v^2 w^{76}+1347 \
+w^{76}-20530 v^2 w^{75}+820 w^{75}-41093 v^2 w^{74}-707 w^{74}-57921 v^2 \
+w^{73}-2788 w^{73}-57427 v^2 w^{72}-5659 w^{72}-32326 v^2 w^{71}-7123 \
+w^{71}+17675 v^2 w^{70}-7305 w^{70}+87543 v^2 w^{69}-3112 w^{69}+148211 v^2 \
+w^{68}+3718 w^{68}+182292 v^2 w^{67}+14056 w^{67}+149216 v^2 w^{66}+22910 \
+w^{66}+53879 v^2 w^{65}+27332 w^{65}-107376 v^2 w^{64}+22379 w^{64}-275401 \
+v^2 w^{63}+5580 w^{63}-402038 v^2 w^{62}-19547 w^{62}-413565 v^2 w^{61}-49122 \
+w^{61}-275946 v^2 w^{60}-68296 w^{60}-1524 v^2 w^{59}-71314 w^{59}+354064 v^2 \
+w^{58}-44700 w^{58}+659987 v^2 w^{57}+3722 w^{57}+818616 v^2 w^{56}+68835 \
+w^{56}+706689 v^2 w^{55}+124618 w^{55}+344476 v^2 w^{54}+151968 w^{54}-224694 \
+v^2 w^{53}+131202 w^{53}-802465 v^2 w^{52}+58270 w^{52}-1217435 v^2 \
+w^{51}-48656 w^{51}-1279975 v^2 w^{50}-163985 w^{50}-928500 v^2 w^{49}-239795 \
+w^{49}-231196 v^2 w^{48}-252938 w^{48}+632620 v^2 w^{47}-177151 \
+w^{47}+1365285 v^2 w^{46}-37629 w^{46}+1749009 v^2 w^{45}+137703 \
+w^{45}+1584877 v^2 w^{44}+284101 w^{44}+935391 v^2 w^{43}+356692 w^{43}-67550 \
+v^2 w^{42}+320614 w^{42}-1076368 v^2 w^{41}+179523 w^{41}-1808562 v^2 \
+w^{40}-24440 w^{40}-1999329 v^2 w^{39}-235615 w^{39}-1593831 v^2 \
+w^{38}-377271 w^{38}-711723 v^2 w^{37}-414093 w^{37}+387314 v^2 w^{36}-319633 \
+w^{36}+1342228 v^2 w^{35}-135272 w^{35}+1901116 v^2 w^{34}+94013 \
+w^{34}+1868834 v^2 w^{33}+287042 w^{33}+1322516 v^2 w^{32}+394137 \
+w^{32}+406052 v^2 w^{31}+381281 w^{31}-550112 v^2 w^{30}+259604 \
+w^{30}-1298907 v^2 w^{29}+72817 w^{29}-1614835 v^2 w^{28}-124239 \
+w^{28}-1460852 v^2 w^{27}-266754 w^{27}-919774 v^2 w^{26}-326727 \
+w^{26}-181761 v^2 w^{25}-285869 w^{25}+512535 v^2 w^{24}-176132 w^{24}+992224 \
+v^2 w^{23}-27709 w^{23}+1130899 v^2 w^{22}+105102 w^{22}+961594 v^2 \
+w^{21}+193797 w^{21}+552225 v^2 w^{20}+216041 w^{20}+74099 v^2 w^{19}+178638 \
+w^{19}-350264 v^2 w^{18}+100971 w^{18}-602347 v^2 w^{17}+10575 w^{17}-653645 \
+v^2 w^{16}-64311 w^{16}-526036 v^2 w^{15}-108969 w^{15}-288974 v^2 \
+w^{14}-114811 w^{14}-32907 v^2 w^{13}-91749 w^{13}+168311 v^2 w^{12}-49236 \
+w^{12}+274454 v^2 w^{11}-5848 w^{11}+281552 v^2 w^{10}+27678 w^{10}+212125 \
+v^2 w^9+45060 w^9+112076 v^2 w^8+45426 w^8+18201 v^2 w^7+34240 w^7-44082 v^2 \
+w^6+17931 w^6+41 v^{10} w^5-349 v^8 w^5+802 v^6 w^5+6020 v^4 w^5-75533 v^2 \
+w^5+3180 w^5+30 v^{10} w^4-141 v^8 w^4-547 v^6 w^4+10630 v^4 w^4-79300 v^2 \
+w^4+14 v^{10} w^3-8 v^8 w^3-1181 v^6 w^3+11502 v^4 w^3-63357 v^2 w^3+8 v^{10} \
+w^2+78 v^8 w^2-1332 v^6 w^2+8966 v^4 w^2-37420 v^2 w^2+2 v^{10} w+48 v^8 \
+w-753 v^6 w+4870 v^4 w-17931 v^2 w+v^{10}+57 v^8-556 v^6+2429 v^4-3180 \
+v^2\\\\right\\\\}\\) and then require that at least one is zero.\"\>"], \
+"Print",
+ CellChangeTimes->{3.6212221044677963`*^9, 3.621222558300498*^9, 
+  3.621222934665867*^9, 3.621222970189768*^9, 3.621223028462225*^9, 
+  3.621223059983366*^9}],
+
+Cell[BoxData["\<\"Adjoining \\(v^2 w^{97}+2 v^2 w^{96}+12 v^2 w^{95}+20 v^2 \
+w^{94}+64 v^2 w^{93}+83 v^2 w^{92}+178 v^2 w^{91}+142 v^2 w^{90}+180 v^2 \
+w^{89}-w^{89}-152 v^2 w^{88}-2 w^{88}-457 v^2 w^{87}-11 w^{87}-1282 v^2 \
+w^{86}-18 w^{86}-1879 v^2 w^{85}-53 w^{85}-2424 v^2 w^{84}-66 w^{84}-1956 v^2 \
+w^{83}-128 w^{83}+12 v^2 w^{82}-89 w^{82}+3388 v^2 w^{81}-81 w^{81}+8701 v^2 \
+w^{80}+170 w^{80}+12642 v^2 w^{79}+419 w^{79}+15297 v^2 w^{78}+919 \
+w^{78}+10216 v^2 w^{77}+1245 w^{77}-334 v^2 w^{76}+1347 w^{76}-20530 v^2 \
+w^{75}+820 w^{75}-41093 v^2 w^{74}-707 w^{74}-57921 v^2 w^{73}-2788 \
+w^{73}-57427 v^2 w^{72}-5659 w^{72}-32326 v^2 w^{71}-7123 w^{71}+17675 v^2 \
+w^{70}-7305 w^{70}+87543 v^2 w^{69}-3112 w^{69}+148211 v^2 w^{68}+3718 \
+w^{68}+182292 v^2 w^{67}+14056 w^{67}+149216 v^2 w^{66}+22910 w^{66}+53879 \
+v^2 w^{65}+27332 w^{65}-107376 v^2 w^{64}+22379 w^{64}-275401 v^2 w^{63}+5580 \
+w^{63}-402038 v^2 w^{62}-19547 w^{62}-413565 v^2 w^{61}-49122 w^{61}-275946 \
+v^2 w^{60}-68296 w^{60}-1524 v^2 w^{59}-71314 w^{59}+354064 v^2 w^{58}-44700 \
+w^{58}+659987 v^2 w^{57}+3722 w^{57}+818616 v^2 w^{56}+68835 w^{56}+706689 \
+v^2 w^{55}+124618 w^{55}+344476 v^2 w^{54}+151968 w^{54}-224694 v^2 \
+w^{53}+131202 w^{53}-802465 v^2 w^{52}+58270 w^{52}-1217435 v^2 w^{51}-48656 \
+w^{51}-1279975 v^2 w^{50}-163985 w^{50}-928500 v^2 w^{49}-239795 \
+w^{49}-231196 v^2 w^{48}-252938 w^{48}+632620 v^2 w^{47}-177151 \
+w^{47}+1365285 v^2 w^{46}-37629 w^{46}+1749009 v^2 w^{45}+137703 \
+w^{45}+1584877 v^2 w^{44}+284101 w^{44}+935391 v^2 w^{43}+356692 w^{43}-67550 \
+v^2 w^{42}+320614 w^{42}-1076368 v^2 w^{41}+179523 w^{41}-1808562 v^2 \
+w^{40}-24440 w^{40}-1999329 v^2 w^{39}-235615 w^{39}-1593831 v^2 \
+w^{38}-377271 w^{38}-711723 v^2 w^{37}-414093 w^{37}+387314 v^2 w^{36}-319633 \
+w^{36}+1342228 v^2 w^{35}-135272 w^{35}+1901116 v^2 w^{34}+94013 \
+w^{34}+1868834 v^2 w^{33}+287042 w^{33}+1322516 v^2 w^{32}+394137 \
+w^{32}+406052 v^2 w^{31}+381281 w^{31}-550112 v^2 w^{30}+259604 \
+w^{30}-1298907 v^2 w^{29}+72817 w^{29}-1614835 v^2 w^{28}-124239 \
+w^{28}-1460852 v^2 w^{27}-266754 w^{27}-919774 v^2 w^{26}-326727 \
+w^{26}-181761 v^2 w^{25}-285869 w^{25}+512535 v^2 w^{24}-176132 w^{24}+992224 \
+v^2 w^{23}-27709 w^{23}+1130899 v^2 w^{22}+105102 w^{22}+961594 v^2 \
+w^{21}+193797 w^{21}+552225 v^2 w^{20}+216041 w^{20}+74099 v^2 w^{19}+178638 \
+w^{19}-350264 v^2 w^{18}+100971 w^{18}-602347 v^2 w^{17}+10575 w^{17}-653645 \
+v^2 w^{16}-64311 w^{16}-526036 v^2 w^{15}-108969 w^{15}-288974 v^2 \
+w^{14}-114811 w^{14}-32907 v^2 w^{13}-91749 w^{13}+168311 v^2 w^{12}-49236 \
+w^{12}+274454 v^2 w^{11}-5848 w^{11}+281552 v^2 w^{10}+27678 w^{10}+212125 \
+v^2 w^9+45060 w^9+112076 v^2 w^8+45426 w^8+18201 v^2 w^7+34240 w^7-44082 v^2 \
+w^6+17931 w^6+41 v^{10} w^5-349 v^8 w^5+802 v^6 w^5+6020 v^4 w^5-75533 v^2 \
+w^5+3180 w^5+30 v^{10} w^4-141 v^8 w^4-547 v^6 w^4+10630 v^4 w^4-79300 v^2 \
+w^4+14 v^{10} w^3-8 v^8 w^3-1181 v^6 w^3+11502 v^4 w^3-63357 v^2 w^3+8 v^{10} \
+w^2+78 v^8 w^2-1332 v^6 w^2+8966 v^4 w^2-37420 v^2 w^2+2 v^{10} w+48 v^8 \
+w-753 v^6 w+4870 v^4 w-17931 v^2 w+v^{10}+57 v^8-556 v^6+2429 v^4-3180 v^2\\) \
+the ideal we obtain a new Groebner basis \\(\\\\left\\\\{w^{94}+2 w^{93}+8 \
+w^{92}+12 w^{91}+26 w^{90}+27 w^{89}+34 w^{88}+6 w^{87}-29 w^{86}-104 \
+w^{85}-175 w^{84}-226 w^{83}-217 w^{82}-87 w^{81}+118 w^{80}+439 w^{79}+671 \
+w^{78}+823 w^{77}+631 w^{76}+204 w^{75}-525 w^{74}-1249 w^{73}-1758 \
+w^{72}-1781 w^{71}-1134 w^{70}-13 w^{69}+1443 w^{68}+2554 w^{67}+3118 \
+w^{66}+2592 w^{65}+1280 w^{64}-683 w^{63}-2506 w^{62}-3694 w^{61}-3772 \
+w^{60}-2662 w^{59}-793 w^{58}+1376 w^{57}+2972 w^{56}+3728 w^{55}+3240 \
+w^{54}+1961 w^{53}+157 w^{52}-1418 w^{51}-2443 w^{50}-2624 w^{49}-2066 \
+w^{48}-1073 w^{47}+39 w^{46}+861 w^{45}+1315 w^{44}+1274 w^{43}+968 \
+w^{42}+471 w^{41}+44 w^{40}-277 w^{39}-403 w^{38}-394 w^{37}-293 w^{36}-162 \
+w^{35}-56 w^{34}+21 w^{33}+48 w^{32}+57 w^{31}+41 w^{30}+30 w^{29}+14 \
+w^{28}+8 w^{27}+2 w^{26}+w^{25},-34 w^{93}-65 w^{92}-245 w^{91}-346 \
+w^{90}-700 w^{89}-640 w^{88}-659 w^{87}+257 w^{86}+1383 w^{85}+3256 \
+w^{84}+4797 w^{83}+5203 w^{82}+3878 w^{81}-703 w^{80}-6439 w^{79}-13946 \
+w^{78}-17502 w^{77}-17541 w^{76}-8686 w^{75}+5118 w^{74}+23030 w^{73}+37188 \
+w^{72}+41657 w^{71}+32866 w^{70}+v^2 w^{69}+8689 w^{69}+2 v^2 w^{68}-21573 \
+w^{68}+8 v^2 w^{67}-52706 w^{67}+12 v^2 w^{66}-67963 w^{66}+26 v^2 \
+w^{65}-65527 w^{65}+27 v^2 w^{64}-37940 w^{64}+34 v^2 w^{63}+2431 w^{63}+6 \
+v^2 w^{62}+47316 w^{62}-29 v^2 w^{61}+78650 w^{61}-104 v^2 w^{60}+86772 \
+w^{60}-175 v^2 w^{59}+68387 w^{59}-226 v^2 w^{58}+27455 w^{58}-217 v^2 \
+w^{57}-19605 w^{57}-87 v^2 w^{56}-61610 w^{56}+118 v^2 w^{55}-80805 \
+w^{55}+439 v^2 w^{54}-77425 w^{54}+671 v^2 w^{53}-49294 w^{53}+823 v^2 \
+w^{52}-11777 w^{52}+631 v^2 w^{51}+26517 w^{51}+204 v^2 w^{50}+51200 \
+w^{50}-525 v^2 w^{49}+58656 w^{49}-1249 v^2 w^{48}+48685 w^{48}-1758 v^2 \
+w^{47}+26978 w^{47}-1781 v^2 w^{46}+3030 w^{46}-1134 v^2 w^{45}-17487 \
+w^{45}-13 v^2 w^{44}-27680 w^{44}+1443 v^2 w^{43}-29215 w^{43}+2554 v^2 \
+w^{42}-21868 w^{42}+3118 v^2 w^{41}-11968 w^{41}+2592 v^2 w^{40}-1287 \
+w^{40}+1280 v^2 w^{39}+5729 w^{39}-683 v^2 w^{38}+9310 w^{38}-2506 v^2 \
+w^{37}+9033 w^{37}-3694 v^2 w^{36}+6610 w^{36}-3772 v^2 w^{35}+3448 \
+w^{35}-2662 v^2 w^{34}+555 w^{34}-793 v^2 w^{33}-1092 w^{33}+1376 v^2 \
+w^{32}-1781 w^{32}+2972 v^2 w^{31}-1385 w^{31}+3728 v^2 w^{30}-761 \
+w^{30}+3240 v^2 w^{29}+63 w^{29}+1961 v^2 w^{28}+450 w^{28}+157 v^2 \
+w^{27}+599 w^{27}-1418 v^2 w^{26}+348 w^{26}-2443 v^2 w^{25}+22 w^{25}-2624 \
+v^2 w^{24}-331 w^{24}-2066 v^2 w^{23}-513 w^{23}-1073 v^2 w^{22}-536 \
+w^{22}+39 v^2 w^{21}-390 w^{21}+861 v^2 w^{20}-192 w^{20}+1315 v^2 w^{19}+18 \
+w^{19}+1274 v^2 w^{18}+151 w^{18}+968 v^2 w^{17}+209 w^{17}+471 v^2 \
+w^{16}+191 w^{16}+44 v^2 w^{15}+133 w^{15}-277 v^2 w^{14}+67 w^{14}-403 v^2 \
+w^{13}+10 w^{13}-394 v^2 w^{12}-20 w^{12}-293 v^2 w^{11}-34 w^{11}-162 v^2 \
+w^{10}-29 w^{10}-56 v^2 w^9-23 w^9+21 v^2 w^8-12 w^8+48 v^2 w^7-7 w^7+57 v^2 \
+w^6-2 w^6+41 v^2 w^5-w^5+30 v^2 w^4+14 v^2 w^3+8 v^2 w^2+2 v^2 w+v^2,369 \
+w^{93}+2020 w^{92}+5091 w^{91}+13120 w^{90}+20509 w^{89}+33588 w^{88}+30921 \
+w^{87}+22444 w^{86}-25080 w^{85}-86878 w^{84}-174852 w^{83}-237015 \
+w^{82}-238541 w^{81}-140333 w^{80}+94616 w^{79}+389986 w^{78}+714940 \
+w^{77}+849266 w^{76}+762778 w^{75}+280411 w^{74}-428590 w^{73}-1262764 \
+w^{72}-1852219 w^{71}-1939314 w^{70}-1360280 w^{69}-15 v^2 w^{68}-125071 \
+w^{68}-24 v^2 w^{67}+1354978 w^{67}-100 v^2 w^{66}+2718341 w^{66}-119 v^2 \
+w^{65}+3290208 w^{65}-262 v^2 w^{64}+2933344 w^{64}-180 v^2 w^{63}+1464202 \
+w^{63}-190 v^2 w^{62}-546952 w^{62}+236 v^2 w^{61}-2615221 w^{61}+622 v^2 \
+w^{60}-3928309 w^{60}+1304 v^2 w^{59}-4081109 w^{59}+1710 v^2 w^{58}-2968452 \
+w^{58}+1617 v^2 w^{57}-904171 w^{57}+875 v^2 w^{56}+1362959 w^{56}-1101 v^2 \
+w^{55}+3218543 w^{55}-3104 v^2 w^{54}+3955831 w^{54}-5645 v^2 w^{53}+3559022 \
+w^{53}-6018 v^2 w^{52}+2079236 w^{52}-5204 v^2 w^{51}+213734 w^{51}-799 v^2 \
+w^{50}-1560364 w^{50}+4537 v^2 w^{49}-2622135 w^{49}+10775 v^2 w^{48}-2826332 \
+w^{48}+14349 v^2 w^{47}-2211311 w^{47}+13625 v^2 w^{46}-1102571 w^{46}+7973 \
+v^2 w^{45}+63685 w^{45}-2739 v^2 w^{44}+987277 w^{44}-13610 v^2 \
+w^{43}+1405920 w^{43}-23185 v^2 w^{42}+1387288 w^{42}-24550 v^2 w^{41}+986645 \
+w^{41}-19376 v^2 w^{40}+482455 w^{40}-5177 v^2 w^{39}-11930 w^{39}+10735 v^2 \
+w^{38}-319410 w^{38}+25642 v^2 w^{37}-453145 w^{37}+32274 v^2 w^{36}-415995 \
+w^{36}+29004 v^2 w^{35}-294293 w^{35}+16449 v^2 w^{34}-151509 w^{34}-2090 v^2 \
+w^{33}-31826 w^{33}-18842 v^2 w^{32}+34092 w^{32}-30496 v^2 w^{31}+61995 \
+w^{31}-30832 v^2 w^{30}+53129 w^{30}-23149 v^2 w^{29}+38831 w^{29}-7660 v^2 \
+w^{28}+17984 w^{28}+7388 v^2 w^{27}+9350 w^{27}+19579 v^2 w^{26}+2897 \
+w^{26}+23696 v^2 w^{25}+4177 w^{25}+20758 v^2 w^{24}+4362 w^{24}+12205 v^2 \
+w^{23}+5285 w^{23}+1603 v^2 w^{22}+4059 w^{22}-6971 v^2 w^{21}+2132 \
+w^{21}-12211 v^2 w^{20}-118 w^{20}-12262 v^2 w^{19}-1521 w^{19}-9520 v^2 \
+w^{18}-2239 w^{18}-4369 v^2 w^{17}-1964 w^{17}-90 v^2 w^{16}-1265 w^{16}+3307 \
+v^2 w^{15}-463 w^{15}+4319 v^2 w^{14}+142 w^{14}+4050 v^2 w^{13}+410 \
+w^{13}+2660 v^2 w^{12}+476 w^{12}+1170 v^2 w^{11}+324 w^{11}+21 v^2 \
+w^{10}+194 w^{10}-673 v^2 w^9+40 w^9-765 v^2 w^8+6 w^8-684 v^2 w^7-38 w^7-364 \
+v^2 w^6-16 w^6-201 v^2 w^5-15 w^5-2 v^2 w^4+10 v^2 w^3+53 v^2 w^2+16 v^2 \
+w+v^4+15 v^2\\\\right\\\\}\\) with respect to which the nonzero quantities \
+reduce to \\(\\\\left\\\\{w^2+1,v^2+w^2,w^2+w+1,v w^3-1,v w^3+1,v^2 \
+w^3+1,v^2-w^5,w^5-v^2\\\\right\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{3.6212221044677963`*^9, 3.621222558300498*^9, 
+  3.621222934665867*^9, 3.621222970189768*^9, 3.621223028462225*^9, 
+  3.6212230609523077`*^9}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{-1,v^2 w^{141}+2 v^2 \
+w^{140}+16 v^2 w^{139}+28 v^2 w^{138}+118 v^2 w^{137}+171 v^2 w^{136}+498 v^2 \
+w^{135}+532 v^2 w^{134}+1155 v^2 w^{133}-w^{133}+446 v^2 w^{132}-2 \
+w^{132}+515 v^2 w^{131}-15 w^{131}-3140 v^2 w^{130}-26 w^{130}-5667 v^2 \
+w^{129}-103 w^{129}-13997 v^2 w^{128}-146 w^{128}-17747 v^2 w^{127}-398 \
+w^{127}-22724 v^2 w^{126}-403 w^{126}-12557 v^2 w^{125}-798 w^{125}+11953 v^2 \
+w^{124}-172 w^{124}+59430 v^2 w^{123}+34 w^{123}+129254 v^2 w^{122}+2769 \
+w^{122}+186607 v^2 w^{121}+4834 w^{121}+224067 v^2 w^{120}+10043 \
+w^{120}+138510 v^2 w^{119}+11971 w^{119}-45210 v^2 w^{118}+12660 \
+w^{118}-436792 v^2 w^{117}+3559 w^{117}-860486 v^2 w^{116}-16523 \
+w^{116}-1288276 v^2 w^{115}-47587 w^{115}-1339054 v^2 w^{114}-89610 \
+w^{114}-850322 v^2 w^{113}-113937 w^{113}+437057 v^2 w^{112}-117786 \
+w^{112}+2433422 v^2 w^{111}-40430 w^{111}+4592400 v^2 w^{110}+93494 \
+w^{110}+6217028 v^2 w^{109}+327224 w^{109}+5850334 v^2 w^{108}+546986 \
+w^{108}+2975749 v^2 w^{107}+708950 w^{107}-3266410 v^2 w^{106}+622204 \
+w^{106}-11200379 v^2 w^{105}+205213 w^{105}-19127303 v^2 w^{104}-586913 \
+w^{104}-22737699 v^2 w^{103}-1652087 w^{103}-19018158 v^2 w^{102}-2589255 \
+w^{102}-5426326 v^2 w^{101}-3042525 w^{101}+16829326 v^2 w^{100}-2314461 \
+w^{100}+42184552 v^2 w^{99}-348832 w^{99}+62347138 v^2 w^{98}+2990296 \
+w^{98}+65527500 v^2 w^{97}+6612719 w^{97}+45348649 v^2 w^{96}+9473498 \
+w^{96}-1736767 v^2 w^{95}+9691120 w^{95}-64665725 v^2 w^{94}+6187501 \
+w^{94}-127357902 v^2 w^{93}-1337928 w^{93}-162675357 v^2 w^{92}-11608993 \
+w^{92}-149881419 v^2 w^{91}-21336379 w^{91}-76570289 v^2 w^{90}-26920420 \
+w^{90}+48067860 v^2 w^{89}-23890070 w^{89}+192053560 v^2 w^{88}-11180191 \
+w^{88}+309376622 v^2 w^{87}+10671461 w^{87}+345836892 v^2 w^{86}+35292312 \
+w^{86}+270955669 v^2 w^{85}+55226544 w^{85}+77872384 v^2 w^{84}+60668491 \
+w^{84}-186660470 v^2 w^{83}+45920518 w^{83}-450776317 v^2 w^{82}+10493714 \
+w^{82}-614779374 v^2 w^{81}-38362250 w^{81}-603948203 v^2 w^{80}-85697281 \
+w^{80}-383418134 v^2 w^{79}-115164109 w^{79}+9711246 v^2 w^{78}-110515855 \
+w^{78}+470100160 v^2 w^{77}-67663429 w^{77}+855203446 v^2 w^{76}+8432145 \
+w^{76}+1015476422 v^2 w^{75}+95754064 w^{75}+869565812 v^2 w^{74}+168091393 \
+w^{74}+412437791 v^2 w^{73}+196244839 w^{73}-236153092 v^2 w^{72}+164236214 \
+w^{72}-895522975 v^2 w^{71}+72885710 w^{71}-1340920059 v^2 w^{70}-56138162 \
+w^{70}-1409818850 v^2 w^{69}-183942047 w^{69}-1036560167 v^2 w^{68}-269650323 \
+w^{68}-301716941 v^2 w^{67}-277629578 w^{67}+588304487 v^2 w^{66}-199405783 \
+w^{66}+1366265737 v^2 w^{65}-48664403 w^{65}+1770006312 v^2 w^{64}+129652842 \
+w^{64}+1658959512 v^2 w^{63}+283350461 w^{63}+1028632731 v^2 w^{62}+359370614 \
+w^{62}+63337846 v^2 w^{61}+330013320 w^{61}-962737443 v^2 w^{60}+197717768 \
+w^{60}-1725237058 v^2 w^{59}-1431411 w^{59}-1992872447 v^2 w^{58}-207231566 \
+w^{58}-1670676779 v^2 w^{57}-358248665 w^{57}-853107565 v^2 w^{56}-404258406 \
+w^{56}+213690769 v^2 w^{55}-332458573 w^{55}+1213575894 v^2 w^{54}-160396860 \
+w^{54}+1842918288 v^2 w^{53}+57053113 w^{53}+1932106989 v^2 w^{52}+257291557 \
+w^{52}+1458653040 v^2 w^{51}+378652987 w^{51}+591049295 v^2 w^{50}+388605989 \
+w^{50}-413066655 v^2 w^{49}+286703642 w^{49}-1247158159 v^2 w^{48}+106941243 \
+w^{48}-1687913330 v^2 w^{47}-94144110 w^{47}-1627790353 v^2 w^{46}-258757982 \
+w^{46}-1120207931 v^2 w^{45}-339726239 w^{45}-342247432 v^2 w^{44}-321841143 \
+w^{44}+467673124 v^2 w^{43}-214980089 w^{43}+1074826783 v^2 w^{42}-59044876 \
+w^{42}+1335215626 v^2 w^{41}+100005543 w^{41}+1203846455 v^2 w^{40}+215541888 \
+w^{40}+766533267 v^2 w^{39}+261212102 w^{39}+170533061 v^2 w^{38}+231238467 \
+w^{38}-395508197 v^2 w^{37}+142887352 w^{37}-786743040 v^2 w^{36}+27879775 \
+w^{36}-916391676 v^2 w^{35}-79755986 w^{35}-787944370 v^2 w^{34}-150721550 \
+w^{34}-472664384 v^2 w^{33}-172522295 w^{33}-81986389 v^2 w^{32}-145267449 \
+w^{32}+266150733 v^2 w^{31}-85419099 w^{31}+489807842 v^2 w^{30}-12932067 \
+w^{30}+547446806 v^2 w^{29}+49752876 w^{29}+457217375 v^2 w^{28}+88727706 \
+w^{28}+265727381 v^2 w^{27}+97630767 w^{27}+45346270 v^2 w^{26}+80167929 \
+w^{26}-144177226 v^2 w^{25}+46133687 w^{25}-258099190 v^2 w^{24}+7483478 \
+w^{24}-284178515 v^2 w^{23}-24445871 w^{23}-234003994 v^2 w^{22}-43482979 \
+w^{22}-136905541 v^2 w^{21}-47111200 w^{21}-28880213 v^2 w^{20}-38583833 \
+w^{20}+61387023 v^2 w^{19}-22438062 w^{19}+113966917 v^2 w^{18}-5069946 \
+w^{18}+126407514 v^2 w^{17}+9180293 w^{17}+104156497 v^2 w^{16}+17359490 \
+w^{16}+63124420 v^2 w^{15}+19130717 w^{15}+17468658 v^2 w^{14}+15825118 \
+w^{14}-19307261 v^2 w^{13}+9606076 w^{13}-39953173 v^2 w^{12}+2994378 \
+w^{12}-45105230 v^2 w^{11}-2375863 w^{11}-36761294 v^2 w^{10}-5348284 \
+w^{10}-22583543 v^2 w^9-6141012 w^9-7464642 v^2 w^8-5068159 w^8+3222810 v^2 \
+w^7-3192172 w^7+8905511 v^2 w^6-1220540 w^6+2 v^{14} w^5+189 v^{12} w^5-3391 \
+v^{10} w^5+20489 v^8 w^5-1070 v^6 w^5-1017011 v^4 w^5+10573599 v^2 w^5+243860 \
+w^5+v^{14} w^4+166 v^{12} w^4-1847 v^{10} w^4+4389 v^8 w^4+89446 v^6 \
+w^4-1273709 v^4 w^4+9333184 v^2 w^4+87 v^{12} w^3-796 v^{10} w^3-4771 v^8 \
+w^3+125879 v^6 w^3-1130887 v^4 w^3+6288699 v^2 w^3+57 v^{12} w^2+11 v^{10} \
+w^2-8806 v^8 w^2+113123 v^6 w^2-782200 v^4 w^2+2948312 v^2 w^2+18 v^{12} w+61 \
+v^{10} w-5388 v^8 w+62786 v^6 w-388636 v^4 w+1220540 v^2 w+10 v^{12}+228 \
+v^{10}-4675 v^8+38930 v^6-157156 v^4-243860 v^2\\\\right\\\\}\\) and then \
+require that at least one is zero.\"\>"], "Print",
+ CellChangeTimes->{3.6212221044677963`*^9, 3.621222558300498*^9, 
+  3.621222934665867*^9, 3.621222970189768*^9, 3.621223028462225*^9, 
+  3.621223061543159*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"d0", "=", 
+  RowBox[{
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{
+     RowBox[{"initialState", "[", 
+      RowBox[{"reducedDiagrams", "[", 
+       RowBox[{"4", ",", "1", ",", "2"}], "]"}], "]"}], ",", "1"}], "]"}], 
+   "[", 
+   RowBox[{"[", "1", "]"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.6210703239130077`*^9, 3.62107034059203*^9}, {
+  3.621070437203725*^9, 3.621070460154961*^9}, {3.6210705289053497`*^9, 
+  3.62107055057915*^9}, {3.621071389345798*^9, 3.621071389745204*^9}, {
+  3.621071567415099*^9, 3.621071567510241*^9}, {3.6210716113921423`*^9, 
+  3.621071611471896*^9}, {3.621211933708436*^9, 3.621211936708672*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{
+    "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
+     "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject49326860533765]], "Output",
  CellChangeTimes->{{3.621070448002239*^9, 3.621070461506031*^9}, 
    3.621070506840255*^9, {3.62107057858502*^9, 3.621070581805916*^9}, 
    3.621070663507674*^9, {3.621071387375557*^9, 3.6210714154093533`*^9}, {
    3.621071564298944*^9, 3.621071569820315*^9}, 3.6210716213279037`*^9, 
-   3.621071668150916*^9}]
+   3.621071668150916*^9, 3.621210227801056*^9, 3.6212109011397333`*^9, 
+   3.6212110184024267`*^9, 3.6212111012208223`*^9, 3.6212119398762074`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"initialState", "@", 
-  RowBox[{"considerDiagram", "[", 
-   RowBox[{"%", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-   "]"}]}]], "Input",
+  RowBox[{"considerDiagram", "[", "d0", "]"}]}]], "Input",
  CellChangeTimes->{{3.621070315021899*^9, 3.621070317751463*^9}, {
-  3.621071638933312*^9, 3.6210716462671423`*^9}}],
+  3.621071638933312*^9, 3.6210716462671423`*^9}, {3.621211942197281*^9, 
+  3.6212119422722282`*^9}}],
 
 Cell[CellGroupData[{
 
@@ -2889,23 +4970,117 @@ Cell[BoxData["\<\"We now consider the diagram \
 PlanarGraph(11,Vector(List((6,11), (7,13), (5,15), (4,14)), List((6,13), \
 (8,11), (10,12)), List((7,15), (10,13), (9,12)), List((4,11), (5,14), (9,15), \
 (8,12))),List(1, 1, 2),0).\"\>"], "Print",
- CellChangeTimes->{{3.621071646811124*^9, 3.621071668228409*^9}}],
+ CellChangeTimes->{{3.621071646811124*^9, 3.621071668228409*^9}, 
+   3.621210869551276*^9, 3.621210902211074*^9, 3.6212110184714003`*^9, 
+   3.621211101284206*^9, {3.621211942577464*^9, 3.621211958399726*^9}, {
+   3.6212120857129917`*^9, 3.621212137032156*^9}, 3.6212121896847*^9, 
+   3.6212123956609983`*^9, 3.621212627729268*^9, 3.621212729100787*^9, 
+   3.621212958152699*^9, {3.621213008453373*^9, 3.6212130186066837`*^9}, 
+   3.621213185317569*^9, 3.6212132372542953`*^9, 3.62121871930464*^9, 
+   3.621218775325632*^9, 3.6212189307318068`*^9, 3.6212189904048147`*^9, 
+   3.621219051493148*^9, 3.621219093941477*^9, 3.6212192493999023`*^9, 
+   3.621219738462639*^9, 3.621219790098011*^9, 3.621219863808386*^9, 
+   3.6212199168354073`*^9, 3.6212212566871967`*^9}],
 
-Cell[BoxData["\<\"We find that this diagram pairs with previously identified \
-non-reducing relations to give the new identities: \
-\\(\\\\text{SpiderAnalysis}(\\\\langle\\\\langle \
-\\\\text{JavaObject}[\\\\text{net.tqft.toolkit.algebra.spiders.examples.\
-QuotientSpider}]\\\\rangle\\\\rangle \
-,\\\\text{Manifold}(\\\\{\\\\},\\\\{\\\\}),\\\\{\\\\},\\\\{\\\\},\\\\{\\\\},\\\
-\\{\\\\},\\\\{\\\\})(\\\\text{computePairingsWithNonReducingRelations}(\\\\\
-langle\\\\langle \
-\\\\text{JavaObject}[\\\\text{net.tqft.toolkit.algebra.spiders.PlanarGraph}]\\\
-\\rangle\\\\rangle ))\\)\"\>"], "Print",
- CellChangeTimes->{{3.621071646811124*^9, 3.621071668230031*^9}}]
+Cell[BoxData["\<\"We consider separately the possibilities that it is visibly \
+independent, invisibly independent, or linearly dependent.\"\>"], "Print",
+ CellChangeTimes->{{3.621071646811124*^9, 3.621071668228409*^9}, 
+   3.621210869551276*^9, 3.621210902211074*^9, 3.6212110184714003`*^9, 
+   3.621211101284206*^9, {3.621211942577464*^9, 3.621211958399726*^9}, {
+   3.6212120857129917`*^9, 3.621212137032156*^9}, 3.6212121896847*^9, 
+   3.6212123956609983`*^9, 3.621212627729268*^9, 3.621212729100787*^9, 
+   3.621212958152699*^9, {3.621213008453373*^9, 3.6212130186066837`*^9}, 
+   3.621213185317569*^9, 3.6212132372542953`*^9, 3.62121871930464*^9, 
+   3.621218775325632*^9, 3.6212189307318068`*^9, 3.6212189904048147`*^9, 
+   3.621219051493148*^9, 3.621219093941477*^9, 3.6212192493999023`*^9, 
+   3.621219738462639*^9, 3.621219790098011*^9, 3.621219863808386*^9, 
+   3.6212199168354073`*^9, 3.6212212566884527`*^9}],
+
+Cell[BoxData["\<\"If PlanarGraph(11,Vector(List((6,11), (7,13), (5,15), \
+(4,14)), List((6,13), (8,11), (10,12)), List((7,15), (10,13), (9,12)), \
+List((4,11), (5,14), (9,15), (8,12))),List(1, 1, 2),0) is visibly \
+independent, and does not lift any of the currently invisibly independent \
+diagrams into visibility, we must have that \\(p_3\\) is nonzero while \
+\\(\\\\{\\\\}\\) are all zero.\"\>"], "Print",
+ CellChangeTimes->{{3.621071646811124*^9, 3.621071668228409*^9}, 
+   3.621210869551276*^9, 3.621210902211074*^9, 3.6212110184714003`*^9, 
+   3.621211101284206*^9, {3.621211942577464*^9, 3.621211958399726*^9}, {
+   3.6212120857129917`*^9, 3.621212137032156*^9}, 3.6212121896847*^9, 
+   3.6212123956609983`*^9, 3.621212627729268*^9, 3.621212729100787*^9, 
+   3.621212958152699*^9, {3.621213008453373*^9, 3.6212130186066837`*^9}, 
+   3.621213185317569*^9, 3.6212132372542953`*^9, 3.62121871930464*^9, 
+   3.621218775325632*^9, 3.6212189307318068`*^9, 3.6212189904048147`*^9, 
+   3.621219051493148*^9, 3.621219093941477*^9, 3.6212192493999023`*^9, 
+   3.621219738462639*^9, 3.621219790098011*^9, 3.621219863808386*^9, 
+   3.6212199168354073`*^9, 3.6212212566896067`*^9}],
+
+Cell[BoxData["\<\"We now consider the possibility that \
+PlanarGraph(11,Vector(List((6,11), (7,13), (5,15), (4,14)), List((6,13), \
+(8,11), (10,12)), List((7,15), (10,13), (9,12)), List((4,11), (5,14), (9,15), \
+(8,12))),List(1, 1, 2),0) is invisibly independent of the previously \
+considered diagrams.\"\>"], "Print",
+ CellChangeTimes->{{3.621071646811124*^9, 3.621071668228409*^9}, 
+   3.621210869551276*^9, 3.621210902211074*^9, 3.6212110184714003`*^9, 
+   3.621211101284206*^9, {3.621211942577464*^9, 3.621211958399726*^9}, {
+   3.6212120857129917`*^9, 3.621212137032156*^9}, 3.6212121896847*^9, 
+   3.6212123956609983`*^9, 3.621212627729268*^9, 3.621212729100787*^9, 
+   3.621212958152699*^9, {3.621213008453373*^9, 3.6212130186066837`*^9}, 
+   3.621213185317569*^9, 3.6212132372542953`*^9, 3.62121871930464*^9, 
+   3.621218775325632*^9, 3.6212189307318068`*^9, 3.6212189904048147`*^9, 
+   3.621219051493148*^9, 3.621219093941477*^9, 3.6212192493999023`*^9, 
+   3.621219738462639*^9, 3.621219790098011*^9, 3.621219863808386*^9, 
+   3.6212199168354073`*^9, 3.621221256690579*^9}],
+
+Cell[BoxData["\<\"We compute all the determinants of matrices of inner \
+products of the visibly independent diagrams along with some subset of the \
+invisibly independent diagrams, finding \\(\\\\left\\\\{p_3\\\\right\\\\}\\).\
+\"\>"], "Print",
+ CellChangeTimes->{{3.621071646811124*^9, 3.621071668228409*^9}, 
+   3.621210869551276*^9, 3.621210902211074*^9, 3.6212110184714003`*^9, 
+   3.621211101284206*^9, {3.621211942577464*^9, 3.621211958399726*^9}, {
+   3.6212120857129917`*^9, 3.621212137032156*^9}, 3.6212121896847*^9, 
+   3.6212123956609983`*^9, 3.621212627729268*^9, 3.621212729100787*^9, 
+   3.621212958152699*^9, {3.621213008453373*^9, 3.6212130186066837`*^9}, 
+   3.621213185317569*^9, 3.6212132372542953`*^9, 3.62121871930464*^9, 
+   3.621218775325632*^9, 3.6212189307318068`*^9, 3.6212189904048147`*^9, 
+   3.621219051493148*^9, 3.621219093941477*^9, 3.6212192493999023`*^9, 
+   3.621219738462639*^9, 3.621219790098011*^9, 3.621219863808386*^9, 
+   3.6212199168354073`*^9, 3.62122125669153*^9}],
+
+Cell[BoxData["\<\"Adjoining \\(p_3\\) the ideal we obtain a new Groebner \
+basis \\(\\\\left\\\\{p_3\\\\right\\\\}\\) with respect to which the nonzero \
+quantities reduce to \\(\\\\{\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{{3.621071646811124*^9, 3.621071668228409*^9}, 
+   3.621210869551276*^9, 3.621210902211074*^9, 3.6212110184714003`*^9, 
+   3.621211101284206*^9, {3.621211942577464*^9, 3.621211958399726*^9}, {
+   3.6212120857129917`*^9, 3.621212137032156*^9}, 3.6212121896847*^9, 
+   3.6212123956609983`*^9, 3.621212627729268*^9, 3.621212729100787*^9, 
+   3.621212958152699*^9, {3.621213008453373*^9, 3.6212130186066837`*^9}, 
+   3.621213185317569*^9, 3.6212132372542953`*^9, 3.62121871930464*^9, 
+   3.621218775325632*^9, 3.6212189307318068`*^9, 3.6212189904048147`*^9, 
+   3.621219051493148*^9, 3.621219093941477*^9, 3.6212192493999023`*^9, 
+   3.621219738462639*^9, 3.621219790098011*^9, 3.621219863808386*^9, 
+   3.6212199168354073`*^9, 3.6212212566923113`*^9}],
+
+Cell[BoxData["\<\"Finally we append PlanarGraph(11,Vector(List((6,11), \
+(7,13), (5,15), (4,14)), List((6,13), (8,11), (10,12)), List((7,15), (10,13), \
+(9,12)), List((4,11), (5,14), (9,15), (8,12))),List(1, 1, 2),0) to the list \
+of invisibly independent diagrams.\"\>"], "Print",
+ CellChangeTimes->{{3.621071646811124*^9, 3.621071668228409*^9}, 
+   3.621210869551276*^9, 3.621210902211074*^9, 3.6212110184714003`*^9, 
+   3.621211101284206*^9, {3.621211942577464*^9, 3.621211958399726*^9}, {
+   3.6212120857129917`*^9, 3.621212137032156*^9}, 3.6212121896847*^9, 
+   3.6212123956609983`*^9, 3.621212627729268*^9, 3.621212729100787*^9, 
+   3.621212958152699*^9, {3.621213008453373*^9, 3.6212130186066837`*^9}, 
+   3.621213185317569*^9, 3.6212132372542953`*^9, 3.62121871930464*^9, 
+   3.621218775325632*^9, 3.6212189307318068`*^9, 3.6212189904048147`*^9, 
+   3.621219051493148*^9, 3.621219093941477*^9, 3.6212192493999023`*^9, 
+   3.621219738462639*^9, 3.621219790098011*^9, 3.621219863808386*^9, 
+   3.6212199168354073`*^9, 3.6212212566931057`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
- RowBox[{
+ RowBox[{"{", 
   RowBox[{
    RowBox[{"SpiderAnalysis", "[", 
     RowBox[{
@@ -2916,57 +5091,70 @@ Cell[BoxData[
         "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
          ".", "examples", ".", "QuotientSpider"}], "]"}], 
        "\[RightGuillemet]"}],
-      JLink`Objects`vm1`JavaObject10535021580386306], ",", 
+      JLink`Objects`vm1`JavaObject10535021580386305], ",", 
      RowBox[{"Manifold", "[", 
       RowBox[{
        RowBox[{"{", "}"}], ",", 
-       RowBox[{"{", "}"}]}], "]"}], ",", 
-     RowBox[{"{", "}"}], ",", 
-     RowBox[{"{", "}"}], ",", 
-     RowBox[{"{", "}"}], ",", 
-     RowBox[{"{", "}"}], ",", 
-     RowBox[{"{", "}"}]}], "]"}], "[", 
-   RowBox[{"declarePolynomialsZero", "[", 
-    RowBox[{
-     RowBox[{"SpiderAnalysis", "[", 
+       RowBox[{"{", 
+        SubscriptBox["p", "3"], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
       RowBox[{
-       InterpretationBox[
-        RowBox[{"\[LeftGuillemet]", 
-         RowBox[{"JavaObject", "[", 
-          RowBox[{
-          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
-           ".", "examples", ".", "QuotientSpider"}], "]"}], 
-         "\[RightGuillemet]"}],
-        JLink`Objects`vm1`JavaObject10535021580386306], ",", 
-       RowBox[{"Manifold", "[", 
-        RowBox[{
-         RowBox[{"{", "}"}], ",", 
-         RowBox[{"{", "}"}]}], "]"}], ",", 
-       RowBox[{"{", "}"}], ",", 
-       RowBox[{"{", "}"}], ",", 
-       RowBox[{"{", "}"}], ",", 
-       RowBox[{"{", "}"}], ",", 
-       RowBox[{"{", "}"}]}], "]"}], "[", 
-     RowBox[{"computePairingsWithNonReducingRelations", "[", 
+      "1", ",", "0", ",", "1", ",", "1", ",", "5", ",", "16", ",", "80"}], 
+      "}"}], ",", 
+     RowBox[{"{", 
       InterpretationBox[
        RowBox[{"\[LeftGuillemet]", 
         RowBox[{"JavaObject", "[", 
          RowBox[{
          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-       JLink`Objects`vm1`JavaObject49326860533767], "]"}], "]"}], "]"}], 
-   "]"}], "[", 
-  RowBox[{"considerDiagram", "[", 
-   RowBox[{
-    InterpretationBox[
-     RowBox[{"\[LeftGuillemet]", 
-      RowBox[{"JavaObject", "[", 
-       RowBox[{
-       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
-        ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-     JLink`Objects`vm1`JavaObject49326860533767], ",", "False"}], "]"}], 
-  "]"}]], "Output",
- CellChangeTimes->{{3.621071646816934*^9, 3.621071668232679*^9}}]
+       JLink`Objects`vm1`JavaObject49326860533765], "}"}], ",", 
+     RowBox[{"{", "}"}], ",", 
+     RowBox[{"{", "}"}], ",", 
+     RowBox[{"{", "}"}], ",", 
+     RowBox[{"{", "}"}]}], "]"}], ",", 
+   RowBox[{"SpiderAnalysis", "[", 
+    RowBox[{
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject10535021580386305], ",", 
+     RowBox[{"Manifold", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        SubscriptBox["p", "3"], "}"}], ",", 
+       RowBox[{"{", "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "1", ",", "0", ",", "1", ",", "1", ",", "5", ",", "16", ",", "80"}], 
+      "}"}], ",", 
+     RowBox[{"{", "}"}], ",", 
+     RowBox[{"{", 
+      InterpretationBox[
+       RowBox[{"\[LeftGuillemet]", 
+        RowBox[{"JavaObject", "[", 
+         RowBox[{
+         "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+          ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+       JLink`Objects`vm1`JavaObject49326860533765], "}"}], ",", 
+     RowBox[{"{", "}"}], ",", 
+     RowBox[{"{", "}"}], ",", 
+     RowBox[{"{", "}"}]}], "]"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.621071646816934*^9, 3.621071668232679*^9}, 
+   3.621210869585575*^9, 3.621210902213874*^9, 3.621211018473942*^9, 
+   3.621211101286912*^9, {3.621211942728455*^9, 3.6212119584029093`*^9}, {
+   3.621212085849639*^9, 3.621212137067483*^9}, 3.621212189688464*^9, 
+   3.6212123956654453`*^9, 3.621212627733879*^9, 3.621212729141618*^9, 
+   3.621212958157112*^9, {3.621213008457822*^9, 3.621213018611094*^9}, 
+   3.621213185323449*^9, 3.62121323733764*^9, 3.621218719390215*^9, 
+   3.621218775393715*^9, 3.621218930817081*^9, 3.62121899047402*^9, 
+   3.621219051561809*^9, 3.621219094027318*^9, 3.621219249453652*^9, 
+   3.6212197385202303`*^9, 3.62121979015478*^9, 3.621219863861539*^9, 
+   3.621219916865328*^9, 3.621221256694252*^9}]
 }, Open  ]]
 },
 WindowSize->{1426, 632},
@@ -2993,91 +5181,200 @@ Cell[1238, 41, 2081, 54, 97, "Input"],
 Cell[3322, 97, 713, 18, 80, "Input"],
 Cell[4038, 117, 2815, 69, 165, "Input"],
 Cell[6856, 188, 1479, 36, 131, "Input"],
-Cell[8338, 226, 1460, 33, 81, "Input"],
-Cell[9801, 261, 137, 2, 28, "Input"],
-Cell[9941, 265, 183, 4, 28, "Input"],
-Cell[10127, 271, 455, 12, 28, "Input"],
-Cell[10585, 285, 1539, 39, 63, "Input"],
-Cell[12127, 326, 932, 24, 46, "Input"],
-Cell[13062, 352, 903, 20, 46, "Input"],
-Cell[13968, 374, 499, 11, 28, "Input"],
-Cell[14470, 387, 518, 13, 46, "Input"],
-Cell[14991, 402, 552, 14, 46, "Input"],
-Cell[15546, 418, 460, 11, 46, "Input"],
-Cell[16009, 431, 138, 2, 28, "Input"],
-Cell[16150, 435, 236, 5, 28, "Input"],
-Cell[16389, 442, 428, 9, 46, "Input"],
-Cell[16820, 453, 270, 7, 28, "Input"],
-Cell[17093, 462, 933, 22, 46, "Input"],
+Cell[8338, 226, 137, 2, 28, "Input"],
+Cell[8478, 230, 183, 4, 28, "Input"],
+Cell[8664, 236, 455, 12, 28, "Input"],
+Cell[9122, 250, 1539, 39, 63, "Input"],
+Cell[10664, 291, 932, 24, 46, "Input"],
+Cell[11599, 317, 1421, 35, 66, "Input"],
+Cell[13023, 354, 499, 11, 28, "Input"],
+Cell[13525, 367, 518, 13, 46, "Input"],
+Cell[14046, 382, 552, 14, 46, "Input"],
+Cell[14601, 398, 460, 11, 46, "Input"],
+Cell[15064, 411, 138, 2, 28, "Input"],
+Cell[15205, 415, 1460, 33, 81, "Input"],
+Cell[16668, 450, 236, 5, 28, "Input"],
+Cell[16907, 457, 428, 9, 46, "Input"],
+Cell[17338, 468, 270, 7, 28, "Input"],
+Cell[17611, 477, 933, 22, 46, "Input"],
 Cell[CellGroupData[{
-Cell[18051, 488, 291, 7, 28, "Input"],
-Cell[18345, 497, 426, 10, 28, "Output"]
+Cell[18569, 503, 291, 7, 28, "Input"],
+Cell[18863, 512, 447, 10, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[18808, 512, 1231, 32, 63, "Input"],
-Cell[20042, 546, 385, 8, 28, "Output"]
+Cell[19347, 527, 1231, 32, 63, "Input"],
+Cell[20581, 561, 413, 9, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[20464, 559, 425, 10, 28, "Input"],
-Cell[20892, 571, 407, 9, 28, "Output"]
+Cell[21031, 575, 425, 10, 28, "Input"],
+Cell[21459, 587, 428, 9, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21336, 585, 627, 15, 28, "Input"],
-Cell[21966, 602, 451, 9, 28, "Output"]
+Cell[21924, 601, 627, 15, 28, "Input"],
+Cell[22554, 618, 483, 10, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[22454, 616, 287, 6, 28, "Input"],
-Cell[22744, 624, 74, 1, 28, "Output"]
+Cell[23074, 633, 287, 6, 28, "Input"],
+Cell[23364, 641, 96, 1, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[22855, 630, 342, 8, 28, "Input"],
-Cell[23200, 640, 53304, 1502, 856, "Output"]
+Cell[23497, 647, 342, 8, 28, "Input"],
+Cell[23842, 657, 57202, 1645, 856, "Output"]
+}, Open  ]],
+Cell[81059, 2305, 302, 7, 46, "Input"],
+Cell[81364, 2314, 428, 12, 53, "Input"],
+Cell[81795, 2328, 127, 2, 28, "Input"],
+Cell[81925, 2332, 1120, 25, 46, "Input"],
+Cell[83048, 2359, 423, 11, 28, "Input"],
+Cell[83474, 2372, 2295, 53, 148, "Input"],
+Cell[85772, 2427, 3428, 76, 235, "Input"],
+Cell[89203, 2505, 2277, 54, 148, "Input"],
+Cell[91483, 2561, 2262, 50, 148, "Input"],
+Cell[93748, 2613, 529, 16, 28, "Input"],
+Cell[94280, 2631, 430, 10, 28, "Input"],
+Cell[CellGroupData[{
+Cell[94735, 2645, 973, 27, 36, "Input"],
+Cell[CellGroupData[{
+Cell[95733, 2676, 553, 8, 22, "Print"],
+Cell[96289, 2686, 517, 7, 22, "Print"],
+Cell[96809, 2695, 574, 8, 22, "Print"],
+Cell[97386, 2705, 567, 8, 22, "Print"]
+}, Open  ]],
+Cell[97968, 2716, 1200, 25, 35, "Output"]
+}, Open  ]],
+Cell[99183, 2744, 524, 14, 28, "Input"],
+Cell[99710, 2760, 2294, 53, 199, "Input"],
+Cell[102007, 2815, 293, 7, 28, "Input"],
+Cell[102303, 2824, 2103, 57, 80, "Input"],
+Cell[104409, 2883, 769, 23, 31, "Input"],
+Cell[105181, 2908, 9586, 222, 676, "Input"],
+Cell[114770, 3132, 230, 6, 28, "Input"],
+Cell[115003, 3140, 357, 10, 28, "Input"],
+Cell[115363, 3152, 515, 12, 28, "Input"],
+Cell[115881, 3166, 1339, 36, 80, "Input"],
+Cell[117223, 3204, 4116, 98, 267, "Input"],
+Cell[121342, 3304, 3572, 82, 250, "Input"],
+Cell[124917, 3388, 459, 12, 63, "Input"],
+Cell[125379, 3402, 1358, 36, 80, "Input"],
+Cell[126740, 3440, 1885, 49, 97, "Input"],
+Cell[128628, 3491, 307, 8, 28, "Input"],
+Cell[128938, 3501, 1444, 38, 63, "Input"],
+Cell[CellGroupData[{
+Cell[130407, 3543, 678, 19, 28, "Input"],
+Cell[131088, 3564, 909, 24, 28, "Output"]
+}, Open  ]],
+Cell[132012, 3591, 1163, 28, 97, "Input"],
+Cell[CellGroupData[{
+Cell[133200, 3623, 812, 20, 46, "Input"],
+Cell[CellGroupData[{
+Cell[134037, 3647, 583, 9, 22, "Print"],
+Cell[134623, 3658, 538, 8, 22, "Print"],
+Cell[135164, 3668, 538, 8, 22, "Print"],
+Cell[135705, 3678, 684, 10, 38, "Print"],
+Cell[136392, 3690, 707, 10, 38, "Print"]
+}, Open  ]],
+Cell[137114, 3703, 2687, 68, 46, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[76541, 2147, 307, 7, 28, "Input"],
-Cell[76851, 2156, 283, 5, 28, "Output"]
-}, Open  ]],
-Cell[77149, 2164, 302, 7, 46, "Input"],
-Cell[77454, 2173, 268, 9, 53, "Input"],
-Cell[77725, 2184, 127, 2, 28, "Input"],
-Cell[77855, 2188, 1072, 25, 46, "Input"],
-Cell[78930, 2215, 1927, 44, 148, "Input"],
-Cell[80860, 2261, 3144, 70, 216, "Input"],
-Cell[84007, 2333, 2030, 47, 148, "Input"],
-Cell[86040, 2382, 2090, 47, 148, "Input"],
-Cell[88133, 2431, 502, 15, 28, "Input"],
-Cell[88638, 2448, 345, 8, 28, "Input"],
+Cell[139838, 3776, 809, 20, 28, "Input"],
 Cell[CellGroupData[{
-Cell[89008, 2460, 973, 27, 36, "Input"],
-Cell[CellGroupData[{
-Cell[90006, 2491, 424, 7, 22, "Print"],
-Cell[90433, 2500, 507, 8, 22, "Print"],
-Cell[90943, 2510, 471, 7, 22, "Print"],
-Cell[91417, 2519, 517, 8, 22, "Print"],
-Cell[91937, 2529, 521, 8, 22, "Print"],
-Cell[92461, 2539, 426, 7, 22, "Print"],
-Cell[92890, 2548, 426, 7, 22, "Print"]
+Cell[140672, 3800, 277, 4, 22, "Print"],
+Cell[140952, 3806, 198, 3, 22, "Print"],
+Cell[141153, 3811, 196, 3, 22, "Print"],
+Cell[141352, 3816, 883, 12, 85, "Print"],
+Cell[142238, 3830, 903, 13, 84, "Print"]
 }, Open  ]],
-Cell[93331, 2558, 1150, 24, 35, "Output"]
-}, Open  ]],
-Cell[94496, 2585, 2039, 52, 182, "Input"],
-Cell[96538, 2639, 3452, 83, 268, "Input"],
-Cell[CellGroupData[{
-Cell[100015, 2726, 504, 14, 28, "Input"],
-Cell[100522, 2742, 712, 19, 28, "Output"]
-}, Open  ]],
-Cell[101249, 2764, 1163, 28, 97, "Input"],
-Cell[CellGroupData[{
-Cell[102437, 2796, 526, 11, 28, "Input"],
-Cell[102966, 2809, 2721, 63, 80, "Output"]
+Cell[143156, 3846, 3153, 83, 46, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[105724, 2877, 291, 6, 28, "Input"],
-Cell[CellGroupData[{
-Cell[106040, 2887, 311, 4, 38, "Print"],
-Cell[106354, 2893, 658, 10, 70, "Print"]
+Cell[146346, 3934, 845, 23, 46, "Input"],
+Cell[147194, 3959, 1568, 38, 63, "Output"]
 }, Open  ]],
-Cell[107027, 2906, 2325, 62, 80, "Output"]
+Cell[CellGroupData[{
+Cell[148799, 4002, 342, 8, 28, "Input"],
+Cell[CellGroupData[{
+Cell[149166, 4014, 330, 5, 22, "Print"],
+Cell[149499, 4021, 296, 4, 22, "Print"],
+Cell[149798, 4027, 511, 7, 38, "Print"],
+Cell[150312, 4036, 322, 5, 22, "Print"],
+Cell[150637, 4043, 366, 5, 22, "Print"],
+Cell[151006, 4050, 587, 9, 38, "Print"],
+Cell[151596, 4061, 326, 5, 22, "Print"],
+Cell[151925, 4068, 301, 4, 22, "Print"],
+Cell[152229, 4074, 303, 4, 22, "Print"],
+Cell[152535, 4080, 301, 4, 22, "Print"],
+Cell[152839, 4086, 303, 4, 22, "Print"],
+Cell[153145, 4092, 330, 5, 22, "Print"],
+Cell[153478, 4099, 328, 5, 22, "Print"],
+Cell[153809, 4106, 295, 4, 22, "Print"],
+Cell[154107, 4112, 695, 10, 54, "Print"],
+Cell[154805, 4124, 464, 6, 38, "Print"],
+Cell[155272, 4132, 366, 5, 22, "Print"],
+Cell[155641, 4139, 769, 11, 54, "Print"],
+Cell[156413, 4152, 469, 6, 38, "Print"],
+Cell[156885, 4160, 299, 4, 22, "Print"],
+Cell[157187, 4166, 301, 4, 22, "Print"],
+Cell[157491, 4172, 301, 4, 22, "Print"],
+Cell[157795, 4178, 301, 4, 22, "Print"],
+Cell[158099, 4184, 573, 8, 38, "Print"],
+Cell[158675, 4194, 605, 8, 38, "Print"],
+Cell[159283, 4204, 332, 5, 22, "Print"],
+Cell[159618, 4211, 394, 6, 38, "Print"],
+Cell[160015, 4219, 296, 4, 22, "Print"],
+Cell[160314, 4225, 1191, 17, 101, "Print"],
+Cell[161508, 4244, 852, 12, 69, "Print"],
+Cell[162363, 4258, 432, 6, 38, "Print"],
+Cell[162798, 4266, 1200, 17, 101, "Print"],
+Cell[164001, 4285, 855, 12, 69, "Print"],
+Cell[164859, 4299, 299, 4, 22, "Print"],
+Cell[165161, 4305, 300, 4, 22, "Print"],
+Cell[165464, 4311, 301, 4, 22, "Print"],
+Cell[165768, 4317, 301, 4, 22, "Print"],
+Cell[166072, 4323, 301, 4, 22, "Print"],
+Cell[166376, 4329, 303, 4, 22, "Print"],
+Cell[166682, 4335, 303, 4, 22, "Print"],
+Cell[166988, 4341, 1587, 22, 133, "Print"],
+Cell[168578, 4365, 396, 6, 38, "Print"],
+Cell[168977, 4373, 394, 6, 38, "Print"],
+Cell[169374, 4381, 296, 4, 22, "Print"],
+Cell[169673, 4387, 1609, 22, 133, "Print"],
+Cell[171285, 4411, 217, 3, 22, "Print"],
+Cell[171505, 4416, 855, 12, 69, "Print"],
+Cell[172363, 4430, 299, 4, 22, "Print"],
+Cell[172665, 4436, 303, 4, 22, "Print"],
+Cell[172971, 4442, 300, 4, 22, "Print"],
+Cell[173274, 4448, 486, 7, 38, "Print"],
+Cell[173763, 4457, 486, 7, 38, "Print"],
+Cell[174252, 4466, 518, 8, 38, "Print"],
+Cell[174773, 4476, 301, 4, 22, "Print"],
+Cell[175077, 4482, 2297, 31, 192, "Print"],
+Cell[177377, 4515, 353, 6, 22, "Print"],
+Cell[177733, 4523, 353, 6, 22, "Print"],
+Cell[178089, 4531, 355, 6, 22, "Print"],
+Cell[178447, 4539, 352, 6, 22, "Print"],
+Cell[178802, 4547, 430, 6, 38, "Print"],
+Cell[179235, 4555, 8983, 120, 777, "Print"],
+Cell[188221, 4677, 3384, 46, 294, "Print"],
+Cell[191608, 4725, 8698, 117, 747, "Print"],
+Cell[200309, 4844, 5650, 75, 489, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[206008, 4925, 658, 14, 28, "Input"],
+Cell[206669, 4941, 729, 13, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[207435, 4959, 271, 5, 28, "Input"],
+Cell[CellGroupData[{
+Cell[207731, 4968, 1012, 14, 38, "Print"],
+Cell[208746, 4984, 921, 12, 22, "Print"],
+Cell[209670, 4998, 1177, 16, 38, "Print"],
+Cell[210850, 5016, 1084, 15, 38, "Print"],
+Cell[211937, 5033, 1009, 14, 38, "Print"],
+Cell[212949, 5049, 975, 13, 22, "Print"],
+Cell[213927, 5064, 1048, 14, 38, "Print"]
+}, Open  ]],
+Cell[214990, 5081, 3086, 75, 80, "Output"]
 }, Open  ]]
 }
 ]
