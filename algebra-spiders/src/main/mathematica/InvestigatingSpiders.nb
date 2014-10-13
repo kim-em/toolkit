@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[    252508,       6495]
-NotebookOptionsPosition[    246011,       6306]
-NotebookOutlinePosition[    246390,       6323]
-CellTagsIndexPosition[    246347,       6320]
+NotebookDataLength[    253478,       6504]
+NotebookOptionsPosition[    247033,       6319]
+NotebookOutlinePosition[    247412,       6336]
+CellTagsIndexPosition[    247369,       6333]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -610,29 +610,6 @@ Cell[BoxData[{
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{
-  RowBox[{"AsScalaObject", "[", 
-   RowBox[{
-    RowBox[{"x", "+", 
-     RowBox[{"2", 
-      SuperscriptBox["y", "2"]}]}], ",", 
-    "\"\<MultivariableRationalFunction\>\""}], "]"}], "@", 
-  RowBox[{"toString", "[", "]"}]}]], "Input",
- CellChangeTimes->{{3.622188985862053*^9, 3.622189016059662*^9}, {
-  3.622190619231724*^9, 3.622190620671969*^9}}],
-
-Cell[BoxData["\<\"Fraction(MultivariablePolynomial(Map(Map(y -> 2) -> \
-Fraction(2, 1), Map(x -> 1) -> Fraction(1, 1))), \
-MultivariablePolynomial(Map(Map() -> Fraction(1, 1))))\"\>"], "Output",
- CellChangeTimes->{
-  3.622189017082358*^9, 3.622189238840459*^9, {3.622189320646659*^9, 
-   3.6221894002155724`*^9}, 3.622189796537148*^9, {3.622190616913364*^9, 
-   3.622190621124185*^9}}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
  RowBox[{"QES", "=", 
   RowBox[{
   "ScalaSingleton", "[", 
@@ -649,10 +626,10 @@ Cell[BoxData[
     "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
      "examples", ".", "QuantumExceptionalSeries$"}], "]"}], 
    "\[RightGuillemet]"}],
-  JLink`Objects`vm1`JavaObject7246088566210561]], "Output",
+  JLink`Objects`vm1`JavaObject12641731593895937]], "Output",
  CellChangeTimes->{{3.620615740186701*^9, 3.620615772915757*^9}, 
    3.621066550545342*^9, 3.621209636556823*^9, 3.6218975758553247`*^9, 
-   3.6221842064823*^9, 3.622185158198531*^9}]
+   3.6221842064823*^9, 3.622185158198531*^9, 3.622222123316766*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -701,34 +678,30 @@ Cell[BoxData[
   JLink`Objects`vm1`JavaObject10535021580386305]], "Output",
  CellChangeTimes->{{3.621068770667886*^9, 3.621068823139434*^9}, 
    3.6212096373506002`*^9, 3.6218975765222816`*^9, 3.6221842071884127`*^9, 
-   3.622185158874752*^9}]
+   3.622185158874752*^9, 3.622222124011695*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"AsScalaObject", "[", 
-  RowBox[{"{", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
    RowBox[{
-    RowBox[{"ScalaCaseClass", "[", 
-     RowBox[{
-     "\"\<net.tqft.toolkit.algebra.spiders.VertexType\>\"", ",", "3", ",", 
-      "1"}], "]"}], "\[Rule]", "2"}], "}"}], "]"}]], "Input",
- CellChangeTimes->{{3.6206178816429*^9, 3.620617884066184*^9}, {
-  3.621068745625999*^9, 3.621068759633667*^9}, {3.621068805257268*^9, 
-  3.6210688102044992`*^9}}],
+    RowBox[{"x", "+", 
+     RowBox[{"2", 
+      SuperscriptBox["y", "2"]}]}], ",", 
+    "\"\<MultivariableRationalFunction\>\""}], "]"}], "@", 
+  RowBox[{"toString", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.622188985862053*^9, 3.622189016059662*^9}, {
+  3.622190619231724*^9, 3.622190620671969*^9}}],
 
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\[LeftGuillemet]", 
-   RowBox[{"JavaObject", "[", 
-    RowBox[{"scala", ".", "collection", ".", "immutable", ".", "Map$Map1"}], 
-    "]"}], "\[RightGuillemet]"}],
-  JLink`Objects`vm1`JavaObject32876417440022529]], "Output",
+Cell[BoxData["\<\"Fraction(MultivariablePolynomial(Map(Map(y -> 2) -> \
+Fraction(2, 1), Map(x -> 1) -> Fraction(1, 1))), \
+MultivariablePolynomial(Map(Map() -> Fraction(1, 1))))\"\>"], "Output",
  CellChangeTimes->{
-  3.620617884493453*^9, 3.621066552240961*^9, {3.621068750279607*^9, 
-   3.621068760188841*^9}, 3.621068810859003*^9, 3.62120963742102*^9, 
-   3.621897576583067*^9, 3.622184207253353*^9, 3.622185158940744*^9}]
+  3.622189017082358*^9, 3.622189238840459*^9, {3.622189320646659*^9, 
+   3.6221894002155724`*^9}, 3.622189796537148*^9, {3.622190616913364*^9, 
+   3.622190621124185*^9}, 3.622222121263105*^9, 3.6222225140772133`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -761,22 +734,8 @@ Cell[BoxData[
  CellChangeTimes->{3.620615837016811*^9, 3.620617868236783*^9, 
   3.6206178992007437`*^9, 3.620617935456181*^9, 3.620618067768978*^9, 
   3.621066561775518*^9, 3.621068858192748*^9, 3.6212096420483027`*^9, 
-  3.621897581242219*^9, 3.6221842189397097`*^9, 3.622185173894114*^9}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"QES", "@", 
-  RowBox[{"reducibleDiagramU$qmark", "[", 
-   RowBox[{"diagrams", "@", 
-    RowBox[{"apply", "[", "0", "]"}]}], "]"}]}]], "Input",
- CellChangeTimes->{{3.6210689477952833`*^9, 3.6210689549426126`*^9}, {
-  3.621068988946957*^9, 3.6210690019623833`*^9}}],
-
-Cell[BoxData["False"], "Output",
- CellChangeTimes->{3.621069115201523*^9, 3.621209642265545*^9, 
-  3.621897581408887*^9, 3.622184219109213*^9, 3.622185174065741*^9}]
+  3.621897581242219*^9, 3.6221842189397097`*^9, 3.622185173894114*^9, 
+  3.622222138471538*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2437,7 +2396,8 @@ Cell[BoxData[
  CellChangeTimes->{3.620618288403048*^9, 3.620686004721492*^9, 
   3.620686771422935*^9, 3.621066835816039*^9, 3.621069115001751*^9, 
   3.6212098344922743`*^9, 3.62121290580818*^9, 3.621212949382824*^9, 
-  3.621897765879624*^9, 3.6221844405446663`*^9, 3.622185414379343*^9}]
+  3.621897765879624*^9, 3.6221844405446663`*^9, 3.622185414379343*^9, 
+  3.6222224850712233`*^9}]
 }, Open  ]],
 
 Cell[BoxData[{
@@ -2850,7 +2810,8 @@ require that at least one is zero.\"\>"], "Print",
    3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
    3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
    3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
-   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9}],
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485680483*^9}],
 
 Cell[BoxData["\<\"Adding \\(x-1\\) to the ideal would render a nonzero \
 quantity zero, so we reject this possibility.\"\>"], "Print",
@@ -2860,7 +2821,8 @@ quantity zero, so we reject this possibility.\"\>"], "Print",
    3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
    3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
    3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
-   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461467348*^9}],
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485712965*^9}],
 
 Cell[BoxData["\<\"Adjoining \\(x+1\\) the ideal we obtain a new Groebner \
 basis \\(\\\\{x+1\\\\}\\) with respect to which the nonzero quantities reduce \
@@ -2871,7 +2833,8 @@ to \\(\\\\{-2\\\\}\\).\"\>"], "Print",
    3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
    3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
    3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
-   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461525638*^9}],
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485715247*^9}],
 
 Cell[BoxData["\<\"We find the factors \
 \\(\\\\left\\\\{y^2-2,y^2+2\\\\right\\\\}\\) and then require that each is \
@@ -2882,7 +2845,8 @@ nonzero.\"\>"], "Print",
    3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
    3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
    3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
-   3.621897766429531*^9, 3.622184441146317*^9, 3.62218546152838*^9}]
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485717478*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -2912,7 +2876,7 @@ Cell[BoxData[
    3.6210671408283377`*^9, 3.6210671971040163`*^9, 3.6210672760510798`*^9, 
    3.6210673761115847`*^9, 3.62106740983578*^9, 3.6212098351071863`*^9, 
    3.621218715176608*^9, 3.6218977665153637`*^9, 3.622184441189625*^9, 
-   3.6221854615319357`*^9}]
+   3.6221854615319357`*^9, 3.622222485719769*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -3305,7 +3269,8 @@ Cell[BoxData[
     "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}]}]], "Input",
  CellChangeTimes->{{3.621212019067363*^9, 3.621212047798473*^9}, {
   3.621212183650423*^9, 3.621212184554632*^9}, {3.6221846566744547`*^9, 
-  3.6221846620065517`*^9}, {3.622186544768944*^9, 3.622186548677821*^9}}],
+  3.6221846620065517`*^9}, {3.622186544768944*^9, 3.622186548677821*^9}},
+ EmphasizeSyntaxErrors->True],
 
 Cell[BoxData[
  RowBox[{
@@ -3696,34 +3661,20 @@ Cell[BoxData[
    RowBox[{"Module", "[", 
     RowBox[{
      RowBox[{"{", "reduction", "}"}], ",", "\[IndentingNewLine]", 
-     RowBox[{"(*", "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{"val", " ", "newReduction"}], "=", 
-       RowBox[{"Reduction", 
-        RowBox[{"(", 
-         RowBox[{"p", ",", 
-          RowBox[{
-           RowBox[{"relation", ".", "dropRight"}], 
-           RowBox[{
-            RowBox[{"(", "1", ")"}], ".", "map"}], 
-           RowBox[{
-            RowBox[{"(", 
-             RowBox[{"q", "=", 
-              RowBox[{">", 
-               RowBox[{"(", 
-                RowBox[{
-                 RowBox[{
-                  RowBox[{"q", ".", "_"}], "1"}], ",", 
-                 RowBox[{
-                  RowBox[{"s", ".", "rationalFunctions", ".", "negate"}], 
-                  RowBox[{"(", 
-                   RowBox[{
-                    RowBox[{"q", ".", "_"}], "2"}], ")"}]}]}], ")"}]}]}], 
-             ")"}], ".", "toMap"}]}]}], ")"}], "\n", "\t", 
-        RowBox[{"s", ".", "addReduction"}], 
-        RowBox[{"(", "newReduction", ")"}]}]}], "\[IndentingNewLine]", "*)"}],
-      "\[IndentingNewLine]", 
      RowBox[{
+      RowBox[{"Print", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}],
+           "\[Rule]", 
+          RowBox[{"AsScalaObject", "[", 
+           RowBox[{
+            RowBox[{
+            "#", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], ",", 
+            "\"\<MultivariableRationalFunction\>\""}], "]"}]}], "&"}], "/@", 
+        RowBox[{"{", "initialTerms", "}"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
       RowBox[{"reduction", "=", 
        RowBox[{"ScalaCaseClass", "[", 
         RowBox[{
@@ -3738,10 +3689,11 @@ Cell[BoxData[
              "\[Rule]", 
              RowBox[{"AsScalaObject", "[", 
               RowBox[{
-               RowBox[{
-               "#", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-               ",", "\"\<MultivariableRationalFunction\>\""}], "]"}]}], "&"}],
-            "/@", 
+               RowBox[{"-", 
+                RowBox[{
+                "#", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]}],
+                ",", "\"\<MultivariableRationalFunction\>\""}], "]"}]}], 
+            "&"}], "/@", 
            RowBox[{"{", "initialTerms", "}"}]}], "]"}]}], "]"}]}], ";", 
       "\[IndentingNewLine]", 
       RowBox[{"Print", "[", 
@@ -3752,7 +3704,8 @@ Cell[BoxData[
  CellChangeTimes->{{3.622185910258069*^9, 3.6221859152387247`*^9}, {
   3.622186343436524*^9, 3.622186353948721*^9}, {3.62218679677278*^9, 
   3.622186797947009*^9}, {3.622188572768833*^9, 3.6221886897594147`*^9}, {
-  3.6221906734190617`*^9, 3.62219072503115*^9}}],
+  3.6221906734190617`*^9, 3.62219072503115*^9}, {3.622222207493886*^9, 
+  3.622222248939636*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -3999,7 +3952,7 @@ Cell[BoxData[
  CellChangeTimes->{{3.621070267310356*^9, 3.6210703141698723`*^9}, 
    3.6212102200099363`*^9, {3.621220568300658*^9, 3.6212206325253363`*^9}, 
    3.621897767229074*^9, 3.621897911999242*^9, 3.622184441977714*^9, 
-   3.6221855560575237`*^9}]
+   3.6221855560575237`*^9, 3.6222224867827597`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -4062,26 +4015,26 @@ PlanarGraph(2,Vector(List((1,2), (1,3))),List(),0), insisting that it is \
 independent.\"\>"], "Print",
  CellChangeTimes->{3.621897918673015*^9, 3.6218979877819643`*^9, 
   3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
-  3.622184449104488*^9, 3.622185567597465*^9}],
+  3.622184449104488*^9, 3.622185567597465*^9, 3.622222497543223*^9}],
 
 Cell[BoxData["\<\"The number of independent diagrams of size \\(2\\) has now \
 hit the upper bound of \\(1\\)\"\>"], "Print",
  CellChangeTimes->{3.621897918673015*^9, 3.6218979877819643`*^9, 
   3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
-  3.622184449104488*^9, 3.622185567599455*^9}],
+  3.622184449104488*^9, 3.622185567597465*^9, 3.62222249757767*^9}],
 
 Cell[BoxData["\<\"We now insist that the matrix of inner products of the \
 independent diagrams of size \\(2\\) is non-zero.\"\>"], "Print",
  CellChangeTimes->{3.621897918673015*^9, 3.6218979877819643`*^9, 
   3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
-  3.622184449104488*^9, 3.62218556760176*^9}],
+  3.622184449104488*^9, 3.622185567597465*^9, 3.622222497579947*^9}],
 
 Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{-1,w^2+1,v w^3-1,v \
 w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that each is nonzero.\"\>"], \
 "Print",
  CellChangeTimes->{3.621897918673015*^9, 3.6218979877819643`*^9, 
   3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
-  3.622184449104488*^9, 3.622185567649358*^9}]
+  3.622184449104488*^9, 3.622185567597465*^9, 3.622222497632091*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -4152,7 +4105,8 @@ Cell[BoxData[
    3.62122143596006*^9, 3.621221506436838*^9}, 3.621221636779972*^9, 
    3.621222541015645*^9, 3.621897767419504*^9, 3.621897918826542*^9, 
    3.621897987862247*^9, 3.6218980469635344`*^9, 3.6218981573569508`*^9, 
-   3.621905861935985*^9, 3.6221844491112967`*^9, 3.622185567696499*^9}]
+   3.621905861935985*^9, 3.6221844491112967`*^9, 3.622185567696499*^9, 
+   3.622222497635007*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -4171,13 +4125,14 @@ Cell[BoxData[
 Cell[CellGroupData[{
 
 Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(8,Vector(List((4,8), (3,11)), List((3,8), (5,11), (7,9), (6,10)), \
-List((5,9), (4,11), (6,8), (7,10))),List(2, 2),0), insisting that it is \
+PlanarGraph(8,Vector(List((4,8), (3,11)), List((6,10), (3,8), (5,11), (7,9)), \
+List((4,11), (6,8), (7,10), (5,9))),List(2, 2),0), insisting that it is \
 dependent.\"\>"], "Print",
  CellChangeTimes->{3.621903682551929*^9, 3.621905077787034*^9, 
   3.6219051382670183`*^9, 3.6219058667350883`*^9, 3.6219059090203876`*^9, 
   3.6219059615529222`*^9, 3.62218558897113*^9, 3.622186817072537*^9, 
-  3.622186903329767*^9, 3.62218694382299*^9, 3.622190744363038*^9}],
+  3.622186903329767*^9, 3.62218694382299*^9, 3.622190744363038*^9, 
+  3.6222225079382544`*^9}],
 
 Cell[BoxData["\<\"We find a candidate relation \\(\\\\left\\\\{-\\\\frac{p_3 \
 \\\\left(v^4 w^8-v^2 w^8-v^2 w^7+w^7\\\\right)}{\\\\left(w^2+1\\\\right) \
@@ -4186,7 +4141,8 @@ Cell[BoxData["\<\"We find a candidate relation \\(\\\\left\\\\{-\\\\frac{p_3 \
  CellChangeTimes->{3.621903682551929*^9, 3.621905077787034*^9, 
   3.6219051382670183`*^9, 3.6219058667350883`*^9, 3.6219059090203876`*^9, 
   3.6219059615529222`*^9, 3.62218558897113*^9, 3.622186817072537*^9, 
-  3.622186903329767*^9, 3.62218694382299*^9, 3.622190744397524*^9}]
+  3.622186903329767*^9, 3.62218694382299*^9, 3.622190744363038*^9, 
+  3.6222225080731363`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -4198,7 +4154,7 @@ Cell[BoxData[
 \[NoBreak]\\!\\(\\\"java.lang.IllegalArgumentException: array element type \
 mismatch\\\\n\\\\tat java.lang.reflect.Array.set(Native Method)\\\"\\)\
 \[NoBreak].\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.622190744624629*^9}],
+ CellChangeTimes->{3.622190744624629*^9, 3.622222508856848*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -4209,7 +4165,7 @@ Cell[BoxData[
 \[NoBreak]\\!\\(java`util`Arrays`asList\\)\[NoBreak] was called with an \
 incorrect number or type of arguments. The argument was \
 \[NoBreak]\\!\\($Failed\\)\[NoBreak].\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.622190744752741*^9}],
+ CellChangeTimes->{3.622190744624629*^9, 3.622222509267228*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -4220,7 +4176,7 @@ Cell[BoxData[
 \[NoBreak]\\!\\(scala`collection`JavaConversions`asScalaBuffer\\)\[NoBreak] \
 was called with an incorrect number or type of arguments. The argument was \
 \[NoBreak]\\!\\($Failed\\)\[NoBreak].\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.6221907448603163`*^9}],
+ CellChangeTimes->{3.622190744624629*^9, 3.6222225096935368`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -4234,7 +4190,73 @@ defined in class \
 argument was \
 \[NoBreak]\\!\\($Failed[\\(\\(toList[]\\)\\)]\\)\[NoBreak].\"\>"}]], "Message",\
  "MSG",
- CellChangeTimes->{3.6221907449602613`*^9}],
+ CellChangeTimes->{3.622190744624629*^9, 3.622222510089697*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    RowBox[{"\[LeftGuillemet]", 
+     RowBox[{"JavaObject", "[", 
+      RowBox[{
+      "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
+        "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+    JLink`Objects`vm1`JavaObject7178064790290433], "\[Rule]", "$Failed"}], 
+  "}"}]], "Print",
+ CellChangeTimes->{3.621903682551929*^9, 3.621905077787034*^9, 
+  3.6219051382670183`*^9, 3.6219058667350883`*^9, 3.6219059090203876`*^9, 
+  3.6219059615529222`*^9, 3.62218558897113*^9, 3.622186817072537*^9, 
+  3.622186903329767*^9, 3.62218694382299*^9, 3.622190744363038*^9, 
+  3.6222225100912647`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Java", "::", "excptn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"A Java exception occurred: \
+\[NoBreak]\\!\\(\\\"java.lang.IllegalArgumentException: array element type \
+mismatch\\\\n\\\\tat java.lang.reflect.Array.set(Native Method)\\\"\\)\
+\[NoBreak].\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.622190744624629*^9, 3.6222225106454983`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Java", "::", "argxs1"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"The static method \
+\[NoBreak]\\!\\(java`util`Arrays`asList\\)\[NoBreak] was called with an \
+incorrect number or type of arguments. The argument was \
+\[NoBreak]\\!\\($Failed\\)\[NoBreak].\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.622190744624629*^9, 3.62222251103288*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Java :: \
+argxs1\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.622190744624629*^9, 3.622222511087261*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Java", "::", "argx1"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Method named \[NoBreak]\\!\\(\\\"product\\\"\\)\[NoBreak] \
+defined in class \
+\[NoBreak]\\!\\(\\\"net.tqft.toolkit.algebra.Field$FieldOfFractions\\\"\\)\
+\[NoBreak] was called with an incorrect number or type of arguments. The \
+argument was \
+\[NoBreak]\\!\\($Failed[\\(\\(toList[]\\)\\)]\\)\[NoBreak].\"\>"}]], "Message",\
+ "MSG",
+ CellChangeTimes->{3.622190744624629*^9, 3.622222511453876*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -4252,7 +4274,7 @@ here in a list, were \
 \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
 ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/argx\\\", \
 ButtonNote -> \\\"JLink`Java::argx\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.6221907450485287`*^9}],
+ CellChangeTimes->{3.622190744624629*^9, 3.62222251171574*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -4265,31 +4287,7 @@ Cell[BoxData[
 ButtonFrame->None, ButtonData:>\\\"paclet:JLink/ref/MakeJavaObject\\\", \
 ButtonNote -> \\\"JLink`MakeJavaObject::arg\\\"]\\)\"\>"}]], "Message", "MSG",
  
- CellChangeTimes->{3.622190745156514*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"Java", "::", "argxs1"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"The static method \
-\[NoBreak]\\!\\(java`util`Arrays`asList\\)\[NoBreak] was called with an \
-incorrect number or type of arguments. The argument was \
-\[NoBreak]\\!\\($Failed\\)\[NoBreak].\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.6221907452434683`*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"General", "::", "stop"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Java :: \
-argxs1\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
-calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
-\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.622190745265691*^9}],
+ CellChangeTimes->{3.622190744624629*^9, 3.6222225121258373`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -4302,7 +4300,20 @@ Cell[BoxData[
 was called with an incorrect number or type of arguments. The argument was \
 \[NoBreak]\\!\\($Failed[\\(\\(toList[]\\)\\)]\\)\[NoBreak].\"\>"}]], "Message",\
  "MSG",
- CellChangeTimes->{3.6221907453675833`*^9}],
+ CellChangeTimes->{3.622190744624629*^9, 3.6222225124754*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Java :: \
+argx1\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.622190744624629*^9, 3.622222512560684*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -4316,13 +4327,13 @@ defined in class \
 arguments, shown here in a list, were \
 \[NoBreak]\\!\\({\\*InterpretationBox[\\(\[LeftGuillemet] \
 \\(\\(JavaObject[net.tqft.toolkit.algebra.spiders.PlanarGraph]\\)\\) \
-\[RightGuillemet]\\), JLink`Objects`vm1`JavaObject31975445490565131], \
+\[RightGuillemet]\\), JLink`Objects`vm1`JavaObject31730902853746689], \
 \\(\\(AsScalaObject[\\(\\($Failed, \
 \\\"scala.collection.immutable.Map\\\"\\)\\)]\\)\\)}\\)\[NoBreak]. \
 \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
 ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/argx\\\", \
 ButtonNote -> \\\"JLink`Java::argx\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.622190745430068*^9}],
+ CellChangeTimes->{3.622190744624629*^9, 3.622222512748189*^9}],
 
 Cell[BoxData[
  RowBox[{"$Failed", "[", 
@@ -4330,13 +4341,15 @@ Cell[BoxData[
  CellChangeTimes->{3.621903682551929*^9, 3.621905077787034*^9, 
   3.6219051382670183`*^9, 3.6219058667350883`*^9, 3.6219059090203876`*^9, 
   3.6219059615529222`*^9, 3.62218558897113*^9, 3.622186817072537*^9, 
-  3.622186903329767*^9, 3.62218694382299*^9, 3.6221907454307737`*^9}],
+  3.622186903329767*^9, 3.62218694382299*^9, 3.622190744363038*^9, 
+  3.622222512750297*^9}],
 
 Cell[BoxData["$Aborted"], "Output",
  CellChangeTimes->{3.6219036825531483`*^9, 3.6219050777901697`*^9, 
   3.621905138312026*^9, 3.621905866789145*^9, 3.621905909067068*^9, 
   3.621905961588876*^9, 3.62218558906469*^9, 3.622186817140542*^9, 
-  3.622186903372287*^9, 3.6221869438649273`*^9, 3.622190745432495*^9}]
+  3.622186903372287*^9, 3.6221869438649273`*^9, 3.622190745432495*^9, 
+  3.6222225127515182`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -6348,155 +6361,151 @@ Cell[17611, 477, 933, 22, 46, "Input"],
 Cell[18547, 501, 259, 7, 28, "Input"],
 Cell[18809, 510, 3563, 97, 131, "Input"],
 Cell[CellGroupData[{
-Cell[22397, 611, 373, 10, 35, "Input"],
-Cell[22773, 623, 385, 6, 28, "Output"]
+Cell[22397, 611, 291, 7, 28, "Input"],
+Cell[22691, 620, 540, 11, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[23195, 634, 291, 7, 28, "Input"],
-Cell[23489, 643, 517, 11, 28, "Output"]
+Cell[23268, 636, 1231, 32, 63, "Input"],
+Cell[24502, 670, 509, 10, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[24043, 659, 1231, 32, 63, "Input"],
-Cell[25277, 693, 487, 10, 28, "Output"]
+Cell[25048, 685, 373, 10, 35, "Input"],
+Cell[25424, 697, 431, 6, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[25801, 708, 425, 10, 28, "Input"],
-Cell[26229, 720, 498, 10, 28, "Output"]
+Cell[25892, 708, 627, 15, 28, "Input"],
+Cell[26522, 725, 579, 12, 62, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[26764, 735, 627, 15, 28, "Input"],
-Cell[27394, 752, 554, 11, 28, "Output"]
+Cell[27138, 742, 342, 8, 28, "Input"],
+Cell[27483, 752, 57300, 1647, 856, "Output"]
+}, Open  ]],
+Cell[84798, 2402, 302, 7, 46, "Input"],
+Cell[85103, 2411, 428, 12, 53, "Input"],
+Cell[85534, 2425, 127, 2, 28, "Input"],
+Cell[85664, 2429, 1120, 25, 46, "Input"],
+Cell[86787, 2456, 458, 13, 28, "Input"],
+Cell[87248, 2471, 468, 13, 28, "Input"],
+Cell[87719, 2486, 2326, 54, 148, "Input"],
+Cell[90048, 2542, 3474, 76, 235, "Input"],
+Cell[93525, 2620, 493, 13, 28, "Input"],
+Cell[94021, 2635, 2302, 54, 148, "Input"],
+Cell[96326, 2691, 2312, 51, 148, "Input"],
+Cell[98641, 2744, 478, 13, 28, "Input"],
+Cell[99122, 2759, 660, 13, 46, "Input"],
+Cell[CellGroupData[{
+Cell[99807, 2776, 967, 24, 36, "Input"],
+Cell[CellGroupData[{
+Cell[100799, 2804, 604, 9, 22, "Print"],
+Cell[101406, 2815, 615, 9, 22, "Print"],
+Cell[102024, 2826, 674, 10, 22, "Print"],
+Cell[102701, 2838, 622, 10, 22, "Print"]
+}, Open  ]],
+Cell[103338, 2851, 1328, 27, 35, "Output"]
+}, Open  ]],
+Cell[104681, 2881, 524, 14, 28, "Input"],
+Cell[105208, 2897, 2148, 50, 182, "Input"],
+Cell[107359, 2949, 317, 6, 28, "Input"],
+Cell[107679, 2957, 1684, 46, 63, "Input"],
+Cell[109366, 3005, 528, 13, 28, "Input"],
+Cell[109897, 3020, 502, 13, 28, "Input"],
+Cell[110402, 3035, 347, 8, 28, "Input"],
+Cell[110752, 3045, 794, 23, 31, "Input"],
+Cell[111549, 3070, 7084, 164, 472, "Input"],
+Cell[118636, 3236, 281, 7, 28, "Input"],
+Cell[118920, 3245, 435, 12, 28, "Input"],
+Cell[119358, 3259, 621, 13, 28, "Input"],
+Cell[119982, 3274, 1507, 38, 80, "Input"],
+Cell[121492, 3314, 2525, 55, 165, "Input"],
+Cell[124020, 3371, 1461, 33, 97, "Input"],
+Cell[125484, 3406, 4741, 112, 250, "Input"],
+Cell[130228, 3520, 276, 7, 28, "Input"],
+Cell[130507, 3529, 442, 12, 28, "Input"],
+Cell[130952, 3543, 1901, 49, 131, "Input"],
+Cell[132856, 3594, 2054, 52, 131, "Input"],
+Cell[134913, 3648, 2352, 59, 148, "Input"],
+Cell[137268, 3709, 506, 12, 63, "Input"],
+Cell[137777, 3723, 286, 7, 28, "Input"],
+Cell[138066, 3732, 1910, 48, 97, "Input"],
+Cell[139979, 3782, 1798, 47, 97, "Input"],
+Cell[141780, 3831, 1423, 36, 80, "Input"],
+Cell[143206, 3869, 1390, 36, 80, "Input"],
+Cell[CellGroupData[{
+Cell[144621, 3909, 696, 18, 28, "Input"],
+Cell[145320, 3929, 1002, 25, 28, "Output"]
+}, Open  ]],
+Cell[146337, 3957, 1167, 27, 97, "Input"],
+Cell[CellGroupData[{
+Cell[147529, 3988, 841, 20, 46, "Input"],
+Cell[CellGroupData[{
+Cell[148395, 4012, 357, 5, 22, "Print"],
+Cell[148755, 4019, 330, 4, 22, "Print"],
+Cell[149088, 4025, 346, 4, 22, "Print"],
+Cell[149437, 4031, 368, 5, 22, "Print"]
+}, Open  ]],
+Cell[149820, 4039, 2839, 69, 46, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[27985, 768, 287, 6, 28, "Input"],
-Cell[28275, 776, 165, 2, 28, "Output"]
+Cell[152696, 4113, 398, 9, 28, "Input"],
+Cell[CellGroupData[{
+Cell[153119, 4126, 532, 8, 38, "Print"],
+Cell[153654, 4136, 542, 8, 22, "Print"]
+}, Open  ]],
+Cell[154211, 4147, 400, 9, 42, "Message"],
+Cell[154614, 4158, 400, 9, 24, "Message"],
+Cell[155017, 4169, 425, 9, 24, "Message"],
+Cell[155445, 4180, 516, 12, 24, "Message"],
+Cell[155964, 4194, 675, 15, 22, "Print"],
+Cell[156642, 4211, 402, 9, 42, "Message"],
+Cell[157047, 4222, 399, 9, 24, "Message"],
+Cell[157449, 4233, 551, 11, 24, "Message"],
+Cell[158003, 4246, 516, 12, 24, "Message"],
+Cell[158522, 4260, 912, 16, 42, "Message"],
+Cell[159437, 4278, 559, 11, 24, "Message"],
+Cell[159999, 4291, 508, 11, 24, "Message"],
+Cell[160510, 4304, 550, 11, 24, "Message"],
+Cell[161063, 4317, 972, 18, 42, "Message"],
+Cell[162038, 4337, 392, 7, 22, "Print"],
+Cell[162433, 4346, 338, 5, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[28477, 783, 342, 8, 28, "Input"],
-Cell[28822, 793, 57273, 1646, 856, "Output"]
-}, Open  ]],
-Cell[86110, 2442, 302, 7, 46, "Input"],
-Cell[86415, 2451, 428, 12, 53, "Input"],
-Cell[86846, 2465, 127, 2, 28, "Input"],
-Cell[86976, 2469, 1120, 25, 46, "Input"],
-Cell[88099, 2496, 458, 13, 28, "Input"],
-Cell[88560, 2511, 468, 13, 28, "Input"],
-Cell[89031, 2526, 2326, 54, 148, "Input"],
-Cell[91360, 2582, 3474, 76, 235, "Input"],
-Cell[94837, 2660, 493, 13, 28, "Input"],
-Cell[95333, 2675, 2302, 54, 148, "Input"],
-Cell[97638, 2731, 2312, 51, 148, "Input"],
-Cell[99953, 2784, 478, 13, 28, "Input"],
-Cell[100434, 2799, 660, 13, 46, "Input"],
+Cell[162808, 4356, 838, 20, 28, "Input"],
 Cell[CellGroupData[{
-Cell[101119, 2816, 967, 24, 36, "Input"],
-Cell[CellGroupData[{
-Cell[102111, 2844, 578, 8, 22, "Print"],
-Cell[102692, 2854, 589, 8, 22, "Print"],
-Cell[103284, 2864, 648, 9, 22, "Print"],
-Cell[103935, 2875, 595, 9, 22, "Print"]
+Cell[163671, 4380, 299, 4, 22, "Print"],
+Cell[163973, 4386, 238, 3, 22, "Print"],
+Cell[164214, 4391, 255, 3, 22, "Print"],
+Cell[164472, 4396, 303, 5, 22, "Print"]
 }, Open  ]],
-Cell[104545, 2887, 1306, 27, 35, "Output"]
-}, Open  ]],
-Cell[105866, 2917, 524, 14, 28, "Input"],
-Cell[106393, 2933, 2148, 50, 182, "Input"],
-Cell[108544, 2985, 317, 6, 28, "Input"],
-Cell[108864, 2993, 1684, 46, 63, "Input"],
-Cell[110551, 3041, 528, 13, 28, "Input"],
-Cell[111082, 3056, 502, 13, 28, "Input"],
-Cell[111587, 3071, 347, 8, 28, "Input"],
-Cell[111937, 3081, 794, 23, 31, "Input"],
-Cell[112734, 3106, 7084, 164, 472, "Input"],
-Cell[119821, 3272, 281, 7, 28, "Input"],
-Cell[120105, 3281, 435, 12, 28, "Input"],
-Cell[120543, 3295, 591, 12, 28, "Input"],
-Cell[121137, 3309, 1507, 38, 80, "Input"],
-Cell[122647, 3349, 2525, 55, 165, "Input"],
-Cell[125175, 3406, 1461, 33, 97, "Input"],
-Cell[126639, 3441, 4741, 112, 250, "Input"],
-Cell[131383, 3555, 276, 7, 28, "Input"],
-Cell[131662, 3564, 442, 12, 28, "Input"],
-Cell[132107, 3578, 1901, 49, 131, "Input"],
-Cell[134011, 3629, 2054, 52, 131, "Input"],
-Cell[136068, 3683, 2782, 71, 199, "Input"],
-Cell[138853, 3756, 506, 12, 63, "Input"],
-Cell[139362, 3770, 286, 7, 28, "Input"],
-Cell[139651, 3779, 1910, 48, 97, "Input"],
-Cell[141564, 3829, 1798, 47, 97, "Input"],
-Cell[143365, 3878, 1423, 36, 80, "Input"],
-Cell[144791, 3916, 1390, 36, 80, "Input"],
-Cell[CellGroupData[{
-Cell[146206, 3956, 696, 18, 28, "Input"],
-Cell[146905, 3976, 978, 25, 28, "Output"]
-}, Open  ]],
-Cell[147898, 4004, 1167, 27, 97, "Input"],
-Cell[CellGroupData[{
-Cell[149090, 4035, 841, 20, 46, "Input"],
-Cell[CellGroupData[{
-Cell[149956, 4059, 335, 5, 22, "Print"],
-Cell[150294, 4066, 309, 4, 22, "Print"],
-Cell[150606, 4072, 323, 4, 22, "Print"],
-Cell[150932, 4078, 346, 5, 22, "Print"]
-}, Open  ]],
-Cell[151293, 4086, 2813, 68, 46, "Output"]
+Cell[164790, 4404, 2998, 78, 35, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[154143, 4159, 398, 9, 28, "Input"],
-Cell[CellGroupData[{
-Cell[154566, 4172, 505, 7, 38, "Print"],
-Cell[155074, 4181, 515, 7, 22, "Print"]
-}, Open  ]],
-Cell[155604, 4191, 378, 9, 42, "Message"],
-Cell[155985, 4202, 378, 9, 24, "Message"],
-Cell[156366, 4213, 403, 9, 24, "Message"],
-Cell[156772, 4224, 496, 12, 24, "Message"],
-Cell[157271, 4238, 893, 16, 42, "Message"],
-Cell[158167, 4256, 535, 11, 24, "Message"],
-Cell[158705, 4269, 380, 9, 24, "Message"],
-Cell[159088, 4280, 529, 11, 24, "Message"],
-Cell[159620, 4293, 490, 11, 24, "Message"],
-Cell[160113, 4306, 950, 18, 42, "Message"],
-Cell[161066, 4326, 369, 6, 22, "Print"],
-Cell[161438, 4334, 311, 4, 28, "Output"]
+Cell[167825, 4487, 829, 21, 46, "Input"],
+Cell[168657, 4510, 1590, 38, 63, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[161786, 4343, 838, 20, 28, "Input"],
+Cell[170284, 4553, 504, 12, 28, "Input"],
 Cell[CellGroupData[{
-Cell[162649, 4367, 299, 4, 22, "Print"],
-Cell[162951, 4373, 238, 3, 22, "Print"],
-Cell[163192, 4378, 255, 3, 22, "Print"],
-Cell[163450, 4383, 303, 5, 22, "Print"]
+Cell[170813, 4569, 380, 6, 22, "Print"],
+Cell[171196, 4577, 378, 6, 22, "Print"],
+Cell[171577, 4585, 444, 7, 38, "Print"],
+Cell[172024, 4594, 443, 7, 38, "Print"],
+Cell[172470, 4603, 413, 6, 22, "Print"],
+Cell[172886, 4611, 338, 5, 22, "Print"],
+Cell[173227, 4618, 352, 5, 22, "Print"],
+Cell[173582, 4625, 7163, 94, 620, "Print"]
 }, Open  ]],
-Cell[163768, 4391, 2998, 78, 35, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[166803, 4474, 829, 21, 46, "Input"],
-Cell[167635, 4497, 1590, 38, 63, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[169262, 4540, 504, 12, 28, "Input"],
-Cell[CellGroupData[{
-Cell[169791, 4556, 380, 6, 22, "Print"],
-Cell[170174, 4564, 378, 6, 22, "Print"],
-Cell[170555, 4572, 444, 7, 38, "Print"],
-Cell[171002, 4581, 443, 7, 38, "Print"],
-Cell[171448, 4590, 413, 6, 22, "Print"],
-Cell[171864, 4598, 338, 5, 22, "Print"],
-Cell[172205, 4605, 352, 5, 22, "Print"],
-Cell[172560, 4612, 7163, 94, 620, "Print"]
-}, Open  ]],
-Cell[179738, 4709, 63616, 1516, 35, "Output"]
+Cell[180760, 4722, 63616, 1516, 35, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[243391, 6230, 308, 7, 28, "Input"],
-Cell[243702, 6239, 372, 9, 28, "Output"]
+Cell[244413, 6243, 308, 7, 28, "Input"],
+Cell[244724, 6252, 372, 9, 28, "Output"]
 }, Open  ]],
-Cell[244089, 6251, 310, 7, 28, "Input"],
-Cell[244402, 6260, 308, 7, 28, "Input"],
-Cell[244713, 6269, 308, 7, 28, "Input"],
-Cell[245024, 6278, 310, 7, 28, "Input"],
-Cell[245337, 6287, 308, 7, 28, "Input"],
-Cell[245648, 6296, 359, 8, 28, "Input"]
+Cell[245111, 6264, 310, 7, 28, "Input"],
+Cell[245424, 6273, 308, 7, 28, "Input"],
+Cell[245735, 6282, 308, 7, 28, "Input"],
+Cell[246046, 6291, 310, 7, 28, "Input"],
+Cell[246359, 6300, 308, 7, 28, "Input"],
+Cell[246670, 6309, 359, 8, 28, "Input"]
 }
 ]
 *)
