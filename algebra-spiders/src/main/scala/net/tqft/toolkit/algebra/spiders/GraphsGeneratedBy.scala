@@ -157,56 +157,22 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
 
         def pickleGraphSeq(graphs: Seq[PlanarGraph]): String = {
           val result = graphs.map(pickleGraph).mkString("Seq(\n  ", ",\n  ", "\n)")
-          require(unpickleGraphSeq(result) == graphs, "pickling failed on:\n" + graphs + "\nresults:\n" + unpickleGraphSeq(result))
+//          require(PlanarGraph.graphSeqFromString(result) == graphs, "pickling failed on:\n" + graphs + "\nresults:\n" + PlanarGraph.graphSeqFromString(result))
           result
         }
         def pickleGraph(graph: PlanarGraph): String = {
           graph.toString
         }
-        def unpickleGraphSeq(string: String): Seq[PlanarGraph] = {
 
-          object PickleParser extends RegexParsers with JavaTokenParsers {
-            val sequenceTypes = "Seq" | "List" | "Vector" | "ArrayBuffer"
-
-            def list[A](parsable: Parser[A]): Parser[Seq[A]] = sequenceTypes ~> "(" ~> whitespace ~> repsep(parsable, "," ~ whitespace) <~ whitespace <~ ")"
-            def seq[A](parsable: Parser[A]): Parser[Seq[A]] = list(parsable) ^^ { _.toSeq }
-            def indexedSeq[A](parsable: Parser[A]): Parser[IndexedSeq[A]] = list(parsable) ^^ { _.toIndexedSeq }
-
-            def pair[A](parsable: Parser[A]): Parser[(A, A)] = "(" ~> whitespace ~> parsable ~ "," ~ whitespace ~ parsable <~ ")" ^^ {
-              case a1 ~ "," ~ whitespace ~ a2 => (a1, a2)
-            }
-
-            def whitespaceCharacter: Parser[String] = " " | "\n" | "\t"
-            def whitespace = whitespaceCharacter.*
-
-            def int = wholeNumber ^^ { _.toInt }
-
-            def planarGraph: Parser[PlanarGraph] = ("PlanarGraph(" ~> whitespace ~>
-              (int <~ "," <~ whitespace) ~
-              (indexedSeq(seq(pair(int))) <~ "," <~ whitespace) ~
-              (seq(int) <~ "," <~ whitespace) ~
-              int <~ whitespace <~ ")") ^^ {
-                case outerFace ~ vertexFlags ~ labels ~ loops => PlanarGraph(outerFace, vertexFlags, labels, loops)
-              }
-
-          }
-
-          import PickleParser._
-
-          val parse = parseAll(seq(planarGraph), string)
-          require(parse.successful, "Parsing failed:\n" + string)
-          parse.get
-        }
-
-        require({
-          val graphs = Seq(PlanarGraph.dodecahedron)
-          unpickleGraphSeq(pickleGraphSeq(graphs)) == graphs
-        })
+//        require({
+//          val graphs = Seq(PlanarGraph.dodecahedron)
+//          PlanarGraph.graphSeqFromString(pickleGraphSeq(graphs)) == graphs
+//        })
 
         import net.tqft.toolkit.collections.MapTransformer._
         S3("planar-graphs")
           .transformKeys({ t: (Int, Map[VertexType, Int]) => (vertexTypes, faces, t).hashCode.toString })
-          .transformValues(unpickleGraphSeq, pickleGraphSeq)
+          .transformValues(PlanarGraph.graphSeqFromString, pickleGraphSeq)
 
       }
 
