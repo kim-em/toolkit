@@ -4,6 +4,8 @@ import net.tqft.toolkit.algebra.graphs.ColouredGraph
 import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import scala.collection.mutable.ListBuffer
 import net.tqft.toolkit.Logging
+import scala.util.parsing.combinator.RegexParsers
+import scala.util.parsing.combinator.JavaTokenParsers
 
 // flags veer to the left
 // edges are ordered clockwise around each vertex
@@ -699,6 +701,48 @@ object PlanarGraph {
 
   val two_strands_horizontal = spider.tensor(strand, strand)
   val two_strands_vertical = spider.rotate(two_strands_horizontal, 1)
+
+  private object PickleParser extends RegexParsers with JavaTokenParsers {
+    val sequenceTypes = "Seq" | "List" | "Vector" | "ArrayBuffer"
+
+    def list[A](parsable: Parser[A]): Parser[Seq[A]] = sequenceTypes ~> "(" ~> whitespace ~> repsep(parsable, "," ~ whitespace) <~ whitespace <~ ")"
+    def seq[A](parsable: Parser[A]): Parser[Seq[A]] = list(parsable) ^^ { _.toSeq }
+    def indexedSeq[A](parsable: Parser[A]): Parser[IndexedSeq[A]] = list(parsable) ^^ { _.toIndexedSeq }
+
+    def pair[A](parsable: Parser[A]): Parser[(A, A)] = "(" ~> whitespace ~> parsable ~ "," ~ whitespace ~ parsable <~ ")" ^^ {
+      case a1 ~ "," ~ whitespace ~ a2 => (a1, a2)
+    }
+
+    def whitespaceCharacter: Parser[String] = " " | "\n" | "\t"
+    def whitespace = whitespaceCharacter.*
+
+    def int = wholeNumber ^^ { _.toInt }
+
+    def planarGraph: Parser[PlanarGraph] = ("PlanarGraph(" ~> whitespace ~>
+      (int <~ "," <~ whitespace) ~
+      (indexedSeq(seq(pair(int))) <~ "," <~ whitespace) ~
+      (seq(int) <~ "," <~ whitespace) ~
+      int <~ whitespace <~ ")") ^^ {
+        case outerFace ~ vertexFlags ~ labels ~ loops => PlanarGraph(outerFace, vertexFlags, labels, loops)
+      }
+
+  }
+
+  def graphSeqFromString(string: String): Seq[PlanarGraph] = {
+    import PickleParser._
+
+    val parse = parseAll(seq(planarGraph), string)
+    require(parse.successful, "Parsing failed:\n" + string)
+    parse.get
+  }
+
+  def fromString(s: String) = {
+    import PickleParser._
+
+    val parse = parseAll(planarGraph, s)
+    require(parse.successful, "Parsing failed:\n" + s)
+    parse.get
+  }
 
   private def polygon_(k: Int) = {
     if (k == 0) {
