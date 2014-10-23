@@ -51,7 +51,7 @@ PairOfBigraphsWithDuals(BigraphWithDuals("bwd1v1v1v1p1v1x0p1x0v1x0v1p1vduals1v1v
   //	  }
   //	}
   var count = 0
-  for ((g, children) <- A3(5.25).descendantsTreeFiltered(3, -1, ignoring)) {
+  for ((g, children) <- A3(5.25).descendantsTreeFiltered(3, -1, -1, ignoring)) {
     count = count + 1
     p(g)
   } 
