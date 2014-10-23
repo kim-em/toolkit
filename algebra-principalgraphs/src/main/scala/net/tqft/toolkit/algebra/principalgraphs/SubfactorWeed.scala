@@ -26,8 +26,8 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
 
   def supertransitivity = pair.supertransitivity
 
-  def descendantsFiltered(supertransitivityBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = descendantsTreeFiltered(supertransitivityBound, rankBound, avoiding, stopWhenPersistentlyCylindrical).map(_._1)
-  def descendantsTreeFiltered(supertransitivityBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = {
+  def descendantsFiltered(supertransitivityBound: Int = -1, depthBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = descendantsTreeFiltered(supertransitivityBound, depthBound, rankBound, avoiding, stopWhenPersistentlyCylindrical).map(_._1)
+  def descendantsTreeFiltered(supertransitivityBound: Int = -1, depthBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = {
     val canonicalAvoiding = {
       avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.nautyGraph)) ++
         avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.switch.nautyGraph))
@@ -36,7 +36,7 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
 //      println(s"beginning filtering for $w")
       if (!stopWhenPersistentlyCylindrical || !w.pair.persistentlyCylindrical_?) {
         if (supertransitivityBound <= 0 || w.supertransitivity <= supertransitivityBound || w.supertransitivity == w.depth && w.depth == supertransitivityBound + 1) {
-          if (rankBound <= 0 || w.pair.totalRank <= rankBound) {
+          if ((rankBound <= 0 || w.pair.totalRank <= rankBound) && (depthBound <= 0 || w.pair.depth <= depthBound)) {
             if (canonicalAvoiding.contains(w.pair.nautyGraph) || canonicalAvoiding.contains(w.pair.canonicalNautyGraph)) {
 //              println(s"  rejected, as it's on the ignoring list: ${w.pair.canonicalNautyGraph}")
               -1
