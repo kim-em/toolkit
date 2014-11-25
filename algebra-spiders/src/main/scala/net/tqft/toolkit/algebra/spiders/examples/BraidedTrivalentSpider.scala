@@ -62,19 +62,19 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
       val diagramsWithCrossing = diagrams.map(x => diagramSpider.multiply(x, crossing, 2))
       innerProductMatrix(diagrams, diagramsWithCrossing)
     }
-    lazy val actionOfBraiding = {
-      val m1 = Matrix(diagrams.size, crossingInnerProducts)
-      val matrices = Matrices.matricesOver(diagrams.size)(ring)
-      matrices.multiply(m1, Matrix(diagrams.size, inverseInnerProducts)).entries.seq
-    }
-    def verifyActionOfBraiding = {
-      val s1 = Matrix(diagrams.size, actionOfBraiding)
-      val matrices = Matrices.matricesOver(diagrams.size)(ring)
-      val rho = Matrix(diagrams.size, actionOfRotation)
-      val s2 = matrices.multiply(rho.inverse.get, s1, rho)
-
-      matrices.multiply(s1, s2, s1) == matrices.multiply(s2, s1, s2)
-    }
+//    lazy val actionOfBraiding = {
+//      val m1 = Matrix(diagrams.size, crossingInnerProducts)
+//      val matrices = Matrices.matricesOver(diagrams.size)(ring)
+//      matrices.multiply(m1, Matrix(diagrams.size, inverseInnerProducts)).entries.seq
+//    }
+//    def verifyActionOfBraiding = {
+//      val s1 = Matrix(diagrams.size, actionOfBraiding)
+//      val matrices = Matrices.matricesOver(diagrams.size)(ring)
+//      val rho = Matrix(diagrams.size, actionOfRotation)
+//      val s2 = matrices.multiply(rho.inverse.get, s1, rho)
+//
+//      matrices.multiply(s1, s2, s1) == matrices.multiply(s2, s1, s2)
+//    }
   }
 
   trait BasisWithPlatElement extends Basis {

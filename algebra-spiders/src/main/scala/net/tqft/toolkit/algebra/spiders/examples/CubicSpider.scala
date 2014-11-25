@@ -16,6 +16,12 @@ abstract class CubicSpider[R: Field] extends TrivalentSpider[R] { cs =>
     }
     PreCubicSpider.basis(4, PreCubicSpider.reducedDiagrams(4, 0) ++ PreCubicSpider.reducedDiagrams(4, 2)).deriveNewRelations(4).next
   }
+
+  // FIXME I think I want to rip out all the deriveNewRelations code.
+  
+  println("squareReduction = ")
+  println(squareReduction)
+  
   override def reductions = super.reductions :+ squareReduction
 }
 

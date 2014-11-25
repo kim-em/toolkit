@@ -15,13 +15,13 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
     def diagrams: Seq[PlanarGraph]
 
     lazy val innerProducts = innerProductMatrix(diagrams)
-    lazy val determinant = Matrix(diagrams.size, innerProducts).determinant
+//    lazy val determinant = Matrix(diagrams.size, innerProducts).determinant
     def linearCombination(a: Seq[R]) = diagrams.zip(a).toMap
   }
 
-  trait LinearlyDependentDiagrams extends CollectionOfDiagrams {
-    
-  }
+//  trait LinearlyDependentDiagrams extends CollectionOfDiagrams {
+//    
+//  }
 
   trait LinearlyIndependentDiagrams extends CollectionOfDiagrams {
     lazy val inverseInnerProducts = {

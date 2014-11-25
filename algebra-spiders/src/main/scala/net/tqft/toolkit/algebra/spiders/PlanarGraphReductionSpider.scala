@@ -5,6 +5,14 @@ import net.tqft.toolkit.algebra._
 abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.PlanarGraphMapSubstitutionSpider[R] with ReductionSpider[PlanarGraph, R] {
   // TODO move these further up the hierarchy?
 
+  def innerProductsOfLinearCombinationsMatrix(linearCombos1: Seq[Map[PlanarGraph, R]], linearCombos2: Seq[Map[PlanarGraph, R]]): Seq[Seq[R]] = {
+    for (x <- linearCombos1) yield {
+      for (y <- linearCombos2) yield {
+        evaluatedInnerProduct(x, y)
+      }
+    }
+  }
+
   def innerProductMatrix(diagrams1: Seq[PlanarGraph], diagrams2: Seq[PlanarGraph]): Seq[Seq[R]] = {
     def ring = implicitly[Ring[R]]
 

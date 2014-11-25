@@ -23,10 +23,21 @@ abstract class TrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverF
   private lazy val bigonReduction = Reduction(PlanarGraph.polygon(2), Map(PlanarGraph.strand -> b))
   private lazy val triangleReduction = Reduction(PlanarGraph.polygon(3), Map(PlanarGraph.star(3) -> t))
   override def reductions = Seq(loopReduction, monogonReduction, bigonReduction, triangleReduction)
+
+  def rectangularLowestWeightConditions(spanningSet1: Seq[PlanarGraph], spanningSet2: Seq[PlanarGraph])(d: PlanarGraph): Seq[R] = {
+    val caps = for (k <- 1 until d.numberOfBoundaryPoints; if k != d.numberOfBoundaryPoints / 2) yield {
+      DiagramSpider.graphSpider.stitchAt(d, k)
+    }
+    val fuses = for (k <- 1 until d.numberOfBoundaryPoints; if k != d.numberOfBoundaryPoints / 2) yield {
+      DiagramSpider.graphSpider.multiply(PlanarGraph.star(3), DiagramSpider.graphSpider.rotate(d, 1 - k), 2)
+    }
+    innerProductMatrix(fuses, spanningSet1).flatten ++ innerProductMatrix(caps, spanningSet2).flatten
+    
+    // TODO test this, and try it on the Cantor category.
+  }
 }
 
-
-trait MultivariableRationalFunctionTrivalentSpider[A] extends TrivalentSpider[MultivariableRationalFunction[A, String]] with MultivariableRationalFunctionSpider[A]  {
+trait MultivariableRationalFunctionTrivalentSpider[A] extends TrivalentSpider[MultivariableRationalFunction[A, String]] with MultivariableRationalFunctionSpider[A] {
   override def d = Map(Map("d" -> 1) -> coefficientRing.one)
   override def b = Map(Map("b" -> 1) -> coefficientRing.one)
   override def t = Map(Map("t" -> 1) -> coefficientRing.one)
