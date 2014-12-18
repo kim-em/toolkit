@@ -51,7 +51,8 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
           -1
         }
       } else {
-        -1
+        // if persistently cylindrical, report it!
+        0
       }
     })
   }
