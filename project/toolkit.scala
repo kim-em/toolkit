@@ -162,7 +162,7 @@ object BuildSettings {
     resolvers := sonatypeResolvers ++ tqftResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.4" % "test",
     //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
-//    scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
+    //    scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j),
     exportJars := true,
     EclipseKeys.withSource := true
@@ -171,10 +171,10 @@ object BuildSettings {
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
 }
 
-object OneJar {
-    import com.github.retronym.SbtOneJar._
-    val settings = oneJarSettings ++ Seq(exportJars := true, mainClass in oneJar := Some("org.omath.ui.repl.omath"))
-}
+// object OneJar {
+//     import com.github.retronym.SbtOneJar._
+//     val settings = oneJarSettings ++ Seq(exportJars := true, mainClass in oneJar := Some("org.omath.ui.repl.omath"))
+// }
 
 
 object SonatypeSettings {
@@ -216,8 +216,7 @@ object Resolvers {
   val sonatypeResolvers = Seq(
     "Sonatype Nexus Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     "Sonatype Nexus Releases" at "https://oss.sonatype.org/content/repositories/releases")
-  val tqftResolvers = Seq(
-	"tqft.net Maven repository" at "http://tqft.net/releases"	
+  val tqftResolvers = Seq("tqft.net Maven repository" at "https://tqft.net/releases"	
   )
 }
 
@@ -244,7 +243,7 @@ object Dependencies {
 		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.40.0"
 	}
 	object lift {
-		val util = "net.liftweb" %% "lift-util" % "2.6-M2"
+		val util = "net.liftweb" %% "lift-util" % "2.6-RC2"
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
 	val mapdb = "org.mapdb" % "mapdb" % "0.9.9"
