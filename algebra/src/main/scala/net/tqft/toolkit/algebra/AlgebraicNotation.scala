@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import scala.collection.GenTraversableOnce
+
 object AlgebraicNotation {
   implicit class AdditiveMonoidElement[A: AdditiveMonoid](a: A) {
     def +(b: A) = implicitly[AdditiveMonoid[A]].add(a, b)

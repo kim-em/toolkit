@@ -1,26 +1,69 @@
 package net.tqft.toolkit.algebra.fusion2
 
 import net.tqft.toolkit.algebra.AdditiveMonoid
+import scala.collection.mutable.ListBuffer
 
 trait Substitutable[X <: Substitutable[X, S], S] {
   def substitute(s: S, k: Int): X
   def zero_? : Boolean
-  def becomesConstantAtZero_?(s: S): Boolean
-  def becomesConstant_?(s: S): Boolean
   def variables: Set[S]
+}
+
+case class SystemOfQuadratics[S](quadratics: Seq[QuadraticHistory[S]]) {
+  private lazy val (minimalNumberOfVariables, equationsWithMinimalNumberOfVariables) = {
+    var n = quadratics.head.variables.size
+    val b = ListBuffer[Quadratic[S]]()
+    for (q <- quadratics) {
+      if (q.variables.size < n) {
+        n = q.variables.size
+        b.clear
+      }
+      if (q.variables.size == n) {
+        b += q.current
+      }
+    }
+    (n, b.toList)
+  }
+  lazy val preferredSubstitutionVariables = {
+    val tally = {
+      import net.tqft.toolkit.collections.Tally._
+      equationsWithMinimalNumberOfVariables.flatMap(_.variables).tally
+    }
+    val max = tally.map(_._2).max
+    tally.filter(_._2 == max).map(_._1)
+  }
+  def resetHistory = SystemOfQuadratics(quadratics.map(qh => { val q = qh.current.factor; QuadraticHistory(q, q) }))
+  def substitute(s: S, k: Int) = {
+    val result = SystemOfQuadratics(quadratics.map(_.substitute(s, k)).filter(q => !q.zero_?))
+    if (result.minimalNumberOfVariables == 0) {
+      None
+    } else {
+      Some(result)
+    }
+  }
+}
+
+case class QuadraticHistory[S](original: Quadratic[S], current: Quadratic[S]) extends Substitutable[QuadraticHistory[S], S] {
+  override def substitute(s: S, k: Int) = QuadraticHistory(original, current.substitute(s, k))
+  override def zero_? = current.zero_?
+  override def variables = current.variables
+}
+
+object QuadraticHistory {
+  implicit def promote[S](q: Quadratic[S]): QuadraticHistory[S] = QuadraticHistory(q, q)
 }
 
 case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[QuadraticTerm[S]]) extends Substitutable[Quadratic[S], S] {
   override def toString = {
-    if(linearTerm.zero_?) {
-      if(quadraticTerms.isEmpty) {
+    if (linearTerm.zero_?) {
+      if (quadraticTerms.isEmpty) {
         "0"
       } else {
         quadraticTerms.mkString(" + ")
-      } 
-        
+      }
+
     } else {
-      if(quadraticTerms.isEmpty) {
+      if (quadraticTerms.isEmpty) {
         linearTerm.toString
       } else {
         linearTerm.toString + " + " + quadraticTerms.mkString(" + ")
@@ -29,11 +72,6 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
   }
 
   def zero_? = linearTerm.zero_? && quadraticTerms.forall(_.zero_?)
-  
-  override def becomesConstantAtZero_?(s: S) = linearTerm.becomesConstantAtZero_?(s) && quadraticTerms.forall(t => t.becomesConstantAtZero_?(s))
-  override def becomesConstant_?(s: S) = linearTerm.becomesConstant_?(s) && quadraticTerms.forall(t => t.becomesConstant_?(s))
-  lazy val closedByZeroSubstitutions: Set[S] = variables.filter(becomesConstantAtZero_?)
-  lazy val closedBySubstitutions: Set[S] = variables.filter(becomesConstant_?)
 
   def factor: Quadratic[S] = {
     // tally up all the linear terms (both the linear term, and factors of the linear terms)
@@ -42,14 +80,47 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
     //   then try factoring again
     val tally = {
       import net.tqft.toolkit.collections.Tally._
-      (linearTerm +: quadraticTerms.flatMap(term => Seq(term.x, term.y))).tally
+      (linearTerm +: quadraticTerms.flatMap(term => Set(term.x, term.y))).tally
     }
     if (tally.forall(_._2 == 1)) {
       this
     } else {
+      import net.tqft.toolkit.algebra.AlgebraicNotation._
       val max = tally.map(_._2).max
-      val index = tally.indexWhere(_._2 == max)
-      ???
+      val term = tally.find(_._2 == max).get._1
+      val newLinearTerm: LinearTerm[S] = if (linearTerm == term) {
+        LinearTerm(0, Map.empty)
+      } else {
+        linearTerm
+      }
+      val newQuadraticTerms = quadraticTerms.filter(t => t.x != term && t.y != term)
+      val coefficient = {
+        val linearCoefficient = {
+          if (linearTerm == term) {
+            LinearTerm[S](1, Map.empty)
+          } else {
+            LinearTerm[S](0, Map.empty)
+          }
+        }
+
+        val quadraticCoefficient = {
+          val monoid = implicitly[AdditiveMonoid[LinearTerm[S]]]
+          monoid.sum(quadraticTerms.flatMap({ t =>
+            if (t.x == term) {
+              Some(t.y.multiplyBy(t.a))
+            } else if (t.y == term) {
+              Some(t.x.multiplyBy(t.a))
+            } else {
+              None
+            }
+          }))
+        }
+        linearCoefficient + quadraticCoefficient
+      }
+      (QuadraticTerm(1, coefficient, term) match {
+        case LinearTerm(l) => Quadratic(newLinearTerm + l, newQuadraticTerms)
+        case e => Quadratic(newLinearTerm, e +: newQuadraticTerms)
+      }).factor
     }
   }
 
@@ -101,29 +172,22 @@ case class LinearTerm[S](constant: Int, terms: Map[S, Int]) extends Substitutabl
   def zero_? = constant == 0 && constant_?
   def multiplyBy(k: Int) = LinearTerm(constant * k, terms.mapValues(_ * k))
   override def toString = {
-    if(constant == 0) {
-      if(terms.nonEmpty) {
+    if (constant == 0) {
+      if (terms.nonEmpty) {
         terms.map(t => t._2.toString + " * " + t._1.toString).mkString("(", " + ", ")")
       } else {
         "0"
       }
     } else {
-      if(terms.nonEmpty) {
+      if (terms.nonEmpty) {
         "(" + constant + terms.map(t => t._2.toString + " * " + t._1.toString).mkString(" + ") + ")"
       } else {
         constant.toString
       }
     }
-  } 
+  }
 
   override def variables = terms.keySet
-  override def becomesConstantAtZero_?(s: S) = becomesConstant_?(s)
-  override def becomesConstant_?(s: S) = terms.size match {
-    case 0 => true
-    case 1 => terms.get(s).nonEmpty
-    case 2 => false
-  }
-  def becomesZeroAtZero_?(s: S) = constant == 0 && becomesConstantAtZero_?(s)
 
   override def substitute(s: S, k: Int): LinearTerm[S] = {
     terms.get(s) match {
@@ -138,8 +202,6 @@ case class QuadraticTerm[S](a: Int, x: LinearTerm[S], y: LinearTerm[S]) extends 
 
   override val variables = x.variables ++ y.variables
   override def zero_? = x.zero_? || y.zero_?
-  override def becomesConstantAtZero_?(s: S) = x.becomesZeroAtZero_?(s) || y.becomesZeroAtZero_?(s) || (x.becomesConstantAtZero_?(s) && y.becomesConstantAtZero_?(s))
-  override def becomesConstant_?(s: S) = x.becomesConstant_?(s) && y.becomesConstant_?(s)
 
   override def substitute(s: S, k: Int): QuadraticTerm[S] = {
     if (variables.contains(s)) {
