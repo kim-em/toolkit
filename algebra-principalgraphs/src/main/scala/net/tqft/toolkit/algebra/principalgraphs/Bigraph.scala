@@ -88,6 +88,17 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
         })
     }).toMap
   }
+  def nextToNeighbours(d: Int, k: Int) = {
+    (for((d1, k1) <- neighbours((d,k)); (d2,k2) <- neighbours((d1,k1))) yield (d2,k2)).sorted
+  }
+  def downDownNeighbours(d: Int, k: Int) = {
+    val row = inclusions(d-1)(k)
+    (for((1, j) <- row.zipWithIndex; (1, i) <- inclusions(d-2)(j).zipWithIndex) yield i)
+  }
+  def downUpNeighbours(d: Int, k: Int) = {
+    val row = inclusions(d-1)(k)
+    (for((1, j) <- row.zipWithIndex; i <- (0 until rankAtDepth(d)).filter(i => inclusions(d-1)(i)(j) == 1)) yield i)
+  }
   lazy val totalRank: Int = (for (k <- 0 to depth) yield rankAtDepth(k)).sum
   lazy val totalEvenRank: Int = (for (k <- 0 to depth by 2) yield rankAtDepth(k)).sum
   def depth: Int = inclusions.size
