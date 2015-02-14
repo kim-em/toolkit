@@ -137,7 +137,7 @@ trait PairOfBigraphsWithDuals {
 
   }
 
-  override def toString = s"{ $g0, $g1 }"
+  override def toString = s"""{ "$g0", "$g1" }"""
 
   def depth = g0.bigraph.depth
   def totalRank = g0.bigraph.totalRank + g1.bigraph.totalRank
@@ -177,6 +177,7 @@ trait PairOfBigraphsWithDuals {
     result
   }
 
+  def invariant = (depth, canonicalNautyGraph)
   lazy val canonicalNautyGraph = Dreadnaut.canonicalizeColouredGraph(nautyGraph)
   lazy val nautyGraph: ColouredGraph[(Int, Int)] = {
     // FIXME this ignores edge multiplicities!
@@ -197,7 +198,7 @@ trait PairOfBigraphsWithDuals {
         } else {
           Seq(graphLabel(1 - graph, d, i))
         }) ++
-          (if (d == g.bigraph.depth) {
+          (if (d == depth) {
             Seq.empty
           } else {
             (for (
@@ -208,12 +209,12 @@ trait PairOfBigraphsWithDuals {
             })
           })
       }).toIndexedSeq
-    require(adjacencies.forall(_.forall(_ < totalRank)))
+//    require(adjacencies.forall(_.forall(_ < totalRank)))
     val colours = for (
       graph <- 0 to 1;
       d <- 0 to depth;
       i <- 0 until apply(graph).bigraph.rankAtDepth(d)
-    ) yield (graph, depth - d) /* this colouring scheme is a hack to ensure that increasing the depth changes the nauty graph */
+    ) yield (graph, d)
     Graph(totalRank, adjacencies).colour(colours)
   }
 

@@ -140,7 +140,7 @@ object Toolkit extends Build {
         ProguardKeys.options in Proguard ++= Seq("-dontnote", "-dontwarn", "-ignorewarnings"),
         ProguardKeys.options in Proguard += ProguardOptions.keepMain("net.tqft.toolkit.wiki.Wiki$")
       ) ++ 
-      OneJar.settings ++ 
+      com.github.retronym.SbtOneJar.oneJarSettings ++ 
       Seq(libraryDependencies ++= Seq(selenium.firefox, selenium.htmlunit, mysql, slick))) dependsOn (base)
 
 }
@@ -152,7 +152,7 @@ object BuildSettings {
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.18-SNAPSHOT"
  // val buildScalaVersion = "2.10.4"
-  val buildScalaVersion = "2.11.2"
+  val buildScalaVersion = "2.11.5"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -170,12 +170,6 @@ object BuildSettings {
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
 }
-
-// object OneJar {
-//     import com.github.retronym.SbtOneJar._
-//     val settings = oneJarSettings ++ Seq(exportJars := true, mainClass in oneJar := Some("org.omath.ui.repl.omath"))
-// }
-
 
 object SonatypeSettings {
 /*

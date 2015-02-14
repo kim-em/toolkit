@@ -20,7 +20,7 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
 
   override def toString = s"weed[$indexLimit, $pair]"
   override def isomorphicTo_?(other: SubfactorWeed) = {
-    indexLimit == other.indexLimit &&
+    indexLimit == other.indexLimit && depth == other.depth &&
       pair.canonicalNautyGraph == other.pair.canonicalNautyGraph
   }
 
@@ -29,16 +29,16 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
   def descendantsFiltered(supertransitivityBound: Int = -1, depthBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = descendantsTreeFiltered(supertransitivityBound, depthBound, rankBound, avoiding, stopWhenPersistentlyCylindrical).map(_._1)
   def descendantsTreeFiltered(supertransitivityBound: Int = -1, depthBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = {
     val canonicalAvoiding = {
-      avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.nautyGraph)) ++
-        avoiding.map(a => Dreadnaut.canonicalizeColouredGraph(a.switch.nautyGraph))
+      avoiding.map(_.invariant) ++
+        avoiding.map(_.switch.invariant)
     }
     descendantsTree(w => {
-      //      println(s"beginning filtering for $w")
+      //            println(s"beginning filtering for $w")
       if (!stopWhenPersistentlyCylindrical || !w.pair.persistentlyCylindrical_?) {
         if (supertransitivityBound <= 0 || w.supertransitivity <= supertransitivityBound || w.supertransitivity == w.depth && w.depth == supertransitivityBound + 1) {
           if ((rankBound <= 0 || w.pair.totalRank <= rankBound) && (depthBound <= 0 || w.pair.depth <= depthBound)) {
-            if (canonicalAvoiding.contains(w.pair.nautyGraph) || canonicalAvoiding.contains(w.pair.canonicalNautyGraph)) {
-              //              println(s"  rejected, as it's on the ignoring list: ${w.pair.canonicalNautyGraph}")
+            if (canonicalAvoiding.contains((w.depth, w.pair.nautyGraph)) || canonicalAvoiding.contains(w.pair.invariant)) {
+              //                            println(s"  rejected $w, as it's on the ignoring list: ${w.pair.canonicalNautyGraph}")
               -1
             } else {
               //              println("  accepted!")
@@ -57,7 +57,13 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
     })
   }
 
-  override def findIsomorphismTo(other: SubfactorWeed) = ???
+  override def findIsomorphismTo(other: SubfactorWeed) = {
+    if (depth == other.depth) {
+      Dreadnaut.findIsomorphism(pair.nautyGraph, other.pair.nautyGraph).map(splitPermutation)
+    } else {
+      None
+    }
+  }
   def isomorphs = ???
 
   override def verifyParent = {
@@ -79,29 +85,24 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
 
   protected def depth = pair(0).bigraph.depth
 
+  private def splitPermutation(p: Permutation): Seq[(Permutation, Permutation)] = {
+    require(p(0) == 0)
+    def shift(x: IndexedSeq[Int]) = {
+      if (x.isEmpty) {
+        x
+      } else {
+        val m = x.min
+        x.map(_ - m)
+      }
+    }
+    val chunks = pair.rankPartialSums.sliding(2).map(t => p.slice(t(0), t(1))).map(shift).toIndexedSeq
+    for (i <- 0 to depth) yield {
+      (chunks(i), chunks(i + depth + 1))
+    }
+  }
+
   override lazy val automorphisms: FinitelyGeneratedFiniteGroup[Seq[(Permutation, Permutation)]] = {
     val group = Dreadnaut.automorphismGroup(pair.nautyGraph)
-
-    def splitPermutation(p: Permutation): Seq[(Permutation, Permutation)] = {
-      require(p(0) == 0)
-      def shift(x: IndexedSeq[Int]) = {
-        if (x.isEmpty) {
-          x
-        } else {
-          val m = x.min
-          x.map(_ - m)
-        }
-      }
-      val chunks = pair.rankPartialSums.sliding(2).map(t => p.slice(t(0), t(1))).map(shift).toIndexedSeq
-      val result = for (i <- 0 to depth) yield {
-        (chunks(i), chunks(i + depth + 1))
-      }
-      //      for (i <- 0 to depth) {
-      //        require(result(i)._1.sorted == (0 until pair(0).bigraph.rankAtDepth(i)))
-      //        require(result(i)._2.sorted == (0 until pair(1).bigraph.rankAtDepth(i)))
-      //      }
-      result
-    }
 
     FiniteGroups.indexedProduct(
       for (i <- 0 until pair.g0.bigraph.depth) yield {
@@ -141,6 +142,8 @@ object SubfactorWeed {
       case pair: OddDepthPairOfBigraphsWithDuals => OddDepthSubfactorWeed(indexLimit, pair)
     }
   }
+
+  var experimental = false
 }
 
 case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigraphsWithDuals) extends SubfactorWeed { weed =>
@@ -189,22 +192,24 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
       }
     }).refineByPartialFunction({
       case DeleteSelfDualVertex(graph, index) => pair(graph).bigraph.inclusions.last(index).sum
-      case DeleteDualPairAtEvenDepth(graph, index) => pair(graph).bigraph.inclusions.last(index).sum + pair(graph).bigraph.inclusions.last(index + 1).sum
-    })/*.refineByPartialFunction({
+    }).refineByPartialFunction({
+      case DeleteDualPairAtEvenDepth(graph, index) => 
+         Seq(pair(graph).bigraph.inclusions.last(index).sum, pair(graph).bigraph.inclusions.last(index + 1).sum).sorted
+    }).refineByPartialFunction({
       case DeleteSelfDualVertex(graph, index) => {
         import net.tqft.toolkit.collections.Tally._
-        pair(graph).bigraph.nextToNeighbours(pair(graph).bigraph.depth, index).tally.map(_._2).sorted
+        pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index).tally.map(_._2).sorted
       }
-    })*//*.refineByPartialFunction({
+    }) .refineByPartialFunction({
       case DeleteDualPairAtEvenDepth(graph, index) => {
         import net.tqft.toolkit.collections.Tally._
-        Seq(pair(graph).bigraph.nextToNeighbours(pair(graph).bigraph.depth, index).tally.map(_._2).sorted,
-          pair(graph).bigraph.nextToNeighbours(pair(graph).bigraph.depth, index + 1).tally.map(_._2).sorted).sorted
+        Seq(pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index).tally.map(_._2).sorted,
+          pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index + 1).tally.map(_._2).sorted).sorted
       }
-    })*/.refineByPartialFunction({
-      case DeleteSelfDualVertex(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index))))
-      case DeleteDualPairAtEvenDepth(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index), pair.graphLabel(graph, pair(graph).bigraph.depth, index + 1))))
-    })
+    }) .refineByPartialFunction({
+        case DeleteSelfDualVertex(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index))))
+        case DeleteDualPairAtEvenDepth(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index), pair.graphLabel(graph, pair(graph).bigraph.depth, index + 1))))
+      })
     Ordering.by({ o: lowerObjects.Orbit => o.representative })
   }
 
@@ -308,7 +313,14 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
         case AddSelfDualVertex(graph, row) => AddSelfDualVertex(graph, (graph match { case 0 => g.secondLast._1; case 1 => g.secondLast._2 }).permute(row))
         case AddDualPairAtEvenDepth(graph, row0, row1) => {
           val p = (graph match { case 0 => g.secondLast._1; case 1 => g.secondLast._2 })
-          AddDualPairAtEvenDepth(graph, p.permute(row0), p.permute(row1))
+          val nr0 = p.permute(row0)
+          val nr1 = p.permute(row1)
+          import Ordering.Implicits._
+          if (nr1 <= nr0) {
+            AddDualPairAtEvenDepth(graph, nr0, nr1)
+          } else {
+            AddDualPairAtEvenDepth(graph, nr1, nr0)
+          }
         }
       }
     }
@@ -362,16 +374,14 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
         case DeleteDualPairAtOddDepth(_) => 1
       }
     }).refineByPartialFunction({
-      case DeleteDualPairAtOddDepth(index) => pair(0).bigraph.inclusions.last(index).sum + pair(1).bigraph.inclusions.last(index).sum
-    })
-    // FIXME the next comparison breaks the enumerator, but I don't understand why!
-    /*.refineByPartialFunction({
+      case DeleteDualPairAtOddDepth(index) => (pair(0).bigraph.inclusions.last(index).sum, pair(1).bigraph.inclusions.last(index).sum)
+    }).refineByPartialFunction({
       case DeleteDualPairAtOddDepth(index) => {
         import net.tqft.toolkit.collections.Tally._
         (pair(0).bigraph.downUpNeighbours(pair(0).bigraph.depth, index).tally.map(_._2).sorted,
           pair(1).bigraph.downUpNeighbours(pair(1).bigraph.depth, index).tally.map(_._2).sorted)
       }
-    })*/.refineByPartialFunction({
+    }).refineByPartialFunction({
       case DeleteDualPairAtOddDepth(index) => {
         Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(0, pair(0).bigraph.depth, index), pair.graphLabel(1, pair(1).bigraph.depth, index))))
       }

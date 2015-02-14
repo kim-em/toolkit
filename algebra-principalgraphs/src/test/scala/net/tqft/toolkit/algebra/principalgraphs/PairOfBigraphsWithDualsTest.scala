@@ -8,8 +8,8 @@ import scala.math._
 @RunWith(classOf[JUnitRunner])
 class PairOfBigraphsWithDualsTest extends FlatSpec with Matchers {
 
-  "" should "" in {
-    PairOfBigraphsWithDuals("bwd1v1v1v1p1v1x0p1x0vduals1v1v1x2v", "bwd1v1v1v1p1v1x0p0x1v1x0p0x1duals1v1v1x2v1x2")
+  "Companion object" should "parse string notation" in {
+    PairOfBigraphsWithDuals("bwd1v1v1v1p1v1x0p0x1v0x1p1x0p1x0p0x1v1x0x0x0p0x0x1x0p0x0x0x1p0x1x0x0duals1v1v1x2v1x2x4x3", "bwd1v1v1v1p1v1x0p1x0v1x0p0x1v0x1p0x1p1x0p1x0duals1v1v1x2v1x2")
   }
   
   "passesTriplePointObstruction_?" should "allow Haagerup, but not `self-dual` Haagerup" in {
