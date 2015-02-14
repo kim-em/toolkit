@@ -8,7 +8,7 @@ import org.scalatest._
 class AssociativityConstraintsTest extends FlatSpec with Matchers {
 
   "PartialFusionRingEnumeration.root" should "prepare all the associativity and duality equations" in {
-    val quadratics = PartialFusionRingEnumeration(4, 0).root.associativity.get.quadratics
+    val quadratics = PartialFusionRingEnumeration(4, 0).root.associativity.quadratics
     for (e <- quadratics) {
       println(e)
     }
@@ -16,7 +16,7 @@ class AssociativityConstraintsTest extends FlatSpec with Matchers {
   }
 
   "SystemOfQuadratics.preferredSubstitutionVariables" should "report the best variables to evaluate next" in {
-    val s = PartialFusionRingEnumeration(6, 0).root.associativity.get
+    val s = PartialFusionRingEnumeration(6, 0).root.associativity
     println(s.preferredSubstitutionVariables)
     val s2 = s.substitute((1, 1, 1), 0).get
     println(s2.preferredSubstitutionVariables)
