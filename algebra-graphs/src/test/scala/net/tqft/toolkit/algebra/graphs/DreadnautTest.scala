@@ -50,6 +50,10 @@ class DreadnautTest extends FlatSpec with Matchers {
       g.relabel(h) should equal(g.relabel(IndexedSeq.range(0, g.numberOfVertices)))
     }
   }
-  
+  "dreadnaut" should "find isomorphisms" in {
+    val g = Graph(3, IndexedSeq(Seq(), Seq(2), Seq(1)))
+    val h = Graph(3, IndexedSeq(Seq(2), Seq(), Seq(0)))
+    Dreadnaut.findIsomorphism(g, h) should equal (Some(IndexedSeq(1,0,2)))
+  }
   
 }

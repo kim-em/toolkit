@@ -5,7 +5,8 @@ import net.tqft.toolkit.Profiler
 
 object SubfactorClassifierProfiler extends App {
 
-  for(t <- Profiler.movingTimingAverages(3)(require(A3(5.0).descendantsTreeFiltered(3, -1, 100, ignoring).size == 873))) {
+//  SubfactorWeed.experimental = true
+  for(t <- Profiler.movingTimingAverages(3)(require(A3(5.01).descendantsTreeFiltered(3, -1, -1, ignoring).size == 1054))) {
     println(t)
   }
 
