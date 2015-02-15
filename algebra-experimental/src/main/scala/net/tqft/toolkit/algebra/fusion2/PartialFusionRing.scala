@@ -181,7 +181,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
           } else {
             Seq.empty
           }) ++ (
-            associativity.preferredSubstitutionVariables.flatMap({
+            associativity.mostFrequentVariablesInMinimalEquations.flatMap({
               case v => associativity.substitute(v, level).map({ quadratics =>
                 AddEntry(v, Some(quadratics))
               })
@@ -203,7 +203,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
         case DecreaseLevel => 0
         case DeleteEntry(_) => 1
       }).refineByPartialFunction({
-        case DeleteEntry((i, j, k)) => { ???; 0 }
+        case DeleteEntry(v) => associativity.closedVariableTalliesInMinimalEquations(v)
       }).refineByPartialFunction({
         case DeleteEntry((i, j, k)) => Dreadnaut.canonicalizeColouredGraph(graph.additionalMarking(Seq(3 * rank + i * rank * rank + j * rank + k)))
       })
