@@ -21,13 +21,19 @@ class PartialFusionRingTest extends FlatSpec with Matchers {
 	  }
 	  children should be ('nonEmpty)
   }
-  "descendants" should "find all the fusion rings" in {
+  "descendants" should "find some the fusion rings" in {
     val enumeration = PartialFusionRingEnumeration(4,0,12.0)
     val descendants = enumeration.root.descendants().toStream
     for(r <- descendants) {
-      print(r.matrices)
+      println(r.matricesToString)
     }
     descendants should be ('nonEmpty)
+  }
+  "descendants" should "not have any duplicates " in {
+    val enumeration = PartialFusionRingEnumeration(4,0,15.0)
+    val descendants = enumeration.root.descendants().toStream
+    val repeats = descendants.groupBy(_.graphPresentation).mapValues(_.size)
+    repeats.values.max should equal (1)
   }
   
 }

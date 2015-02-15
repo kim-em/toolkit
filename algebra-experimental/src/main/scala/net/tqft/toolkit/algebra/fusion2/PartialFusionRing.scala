@@ -77,6 +77,16 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
     def associativity = associativityOption.get
     def matrices = matricesOption.get
+    def matricesToString = {
+      val head = Seq.fill(rank)(Seq.fill(2 * rank + 1)("-").mkString).mkString("+", "+", "+\n")
+      (for (j <- 0 until rank) yield {
+        (for (i <- 0 until rank) yield {
+          (for (k <- 0 until rank) yield {
+            matrices(i)(j)(k)
+          }).mkString(" ")
+        }).mkString("| ", " | ", " |")
+      }).mkString(head, "\n", "")
+    }
 
     override def equals(other: Any) = {
       other match {
@@ -148,12 +158,12 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       }
     }
 
-    private lazy val graph = {
+    lazy val graphPresentation = {
       val colours = IndexedSeq.fill(rank)(-3) ++ IndexedSeq.fill(rank)(-2) ++ IndexedSeq.fill(rank)(-1) ++ matrices.map(_.flatten).flatten
       unlabelledGraph.colour(colours)
     }
     override lazy val automorphisms: net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
-      FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(graph.automorphismGroup.generators.map(_.take(rank)))
+      FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(graphPresentation.automorphismGroup.generators.map(_.take(rank)))
     }
 
     override lazy val lowerObjects: automorphisms.Action[Lower] = {
@@ -203,9 +213,9 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
         case DecreaseLevel => 0
         case DeleteEntry(_) => 1
       }).refineByPartialFunction({
-        case DeleteEntry(v) => associativity.closedVariableTalliesInMinimalEquations(v)
+        case DeleteEntry(v) => -associativity.closedVariableTalliesInMinimalEquations.get(v).getOrElse(0)
       }).refineByPartialFunction({
-        case DeleteEntry((i, j, k)) => Dreadnaut.canonicalizeColouredGraph(graph.additionalMarking(Seq(3 * rank + i * rank * rank + j * rank + k)))
+        case DeleteEntry((i, j, k)) => Dreadnaut.canonicalizeColouredGraph(graphPresentation.additionalMarking(Seq(3 * rank + i * rank * rank + j * rank + k)))
       })
 
       Ordering.by({ o: lowerObjects.Orbit =>
