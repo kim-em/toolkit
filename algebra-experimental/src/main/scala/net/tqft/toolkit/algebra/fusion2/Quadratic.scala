@@ -10,7 +10,8 @@ trait Substitutable[X <: Substitutable[X, S], S] {
 }
 
 case class SystemOfQuadratics[S](quadratics: Seq[Quadratic[S]]) {
-  private lazy val (minimalNumberOfVariables, equationsWithMinimalNumberOfVariables) = {
+  // 'minimalEquations' is the list of equations having the minimal number of variables.
+  private lazy val (minimalNumberOfVariables, minimalEquations) = {
     var n = quadratics.head.variables.size
     val b = ListBuffer[Quadratic[S]]()
     for (q <- quadratics) {
@@ -24,13 +25,17 @@ case class SystemOfQuadratics[S](quadratics: Seq[Quadratic[S]]) {
     }
     (n, b.toList)
   }
-  lazy val preferredSubstitutionVariables = {
+  lazy val mostFrequentVariablesInMinimalEquations = {
     val tally = {
       import net.tqft.toolkit.collections.Tally._
-      equationsWithMinimalNumberOfVariables.flatMap(_.variables).tally
+      minimalEquations.flatMap(_.variables).tally
     }
     val max = tally.map(_._2).max
     tally.filter(_._2 == max).map(_._1)
+  }
+  lazy val closedVariableTalliesInMinimalEquations = {
+      import net.tqft.toolkit.collections.Tally._
+      minimalEquations.flatMap(_.closedVariables).tally.toMap
   }
   // If substitution is slow, we could easily remove many more duplicates, by sorting terms, or multiplying through by -1
   def substitute(s: S, k: Int): Option[SystemOfQuadratics[S]] = {
@@ -62,6 +67,11 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
   }
 
   def zero_? = linearTerm.zero_? && quadraticTerms.forall(_.zero_?)
+  lazy val closedVariables = {
+    linearTerm.closedVariables ++
+      quadraticTerms.map(_.x.closedVariables).flatten ++
+      quadraticTerms.map(_.y.closedVariables).flatten
+  }
 
   def factor: Quadratic[S] = {
     // tally up all the linear terms (both the linear term, and factors of the linear terms)
@@ -79,7 +89,7 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
       val max = tally.map(_._2).max
       val term = tally.find(_._2 == max).get._1
       val newLinearTerm: LinearTerm[S] = if (linearTerm == term) {
-        LinearTerm(0, Map.empty)
+        LinearTerm(0, Map.empty, Set.empty)
       } else {
         linearTerm
       }
@@ -87,9 +97,9 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
       val coefficient = {
         val linearCoefficient = {
           if (linearTerm == term) {
-            LinearTerm[S](1, Map.empty)
+            LinearTerm[S](1, Map.empty, Set.empty)
           } else {
-            LinearTerm[S](0, Map.empty)
+            LinearTerm[S](0, Map.empty, Set.empty)
           }
         }
 
@@ -140,27 +150,42 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
 
 object LinearTerm {
   def unapply[S](q: QuadraticTerm[S]): Option[LinearTerm[S]] = {
-    if (q.x.constant_?) {
-      Some(q.y.multiplyBy(q.x.constant).multiplyBy(q.a))
+    val monoid = implicitly[AdditiveMonoid[LinearTerm[S]]]
+    if (q.x.zero_? && q.y.zero_?) {
+      Some(monoid.zero)
+    } else if (q.x.zero_?) {
+      Some(monoid.zero.copy(closedVariables = q.x.closedVariables))
+    } else if (q.y.zero_?) {
+      Some(monoid.zero.copy(closedVariables = q.y.closedVariables))
+    } else if (q.x.constant_?) {
+      val l = q.y.multiplyBy(q.x.constant).multiplyBy(q.a)
+      Some(l.copy(closedVariables = l.closedVariables ++ q.x.closedVariables))
     } else if (q.y.constant_?) {
-      Some(q.x.multiplyBy(q.y.constant).multiplyBy(q.a))
+      val l = q.x.multiplyBy(q.y.constant).multiplyBy(q.a)
+      Some(l.copy(closedVariables = l.closedVariables ++ q.y.closedVariables))
     } else {
       None
     }
   }
 
   implicit def MonoidStructure[S]: AdditiveMonoid[LinearTerm[S]] = new AdditiveMonoid[LinearTerm[S]] {
-    override def zero = LinearTerm(0, Map.empty)
+    override def zero = LinearTerm(0, Map.empty, Set.empty)
     override def add(x: LinearTerm[S], y: LinearTerm[S]) = {
-      LinearTerm(x.constant + y.constant, (x.terms.keySet ++ y.terms.keySet).map(s => s -> (x.terms.getOrElse(s, 0) + y.terms.getOrElse(s, 0))).filter(_._2 != 0).toMap)
+      LinearTerm(
+        x.constant + y.constant,
+        (x.terms.keySet ++ y.terms.keySet).map(s => s -> (x.terms.getOrElse(s, 0) + y.terms.getOrElse(s, 0))).filter(_._2 != 0).toMap,
+        x.closedVariables ++ y.closedVariables)
     }
   }
 }
 
-case class LinearTerm[S](constant: Int, terms: Map[S, Int]) extends Substitutable[LinearTerm[S], S] {
+case class LinearTerm[S](constant: Int, terms: Map[S, Int], closedVariables: Set[S]) extends Substitutable[LinearTerm[S], S] {
   def constant_? = terms.isEmpty
   def zero_? = (constant == 0) && constant_?
-  def multiplyBy(k: Int) = LinearTerm(constant * k, terms.mapValues(_ * k))
+  def multiplyBy(k: Int) = {
+    require(k != 0)
+    LinearTerm(constant * k, terms.mapValues(_ * k), closedVariables)
+  }
   override def toString = {
     if (constant == 0) {
       if (terms.nonEmpty) {
@@ -181,7 +206,7 @@ case class LinearTerm[S](constant: Int, terms: Map[S, Int]) extends Substitutabl
 
   override def substitute(s: S, k: Int): LinearTerm[S] = {
     terms.get(s) match {
-      case Some(x) => LinearTerm(constant + k * x, terms - s)
+      case Some(x) => LinearTerm(constant + k * x, terms - s, closedVariables + s)
       case None => this
     }
   }

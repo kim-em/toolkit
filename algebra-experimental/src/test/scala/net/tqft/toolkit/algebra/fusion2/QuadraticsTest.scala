@@ -8,6 +8,6 @@ import org.scalatest._
 class QuadraticsTest extends FlatSpec with Matchers {
 
   "zero_?" should "report whether a quadratic is zero" in {
-    Quadratic[String](LinearTerm(0, Map.empty), Seq.empty).zero_? should be (true)
+    Quadratic[String](LinearTerm(0, Map.empty, Set.empty), Seq.empty).zero_? should be (true)
   }
 }
