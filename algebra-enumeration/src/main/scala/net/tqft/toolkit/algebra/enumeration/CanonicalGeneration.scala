@@ -84,14 +84,22 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
 
   // and, for convenience, something to recursively find all children, filtering on a predicate
-  def descendants(accept: A => Int = { _ => 1 }): Iterator[A] = descendantsTree(accept).map(_._1)
+  def descendants(accept: A => Int = { _ => 1 }): Iterator[A] = {
+    accept(this) match {
+      case a if a > 0 => {        
+        Iterator(this) ++ Iterator.continually(children).take(1).flatten.flatMap(_.descendants(accept))
+      }
+      case 0 => Iterator(this)
+      case a if a < 0 => Iterator.empty
+    }
+  }
 
   def descendantsTree(accept: A => Int = { _ => 1 }): Iterator[(A, Seq[A])] = {
     accept(this) match {
       case a if a > 0 => {
         val c = children
         //        lazy val d1 = c.par.map(_.descendantsTree(accept)).seq.iterator.flatMap(i => i) // this seems to make mathematica sick?
-        lazy val d2 = c.iterator.map(_.descendantsTree(accept)).flatten
+        lazy val d2 = c.iterator.flatMap(_.descendantsTree(accept))
         Iterator((this, c)) ++ d2
       }
       case 0 => Iterator((this, Nil))

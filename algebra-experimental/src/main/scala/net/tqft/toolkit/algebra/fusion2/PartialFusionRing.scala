@@ -8,8 +8,9 @@ import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
 import net.tqft.toolkit.algebra.graphs.Graph
 import net.tqft.toolkit.algebra.graphs.Dreadnaut
+import net.tqft.toolkit.algebra.enumeration.CanonicalGenerationWithIsomorphism
 
-case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDualPairs: Int, globalDimensionBound: Double = 12.0) {
+case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDualPairs: Int, globalDimensionBound: Double = 12.0) { enumeration =>
 
   val rank = numberOfSelfDualObjects + 2 * numberOfDualPairs
   def dual(i: Int) = {
@@ -54,7 +55,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     val associativity = dualitySubstitutions.foldLeft(
       SystemOfQuadratics(AssociativityConstraints.apply(rank, multiplicityNamer _)))({
         case (system, (s, k)) => system.substitute(s, k).get
-      }).factor
+      }).factor.forgetClosedVariables
     val matrices = IndexedSeq.tabulate(rank, rank, rank)({
       case (i, j, 0) => if (i == dual(j)) 1 else 0
       case (i, 0, j) => if (i == j) 1 else 0
@@ -64,6 +65,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     PartialFusionRing(
       None,
       Set.empty,
+      Seq.tabulate(rank - 1, rank - 1, rank - 1)({ case (i, j, k) => multiplicityNamer(i + 1, j + 1, k + 1) }).flatten.flatten.toSet,
       Some(associativity),
       Some(matrices))
   }
@@ -72,8 +74,9 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
   case class PartialFusionRing(
     previousLevel: Option[PartialFusionRing],
     entries: Set[(Int, Int, Int)],
+    remaining: Set[(Int, Int, Int)],
     associativityOption: Option[SystemOfQuadratics[(Int, Int, Int)]],
-    matricesOption: Option[IndexedSeq[IndexedSeq[IndexedSeq[Int]]]]) extends CanonicalGeneration[PartialFusionRing, IndexedSeq[Int]] { pfr =>
+    matricesOption: Option[IndexedSeq[IndexedSeq[IndexedSeq[Int]]]]) extends CanonicalGenerationWithIsomorphism[PartialFusionRing, IndexedSeq[Int]] { pfr =>
 
     def associativity = associativityOption.get
     def matrices = matricesOption.get
@@ -82,10 +85,27 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       (for (j <- 0 until rank) yield {
         (for (i <- 0 until rank) yield {
           (for (k <- 0 until rank) yield {
-            matrices(i)(j)(k)
+            matrices(i)(j)(k) match {
+              case e if e == level + 1 => {
+                if (level == 0 && (i == 0 || j == 0 || (k == 0 && i == dual(j)))) {
+                  "1"
+                } else {
+                  "?"
+                }
+              }
+              case e => e.toString
+            }
           }).mkString(" ")
         }).mkString("| ", " | ", " |")
-      }).mkString(head, "\n", "")
+      }).mkString(head, "\n", "\n" + head)
+    }
+
+    override def toString = {
+      if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
+        s"PartialFusionRing(level = $level, entries = $entries, remaining = $remaining, D >= $globalDimensionLowerBoundAfterIncreasingLevel)\n" + matricesToString + associativity
+      } else {
+        s"PartialFusionRing(level = $level, entries = $entries)"
+      }
     }
 
     override def equals(other: Any) = {
@@ -116,13 +136,13 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     case object IncreaseLevel extends Upper {
       override val result = {
         val newMatrices = IndexedSeq.tabulate(rank, rank, rank)({
-          case (i, j, k) => if (i == 0 || j == 0 || i == dual(j) || matrices(i)(j)(k) <= level) {
+          case (i, j, k) => if (i == 0 || j == 0 || (k == 0 && i == dual(j)) || matrices(i)(j)(k) <= level) {
             matrices(i)(j)(k)
           } else {
             level + 2
           }
         })
-        PartialFusionRing(Some(pfr), Set.empty, associativityOption, Some(newMatrices))
+        PartialFusionRing(Some(pfr), Set.empty, remaining, associativityOption, Some(newMatrices))
       }
       override def inverse = result.DecreaseLevel
     }
@@ -130,6 +150,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       override val result: PartialFusionRing = PartialFusionRing(
         previousLevel,
         entries + m,
+        remaining - m,
         quadratics,
         Some(synonymousMultiplicities(m).foldLeft(matrices)({
           case (ms, v) => ms.updated(v._1, ms(v._1).updated(v._2, ms(v._1)(v._2).updated(v._3, level)))
@@ -144,6 +165,13 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       }
       override def hashCode = (pfr, m).hashCode
     }
+    def addEntryIfAssociative(m: (Int, Int, Int)): Option[AddEntry] = {
+      val substitutions = associativity.substitute(m, level)
+      if (substitutions.isEmpty) println(" ... breaks associativity")
+      substitutions.map({ quadratics =>
+        AddEntry(m, Some(quadratics))
+      })
+    }
 
     trait Lower {
       def result: PartialFusionRing
@@ -153,8 +181,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     }
     case class DeleteEntry(m: (Int, Int, Int)) extends Lower {
       override def result = {
-        val remainingEntries = entries - m
-        PartialFusionRing(previousLevel, remainingEntries, None, ???)
+        PartialFusionRing(previousLevel, entries - m, remaining + m, None, None)
       }
     }
 
@@ -165,6 +192,11 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     override lazy val automorphisms: net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
       FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(graphPresentation.automorphismGroup.generators.map(_.take(rank)))
     }
+
+    def findIsomorphismTo(other: enumeration.PartialFusionRing) = {
+      Dreadnaut.findIsomorphism(graphPresentation, other.graphPresentation).map(_.take(rank))
+    }
+    def isomorphs = ???
 
     override lazy val lowerObjects: automorphisms.Action[Lower] = {
       new automorphisms.Action[Lower] {
@@ -178,29 +210,39 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
         override def act(g: IndexedSeq[Int], l: Lower): Lower = {
           l match {
             case DecreaseLevel => DecreaseLevel
-            case DeleteEntry(m) => DeleteEntry((g(m._1), g(m._2), g(m._3)))
+            case DeleteEntry(m) => DeleteEntry(multiplicityNamer(g(m._1), g(m._2), g(m._3)))
           }
         }
       }
     }
+
+    private def actionOn(variables: Seq[(Int, Int, Int)]): automorphisms.Action[(Int, Int, Int)] = {
+      new automorphisms.Action[(Int, Int, Int)] {
+        override def elements = variables
+        override def act(g: IndexedSeq[Int], v: (Int, Int, Int)) = multiplicityNamer(g(v._1), g(v._2), g(v._3))
+      }
+    }
+
     override lazy val upperObjects: automorphisms.Action[Upper] = {
       new automorphisms.Action[Upper] {
         override def elements: Seq[Upper] = {
-          (if (globalDimensionLowerBoundAfterIncreasingLevel < globalDimensionBound) {
+          (if (remaining.nonEmpty && globalDimensionLowerBoundAfterIncreasingLevel < globalDimensionBound) {
             Seq(IncreaseLevel)
           } else {
             Seq.empty
-          }) ++ (
-            associativity.mostFrequentVariablesInMinimalEquations.flatMap({
-              case v => associativity.substitute(v, level).map({ quadratics =>
-                AddEntry(v, Some(quadratics))
-              })
-            }))
+          }) ++ ({
+            val targets = if (associativity.mostFrequentVariables.nonEmpty) {
+              associativity.mostFrequentVariables
+            } else {
+              remaining.toSeq
+            }
+            actionOn(targets).orbits.map(_.representative).flatMap(addEntryIfAssociative)
+          })
         }
         override def act(g: IndexedSeq[Int], u: Upper): Upper = {
           u match {
             case IncreaseLevel => IncreaseLevel
-            case AddEntry(m, quadratics) => AddEntry((g(m._1), g(m._2), g(m._3)), None)
+            case AddEntry(m, quadratics) => AddEntry(multiplicityNamer(g(m._1), g(m._2), g(m._3)), None)
           }
         }
       }
@@ -213,7 +255,9 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
         case DecreaseLevel => 0
         case DeleteEntry(_) => 1
       }).refineByPartialFunction({
-        case DeleteEntry(v) => -associativity.closedVariableTalliesInMinimalEquations.get(v).getOrElse(0)
+        case DeleteEntry(v) => {
+          -associativity.closedVariableTallies.get(v).getOrElse(0)
+        }
       }).refineByPartialFunction({
         case DeleteEntry((i, j, k)) => Dreadnaut.canonicalizeColouredGraph(graphPresentation.additionalMarking(Seq(3 * rank + i * rank * rank + j * rank + k)))
       })
@@ -223,5 +267,23 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       })
     }
 
+  }
+}
+
+object PartialFusionRingEnumeration {
+  import net.tqft.toolkit.algebra.grouptheory.FiniteGroup
+  def fromFiniteGroup[S](G: FiniteGroup[S]): PartialFusionRingEnumeration#PartialFusionRing = {
+    val rank = G.size
+    val elementsSeq = G.elements.toIndexedSeq
+    val numberOfSelfDualObjects = G.elements.count(x => G.inverse(x) == x)
+    val enumeration = PartialFusionRingEnumeration(numberOfSelfDualObjects, (rank - numberOfSelfDualObjects) / 2, G.size + 0.001)
+    val zeroEntries = for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank; if G.multiply(elementsSeq(i), elementsSeq(j)) != elementsSeq(k)) yield (i, j, k)
+    val oneEntries = for (i <- 1 until rank; j <- 1 until rank) yield (i, j, elementsSeq.indexOf(G.multiply(elementsSeq(i), elementsSeq(j))))
+    val withZeroEntries = zeroEntries.foldLeft(enumeration.root)({
+      case (pfr, m) => pfr.addEntryIfAssociative(m).get.result
+    })
+    oneEntries.foldLeft(withZeroEntries.IncreaseLevel.result)({
+      case (pfr, m) => pfr.addEntryIfAssociative(m).get.result
+    })
   }
 }
