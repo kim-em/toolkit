@@ -21,29 +21,29 @@ class PartialFusionRingTest extends FlatSpec with Matchers {
   //	  }
   //	  children should be ('nonEmpty)
   //  }
-  "descendants(2, 0, 2.01)" should "find Z/2Z" in {
-    val enumeration = PartialFusionRingEnumeration(2, 0, 2.01)
-    val descendants = enumeration.root.descendants().toStream
-    descendants.filter(_.remaining.isEmpty).size should equal(1)
-  }
-  "descendants(2, 0, 3.62)" should "find T_2" in {
-    val enumeration = PartialFusionRingEnumeration(2, 0, 3.62)
-    val descendants = enumeration.root.descendants().toStream
-    //    for(r <- descendants) println(r)
-    descendants.filter(_.remaining.isEmpty).size should equal(2)
-  }
-  "descendants(3, 0, 3.01)" should "find nothing" in {
-    val enumeration = PartialFusionRingEnumeration(3, 0, 3.01)
-    val descendants = enumeration.root.descendants().toStream
-//    for (r <- descendants) println(r)
-    descendants.filter(_.remaining.isEmpty).size should equal(0)
-  }
-  "descendants(1, 1, 3.01)" should "find Z/3Z" in {
-    val enumeration = PartialFusionRingEnumeration(1, 1, 3.01)
-    val descendants = enumeration.root.descendants().toStream
-//    for (r <- descendants) println(r)
-    descendants.filter(_.remaining.isEmpty).size should equal(1)
-  }
+//  "descendants(2, 0, 2.01)" should "find Z/2Z" in {
+//    val enumeration = PartialFusionRingEnumeration(2, 0, 2.01)
+//    val descendants = enumeration.root.descendants().toStream
+//    descendants.filter(_.remaining.isEmpty).size should equal(1)
+//  }
+//  "descendants(2, 0, 3.62)" should "find T_2" in {
+//    val enumeration = PartialFusionRingEnumeration(2, 0, 3.62)
+//    val descendants = enumeration.root.descendants().toStream
+//    //    for(r <- descendants) println(r)
+//    descendants.filter(_.remaining.isEmpty).size should equal(2)
+//  }
+//  "descendants(3, 0, 3.01)" should "find nothing" in {
+//    val enumeration = PartialFusionRingEnumeration(3, 0, 3.01)
+//    val descendants = enumeration.root.descendants().toStream
+////    for (r <- descendants) println(r)
+//    descendants.filter(_.remaining.isEmpty).size should equal(0)
+//  }
+//  "descendants(1, 1, 3.01)" should "find Z/3Z" in {
+//    val enumeration = PartialFusionRingEnumeration(1, 1, 3.01)
+//    val descendants = enumeration.root.descendants().toStream
+////    for (r <- descendants) println(r)
+//    descendants.filter(_.remaining.isEmpty).size should equal(1)
+//  }
   "descendants(3, 0, 6.01)" should "find 1/2 A_5" in {
     val enumeration = PartialFusionRingEnumeration(3, 0, 6.01)
     val descendants = enumeration.root.descendants().toStream
