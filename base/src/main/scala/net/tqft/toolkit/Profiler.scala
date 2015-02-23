@@ -1,6 +1,9 @@
 package net.tqft.toolkit
 
 trait Profiler {
+  /** 
+   *  returns the running time, in milliseconds, and result, of evaluating f()
+   */
 	  def timing[R](f: => R): (Long, R) = {
 	 	  val startTime = System.nanoTime
 	 	  val result = f
