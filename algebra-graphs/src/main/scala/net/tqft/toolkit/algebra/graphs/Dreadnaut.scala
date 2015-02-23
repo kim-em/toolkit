@@ -43,12 +43,13 @@ trait Dreadnaut extends Logging {
     //    println("invoking dreadnaut: ")
     //    println(g.toDreadnautString + "cxo\n")
     val output = invokeDreadnaut(g.toDreadnautString + "cxo\n")
-    //    println("output: ")
-    //    println(output.mkString("\n"))
+//        println("output: ")
+//        println(output.mkString("\n"))
     val generatorsString = {
       import net.tqft.toolkit.collections.Split._
-      output.takeWhile(l => !l.startsWith("canupdates")).filter(_.trim.startsWith("(")).iterator.splitBefore(_.startsWith("(")).filter(_.nonEmpty).map(_.map(_.trim).mkString(""))
+      output.takeWhile(l => !l.startsWith("canupdates")).filter(line => line.trim.startsWith("(") || line.startsWith(" ")).iterator.splitBefore(_.startsWith("(")).filter(_.nonEmpty).map(_.map(_.trim).mkString(" ")).toStream
     }
+//    println(s"generatorsString: \n${generatorsString.mkString("\n")}")
     def permutationFromCycles(cycles: Array[Array[Int]]): IndexedSeq[Int] = {
       for (i <- 0 until g.numberOfVertices) yield {
         cycles.find(_.contains(i)) match {
@@ -57,14 +58,14 @@ trait Dreadnaut extends Logging {
         }
       }
     }
-    val generators = generatorsString.map(line => permutationFromCycles(line.trim.split('(').filter(_.nonEmpty).map(_.stripSuffix(")").split(" ").map(_.toInt)))).toSet
+    val generators = generatorsString.map(line => permutationFromCycles(line.trim.split('(').filter(_.nonEmpty).map(_.trim.stripSuffix(")").split(" ").map(_.toInt)))).toSet
     for (x <- generators) {
       require(g.relabel(x) == g.relabel(IndexedSeq.range(0, g.numberOfVertices)),
         "something went wrong while calling dreadnaut '" + g.toDreadnautString + "cxo':\n" +
           "generators:\n" + generators.mkString("\n") + "\n" +
           "output:\n" + output.mkString("\n") +
-          s"looking at generator x = $x we have:\n" +
-          s"g.relabel(x) = ${g.relabel(x)} != ${g.relabel(IndexedSeq.range(0, g.numberOfVertices))} = g.relabel(IndexedSeq.range(0, g.numberOfVertices)")
+          s"looking at generator x = \n$x\n${x.zipWithIndex.map(_.swap)}\n we have:\n" +
+          s"g.relabel(x) = \n${g.relabel(x)} = \n${g.relabel(x).toDreadnautString} != \n${g.relabel(IndexedSeq.range(0, g.numberOfVertices))} = \n${g.relabel(IndexedSeq.range(0, g.numberOfVertices)).toDreadnautString} = \ng.relabel(IndexedSeq.range(0, g.numberOfVertices)")          
     }
     val automorphismGroup = FiniteGroups.symmetricGroup(g.numberOfVertices).subgroupGeneratedBy(generators)
     val orbits = output.dropWhile(l => !l.startsWith("canupdates")).tail.mkString("").split(";").toSeq.map(_.trim).filter(_.nonEmpty).map({ orbitString =>
@@ -84,7 +85,7 @@ trait Dreadnaut extends Logging {
 
   def findIsomorphism(g1: Graph, g2: Graph): Option[IndexedSeq[Int]] = {
     val output = invokeDreadnaut(g1.toDreadnautString + "c x @\n" + g2.toDreadnautString + "x ##")
-    for (line <- output) println(line)
+//    for (line <- output) println(line)
     val relevantOutput = output.dropWhile(l => !l.startsWith("canupdates")).tail.dropWhile(l => !l.startsWith("canupdates")).tail
     if (relevantOutput.head == "h and h' are identical.") {
       Some(

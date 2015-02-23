@@ -10,7 +10,7 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
   override lazy val elements = {
     @scala.annotation.tailrec
     def extendElements(generators: Set[A], elementsSoFar: Set[A], newestElements: GenSet[A]): Set[A] = {
-      FiniteGroup.info("... found " + elementsSoFar.size + " elements of the group so far.")
+//      FiniteGroup.info("... found " + elementsSoFar.size + " elements of the group so far.")
       if (newestElements.isEmpty) {
         elementsSoFar
       } else {
