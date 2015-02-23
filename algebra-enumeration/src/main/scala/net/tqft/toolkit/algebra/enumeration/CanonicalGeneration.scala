@@ -3,11 +3,11 @@ package net.tqft.toolkit.algebra.enumeration
 import net.tqft.toolkit.algebra.Group
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.Logging
-
 import scala.language.reflectiveCalls // ouch...
+import CanonicalGeneration.{ info }
+import scala.collection.immutable.Queue
 
 object CanonicalGeneration extends Logging
-import CanonicalGeneration.{ info }
 
 // this line is a bit opaque... it says:
 //   A represents an eventual concrete realization of this trait, e.g. a TriangleFreeGraph
@@ -34,29 +34,29 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
 
   // now the actual algorithm
   def children = {
-//        info("computing children of " + this)
-//        info(" automorphism group: " + automorphisms.generators)
+    //        info("computing children of " + this)
+    //        info(" automorphism group: " + automorphisms.generators)
     val orbits = upperObjects.orbits.toSeq
-//        info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+    //        info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
     val result = orbits.flatMap({ orbit =>
       val candidateUpperObject = orbit.representative;
-//            info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements)
-//            info("   with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
+      //            info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements)
+      //            info("   with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
       val lowerOrbits = candidateUpperObject.result.lowerObjects.orbits
-//            info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
-//            info("   which sort as " + lowerOrbits.toSeq.sorted(candidateUpperObject.result.ordering).map(_.elements))
+      //            info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+      //            info("   which sort as " + lowerOrbits.toSeq.sorted(candidateUpperObject.result.ordering).map(_.elements))
       val canonicalReductionOrbit = lowerOrbits.min(candidateUpperObject.result.ordering)
-//            info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
-//            info("  with result " + canonicalReductionOrbit.representative.result)
+      //            info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
+      //            info("  with result " + canonicalReductionOrbit.representative.result)
       if (canonicalReductionOrbit.contains(candidateUpperObject.inverse)) {
-//                info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
+        //                info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
         Some(candidateUpperObject.result)
       } else {
-//                info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
+        //                info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
         None
       }
     })
-//        info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
+    //        info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
     result
   }
 
@@ -86,7 +86,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   // and, for convenience, something to recursively find all children, filtering on a predicate
   def descendants(accept: A => Int = { _ => 1 }): Iterator[A] = {
     accept(this) match {
-      case a if a > 0 => {        
+      case a if a > 0 => {
         Iterator(this) ++ Iterator.continually(children).take(1).flatten.flatMap(_.descendants(accept))
       }
       case 0 => Iterator(this)
@@ -94,13 +94,27 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     }
   }
 
+  def resMod(res: Int, mod: Int): Iterator[A] = {
+    require(mod > 0)
+    require(res >= 0)
+    require(res < 10)
+    if (mod == 1) {
+      descendants()
+    } else {
+      val c = children
+      if (c.size < mod) {
+        Iterator(this) ++ c(res % c.size).resMod(res / c.size, (mod + c.size - 1 - (res % c.size))/c.size)
+      } else {
+        Iterator(this) ++ (for (i <- res until c.size by mod; k = c(i); d <- k.descendants()) yield d)
+      }
+    }
+  }
+
   def descendantsTree(accept: A => Int = { _ => 1 }): Iterator[(A, Seq[A])] = {
     accept(this) match {
       case a if a > 0 => {
         val c = children
-        //        lazy val d1 = c.par.map(_.descendantsTree(accept)).seq.iterator.flatMap(i => i) // this seems to make mathematica sick?
-        lazy val d2 = c.iterator.flatMap(_.descendantsTree(accept))
-        Iterator((this, c)) ++ d2
+        Iterator((this, c)) ++ c.iterator.flatMap(_.descendantsTree(accept))
       }
       case 0 => Iterator((this, Nil))
       case a if a < 0 => Iterator.empty
@@ -145,6 +159,30 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
     averages
   }
+  private def verboseDuration(x: Long): String = {
+    val sb = new StringBuffer
+    val second = 1000L
+    val minute = 60 * second
+    val hour = 60 * minute
+    val day = 24 * hour
+    val year = 365 * day
+    if (x > year) {
+      sb.append((x / year) + " years ")
+    }
+    if (x > day) {
+      sb.append((x % year) / day + " days ")
+    }
+    if (x > hour) {
+      sb.append((x % day) / hour + " hours ")
+    }
+    if (x > minute) {
+      sb.append((x % hour) / minute + " minutes ")
+    }
+    sb.append((x % minute) / (second.toDouble) + " seconds.")
+
+    sb.toString
+  }
+  def runtimeEstimatorStrings = runtimeEstimators.map(verboseDuration)
 
 }
 
