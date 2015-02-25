@@ -83,48 +83,63 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     badPairOption.isEmpty
   }
 
+  private def childrenResMod(c: Seq[A], res: Int, mod: Int): (Seq[A], Int, Int) = {
+    if (mod == 1) {
+      (c, 0, 1)
+    } else if (c.isEmpty) {
+      (Nil, 0, 1)
+    } else if (c.size < mod) {
+      (Seq(c(res % c.size)), res / c.size, (mod + c.size - 1 - (res % c.size)) / c.size)
+    } else {
+      (for (i <- res until c.size by mod) yield c(i), 0, 1)
+    }
+  }
+
   // and, for convenience, something to recursively find all children, filtering on a predicate
-  def descendants(accept: A => Int = { _ => 1 }): Iterator[A] = {
+  def descendants(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[A] = {
+    require(mod > 0)
+    require(res >= 0)
+    require(res < mod)
+
+    def thisIterator = if (res == 0) {
+      Iterator(this)
+    } else {
+      Iterator.empty
+    }
+
     accept(this) match {
       case a if a > 0 => {
-        Iterator(this) ++ Iterator.continually(children).take(1).flatten.flatMap(_.descendants(accept))
+        thisIterator ++ Iterator.continually(childrenResMod(children, res, mod)).take(1).map({ case (subset, r, m) => subset.iterator.flatMap(_.descendants(accept, r, m)) }).flatten
       }
-      case 0 => Iterator(this)
+      case 0 => {
+        thisIterator
+      }
       case a if a < 0 => Iterator.empty
     }
   }
 
-  def resMod(res: Int, mod: Int): Iterator[A] = {
-    require(mod > 0)
-    require(res >= 0)
-    require(res < 10)
-    if (mod == 1) {
-      descendants()
+  def descendantsTree(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[(A, Seq[A])] = {
+    def thisIterator(c: Seq[A]) = if (res == 0) {
+      Iterator((this, c))
     } else {
-      val c = children
-      if (c.size < mod) {
-        Iterator(this) ++ c(res % c.size).resMod(res / c.size, (mod + c.size - 1 - (res % c.size))/c.size)
-      } else {
-        Iterator(this) ++ (for (i <- res until c.size by mod; k = c(i); d <- k.descendants()) yield d)
-      }
+      Iterator.empty
     }
-  }
 
-  def descendantsTree(accept: A => Int = { _ => 1 }): Iterator[(A, Seq[A])] = {
     accept(this) match {
       case a if a > 0 => {
         val c = children
-        Iterator((this, c)) ++ c.iterator.flatMap(_.descendantsTree(accept))
+        val (subset, r, m) = childrenResMod(c, res, mod)
+        thisIterator(c) ++ subset.iterator.flatMap(_.descendantsTree(accept, r, m))
       }
-      case 0 => Iterator((this, Nil))
+      case 0 => thisIterator(Nil)
       case a if a < 0 => Iterator.empty
     }
   }
-
-  def descendantsWithProgress(accept: A => Int = { _ => 1 }): Iterator[(A, Seq[(Int, Int)])] = {
+  
+  def descendantsWithProgress(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[(A, Seq[(Int, Int)])] = {
     // TODO don't save progress forever
     val progress = scala.collection.mutable.Map[Int, Seq[(Int, Int)]](this.hashCode -> Seq((1, 1)))
-    descendantsTree(accept).map({
+    descendantsTree(accept, res, mod).map({
       case (a, children) => {
         for ((c, i) <- children.zipWithIndex) {
           progress.put(c.hashCode, progress(a.hashCode) :+ (i + 1, children.size))
