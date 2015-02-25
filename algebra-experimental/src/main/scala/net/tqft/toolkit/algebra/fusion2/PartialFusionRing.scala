@@ -84,6 +84,8 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     matricesOption: Option[IndexedSeq[IndexedSeq[IndexedSeq[Int]]]]) extends CanonicalGenerationWithIsomorphism[PartialFusionRing, IndexedSeq[Int]] { pfr =>
 
     def associativity = associativityOption.get
+    def associativityToString = associativity.mapVariables(stringNamer).toString
+    
     def matrices = matricesOption.get
     def matricesToString = {
       val head = Seq.fill(rank)(Seq.fill(2 * rank + 1)("-").mkString).mkString("+", "+", "+\n")
@@ -107,7 +109,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
     override def toString = {
       if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
-        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)}, D >= $globalDimensionLowerBoundAfterIncreasingLevel)\n" + matricesToString // + associativity.mapVariables(stringNamer)
+        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)}, D >= $globalDimensionLowerBoundAfterIncreasingLevel)\n" + matricesToString // + associativityToString 
       } else {
         s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})"
       }
