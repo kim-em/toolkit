@@ -15,11 +15,17 @@ object PartialFusionRingApp extends App {
 
   var counter = 0
   val dimensions = ListBuffer[Double]()
-  for (res <- range; x <- enumeration.root.descendants({ r => 1 - r.level }, res, mod); if(x.level == 1)) {
+//  for (res <- range; x <- enumeration.root.descendants({ r => 1 - r.level }, res, mod); if(x.level == 1)) {
+//    println(x)
+//    println(x.associativity)
+//    counter = counter + 1
+//    dimensions += x.globalDimensionLowerBound
+//  }
+  
+  for(x <- enumeration.root.parDescendants({ r => 1 - r.level }); if (x.level == 1)) {
     println(x)
-    println(x.associativity)
     counter = counter + 1
-    dimensions += x.globalDimensionLowerBound
+    dimensions += x.globalDimensionLowerBound    
   }
   
   println(s"Saw $counter possibilities.")

@@ -13,43 +13,46 @@ import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
 trait Dreadnaut extends Logging {
   def dreadnautPath: String
 
-  private var in: PrintWriter = null
-  private var out: Iterator[String] = null
-  private var err: Iterator[String] = null
+  private var inLocal = new ThreadLocal[PrintWriter]
+  private var outLocal = new ThreadLocal[Iterator[String]]
+  private var errLocal = new ThreadLocal[Iterator[String]]
 
-  protected lazy val initializeDreadnaut = {
-    dreadnautPath.run(new ProcessIO(os => in = new PrintWriter(os), is => out = Source.fromInputStream(is).getLines, is => err = Source.fromInputStream(is).getLines))
-    while (in == null || out == null) {
-      Thread.sleep(10)
+  private def in = inLocal.get
+  private def out = outLocal.get
+  private def err = errLocal.get
+
+  protected def initializeDreadnaut = {
+    if (in == null) {
+      dreadnautPath.run(new ProcessIO(os => inLocal.set(new PrintWriter(os)), is => outLocal.set(Source.fromInputStream(is).getLines), is => errLocal.set(Source.fromInputStream(is).getLines)))
+      while (in == null || out == null) {
+        Thread.sleep(10)
+      }
+      outLocal.set(out.filterNot(line => line.startsWith("Mode=") || line.startsWith("linelen=")))
     }
-    out = out.filterNot(line => line.startsWith("Mode=") || line.startsWith("linelen="))
   }
 
-  // TODO make it possible to access dreadnaut in parallel?
   def invokeDreadnaut(cmd: String): Seq[String] = {
-    synchronized {
-      initializeDreadnaut
+    initializeDreadnaut
 
-      in.println(cmd)
-      in.println("\"done... \"z")
-      for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
-      in.flush()
-      val result = out.takeWhile(!_.startsWith("done... [")).toList
-      result
-    }
+    in.println(cmd)
+    in.println("\"done... \"z")
+    for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
+    in.flush()
+    val result = out.takeWhile(!_.startsWith("done... [")).toList
+    result
   }
 
   def automorphismGroupAndOrbits(g: Graph): (FinitelyGeneratedFiniteGroup[IndexedSeq[Int]], Seq[Seq[Int]]) = {
     //    println("invoking dreadnaut: ")
     //    println(g.toDreadnautString + "cxo\n")
     val output = invokeDreadnaut(g.toDreadnautString + "cxo\n")
-//        println("output: ")
-//        println(output.mkString("\n"))
+    //        println("output: ")
+    //        println(output.mkString("\n"))
     val generatorsString = {
       import net.tqft.toolkit.collections.Split._
       output.takeWhile(l => !l.startsWith("canupdates")).filter(line => line.trim.startsWith("(") || line.startsWith(" ")).iterator.splitBefore(_.startsWith("(")).filter(_.nonEmpty).map(_.map(_.trim).mkString(" ")).toStream
     }
-//    println(s"generatorsString: \n${generatorsString.mkString("\n")}")
+    //    println(s"generatorsString: \n${generatorsString.mkString("\n")}")
     def permutationFromCycles(cycles: Array[Array[Int]]): IndexedSeq[Int] = {
       for (i <- 0 until g.numberOfVertices) yield {
         cycles.find(_.contains(i)) match {
@@ -65,7 +68,7 @@ trait Dreadnaut extends Logging {
           "generators:\n" + generators.mkString("\n") + "\n" +
           "output:\n" + output.mkString("\n") +
           s"looking at generator x = \n$x\n${x.zipWithIndex.map(_.swap)}\n we have:\n" +
-          s"g.relabel(x) = \n${g.relabel(x)} = \n${g.relabel(x).toDreadnautString} != \n${g.relabel(IndexedSeq.range(0, g.numberOfVertices))} = \n${g.relabel(IndexedSeq.range(0, g.numberOfVertices)).toDreadnautString} = \ng.relabel(IndexedSeq.range(0, g.numberOfVertices)")          
+          s"g.relabel(x) = \n${g.relabel(x)} = \n${g.relabel(x).toDreadnautString} != \n${g.relabel(IndexedSeq.range(0, g.numberOfVertices))} = \n${g.relabel(IndexedSeq.range(0, g.numberOfVertices)).toDreadnautString} = \ng.relabel(IndexedSeq.range(0, g.numberOfVertices)")
     }
     val automorphismGroup = FiniteGroups.symmetricGroup(g.numberOfVertices).subgroupGeneratedBy(generators)
     val orbits = output.dropWhile(l => !l.startsWith("canupdates")).tail.mkString("").split(";").toSeq.map(_.trim).filter(_.nonEmpty).map({ orbitString =>
@@ -85,7 +88,7 @@ trait Dreadnaut extends Logging {
 
   def findIsomorphism(g1: Graph, g2: Graph): Option[IndexedSeq[Int]] = {
     val output = invokeDreadnaut(g1.toDreadnautString + "c x @\n" + g2.toDreadnautString + "x ##")
-//    for (line <- output) println(line)
+    //    for (line <- output) println(line)
     val relevantOutput = output.dropWhile(l => !l.startsWith("canupdates")).tail.dropWhile(l => !l.startsWith("canupdates")).tail
     if (relevantOutput.head == "h and h' are identical.") {
       Some(
