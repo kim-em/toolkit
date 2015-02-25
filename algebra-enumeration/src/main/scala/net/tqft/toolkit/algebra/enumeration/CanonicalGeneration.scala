@@ -3,9 +3,10 @@ package net.tqft.toolkit.algebra.enumeration
 import net.tqft.toolkit.algebra.Group
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.Logging
-import scala.language.reflectiveCalls // ouch...
+import scala.language.reflectiveCalls
 import CanonicalGeneration.{ info }
 import scala.collection.immutable.Queue
+import net.tqft.toolkit.collections.Iterators
 
 object CanonicalGeneration extends Logging
 
@@ -118,6 +119,12 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     }
   }
 
+  
+  
+  def parDescendants(accept: A => Double = { _ => 1}, mod: Int = Runtime.getRuntime().availableProcessors() * 3): Iterator[A] = {
+    Iterators.parallelCombine(for(res <- 0 until mod) yield descendants(accept, res, mod))
+  }
+  
   def descendantsTree(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[(A, Seq[A])] = {
     def thisIterator(c: Seq[A]) = if (res == 0) {
       Iterator((this, c))

@@ -1,8 +1,45 @@
 package net.tqft.toolkit.collections
 
 import scala.language.implicitConversions
+import java.util.concurrent.LinkedBlockingQueue
+import scala.concurrent.Future
+import java.util.concurrent.TimeUnit
+import net.tqft.toolkit.Logging
 
 object Iterators {
+
+  def parallelCombine[A](iterators: Seq[Iterator[A]], queueSize: Int = Integer.MAX_VALUE): Iterator[A] = {
+    var running = iterators.size
+    val queue = new LinkedBlockingQueue[A]()
+    import scala.concurrent.ExecutionContext.Implicits.global
+    for (i <- iterators) {
+      Future {
+        for (a <- i) {
+          queue.put(a)
+        }
+        running = running - 1
+      }
+    }
+    new Iterator[A] {
+      var held: Option[A] = None
+      override def hasNext = {
+        held.nonEmpty || {
+          while (running > 0 && { held = Option(queue.poll(1, TimeUnit.SECONDS)); held.isEmpty }) {}
+          held.nonEmpty || queue.peek != null
+        }
+      }
+      override def next = {
+        if (held.nonEmpty) {
+          val r = held.get
+          held = None
+          r
+        } else {
+          queue.take
+        }
+      }
+    }
+  }
+
   implicit class RichIterator[A](iterator: Iterator[A]) {
     def last: A = {
       var a =

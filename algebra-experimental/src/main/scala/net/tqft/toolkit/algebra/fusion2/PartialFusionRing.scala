@@ -72,7 +72,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
   }
 
   private val stringNamer = {
-    root.remaining.zip('A' to 'Z').toMap
+    root.remaining.toSeq.sorted.zip(('A' to 'Z') ++ ('a' to 'z')).toMap
   }
   
   // matrices contains the current fusion multiplicities, with all as-yet unspecified entries set at level+1
@@ -107,7 +107,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
     override def toString = {
       if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
-        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)}, D >= $globalDimensionLowerBoundAfterIncreasingLevel)\n" + matricesToString  + associativity.mapVariables(stringNamer)
+        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)}, D >= $globalDimensionLowerBoundAfterIncreasingLevel)\n" + matricesToString // + associativity.mapVariables(stringNamer)
       } else {
         s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})"
       }
