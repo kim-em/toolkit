@@ -80,7 +80,7 @@ class PartialFusionRingTest extends FlatSpec with Matchers {
   "descendants(3, 0, 13.0)" should "find A_3, 1/2 A_5, 1/2 A_6, and 1/2 E_6" in { 
     val enumeration = PartialFusionRingEnumeration(3, 0, Some(13.0))
     val descendants = enumeration.root.descendants().toStream
-//    for (r <- descendants; if r.remaining.isEmpty) println(r)
+    for (r <- descendants; if r.remaining.isEmpty) println(r)
     descendants.filter(_.remaining.isEmpty).size should equal(4)
   }
 

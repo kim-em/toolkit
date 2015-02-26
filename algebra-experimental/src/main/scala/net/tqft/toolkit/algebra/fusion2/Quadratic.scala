@@ -12,7 +12,7 @@ trait Substitutable[X <: Substitutable[X, S], S] {
 
 // TODO split up quadratics which are sums of terms of the same sign.
 
-case class SystemOfQuadratics[S](quadratics: Seq[QuadraticState[S]]) {
+case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[QuadraticState[S]]) {
   lazy val variableTallies = {
     import net.tqft.toolkit.collections.Tally._
     quadratics.flatMap(_.variables).tally
@@ -31,8 +31,8 @@ case class SystemOfQuadratics[S](quadratics: Seq[QuadraticState[S]]) {
   }
   lazy val closedVariablesByNumberOfVariables: Map[S, Map[Int, Int]] = {
     import net.tqft.toolkit.collections.Tally._
-    (for(s <- variables) yield {
-      s -> quadratics.map(_.closedVariablesByNumberOfVariables.get(s).getOrElse(0)).tally.toMap
+    (for (s <- closedVariables) yield {
+      s -> quadratics.map(q => q.closedVariablesByNumberOfVariables.get(s).getOrElse(q.completeSubstitution.variables.size)).tally.toMap
     }).toMap
   }
   def variables = quadratics.flatMap({ q: QuadraticState[S] => q.variables }).toSet
@@ -42,13 +42,13 @@ case class SystemOfQuadratics[S](quadratics: Seq[QuadraticState[S]]) {
     if (newQuadratics.exists({ q: QuadraticState[S] => q.constant_? && !q.zero_? })) {
       None
     } else {
-      Some(SystemOfQuadratics(newQuadratics))
+      Some(SystemOfQuadratics(closedVariables + s, newQuadratics))
     }
   }
-  def factor = SystemOfQuadratics(quadratics.map(_.factor).filter(q => !q.zero_?).distinct)
+  def factor = SystemOfQuadratics(Set.empty, quadratics.map(_.factor).filter(q => !q.zero_?).distinct)
 
-  def mapVariables[T](f:S=>T) = SystemOfQuadratics(quadratics.map(_.mapVariables(f)))
-  
+  def mapVariables[T](f: S => T) = SystemOfQuadratics(closedVariables.map(f), quadratics.map(_.mapVariables(f)))
+
   override def toString = {
     quadratics.mkString("{\n  ", ",\n  ", "\n}")
   }
@@ -60,13 +60,13 @@ case class QuadraticState[S](completeSubstitution: Quadratic[S], partialSubstitu
   override def variables = completeSubstitution.variables
   lazy val closedVariablesByNumberOfVariables = partialSubstitutions.mapValues(_.variables.size)
   def closedVariables = partialSubstitutions.keys
-  
-  def mapVariables[T](f: S=>T) = QuadraticState(completeSubstitution.mapVariables(f), partialSubstitutions.map(p => (f(p._1), p._2.mapVariables(f))))
-  
+
+  def mapVariables[T](f: S => T) = QuadraticState(completeSubstitution.mapVariables(f), partialSubstitutions.map(p => (f(p._1), p._2.mapVariables(f))))
+
   override def toString = {
-    "QuadraticState("+completeSubstitution+",\n" + partialSubstitutions.mkString("    Map(","\n        ","))")
+    "QuadraticState(" + completeSubstitution + ",\n" + partialSubstitutions.mkString("    Map(", "\n        ", "))") + "     closedVariables =  " + closedVariablesByNumberOfVariables
   }
-  
+
   override def substitute(s: S, k: Int) = {
     if (variables.contains(s)) {
       QuadraticState(
@@ -103,10 +103,24 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
   }
 
   def mapVariables[T](f: S => T) = Quadratic(linearTerm.mapVariables(f), quadraticTerms.map(_.mapVariables(f)))
-  
+
   def constant_? = quadraticTerms.forall(_.zero_?) && linearTerm.constant_?
   def zero_? = linearTerm.zero_? && quadraticTerms.forall(_.zero_?)
-
+  def sign = {
+    val signs = if(linearTerm.zero_?) {
+     quadraticTerms.map(_.sign)
+    } else {
+      linearTerm.sign +: quadraticTerms.map(_.sign)
+    }
+    if(signs.forall(_ == 1)) {
+      1
+    } else if(signs.forall(_ == -1)) {
+      -1
+    } else {
+      0
+    }
+  }
+  
   def factor: Quadratic[S] = {
     // tally up all the linear terms (both the linear term, and factors of the linear terms)
     // if everything just appears once, return this
@@ -208,6 +222,15 @@ object LinearTerm {
 case class LinearTerm[S](constant: Int, terms: Map[S, Int]) extends Substitutable[LinearTerm[S], S] {
   def constant_? = terms.isEmpty
   def zero_? = (constant == 0) && constant_?
+  def sign = {
+    if (constant >= 0 && terms.values.forall(_ > 0)) {
+      1
+    } else if (constant <= 0 && terms.values.forall(_ < 0)) {
+      -1
+    } else {
+      0
+    }
+  }
   def multiplyBy(k: Int) = {
     require(k != 0)
     LinearTerm(constant * k, terms.mapValues(_ * k))
@@ -241,11 +264,12 @@ case class LinearTerm[S](constant: Int, terms: Map[S, Int]) extends Substitutabl
 case class QuadraticTerm[S](a: Int, x: LinearTerm[S], y: LinearTerm[S]) extends Substitutable[QuadraticTerm[S], S] {
   override def toString = (if (a == 1) "" else { a.toString + " * " }) + x.toString ++ y.toString
 
-  def mapVariables[T](f: S=>T) = QuadraticTerm(a, x.mapVariables(f), y.mapVariables(f))
-  
+  def mapVariables[T](f: S => T) = QuadraticTerm(a, x.mapVariables(f), y.mapVariables(f))
+
   override val variables = x.variables ++ y.variables
   override def zero_? = x.zero_? || y.zero_?
   override def constant_? = x.zero_? || y.zero_? || x.constant_? && y.constant_?
+  def sign = a.signum * x.sign * y.sign
 
   override def substitute(s: S, k: Int): QuadraticTerm[S] = {
     if (variables.contains(s)) {
