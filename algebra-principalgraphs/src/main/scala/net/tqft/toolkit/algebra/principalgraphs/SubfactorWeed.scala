@@ -335,7 +335,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
   case class AddSelfDualVertex(graph: Int, row: Seq[Int]) extends AddVertexUpper {
     override lazy val pairOption = pair.addSelfDualVertex(graph, row)
     override def inverse = result.DeleteSelfDualVertex(graph, pair(graph).bigraph.rankAtMaximalDepth)
-  }
+  }  
   case class AddDualPairAtEvenDepth(graph: Int, row0: Seq[Int], row1: Seq[Int]) extends AddVertexUpper {
     override lazy val pairOption = pair.addDualPairAtEvenDepth(graph, row0, row1)
     override def inverse = result.DeleteDualPairAtEvenDepth(graph, pair(graph).bigraph.rankAtMaximalDepth)
