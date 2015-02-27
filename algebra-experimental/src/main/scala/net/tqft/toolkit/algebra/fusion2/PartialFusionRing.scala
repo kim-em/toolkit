@@ -54,7 +54,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
   val root = {
     val associativity = dualitySubstitutions.foldLeft(
-      SystemOfQuadratics(AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q))))({
+      SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q))))({
         case (system, (s, k)) => system.substitute(s, k).get
       }).factor
     val matrices = IndexedSeq.tabulate(rank, rank, rank)({
@@ -74,6 +74,16 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
   private val stringNamer = {
     root.remaining.toSeq.sorted.zip(('A' to 'Z') ++ ('a' to 'z')).toMap
   }
+
+  object PartialFusionRing {
+    def apply(shortString: String): PartialFusionRing = {
+      val Seq(objects, level, matrices, dimension) = shortString.split(" ").toSeq
+      require(level == "1")
+      require(objects.split(",").map(_.toInt).toSeq == Seq(numberOfSelfDualObjects, numberOfDualPairs))
+      val zeroes = (for(i <- 1 until rank; j <- 1 until rank; k <- 1 until rank; if(matrices((i-1)*(rank-1)*(rank-1) + (j-1)*(rank-1) + (k-1))) == '0') yield multiplicityNamer(i,j,k)).toSet
+      zeroes.foldLeft(root)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
+    }
+  }
   
   // matrices contains the current fusion multiplicities, with all as-yet unspecified entries set at level+1
   case class PartialFusionRing(
@@ -84,6 +94,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     matricesOption: Option[IndexedSeq[IndexedSeq[IndexedSeq[Int]]]]) extends CanonicalGenerationWithIsomorphism[PartialFusionRing, IndexedSeq[Int]] { pfr =>
 
     def associativity = associativityOption.get
+    def associativityToString = associativity.mapVariables(stringNamer).toString
     def matrices = matricesOption.get
     def matricesToString = {
       val head = Seq.fill(rank)(Seq.fill(2 * rank + 1)("-").mkString).mkString("+", "+", "+\n")
@@ -95,7 +106,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
                 if (level == 0 && (i == 0 || j == 0 || (k == 0 && i == dual(j)))) {
                   "1"
                 } else {
-                  stringNamer(multiplicityNamer(i,j,k))
+                  stringNamer(multiplicityNamer(i, j, k))
                 }
               }
               case e => e.toString
@@ -107,10 +118,17 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
     override def toString = {
       if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
-        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)}, D >= $globalDimensionLowerBoundAfterIncreasingLevel)\n" + matricesToString // + associativity.mapVariables(stringNamer)
+        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})\n" +
+          matricesToString // +
+        //          associativityToString + 
+        //          "\nclosedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 })
       } else {
         s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})"
       }
+    }
+    def toShortString: String = {
+      require(entries.isEmpty)
+      numberOfSelfDualObjects + "," + numberOfDualPairs + " " + level + " " + previousLevel.get.matrices.tail.map(_.tail.map(_.tail.mkString("")).mkString("")).mkString("") + " " + globalDimensionLowerBound.toString.take(5)
     }
 
     override def equals(other: Any) = {
@@ -128,14 +146,14 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       case None => 0
     }
 
-    def globalDimensionLowerBound: Double = {
+    lazy val globalDimensionLowerBound: Double = {
       val matrixRing = Matrices.ofSize[Int](rank)
       def r(m: IndexedSeq[IndexedSeq[Int]]) = for (row <- m) yield for (x <- row) yield if (x > level) level else x
       val squares = for (m <- matrices; m0 = r(m)) yield matrixRing.multiply(m0, m0.transpose)
       (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).sum
     }
 
-    def globalDimensionLowerBoundAfterIncreasingLevel: Double = {
+    lazy val globalDimensionLowerBoundAfterIncreasingLevel: Double = {
       val matrixRing = Matrices.ofSize[Int](rank)
       val squares = for (m <- matrices) yield matrixRing.multiply(m, m.transpose)
       (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).sum
@@ -239,7 +257,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     override lazy val upperObjects: automorphisms.Action[Upper] = {
       new automorphisms.Action[Upper] {
         override def elements: Seq[Upper] = {
-          (if (remaining.nonEmpty && (globalDimensionUpperBound.isEmpty || globalDimensionLowerBoundAfterIncreasingLevel < globalDimensionUpperBound.get)) {
+          (if (remaining.nonEmpty && associativity.quadratics.forall(q => q.zero_? || q.completeSubstitution.sign == 0) && (globalDimensionUpperBound.isEmpty || globalDimensionLowerBoundAfterIncreasingLevel < globalDimensionUpperBound.get)) {
             Seq(IncreaseLevel)
           } else {
             Seq.empty
@@ -262,13 +280,13 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       import net.tqft.toolkit.orderings.LexicographicOrdering
 
       implicit val mapOrdering = LexicographicOrdering.mapOrdering[Int, Int].reverse
-      
+
       implicit val invariantOrdering: Ordering[Lower] = Ordering.by[Lower, Int]({
         case DecreaseLevel => 0
         case DeleteEntry(_) => 1
       }).refineByPartialFunction({
         case DeleteEntry(v) => {
-          //          -associativity.closedVariableTallies.get(v).getOrElse(0)
+          //                    -associativity.closedVariableTallies.get(v).getOrElse(0)
           associativity.closedVariablesByNumberOfVariables.get(v).getOrElse(Map.empty) // TODO why do we need the getOrElse here?
         }
       }).refineByPartialFunction({
