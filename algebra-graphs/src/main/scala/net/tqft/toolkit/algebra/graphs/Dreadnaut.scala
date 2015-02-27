@@ -13,21 +13,23 @@ import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
 trait Dreadnaut extends Logging {
   def dreadnautPath: String
 
-  private var inLocal = new ThreadLocal[PrintWriter]
-  private var outLocal = new ThreadLocal[Iterator[String]]
-  private var errLocal = new ThreadLocal[Iterator[String]]
-
-  private def in = inLocal.get
-  private def out = outLocal.get
-  private def err = errLocal.get
+  private case class Pipes(var in: PrintWriter, var out: Iterator[String], var err: Iterator[String])
+  
+  private val pipes = new ThreadLocal[Pipes]
+  
+  private def in = pipes.get.in
+  private def out = pipes.get.out
+  private def err = pipes.get.err
 
   protected def initializeDreadnaut = {
-    if (in == null) {
-      dreadnautPath.run(new ProcessIO(os => inLocal.set(new PrintWriter(os)), is => outLocal.set(Source.fromInputStream(is).getLines), is => errLocal.set(Source.fromInputStream(is).getLines)))
+    if (pipes.get == null || in == null) {
+      val p = Pipes(null, null, null)
+      pipes.set(p)
+      dreadnautPath.run(new ProcessIO(os => p.in = new PrintWriter(os), is => p.out = Source.fromInputStream(is).getLines, is => p.err = Source.fromInputStream(is).getLines))
       while (in == null || out == null) {
         Thread.sleep(10)
       }
-      outLocal.set(out.filterNot(line => line.startsWith("Mode=") || line.startsWith("linelen=")))
+      p.out = out.filterNot(line => line.startsWith("Mode=") || line.startsWith("linelen="))
     }
   }
 

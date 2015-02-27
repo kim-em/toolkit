@@ -174,14 +174,14 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
     averages
   }
-  def runtimeEstimators: Iterator[Long] = {
-    def estimate = randomLineage.foldLeft((1, 0L))({ (a, b) => (a._1 * b._2.size, a._2 + a._1 * b._3) })._2
+  def runtimeEstimators: Iterator[BigInt] = {
+    def estimate = randomLineage.foldLeft((1, BigInt(0)))({ (a, b) => (a._1 * b._2.size, a._2 + a._1 * b._3) })._2
     def estimates = Iterator.continually(estimate)
-    def partialSums = estimates.scanLeft(0L)(_ + _)
+    def partialSums = estimates.scanLeft(BigInt(0))(_ + _)
     def averages = partialSums.zipWithIndex.collect({ case (s, i) if i != 0 => s / i })
     averages
   }
-  private def verboseDuration(x: Long): String = {
+  private def verboseDuration(x: BigInt): String = {
     val sb = new StringBuffer
     val second = 1000L
     val minute = 60 * second
@@ -200,7 +200,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     if (x > minute) {
       sb.append((x % hour) / minute + " minutes ")
     }
-    sb.append((x % minute) / (second.toDouble) + " seconds.")
+    sb.append((x % minute).toDouble / second + " seconds.")
 
     sb.toString
   }
