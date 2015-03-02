@@ -119,11 +119,26 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     }
   }
 
-  
-  
-  def parDescendants(accept: A => Double = { _ => 1}, mod: Int = Runtime.getRuntime().availableProcessors() * 3): Iterator[A] = {
-    Iterators.parallelCombine(for(res <- 0 until mod) yield descendants(accept, res, mod))
-  }
+//  def descendantsWithETAs(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1, estimateForOtherBranches: BigInt = 0): Iterator[(A, BigInt)] = {
+//    def thisIterator = if (res == 0) {
+//      Iterator((this, estimateForOtherBranches))
+//    } else {
+//      Iterator.empty
+//    }
+//
+//    accept(this) match {
+//      case a if a > 0 => {
+//        val (subset, r, m) = childrenResMod(children, res, mod)
+//        val startTime = System.nanoTime
+//        def elapsedTime = (System.nanoTime - startTime) / 1000000000
+//        thisIterator ++ subset.zipWithIndex.iterator.flatMap({ case (c, i) => c.descendantsWithETAs(accept, r, m, estimateForOtherBranches + (subset.size - i) * elapsedTime / (i + 1)) })
+//      }
+//      case 0 => {
+//        thisIterator
+//      }
+//      case a if a < 0 => Iterator.empty
+//    }
+//  }
   
   def descendantsTree(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[(A, Seq[A])] = {
     def thisIterator(c: Seq[A]) = if (res == 0) {
