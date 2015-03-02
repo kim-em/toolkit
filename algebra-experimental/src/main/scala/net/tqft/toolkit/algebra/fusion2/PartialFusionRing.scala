@@ -75,16 +75,21 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     root.remaining.toSeq.sorted.zip(('A' to 'Z') ++ ('a' to 'z')).toMap
   }
 
+  
+  
   object PartialFusionRing {
     def apply(shortString: String): PartialFusionRing = {
       val Seq(objects, level, matrices, dimension) = shortString.split(" ").toSeq
-      require(level == "1")
       require(objects.split(",").map(_.toInt).toSeq == Seq(numberOfSelfDualObjects, numberOfDualPairs))
-      val zeroes = (for(i <- 1 until rank; j <- 1 until rank; k <- 1 until rank; if(matrices((i-1)*(rank-1)*(rank-1) + (j-1)*(rank-1) + (k-1))) == '0') yield multiplicityNamer(i,j,k)).toSet
-      zeroes.foldLeft(root)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
+      (0 until level.toInt).foldLeft(root)({
+        case (pfr, l) => {
+          val entries = (for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank; if (matrices((i - 1) * (rank - 1) * (rank - 1) + (j - 1) * (rank - 1) + (k - 1))) == l.toChar) yield multiplicityNamer(i, j, k)).toSet
+          entries.foldLeft(pfr)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
+        }
+      })
     }
   }
-  
+
   // matrices contains the current fusion multiplicities, with all as-yet unspecified entries set at level+1
   case class PartialFusionRing(
     previousLevel: Option[PartialFusionRing],
@@ -128,7 +133,11 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     }
     def toShortString: String = {
       require(entries.isEmpty)
-      numberOfSelfDualObjects + "," + numberOfDualPairs + " " + level + " " + previousLevel.get.matrices.tail.map(_.tail.map(_.tail.mkString("")).mkString("")).mkString("") + " " + globalDimensionLowerBound.toString.take(5)
+      def short(d: Double) = {
+        val s = d.toString
+        s.take(s.indexOf(".") + 3)
+      }
+      numberOfSelfDualObjects + "," + numberOfDualPairs + " " + level + " " + previousLevel.get.matrices.tail.map(_.tail.map(_.tail.mkString("")).mkString("")).mkString("") + " " + short(globalDimensionLowerBound)
     }
 
     override def equals(other: Any) = {

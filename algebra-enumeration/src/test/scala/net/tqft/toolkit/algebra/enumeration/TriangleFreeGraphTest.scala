@@ -52,12 +52,14 @@ class TriangleFreeGraphTest extends FlatSpec with Matchers {
     pairwiseIntersections(4).foreach(_ should be('empty))
     pairwiseIntersections(15).foreach(_ should be('empty))
 
+    (for(k <- 0 until 100 by 10; g <- resMod(k, 100)) yield g) should equal(mod(10))
+    
     graphs should equal(mod(3))
-    graphs should equal(mod(150))
+    graphs should equal(mod(48))
     mod(2) should equal(mod(4))
-    mod(72) should equal(mod(216))
+    mod(72) should equal(mod(36))
 
     println(graphs.size)
-    for (k <- 0 until 216) println(resMod(k, 216).size)
+    for (k <- 0 until 72) println(resMod(k, 72).size)
   }
 }
