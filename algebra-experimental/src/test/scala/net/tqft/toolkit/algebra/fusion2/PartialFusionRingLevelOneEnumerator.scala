@@ -25,6 +25,9 @@ object PartialFusionRingLevelOneEnumerator extends App {
   outputFile.delete
   val out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))
 
+  val start = System.nanoTime
+  def elapsed = (System.nanoTime - start) / 1000000000
+  
   for (res <- (0 until mod).par; x <- enumeration.root.descendants({ r => 1 - r.level }, res, mod); if (x.level == 1)) {
     val ss = x.toShortString
     out.println(ss)
@@ -32,6 +35,7 @@ object PartialFusionRingLevelOneEnumerator extends App {
     counter = counter + 1
   }
 
+  out.println(".")
   out.flush
   out.close
   
