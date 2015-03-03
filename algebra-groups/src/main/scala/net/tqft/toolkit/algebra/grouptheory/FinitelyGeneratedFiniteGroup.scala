@@ -34,7 +34,7 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
 
       class O(val representative: B) extends Orbit {
         override def stabilizer = ???
-        override lazy val elements = extendElements(Seq.empty, Seq(representative).par).toSet
+        override lazy val elements = extendElements(Seq.empty, Seq(representative)).toSet
 
         override def hashCode = elements.hashCode
         override def equals(other: Any) = {

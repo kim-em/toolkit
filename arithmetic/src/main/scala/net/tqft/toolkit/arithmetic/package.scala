@@ -1,8 +1,6 @@
 package net.tqft.toolkit
 
 package object arithmetic {
-  def ??? = throw new NoSuchMethodException
-
   // from http://stackoverflow.com/a/6824828/82970
   val Primes = {
     case class Cross(next: Int, incr: Int)

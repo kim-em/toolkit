@@ -113,7 +113,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-enumeration` = Project(id = "toolkit-algebra-enumeration",
     base = file("algebra-enumeration"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (`algebra-graphs`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (arithmetic, `algebra-graphs`)
 
   lazy val `algebra-principalgraphs` = Project(id = "toolkit-algebra-principalgraphs",
     base = file("algebra-principalgraphs"),

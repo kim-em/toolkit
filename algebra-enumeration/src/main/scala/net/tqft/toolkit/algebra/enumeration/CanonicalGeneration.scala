@@ -84,84 +84,81 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     badPairOption.isEmpty
   }
 
-  private def childrenResMod(c: Seq[A], res: Int, mod: Int): (Seq[A], Int, Int) = {
-    if (mod == 1) {
-      (c, 0, 1)
-    } else if (c.isEmpty) {
-      (Nil, 0, 1)
-    } else if (c.size < mod) {
-      (Seq(c(res % c.size)), res / c.size, (mod + c.size - 1 - (res % c.size)) / c.size)
-    } else {
-      (for (i <- res until c.size by mod) yield c(i), 0, 1)
-    }
-  }
-
   // and, for convenience, something to recursively find all children, filtering on a predicate
-  def descendants(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[A] = {
-    require(mod > 0)
-    require(res >= 0)
-    require(res < mod)
-
-    def thisIterator = if (res == 0) {
-      Iterator(this)
-    } else {
-      Iterator.empty
-    }
-
+  private def descendantsComplete(accept: A => Double = { _ => 1 }): Iterator[A] = {
     accept(this) match {
       case a if a > 0 => {
-        thisIterator ++ Iterator.continually(childrenResMod(children, res, mod)).take(1).map({ case (subset, r, m) => subset.iterator.flatMap(_.descendants(accept, r, m)) }).flatten
+        Iterator(this) ++ Iterator.continually(children).take(1).map(_.iterator.flatMap(_.descendants(accept))).flatten
       }
       case 0 => {
-        thisIterator
+        Iterator(this)
       }
       case a if a < 0 => Iterator.empty
     }
   }
 
-//  def descendantsWithETAs(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1, estimateForOtherBranches: BigInt = 0): Iterator[(A, BigInt)] = {
-//    def thisIterator = if (res == 0) {
-//      Iterator((this, estimateForOtherBranches))
-//    } else {
-//      Iterator.empty
-//    }
-//
-//    accept(this) match {
-//      case a if a > 0 => {
-//        val (subset, r, m) = childrenResMod(children, res, mod)
-//        val startTime = System.nanoTime
-//        def elapsedTime = (System.nanoTime - startTime) / 1000000000
-//        thisIterator ++ subset.zipWithIndex.iterator.flatMap({ case (c, i) => c.descendantsWithETAs(accept, r, m, estimateForOtherBranches + (subset.size - i) * elapsedTime / (i + 1)) })
-//      }
-//      case 0 => {
-//        thisIterator
-//      }
-//      case a if a < 0 => Iterator.empty
-//    }
-//  }
-  
-  def descendantsTree(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[(A, Seq[A])] = {
-    def thisIterator(c: Seq[A]) = if (res == 0) {
-      Iterator((this, c))
-    } else {
-      Iterator.empty
+  private lazy val splittingData: (Seq[A], IndexedSeq[A]) = {
+    val startTime = System.nanoTime
+    def elapsedTimeMillis = (System.nanoTime - startTime) / 1000000
+    var done: List[A] = Nil
+    val queue = scala.collection.mutable.Queue[A](this)
+    while (queue.nonEmpty && elapsedTimeMillis < 2000) {
+      val a = queue.dequeue
+      done = a :: done
+      queue.enqueue(a.children: _*)
     }
+    (done, queue.toIndexedSeq)
+  }
 
+  def descendants(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[A] = {
+    if (mod == 1) {
+      descendantsComplete(accept)
+    } else {
+      (if (res == 0) {
+        splittingData._1.iterator.filter(a => accept(a) >= 0)
+      } else {
+        Iterator.empty
+      }) ++
+        (for (z <- (res until splittingData._2.size by mod).iterator; a <- splittingData._2(z).descendants(accept)) yield a)
+    }
+  }
+
+  //  def descendantsWithETAs(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1, estimateForOtherBranches: BigInt = 0): Iterator[(A, BigInt)] = {
+  //    def thisIterator = if (res == 0) {
+  //      Iterator((this, estimateForOtherBranches))
+  //    } else {
+  //      Iterator.empty
+  //    }
+  //
+  //    accept(this) match {
+  //      case a if a > 0 => {
+  //        val (subset, r, m) = childrenResMod(children, res, mod)
+  //        val startTime = System.nanoTime
+  //        def elapsedTime = (System.nanoTime - startTime) / 1000000000
+  //        thisIterator ++ subset.zipWithIndex.iterator.flatMap({ case (c, i) => c.descendantsWithETAs(accept, r, m, estimateForOtherBranches + (subset.size - i) * elapsedTime / (i + 1)) })
+  //      }
+  //      case 0 => {
+  //        thisIterator
+  //      }
+  //      case a if a < 0 => Iterator.empty
+  //    }
+  //  }
+
+  def descendantsTree(accept: A => Double = { _ => 1 }): Iterator[(A, Seq[A])] = {
     accept(this) match {
       case a if a > 0 => {
         val c = children
-        val (subset, r, m) = childrenResMod(c, res, mod)
-        thisIterator(c) ++ subset.iterator.flatMap(_.descendantsTree(accept, r, m))
+        Iterator((this, c)) ++ c.iterator.flatMap(_.descendantsTree(accept))
       }
-      case 0 => thisIterator(Nil)
+      case 0 => Iterator((this, Nil))
       case a if a < 0 => Iterator.empty
     }
   }
-  
-  def descendantsWithProgress(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[(A, Seq[(Int, Int)])] = {
+
+  def descendantsWithProgress(accept: A => Double = { _ => 1 }): Iterator[(A, Seq[(Int, Int)])] = {
     // TODO don't save progress forever
     val progress = scala.collection.mutable.Map[Int, Seq[(Int, Int)]](this.hashCode -> Seq((1, 1)))
-    descendantsTree(accept, res, mod).map({
+    descendantsTree(accept).map({
       case (a, children) => {
         for ((c, i) <- children.zipWithIndex) {
           progress.put(c.hashCode, progress(a.hashCode) :+ (i + 1, children.size))
@@ -228,13 +225,13 @@ trait CanonicalGenerationWithIsomorphism[A <: CanonicalGenerationWithIsomorphism
   def isomorphs: Iterator[A]
   def isomorphicTo_?(other: A) = findIsomorphismTo(other).nonEmpty
 
-  def descendantsTreeAvoiding(instances: Seq[A], accept: A => Int = { _ => 1 }) = descendantsTree({ a: A =>
-    if (instances.exists(_.isomorphicTo_?(a))) {
-      0
-    } else {
-      accept(a)
-    }
-  })
+  //  def descendantsTreeAvoiding(instances: Seq[A], accept: A => Int = { _ => 1 }) = descendantsTree({ a: A =>
+  //    if (instances.exists(_.isomorphicTo_?(a))) {
+  //      0
+  //    } else {
+  //      accept(a)
+  //    }
+  //  })
 
   def verifyParent = {
     parent.map(_.children.exists(isomorphicTo_?)).getOrElse(true)

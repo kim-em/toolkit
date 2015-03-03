@@ -1,8 +1,6 @@
 package net.tqft.toolkit.arithmetic
 
 object Factor {
-  //  val cached: Int => List[Int] = net.tqft.toolkit.functions.Memo(apply _)
-
   def apply(i: BigInt): List[BigInt] = byECM(i.toString).map(BigInt(_))
   def apply(i: Long): List[Long] = byECM(i.toString).map(_.toLong)
   def apply(n: Int): List[Int] = {
