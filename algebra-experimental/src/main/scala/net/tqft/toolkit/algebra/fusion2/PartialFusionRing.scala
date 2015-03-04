@@ -75,15 +75,19 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     root.remaining.toSeq.sorted.zip(('A' to 'Z') ++ ('a' to 'z')).toMap
   }
 
-  
-  
   object PartialFusionRing {
     def apply(shortString: String): PartialFusionRing = {
       val Seq(objects, level, matrices, dimension) = shortString.split(" ").toSeq
       require(objects.split(",").map(_.toInt).toSeq == Seq(numberOfSelfDualObjects, numberOfDualPairs))
       (0 until level.toInt).foldLeft(root)({
         case (pfr, l) => {
-          val entries = (for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank; if (matrices((i - 1) * (rank - 1) * (rank - 1) + (j - 1) * (rank - 1) + (k - 1))) == l.toChar) yield multiplicityNamer(i, j, k)).toSet
+          val entries = (
+            for (
+              i <- 1 until rank;
+              j <- 1 until rank; 
+              k <- 1 until rank; 
+              if (matrices((i - 1) * (rank - 1) * (rank - 1) + (j - 1) * (rank - 1) + (k - 1))) == l.toString.head
+            ) yield multiplicityNamer(i, j, k)).toSet
           entries.foldLeft(pfr)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
         }
       })
@@ -100,6 +104,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
     def associativity = associativityOption.get
     def associativityToString = associativity.mapVariables(stringNamer).toString
+    def associativityToMathematicaString = associativity.mapVariables(stringNamer).quadratics.map(_.completeSubstitution).mkString("{\n  ",",\n  ","\n}")
     def matrices = matricesOption.get
     def matricesToString = {
       val head = Seq.fill(rank)(Seq.fill(2 * rank + 1)("-").mkString).mkString("+", "+", "+\n")
@@ -123,7 +128,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
     override def toString = {
       if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
-        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})\n" +
+        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" +
           matricesToString // +
         //          associativityToString + 
         //          "\nclosedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 })
@@ -137,7 +142,14 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
         val s = d.toString
         s.take(s.indexOf(".") + 3)
       }
-      numberOfSelfDualObjects + "," + numberOfDualPairs + " " + level + " " + previousLevel.get.matrices.tail.map(_.tail.map(_.tail.mkString("")).mkString("")).mkString("") + " " + short(globalDimensionLowerBound)
+      def writeEntry(n: Int) = {
+        if (n == level + 1) { 
+          "?"
+        } else {
+          n.toString
+        }
+      }
+      numberOfSelfDualObjects + "," + numberOfDualPairs + " " + level + " " + matrices.tail.map(_.tail.map(_.tail.map(writeEntry).mkString("")).mkString("")).mkString("") + " " + short(globalDimensionLowerBound)
     }
 
     override def equals(other: Any) = {

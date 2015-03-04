@@ -8,11 +8,11 @@ import scala.io.Source
 
 object PartialFusionRingEnumerator extends App {
 
-  val defaultArgs = (5, 0, 20.0)
+  val defaultArgs = (5, 0, 36.0)
 
   val selfDualObjects = args.lift(0).map(_.toInt).getOrElse(defaultArgs._1)
   val dualPairs = args.lift(1).map(_.toInt).getOrElse(defaultArgs._2)
-  val globalDimensionBound = args.lift(1).map(_.toDouble).getOrElse(defaultArgs._3)
+  val globalDimensionBound = args.lift(2).map(_.toDouble).getOrElse(defaultArgs._3)
 
   val enumeration = PartialFusionRingEnumeration(selfDualObjects, dualPairs, Some(globalDimensionBound))
 
@@ -28,6 +28,7 @@ object PartialFusionRingEnumerator extends App {
   var finished = false
   val levelOne = {
     (for (line <- lines; if line != "."; dimensionString = line.split(" ").last; if dimensionString.toDouble < globalDimensionBound) yield {
+//      println(line)
       enumeration.PartialFusionRing(line)
     }).toStream
   }
@@ -35,9 +36,10 @@ object PartialFusionRingEnumerator extends App {
   var counter = 0
   val dimensions = ListBuffer[Double]()
 
-  val mod = 1024
-
-  for (root <- levelOne) {
+  println(s"Found ${levelOne.size} partial fusion rings at level 1.")
+ 
+  
+  for (root <- levelOne.par) {
     println("Considering "+root)
     for(x <- root.descendants(); if x.remaining.isEmpty) {
     println(x)

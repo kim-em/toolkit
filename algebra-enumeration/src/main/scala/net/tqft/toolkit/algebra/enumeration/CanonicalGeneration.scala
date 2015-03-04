@@ -7,6 +7,7 @@ import scala.language.reflectiveCalls
 import CanonicalGeneration.{ info }
 import scala.collection.immutable.Queue
 import net.tqft.toolkit.collections.Iterators
+import net.tqft.toolkit.algebra.Integers
 
 object CanonicalGeneration extends Logging
 
@@ -97,29 +98,89 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     }
   }
 
-  private lazy val splittingData: (Seq[A], IndexedSeq[A]) = {
+  private lazy val splittingData: (Seq[Seq[A]], IndexedSeq[Seq[A]]) = {
     val startTime = System.nanoTime
     def elapsedTimeMillis = (System.nanoTime - startTime) / 1000000
-    var done: List[A] = Nil
-    val queue = scala.collection.mutable.Queue[A](this)
+    var done: List[List[A]] = Nil
+    val queue = scala.collection.mutable.Queue[List[A]](List(this))
     while (queue.nonEmpty && elapsedTimeMillis < 2000) {
       val a = queue.dequeue
       done = a :: done
-      queue.enqueue(a.children: _*)
+      queue.enqueue(a.head.children.map(c => c :: a): _*)
     }
-    (done, queue.toIndexedSeq)
+    val todo = queue.toIndexedSeq
+    println(s"${todo.size} splitting cases available.")
+    (done, todo)
   }
 
   def descendants(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[A] = {
     if (mod == 1) {
       descendantsComplete(accept)
     } else {
+
+      def acceptAncestry(x: Seq[A]) = accept(x.head) >= 0 && x.tail.forall(a => accept(a) > 0)
+      val done = splittingData._1.filter(acceptAncestry).map(_.head)
+      val todo = splittingData._2.filter(acceptAncestry).map(_.head)
+
       (if (res == 0) {
-        splittingData._1.iterator.filter(a => accept(a) >= 0)
+        done.iterator
       } else {
         Iterator.empty
       }) ++
-        (for (z <- (res until splittingData._2.size by mod).iterator; a <- splittingData._2(z).descendants(accept)) yield a)
+        (for (
+          z <- (res until todo.size by mod).iterator;
+          r = todo(z);
+          a <- r.descendantsComplete(accept)
+        ) yield a)
+    }
+  }
+
+  def dyadicDescendants(accept: A => Double = { _ => 1 }, res: Int, exponent: Int): Iterator[A] = {
+    if (exponent == 0) {
+      descendantsComplete(accept)
+    } else {
+      def thisIterator = (if (res == 0) Iterator(this) else Iterator.empty)
+
+      accept(this) match {
+        case a if a > 0 => {
+          def selectChildren(c: Seq[A]): Seq[(A, Int, Int)] = {
+            println(s"Selecting children from $children.")
+            println(s"res = $res, exponent = $exponent")
+            val log = 32 - Integer.numberOfLeadingZeros(c.size - 1) // rounding up
+            val min = Math.min(log, exponent)
+            println(s"c.size = ${c.size}, log = $log, min = $min")
+            val result = Integers.power(2, min) match {
+              case n if n > c.size => {
+                val rn = res % n
+                if (rn < n % c.size) {
+                  // we're at the beginning
+                  Seq((c(rn), res / n, exponent - min + 1))
+                } else if (rn >= c.size) {
+                  // we've wrapped around
+                  Seq((c(rn % c.size), res / n + Integers.power(2, exponent - min), exponent - min + 1))
+                } else {
+                  // we're just in the middle
+                  Seq((c(rn), res / n, exponent - min))
+                }
+              }
+              case n if n == c.size => {
+                Seq((c(res % n), res / n, exponent - min))
+              }
+              case n if n < c.size => {
+                for (z <- res until c.size by n) yield (c(z), 0, 1)
+              }
+            }
+            for (x <- result) { println(x) }
+            println(".")
+            result
+          }
+          thisIterator ++ Iterator.continually(children).take(1).flatMap(c => selectChildren(c).map({ case (a, newRes, newExponent) => a.dyadicDescendants(accept, newRes, newExponent) })).flatten
+        }
+        case 0 => {
+          thisIterator
+        }
+        case a if a < 0 => Iterator.empty
+      }
     }
   }
 

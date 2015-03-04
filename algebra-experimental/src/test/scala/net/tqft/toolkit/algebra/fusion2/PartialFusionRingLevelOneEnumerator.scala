@@ -28,7 +28,7 @@ object PartialFusionRingLevelOneEnumerator extends App {
   val start = System.nanoTime
   def elapsed = (System.nanoTime - start) / 1000000000
   
-  for (res <- (0 until mod).par; x <- enumeration.root.descendants({ r => 1 - r.level }, res, mod); if (x.level == 1)) {
+  for (res <- (0 until mod); x <- enumeration.root.descendants({ r => 1 - r.level }, res, mod); if (x.level == 1)) {
     val ss = x.toShortString
     out.println(ss)
     println(ss)
