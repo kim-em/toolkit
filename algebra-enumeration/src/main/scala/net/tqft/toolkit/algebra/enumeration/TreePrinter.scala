@@ -150,7 +150,12 @@ object TreeMerger {
   }
 
   def merge(tree1: File, tree2: File, out: Writer): Boolean = {
-    merge(Source.fromFile(tree1).getLines, Source.fromFile(tree2).getLines, out)
+    val source1 = Source.fromFile(tree1)
+    val source2 = Source.fromFile(tree2)
+    val result = merge(source1.getLines, source2.getLines, out)
+    source1.close
+    source2.close
+    result
   }
   def merge(tree1: String, tree2: String, out: Writer): Boolean = {
     merge(Source.fromString(tree1).getLines, Source.fromString(tree2).getLines, out)
