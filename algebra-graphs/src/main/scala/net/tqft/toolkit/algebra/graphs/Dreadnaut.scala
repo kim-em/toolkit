@@ -116,9 +116,9 @@ trait Dreadnaut extends Logging {
 
 object Dreadnaut extends Dreadnaut {
   override val dreadnautPath = {
-    val localDreadnaut = new File("dreadnaut")
+    val localDreadnaut = new File("./dreadnaut")
     if (localDreadnaut.exists) {
-      localDreadnaut.toString
+      localDreadnaut.toPath.toString
     } else {
       try {
         "which dreadnaut".!!
