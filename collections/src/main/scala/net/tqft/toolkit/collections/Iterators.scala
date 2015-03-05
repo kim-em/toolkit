@@ -17,24 +17,30 @@ object Iterators {
         for (a <- i) {
           queue.put(a)
         }
-        running = running - 1
+        synchronized {
+          running = running - 1
+        }
       }
     }
     new Iterator[A] {
       var held: Option[A] = None
       override def hasNext = {
-        held.nonEmpty || {
-          while (running > 0 && { held = Option(queue.poll(1, TimeUnit.SECONDS)); held.isEmpty }) {}
-          held.nonEmpty || queue.peek != null
+        synchronized {
+          held.nonEmpty || {
+            while (running > 0 && { held = Option(queue.poll(1, TimeUnit.SECONDS)); held.isEmpty }) {}
+            held.nonEmpty || queue.peek != null
+          }
         }
       }
       override def next = {
-        if (held.nonEmpty) {
-          val r = held.get
-          held = None
-          r
-        } else {
-          queue.take
+        synchronized {
+          if (held.nonEmpty) {
+            val r = held.get
+            held = None
+            r
+          } else {
+            queue.take
+          }
         }
       }
     }
@@ -68,15 +74,15 @@ object Iterators {
         override def next = {
           val r = iterator.next
           var j = k - 1
-          while(iterator.hasNext && j > 0) {
+          while (iterator.hasNext && j > 0) {
             iterator.next
-            j = j -1
+            j = j - 1
           }
           r
         }
       }
     }
-    
+
     def distinct: Iterator[A] = {
       new Iterator[A] {
         val store = scala.collection.mutable.Set[A]()

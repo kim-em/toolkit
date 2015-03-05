@@ -25,7 +25,7 @@ object PartialFusionRingWorker extends App {
       c.copy(levelBound = Some(x))
     } text ("only enumerate fusion rings up to level <level>")
     opt[Int]('s', "step") valueName ("<step>") action { (x, c) =>
-      c.copy(levelBound = Some(x))
+      c.copy(stepsBound = Some(x))
     } text ("only enumerate fusion rings up to step <step> (steps including fixing entries and increasing the level)")
     opt[Double]('h', "hours") valueName ("<hours>") action { (x, c) =>
       c.copy(finishBy = Some(System.currentTimeMillis() + (x * 60 * 60 * 1000).toLong))
@@ -38,8 +38,8 @@ object PartialFusionRingWorker extends App {
     //      c.copy(verbose = true)
     //    } text ("verbose is a flag")
     help("help") text ("prints this usage text")
-    arg[Int]("<number-of-self-dual-objects>") action { (x, c) => c.copy(selfDualObjects = x) }
-    arg[Int]("<number-of-dual-pairs>") action { (x, c) => c.copy(dualPairs = x) }
+    arg[Int]("<number-of-self-dual-objects>") hidden() action { (x, c) => c.copy(selfDualObjects = x) }
+    arg[Int]("<number-of-dual-pairs>") hidden() action { (x, c) => c.copy(dualPairs = x) }
     checkConfig { c =>
       if (c.globalDimensionBound.nonEmpty || c.levelBound.nonEmpty || c.stepsBound.nonEmpty || c.finishBy.nonEmpty) success else failure("You have requested an infinite computation; please specify at least one bound.")
     }
@@ -49,6 +49,11 @@ object PartialFusionRingWorker extends App {
     val enumeration = PartialFusionRingEnumeration(config.selfDualObjects, config.dualPairs)
 
     val initialString = config.selfDualObjects + "," + config.dualPairs
+
+    val dir = new File("fusion-rings")
+    if (!dir.exists) {
+      dir.mkdir()
+    }
 
     val seedFile = new File("fusion-rings/" + enumeration.root.toShortString + ".tree")
     if (!seedFile.exists) {
@@ -71,6 +76,7 @@ object PartialFusionRingWorker extends App {
       if (checks.forall(_ == true)) { 1 } else { 0 }
     }
 
+    
     import net.tqft.toolkit.collections.Iterators._
     val targets = TreeReader
       .readLeaves(new File("fusion-rings"))
@@ -89,14 +95,21 @@ object PartialFusionRingWorker extends App {
     Future {
       println("Hit <enter> to request that everyone finishes up quickly and goes home.")
       StdIn.readLine
+      println("Cleaning up ...")
       pleaseFinishNow = true
     }
 
-    for (t <- targets) {
+    import net.tqft.toolkit.collections.ParIterator._
+
+    for (t <- targets.par) {
       TreePrinter[enumeration.PartialFusionRing](_.toShortString, _.steps, accept)
         .to("fusion-rings", t)
         .print(t.descendants(accept))
       println("Finished target " + t.toShortString)
+    }
+    
+    for(t <- config.finishBy) {
+      if(System.currentTimeMillis >= t) println("Time limited exceeded.")
     }
   } getOrElse {
     // arguments are bad, usage message will have been displayed

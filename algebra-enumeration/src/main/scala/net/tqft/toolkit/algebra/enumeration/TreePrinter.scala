@@ -9,6 +9,10 @@ import java.io.Writer
 import java.nio.file.Paths
 import java.nio.file.Path
 import java.nio.file.Files
+import java.io.Reader
+import java.io.FileInputStream
+import java.io.BufferedReader
+import java.io.FileReader
 
 case class TreePrinter[A](stringify: A => String, level: A => Int, accept: A => Double = { a: A => 1 }, out: PrintWriter = new PrintWriter(System.out)) {
   def to(pw: Writer): TreePrinter[A] = this.copy(out = new PrintWriter(pw))
@@ -19,23 +23,23 @@ case class TreePrinter[A](stringify: A => String, level: A => Int, accept: A => 
   def to(directory: File, a: A): TreePrinter[A] = to(directory.toPath.resolve(stringify(a) + ".tree").toFile)
 
   def print(iterator: Iterator[A]) {
-    val stack = scala.collection.mutable.Stack[A]()
+    val stack = scala.collection.mutable.Stack[(A, Double)]()
 
     var offset = -1
 
     def spaces: Stream[String] = "" #:: spaces.map(_ + " ")
 
     def printDots {
-      val y = stack.pop
-      if (accept(y) > 0) {
+      val (y, a) = stack.pop
+      if (a > 0) {
         out.println(spaces(level(y) + 1 - offset) + ".")
       }
     }
 
     for (x <- iterator) {
       if (offset == -1) offset = level(x)
-      while (stack.nonEmpty && level(stack.top) >= level(x)) printDots
-      stack.push(x)
+      while (stack.nonEmpty && level(stack.top._1) >= level(x)) printDots
+      stack.push((x, accept(x)))
       out.println(spaces(level(x) - offset) + stringify(x))
     }
 
@@ -49,7 +53,30 @@ object TreeReader {
   def readLeaves(file: File): Iterator[String] = {
     if (file.isDirectory) {
       import scala.collection.JavaConverters._
-      for (file <- Files.newDirectoryStream(file.toPath, "*.tree").iterator.asScala.map(_.toFile); leaf <- readLeaves(file)) yield leaf
+
+      def files = Files.newDirectoryStream(file.toPath, "*.tree")
+        .iterator
+        .asScala
+        .map(_.toFile)
+
+      def firstLineIfMoreThanOneLine(file: File): Option[String] = {
+        val reader = new BufferedReader(new FileReader(file))
+        val line = reader.readLine
+        val result = if (reader.readLine == null) {
+          None
+        } else {
+          Some(line)
+        }
+        reader.close
+        result
+      }
+      val roots = (for (file <- files; root <- firstLineIfMoreThanOneLine(file)) yield root).toSet
+
+      for (
+        file <- files;
+        leaf <- readLeaves(file);
+        if !roots.contains(leaf)
+      ) yield leaf
     } else {
       readLeaves(Source.fromFile(file).getLines)
     }
@@ -63,39 +90,52 @@ object TreeReader {
 object TreeMerger {
   def mergeDirectory(directory: File = new File(System.getProperty("user.dir")), filenamer: String => String = { s => s }) {
     import scala.collection.JavaConverters._
-    mergeFiles(Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile), filenamer, directory)
+    import net.tqft.toolkit.collections.Iterators._
+    val files = Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile).toSet.filter(f => Source.fromFile(f).getLines.last == " .")
+
+    mergeFiles(files, Set.empty, filenamer, directory)
   }
 
-  def mergeFiles(files: TraversableOnce[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Set[File] = {
-    val fileStream = files.toStream
-    println("Merging " + fileStream.mkString(" + "))
-    val merges = for (
-      file1 <- fileStream;
-      file2 <- fileStream;
-      if file1 != file2;
-      tmp = File.createTempFile("tree-merger-tmp", ".tree");
-      merged = merge(file1, file2, new PrintWriter(new FileOutputStream(tmp)))
-    ) yield (file1, file2, merged, tmp)
+  def mergeFiles(toMerge: Set[File], mergeInto: Set[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Set[File] = {
+    if (toMerge.isEmpty) {
+      mergeInto
+    } else {
+      println("Merging " + toMerge.size + " files.")
+      val file2 = toMerge.head
+      val merges = for (
+        file1 <- toMerge.tail ++ mergeInto;
+        tmp = File.createTempFile("tree-merger-tmp", ".tree");
+        merged = merge(file1, file2, new PrintWriter(new FileOutputStream(tmp)))
+      ) yield (file1, file2, merged, tmp)
 
-    merges.flatMap({
-      case (_, _, false, tmp) => {
-        tmp.delete
-        None
+      def firstLine(file: File) = {
+        val reader = new BufferedReader(new FileReader(file))
+        val r = reader.readLine()
+        reader.close
+        r
       }
-      case (file1, file2, true, tmp) => {
-        file1.delete
-        file2.delete
-        val newPath = outputDir.toPath.resolve(filenamer(Source.fromFile(tmp).getLines.next) + ".tree")
-        Files.move(tmp.toPath, newPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
-        Some((file1, file2, newPath.toFile))
+
+      merges.flatMap({
+        case (_, _, false, tmp) => {
+          tmp.delete
+          None
+        }
+        case (file1, file2, true, tmp) => {
+          file1.delete
+          file2.delete
+          val newPath = outputDir.toPath.resolve(filenamer(firstLine(tmp)) + ".tree")
+          Files.move(tmp.toPath, newPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+          Some((file1, file2, newPath.toFile))
+        }
+      }).toStream.headOption match {
+        case Some((deletedFile1, deletedFile2, newFile)) => {
+          mergeFiles(toMerge - deletedFile1 - deletedFile2 + newFile, mergeInto - deletedFile1 - deletedFile2, filenamer, outputDir)
+        }
+        case None => {
+          mergeFiles(toMerge.tail, mergeInto + toMerge.head, filenamer, outputDir)
+        }
       }
-    }).toStream.headOption match {
-      case Some((deletedFile1, deletedFile2, newFile)) => {
-        mergeFiles(fileStream.toSet - deletedFile1 - deletedFile2 + newFile, filenamer, outputDir)
-      }
-      case None => fileStream.toSet
     }
-
   }
 
   def merge(tree1: File, tree2: File, out: Writer): Boolean = {
@@ -104,8 +144,6 @@ object TreeMerger {
   def merge(tree1: String, tree2: String, out: Writer): Boolean = {
     merge(Source.fromString(tree1).getLines, Source.fromString(tree2).getLines, out)
   }
-
-  case class StringTree(root: String, children: Option[Iterator[StringTree]])
 
   trait PeekableIterator[A] extends Iterator[A] {
     def peek: Option[A]
@@ -199,7 +237,9 @@ object TreeMerger {
         pw.println(x)
       }
     }
-    pw.flush
+    // make sure we exhaust the iterator
+    for (x <- tree2) {}
+    pw.close
     merged
   }
 
