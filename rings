@@ -1,1 +1,5 @@
-grep -h -v " \\." * | grep -v "\\?" | sed 's/^[ \t]*//;s/[ \t]*$//' | sort
+grep -h -v " \\." fusion-rings/* | grep -v "\\?" | sed 's/^[ \t]*//;s/[ \t]*$//' >> rings.out
+cat rings.out | sort | uniq > rings.out.tmp
+mv rings.out.tmp rings.out
+cat rings.out
+
