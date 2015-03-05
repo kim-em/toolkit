@@ -134,7 +134,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
         ) yield a)
     }
   }
-
+  
   def dyadicDescendants(accept: A => Double = { _ => 1 }, res: Int, exponent: Int): Iterator[A] = {
     if (exponent == 0) {
       descendantsComplete(accept)

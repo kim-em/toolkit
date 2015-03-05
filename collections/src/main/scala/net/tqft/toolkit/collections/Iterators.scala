@@ -62,6 +62,21 @@ object Iterators {
       }
     }
 
+    def takeEvery(k: Int): Iterator[A] = {
+      new Iterator[A] {
+        override def hasNext = iterator.hasNext
+        override def next = {
+          val r = iterator.next
+          var j = k - 1
+          while(iterator.hasNext && j > 0) {
+            iterator.next
+            j = j -1
+          }
+          r
+        }
+      }
+    }
+    
     def distinct: Iterator[A] = {
       new Iterator[A] {
         val store = scala.collection.mutable.Set[A]()

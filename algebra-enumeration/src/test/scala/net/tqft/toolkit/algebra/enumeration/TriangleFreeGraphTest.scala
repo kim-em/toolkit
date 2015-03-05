@@ -69,7 +69,7 @@ class TriangleFreeGraphTest extends FlatSpec with Matchers {
   //    mod(2) should equal(mod(4))
   //    mod(72) should equal(mod(36))
   //  }
-  "dyadicDescendants" should "partition results according to a res/mod pair" in {
+  "dyadicDescendants" should "partition results according to a res/exponent pair" in {
     val n = 5
 
     val g0 = TriangleFreeGraph(1, IndexedSeq(Seq()))
