@@ -79,7 +79,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     def apply(shortString: String): PartialFusionRing = {
       val Seq(objects, level, matrices, dimension) = shortString.split(" ").toSeq
       require(objects.split(",").map(_.toInt).toSeq == Seq(numberOfSelfDualObjects, numberOfDualPairs))
-      (0 until level.toInt).foldLeft(root)({
+      (0 to level.toInt).foldLeft(root)({
         case (pfr, l) => {
           val entries = (
             for (
@@ -90,7 +90,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
             ) yield multiplicityNamer(i, j, k)).toSet
           entries.foldLeft(pfr)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
         }
-      })
+      }).previousLevel.get
     }
   }
 
@@ -137,8 +137,9 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       }
     }
     def toShortString: String = {
-      require(entries.isEmpty)
+//      require(entries.isEmpty)
       def short(d: Double) = {
+        require(d != Double.NaN)
         val s = d.toString
         s.take(s.indexOf(".") + 3)
       }
@@ -166,18 +167,30 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       case Some(p) => p.level + 1
       case None => 0
     }
+    def steps: Int = previousLevel match {
+      case Some(p) => p.steps + 1 + entries.size
+      case None => entries.size
+    }
 
+    private def fixDimension(d: Double) = {
+      if(d.toString == "NaN" || d < 1.0) {
+        1.0
+      } else {
+        d
+      }
+    }
+    
     lazy val globalDimensionLowerBound: Double = {
       val matrixRing = Matrices.ofSize[Int](rank)
       def r(m: IndexedSeq[IndexedSeq[Int]]) = for (row <- m) yield for (x <- row) yield if (x > level) level else x
       val squares = for (m <- matrices; m0 = r(m)) yield matrixRing.multiply(m0, m0.transpose)
-      (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).sum
+      (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).map(fixDimension).sum
     }
 
     lazy val globalDimensionLowerBoundAfterIncreasingLevel: Double = {
       val matrixRing = Matrices.ofSize[Int](rank)
       val squares = for (m <- matrices) yield matrixRing.multiply(m, m.transpose)
-      (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).sum
+      (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).map(fixDimension).sum
     }
 
     trait Upper {

@@ -121,7 +121,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs, scopt))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),
@@ -232,6 +232,7 @@ object Dependencies {
 	val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "16.0.1"
 	val findbugs = "com.google.code.findbugs" % "jsr305" % "1.3.9"
+	val scopt = "com.github.scopt" %% "scopt" % "3.3.0"
 	object selenium {
 		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.40.0"
 		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.40.0"
