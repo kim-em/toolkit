@@ -1,4 +1,4 @@
-grep -h -v " \\." fusion-rings/* | grep -v "\\?" | sed 's/^[ \t]*//;s/[ \t]*$//' >> rings.out
+find fusion-rings/ -name "*.tree" -print0 | xargs -0 cat | ./extract-complete-rings >> rings.out
 cat rings.out | sort | uniq > rings.out.tmp
 mv rings.out.tmp rings.out
 cat rings.out
