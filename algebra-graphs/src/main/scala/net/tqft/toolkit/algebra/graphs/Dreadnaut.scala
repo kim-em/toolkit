@@ -14,9 +14,9 @@ trait Dreadnaut extends Logging {
   def dreadnautPath: String
 
   private case class Pipes(var in: PrintWriter, var out: Iterator[String], var err: Iterator[String])
-  
+
   private val pipes = new ThreadLocal[Pipes]
-  
+
   private def in = pipes.get.in
   private def out = pipes.get.out
   private def err = pipes.get.err
@@ -115,10 +115,17 @@ trait Dreadnaut extends Logging {
 }
 
 object Dreadnaut extends Dreadnaut {
-  override val dreadnautPath = try {
-    "which dreadnaut".!!
-  } catch {
-    case e: Exception => System.getProperty("user.home") + "/bin/dreadnaut"
+  override val dreadnautPath = {
+    val localDreadnaut = new File("dreadnaut")
+    if (localDreadnaut.exists) {
+      localDreadnaut.toString
+    } else {
+      try {
+        "which dreadnaut".!!
+      } catch {
+        case e: Exception => System.getProperty("user.home") + "/bin/dreadnaut"
+      }
+    }
   }
 
   require(dreadnautPath.nonEmpty, "There doesn't appear to be a copy of dreadnaut on the $PATH.")
