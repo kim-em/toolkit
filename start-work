@@ -1,5 +1,5 @@
 ./work -s 2 $@
-./work -s 5 $@
+./work -s 5 -D 60.0 $@
 ./work -D 12.0 $@
 ./work -D 30.0 $@
 ./work -D 60.0 $@
