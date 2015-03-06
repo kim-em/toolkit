@@ -1,6 +1,10 @@
+#!/bin/bash
+
+### usage: ./qwork <number-of-workers> <arguments-for-work>
+
 mod=$1
 shift
-for i in {0..$mod}; do
+for i in `seq 0 $(($mod-1))`; do
 cat <<EOT > jobscript
 #PBS -l walltime=48:00:00,mem=3500MB
 #PBS -l wd
@@ -8,5 +12,7 @@ module load dot
 module load java
 EOT
 echo /home/251/ssm251/projects/toolkit/work -h 40.0 -r $i,$mod $* >> jobscript
+echo "Submitting job:"
+cat jobscript
 qsub jobscript
 done
