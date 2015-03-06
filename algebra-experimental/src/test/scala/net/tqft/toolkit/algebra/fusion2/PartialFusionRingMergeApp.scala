@@ -4,10 +4,20 @@ import net.tqft.toolkit.algebra.enumeration.TreeMerger
 import java.io.File
 import java.nio.file.Files
 import scala.io.Source
+import scala.concurrent.Future
+import scala.io.StdIn
 
 object PartialFusionRingMergeApp extends App {
 
   val directory = new File("fusion-rings")
+
+  import scala.concurrent.ExecutionContext.Implicits.global
+  Future {
+    println("Hit <enter> to request that everyone finishes up quickly and goes home.")
+    StdIn.readLine
+    println("Cleaning up ...")
+    TreeMerger.pleaseFinishNow = true
+  }
 
   TreeMerger.mergeDirectory(directory)
 
