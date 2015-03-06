@@ -76,12 +76,18 @@ object PartialFusionRingWorker extends App {
       if (checks.forall(_ == true)) { 1 } else { 0 }
     }
 
+    val sourceFile = if(config.mod > 1) {
+      seedFile
+    } else {
+      new File("fusion-rings")
+    }
     
     import net.tqft.toolkit.collections.Iterators._
     val targets = TreeReader
-      .readLeaves(new File("fusion-rings"))
+      .readLeaves(sourceFile)
       .filter(_.startsWith(initialString))
       .map(l => (l, l.split(" ")))
+      .filter(_._2.size == 4)
       .filter(config.levelBound.isEmpty || _._2(1).toInt <= config.levelBound.get)
       .filter(config.globalDimensionBound.isEmpty || _._2(3).toDouble <= config.globalDimensionBound.get)
       .map(_._1)

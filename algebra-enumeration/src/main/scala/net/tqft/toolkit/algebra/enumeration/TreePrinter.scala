@@ -88,10 +88,21 @@ object TreeReader {
 }
 
 object TreeMerger {
+  def fileComplete(file: File): Boolean = {
+    val reader = new BufferedReader(new FileReader(file))
+    var lastLine: String = null
+    var currentLine: String = null
+    while ({ currentLine = reader.readLine; currentLine != null }) {
+      lastLine = currentLine
+    }
+    reader.close
+    lastLine == " ."
+  }
+
   def mergeDirectory(directory: File = new File(System.getProperty("user.dir")), filenamer: String => String = { s => s }) {
     import scala.collection.JavaConverters._
     import net.tqft.toolkit.collections.Iterators._
-    val files = Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile).toSet.filter(f => Source.fromFile(f).getLines.last == " .")
+    val files = Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile).toSet.filter(fileComplete)
 
     mergeFiles(files, Set.empty, filenamer, directory)
   }
@@ -139,7 +150,12 @@ object TreeMerger {
   }
 
   def merge(tree1: File, tree2: File, out: Writer): Boolean = {
-    merge(Source.fromFile(tree1).getLines, Source.fromFile(tree2).getLines, out)
+    val source1 = Source.fromFile(tree1)
+    val source2 = Source.fromFile(tree2)
+    val result = merge(source1.getLines, source2.getLines, out)
+    source1.close
+    source2.close
+    result
   }
   def merge(tree1: String, tree2: String, out: Writer): Boolean = {
     merge(Source.fromString(tree1).getLines, Source.fromString(tree2).getLines, out)
