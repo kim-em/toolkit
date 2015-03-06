@@ -12,6 +12,8 @@ lib_managed
 project/boot
 bin
 
+jobscript.e*
+jobscript.o*
 fusion-rings/
 
 *.out
