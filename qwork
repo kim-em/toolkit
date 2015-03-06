@@ -1,0 +1,7 @@
+cat <<EOT > jobscript
+#PBS -l walltime=48:00:00,mem=3500MB
+#PBS -l wd
+module load dot
+module load java
+EOT
+echo /home/251/ssm251/projects/toolkit/work -h 40.0 $* >> jobscript
