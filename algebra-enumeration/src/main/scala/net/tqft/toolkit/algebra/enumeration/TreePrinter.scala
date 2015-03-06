@@ -49,7 +49,29 @@ case class TreePrinter[A](stringify: A => String, level: A => Int, accept: A => 
   }
 }
 
+object TreeHelper {
+  def firstLine(file: File): String = {
+    val reader = new BufferedReader(new FileReader(file))
+    val line = reader.readLine
+    reader.close
+    line
+  }
+  
+  def firstLineIfMoreThanOneLine(file: File): Option[String] = {
+    val reader = new BufferedReader(new FileReader(file))
+    val line = reader.readLine
+    val result = if (reader.readLine == null) {
+      None
+    } else {
+      Some(line)
+    }
+    reader.close
+    result
+  }
+}
+
 object TreeReader {
+
   def readLeaves(file: File): Iterator[String] = {
     if (file.isDirectory) {
       import scala.collection.JavaConverters._
@@ -59,18 +81,7 @@ object TreeReader {
         .asScala
         .map(_.toFile)
 
-      def firstLineIfMoreThanOneLine(file: File): Option[String] = {
-        val reader = new BufferedReader(new FileReader(file))
-        val line = reader.readLine
-        val result = if (reader.readLine == null) {
-          None
-        } else {
-          Some(line)
-        }
-        reader.close
-        result
-      }
-      val roots = (for (file <- files; root <- firstLineIfMoreThanOneLine(file)) yield root).toSet
+      val roots = (for (file <- files; root <- TreeHelper.firstLineIfMoreThanOneLine(file)) yield root).toSet
 
       for (
         file <- files;
@@ -88,6 +99,8 @@ object TreeReader {
 }
 
 object TreeMerger {
+  var pleaseFinishNow = false
+  
   def fileComplete(file: File): Boolean = {
     val reader = new BufferedReader(new FileReader(file))
     var lastLine: String = null
@@ -104,50 +117,51 @@ object TreeMerger {
     import net.tqft.toolkit.collections.Iterators._
     val files = Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile).toSet.filter(fileComplete)
 
-    mergeFiles(files, Set.empty, filenamer, directory)
+    mergeFiles(files, filenamer, directory)
   }
 
-  def mergeFiles(toMerge: Set[File], mergeInto: Set[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Set[File] = {
-    if (toMerge.isEmpty) {
-      mergeInto
+  def mergeFiles(toMerge: Set[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Set[File] = {
+    println(s"Merging ${toMerge.size} files.")
+    val firstLines = toMerge.map(f => (TreeHelper.firstLine(f), f)).toMap
+    def findMatchingLineInFile(f: File): Option[File] = {
+      val reader = new BufferedReader(new FileReader(f))
+      var found: Option[File] = None
+      var currentLine: String = null
+      while (found.isEmpty && { currentLine = reader.readLine; currentLine != null }) {
+        found = firstLines.get(currentLine.trim)
+        if(found.nonEmpty && found.get == f) found = None
+      }
+      reader.close
+      found
+    }
+    def findMatchingLinesInFile(f: File): Iterator[File] = {
+      Source.fromFile(f).getLines.flatMap(line => firstLines.get(line.trim)).filter(_ != f)
+    }
+    val pairs = toMerge.par.flatMap({ f => findMatchingLinesInFile(f).map(g => (f, g))}).seq
+//    val pairsWithOverlaps = toMerge.par.map({ f => (f, findMatchingLineInFile(f))}).collect({ case (f, Some(g)) => (f,g) }).seq
+//    println(s"Found ${pairsWithOverlaps.size} pairs (with overlaps) of files to merge.")
+//    val (mergingFiles, pairs) = pairsWithOverlaps.foldLeft((Set.empty[File], List.empty[(File, File)]))({ case ((seen, pairsSoFar), (f,g)) => if(seen.contains(f) || seen.contains(g)) (seen, pairsSoFar) else (seen + f + g, (f,g) :: pairsSoFar)})
+    println(s"Found ${pairs.size} pairs of files to merge.")
+    val newFiles = for((f,g) <- pairs; if f.exists && g.exists) yield {
+      val tmp = File.createTempFile("tree-merger-tmp", ".tree")
+      println(s"merging $f <--- $g")
+      require(merge(f, g, new PrintWriter(new FileOutputStream(tmp))))
+//      println(s"deleting $f")
+      f.delete
+//      println(s"deleting $g")
+      g.delete
+      val newPath = outputDir.toPath.resolve(filenamer(TreeHelper.firstLine(tmp)) + ".tree")
+//      println(s"writing $newPath")
+      Files.move(tmp.toPath, newPath)
+      newPath.toFile
+    } 
+    if(newFiles.nonEmpty && !pleaseFinishNow) {
+      mergeFiles((toMerge ++ newFiles).filter(_.exists), filenamer, outputDir)
     } else {
-      println("Merging " + toMerge.size + " files.")
-      val file2 = toMerge.head
-      val merges = for (
-        file1 <- toMerge.tail ++ mergeInto;
-        tmp = File.createTempFile("tree-merger-tmp", ".tree");
-        merged = merge(file1, file2, new PrintWriter(new FileOutputStream(tmp)))
-      ) yield (file1, file2, merged, tmp)
-
-      def firstLine(file: File) = {
-        val reader = new BufferedReader(new FileReader(file))
-        val r = reader.readLine()
-        reader.close
-        r
-      }
-
-      merges.flatMap({
-        case (_, _, false, tmp) => {
-          tmp.delete
-          None
-        }
-        case (file1, file2, true, tmp) => {
-          file1.delete
-          file2.delete
-          val newPath = outputDir.toPath.resolve(filenamer(firstLine(tmp)) + ".tree")
-          Files.move(tmp.toPath, newPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
-          Some((file1, file2, newPath.toFile))
-        }
-      }).toStream.headOption match {
-        case Some((deletedFile1, deletedFile2, newFile)) => {
-          mergeFiles(toMerge - deletedFile1 - deletedFile2 + newFile, mergeInto - deletedFile1 - deletedFile2, filenamer, outputDir)
-        }
-        case None => {
-          mergeFiles(toMerge.tail, mergeInto + toMerge.head, filenamer, outputDir)
-        }
-      }
+      toMerge
     }
   }
+
 
   def merge(tree1: File, tree2: File, out: Writer): Boolean = {
     val source1 = Source.fromFile(tree1)
