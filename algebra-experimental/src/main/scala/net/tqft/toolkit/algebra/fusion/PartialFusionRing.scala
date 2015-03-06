@@ -66,7 +66,7 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
 
     import PartialFusionRingMeasurement.reportTiming
 
-    def rowSums = ring.structureCoefficients.map(m => m.entries.map(_.sum).seq.tally.sorted)
+    def rowSums = ring.structureCoefficients.map(m => m.entries.map(_.sum).seq.tally.toSeq.sorted)
     // it seems from profiling that columnSums is completely redundant with rowSums
 
     def rowSumsBy[A: Ordering](data: Seq[A]): Seq[Int] = {
@@ -75,12 +75,12 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
           r.zip(data).map({
             case (rx, d) => rx * d.hashCode
           }).sum
-        }).seq.zip(data).map(_.hashCode).tally.sorted
+        }).seq.zip(data).map(_.hashCode).tally.toSeq.sorted
       }).zip(data).map(_.hashCode)
     }
 
     def rowSumsIterator = Iterator.iterate(depths.map(Integers.power(10, _)))(rowSumsBy)
-    def rowSumsWithTalliesIterator = rowSumsIterator.map(_.tally.map(_.swap).sorted)
+    def rowSumsWithTalliesIterator = rowSumsIterator.map(_.tally.toSeq.map(_.swap).sorted)
     def fixedPointLabels = rowSumsWithTalliesIterator.sliding(2, 1).find({ case Seq(p1, p2) => p1.map(_._1) == p2.map(_._1) }).get.head.map(_._2)
 
     def canonicalize = {
@@ -90,7 +90,7 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
 
     // about a third of cases are still going through to canonicalize
     LazyPair(
-      reportTiming(0, rowSums.tally.sorted),
+      reportTiming(0, rowSums.tally.toSeq.sorted),
       LazyPair(
         reportTiming(1, fixedPointLabels),
         reportTiming(2, canonicalize)))
@@ -161,9 +161,9 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
       // TODO would it help to do the DeleteDualPairOfObjects case??
       case DeleteSelfDualObject(k) => {
         (ring.structureCoefficients(k).entries(k)(k),
-          ring.structureCoefficients(k).entries(k).tally.sorted,
-          ring.structureCoefficients(k).entries.map(_(k)).seq.tally.sorted,
-          ring.structureCoefficients(k).entries.flatten.seq.tally.sorted)
+          ring.structureCoefficients(k).entries(k).tally.toSeq.sorted,
+          ring.structureCoefficients(k).entries.map(_(k)).seq.tally.toSeq.sorted,
+          ring.structureCoefficients(k).entries.flatten.seq.tally.toSeq.sorted)
       }
     }).refineByPartialFunction({
       case DeleteSelfDualObject(k) => Dreadnaut.canonicalize(ring.graphEncoding(depths.updated(k, -1)))

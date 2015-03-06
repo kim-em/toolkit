@@ -3,7 +3,7 @@ package net.tqft.toolkit.collections
 object Tally {
 
   implicit class Tallyable[A](i: Iterable[A]) {
-    def tally: Seq[(A, Int)] = {
+    def tally: Map[A, Int] = {
       val counter = scala.collection.mutable.Map[A, Int]()
       for(a <- i) {
         if(counter.contains(a)) {
@@ -12,7 +12,7 @@ object Tally {
           counter(a) = 1
         }
       }
-      counter.toSeq
+      counter.toMap
     }
   }
 

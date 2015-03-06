@@ -1,6 +1,8 @@
 cat <<EOT > jobscript
 #PBS -l walltime=48:00:00,mem=3500MB
 #PBS -l wd
+#PBS -M nci-notify@tqft.net
+#PBS -m abe
 module load dot
 module load java
 EOT

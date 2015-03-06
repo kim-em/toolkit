@@ -137,7 +137,6 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       }
     }
     def toShortString: String = {
-//      require(entries.isEmpty)
       def short(d: Double) = {
         require(d != Double.NaN)
         val s = d.toString

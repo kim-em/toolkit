@@ -134,7 +134,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
         ) yield a)
     }
   }
-  
+
   def dyadicDescendants(accept: A => Double = { _ => 1 }, res: Int, exponent: Int): Iterator[A] = {
     if (exponent == 0) {
       descendantsComplete(accept)
@@ -144,35 +144,39 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
       accept(this) match {
         case a if a > 0 => {
           def selectChildren(c: Seq[A]): Seq[(A, Int, Int)] = {
-            println(s"Selecting children from $children.")
-            println(s"res = $res, exponent = $exponent")
-            val log = 32 - Integer.numberOfLeadingZeros(c.size - 1) // rounding up
-            val min = Math.min(log, exponent)
-            println(s"c.size = ${c.size}, log = $log, min = $min")
-            val result = Integers.power(2, min) match {
-              case n if n > c.size => {
-                val rn = res % n
-                if (rn < n % c.size) {
-                  // we're at the beginning
-                  Seq((c(rn), res / n, exponent - min + 1))
-                } else if (rn >= c.size) {
-                  // we've wrapped around
-                  Seq((c(rn % c.size), res / n + Integers.power(2, exponent - min), exponent - min + 1))
-                } else {
-                  // we're just in the middle
-                  Seq((c(rn), res / n, exponent - min))
+            if (c.isEmpty) {
+              Seq.empty
+            } else {
+//              println(s"Selecting children from $children.")
+//              println(s"res = $res, exponent = $exponent")
+              val log = 32 - Integer.numberOfLeadingZeros(c.size - 1) // rounding up
+              val min = Math.min(log, exponent)
+//              println(s"c.size = ${c.size}, log = $log, min = $min")
+              val result = Integers.power(2, min) match {
+                case n if n > c.size => {
+                  val rn = res % n
+                  if (rn < n % c.size) {
+                    // we're at the beginning
+                    Seq((c(rn), res / n, exponent - min + 1))
+                  } else if (rn >= c.size) {
+                    // we've wrapped around
+                    Seq((c(rn % c.size), res / n + Integers.power(2, exponent - min), exponent - min + 1))
+                  } else {
+                    // we're just in the middle
+                    Seq((c(rn), res / n, exponent - min))
+                  }
+                }
+                case n if n == c.size => {
+                  Seq((c(res % n), res / n, exponent - min))
+                }
+                case n if n < c.size => {
+                  for (z <- res until c.size by n) yield (c(z), 0, 1)
                 }
               }
-              case n if n == c.size => {
-                Seq((c(res % n), res / n, exponent - min))
-              }
-              case n if n < c.size => {
-                for (z <- res until c.size by n) yield (c(z), 0, 1)
-              }
+//              for (x <- result) { println(x) }
+//              println(".")
+              result
             }
-            for (x <- result) { println(x) }
-            println(".")
-            result
           }
           thisIterator ++ Iterator.continually(children).take(1).flatMap(c => selectChildren(c).map({ case (a, newRes, newExponent) => a.dyadicDescendants(accept, newRes, newExponent) })).flatten
         }

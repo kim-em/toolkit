@@ -10,29 +10,11 @@ trait Substitutable[X <: Substitutable[X, S], S] {
   def variables: Set[S]
 }
 
-// TODO split up quadratics which are sums of terms of the same sign.
-
 case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[QuadraticState[S]]) {
-  lazy val variableTallies = {
-    import net.tqft.toolkit.collections.Tally._
-    quadratics.flatMap(_.variables).tally
-  }
-  lazy val mostFrequentVariables = {
-    if (variableTallies.isEmpty) {
-      Seq.empty
-    } else {
-      val max = variableTallies.map(_._2).max
-      variableTallies.filter(_._2 == max).map(_._1)
-    }
-  }
-  lazy val closedVariableTallies = {
-    import net.tqft.toolkit.collections.Tally._
-    quadratics.flatMap(_.closedVariables).tally.toMap
-  }
   lazy val closedVariablesByNumberOfVariables: Map[S, Map[Int, Int]] = {
     import net.tqft.toolkit.collections.Tally._
     (for (s <- closedVariables) yield {
-      s -> quadratics.map(q => q.closedVariablesByNumberOfVariables.get(s).getOrElse(q.completeSubstitution.variables.size)).tally.toMap
+      s -> quadratics.map(q => q.closedVariablesByNumberOfVariables.get(s).getOrElse(q.completeSubstitution.variables.size)).tally
     }).toMap
   }
   def variables = quadratics.flatMap({ q: QuadraticState[S] => q.variables }).toSet
@@ -166,8 +148,8 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
         linearCoefficient + quadraticCoefficient
       }
       (QuadraticTerm(1, coefficient, term) match {
-        case LinearTerm(l) => Quadratic(newLinearTerm + l, newQuadraticTerms)
-        case e => Quadratic(newLinearTerm, e +: newQuadraticTerms)
+        case LinearTerm(l) => Quadratic(newLinearTerm + l, newQuadraticTerms.sortBy(_.hashCode))
+        case e => Quadratic(newLinearTerm, (e +: newQuadraticTerms).sortBy(_.hashCode))
       }).factor
     }
   }
@@ -216,7 +198,7 @@ object LinearTerm {
         x.constant + y.constant,
         (x.terms.keySet ++ y.terms.keySet).map(s => s -> (x.terms.getOrElse(s, 0) + y.terms.getOrElse(s, 0))).filter(_._2 != 0).toMap)
     }
-  }
+  }  
 }
 
 case class LinearTerm[S](constant: Int, terms: Map[S, Int]) extends Substitutable[LinearTerm[S], S] {

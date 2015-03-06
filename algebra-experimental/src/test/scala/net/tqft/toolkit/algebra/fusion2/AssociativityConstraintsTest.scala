@@ -17,11 +17,8 @@ class AssociativityConstraintsTest extends FlatSpec with Matchers {
 
   "SystemOfQuadratics.preferredSubstitutionVariables" should "report the best variables to evaluate next" in {
     val s = PartialFusionRingEnumeration(6, 0).root.associativity
-    println(s.mostFrequentVariables)
     val s2 = s.substitute((1, 1, 1), 0).get
-    println(s2.mostFrequentVariables)
     val s3 = s2.substitute((1, 1, 2), 0).get
-    println(s3.mostFrequentVariables)
   }
 
 }

@@ -198,13 +198,13 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
     }).refineByPartialFunction({
       case DeleteSelfDualVertex(graph, index) => {
         import net.tqft.toolkit.collections.Tally._
-        pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index).tally.map(_._2).sorted
+        pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index).tally.values.toSeq.sorted
       }
     }) .refineByPartialFunction({
       case DeleteDualPairAtEvenDepth(graph, index) => {
         import net.tqft.toolkit.collections.Tally._
-        Seq(pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index).tally.map(_._2).sorted,
-          pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index + 1).tally.map(_._2).sorted).sorted
+        Seq(pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index).tally.values.toSeq.sorted,
+          pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index + 1).tally.values.toSeq.sorted).sorted
       }
     }) .refineByPartialFunction({
         case DeleteSelfDualVertex(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index))))
@@ -378,8 +378,8 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
     }).refineByPartialFunction({
       case DeleteDualPairAtOddDepth(index) => {
         import net.tqft.toolkit.collections.Tally._
-        (pair(0).bigraph.downUpNeighbours(pair(0).bigraph.depth, index).tally.map(_._2).sorted,
-          pair(1).bigraph.downUpNeighbours(pair(1).bigraph.depth, index).tally.map(_._2).sorted)
+        (pair(0).bigraph.downUpNeighbours(pair(0).bigraph.depth, index).tally.values.toSeq.sorted,
+          pair(1).bigraph.downUpNeighbours(pair(1).bigraph.depth, index).tally.values.toSeq.sorted)
       }
     }).refineByPartialFunction({
       case DeleteDualPairAtOddDepth(index) => {

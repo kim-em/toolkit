@@ -78,7 +78,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   def dangle = {
     import net.tqft.toolkit.collections.Tally._
-    (0 +: neighboursOf(0).filterNot(_ == 0).tally.map(_._2)).max
+    (0 +: neighboursOf(0).filterNot(_ == 0).tally.values.toSeq).max
   }
 
   def edgesAdjacentTo(vertex: Int): Seq[Int] = vertexFlags(vertex).map(_._1)
