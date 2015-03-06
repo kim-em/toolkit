@@ -6,5 +6,5 @@ cat <<EOT > jobscript
 module load dot
 module load java
 EOT
-echo /home/251/ssm251/projects/toolkit/start-work $* >> jobscript
+echo /home/251/ssm251/projects/toolkit/start-work -q $* >> jobscript
 qsub jobscript
