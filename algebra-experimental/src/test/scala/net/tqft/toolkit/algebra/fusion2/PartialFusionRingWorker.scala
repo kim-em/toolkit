@@ -14,7 +14,7 @@ import scala.concurrent.Future
 
 object PartialFusionRingWorker extends App {
 
-  case class Config(selfDualObjects: Int = 5, dualPairs: Int = 0, res: Int = 0, mod: Int = 1, globalDimensionBound: Option[Double] = None, levelBound: Option[Int] = None, stepsBound: Option[Int] = None, finishBy: Option[Long] = None, verbose: Boolean = false)
+  case class Config(selfDualObjects: Int = 5, dualPairs: Int = 0, res: Int = 0, mod: Int = 1, globalDimensionBound: Option[Double] = None, levelBound: Option[Int] = None, stepsBound: Option[Int] = None, finishBy: Option[Long] = None, batch: Boolean = false, verbose: Boolean = false)
 
   val parser = new scopt.OptionParser[Config]("PartialFusionRingWorker") {
     head("PartialFusionRingWorker", "1.0")
@@ -30,6 +30,9 @@ object PartialFusionRingWorker extends App {
     opt[Double]('h', "hours") valueName ("<hours>") action { (x, c) =>
       c.copy(finishBy = Some(System.currentTimeMillis() + (x * 60 * 60 * 1000).toLong))
     } text ("run for at most <hours> hours")
+    opt[Unit]('q', "batch") action { (_, c) =>
+      c.copy(batch = true)
+    } text ("disable keyboard interrupt")
     opt[Seq[Int]]('r', "resmod") valueName ("<res>,<mod>") action {
       case (Seq(r, m), c) =>
         c.copy(res = r, mod = m)
@@ -38,8 +41,8 @@ object PartialFusionRingWorker extends App {
     //      c.copy(verbose = true)
     //    } text ("verbose is a flag")
     help("help") text ("prints this usage text")
-    arg[Int]("<number-of-self-dual-objects>") hidden() action { (x, c) => c.copy(selfDualObjects = x) }
-    arg[Int]("<number-of-dual-pairs>") hidden() action { (x, c) => c.copy(dualPairs = x) }
+    arg[Int]("<number-of-self-dual-objects>") hidden () action { (x, c) => c.copy(selfDualObjects = x) }
+    arg[Int]("<number-of-dual-pairs>") hidden () action { (x, c) => c.copy(dualPairs = x) }
     checkConfig { c =>
       if (c.globalDimensionBound.nonEmpty || c.levelBound.nonEmpty || c.stepsBound.nonEmpty || c.finishBy.nonEmpty) success else failure("You have requested an infinite computation; please specify at least one bound.")
     }
@@ -76,12 +79,12 @@ object PartialFusionRingWorker extends App {
       if (checks.forall(_ == true)) { 1 } else { 0 }
     }
 
-    val sourceFile = if(config.mod > 1) {
+    val sourceFile = if (config.mod > 1) {
       seedFile
     } else {
       new File("fusion-rings")
     }
-    
+
     import net.tqft.toolkit.collections.Iterators._
     val targets = TreeReader
       .readLeaves(sourceFile)
@@ -97,12 +100,14 @@ object PartialFusionRingWorker extends App {
       .takeEvery(config.mod)
       .map({ x => println("Found target " + x.toShortString); x })
 
-    import scala.concurrent.ExecutionContext.Implicits.global
-    Future {
-      println("Hit <enter> to request that everyone finishes up quickly and goes home.")
-      StdIn.readLine
-      println("Cleaning up ...")
-      pleaseFinishNow = true
+    if (!config.batch) {
+      import scala.concurrent.ExecutionContext.Implicits.global
+      Future {
+        println("Hit <enter> to request that everyone finishes up quickly and goes home.")
+        StdIn.readLine
+        println("Cleaning up ...")
+        pleaseFinishNow = true
+      }
     }
 
     import net.tqft.toolkit.collections.ParIterator._
@@ -113,9 +118,9 @@ object PartialFusionRingWorker extends App {
         .print(t.descendants(accept))
       println("Finished target " + t.toShortString)
     }
-    
-    for(t <- config.finishBy) {
-      if(System.currentTimeMillis >= t) println("Time limited exceeded.")
+
+    for (t <- config.finishBy) {
+      if (System.currentTimeMillis >= t) println("Time limited exceeded.")
     }
   } getOrElse {
     // arguments are bad, usage message will have been displayed
