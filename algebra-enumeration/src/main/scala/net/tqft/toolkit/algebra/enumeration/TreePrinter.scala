@@ -92,6 +92,7 @@ object TreeHelper {
         !closed && (cached.nonEmpty || readCache)
       }
       override def next = {
+        if(!hasNext) Iterator.empty.next
         val r = cached.get
         cached = None
         r
