@@ -56,7 +56,7 @@ object TreeHelper {
     reader.close
     line
   }
-  
+
   def firstLineIfMoreThanOneLine(file: File): Option[String] = {
     val reader = new BufferedReader(new FileReader(file))
     val line = reader.readLine
@@ -68,6 +68,37 @@ object TreeHelper {
     reader.close
     result
   }
+
+  def lines(f: File): Iterator[String] = {
+    new Iterator[String] {
+      val br = new BufferedReader(new FileReader(f))
+      var cached: Option[String] = None
+      var closed = false
+      def readCache = {
+        br.readLine match {
+          case null => {
+            closed = true
+            br.close
+            cached = None
+            false
+          }
+          case line => {
+            cached = Some(line)
+            true
+          }
+        }
+      }
+      override def hasNext = {
+        !closed && (cached.nonEmpty || readCache)
+      }
+      override def next = {
+        val r = cached.get
+        cached = None
+        r
+      }
+    }
+  }
+
 }
 
 object TreeReader {
@@ -89,7 +120,7 @@ object TreeReader {
         if !roots.contains(leaf)
       ) yield leaf
     } else {
-      readLeaves(Source.fromFile(file).getLines)
+      readLeaves(TreeHelper.lines(file))
     }
   }
   def readLeaves(lines: Iterator[String]): Iterator[String] = {
@@ -100,7 +131,7 @@ object TreeReader {
 
 object TreeMerger {
   var pleaseFinishNow = false
-  
+
   def fileComplete(file: File): Boolean = {
     val reader = new BufferedReader(new FileReader(file))
     var lastLine: String = null
@@ -129,47 +160,41 @@ object TreeMerger {
       var currentLine: String = null
       while (found.isEmpty && { currentLine = reader.readLine; currentLine != null }) {
         found = firstLines.get(currentLine.trim)
-        if(found.nonEmpty && found.get == f) found = None
+        if (found.nonEmpty && found.get == f) found = None
       }
       reader.close
       found
     }
     def findMatchingLinesInFile(f: File): Iterator[File] = {
-      Source.fromFile(f).getLines.flatMap(line => firstLines.get(line.trim)).filter(_ != f)
+      TreeHelper.lines(f).flatMap(line => firstLines.get(line.trim)).filter(_ != f)
     }
-    val pairs = toMerge.par.flatMap({ f => findMatchingLinesInFile(f).map(g => (f, g))}).seq
-//    val pairsWithOverlaps = toMerge.par.map({ f => (f, findMatchingLineInFile(f))}).collect({ case (f, Some(g)) => (f,g) }).seq
-//    println(s"Found ${pairsWithOverlaps.size} pairs (with overlaps) of files to merge.")
-//    val (mergingFiles, pairs) = pairsWithOverlaps.foldLeft((Set.empty[File], List.empty[(File, File)]))({ case ((seen, pairsSoFar), (f,g)) => if(seen.contains(f) || seen.contains(g)) (seen, pairsSoFar) else (seen + f + g, (f,g) :: pairsSoFar)})
+    val pairs = toMerge.par.flatMap({ f => findMatchingLinesInFile(f).map(g => (f, g)) }).seq
+    //    val pairsWithOverlaps = toMerge.par.map({ f => (f, findMatchingLineInFile(f))}).collect({ case (f, Some(g)) => (f,g) }).seq
+    //    println(s"Found ${pairsWithOverlaps.size} pairs (with overlaps) of files to merge.")
+    //    val (mergingFiles, pairs) = pairsWithOverlaps.foldLeft((Set.empty[File], List.empty[(File, File)]))({ case ((seen, pairsSoFar), (f,g)) => if(seen.contains(f) || seen.contains(g)) (seen, pairsSoFar) else (seen + f + g, (f,g) :: pairsSoFar)})
     println(s"Found ${pairs.size} pairs of files to merge.")
-    val newFiles = for((f,g) <- pairs; if f.exists && g.exists) yield {
+    val newFiles = for ((f, g) <- pairs; if f.exists && g.exists) yield {
       val tmp = File.createTempFile("tree-merger-tmp", ".tree")
       println(s"merging $f <--- $g")
       require(merge(f, g, new PrintWriter(new FileOutputStream(tmp))))
-//      println(s"deleting $f")
+      //      println(s"deleting $f")
       f.delete
-//      println(s"deleting $g")
+      //      println(s"deleting $g")
       g.delete
       val newPath = outputDir.toPath.resolve(filenamer(TreeHelper.firstLine(tmp)) + ".tree")
-//      println(s"writing $newPath")
+      //      println(s"writing $newPath")
       Files.move(tmp.toPath, newPath)
       newPath.toFile
-    } 
-    if(newFiles.nonEmpty && !pleaseFinishNow) {
+    }
+    if (newFiles.nonEmpty && !pleaseFinishNow) {
       mergeFiles((toMerge ++ newFiles).filter(_.exists), filenamer, outputDir)
     } else {
       toMerge
     }
   }
 
-
   def merge(tree1: File, tree2: File, out: Writer): Boolean = {
-    val source1 = Source.fromFile(tree1)
-    val source2 = Source.fromFile(tree2)
-    val result = merge(source1.getLines, source2.getLines, out)
-    source1.close
-    source2.close
-    result
+    merge(TreeHelper.lines(tree1), TreeHelper.lines(tree2), out)
   }
   def merge(tree1: String, tree2: String, out: Writer): Boolean = {
     merge(Source.fromString(tree1).getLines, Source.fromString(tree2).getLines, out)

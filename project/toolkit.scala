@@ -233,6 +233,7 @@ object Dependencies {
 	val guava = "com.google.guava" % "guava" % "16.0.1"
 	val findbugs = "com.google.code.findbugs" % "jsr305" % "1.3.9"
 	val scopt = "com.github.scopt" %% "scopt" % "3.3.0"
+	val arm = "com.jsuereth" %% "scala-arm" % "1.4"
 	object selenium {
 		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.40.0"
 		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.40.0"
