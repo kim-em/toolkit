@@ -171,11 +171,12 @@ object TreeMerger {
       for (line <- mergeManyFiles(TreeHelper.lines(mergeTo), firstLines.filter(_._2 != mergeTo), mergedFiles)) pw.println(line)
 
       pw.close
-
+      
       if (mergedFiles.isEmpty) {
         tmp.delete
         None
       } else {
+        println("Finished merging")
         mergeTo.delete
         for (f <- mergedFiles) f.delete
 
