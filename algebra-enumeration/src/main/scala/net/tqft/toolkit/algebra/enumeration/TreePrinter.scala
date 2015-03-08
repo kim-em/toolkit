@@ -215,7 +215,7 @@ object TreeMerger {
                 println("      <--- " + file)
                 mergedFiles += file
                 val fileIterator = TreeHelper.lines(file).peekable
-                val shift = offset - indenting(fileIterator.peek.get)
+                val shift = indenting(next) - indenting(fileIterator.peek.get)
                 val padding = if (shift > 0) Seq.fill(shift)(" ").mkString else ""
                 def shiftString(s: String) = {
                   if (shift <= 0) {
@@ -333,8 +333,6 @@ object TreeMerger {
     def simplify: X
   }
 
-  trait SimplifiableIterator[X] extends Iterator[X] with Simplifiable[Iterator[X]]
-
   trait FancyIterator[X] extends PeekableIterator[X] with Simplifiable[FancyIterator[X]]
 
   object FancyIterator {
@@ -360,7 +358,7 @@ object TreeMerger {
         if (!peekable1.hasNext) {
           ???
         } else if (!peekable2.hasNext) {
-          peekable1
+          peekable1.simplify
         } else {
           this
         }
@@ -369,14 +367,16 @@ object TreeMerger {
       override def peek = {
         if (peekable1.hasNext) {
           if (peekable2.hasNext) {
-            val i1 = indenting(peekable1.peek.get)
-            val i2 = indenting(peekable2.peek.get)
+            val p1 = peekable1.peek
+            val p2 = peekable2.peek
+            val i1 = indenting(p1.get)
+            val i2 = indenting(p2.get)
             if (i1 == i2) {
-              peekable1.peek.ensuring(_ == peekable2.peek)
+              p1.ensuring(_ == p2)
             } else if (i1 < i2) {
-              peekable2.peek
+              p2
             } else {
-              peekable1.peek
+              p1
             }
           } else {
             peekable1.peek
