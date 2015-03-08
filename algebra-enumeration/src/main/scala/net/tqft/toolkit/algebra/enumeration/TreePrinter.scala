@@ -211,7 +211,7 @@ object TreeMerger {
         iterator.peek match {
           case Some(next) => {
             mergeFrom.get(next.trim) match {
-              case Some(file) => {
+              case Some(file) if file.exists => {
                 println("      <--- " + file)
                 mergedFiles += file
                 val fileIterator = TreeHelper.lines(file).peekable
