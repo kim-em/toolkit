@@ -227,7 +227,7 @@ object TreeMerger {
                 iterator = mergeIterators(iterator.simplify, fileIterator.map(shiftString))
                 iterator.next
               }
-              case None => iterator.next
+              case _ => iterator.next
             }
           }
           case None => Iterator.empty.next
