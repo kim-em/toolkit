@@ -156,9 +156,6 @@ object TreeMerger {
   def mergeFiles(toMerge: Set[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Set[File] = {
     println(s"Merging ${toMerge.size} files.")
     val firstLines = toMerge.map(f => (TreeHelper.firstLine(f), f)).toMap
-    def findMatchingLinesInFile(f: File): Map[String, File] = {
-      TreeHelper.lines(f).flatMap(line => firstLines.get(line.trim).map(f => (line.trim, f))).toMap.filter(_._2 != f)
-    }
     val newFiles = (for (
       mergeTo <- toMerge;
       if mergeTo.exists;
@@ -209,7 +206,7 @@ object TreeMerger {
       override def next: String = {
         iterator.peek match {
           case Some(next) => {
-            mergeFrom.get(next) match {
+            mergeFrom.get(next.trim) match {
               case Some(file) => {
                 println("      <--- " + file)
                 mergedFiles += file
