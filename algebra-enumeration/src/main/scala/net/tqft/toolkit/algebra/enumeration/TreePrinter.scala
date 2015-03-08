@@ -168,7 +168,10 @@ object TreeMerger {
 
       val mergedFiles = scala.collection.mutable.Set[File]()
 
-      for (line <- mergeManyFiles(TreeHelper.lines(mergeTo), firstLines.filter(_._2 != mergeTo), mergedFiles)) pw.println(line)
+      for (line <- mergeManyFiles(TreeHelper.lines(mergeTo), firstLines.filter(_._2 != mergeTo), mergedFiles)) {
+       println(line) 
+      pw.println(line)
+      }
 
       pw.close
       
