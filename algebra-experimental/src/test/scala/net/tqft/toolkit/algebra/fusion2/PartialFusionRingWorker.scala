@@ -88,8 +88,7 @@ object PartialFusionRingWorker extends App {
 
     import net.tqft.toolkit.collections.Iterators._
     val targets = TreeReader
-      .readLeaves(sourceFile)
-      .filter(_.startsWith(initialString))
+      .readLeaves(sourceFile, initialString)
       .map(l => (l, l.split(" ")))
       .filter(_._2.size == 4)
       .filter(config.levelBound.isEmpty || _._2(1).toInt <= config.levelBound.get)

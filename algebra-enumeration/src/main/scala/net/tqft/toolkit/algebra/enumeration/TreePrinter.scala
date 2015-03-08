@@ -105,11 +105,11 @@ object TreeHelper {
 
 object TreeReader {
 
-  def readLeaves(file: File): Iterator[String] = {
+  def readLeaves(file: File, prefix: String = ""): Iterator[String] = {
     if (file.isDirectory) {
       import scala.collection.JavaConverters._
 
-      def files = Files.newDirectoryStream(file.toPath, "*.tree")
+      def files = Files.newDirectoryStream(file.toPath, prefix + "*.tree")
         .iterator
         .asScala
         .map(_.toFile)
