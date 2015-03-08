@@ -13,6 +13,7 @@ import java.io.Reader
 import java.io.FileInputStream
 import java.io.BufferedReader
 import java.io.FileReader
+import java.io.FileWriter
 
 case class TreePrinter[A](stringify: A => String, level: A => Int, accept: A => Double = { a: A => 1 }, out: PrintWriter = new PrintWriter(System.out)) {
   def to(pw: Writer): TreePrinter[A] = this.copy(out = new PrintWriter(pw))
@@ -92,7 +93,7 @@ object TreeHelper {
         !closed && (cached.nonEmpty || readCache)
       }
       override def next = {
-        if(!hasNext) Iterator.empty.next
+        if (!hasNext) Iterator.empty.next
         val r = cached.get
         cached = None
         r
@@ -155,44 +156,122 @@ object TreeMerger {
   def mergeFiles(toMerge: Set[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Set[File] = {
     println(s"Merging ${toMerge.size} files.")
     val firstLines = toMerge.map(f => (TreeHelper.firstLine(f), f)).toMap
-    def findMatchingLineInFile(f: File): Option[File] = {
-      val reader = new BufferedReader(new FileReader(f))
-      var found: Option[File] = None
-      var currentLine: String = null
-      while (found.isEmpty && { currentLine = reader.readLine; currentLine != null }) {
-        found = firstLines.get(currentLine.trim)
-        if (found.nonEmpty && found.get == f) found = None
-      }
-      reader.close
-      found
+    def findMatchingLinesInFile(f: File): Iterator[(String, File)] = {
+      TreeHelper.lines(f).flatMap(line => firstLines.get(line.trim).map(f => (line.trim, f))).filter(_._2 != f)
     }
-    def findMatchingLinesInFile(f: File): Iterator[File] = {
-      TreeHelper.lines(f).flatMap(line => firstLines.get(line.trim)).filter(_ != f)
-    }
-    val pairs = toMerge.par.flatMap({ f => findMatchingLinesInFile(f).map(g => (f, g)) }).seq
-    //    val pairsWithOverlaps = toMerge.par.map({ f => (f, findMatchingLineInFile(f))}).collect({ case (f, Some(g)) => (f,g) }).seq
-    //    println(s"Found ${pairsWithOverlaps.size} pairs (with overlaps) of files to merge.")
-    //    val (mergingFiles, pairs) = pairsWithOverlaps.foldLeft((Set.empty[File], List.empty[(File, File)]))({ case ((seen, pairsSoFar), (f,g)) => if(seen.contains(f) || seen.contains(g)) (seen, pairsSoFar) else (seen + f + g, (f,g) :: pairsSoFar)})
-    println(s"Found ${pairs.size} pairs of files to merge.")
-    val newFiles = for ((f, g) <- pairs; if f.exists && g.exists) yield {
+    val mergeSets = toMerge.map({ f => (f, findMatchingLinesInFile(f)) }).toMap
+    val newFiles = (for (
+      (mergeTo, mergeFrom) <- mergeSets;
+      if mergeTo.exists;
+      if !pleaseFinishNow;
+      mergeFromSet = mergeFrom.filter(_._2.exists).toMap;
+      if mergeFromSet.nonEmpty
+    ) yield {
+      println("Merging into " + mergeTo)
+
+      for ((_, f) <- mergeFromSet) println("      <--- " + f)
+
       val tmp = File.createTempFile("tree-merger-tmp", ".tree")
-      println(s"merging $f <--- $g")
-      require(merge(f, g, new PrintWriter(new FileOutputStream(tmp))))
-      //      println(s"deleting $f")
-      f.delete
-      //      println(s"deleting $g")
-      g.delete
+      val pw = new PrintWriter(new FileWriter(tmp))
+
+      for (line <- mergeManyFiles(TreeHelper.lines(mergeTo), mergeFromSet)) pw.println(line)
+
+      pw.close
+
+      mergeTo.delete
+      for ((_, f) <- mergeFromSet) f.delete
+
       val newPath = outputDir.toPath.resolve(filenamer(TreeHelper.firstLine(tmp)) + ".tree")
-      //      println(s"writing $newPath")
       Files.move(tmp.toPath, newPath)
+
       newPath.toFile
-    }
+    }).toSet
+
     if (newFiles.nonEmpty && !pleaseFinishNow) {
       mergeFiles((toMerge ++ newFiles).filter(_.exists), filenamer, outputDir)
     } else {
       toMerge
     }
   }
+
+  def mergeManyFiles(mergeTo: Iterator[String], mergeFrom: Map[String, File], filename: String => String = { s => s }): Iterator[String] = {
+    import PeekableIterator._
+    new Iterator[String] {
+      var iterator: PeekableIterator[String] = mergeTo.peekable
+
+      val offset = indenting(iterator.peek.get)
+
+      override def hasNext: Boolean = {
+        iterator.hasNext
+      }
+      override def next: String = {
+        iterator.peek match {
+          case Some(next) => {
+            mergeFrom.get(next) match {
+              case Some(file) => {
+                val fileIterator = TreeHelper.lines(file).peekable
+                val shift = offset - indenting(fileIterator.peek.get)
+                val padding = if (shift > 0) Seq.fill(shift)(" ").mkString else ""
+                def shiftString(s: String) = {
+                  if (shift <= 0) {
+                    s.drop(-shift)
+                  } else {
+                    padding + s
+                  }
+                }
+                iterator = mergeIterators(iterator, fileIterator.map(shiftString)).peekable
+                iterator.next
+              }
+              case None => iterator.next
+            }
+          }
+          case None => Iterator.empty.next
+        }
+      }
+    }
+  }
+
+  //  def mergeFiles(toMerge: Set[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Set[File] = {
+  //    println(s"Merging ${toMerge.size} files.")
+  //    val firstLines = toMerge.map(f => (TreeHelper.firstLine(f), f)).toMap
+  //    def findMatchingLineInFile(f: File): Option[File] = {
+  //      val reader = new BufferedReader(new FileReader(f))
+  //      var found: Option[File] = None
+  //      var currentLine: String = null
+  //      while (found.isEmpty && { currentLine = reader.readLine; currentLine != null }) {
+  //        found = firstLines.get(currentLine.trim)
+  //        if (found.nonEmpty && found.get == f) found = None
+  //      }
+  //      reader.close
+  //      found
+  //    }
+  //    def findMatchingLinesInFile(f: File): Iterator[File] = {
+  //      TreeHelper.lines(f).flatMap(line => firstLines.get(line.trim)).filter(_ != f)
+  //    }
+  //    val pairs = toMerge.par.flatMap({ f => findMatchingLinesInFile(f).map(g => (f, g)) }).seq
+  //    //    val pairsWithOverlaps = toMerge.par.map({ f => (f, findMatchingLineInFile(f))}).collect({ case (f, Some(g)) => (f,g) }).seq
+  //    //    println(s"Found ${pairsWithOverlaps.size} pairs (with overlaps) of files to merge.")
+  //    //    val (mergingFiles, pairs) = pairsWithOverlaps.foldLeft((Set.empty[File], List.empty[(File, File)]))({ case ((seen, pairsSoFar), (f,g)) => if(seen.contains(f) || seen.contains(g)) (seen, pairsSoFar) else (seen + f + g, (f,g) :: pairsSoFar)})
+  //    println(s"Found ${pairs.size} pairs of files to merge.")
+  //    val newFiles = for ((f, g) <- pairs; if f.exists && g.exists) yield {
+  //      val tmp = File.createTempFile("tree-merger-tmp", ".tree")
+  //      println(s"merging $f <--- $g")
+  //      require(merge(f, g, new PrintWriter(new FileOutputStream(tmp))))
+  //      //      println(s"deleting $f")
+  //      f.delete
+  //      //      println(s"deleting $g")
+  //      g.delete
+  //      val newPath = outputDir.toPath.resolve(filenamer(TreeHelper.firstLine(tmp)) + ".tree")
+  //      //      println(s"writing $newPath")
+  //      Files.move(tmp.toPath, newPath)
+  //      newPath.toFile
+  //    }
+  //    if (newFiles.nonEmpty && !pleaseFinishNow) {
+  //      mergeFiles((toMerge ++ newFiles).filter(_.exists), filenamer, outputDir)
+  //    } else {
+  //      toMerge
+  //    }
+  //  }
 
   def merge(tree1: File, tree2: File, out: Writer): Boolean = {
     merge(TreeHelper.lines(tree1), TreeHelper.lines(tree2), out)
@@ -206,6 +285,10 @@ object TreeMerger {
   }
 
   object PeekableIterator {
+    implicit class Peekable[A](iterator: Iterator[A]) {
+      def peekable: PeekableIterator[A] = apply(iterator)
+    }
+
     def apply[A](iterator: Iterator[A]): PeekableIterator[A] = PeekableIteratorImplementation(iterator)
     private case class PeekableIteratorImplementation[A](iterator: Iterator[A], var nextOption: Option[A] = None) extends PeekableIterator[A] {
       override def hasNext = nextOption.nonEmpty || iterator.hasNext
