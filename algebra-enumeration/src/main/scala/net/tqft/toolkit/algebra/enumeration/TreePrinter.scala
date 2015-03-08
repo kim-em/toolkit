@@ -156,36 +156,38 @@ object TreeMerger {
   def mergeFiles(toMerge: Set[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Set[File] = {
     println(s"Merging ${toMerge.size} files.")
     val firstLines = toMerge.map(f => (TreeHelper.firstLine(f), f)).toMap
-    def findMatchingLinesInFile(f: File): Iterator[(String, File)] = {
-      TreeHelper.lines(f).flatMap(line => firstLines.get(line.trim).map(f => (line.trim, f))).filter(_._2 != f)
+    def findMatchingLinesInFile(f: File): Map[String, File] = {
+      TreeHelper.lines(f).flatMap(line => firstLines.get(line.trim).map(f => (line.trim, f))).toMap.filter(_._2 != f)
     }
-    val mergeSets = toMerge.map({ f => (f, findMatchingLinesInFile(f)) }).toMap
     val newFiles = (for (
-      (mergeTo, mergeFrom) <- mergeSets;
+      mergeTo <- toMerge;
       if mergeTo.exists;
-      if !pleaseFinishNow;
-      mergeFromSet = mergeFrom.filter(_._2.exists).toMap;
-      if mergeFromSet.nonEmpty
+      if !pleaseFinishNow
     ) yield {
       println("Merging into " + mergeTo)
-
-      for ((_, f) <- mergeFromSet) println("      <--- " + f)
 
       val tmp = File.createTempFile("tree-merger-tmp", ".tree")
       val pw = new PrintWriter(new FileWriter(tmp))
 
-      for (line <- mergeManyFiles(TreeHelper.lines(mergeTo), mergeFromSet)) pw.println(line)
+      val mergedFiles = scala.collection.mutable.Set[File]()
+
+      for (line <- mergeManyFiles(TreeHelper.lines(mergeTo), firstLines.filter(_._2 != mergeTo), mergedFiles)) pw.println(line)
 
       pw.close
 
-      mergeTo.delete
-      for ((_, f) <- mergeFromSet) f.delete
+      if (mergedFiles.isEmpty) {
+        tmp.delete
+        None
+      } else {
+        mergeTo.delete
+        for (f <- mergedFiles) f.delete
 
-      val newPath = outputDir.toPath.resolve(filenamer(TreeHelper.firstLine(tmp)) + ".tree")
-      Files.move(tmp.toPath, newPath)
+        val newPath = outputDir.toPath.resolve(filenamer(TreeHelper.firstLine(tmp)) + ".tree")
+        Files.move(tmp.toPath, newPath)
 
-      newPath.toFile
-    }).toSet
+        Some(newPath.toFile)
+      }
+    }).toSet.flatten
 
     if (newFiles.nonEmpty && !pleaseFinishNow) {
       mergeFiles((toMerge ++ newFiles).filter(_.exists), filenamer, outputDir)
@@ -194,7 +196,7 @@ object TreeMerger {
     }
   }
 
-  def mergeManyFiles(mergeTo: Iterator[String], mergeFrom: Map[String, File], filename: String => String = { s => s }): Iterator[String] = {
+  def mergeManyFiles(mergeTo: Iterator[String], mergeFrom: Map[String, File], mergedFiles: scala.collection.mutable.Set[File]): Iterator[String] = {
     import PeekableIterator._
     new Iterator[String] {
       var iterator: PeekableIterator[String] = mergeTo.peekable
@@ -209,6 +211,8 @@ object TreeMerger {
           case Some(next) => {
             mergeFrom.get(next) match {
               case Some(file) => {
+                println("      <--- " + file)
+                mergedFiles += file
                 val fileIterator = TreeHelper.lines(file).peekable
                 val shift = offset - indenting(fileIterator.peek.get)
                 val padding = if (shift > 0) Seq.fill(shift)(" ").mkString else ""
