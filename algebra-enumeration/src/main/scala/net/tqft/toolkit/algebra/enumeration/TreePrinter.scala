@@ -169,12 +169,11 @@ object TreeMerger {
       val mergedFiles = scala.collection.mutable.Set[File]()
 
       for (line <- mergeManyFiles(TreeHelper.lines(mergeTo), firstLines.filter(_._2 != mergeTo), mergedFiles)) {
-       println(line) 
-      pw.println(line)
+        pw.println(line)
       }
 
       pw.close
-      
+
       if (mergedFiles.isEmpty) {
         tmp.delete
         None
@@ -199,8 +198,9 @@ object TreeMerger {
 
   def mergeManyFiles(mergeTo: Iterator[String], mergeFrom: Map[String, File], mergedFiles: scala.collection.mutable.Set[File]): Iterator[String] = {
     import PeekableIterator._
+    import FancyIterator._
     new Iterator[String] {
-      var iterator: PeekableIterator[String] = mergeTo.peekable
+      var iterator: FancyIterator[String] = mergeTo.fancy
 
       val offset = indenting(iterator.peek.get)
 
@@ -224,7 +224,7 @@ object TreeMerger {
                     padding + s
                   }
                 }
-                iterator = mergeIterators(iterator, fileIterator.map(shiftString)).peekable
+                iterator = mergeIterators(iterator.simplify, fileIterator.map(shiftString))
                 iterator.next
               }
               case None => iterator.next
@@ -278,12 +278,12 @@ object TreeMerger {
   //    }
   //  }
 
-  def merge(tree1: File, tree2: File, out: Writer): Boolean = {
-    merge(TreeHelper.lines(tree1), TreeHelper.lines(tree2), out)
-  }
-  def merge(tree1: String, tree2: String, out: Writer): Boolean = {
-    merge(Source.fromString(tree1).getLines, Source.fromString(tree2).getLines, out)
-  }
+  //  def merge(tree1: File, tree2: File, out: Writer): Boolean = {
+  //    merge(TreeHelper.lines(tree1), TreeHelper.lines(tree2), out)
+  //  }
+  //  def merge(tree1: String, tree2: String, out: Writer): Boolean = {
+  //    merge(Source.fromString(tree1).getLines, Source.fromString(tree2).getLines, out)
+  //  }
 
   trait PeekableIterator[A] extends Iterator[A] {
     def peek: Option[A]
@@ -291,7 +291,12 @@ object TreeMerger {
 
   object PeekableIterator {
     implicit class Peekable[A](iterator: Iterator[A]) {
-      def peekable: PeekableIterator[A] = apply(iterator)
+      def peekable: PeekableIterator[A] = {
+        iterator match {
+          case iterator: PeekableIterator[A] => iterator
+          case _ => apply(iterator)
+        }
+      }
     }
 
     def apply[A](iterator: Iterator[A]): PeekableIterator[A] = PeekableIteratorImplementation(iterator)
@@ -324,11 +329,62 @@ object TreeMerger {
 
   }
 
-  private def mergeIterators(iterator1: Iterator[String], iterator2: Iterator[String]): Iterator[String] = {
-    val peekable1 = PeekableIterator(iterator1)
+  trait Simplifiable[X] { self: X =>
+    def simplify: X
+  }
+
+  trait SimplifiableIterator[X] extends Iterator[X] with Simplifiable[Iterator[X]]
+
+  trait FancyIterator[X] extends PeekableIterator[X] with Simplifiable[FancyIterator[X]]
+
+  object FancyIterator {
+    implicit class Fancyable[A](iterator: Iterator[A]) {
+      def fancy: FancyIterator[A] = new FancyIterator[A] {
+        private val peekableIterator = {
+          import PeekableIterator._
+          iterator.peekable
+        }
+        override def simplify = this
+        override def hasNext = peekableIterator.hasNext
+        override def next = peekableIterator.next
+        override def peek = peekableIterator.peek
+      }
+    }
+  }
+
+  private def mergeIterators(iterator1: FancyIterator[String], iterator2: Iterator[String]): FancyIterator[String] = {
+    val peekable1 = iterator1
     val peekable2 = PeekableIterator(iterator2)
-    new Iterator[String] {
-      override def hasNext = peekable1.hasNext || peekable1.hasNext
+    new FancyIterator[String] {
+      override def simplify = {
+        if (!peekable1.hasNext) {
+          ???
+        } else if (!peekable2.hasNext) {
+          peekable1
+        } else {
+          this
+        }
+      }
+      override def hasNext = peekable1.hasNext || peekable2.hasNext
+      override def peek = {
+        if (peekable1.hasNext) {
+          if (peekable2.hasNext) {
+            val i1 = indenting(peekable1.peek.get)
+            val i2 = indenting(peekable2.peek.get)
+            if (i1 == i2) {
+              peekable1.peek.ensuring(_ == peekable2.peek)
+            } else if (i1 < i2) {
+              peekable2.peek
+            } else {
+              peekable1.peek
+            }
+          } else {
+            peekable1.peek
+          }
+        } else {
+          peekable2.peek
+        }
+      }
       override def next = {
         if (peekable1.hasNext) {
           if (peekable2.hasNext) {
@@ -353,38 +409,38 @@ object TreeMerger {
 
   private def indenting(s: String) = s.indexWhere { _ != ' ' }
 
-  def merge(tree1: Iterator[String], tree2: Iterator[String], out: Writer): Boolean = {
-    val pw = new PrintWriter(out)
-    val (head, offset) = {
-      val untrimmedHead = tree2.next
-      (untrimmedHead.trim, indenting(untrimmedHead))
-    }
-    var merged = false
-    for (x <- tree1) {
-      if (x.trim == head) {
-        merged = true
-        val shift = indenting(x) - offset
-        val padding = if (shift > 0) Seq.fill(shift)(" ").mkString else ""
-        pw.println(x)
-        def shiftString(s: String) = {
-          if (shift <= 0) {
-            s.drop(-shift)
-          } else {
-            padding + s
-          }
-        }
-
-        for (y <- mergeIterators(tree1, tree2.map(shiftString))) {
-          pw.println(y)
-        }
-      } else {
-        pw.println(x)
-      }
-    }
-    // make sure we exhaust the iterator
-    for (x <- tree2) {}
-    pw.close
-    merged
-  }
+  //  def merge(tree1: Iterator[String], tree2: Iterator[String], out: Writer): Boolean = {
+  //    val pw = new PrintWriter(out)
+  //    val (head, offset) = {
+  //      val untrimmedHead = tree2.next
+  //      (untrimmedHead.trim, indenting(untrimmedHead))
+  //    }
+  //    var merged = false
+  //    for (x <- tree1) {
+  //      if (x.trim == head) {
+  //        merged = true
+  //        val shift = indenting(x) - offset
+  //        val padding = if (shift > 0) Seq.fill(shift)(" ").mkString else ""
+  //        pw.println(x)
+  //        def shiftString(s: String) = {
+  //          if (shift <= 0) {
+  //            s.drop(-shift)
+  //          } else {
+  //            padding + s
+  //          }
+  //        }
+  //
+  //        for (y <- mergeIterators(tree1, tree2.map(shiftString))) {
+  //          pw.println(y)
+  //        }
+  //      } else {
+  //        pw.println(x)
+  //      }
+  //    }
+  //    // make sure we exhaust the iterator
+  //    for (x <- tree2) {}
+  //    pw.close
+  //    merged
+  //  }
 
 }

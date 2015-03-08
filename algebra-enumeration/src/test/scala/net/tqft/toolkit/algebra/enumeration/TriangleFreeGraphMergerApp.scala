@@ -30,9 +30,7 @@ object TriangleFreeGraphMergerApp extends App {
 
   val tree2 = sw2.toString
 
-  val sw3 = new StringWriter()
-  
-  TreeMerger.merge(tree1, tree2, sw3)
-  
-  println(sw3.toString)
+//  val sw3 = new StringWriter()
+//  TreeMerger.merge(tree1, tree2, sw3)
+//  println(sw3.toString)
 }
