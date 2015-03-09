@@ -14,6 +14,7 @@ import java.io.FileInputStream
 import java.io.BufferedReader
 import java.io.FileReader
 import java.io.FileWriter
+import net.tqft.toolkit.Logging
 
 case class TreePrinter[A](stringify: A => String, level: A => Int, accept: A => Double = { a: A => 1 }, out: PrintWriter = new PrintWriter(System.out)) {
   def to(pw: Writer): TreePrinter[A] = this.copy(out = new PrintWriter(pw))
@@ -372,7 +373,13 @@ object TreeMerger {
             val i1 = indenting(p1.get)
             val i2 = indenting(p2.get)
             if (i1 == i2) {
-              p1.ensuring(_ == p2)
+              if(p1 != p2) {
+                Logging.warn("Lines did not agree:")
+                Logging.warn(p1.get)
+                Logging.warn(p2.get)
+                ???
+              }
+              p1
             } else if (i1 < i2) {
               p2
             } else {
@@ -391,7 +398,15 @@ object TreeMerger {
             val i1 = indenting(peekable1.peek.get)
             val i2 = indenting(peekable2.peek.get)
             if (i1 == i2) {
-              peekable1.next.ensuring(_ == peekable2.next)
+              val n1 = peekable1.next
+              val n2 = peekable2.next
+              if(n1 != n2) {
+                Logging.warn("Lines did not agree:")
+                Logging.warn(n1)
+                Logging.warn(n2)
+                ???
+              }
+              n1
             } else if (i1 < i2) {
               peekable2.next
             } else {
