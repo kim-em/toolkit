@@ -17,7 +17,9 @@ object ParIterator { pi =>
   
   implicit class ParIterator[A](i: Iterator[A]) {
     def par = new ParIteratorOperations[A] {
-      import scala.concurrent.ExecutionContext.Implicits.global
+//      import scala.concurrent.ExecutionContext.Implicits.global
+      
+      implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(2 * Runtime.getRuntime().availableProcessors()))
       def map[B](f: A => B): Iterator[B] = pi.map(i)(f)
       def foreach[B](f: A => B) {
         def work: Future[Unit] = {
@@ -39,7 +41,7 @@ object ParIterator { pi =>
             case Some(a) => a
           })
         }
-        Await.result(Future.sequence(for (i <- 0 until Runtime.getRuntime().availableProcessors() + 1) yield work).map(_ => ()), Duration.Inf)
+        Await.result(Future.sequence(for (i <- 0 until 4 * Runtime.getRuntime().availableProcessors() + 1) yield work).map(_ => ()), Duration.Inf)
       }
     }
   }

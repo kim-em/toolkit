@@ -86,10 +86,10 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
 
   // and, for convenience, something to recursively find all children, filtering on a predicate
-  private def descendantsComplete(accept: A => Double = { _ => 1 }): Iterator[A] = {
+  private def descendantsComplete(accept: A => Int = { _ => 1 }): Iterator[A] = {
     accept(this) match {
       case a if a > 0 => {
-        Iterator(this) ++ Iterator.continually(children).take(1).map(_.iterator.flatMap(_.descendants(accept))).flatten
+        Iterator(this) ++ Iterator.continually(children).take(1).map(_.iterator.flatMap(_.descendantsComplete(accept))).flatten
       }
       case 0 => {
         Iterator(this)
@@ -113,7 +113,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     (done, todo)
   }
 
-  def descendants(accept: A => Double = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[A] = {
+  def descendants(accept: A => Int = { _ => 1 }, res: Int = 0, mod: Int = 1): Iterator[A] = {
     if (mod == 1) {
       descendantsComplete(accept)
     } else {
@@ -135,7 +135,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     }
   }
 
-  def dyadicDescendants(accept: A => Double = { _ => 1 }, res: Int, exponent: Int): Iterator[A] = {
+  def dyadicDescendants(accept: A => Int = { _ => 1 }, res: Int, exponent: Int): Iterator[A] = {
     if (exponent == 0) {
       descendantsComplete(accept)
     } else {
