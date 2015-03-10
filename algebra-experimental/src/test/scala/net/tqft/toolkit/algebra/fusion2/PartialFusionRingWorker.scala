@@ -68,7 +68,7 @@ object PartialFusionRingWorker extends App {
 
     var pleaseFinishNow = false
 
-    def accept(r: enumeration.PartialFusionRing): Double = {
+    def accept(r: enumeration.PartialFusionRing): Int = {
       val checks = Seq(
         config.globalDimensionBound.isEmpty || r.globalDimensionLowerBound <= config.globalDimensionBound.get,
         config.levelBound.isEmpty || r.level < config.levelBound.get,
