@@ -126,9 +126,58 @@ object TreeReader {
       readLeaves(TreeHelper.lines(file))
     }
   }
+  private def indenting(s: String) = s.indexWhere { _ != ' ' }
   def readLeaves(lines: Iterator[String]): Iterator[String] = {
-    def indenting(s: String) = s.indexWhere { _ != ' ' }
     (lines ++ Iterator("")).sliding(2).collect({ case Seq(s1, s2) if s1.trim != "." && indenting(s1) >= indenting(s2) => s1.trim })
+  }
+
+  def verify(file: File, prefix: String = "") {
+    if (file.isDirectory) {
+      import scala.collection.JavaConverters._
+
+      def files = Files.newDirectoryStream(file.toPath, prefix + "*.tree")
+        .iterator
+        .asScala
+        .map(_.toFile)
+
+      for (file <- files) verify(file)
+    } else {
+      val lines = TreeHelper.lines(file)
+      def parse(line: String) = {
+        val s = line.trim.split(" ")
+        (line, s(1).toInt, s(2).zipWithIndex.collect({ case ('?', i) => i }).toSet)
+      }
+      var stack: List[(String, Int, Set[Int])] = parse(lines.next) :: Nil
+      var s = 1
+
+      for ((line, lineNo) <- lines.zipWithIndex) {
+        val i = indenting(line)
+        if (i != s && i != s - 1) {
+          println(s"Indenting problem in $file:")
+          println(stack.head._1)
+          println(line)
+        }
+        if (line.trim == ".") {
+          stack = stack.tail
+          s = s - 1
+        } else {
+          if (i == s - 1) {
+            stack = stack.tail
+            s = s - 1
+          }
+          val p = parse(line)
+          if (p._2 > stack.head._2 || p._3.forall(i => stack.head._3.contains(i))) {
+            // looks good
+            stack = p :: stack
+            s = s + 1
+          } else {
+            println(s"Invalid child in $file:")
+            println(stack.head)
+            println(p)
+          }
+        }
+      }
+    }
   }
 }
 
@@ -373,7 +422,7 @@ object TreeMerger {
             val i1 = indenting(p1.get)
             val i2 = indenting(p2.get)
             if (i1 == i2) {
-              if(p1 != p2) {
+              if (p1 != p2) {
                 Logging.warn("Lines did not agree:")
                 Logging.warn(p1.get)
                 Logging.warn(p2.get)
@@ -400,7 +449,7 @@ object TreeMerger {
             if (i1 == i2) {
               val n1 = peekable1.next
               val n2 = peekable2.next
-              if(n1 != n2) {
+              if (n1 != n2) {
                 Logging.warn("Lines did not agree:")
                 Logging.warn(n1)
                 Logging.warn(n2)
