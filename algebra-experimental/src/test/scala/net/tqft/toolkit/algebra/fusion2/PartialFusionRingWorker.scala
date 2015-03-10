@@ -75,7 +75,8 @@ object PartialFusionRingWorker extends App {
         r.level < 9,
         config.stepsBound.isEmpty || r.steps < config.stepsBound.get,
         config.finishBy.isEmpty || System.currentTimeMillis < config.finishBy.get,
-        !pleaseFinishNow)
+        !pleaseFinishNow,
+        !(new File("please-stop").exists))
 
       if (checks.forall(_ == true)) { 1 } else { 0 }
     }
