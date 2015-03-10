@@ -131,7 +131,7 @@ object TreeReader {
     (lines ++ Iterator("")).sliding(2).collect({ case Seq(s1, s2) if s1.trim != "." && indenting(s1) >= indenting(s2) => s1.trim })
   }
 
-  def verify(file: File, prefix: String = "") {
+  def verify(file: File, prefix: String = "", delete: Boolean = false) {
     if (file.isDirectory) {
       import scala.collection.JavaConverters._
 
@@ -140,7 +140,7 @@ object TreeReader {
         .asScala
         .map(_.toFile)
 
-      for (file <- files) verify(file)
+      for (file <- files) verify(file, prefix, delete && file.getName.split(" ")(2).filterNot(_ == '?').nonEmpty)
     } else {
       val lines = TreeHelper.lines(file)
       def parse(line: String) = {
@@ -156,6 +156,10 @@ object TreeReader {
           println(s"Indenting problem in $file:")
           println(stack.head._1)
           println(line)
+          if (delete) {
+            println("Deleting!")
+            file.delete
+          }
         }
         if (line.trim == ".") {
           stack = stack.tail
@@ -174,6 +178,10 @@ object TreeReader {
             println(s"Invalid child in $file:")
             println(stack.head)
             println(p)
+            if (delete) {
+              println("Deleting!")
+              file.delete
+            }
           }
         }
       }
