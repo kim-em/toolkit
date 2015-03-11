@@ -24,7 +24,7 @@ object PartialFusionRingMergeApp extends App {
   import scala.collection.JavaConverters._
   import net.tqft.toolkit.collections.Iterators._
 
-  val brokenFiles = Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile).toSet.filter(f => !TreeMerger.fileComplete(f))
+  val brokenFiles = Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile).toSet.par.filter(f => !TreeMerger.fileComplete(f))
   if (brokenFiles.nonEmpty) {
     val delete = args.length > 0 && args(0) == "-d"
     if (delete) {

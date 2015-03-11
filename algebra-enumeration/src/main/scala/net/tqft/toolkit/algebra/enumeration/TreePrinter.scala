@@ -206,14 +206,14 @@ object TreeMerger {
   def mergeDirectory(directory: File = new File(System.getProperty("user.dir")), filenamer: String => String = { s => s }) {
     import scala.collection.JavaConverters._
     import net.tqft.toolkit.collections.Iterators._
-    val files = Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile).filter(fileComplete).toSeq.sortBy(f => -f.length)
+    val files = Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile).toSeq.par.filter(fileComplete).seq.sortBy(f => -f.length)
 
     mergeFiles(files, filenamer, directory)
   }
 
   def mergeFiles(toMerge: Seq[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Seq[File] = {
     println(s"Merging ${toMerge.size} files.")
-    val firstLines = toMerge.map(f => (TreeHelper.firstLine(f), f)).toMap
+    val firstLines = toMerge.par.map(f => (TreeHelper.firstLine(f), f)).seq.toMap
     val newFiles = (for (
       mergeTo <- toMerge;
       if mergeTo.exists;
