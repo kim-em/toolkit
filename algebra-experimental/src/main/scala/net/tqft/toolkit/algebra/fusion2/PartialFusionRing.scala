@@ -106,7 +106,8 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     associativityOption: Option[SystemOfQuadratics[(Int, Int, Int)]],
     matricesOption: Option[IndexedSeq[IndexedSeq[IndexedSeq[Int]]]]) extends CanonicalGenerationWithIsomorphism[PartialFusionRing, IndexedSeq[Int]] { pfr =>
 
-    def associativity: SystemOfQuadratics[(Int, Int, Int)] = associativityOption match {
+      // TODO switch this back to def
+    lazy val associativity: SystemOfQuadratics[(Int, Int, Int)] = associativityOption match {
       case Some(a) => a
       case None => {
         Logging.warn("Reconstructing associativity for a lower object.")
@@ -115,7 +116,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     }
     def associativityToString = associativity.mapVariables(stringNamer).toString
     def associativityToMathematicaString = associativity.mapVariables(stringNamer).quadratics.map(_.completeSubstitution).mkString("{\n  ", ",\n  ", "\n}")
-    def matrices: IndexedSeq[IndexedSeq[IndexedSeq[Int]]] = matricesOption match {
+    lazy val matrices: IndexedSeq[IndexedSeq[IndexedSeq[Int]]] = matricesOption match {
       case Some(m) => m
       case None => {
         Logging.warn("Reconstructing matrices for a lower object.")
@@ -144,14 +145,14 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     }
 
     override def toString = {
-      if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
+//      if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
         s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" +
-          matricesToString // +
-        //          associativityToString + 
-        //          "\nclosedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 })
-      } else {
-        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})"
-      }
+          matricesToString  +
+                  associativityToString + 
+                  "\nclosedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 })
+//      } else {
+//        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})"
+//      }
     }
     def toShortString: String = {
       require(level < 10)

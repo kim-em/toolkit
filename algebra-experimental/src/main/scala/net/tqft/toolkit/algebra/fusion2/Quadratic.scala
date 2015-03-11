@@ -227,7 +227,7 @@ case class LinearTerm[S](constant: Int, terms: Map[S, Int]) extends Substitutabl
       }
     } else {
       if (terms.nonEmpty) {
-        "(" + constant + terms.map(t => t._2.toString + " * " + t._1.toString).mkString(" + ") + ")"
+        "(" + constant + " + " + terms.map(t => t._2.toString + " * " + t._1.toString).mkString(" + ") + ")"
       } else {
         constant.toString
       }
