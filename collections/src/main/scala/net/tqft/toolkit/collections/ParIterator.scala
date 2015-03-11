@@ -14,12 +14,14 @@ object ParIterator { pi =>
     def map[B](f: A => B): Iterator[B]
     def foreach[B](f: A => B)
   }
-  
+
   implicit class ParIterator[A](i: Iterator[A]) {
-    def par = new ParIteratorOperations[A] {
-//      import scala.concurrent.ExecutionContext.Implicits.global
-      
-      implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(2 * Runtime.getRuntime().availableProcessors()))
+    def par = parWithNumberOfThreads(2 * _ + 1)
+    def parWithNumberOfThreads(threadsFromCPUs: Int => Int): ParIteratorOperations[A] = parWithNumberOfThreads(threadsFromCPUs(Runtime.getRuntime().availableProcessors()))
+    def parWithNumberOfThreads(threads: Int): ParIteratorOperations[A] = new ParIteratorOperations[A] {
+      //      import scala.concurrent.ExecutionContext.Implicits.global
+
+      implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(threads))
       def map[B](f: A => B): Iterator[B] = pi.map(i)(f)
       def foreach[B](f: A => B) {
         def work: Future[Unit] = {
@@ -37,11 +39,11 @@ object ParIterator { pi =>
             })
           }
           g.flatMap({
-            case None => Future(())
+            case None => Future.successful(())
             case Some(a) => a
           })
         }
-        Await.result(Future.sequence(for (i <- 0 until 4 * Runtime.getRuntime().availableProcessors() + 1) yield work).map(_ => ()), Duration.Inf)
+        Await.result(Future.sequence(for (i <- 0 until threads + 1) yield work).map(_ => ()), Duration.Inf)
       }
     }
   }

@@ -14,7 +14,7 @@ import scala.concurrent.Future
 
 object PartialFusionRingWorker extends App {
 
-  case class Config(selfDualObjects: Int = 5, dualPairs: Int = 0, res: Int = 0, mod: Int = 1, globalDimensionBound: Option[Double] = None, levelBound: Option[Int] = None, stepsBound: Option[Int] = None, finishBy: Option[Long] = None, batch: Boolean = false, verbose: Boolean = false)
+  case class Config(selfDualObjects: Int = 5, dualPairs: Int = 0, res: Int = 0, mod: Int = 1, globalDimensionBound: Option[Double] = None, levelBound: Option[Int] = None, stepsBound: Option[Int] = None, finishBy: Option[Long] = None, cpus: Option[Int] = None, batch: Boolean = false, verbose: Boolean = false)
 
   val parser = new scopt.OptionParser[Config]("PartialFusionRingWorker") {
     head("PartialFusionRingWorker", "1.0")
@@ -30,6 +30,9 @@ object PartialFusionRingWorker extends App {
     opt[Double]('h', "hours") valueName ("<hours>") action { (x, c) =>
       c.copy(finishBy = Some(System.currentTimeMillis() + (x * 60 * 60 * 1000).toLong))
     } text ("run for at most <hours> hours")
+    opt[Double]('c', "cpu-factor") valueName ("<factor>") action { (x, c) =>
+      c.copy(cpus = Some((Runtime.getRuntime.availableProcessors() * x).toInt))
+    } text ("run with <factor>*#cpus threads")
     opt[Unit]('q', "batch") action { (_, c) =>
       c.copy(batch = true)
     } text ("disable keyboard interrupt")
@@ -112,7 +115,7 @@ object PartialFusionRingWorker extends App {
 
     import net.tqft.toolkit.collections.ParIterator._
 
-    for (t <- targets.par) {
+    for (t <- config.cpus.map(c => targets.parWithNumberOfThreads(c)).getOrElse(targets.par)) {
       TreePrinter[enumeration.PartialFusionRing](_.toShortString, _.steps, accept)
         .to("fusion-rings", t)
         .print(t.descendants(accept))
