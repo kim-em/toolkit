@@ -31,7 +31,7 @@ object LazyPair {
       override lazy val _2 = b
       override def hashCode = (_1, _2).hashCode
       override def equals(other: Any) = (_1, _2).equals(other)
-      override def canEqual(other: Any) = other.isInstanceOf[Product2[A, B]]
+      override def canEqual(other: Any) = other.isInstanceOf[Product2[_, _]]
     }
   }
 }
@@ -154,7 +154,7 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
         case DeleteSelfDualObject(_) => 1
         case DeleteDualPairOfObjects(_, _) => 2
       }
-    }).refineBy({
+    }).refineByPartialFunction({
       case DeleteSelfDualObject(k) => - ring.dimensionLowerBounds(ring.basis(k))
       case DeleteDualPairOfObjects(k1, k2) => - scala.math.max(ring.dimensionLowerBounds(ring.basis(k1)), ring.dimensionLowerBounds(ring.basis(k2)))
     }).refineByPartialFunction({
@@ -241,7 +241,7 @@ case class PartialFusionRing(depth: Int, generators: Set[Int], ring: FusionRing[
     override lazy val result = pfr.copy(depth = depth + 1)
     override def inverse = result.ReduceDepth
   }
-  trait NewRingUpper extends Upper {
+  sealed trait NewRingUpper extends Upper {
     def newRing: FusionRing[Int]
   }
   case class AddSelfDualObject(newRing: FusionRing[Int]) extends NewRingUpper {

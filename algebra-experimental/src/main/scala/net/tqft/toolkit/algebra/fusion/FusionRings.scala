@@ -186,6 +186,7 @@ object FusionRings {
           val (v1, v2) = vs match {
             case v :: Nil => (v, v)
             case v :: w :: Nil => (v, w)
+            case _ => ???
           }
           (coefficient, variables.indexOf(v1), variables.indexOf(v2))
         }))
