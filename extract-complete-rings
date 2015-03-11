@@ -1,2 +1,2 @@
-grep -h -v " \\." | grep -v "\\?" | sed 's/^[ \t]*//;s/[ \t]*$//'
+grep -h -v " \\." | grep -v "_" | sed 's/^[ \t]*//;s/[ \t]*$//'
 
