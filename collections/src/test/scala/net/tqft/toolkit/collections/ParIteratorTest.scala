@@ -5,6 +5,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
+import net.tqft.toolkit.Logging
 
 @RunWith(classOf[JUnitRunner])
 class ParIteratorTest extends FlatSpec with Matchers {
@@ -13,7 +14,8 @@ class ParIteratorTest extends FlatSpec with Matchers {
     import ParIterator._
 
     Iterator.from(0).par.map(_ + 1).take(10000).toList should equal(1 to 10000)
-    (for(x <- Iterator.from(0).par) println(x))
+    for(x <- Iterator.empty.asInstanceOf[Iterator[Int]].par) println(x)
+    (for(x <- Iterator.from(0).take(10000).par) Logging.info(x))
   }
 }
 

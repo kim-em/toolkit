@@ -55,8 +55,8 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
   val root = {
     val associativity = dualitySubstitutions.foldLeft(
-      SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q))))({
-        case (system, (s, k)) => system.substitute(s, k).get
+      SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q._1, q._2))))({
+        case (system, (s, k)) => system.substitute(s, k, levelOverride = Some(0)).get
       }).factor
     val matrices = IndexedSeq.tabulate(rank, rank, rank)({
       case (i, j, 0) => if (i == dual(j)) 1 else 0
@@ -106,8 +106,26 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     associativityOption: Option[SystemOfQuadratics[(Int, Int, Int)]],
     matricesOption: Option[IndexedSeq[IndexedSeq[IndexedSeq[Int]]]]) extends CanonicalGenerationWithIsomorphism[PartialFusionRing, IndexedSeq[Int]] { pfr =>
 
-      // TODO switch this back to def
-    lazy val associativity: SystemOfQuadratics[(Int, Int, Int)] = associativityOption match {
+    def findIsomorphismTo(other: enumeration.PartialFusionRing) = {
+      Dreadnaut.findIsomorphism(graphPresentation, other.graphPresentation).map(_.take(rank))
+    }
+    def imageUnderPermutation(g: IndexedSeq[Int]):PartialFusionRing = {
+      require(g(0) == 0)
+      PartialFusionRing(previousLevel.map(_.imageUnderPermutation(g)), entries.map(v => multiplicityNamer(g(v._1), g(v._2), g(v._3))), remaining.map(v => multiplicityNamer(g(v._1), g(v._2), g(v._3))), None, None)
+    }
+    def isomorphs = FiniteGroups.symmetricGroup(rank).elements.filter(_(0) == 0).map(g => imageUnderPermutation(g)).iterator
+      
+    def extendsTo(other: PartialFusionRing): Boolean = {
+      if(other.level < level) {
+        false
+      } else if(other.level > level) {
+        extendsTo(other.previousLevel.get)
+      } else {
+        previousLevel == other.previousLevel && entries.forall(other.entries.contains)
+      }
+    }
+    
+    def associativity: SystemOfQuadratics[(Int, Int, Int)] = associativityOption match {
       case Some(a) => a
       case None => {
         Logging.warn("Reconstructing associativity for a lower object.")
@@ -116,7 +134,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     }
     def associativityToString = associativity.mapVariables(stringNamer).toString
     def associativityToMathematicaString = associativity.mapVariables(stringNamer).quadratics.map(_.completeSubstitution).mkString("{\n  ", ",\n  ", "\n}")
-    lazy val matrices: IndexedSeq[IndexedSeq[IndexedSeq[Int]]] = matricesOption match {
+    def matrices: IndexedSeq[IndexedSeq[IndexedSeq[Int]]] = matricesOption match {
       case Some(m) => m
       case None => {
         Logging.warn("Reconstructing matrices for a lower object.")
@@ -146,10 +164,10 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
     override def toString = {
 //      if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
-        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" +
-          matricesToString  +
-                  associativityToString + 
-                  "\nclosedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 })
+        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" +
+          matricesToString  //+
+//                  associativityToString + 
+//                  "\nclosedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 })
 //      } else {
 //        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})"
 //      }
@@ -276,18 +294,10 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(graphPresentation.automorphismGroup.generators.map(_.take(rank)))
     }
 
-    def findIsomorphismTo(other: enumeration.PartialFusionRing) = {
-      Dreadnaut.findIsomorphism(graphPresentation, other.graphPresentation).map(_.take(rank))
-    }
-    def imageUnderPermutation(g: IndexedSeq[Int]):PartialFusionRing = {
-      PartialFusionRing(previousLevel.map(_.imageUnderPermutation(g)), entries.map(v => (g(v._1), g(v._2), g(v._3))), remaining.map(v => (g(v._1), g(v._2), g(v._3))), None, None)
-    }
-    def isomorphs = FiniteGroups.symmetricGroup(rank).elements.map(g => imageUnderPermutation(g)).iterator
-
     override lazy val lowerObjects: automorphisms.Action[Lower] = {
       new automorphisms.Action[Lower] {
         override def elements: Seq[Lower] = {
-          (if (entries.isEmpty) {
+          (if (entries.isEmpty && previousLevel.nonEmpty) {
             Seq(DecreaseLevel)
           } else {
             Seq.empty
@@ -312,13 +322,14 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     override lazy val upperObjects: automorphisms.Action[Upper] = {
       new automorphisms.Action[Upper] {
         override def elements: Seq[Upper] = {
-          (if (remaining.nonEmpty && associativity.quadratics.forall(q => q.zero_? || q.completeSubstitution.sign == 0) && (globalDimensionUpperBound.isEmpty || globalDimensionLowerBoundAfterIncreasingLevel < globalDimensionUpperBound.get)) {
+          (if (remaining.nonEmpty && associativity.quadratics.forall(q => (q.zero_? || q.completeSubstitution.sign == 0) && !q.completeSubstitution.impossibleAtLevel(level + 1)) && (globalDimensionUpperBound.isEmpty || globalDimensionLowerBoundAfterIncreasingLevel < globalDimensionUpperBound.get)) {
             Seq(IncreaseLevel)
           } else {
             Seq.empty
           }) ++ ({
             val targets = remaining.toSeq // TODO hopefully we can shrink this
             actionOn(targets).orbits.map(_.representative).flatMap(addEntryIfAssociative)
+//            targets.flatMap(addEntryIfAssociative)
           })
         }
         override def act(g: IndexedSeq[Int], u: Upper): Upper = {
@@ -341,7 +352,6 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
         case DeleteEntry(_) => 1
       }).refineByPartialFunction({
         case DeleteEntry(v) => {
-          //                    -associativity.closedVariableTallies.get(v).getOrElse(0)
           associativity.closedVariablesByNumberOfVariables.get(v).getOrElse(Map.empty) // TODO why do we need the getOrElse here?
         }
       }).refineByPartialFunction({

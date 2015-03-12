@@ -21,10 +21,12 @@ object LexicographicOrdering extends LexicographicOrderingLowPriorityImplicits {
 
     new Ordering[Map[A, B]] {
       override def compare(x: Map[A, B], y: Map[A, B]) = {
+        // largest key counts the most
         val keys = (x.keys ++ y.keys).toSeq.sorted.reverse
         //        println(s"keys = $keys")
         val xs = keys.map(x.get)
         val ys = keys.map(y.get)
+        // obtain an ordering for Options: None comes before Some(_)
         import Ordering.Implicits._
         implicitly[Ordering[Seq[Option[B]]]].compare(xs, ys)
       }

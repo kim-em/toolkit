@@ -165,6 +165,10 @@ object BuildSettings {
     //    scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j),
     exportJars := true,
+    fork := true,
+    javaOptions in run += "-Xmx8G",
+    connectInput in run := true,
+    baseDirectory in run := file("."),
     EclipseKeys.withSource := true
   )
 

@@ -248,7 +248,7 @@ object TreeMerger {
     }).toSet.flatten
 
     if (newFiles.nonEmpty && !pleaseFinishNow) {
-      mergeFiles((toMerge ++ newFiles).filter(_.exists), filenamer, outputDir)
+      mergeFiles((toMerge ++ newFiles).distinct.filter(_.exists), filenamer, outputDir)
     } else {
       toMerge
     }
