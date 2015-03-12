@@ -59,14 +59,10 @@ case class QuadraticState[S](label: (Int, Int, Int, Int), completeSubstitution: 
   override def hashCode = (completeSubstitution, partialSubstitutions).hashCode
 
   override def substitute(s: S, k: Int) = {
-    //    if (variables.contains(s)) {
     QuadraticState(
       label,
       completeSubstitution.substitute(s, k),
       partialSubstitutions.mapValues(q => q.substitute(s, k)).filter(m => m._2.variables.contains(m._1)) + (s -> completeSubstitution))
-    //    } else {
-    //      this
-    //    }
   }
   def factor: QuadraticState[S] = {
     QuadraticState(label, completeSubstitution.factor, Map.empty)
@@ -107,7 +103,7 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
           Rationals.lt(Rationals.subtract(Rationals.quotient(-linearTerm.constant, quadraticTerms.head.a * quadraticTerms.head.x.terms.head._2 * quadraticTerms.head.y.terms.head._2), k * k), 0)
         }
     }
-//    if (result) println(s"Claiming $this is impossible at level $k")
+    //    if (result) println(s"Claiming $this is impossible at level $k")
     result
   }
 
@@ -180,7 +176,12 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
   }
   override val variables = linearTerm.variables ++ quadraticTerms.flatMap(term => term.variables)
 
+  private val substitutionsCache = net.tqft.toolkit.functions.Memo.softly(substituteImpl _)
   override def substitute(s: S, k: Int): Quadratic[S] = {
+    substitutionsCache(s, k)
+//    substituteImpl(s, k)
+  }
+  def substituteImpl(s: S, k: Int): Quadratic[S] = {
     // substitute in the linear term and the quadratic terms
     // and then check if any quadratic terms have become linear
     if (variables.contains(s)) {
