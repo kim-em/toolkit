@@ -145,43 +145,55 @@ object TreeReader {
       val lines = TreeHelper.lines(file)
       def parse(line: String) = {
         val s = line.trim.split(" ")
-        (line, s(1).toInt, s(2).zipWithIndex.collect({ case ('?', i) => i }).toSet)
+        (line, s(1).toInt, s(2).zipWithIndex.collect({ case ('_', i) => i }).toSet)
       }
-      var stack: List[(String, Int, Set[Int])] = parse(lines.next) :: Nil
-      var s = 1
 
-      for ((line, lineNo) <- lines.zipWithIndex) {
-        val i = indenting(line)
-        if (i != s && i != s - 1) {
-          println(s"Indenting problem in $file:")
-          println(stack.head._1)
-          println(line)
-          if (delete) {
-            println("Deleting!")
-            file.delete
-          }
-        }
-        if (line.trim == ".") {
-          stack = stack.tail
-          s = s - 1
-        } else {
-          if (i == s - 1) {
-            stack = stack.tail
-            s = s - 1
-          }
-          val p = parse(line)
-          if (p._2 > stack.head._2 || p._3.forall(i => stack.head._3.contains(i))) {
-            // looks good
-            stack = p :: stack
-            s = s + 1
-          } else {
-            println(s"Invalid child in $file:")
-            println(stack.head)
-            println(p)
+      try {
+        var stack: List[(String, Int, Set[Int])] = parse(lines.next) :: Nil
+        var s = 1
+
+        for ((line, lineNo) <- lines.zipWithIndex) {
+          val i = indenting(line)
+          if (i != s && i != s - 1) {
+            println(s"Indenting problem in $file:")
+            println(stack.head._1)
+            println(line)
             if (delete) {
               println("Deleting!")
               file.delete
             }
+          }
+          if (line.trim == ".") {
+            stack = stack.tail
+            s = s - 1
+          } else {
+            if (i == s - 1) {
+              stack = stack.tail
+              s = s - 1
+            }
+            val p = parse(line)
+            if (p._2 > stack.head._2 || p._3.forall(i => stack.head._3.contains(i))) {
+              // looks good
+              stack = p :: stack
+              s = s + 1
+            } else {
+              println(s"Invalid child in $file:")
+              println(stack.head)
+              println(p)
+              if (delete) {
+                println("Deleting!")
+                file.delete
+              }
+            }
+          }
+        }
+      } catch {
+        case e: Exception => {
+          println(s"Invalid syntax in $file:")
+          println(e)
+          if (delete) {
+            println("Deleting!")
+            file.delete
           }
         }
       }
