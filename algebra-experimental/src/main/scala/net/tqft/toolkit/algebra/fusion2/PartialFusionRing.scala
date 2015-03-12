@@ -165,9 +165,9 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     override def toString = {
 //      if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
         s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" +
-          matricesToString  //+
-//                  associativityToString + 
-//                  "\nclosedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 })
+          matricesToString  +
+                  associativityToString + 
+                  "\nclosedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 })
 //      } else {
 //        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})"
 //      }
@@ -345,14 +345,17 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       import net.tqft.toolkit.orderings.Orderings._
       import net.tqft.toolkit.orderings.LexicographicOrdering
 
-      implicit val mapOrdering = LexicographicOrdering.mapOrdering[Int, Int].reverse
+      val reverseIntOrdering = implicitly[Ordering[Int]].reverse
+      // we prefer deleting a variable which would appear in the most equations with the fewest variables
+      // (i.e. we only compare the number of equations with more variables if there are ties with fewer variables)
+      implicit val mapOrdering = LexicographicOrdering.mapOrdering[Int, Int](reverseIntOrdering,reverseIntOrdering)
 
       implicit val invariantOrdering: Ordering[Lower] = Ordering.by[Lower, Int]({
         case DecreaseLevel => 0
         case DeleteEntry(_) => 1
       }).refineByPartialFunction({
         case DeleteEntry(v) => {
-          associativity.closedVariablesByNumberOfVariables.get(v).getOrElse(Map.empty) // TODO why do we need the getOrElse here?
+          associativity.closedVariablesByNumberOfVariables.get(v)//.getOrElse(Map.empty) // TODO remove this, no longer necessary
         }
       }).refineByPartialFunction({
         case DeleteEntry((i, j, k)) => Dreadnaut.canonicalizeColouredGraph(graphPresentation.additionalMarking(Seq(3 * rank + i * rank * rank + j * rank + k)))
