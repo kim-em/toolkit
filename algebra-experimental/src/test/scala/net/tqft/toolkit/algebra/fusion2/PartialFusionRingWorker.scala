@@ -126,6 +126,8 @@ object PartialFusionRingWorker extends App {
     for (t <- config.finishBy) {
       if (System.currentTimeMillis >= t) println("Time limited exceeded.")
     }
+    
+    System.exit(0)
   } getOrElse {
     // arguments are bad, usage message will have been displayed
   }

@@ -6,6 +6,7 @@ import scala.concurrent.duration.Duration.Inf
 import java.util.concurrent.{ BlockingQueue, Executors, LinkedBlockingQueue }
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import net.tqft.toolkit.Logging
 
 // thanks to Juha Heljoranta for this implementation at <http://grokbase.com/t/gg/scala-user/12bx1gp61a/traversing-iterator-elements-in-parallel>
 object ParIterator { pi =>
@@ -24,26 +25,35 @@ object ParIterator { pi =>
       implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(threads))
       def map[B](f: A => B): Iterator[B] = pi.map(i)(f)
       def foreach[B](f: A => B) {
+        val queue: BlockingQueue[Option[A]] = new LinkedBlockingQueue(threads)
+        
+        Future({
+          while(i.hasNext) {
+            queue.put(Some(i.next))
+          }
+          for(i <- 0 until 2*threads) {
+            queue.put(None)
+          }
+//          Logging.info("iterator exhausted...")
+        })(ExecutionContext.fromExecutor(Executors.newSingleThreadExecutor()))
+        
         def work: Future[Unit] = {
           val g = Future {
-            val o = synchronized {
-              if (i.hasNext) {
-                Some(i.next)
-              } else {
-                None
-              }
-            }
-            o.map(a => {
+            queue.take.map(a => {
               f(a)
               work
             })
           }
           g.flatMap({
-            case None => Future.successful(())
+            case None => {
+//             Logging.info("closing this thread...") 
+            Future.successful(())
+            }
             case Some(a) => a
           })
         }
-        Await.result(Future.sequence(for (i <- 0 until threads + 1) yield work).map(_ => ()), Duration.Inf)
+        Await.result(Future.sequence(for (i <- 0 until threads) yield work).map(_ => ()), Duration.Inf)
+//        Logging.info("finished foreach")
       }
     }
   }
