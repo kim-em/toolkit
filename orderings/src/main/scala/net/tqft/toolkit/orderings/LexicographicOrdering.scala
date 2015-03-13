@@ -13,11 +13,13 @@ trait LexicographicOrderingLowPriorityImplicits {
 }
 
 object LexicographicOrdering extends LexicographicOrderingLowPriorityImplicits {
+  type OptionOrdering[X] = Ordering[Option[X]]
 
-  implicit def mapOrdering[A: Ordering, B: Ordering]: Ordering[Map[A, B]] = {
+  // in the usual Ordering[Option[X]], None comes before Some(_), but sometimes we'll need to reverse this.
+  implicit def mapOrdering[A: Ordering, B: OptionOrdering]: Ordering[Map[A, B]] = {
     // FIXME this could be made more efficient, probably!
     require(implicitly[Ordering[A]] != null)
-    require(implicitly[Ordering[B]] != null)
+    require(implicitly[Ordering[Option[B]]] != null)
 
     new Ordering[Map[A, B]] {
       override def compare(x: Map[A, B], y: Map[A, B]) = {
@@ -26,8 +28,7 @@ object LexicographicOrdering extends LexicographicOrderingLowPriorityImplicits {
         //        println(s"keys = $keys")
         val xs = keys.map(x.get)
         val ys = keys.map(y.get)
-        // obtain an ordering for Options: None comes before Some(_)
-        import Ordering.Implicits._
+        import Ordering.Implicits.seqDerivedOrdering
         implicitly[Ordering[Seq[Option[B]]]].compare(xs, ys)
       }
     }

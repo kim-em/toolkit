@@ -166,9 +166,10 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
     override def toString = {
       s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" +
-        matricesToString //+
-      //                  "closedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 }) + "\n" +
-      //                  associativityToString
+        matricesToString +
+                        "closedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 }) + "\n" +
+                        "quadraticsWithFewestVariables: \n" + associativity.mapVariables(stringNamer).quadraticsWithFewestVariables.mkString(" ","\n ","")
+//                        associativityToString
     }
     def toShortString: String = {
       require(level < 10)
@@ -319,7 +320,12 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
 //    lazy val targets = actionOn(remaining.toSeq).orbits.map(_.representative).flatMap(addEntryIfAssociative)
     lazy val targets = remaining.flatMap(addEntryIfAssociative)
-    lazy val frequentVariables = associativity.mostFrequestVariablesInQuadraticsWithFewestVariables(targets.map(_.m))
+    
+    // TODO! we have to work harder if we want to filter the targets.
+    // You have to look at what's already been closed, and see that you only need to bother deleting things that are even better.
+    // If a variable s has already been closed, and it would open an equation with k variables, we only need to look in variables that appear
+    // in equations with at most k variables. And indeed we only need to look for variables that appear more often in equations with exactly k variables.
+//    lazy val frequentVariables = associativity.mostFrequestVariablesInQuadraticsWithFewestVariables(targets.map(_.m))
 
     override lazy val upperObjects: automorphisms.Action[Upper] = {
       new automorphisms.Action[Upper] {
@@ -330,8 +336,8 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
             Seq.empty
           }) ++ ({
 
-            Logging.info("I think children should be amongst:")
-            Logging.info(targets.filter(t => frequentVariables.contains(t.m)))
+//            Logging.info("I think children should be amongst:")
+//            Logging.info(targets.filter(t => frequentVariables.contains(t.m)))
             targets
           })
         }
@@ -346,9 +352,9 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
     override def children = {
       val result = super.children
-      for (c <- result) {
-        require(c.level == level + 1 || frequentVariables.contains((c.entries.toSet -- entries.toSet).head))
-      }
+//      for (c <- result) {
+//        require(c.level == level + 1 || frequentVariables.contains((c.entries.toSet -- entries.toSet).head))
+//      }
       result
     }
 
@@ -357,16 +363,17 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       import net.tqft.toolkit.orderings.LexicographicOrdering
 
       val reverseIntOrdering = implicitly[Ordering[Int]].reverse
+      val reverseOptionOrdering = implicitly[Ordering[Option[Int]]].reverse
       // we prefer deleting a variable which would appear in the most equations with the fewest variables
       // (i.e. we only compare the number of equations with more variables if there are ties with fewer variables)
-      implicit val mapOrdering = LexicographicOrdering.mapOrdering[Int, Int](reverseIntOrdering, reverseIntOrdering)
+      implicit val mapOrdering = LexicographicOrdering.mapOrdering[Int, Int](reverseIntOrdering, reverseOptionOrdering)
 
       implicit val invariantOrdering: Ordering[Lower] = Ordering.by[Lower, Int]({
         case DecreaseLevel => 0
         case DeleteEntry(_) => 1
       }).refineByPartialFunction({
         case DeleteEntry(v) => {
-          associativity.closedVariablesByNumberOfVariables.get(v) //.getOrElse(Map.empty) // TODO remove this, no longer necessary
+          associativity.closedVariablesByNumberOfVariables(v) //.getOrElse(Map.empty) // TODO remove this, no longer necessary
         }
       }).refineByPartialFunction({
         case DeleteEntry((i, j, k)) => Dreadnaut.canonicalizeColouredGraph(graphPresentation.additionalMarking(Seq(3 * rank + i * rank * rank + j * rank + k)))
