@@ -106,38 +106,40 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     associativityOption: Option[SystemOfQuadratics[(Int, Int, Int)]],
     matricesOption: Option[IndexedSeq[IndexedSeq[IndexedSeq[Int]]]]) extends CanonicalGenerationWithIsomorphism[PartialFusionRing, IndexedSeq[Int]] { pfr =>
 
+    require(entries.forall(_._3 != 0))
+
     def findIsomorphismTo(other: enumeration.PartialFusionRing) = {
       Dreadnaut.findIsomorphism(graphPresentation, other.graphPresentation).map(_.take(rank))
     }
-    def imageUnderPermutation(g: IndexedSeq[Int]):PartialFusionRing = {
+    def imageUnderPermutation(g: IndexedSeq[Int]): PartialFusionRing = {
       require(g(0) == 0)
       PartialFusionRing(previousLevel.map(_.imageUnderPermutation(g)), entries.map(v => multiplicityNamer(g(v._1), g(v._2), g(v._3))), remaining.map(v => multiplicityNamer(g(v._1), g(v._2), g(v._3))), None, None)
     }
     def isomorphs = FiniteGroups.symmetricGroup(rank).elements.filter(_(0) == 0).map(g => imageUnderPermutation(g)).iterator
-      
+
     def extendsTo(other: PartialFusionRing): Boolean = {
-      if(other.level < level) {
+      if (other.level < level) {
         false
-      } else if(other.level > level) {
+      } else if (other.level > level) {
         extendsTo(other.previousLevel.get)
       } else {
         previousLevel == other.previousLevel && entries.forall(other.entries.contains)
       }
     }
-    
-    def associativity: SystemOfQuadratics[(Int, Int, Int)] = associativityOption match {
+
+    lazy val associativity: SystemOfQuadratics[(Int, Int, Int)] = associativityOption match {
       case Some(a) => a
       case None => {
-        Logging.warn("Reconstructing associativity for a lower object.")
+        //        Logging.warn("Reconstructing associativity for a lower object.")
         entries.foldLeft(previousLevel.map(_.IncreaseLevel.result).getOrElse(root))({ case (pfr, entry) => pfr.addEntryIfAssociative(entry).get.result }).associativityOption.get
       }
     }
     def associativityToString = associativity.mapVariables(stringNamer).toString
     def associativityToMathematicaString = associativity.mapVariables(stringNamer).quadratics.map(_.completeSubstitution).mkString("{\n  ", ",\n  ", "\n}")
-    def matrices: IndexedSeq[IndexedSeq[IndexedSeq[Int]]] = matricesOption match {
+    lazy val matrices: IndexedSeq[IndexedSeq[IndexedSeq[Int]]] = matricesOption match {
       case Some(m) => m
       case None => {
-        Logging.warn("Reconstructing matrices for a lower object.")
+        //        Logging.warn("Reconstructing matrices for a lower object.")
         entries.foldLeft(previousLevel.map(_.IncreaseLevel.result).getOrElse(root))({ case (pfr, entry) => pfr.addEntryIfAssociative(entry).get.result }).matricesOption.get
       }
     }
@@ -163,14 +165,10 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     }
 
     override def toString = {
-//      if (associativityOption.nonEmpty && matricesOption.nonEmpty) {
-        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" +
-          matricesToString  +
-                  associativityToString + 
-                  "\nclosedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 })
-//      } else {
-//        s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)})"
-//      }
+      s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" +
+        matricesToString //+
+      //                  "closedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 }) + "\n" +
+      //                  associativityToString
     }
     def toShortString: String = {
       require(level < 10)
@@ -257,6 +255,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
         })))
       override def inverse = result.DeleteEntry(m)
 
+      override def toString = s"AddEntry($m, ...)"
       override def equals(other: Any) = {
         other match {
           case AddEntry(m2, _) => m == m2
@@ -267,7 +266,6 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     }
     def addEntryIfAssociative(m: (Int, Int, Int)): Option[AddEntry] = {
       val substitutions = associativity.substitute(m, level)
-      //      if (substitutions.isEmpty) println(" ... breaks associativity")
       substitutions.map({ quadratics =>
         AddEntry(m, Some(quadratics))
       })
@@ -319,6 +317,10 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       }
     }
 
+//    lazy val targets = actionOn(remaining.toSeq).orbits.map(_.representative).flatMap(addEntryIfAssociative)
+    lazy val targets = remaining.flatMap(addEntryIfAssociative)
+    lazy val frequentVariables = associativity.mostFrequestVariablesInQuadraticsWithFewestVariables(targets.map(_.m))
+
     override lazy val upperObjects: automorphisms.Action[Upper] = {
       new automorphisms.Action[Upper] {
         override def elements: Seq[Upper] = {
@@ -327,9 +329,10 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
           } else {
             Seq.empty
           }) ++ ({
-            val targets = remaining.toSeq // TODO hopefully we can shrink this
-            actionOn(targets).orbits.map(_.representative).flatMap(addEntryIfAssociative)
-//            targets.flatMap(addEntryIfAssociative)
+
+            Logging.info("I think children should be amongst:")
+            Logging.info(targets.filter(t => frequentVariables.contains(t.m)))
+            targets
           })
         }
         override def act(g: IndexedSeq[Int], u: Upper): Upper = {
@@ -341,6 +344,14 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       }
     }
 
+    override def children = {
+      val result = super.children
+      for (c <- result) {
+        require(c.level == level + 1 || frequentVariables.contains((c.entries.toSet -- entries.toSet).head))
+      }
+      result
+    }
+
     override lazy val ordering: Ordering[lowerObjects.Orbit] = {
       import net.tqft.toolkit.orderings.Orderings._
       import net.tqft.toolkit.orderings.LexicographicOrdering
@@ -348,14 +359,14 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       val reverseIntOrdering = implicitly[Ordering[Int]].reverse
       // we prefer deleting a variable which would appear in the most equations with the fewest variables
       // (i.e. we only compare the number of equations with more variables if there are ties with fewer variables)
-      implicit val mapOrdering = LexicographicOrdering.mapOrdering[Int, Int](reverseIntOrdering,reverseIntOrdering)
+      implicit val mapOrdering = LexicographicOrdering.mapOrdering[Int, Int](reverseIntOrdering, reverseIntOrdering)
 
       implicit val invariantOrdering: Ordering[Lower] = Ordering.by[Lower, Int]({
         case DecreaseLevel => 0
         case DeleteEntry(_) => 1
       }).refineByPartialFunction({
         case DeleteEntry(v) => {
-          associativity.closedVariablesByNumberOfVariables.get(v)//.getOrElse(Map.empty) // TODO remove this, no longer necessary
+          associativity.closedVariablesByNumberOfVariables.get(v) //.getOrElse(Map.empty) // TODO remove this, no longer necessary
         }
       }).refineByPartialFunction({
         case DeleteEntry((i, j, k)) => Dreadnaut.canonicalizeColouredGraph(graphPresentation.additionalMarking(Seq(3 * rank + i * rank * rank + j * rank + k)))
@@ -376,13 +387,17 @@ object PartialFusionRingEnumeration {
     val elementsSeq = G.elements.toIndexedSeq
     val numberOfSelfDualObjects = G.elements.count(x => G.inverse(x) == x)
     val enumeration = PartialFusionRingEnumeration(numberOfSelfDualObjects, (rank - numberOfSelfDualObjects) / 2)
-    val zeroEntries = for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank; if G.multiply(elementsSeq(i), elementsSeq(j)) != elementsSeq(k)) yield (i, j, k)
-    val oneEntries = for (i <- 1 until rank; j <- 1 until rank) yield (i, j, elementsSeq.indexOf(G.multiply(elementsSeq(i), elementsSeq(j))))
+    val zeroEntries = (for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank; if G.multiply(elementsSeq(i), elementsSeq(j)) != elementsSeq(k)) yield enumeration.multiplicityNamer(i, j, k)).distinct
+    val oneEntries = (for (i <- 1 until rank; j <- 1 until rank; k = elementsSeq.indexOf(G.multiply(elementsSeq(i), elementsSeq(j))); if k != 0) yield enumeration.multiplicityNamer(i, j, k)).distinct
     val withZeroEntries = zeroEntries.foldLeft(enumeration.root)({
       case (pfr, m) => pfr.addEntryIfAssociative(m).get.result
     })
-    oneEntries.foldLeft(withZeroEntries.IncreaseLevel.result)({
-      case (pfr, m) => pfr.addEntryIfAssociative(m).get.result
-    })
+    if (oneEntries.nonEmpty) {
+      oneEntries.foldLeft(withZeroEntries.IncreaseLevel.result)({
+        case (pfr, m) => pfr.addEntryIfAssociative(m).get.result
+      })
+    } else {
+      withZeroEntries
+    }
   }
 }

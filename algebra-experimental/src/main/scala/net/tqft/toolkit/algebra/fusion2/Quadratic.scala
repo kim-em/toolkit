@@ -14,8 +14,40 @@ case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[Quadra
   lazy val closedVariablesByNumberOfVariables: Map[S, Map[Int, Int]] = {
     import net.tqft.toolkit.collections.Tally._
     (for (s <- closedVariables) yield {
-      s -> quadratics.map(q => q.closedVariablesByNumberOfVariables.get(s).getOrElse(q.completeSubstitution.variables.size)).tally
+      s -> quadratics.flatMap(q => q.closedVariablesByNumberOfVariables.get(s)).tally
     }).toMap
+  }
+  lazy val quadraticsWithFewestVariables: Seq[Quadratic[S]] = {
+    if (quadratics.isEmpty) {
+      Nil
+    } else {
+      var min = quadratics.head.variables.size
+      val result = ListBuffer[Quadratic[S]]()
+      for (q <- quadratics.map(_.completeSubstitution)) {
+        if (q.variables.size < min) {
+          result.clear
+          min = q.variables.size
+        }
+        if (q.variables.size == min) {
+          result += q
+        }
+      }
+      result
+    }
+  }
+  def mostFrequestVariablesInQuadraticsWithFewestVariables(amongst: Set[S]): Set[S] = {
+    if (quadratics.isEmpty) {
+      amongst
+    } else {
+      import net.tqft.toolkit.collections.Tally._
+      val tally = quadraticsWithFewestVariables.flatMap(_.variables.intersect(amongst)).tally
+      if (tally.isEmpty) {
+        amongst
+      } else {
+        val min = tally.map(_._2).min
+        tally.collect({ case (s, f) if f == min => s }).toSet
+      }
+    }
   }
   def variables = quadratics.flatMap({ q: QuadraticState[S] => q.variables }).toSet
   // If substitution is slow, we could easily remove many more duplicates, by sorting terms, or multiplying through by -1
@@ -62,7 +94,7 @@ case class QuadraticState[S](label: (Int, Int, Int, Int), completeSubstitution: 
     QuadraticState(
       label,
       completeSubstitution.substitute(s, k),
-      partialSubstitutions.mapValues(q => q.substitute(s, k)).filter(m => m._2.variables.contains(m._1)) + (s -> completeSubstitution))
+      (partialSubstitutions.mapValues(q => q.substitute(s, k)) + (s -> completeSubstitution)).filter(m => m._2.variables.contains(m._1)))
   }
   def factor: QuadraticState[S] = {
     QuadraticState(label, completeSubstitution.factor, Map.empty)
@@ -179,7 +211,7 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
   private val substitutionsCache = net.tqft.toolkit.functions.Memo.softly(substituteImpl _)
   override def substitute(s: S, k: Int): Quadratic[S] = {
     substitutionsCache(s, k)
-//    substituteImpl(s, k)
+    //    substituteImpl(s, k)
   }
   def substituteImpl(s: S, k: Int): Quadratic[S] = {
     // substitute in the linear term and the quadratic terms
