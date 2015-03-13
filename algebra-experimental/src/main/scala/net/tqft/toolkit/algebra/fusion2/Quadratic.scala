@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.fusion2
 
 import net.tqft.toolkit.algebra.AdditiveMonoid
 import scala.collection.mutable.ListBuffer
+import net.tqft.toolkit.Logging
 
 trait Substitutable[X <: Substitutable[X, S], S] {
   def substitute(s: S, k: Int): X
@@ -18,12 +19,13 @@ case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[Quadra
     }).toMap
   }
   lazy val quadraticsWithFewestVariables: Seq[Quadratic[S]] = {
-    if (quadratics.isEmpty) {
+    val nonzeroQuadratics= quadratics.filterNot(_.zero_?)
+    if (nonzeroQuadratics.isEmpty) {
       Nil
     } else {
-      var min = quadratics.head.variables.size
+      var min = nonzeroQuadratics.head.variables.size
       val result = ListBuffer[Quadratic[S]]()
-      for (q <- quadratics.map(_.completeSubstitution)) {
+      for (q <- nonzeroQuadratics.map(_.completeSubstitution)) {
         if (q.variables.size < min) {
           result.clear
           min = q.variables.size
@@ -35,20 +37,21 @@ case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[Quadra
       result
     }
   }
-  def mostFrequestVariablesInQuadraticsWithFewestVariables(amongst: Set[S]): Set[S] = {
-    if (quadratics.isEmpty) {
-      amongst
-    } else {
-      import net.tqft.toolkit.collections.Tally._
-      val tally = quadraticsWithFewestVariables.flatMap(_.variables.intersect(amongst)).tally
-      if (tally.isEmpty) {
-        amongst
-      } else {
-        val min = tally.map(_._2).min
-        tally.collect({ case (s, f) if f == min => s }).toSet
-      }
-    }
-  }
+//  def mostFrequestVariablesInQuadraticsWithFewestVariables(amongst: Set[S]): Set[S] = {
+//    if (quadratics.isEmpty) {
+//      amongst
+//    } else {
+//      Logging.info(s"amongst: $amongst")
+//      import net.tqft.toolkit.collections.Tally._
+//      val tally = quadraticsWithFewestVariables.flatMap(_.variables.intersect(amongst)).tally
+//      if (tally.isEmpty) {
+//        amongst
+//      } else {
+//        val max = tally.map(_._2).max
+//        tally.collect({ case (s, f) if f == max => s }).toSet
+//      }
+//    }
+//  }
   def variables = quadratics.flatMap({ q: QuadraticState[S] => q.variables }).toSet
   // If substitution is slow, we could easily remove many more duplicates, by sorting terms, or multiplying through by -1
 
