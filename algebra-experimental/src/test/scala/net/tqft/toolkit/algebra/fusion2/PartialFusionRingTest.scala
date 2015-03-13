@@ -8,13 +8,13 @@ import net.tqft.toolkit.algebra.graphs.Dreadnaut
 @RunWith(classOf[JUnitRunner])
 class PartialFusionRingTest extends FlatSpec with Matchers {
 
-//  "children" should "produce some offspring" in {
-//    val children = PartialFusionRingEnumeration(4, 0).root.children
-////    for (c <- children) {
-////      println(c.entries)
-////    }
-//    children should be('nonEmpty)
-//  }
+  "children" should "produce some offspring" in {
+    val children = PartialFusionRingEnumeration(4, 0).root.children
+//    for (c <- children) {
+//      println(c.entries)
+//    }
+    children should be('nonEmpty)
+  }
 //  "children" should "produce some offspring (2)" in {
 //    val children = PartialFusionRingEnumeration(5, 0).root.children
 ////    for (c <- children) {
@@ -22,21 +22,21 @@ class PartialFusionRingTest extends FlatSpec with Matchers {
 ////    }
 //    children should be('nonEmpty)
 //  }
-  "descendants" should "not have any duplicates " in {
-    val enumeration = PartialFusionRingEnumeration(4, 0, Some(0.0))
-    val descendants = enumeration.root.descendants({r => 3-r.steps}).toStream
-     for (r <- descendants) println(Seq.fill(r.steps)(" ").mkString + r.toShortString)
-     val groups = descendants.groupBy(_.graphPresentation)
-     for(group <- groups.values; if group.size > 1) {
-       println(group.size)
-       for(g <- group) {
-         println(g)
-         println(g.toShortString)
-       }
-     }
-    val repeats = descendants.groupBy(r => Dreadnaut.canonicalize(r.graphPresentation)).mapValues(_.size)
-    repeats.values.max should equal(1)
-  }
+//  "descendants" should "not have any duplicates " in {
+//    val enumeration = PartialFusionRingEnumeration(4, 0, Some(0.0))
+//    val descendants = enumeration.root.descendants({r => 3-r.steps}).toStream
+////     for (r <- descendants) println(Seq.fill(r.steps)(" ").mkString + r.toShortString)
+//     val groups = descendants.groupBy(_.graphPresentation)
+//     for(group <- groups.values; if group.size > 1) {
+//       println(group.size)
+//       for(g <- group) {
+//         println(g)
+//         println(g.toShortString)
+//       }
+//     }
+//    val repeats = descendants.groupBy(r => Dreadnaut.canonicalize(r.graphPresentation)).mapValues(_.size)
+//    repeats.values.max should equal(1)
+//  }
 //  "descendants(2, 0, 2.01)" should "find Z/2Z" in {
 //    val enumeration = PartialFusionRingEnumeration(2, 0, Some(2.01))
 //    val descendants = enumeration.root.descendants().toStream
@@ -84,5 +84,5 @@ class PartialFusionRingTest extends FlatSpec with Matchers {
 //    for (r <- descendants; if r.remaining.isEmpty) println(r)
 //    descendants.filter(_.remaining.isEmpty).size should equal(4)
 //  }
-
+//
 }
