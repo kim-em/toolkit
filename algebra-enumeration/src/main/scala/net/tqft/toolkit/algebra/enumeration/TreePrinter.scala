@@ -15,6 +15,7 @@ import java.io.BufferedReader
 import java.io.FileReader
 import java.io.FileWriter
 import net.tqft.toolkit.Logging
+import net.tqft.toolkit.collections.Iterators._
 
 case class TreePrinter[A](stringify: A => String, level: A => Int, accept: A => Double = { a: A => 1 }, out: PrintWriter = new PrintWriter(System.out)) {
   def to(pw: Writer): TreePrinter[A] = this.copy(out = new PrintWriter(pw))
@@ -145,12 +146,14 @@ object TreeReader {
       val lines = TreeHelper.lines(file)
       def parse(line: String) = {
         import net.tqft.toolkit.Extractors._
-        val Seq(_, Int(level), matrices, _) = line.trim.split(" ").toSeq
-        val matrixEntries = if (!matrices.contains(",")) {
+        val Seq(objects, Int(level), matrices, _) = line.trim.split(" ").toSeq
+        val Seq(Int(selfDual), Int(dualPairs)) = objects.split(",").toSeq
+        val rank = selfDual + 2 * dualPairs
+        val matrixEntries = if (matrices.contains(",") || rank == 2) {
+          matrices.split(",")
+        } else {
           require(level < 10)
           matrices.toCharArray().map(_.toString)
-        } else {
-          matrices.split(",")
         }
         (line, level, matrixEntries.zipWithIndex.collect({ case ("_", i) => i }).toSet)
       }
@@ -362,49 +365,6 @@ object TreeMerger {
   //    merge(Source.fromString(tree1).getLines, Source.fromString(tree2).getLines, out)
   //  }
 
-  trait PeekableIterator[A] extends Iterator[A] {
-    def peek: Option[A]
-  }
-
-  object PeekableIterator {
-    implicit class Peekable[A](iterator: Iterator[A]) {
-      def peekable: PeekableIterator[A] = {
-        iterator match {
-          case iterator: PeekableIterator[A] => iterator
-          case _ => apply(iterator)
-        }
-      }
-    }
-
-    def apply[A](iterator: Iterator[A]): PeekableIterator[A] = PeekableIteratorImplementation(iterator)
-    private case class PeekableIteratorImplementation[A](iterator: Iterator[A], var nextOption: Option[A] = None) extends PeekableIterator[A] {
-      override def hasNext = nextOption.nonEmpty || iterator.hasNext
-      override def next = {
-        nextOption match {
-          case Some(a) => {
-            nextOption = None
-            a
-          }
-          case None => iterator.next
-        }
-      }
-      override def peek: Option[A] = {
-        nextOption match {
-          case Some(a) => Some(a)
-          case None => {
-            if (iterator.hasNext) {
-              nextOption = Some(iterator.next)
-              nextOption
-            } else {
-              None
-            }
-          }
-        }
-      }
-      override def map[B](f: A => B) = PeekableIteratorImplementation(iterator.map(f), nextOption.map(f))
-    }
-
-  }
 
   trait Simplifiable[X] { self: X =>
     def simplify: X

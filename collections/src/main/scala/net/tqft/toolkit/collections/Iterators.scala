@@ -5,6 +5,9 @@ import java.util.concurrent.LinkedBlockingQueue
 import scala.concurrent.Future
 import java.util.concurrent.TimeUnit
 import net.tqft.toolkit.Logging
+import java.util.concurrent.BlockingQueue
+import scala.concurrent.ExecutionContext
+import java.util.concurrent.Executors
 
 object Iterators {
 
@@ -44,6 +47,103 @@ object Iterators {
         }
       }
     }
+  }
+
+  implicit class QueueBuffered[A](iterator: Iterator[A]) {
+    def queueBuffered(bufferSize: Int = 1024): Iterator[A] = queueBuffered(new LinkedBlockingQueue[Option[A]](bufferSize))
+    def queueBuffered(queue: BlockingQueue[Option[A]]): Iterator[A] = {
+      Future({
+        while (iterator.hasNext) {
+          queue.put(Some(iterator.next))
+        }
+        queue.put(None)
+      })(ExecutionContext.fromExecutor(Executors.newSingleThreadExecutor()))
+      new Iterator[A] {
+        var finished = false
+        var box: Option[A] = None
+        override def hasNext = {
+          if (box.nonEmpty) {
+            true
+          } else {
+            if (finished) {
+              false
+            } else {
+              queue.take match {
+                case None => {
+                  finished = true
+                  false
+                }
+                case Some(a) => {
+                  box = Some(a)
+                  true
+                }
+              }
+            }
+          }
+        }
+        override def next = {
+          box match {
+            case Some(a) => {
+              val r = a
+              box = None
+              r
+            }
+            case None => {
+              if (finished) {
+                Iterator.empty.next
+              } else {
+                queue.take.get
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  trait PeekableIterator[A] extends Iterator[A] {
+    def peek: Option[A]
+  }
+
+  implicit class Peekable[A](iterator: Iterator[A]) {
+    def peekable: PeekableIterator[A] = {
+      iterator match {
+        case iterator: PeekableIterator[A] => iterator
+        case _ => PeekableIterator.apply(iterator)
+      }
+    }
+  }
+
+  object PeekableIterator {
+
+    def apply[A](iterator: Iterator[A]): PeekableIterator[A] = PeekableIteratorImplementation(iterator)
+    private case class PeekableIteratorImplementation[A](iterator: Iterator[A], var nextOption: Option[A] = None) extends PeekableIterator[A] {
+      override def hasNext = nextOption.nonEmpty || iterator.hasNext
+      override def next = {
+        nextOption match {
+          case Some(a) => {
+            nextOption = None
+            a
+          }
+          case None => iterator.next
+        }
+      }
+      override def peek: Option[A] = {
+        nextOption match {
+          case Some(a) => Some(a)
+          case None => {
+            if (iterator.hasNext) {
+              nextOption = Some(iterator.next)
+              nextOption
+            } else {
+              None
+            }
+          }
+        }
+      }
+      override def map[B](f: A => B) = PeekableIteratorImplementation(iterator.map(f), nextOption.map(f))
+    }
+
   }
 
   implicit class RichIterator[A](iterator: Iterator[A]) {

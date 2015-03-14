@@ -11,6 +11,8 @@ import java.io.FileOutputStream
 import net.tqft.toolkit.algebra.enumeration.TreePrinter
 import scala.io.StdIn
 import scala.concurrent.Future
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.LinkedBlockingQueue
 
 object PartialFusionRingWorker extends App {
 
@@ -90,7 +92,7 @@ object PartialFusionRingWorker extends App {
     }
 
     import net.tqft.toolkit.collections.Iterators._
-    val targets = TreeReader
+    def targets = TreeReader
       .readLeaves(sourceFile, initialString)
       .map(l => (l, l.split(" ")))
       .filter(_._2.size == 4)
@@ -125,7 +127,7 @@ object PartialFusionRingWorker extends App {
     for (t <- config.finishBy) {
       if (System.currentTimeMillis >= t) println("Time limited exceeded.")
     }
-    
+
     System.exit(0)
   } getOrElse {
     // arguments are bad, usage message will have been displayed
