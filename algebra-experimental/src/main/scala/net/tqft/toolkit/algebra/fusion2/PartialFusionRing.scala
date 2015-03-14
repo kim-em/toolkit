@@ -165,11 +165,11 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     }
 
     override def toString = {
-      s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" +
-        matricesToString +
-                        "closedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 }) + "\n" +
-                        "quadraticsWithFewestVariables: \n" + associativity.mapVariables(stringNamer).quadraticsWithFewestVariables.mkString(" ","\n ","")
-//                        associativityToString
+      s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" // +
+//        matricesToString +
+//        "closedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 }) + "\n" +
+//        "quadraticsWithFewestVariables: \n" + associativity.mapVariables(stringNamer).quadraticsWithFewestVariables.mkString(" ", "\n ", "") +
+//                              associativityToString
     }
     def toShortString: String = {
       require(level < 10)
@@ -318,14 +318,25 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       }
     }
 
-//    lazy val targets = actionOn(remaining.toSeq).orbits.map(_.representative).flatMap(addEntryIfAssociative)
-    lazy val targets = remaining.flatMap(addEntryIfAssociative)
-    
-    // TODO! we have to work harder if we want to filter the targets.
-    // You have to look at what's already been closed, and see that you only need to bother deleting things that are even better.
+    lazy val targets = actionOn(remaining.toSeq).orbits.map(_.representative).flatMap(addEntryIfAssociative)
+    //    lazy val targets = remaining.flatMap(addEntryIfAssociative)
+
+    // You can look at what's already been closed, and see that you only need to bother deleting things that are even better.
+
     // If a variable s has already been closed, and it would open an equation with k variables, we only need to look in variables that appear
     // in equations with at most k variables. And indeed we only need to look for variables that appear more often in equations with exactly k variables.
-//    lazy val frequentVariables = associativity.mostFrequestVariablesInQuadraticsWithFewestVariables(targets.map(_.m))
+    lazy val variablesInSmallEquations = {
+      if (associativity.quadratics.forall(_.zero_?)) {
+        remaining
+      } else {
+        import net.tqft.toolkit.arithmetic.MinMax._
+        // TODO we could do even better; variables that only appear in equations with exactly min variables, we only need to take those that appear often.
+        associativity.closedVariablesByNumberOfVariables.values.flatMap(_.keys).minOption match {
+          case Some(min) =>(for (q <- associativity.quadratics; if q.variables.size <= min; v <- q.variables) yield v).toSet
+          case None => remaining
+        }
+      } 
+    }
 
     override lazy val upperObjects: automorphisms.Action[Upper] = {
       new automorphisms.Action[Upper] {
@@ -337,8 +348,9 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
           }) ++ ({
 
 //            Logging.info("I think children should be amongst:")
-//            Logging.info(targets.filter(t => frequentVariables.contains(t.m)))
-            targets
+//            Logging.info(targets.filter(t => variablesInSmallEquations.contains(t.m)))
+            targets.filter(t => variablesInSmallEquations.contains(t.m))
+//            targets
           })
         }
         override def act(g: IndexedSeq[Int], u: Upper): Upper = {
@@ -350,13 +362,14 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       }
     }
 
-    override def children = {
-      val result = super.children
+    // TODO remove this later, and filter targets earlier; it's a sanity check for now.
+//    override def children = {
+//      val result = super.children
 //      for (c <- result) {
-//        require(c.level == level + 1 || frequentVariables.contains((c.entries.toSet -- entries.toSet).head))
+//        require(c.level == level + 1 || variablesInSmallEquations.contains((c.entries.toSet -- entries.toSet).head))
 //      }
-      result
-    }
+//      result
+//    }
 
     override lazy val ordering: Ordering[lowerObjects.Orbit] = {
       import net.tqft.toolkit.orderings.Orderings._
