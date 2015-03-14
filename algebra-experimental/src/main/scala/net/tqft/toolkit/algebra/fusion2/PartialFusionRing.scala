@@ -78,6 +78,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
   object PartialFusionRing {
     def apply(shortString: String): PartialFusionRing = {
+      println(s"parsings $shortString")
       import net.tqft.toolkit.Extractors._
       val Seq(objects, Int(level), matrices, Double(dimension)) = shortString.split(" ").toSeq
       val matrixEntries = if (!matrices.contains(",")) {
@@ -86,10 +87,11 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       } else {
         matrices.split(",")
       }
+      require(matrixEntries.length == (rank-1)*(rank-1)*(rank-1))
       require(objects.split(",").map(_.toInt).toSeq == Seq(numberOfSelfDualObjects, numberOfDualPairs))
-      (0 to level).foldLeft(root)({
+      val result = (0 to level).foldLeft(root)({
         case (pfr, l) => {
-          val lc = l.toString.head
+          val lc = l.toString
           val entries = (
             for (
               i <- 1 until rank;
@@ -100,6 +102,9 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
           entries.foldLeft(pfr)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
         }
       }).previousLevel.get
+//      require(result.toShortString == shortString)
+      println(result)
+      result
     }
   }
 
@@ -110,8 +115,6 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     remaining: Set[(Int, Int, Int)],
     associativityOption: Option[SystemOfQuadratics[(Int, Int, Int)]],
     matricesOption: Option[IndexedSeq[IndexedSeq[IndexedSeq[Int]]]]) extends CanonicalGenerationWithIsomorphism[PartialFusionRing, IndexedSeq[Int]] { pfr =>
-
-    require(entries.forall(_._3 != 0))
 
     def findIsomorphismTo(other: enumeration.PartialFusionRing) = {
       Dreadnaut.findIsomorphism(graphPresentation, other.graphPresentation).map(_.take(rank))
