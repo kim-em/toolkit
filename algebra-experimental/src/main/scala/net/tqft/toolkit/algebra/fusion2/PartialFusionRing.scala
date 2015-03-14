@@ -80,7 +80,12 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     def apply(shortString: String): PartialFusionRing = {
       import net.tqft.toolkit.Extractors._
       val Seq(objects, Int(level), matrices, Double(dimension)) = shortString.split(" ").toSeq
-      require(level < 10)
+      val matrixEntries = if(!matrices.contains(",")) {
+        require(level < 10)
+        matrices.toCharArray().map(_.toString)
+      } else {
+        matrices.split(",")
+      }
       require(objects.split(",").map(_.toInt).toSeq == Seq(numberOfSelfDualObjects, numberOfDualPairs))
       (0 to level).foldLeft(root)({
         case (pfr, l) => {
@@ -90,7 +95,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
               i <- 1 until rank;
               j <- 1 until rank;
               k <- 1 until rank;
-              if (matrices((i - 1) * (rank - 1) * (rank - 1) + (j - 1) * (rank - 1) + (k - 1))) == lc
+              if (matrixEntries((i - 1) * (rank - 1) * (rank - 1) + (j - 1) * (rank - 1) + (k - 1))) == lc
             ) yield multiplicityNamer(i, j, k)).toSet
           entries.foldLeft(pfr)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
         }
@@ -172,7 +177,6 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 //                              associativityToString
     }
     def toShortString: String = {
-      require(level < 10)
       def short(d: Double) = {
         require(d != Double.NaN)
         val s = d.toString
@@ -185,7 +189,8 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
           n.toString
         }
       }
-      numberOfSelfDualObjects + "," + numberOfDualPairs + " " + level + " " + matrices.tail.map(_.tail.map(_.tail.map(writeEntry).mkString("")).mkString("")).mkString("") + " " + short(globalDimensionLowerBound)
+      val separator = if(level >= 10) "," else ""
+      numberOfSelfDualObjects + "," + numberOfDualPairs + " " + level + " " + matrices.tail.map(_.tail.map(_.tail.map(writeEntry).mkString(separator)).mkString(separator)).mkString(separator) + " " + short(globalDimensionLowerBound)
     }
 
     override def equals(other: Any) = {
