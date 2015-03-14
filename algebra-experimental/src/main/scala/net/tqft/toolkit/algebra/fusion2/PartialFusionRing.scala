@@ -80,14 +80,16 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     def apply(shortString: String): PartialFusionRing = {
       import net.tqft.toolkit.Extractors._
       val Seq(objects, Int(level), matrices, Double(dimension)) = shortString.split(" ").toSeq
+      val Seq(Int(selfDual), Int(dualPairs)) = objects.split(",").toSeq
+      require(selfDual == numberOfSelfDualObjects)
+      require(dualPairs == numberOfDualPairs)
       val matrixEntries = if (!matrices.contains(",")) {
         require(level < 10)
         matrices.toCharArray().map(_.toString)
       } else {
         matrices.split(",")
       }
-      require(matrixEntries.length == (rank-1)*(rank-1)*(rank-1))
-      require(objects.split(",").map(_.toInt).toSeq == Seq(numberOfSelfDualObjects, numberOfDualPairs))
+      require(matrixEntries.length == (rank - 1) * (rank - 1) * (rank - 1))
       (0 to level).foldLeft(root)({
         case (pfr, l) => {
           val lc = l.toString
