@@ -78,7 +78,6 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
   object PartialFusionRing {
     def apply(shortString: String): PartialFusionRing = {
-      println(s"parsings $shortString")
       import net.tqft.toolkit.Extractors._
       val Seq(objects, Int(level), matrices, Double(dimension)) = shortString.split(" ").toSeq
       val matrixEntries = if (!matrices.contains(",")) {
@@ -89,7 +88,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
       }
       require(matrixEntries.length == (rank-1)*(rank-1)*(rank-1))
       require(objects.split(",").map(_.toInt).toSeq == Seq(numberOfSelfDualObjects, numberOfDualPairs))
-      val result = (0 to level).foldLeft(root)({
+      (0 to level).foldLeft(root)({
         case (pfr, l) => {
           val lc = l.toString
           val entries = (
@@ -102,9 +101,6 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
           entries.foldLeft(pfr)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
         }
       }).previousLevel.get
-//      require(result.toShortString == shortString)
-      println(result)
-      result
     }
   }
 
