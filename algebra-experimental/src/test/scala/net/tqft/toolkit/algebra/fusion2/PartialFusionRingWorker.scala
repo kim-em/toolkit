@@ -75,7 +75,6 @@ object PartialFusionRingWorker extends App {
       val checks = Seq(
         config.globalDimensionBound.isEmpty || r.globalDimensionLowerBound <= config.globalDimensionBound.get,
         config.levelBound.isEmpty || r.level < config.levelBound.get,
-        r.level < 9,
         config.stepsBound.isEmpty || r.steps < config.stepsBound.get,
         config.finishBy.isEmpty || System.currentTimeMillis < config.finishBy.get,
         !pleaseFinishNow,
