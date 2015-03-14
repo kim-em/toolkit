@@ -144,8 +144,15 @@ object TreeReader {
     } else {
       val lines = TreeHelper.lines(file)
       def parse(line: String) = {
-        val s = line.trim.split(" ")
-        (line, s(1).toInt, s(2).zipWithIndex.collect({ case ('_', i) => i }).toSet)
+        import net.tqft.toolkit.Extractors._
+        val Seq(_, Int(level), matrices, _) = line.trim.split(" ").toSeq
+        val matrixEntries = if (!matrices.contains(",")) {
+          require(level < 10)
+          matrices.toCharArray().map(_.toString)
+        } else {
+          matrices.split(",")
+        }
+        (line, level, matrixEntries.zipWithIndex.collect({ case ("_", i) => i }).toSet)
       }
 
       try {
