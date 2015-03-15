@@ -72,6 +72,7 @@ object PartialFusionRingWorker extends App {
     }
 
     var pleaseFinishNow = false
+    new File("please-stop").delete
 
     def accept(r: enumeration.PartialFusionRing): Int = {
       val checks = Seq(
@@ -85,15 +86,10 @@ object PartialFusionRingWorker extends App {
       if (checks.forall(_ == true)) { 1 } else { 0 }
     }
 
-    val sourceFile = if (config.mod > 1) {
-      seedFile
-    } else {
-      new File("fusion-rings")
-    }
-
     import net.tqft.toolkit.collections.Iterators._
     def targets = TreeReader
-      .readLeaves(sourceFile, initialString)
+      .readLeaves(new File("fusion-rings"), initialString)
+      .filter(l => !pleaseFinishNow)
       .map(l => (l, l.split(" ")))
       .filter(_._2.size == 4)
       .filter(config.levelBound.isEmpty || _._2(1).toInt <= config.levelBound.get)
@@ -101,8 +97,7 @@ object PartialFusionRingWorker extends App {
       .map(_._1)
       .map(enumeration.PartialFusionRing.apply)
       .filter(r => accept(r) > 0)
-      .drop(config.res)
-      .takeEvery(config.mod)
+      .filter(r => config.mod == 1 || r.hashCode.abs % config.mod == config.res)
       .map({ x => println("Found target " + x.toShortString); x })
 
     if (!config.batch) {
