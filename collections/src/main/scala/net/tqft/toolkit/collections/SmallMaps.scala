@@ -16,7 +16,7 @@ object SmallMaps {
     override def keysIterator = Iterator.empty
     override def filter(p: ((Any, Nothing)) => Boolean) = this
     override def filterKeys(p: Any => Boolean) = this
-    override def map[B, That](f: ((Any, Nothing)) ⇒ B)(implicit bf: CanBuildFrom[Map[Any, Nothing], B, That]): That = bf().result()
+    override def map[B, That](f: ((Any, Nothing)) ⇒ B)(implicit bf: CanBuildFrom[Map[Any, Nothing], B, That]): That = this.asInstanceOf[That]
     override def mapValues[B](f: Nothing => B) = SmallMaps.empty[Any, B]
     override def foreach[U](f: ((Any, Nothing)) => U) {}
     override def contains(key: Any) = false
@@ -58,7 +58,7 @@ object SmallMaps {
     override def keySet = new SmallSets.Set1(key1)
     override def filter(p: ((A, B)) => Boolean) = {
       if (p((key1, value1))) this
-      else empty
+      else SmallMaps.empty
     }
     override def filterKeys(p: A => Boolean) = {
       if (p(key1)) {
@@ -460,7 +460,7 @@ object SmallSets {
       new SmallMaps.Map4(key1, value1, key2, value2, key3, value3, key4, value4)
     }
     override def filter(p: A => Boolean) = {
-      val set = List(elem1, elem2, elem3).filter(p)
+      val set = List(elem1, elem2, elem3, elem4).filter(p)
       (if (set.size == 1) {
         new Set1(set.head)
       } else if (set.size == 2) {
