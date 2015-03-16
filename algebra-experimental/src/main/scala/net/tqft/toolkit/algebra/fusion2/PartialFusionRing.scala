@@ -171,11 +171,11 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
     }
 
     override def toString = {
-      s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n" // +
-      //        matricesToString +
-      //        "closedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 }) + "\n" +
-      //        "quadraticsWithFewestVariables: \n" + associativity.mapVariables(stringNamer).quadraticsWithFewestVariables.mkString(" ", "\n ", "") +
-      //                              associativityToString
+      s"PartialFusionRing(level = $level, entries = ${entries.map(stringNamer)}, remaining = ${remaining.map(stringNamer)})     globalDimensionLowerBound = $globalDimensionLowerBound\n"  +
+              matricesToString +
+              "closedVariablesByNumberOfVariables: " + associativity.closedVariablesByNumberOfVariables.map({ p => stringNamer(p._1) -> p._2 }) + "\n" +
+              "quadraticsWithFewestVariables: \n" + associativity.mapVariables(stringNamer).quadraticsWithFewestVariables.mkString(" ", "\n ", "") +
+                                    associativityToString
     }
     def toShortString: String = {
       def short(d: Double) = {
