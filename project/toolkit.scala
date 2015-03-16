@@ -169,7 +169,8 @@ object BuildSettings {
     javaOptions in run += "-Xmx8G",
     connectInput in run := true,
     baseDirectory in run := file("."),
-    EclipseKeys.withSource := true
+    EclipseKeys.withSource := true,
+    EclipseKeys.eclipseOutput := Some(".target")
   )
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
@@ -247,7 +248,7 @@ object Dependencies {
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
 	val mapdb = "org.mapdb" % "mapdb" % "0.9.9"
-	val slick = "com.typesafe.slick" %% "slick" % "2.1.0"
+	val slick = "com.typesafe.slick" %% "slick" % "3.0.0-RC1"
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0-M6"
 	val spire = "org.spire-math" %% "spire" % "0.7.1"
 	object omath {

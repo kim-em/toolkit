@@ -8,6 +8,7 @@ syntax: glob
 .settings/org.scala-ide.sdt.core.prefs
 
 target
+.target
 lib_managed
 project/boot
 bin

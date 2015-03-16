@@ -52,7 +52,6 @@ case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[Quadra
 //      }
 //    }
 //  }
-  def variables = quadratics.flatMap({ q: QuadraticState[S] => q.variables }).toSet
   // If substitution is slow, we could easily remove many more duplicates, by sorting terms, or multiplying through by -1
 
   def substitute(s: S, k: Int, levelOverride: Option[Int] = None): Option[SystemOfQuadratics[S]] = {
@@ -91,7 +90,7 @@ case class QuadraticState[S](label: (Int, Int, Int, Int), completeSubstitution: 
       case _ => false
     }
   }
-  override def hashCode = (completeSubstitution, partialSubstitutions).hashCode
+  override lazy val hashCode = (completeSubstitution, partialSubstitutions).hashCode
 
   override def substitute(s: S, k: Int) = {
     QuadraticState(
@@ -127,7 +126,9 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
 
   def mapVariables[T](f: S => T) = Quadratic(linearTerm.mapVariables(f), quadraticTerms.map(_.mapVariables(f)))
 
-  def impossibleAtLevel(k: Int) = {
+  lazy val impossibleAtLevel = Stream.from(0).map(impossibleAtLevel_)
+  
+  def impossibleAtLevel_(k: Int) = {
     val result = constant_? && !zero_? || {
       import net.tqft.toolkit.algebra.Rationals
       quadraticTerms.isEmpty && linearTerm.terms.size == 1 && Rationals.lt(Rationals.subtract(Rationals.quotient(-linearTerm.constant, linearTerm.terms.head._2), k), 0)
@@ -142,9 +143,9 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
     result
   }
 
-  def constant_? = quadraticTerms.forall(_.zero_?) && linearTerm.constant_?
-  def zero_? = linearTerm.zero_? && quadraticTerms.forall(_.zero_?)
-  def sign = {
+  val constant_? = quadraticTerms.forall(_.zero_?) && linearTerm.constant_?
+  val zero_? = linearTerm.zero_? && quadraticTerms.forall(_.zero_?)
+   val sign = {
     val signs = if (linearTerm.zero_?) {
       quadraticTerms.map(_.sign)
     } else {
@@ -159,7 +160,7 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
     }
   }
 
-  def factor: Quadratic[S] = {
+  lazy val factor: Quadratic[S] = {
     // tally up all the linear terms (both the linear term, and factors of the linear terms)
     // if everything just appears once, return this
     // otherwise, pick the linear term that appears most often, and pull that out
@@ -260,12 +261,22 @@ object LinearTerm {
         (x.terms.keySet ++ y.terms.keySet).map(s => s -> (x.terms.getOrElse(s, 0) + y.terms.getOrElse(s, 0))).filter(_._2 != 0).toMap)
     }
   }
+  
+  val termCounter = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
+  val mapTypes = scala.collection.mutable.Set[Class[_]]()
 }
 
 case class LinearTerm[S](constant: Int, terms: Map[S, Int]) extends Substitutable[LinearTerm[S], S] {
+  LinearTerm.termCounter(terms.size) = LinearTerm.termCounter(terms.size) + 1
+  LinearTerm.mapTypes += terms.getClass
+  require(terms.getClass.toString.contains("Map$"))
+  if(LinearTerm.termCounter.values.sum % 1000 == 0) {
+    println(LinearTerm.termCounter)
+    println(LinearTerm.mapTypes)
+  }
   def constant_? = terms.isEmpty
   def zero_? = (constant == 0) && constant_?
-  def sign = {
+  val sign = {
     if (constant >= 0 && terms.values.forall(_ > 0)) {
       1
     } else if (constant <= 0 && terms.values.forall(_ < 0)) {
