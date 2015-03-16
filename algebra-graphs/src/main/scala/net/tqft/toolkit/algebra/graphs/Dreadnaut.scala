@@ -31,6 +31,7 @@ trait Dreadnaut extends Logging {
       }
       p.out = out.filterNot(line => line.startsWith("Mode=") || line.startsWith("linelen="))
     }
+    in.println("B")
   }
 
   def invokeDreadnaut(cmd: String): Seq[String] = {
@@ -38,7 +39,7 @@ trait Dreadnaut extends Logging {
 
     in.println(cmd)
     in.println("\"done... \"z")
-    for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
+//    for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
     in.flush()
     val result = out.takeWhile(!_.startsWith("done... [")).toList
     result
