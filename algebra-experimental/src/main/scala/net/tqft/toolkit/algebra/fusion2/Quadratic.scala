@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.fusion2
 import net.tqft.toolkit.algebra.AdditiveMonoid
 import scala.collection.mutable.ListBuffer
 import net.tqft.toolkit.Logging
+import net.tqft.toolkit.collections.SmallMaps
 
 trait Substitutable[X <: Substitutable[X, S], S] {
   def substitute(s: S, k: Int): X
@@ -19,7 +20,7 @@ case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[Quadra
     }).toMap
   }
   lazy val quadraticsWithFewestVariables: Seq[Quadratic[S]] = {
-    val nonzeroQuadratics= quadratics.filterNot(_.zero_?)
+    val nonzeroQuadratics = quadratics.filterNot(_.zero_?)
     if (nonzeroQuadratics.isEmpty) {
       Nil
     } else {
@@ -37,21 +38,21 @@ case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[Quadra
       result
     }
   }
-//  def mostFrequestVariablesInQuadraticsWithFewestVariables(amongst: Set[S]): Set[S] = {
-//    if (quadratics.isEmpty) {
-//      amongst
-//    } else {
-//      Logging.info(s"amongst: $amongst")
-//      import net.tqft.toolkit.collections.Tally._
-//      val tally = quadraticsWithFewestVariables.flatMap(_.variables.intersect(amongst)).tally
-//      if (tally.isEmpty) {
-//        amongst
-//      } else {
-//        val max = tally.map(_._2).max
-//        tally.collect({ case (s, f) if f == max => s }).toSet
-//      }
-//    }
-//  }
+  //  def mostFrequestVariablesInQuadraticsWithFewestVariables(amongst: Set[S]): Set[S] = {
+  //    if (quadratics.isEmpty) {
+  //      amongst
+  //    } else {
+  //      Logging.info(s"amongst: $amongst")
+  //      import net.tqft.toolkit.collections.Tally._
+  //      val tally = quadraticsWithFewestVariables.flatMap(_.variables.intersect(amongst)).tally
+  //      if (tally.isEmpty) {
+  //        amongst
+  //      } else {
+  //        val max = tally.map(_._2).max
+  //        tally.collect({ case (s, f) if f == max => s }).toSet
+  //      }
+  //    }
+  //  }
   // If substitution is slow, we could easily remove many more duplicates, by sorting terms, or multiplying through by -1
 
   def substitute(s: S, k: Int, levelOverride: Option[Int] = None): Option[SystemOfQuadratics[S]] = {
@@ -127,7 +128,7 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
   def mapVariables[T](f: S => T) = Quadratic(linearTerm.mapVariables(f), quadraticTerms.map(_.mapVariables(f)))
 
   lazy val impossibleAtLevel = Stream.from(0).map(impossibleAtLevel_)
-  
+
   def impossibleAtLevel_(k: Int) = {
     val result = constant_? && !zero_? || {
       import net.tqft.toolkit.algebra.Rationals
@@ -145,7 +146,7 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
 
   val constant_? = quadraticTerms.forall(_.zero_?) && linearTerm.constant_?
   val zero_? = linearTerm.zero_? && quadraticTerms.forall(_.zero_?)
-   val sign = {
+  val sign = {
     val signs = if (linearTerm.zero_?) {
       quadraticTerms.map(_.sign)
     } else {
@@ -184,9 +185,9 @@ case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[Quadratic
       val coefficient = {
         val linearCoefficient = {
           if (linearTerm == term) {
-            LinearTerm[S](1, Map.empty)
+            LinearTerm[S](1, SmallMaps.empty)
           } else {
-            LinearTerm[S](0, Map.empty)
+            LinearTerm[S](0, SmallMaps.empty)
           }
         }
 
@@ -254,26 +255,16 @@ object LinearTerm {
   }
 
   implicit def MonoidStructure[S]: AdditiveMonoid[LinearTerm[S]] = new AdditiveMonoid[LinearTerm[S]] {
-    override def zero = LinearTerm(0, Map.empty)
+    override def zero = LinearTerm(0, SmallMaps.empty)
     override def add(x: LinearTerm[S], y: LinearTerm[S]) = {
       LinearTerm(
         x.constant + y.constant,
         (x.terms.keySet ++ y.terms.keySet).map(s => s -> (x.terms.getOrElse(s, 0) + y.terms.getOrElse(s, 0))).filter(_._2 != 0).toMap)
     }
   }
-  
-  val termCounter = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
-  val mapTypes = scala.collection.mutable.Set[Class[_]]()
 }
 
 case class LinearTerm[S](constant: Int, terms: Map[S, Int]) extends Substitutable[LinearTerm[S], S] {
-  LinearTerm.termCounter(terms.size) = LinearTerm.termCounter(terms.size) + 1
-  LinearTerm.mapTypes += terms.getClass
-  require(terms.getClass.toString.contains("Map$"))
-  if(LinearTerm.termCounter.values.sum % 1000 == 0) {
-    println(LinearTerm.termCounter)
-    println(LinearTerm.mapTypes)
-  }
   def constant_? = terms.isEmpty
   def zero_? = (constant == 0) && constant_?
   val sign = {
