@@ -200,6 +200,23 @@ object SmallMaps {
     }
   }
   class Map4[A, +B](key1: A, value1: B, key2: A, value2: B, key3: A, value3: B, key4: A, value4: B) extends Map[A, B] with SmallNonEmptyMap[A, B] {
+    override def +[C >: B](kv: (A, C)) = {
+      if (key1 == kv._1) {
+        if (value1 == kv._2) this
+        else new Map4(key1, kv._2, key2, value2, key3, value3, key4, value4)
+      } else if (key2 == kv._1) {
+        if (value2 == kv._2) this
+        else new Map4(key1, value1, key2, kv._2, key3, value3, key4, value4)
+      } else if (key3 == kv._1) {
+        if (value3 == kv._2) this
+        else new Map4(key1, value1, key2, value2, key3, kv._2, key4, value4)
+      } else if (key4 == kv._1) {
+        if (value4 == kv._2) this
+        else new Map4(key1, value1, key2, value2, key3, value3, key4, kv._2)
+      } else {
+        Map(key1 -> value1, key2 -> value2, key3 -> value3, key4 -> value4, kv)
+      }
+    }
     override def -(k: A) = {
       if (k == key1) {
         new Map3(key2, value2, key3, value3, key4, value4)
@@ -241,16 +258,17 @@ object SmallMaps {
 object SmallSets {
   def empty[A] = EmptySet.asInstanceOf[Set[A]]
 
-  object EmptySet extends Set[Nothing] {
-    override def contains(a: Nothing) = false
+  object EmptySet extends Set[Any] {
+    override def contains(a: Any) = false
     override def iterator = Iterator.empty
-    override def -(elem: Nothing) = Set.empty.-(elem)
-    override def +(elem: Nothing) = new Set1(elem)
-    override def filter(p: Nothing => Boolean) = this
-    override def map[B, That](f: Nothing ⇒ B)(implicit bf: CanBuildFrom[Set[Nothing], B, That]): That = bf().result()
-    override def foreach[U](f: Nothing => U) {}
+    override def -(elem: Any) = Set.empty.-(elem)
+    override def +(elem: Any) = new Set1(elem)
+    override def filter(p: Any => Boolean) = this
+    override def map[B, That](f: Any ⇒ B)(implicit bf: CanBuildFrom[Set[Any], B, That]): That = this.asInstanceOf[That]
+    override def foreach[U](f: Any => U) {}
     override def isEmpty = true
     override def nonEmpty = false
+    override def toMap[T, U](implicit ev: <:<[Any, (T, U)]): Map[T, U] = SmallMaps.empty
   }
 
   protected trait SmallNonEmptySet[A] { this: Set[A] =>
@@ -281,9 +299,15 @@ object SmallSets {
       } else
         SmallSets.empty
     }
-    override def map[B, That](f: A ⇒ B)(implicit bf: CanBuildFrom[Set[A], B, That]): That = ???
+    override def map[B, That](f: A ⇒ B)(implicit bf: CanBuildFrom[Set[A], B, That]): That = {
+      new Set1(f(elem1)).asInstanceOf[That]
+    }
     override def foreach[U](f: A => U) {
       f(elem1)
+    }
+    override def toMap[T, U](implicit ev: <:<[A, (T, U)]): Map[T, U] = {
+      val (key1, value1) = ev(elem1)
+      new SmallMaps.Map1(key1, value1)
     }
   }
   class Set2[A](elem1: A, elem2: A) extends Set[A] with SmallNonEmptySet[A] {
@@ -302,7 +326,7 @@ object SmallSets {
       if (elem == elem1 || elem == elem2) {
         this
       } else {
-        ??? // new Set3(elem1, elem2, elem)
+        new Set3(elem1, elem2, elem)
       }
     }
     override def filter(p: A => Boolean) = {
@@ -313,11 +337,26 @@ object SmallSets {
         case (false, false) => SmallSets.empty
       }
     }
-    override def map[B, That](f: A ⇒ B)(implicit bf: CanBuildFrom[Set[A], B, That]): That = ???
+    override def map[B, That](f: A ⇒ B)(implicit bf: CanBuildFrom[Set[A], B, That]): That = {
+      val v1 = f(elem1)
+      val v2 = f(elem2)
+      (if (v1 == v2) {
+        new Set1(v1)
+      } else {
+        new Set2(v1, v2)
+      }).asInstanceOf[That]
+    }
+
     override def foreach[U](f: A => U) {
       f(elem1)
       f(elem2)
     }
+    override def toMap[T, U](implicit ev: <:<[A, (T, U)]): Map[T, U] = {
+      val (key1, value1) = ev(elem1)
+      val (key2, value2) = ev(elem2)
+      new SmallMaps.Map2(key1, value1, key2, value2)
+    }
+
   }
   class Set3[A](elem1: A, elem2: A, elem3: A) extends Set[A] with SmallNonEmptySet[A] {
     override def contains(a: A) = elem1 == a || elem2 == a || elem3 == a
@@ -341,21 +380,109 @@ object SmallSets {
       }
     }
     override def filter(p: A => Boolean) = {
-      (p(elem1), p(elem2)) match {
+      (p(elem1), p(elem2), p(elem3)) match {
         case (true, true, true) => this
         case (true, true, false) => new Set2(elem1, elem2)
         case (true, false, true) => new Set2(elem1, elem3)
-        case (true, false, false) => SmallSets.empty
-        case (false, true, true) => this
-        case (false, true, false) => new Set1(elem1)
-        case (false, false, true) => new Set1(elem2)
+        case (true, false, false) => new Set1(elem1)
+        case (false, true, true) => new Set2(elem2, elem3)
+        case (false, true, false) => new Set1(elem2)
+        case (false, false, true) => new Set1(elem3)
         case (false, false, false) => SmallSets.empty
       }
     }
-    override def map[B, That](f: A ⇒ B)(implicit bf: CanBuildFrom[Set[A], B, That]): That = ???
+    override def map[B, That](f: A ⇒ B)(implicit bf: CanBuildFrom[Set[A], B, That]): That = {
+      val v1 = f(elem1)
+      val v2 = f(elem2)
+      val v3 = f(elem3)
+      (if (v1 == v2) {
+        if (v2 == v3) {
+          new Set1(v1)
+        } else {
+          new Set2(v1, v3)
+        }
+      } else {
+        if (v1 == v3 || v2 == v3) {
+          new Set2(v1, v2)
+        } else {
+          new Set3(v1, v2, v3)
+        }
+      }).asInstanceOf[That]
+    }
+
     override def foreach[U](f: A => U) {
       f(elem1)
       f(elem2)
+      f(elem3)
     }
+    override def toMap[T, U](implicit ev: <:<[A, (T, U)]): Map[T, U] = {
+      val (key1, value1) = ev(elem1)
+      val (key2, value2) = ev(elem2)
+      val (key3, value3) = ev(elem3)
+      new SmallMaps.Map3(key1, value1, key2, value2, key3, value3)
+    }
+
+  }
+  class Set4[A](elem1: A, elem2: A, elem3: A, elem4: A) extends Set[A] with SmallNonEmptySet[A] {
+    override def contains(a: A) = elem1 == a || elem2 == a || elem3 == a || elem4 == a
+    override def iterator = Iterator(elem1, elem2, elem3, elem4)
+    override def -(elem: A) = {
+      if (elem == elem1) {
+        new Set3(elem2, elem3, elem4)
+      } else if (elem == elem2) {
+        new Set3(elem1, elem3, elem4)
+      } else if (elem == elem3) {
+        new Set3(elem1, elem2, elem4)
+      } else if (elem == elem4) {
+        new Set3(elem1, elem2, elem3)
+      } else {
+        this
+      }
+    }
+    override def +(elem: A) = {
+      if (elem == elem1 || elem == elem2 || elem == elem3 || elem == elem4) {
+        this
+      } else {
+        Set(elem1, elem2, elem3, elem4, elem)
+      }
+    }
+    override def foreach[U](f: A => U) {
+      f(elem1)
+      f(elem2)
+      f(elem3)
+      f(elem4)
+    }
+    override def toMap[T, U](implicit ev: <:<[A, (T, U)]): Map[T, U] = {
+      val (key1, value1) = ev(elem1)
+      val (key2, value2) = ev(elem2)
+      val (key3, value3) = ev(elem3)
+      val (key4, value4) = ev(elem4)
+      new SmallMaps.Map4(key1, value1, key2, value2, key3, value3, key4, value4)
+    }
+    override def filter(p: A => Boolean) = {
+      val set = List(elem1, elem2, elem3).filter(p)
+      (if (set.size == 1) {
+        new Set1(set.head)
+      } else if (set.size == 2) {
+        new Set2(set(0), set(1))
+      } else if (set.size == 3) {
+        new Set3(set(0), set(1), set(2))
+      } else {
+        new Set4(set(0), set(1), set(2), set(3))
+      })
+    }
+    override def map[B, That](f: A ⇒ B)(implicit bf: CanBuildFrom[Set[A], B, That]): That = {
+      val set = List(f(elem1), f(elem2), f(elem3), f(elem4)).distinct
+      (if (set.size == 1) {
+        new Set1(set.head)
+      } else if (set.size == 2) {
+        new Set2(set(0), set(1))
+      } else if (set.size == 3) {
+        new Set3(set(0), set(1), set(2))
+      } else {
+        new Set4(set(0), set(1), set(2), set(3))
+      }).asInstanceOf[That]
+    }
+
   }
 }
