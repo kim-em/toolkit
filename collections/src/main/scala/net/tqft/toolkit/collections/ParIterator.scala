@@ -17,7 +17,7 @@ object ParIterator { pi =>
   }
 
   implicit class ParIterator[A](i: Iterator[A]) {
-    def par = parWithNumberOfThreads(2 * _ + 1)
+    def par = parWithNumberOfThreads(4 * _ + 1)
     def parWithNumberOfThreads(threadsFromCPUs: Int => Int): ParIteratorOperations[A] = parWithNumberOfThreads(threadsFromCPUs(Runtime.getRuntime().availableProcessors()))
     def parWithNumberOfThreads(threads: Int): ParIteratorOperations[A] = new ParIteratorOperations[A] {
       //      import scala.concurrent.ExecutionContext.Implicits.global
