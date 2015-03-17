@@ -11,6 +11,14 @@ import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import net.tqft.toolkit.algebra.enumeration.CanonicalGenerationWithIsomorphism
 import net.tqft.toolkit.Logging
 
+object PartialFusionRing {
+  def apply(s: String) = {
+    import net.tqft.toolkit.Extractors._
+    val Seq(Int(sd), Int(dp)) = s.split(" ")(0).split(",").toSeq
+    PartialFusionRingEnumeration(sd, dp).PartialFusionRing(s)
+  }
+}
+
 case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDualPairs: Int, globalDimensionUpperBound: Option[Double] = None) { enumeration =>
 
   val rank = numberOfSelfDualObjects + 2 * numberOfDualPairs
