@@ -1,16 +1,33 @@
 package net.tqft.toolkit.algebra.spiders
 
 import java.nio.file.{Files,Paths}
+import scala.annotation.tailrec
 
 object plantriHelper {
-  def edgeCodeToEdgeAdj(file: String)/*: Seq[IndexedSeq[IndexedSeq[Int]]]*/ = {
+  def edgeCodeToEdgeAdj(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = {
     // Takes plantri's edge code output and converts it into a Seq of 
     // inputs for edgeAdjToPlanarGraph
-    val data = Files.readAllBytes(Paths.get(file))
-    if ( data(0) != 0 ) // See plantri-guide.txt for description of edge code. The first byte flags something.
-      data // PLACEHOLDER
-    else
-      data // PLACEHOLDER
+    //
+    // Input: Path to file containing plantri edge code output 
+    //
+    // NOTE: Doesn't handle case 2 of edge code format for now. (See plantri-guide.txt)
+    
+    @tailrec def splitGraphSections(pre: IndexedSeq[Int], post: Seq[IndexedSeq[Int]]): Seq[IndexedSeq[Int]] = {
+      // Splits input into IndexedSeq sections per graph
+      if (pre.isEmpty) post
+      else splitGraphSections( pre.slice(pre(0)+1, pre.length+1), pre.slice(1,pre(0)+1) +: post )
+    }
+
+    def parseGraph(raw: IndexedSeq[Int]): IndexedSeq[IndexedSeq[Int]] = {
+      // Convert each graph code section from plantri output format to the input format of edgeAdjToPlanarGraph
+      val iter = raw.toIterator
+      return (Iterator continually { iter takeWhile (_ != -1) }
+              takeWhile { !_.isEmpty }
+              map { _.toIndexedSeq }).toIndexedSeq
+    }
+    
+    val rawData = Files.readAllBytes(Paths.get(file)) // raw plantri binary output
+    return splitGraphSections( rawData.map(_.toInt), Seq() ).map(parseGraph(_))
   }
   
   def edgeAdjToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
