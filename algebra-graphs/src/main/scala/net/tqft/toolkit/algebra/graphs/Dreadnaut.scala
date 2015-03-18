@@ -30,8 +30,8 @@ trait Dreadnaut extends Logging {
         Thread.sleep(10)
       }
       p.out = out.filterNot(line => line.startsWith("Mode=") || line.startsWith("linelen="))
+      in.println("B")
     }
-    in.println("B")
   }
 
   def invokeDreadnaut(cmd: String): Seq[String] = {
@@ -39,7 +39,10 @@ trait Dreadnaut extends Logging {
 
     in.println(cmd)
     in.println("\"done... \"z")
-//    for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
+//    if (version <= 2.5) {
+//      warn("Please update your dreadnaut version to 2.6, so that we don't have to deal with buffered output.")
+//      for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
+//    }
     in.flush()
     val result = out.takeWhile(!_.startsWith("done... [")).toList
     result
@@ -64,7 +67,7 @@ trait Dreadnaut extends Logging {
         }
       }
     }
-    val generators = generatorsString.map(line => permutationFromCycles(line.trim.split('(').filter(_.nonEmpty).map(_.trim.stripSuffix(")").split(" ").map(_.toInt)))).toSet
+    val generators = generatorsString.map(line => permutationFromCycles(line.trim.split('(').filter(_.nonEmpty).map(_.trim.stripSuffix(")").split(" ").map(_.toInt))))
     for (x <- generators) {
       require(g.relabel(x) == g.relabel(IndexedSeq.range(0, g.numberOfVertices)),
         "something went wrong while calling dreadnaut '" + g.toDreadnautString + "cxo':\n" +
