@@ -64,12 +64,12 @@ trait Graph {
 
   private lazy val automorphismGroupAndOrbits = Dreadnaut.automorphismGroupAndOrbits(this)
   lazy val automorphismGroup: FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = automorphismGroupAndOrbits._1
-  lazy val automorphismAction: automorphismGroup.Action[Int] = new automorphismGroup.Action[Int] {
+  lazy val automorphismAction: automorphismGroup.ActionOnFiniteSet[Int] = new automorphismGroup.ActionOnFiniteSet[Int] { action =>
     override def act(g: IndexedSeq[Int], x: Int) = g(x)
 
-    override val elements = (0 until numberOfVertices)
-    override lazy val orbits: Set[this.Orbit] = automorphismGroupAndOrbits._2.map({ orbit: Seq[Int] =>
-      new this.Orbit {
+    override val elements = (0 until numberOfVertices).toSet
+    override lazy val allOrbits: Set[action.Orbit] = automorphismGroupAndOrbits._2.map({ orbit: Seq[Int] =>
+      new Orbit {
         override val representative = orbit.head
         override val elements = orbit.toSet
         override def stabilizer = ???
