@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra.spiders
 
 import java.nio.file.{Files,Paths}
+import java.nio.ByteBuffer
 import scala.annotation.tailrec
 
 object plantriHelper {
@@ -9,13 +10,17 @@ object plantriHelper {
     // inputs for edgeAdjToPlanarGraph
     //
     // Input: Path to file containing plantri edge code output 
-    //
-    // NOTE: Doesn't handle case 2 of edge code format for now. (See plantri-guide.txt)
     
     @tailrec def splitGraphSections(pre: IndexedSeq[Int], post: Seq[IndexedSeq[Int]]): Seq[IndexedSeq[Int]] = {
-      // Splits input into IndexedSeq sections per graph
+      // Splits input into IndexedSeq sections per graph      
       if (pre.isEmpty) post
-      else splitGraphSections( pre.slice(pre(0)+1, pre.length+1), pre.slice(1,pre(0)+1) +: post )
+      else {
+        val bodyLength =
+          if (pre.head != 0) pre.head // Read first edge code header type
+          else ByteBuffer.wrap(Array(0, 0, pre(2), pre(3)).map(_.toByte)).getInt // Read second header type: a 0 byte followed by a single byte (see plantri-guide for details)
+                                                                                 // and then two more bytes representing the body length in big endian. 
+        splitGraphSections( pre.slice(bodyLength+1, pre.length+1), pre.slice(1,pre.head+1) +: post )
+      }
     }
 
     def parseGraph(raw: IndexedSeq[Int]): IndexedSeq[IndexedSeq[Int]] = {
