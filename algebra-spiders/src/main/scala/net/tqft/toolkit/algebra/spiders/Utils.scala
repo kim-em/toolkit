@@ -4,7 +4,7 @@ import java.nio.file.{Files,Paths}
 import java.nio.ByteBuffer
 import scala.annotation.tailrec
 
-object plantriHelper {
+object Utils {
   def edgeCodeToEdgeAdj(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = {
     // Takes plantri's edge code output and converts it into a Seq of 
     // inputs for edgeAdjToPlanarGraph
@@ -14,12 +14,11 @@ object plantriHelper {
     @tailrec def splitGraphSections(pre: IndexedSeq[Int], post: Seq[IndexedSeq[Int]]): Seq[IndexedSeq[Int]] = {
       // Splits input into IndexedSeq sections per graph      
       if (pre.isEmpty) post
-      else {
-        val bodyLength =
-          if (pre.head != 0) pre.head // Read first edge code header type
-          else ByteBuffer.wrap(Array(0, 0, pre(2), pre(3)).map(_.toByte)).getInt // Read second header type: a 0 byte followed by a single byte (see plantri-guide for details)
-                                                                                 // and then two more bytes representing the body length in big endian. 
-        splitGraphSections( pre.slice(bodyLength+1, pre.length+1), pre.slice(1,pre.head+1) +: post )
+      else if (pre.head != 0) splitGraphSections( pre.slice(pre.head+1, pre.length+1), pre.slice(1,pre.head+1) +: post ) // Read first edge code header type
+      else {// Read second header type: a 0 byte followed by a single byte (see plantri-guide for details)
+            // and then two more bytes representing the body length in big endian.
+            val bodyLength = ByteBuffer.wrap(Array(0, 0, pre(2), pre(3)).map(_.toByte)).getInt 
+            splitGraphSections( pre.slice(bodyLength+4, pre.length+1), pre.slice(4,bodyLength+4) +: post ) // Read first edge code header type
       }
     }
 
@@ -116,5 +115,9 @@ object plantriHelper {
     val loops = 0 // vertexPairings.values.count(S => S.length == 1) once we correctly implement loop functionality
     
     return PlanarGraph(outerFace, vertexFlags, labels, loops)
+  }
+  
+  def check23Faces(): Boolean = {
+    true
   }
 }
