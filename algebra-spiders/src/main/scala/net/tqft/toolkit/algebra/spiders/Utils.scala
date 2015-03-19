@@ -14,11 +14,12 @@ object Utils {
     @tailrec def splitGraphSections(pre: IndexedSeq[Int], post: Seq[IndexedSeq[Int]]): Seq[IndexedSeq[Int]] = {
       // Splits input into IndexedSeq sections per graph      
       if (pre.isEmpty) post
-      else if (pre.head != 0) splitGraphSections( pre.slice(pre.head+1, pre.length+1), pre.slice(1,pre.head+1) +: post ) // Read first edge code header type
-      else {// Read second header type: a 0 byte followed by a single byte (see plantri-guide for details)
-            // and then two more bytes representing the body length in big endian.
-            val bodyLength = ByteBuffer.wrap(Array(0, 0, pre(2), pre(3)).map(_.toByte)).getInt 
-            splitGraphSections( pre.slice(bodyLength+4, pre.length+1), pre.slice(4,bodyLength+4) +: post ) // Read first edge code header type
+      else {
+        // The following values depend on the header type of the section; see plantri-guide.txt for details 
+        val bodyLength = if (pre.head != 0) pre.head else ByteBuffer.wrap(Array(0, 0, pre(2), pre(3)).map(_.toByte)).getInt
+        val sectionStartIndex = if (pre.head != 0) 1 else 4
+        
+        splitGraphSections( pre.slice(bodyLength+1, pre.length+1), pre.slice(sectionStartIndex, sectionStartIndex + bodyLength) +: post )
       }
     }
 
@@ -117,7 +118,8 @@ object Utils {
     return PlanarGraph(outerFace, vertexFlags, labels, loops)
   }
   
-  def check23Faces(): Boolean = {
-    true
-  }
+  def check23Faces(I: IndexedSeq[Seq[(Int, Int)]]): Boolean =
+    // Takes a sequence of vertex flags and checks for two and three-faces
+    I.flatten.groupBy((x:Tuple2[Int,Int]) => x._2).        // Partition half-edges into collections based on the left face they bound
+      exists(x => (x._2.length == 3 || x._2.length == 2))  // Check for three and two-faces
 }
