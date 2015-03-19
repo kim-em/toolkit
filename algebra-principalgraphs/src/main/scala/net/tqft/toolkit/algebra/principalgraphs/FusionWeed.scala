@@ -40,7 +40,7 @@ case class FusionWeed(depth: Int, graph: FusionGraph) extends CanonicalGeneratio
   override val automorphisms: FinitelyGeneratedFiniteGroup[Seq[Permutation]] = ???
 
   override lazy val lowerObjects = {
-    new automorphisms.Action[Lower] {
+    new automorphisms.ActionOnFiniteSet[Lower] {
       val elements = ???
 
       def act(g: Seq[Permutation], x: Lower): Lower = ???

@@ -115,7 +115,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-fusion` = Project(id = "toolkit-algebra-fusion",
       base = file("algebra-fusion"),
-      settings = buildSettings ++ Seq(libraryDependencies ++= Seq(scopt))) dependsOn (functions, collections, algebra, `algebra-graphs`, `algebra-enumeration`)
+      settings = buildSettings ++ Seq(libraryDependencies ++= Seq(scopt))) dependsOn (functions, collections, algebra, `algebra-graphs`, `algebra-enumeration`, `algebra-magma`)
 
   lazy val `algebra-bugs` = Project(id = "toolkit-algebra-bugs",
     base = file("algebra-bugs"),

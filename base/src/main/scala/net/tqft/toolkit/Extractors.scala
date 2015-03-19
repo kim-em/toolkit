@@ -23,9 +23,9 @@ object Extractors {
     }
   }
 
-  import util.matching.Regex
-
-  implicit class RegexContext(sc: StringContext) {
-    def r = new Regex(sc.parts.mkString, sc.parts.tail.map(_ => "x"): _*)
-  }
+//  import util.matching.Regex
+//
+//  implicit class RegexContext(sc: StringContext) {
+//    def r = new Regex(sc.parts.mkString, sc.parts.tail.map(_ => "x"): _*)
+//  }
 }

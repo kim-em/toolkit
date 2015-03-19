@@ -28,6 +28,7 @@ trait Magma {
         Thread.sleep(10)
       }
 //      p.out = p.out.map(x => {println("out: " + x); x})
+      in.println("SetColumns(0);")
     }
   }
   def invokeMagma(cmd: String): Seq[String] = {
@@ -41,6 +42,8 @@ trait Magma {
     result
   }
 
+  def numberOfSmallGroups(order: Int) = invokeMagma(s"NumberOfSmallGroups($order);").head.toInt
+  
   def smallGroup(order: Int, index: Int): FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
     MagmaGroup(s"SmallGroup($order, $index)").group
   }
@@ -50,7 +53,15 @@ trait Magma {
     lazy val group: FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
       val output = invokeMagma(s"G:=$magmaConstructor; CosetTable(G,sub<G|>);")
       require(output.head.startsWith("Mapping from:"))
-      val generators = output.drop(2).takeWhile(_.trim.nonEmpty).map(_.trim.split("\\s+").toSeq.tail.map(_.toInt - 1)).transpose.map(_.toIndexedSeq.asInstanceOf[Permutation])
+      val generators = try {
+        output.drop(2).takeWhile(_.trim.nonEmpty).map(_.trim.split("\\s+").toSeq.tail.map(_.toInt - 1)).transpose.map(_.toIndexedSeq.asInstanceOf[Permutation])
+      } catch {
+        case e: NumberFormatException => {
+          println("NumberFormatException while parsing:")
+          println(output.mkString("\n"))
+          ???
+        }
+      }
       FiniteGroups.symmetricGroup(generators.head.size).subgroupGeneratedBy(generators)
     }
   }
