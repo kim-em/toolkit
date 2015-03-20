@@ -7,6 +7,7 @@ syntax: glob
 .classpath
 .settings/org.scala-ide.sdt.core.prefs
 
+.target
 target
 lib_managed
 project/boot
