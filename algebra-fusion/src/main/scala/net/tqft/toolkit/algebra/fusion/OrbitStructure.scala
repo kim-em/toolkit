@@ -4,9 +4,35 @@ import net.tqft.toolkit.algebra.magma.LoadSmallGroups
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.enumeration.Odometer
 
-case class OrbitStructureWithDuals(orbitStructure: OrbitStructure)
+object OrbitStructure {
+  def apply(shortString: String) = unapply(shortString).get
+  def unapply(shortString: String): Option[OrbitStructure] = {
+    import net.tqft.toolkit.Extractors._
+    try {
+      shortString.split(",").toSeq match {
+        case Int(groupOrder) +: Int(groupIndex) +: pairs => {
+          val AnObjectRegex = """AnObject(\d+)""".r
+          val actionObjectPairs = pairs.sliding(2, 2).toSeq.map({
+            case Seq(Int(action), AnObjectRegex(Int(n))) => (action, AnObject(n))
+            case Seq(Int(action), "Dimension2Object") => (action, Dimension2Object)
+            case Seq(Int(action), "Generic2SupertransitiveFusionObject") => (action, Generic2SupertransitiveFusionObject)
+            case Seq(Int(action), "GenericDepth2FusionObject") => (action, GenericDepth2FusionObject)
+            case Seq(Int(action), "GenericFusionObject") => (action, GenericFusionObject)
+          })
+          Some(OrbitStructure(groupOrder, groupIndex, actionObjectPairs))
+        }
+      }
+    } catch {
+      case e: Exception => None
+    }
+  }
+}
 
 case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: Seq[(Int, SmallFusionObject)]) {
+  def toShortString = {
+    groupOrder + "," + groupIndex + "," + actionObjectPairs.map(p => p._1 + "," + p._2).mkString(",")
+  }
+
   lazy val (group, actions) = OrbitStructures.groupsDatabase(groupOrder)(groupIndex - 1)
   lazy val elements = {
     import Ordering.Implicits._
@@ -20,24 +46,24 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
 
   def compatibleDualData: Iterator[IndexedSeq[Int]] = {
     val groupInvolution = IndexedSeq.tabulate(groupOrder)({ i => (0 until groupOrder).find(j => groupMultiplication(i, j) == 0).get })
-    
-    val dualitiesByObjectType = (for(objectType <- actionObjectPairs.map(_._2).distinct) yield {
+
+    val dualitiesByObjectType = (for (objectType <- actionObjectPairs.map(_._2).distinct) yield {
       objectType -> {
         val numberOfOrbits = actionObjectPairs.count(_._2 == objectType)
         val orbitSizesOfThisType = actionObjectPairs.zip(orbitSizes).collect({
           case ((_, obj), size) if obj == objectType => size
-        }) 
+        })
         val zeroes = List.tabulate(numberOfOrbits)(i => List.fill(i + 1)(0))
         def completeToSymmetricMatrix(lowerTriangularMatrix: Seq[Seq[Int]]) = {
           List.tabulate(lowerTriangularMatrix.size, lowerTriangularMatrix.size)({
-            case (i,j) if j > i => lowerTriangularMatrix(j)(i)
-            case (i,j) => lowerTriangularMatrix(i)(j)
+            case (i, j) if j > i => lowerTriangularMatrix(j)(i)
+            case (i, j) => lowerTriangularMatrix(i)(j)
           })
         }
         def diagonal(m: Seq[Seq[Int]]) = m.zipWithIndex.map(p => p._1(p._2))
         def limit(lowerTriangularMatrix: List[List[Int]]): Boolean = {
           completeToSymmetricMatrix(lowerTriangularMatrix).map(_.sum).zip(orbitSizesOfThisType).forall(p => p._1 <= p._2)
-        }        
+        }
         Odometer(limit)(zeroes).filter(m => diagonal(m).forall(_ % 2 == 0)).map(completeToSymmetricMatrix).toStream
       }
     }).toMap
