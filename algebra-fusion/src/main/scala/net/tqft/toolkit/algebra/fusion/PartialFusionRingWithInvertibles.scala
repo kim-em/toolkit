@@ -11,6 +11,18 @@ import net.tqft.toolkit.collections.DeleteOne._
 import net.tqft.toolkit.orderings.LexicographicOrdering
 import net.tqft.toolkit.orderings.Orderings.RefineByable
 
+object PartialFusionRingWithInvertible {
+  def apply(shortString: String) = {
+    import net.tqft.toolkit.Extractors._
+    shortString.split(" ").toSeq match {
+      case Seq(Double(_), Int(_), OrbitStructure(os), dualDataString, Int(_), _) => {
+        val dualData = dualDataString.split(",").map(_.toInt).toIndexedSeq
+        PartialFusionRingWithInvertiblesEnumeration(os, dualData, None).PartialFusionRing(shortString)
+      }
+    }
+  }
+}
+
 case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStructure, dualData: IndexedSeq[Int], globalDimensionUpperBound: Option[Double] = None) { enumeration =>
 
   val rank = orbitStructure.groupOrder + orbitStructure.orbitSizes.sum
@@ -59,7 +71,31 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
         }
       ) yield (multiplicityNamer(i, j, k), m)
     }
-    def groupActionSubstitutions = ???
+
+    def orbitIndexPairToIndex(orbit: Int, indexWithinOrbit: Int): Int = {
+      ???
+    }
+
+    def groupActionSubstitutions = {
+      for (
+        i <- 0 until orbitStructure.groupOrder;
+        (((action, _), xSize), xOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
+        (((_, _), ySize), yOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
+        xIndex <- 0 until xSize;
+        yIndex <- 0 until ySize
+      ) yield {
+        val m = if (xOrbit == yOrbit) {
+          if (orbitStructure.actions(action).act(orbitStructure.group.generators(i), xIndex) == yIndex) {
+            1
+          } else {
+            0
+          }
+        } else {
+          0
+        }
+        multiplicityNamer(i, orbitIndexPairToIndex(xOrbit, xIndex), orbitIndexPairToIndex(yOrbit, yIndex)) -> m
+      }
+    }
     def XXdualSubstitutions = ???
 
     (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions).toMap
@@ -92,6 +128,43 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
   }
 
   object PartialFusionRing {
+    def apply(shortString: String): PartialFusionRing = {
+      import net.tqft.toolkit.Extractors._
+      shortString.split(" ").toSeq match {
+        case Seq(
+          Double(globalDimensionLowerBound),
+          Int(rank),
+          OrbitStructure(os),
+          dualDataString,
+          Int(level),
+          matricesString) if rank == enumeration.rank && os == orbitStructure => {
+          val dualData = dualDataString.split(",").map(_.toInt)
+          require(dualData == enumeration.dualData)
+
+          val matrixEntries = if (!matricesString.contains(",")) {
+            require(level < 10)
+            matricesString.toCharArray().map(_.toString)
+          } else {
+            matricesString.split(",")
+          }
+          require(matrixEntries.length == (rank - 1) * (rank - 1) * (rank - 1))
+          (0 to level).foldLeft(root)({
+            case (pfr, l) => {
+              val lc = l.toString
+              val entries = (
+                for (
+                  i <- 1 until rank;
+                  j <- 1 until rank;
+                  k <- 1 until rank;
+                  if (matrixEntries((i - 1) * (rank - 1) * (rank - 1) + (j - 1) * (rank - 1) + (k - 1))) == lc
+                ) yield multiplicityNamer(i, j, k)).toSet
+              entries.foldLeft(pfr)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
+            }
+          }).previousLevel.get
+
+        }
+      }
+    }
   }
 
   // matrices contains the current fusion multiplicities, with all as-yet unspecified entries set at level+1
@@ -106,10 +179,11 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
       Dreadnaut.findIsomorphism(graphPresentation, other.graphPresentation).map(_.take(rank))
     }
     def imageUnderPermutation(g: IndexedSeq[Int]): PartialFusionRing = {
-      require(g(0) == 0)
-      PartialFusionRing(previousLevel.map(_.imageUnderPermutation(g)), entries.map(v => multiplicityNamer(g(v._1), g(v._2), g(v._3))), remaining.map(v => multiplicityNamer(g(v._1), g(v._2), g(v._3))), None, None)
+      ???
+      //      require(g(0) == 0)
+      //      PartialFusionRing(previousLevel.map(_.imageUnderPermutation(g)), entries.map(v => multiplicityNamer(g(v._1), g(v._2), g(v._3))), remaining.map(v => multiplicityNamer(g(v._1), g(v._2), g(v._3))), None, None)
     }
-    def isomorphs = FiniteGroups.symmetricGroup(rank).elements.filter(_(0) == 0).map(g => imageUnderPermutation(g)).iterator
+    def isomorphs = ??? // FiniteGroups.symmetricGroup(rank).elements.filter(_(0) == 0).map(g => imageUnderPermutation(g)).iterator
 
     def extendsTo(other: PartialFusionRing): Boolean = {
       if (other.level < level) {
@@ -165,22 +239,28 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
       //              "quadraticsWithFewestVariables: \n" + associativity.mapVariables(stringNamer).quadraticsWithFewestVariables.mkString(" ", "\n ", "") +
       //                                    associativityToString
     }
-    //    def toShortString: String = {
-    //      def short(d: Double) = {
-    //        require(d != Double.NaN)
-    //        val s = d.toString
-    //        s.take(s.indexOf(".") + 3)
-    //      }
-    //      def writeEntry(n: Int) = {
-    //        if (n == level + 1) {
-    //          "_"
-    //        } else {
-    //          n.toString
-    //        }
-    //      }
-    //      val separator = if (level >= 10) "," else ""
-    //      numberOfSelfDualObjects + "," + numberOfDualPairs + " " + level + " " + matrices.tail.map(_.tail.map(_.tail.map(writeEntry).mkString(separator)).mkString(separator)).mkString(separator) + " " + short(globalDimensionLowerBound)
-    //    }
+    def toShortString: String = {
+      def short(d: Double) = {
+        require(d != Double.NaN)
+        val s = d.toString
+        s.take(s.indexOf(".") + 3)
+      }
+      def writeEntry(n: Int) = {
+        if (n == level + 1) {
+          "_"
+        } else {
+          n.toString
+        }
+      }
+      val separator = if (level >= 10) "," else ""
+
+      short(globalDimensionLowerBound) + " " +
+        rank + " " +
+        orbitStructure.toShortString + " " +
+        dualData.mkString(",") + " " +
+        level + " " +
+        matrices.tail.map(_.tail.map(_.tail.map(writeEntry).mkString(separator)).mkString(separator)).mkString(separator)
+    }
 
     override def equals(other: Any) = {
       other match {
