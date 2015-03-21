@@ -11,15 +11,12 @@ import net.tqft.toolkit.collections.DeleteOne._
 import net.tqft.toolkit.orderings.LexicographicOrdering
 import net.tqft.toolkit.orderings.Orderings.RefineByable
 
-case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStructure, globalDimensionUpperBound: Option[Double] = None) { enumeration =>
+case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStructure, dualData: IndexedSeq[Int], globalDimensionUpperBound: Option[Double] = None) { enumeration =>
 
   val rank = orbitStructure.groupOrder + orbitStructure.orbitSizes.sum
-  def dual(i: Int): Int = ???
 
-  def objectType(i: Int): SmallFusionObject = ???
-
-  def minimumDimension(i: Int): Double = objectType(i).dimension
-  def maximumDimension(i: Int): Option[Double] = objectType(i) match {
+  def minimumDimension(i: Int): Double = orbitStructure.objectTypes(i).dimension
+  def maximumDimension(i: Int): Option[Double] = orbitStructure.objectTypes(i) match {
     case obj: SmallFusionObjectWithDefiniteDimension => Some(obj.dimension)
     case _ => None
   }
@@ -29,7 +26,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
   // synonymousMultiplicities returns the list of multiplicities which must be equal to the given one.
   def synonymousMultiplicities(p: (Int, Int, Int)) = {
     val (a, b, c) = p
-    Seq((c, dual(b), a), (dual(a), c, b), (a, b, c), (b, dual(c), dual(a)), (dual(c), a, dual(b)), (dual(b), dual(a), dual(c)))
+    Seq((c, dualData(b), a), (dualData(a), c, b), (a, b, c), (b, dualData(c), dualData(a)), (dualData(c), a, dualData(b)), (dualData(b), dualData(a), dualData(c)))
   }
   // multiplicityNamer takes a triple of Ints, and returns the 'preferred variable' in the reciprocity class.
   // (In particular, the variables we work with are the image of this function on {0,...,rank-1}^3.)
@@ -50,8 +47,8 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     Graph(3 * rank + rank * rank * rank + 1, adjacencies)
   }
 
-  val root = {
-    def dualitySubstitutions = (for (i <- 0 until rank; j <- 0 until rank; k = if (i == dual(j)) 1 else 0) yield (multiplicityNamer(i, j, 0), k))
+  val rootSubstitutions = {
+    def dualitySubstitutions = (for (i <- 0 until rank; j <- 0 until rank; k = if (i == dualData(j)) 1 else 0) yield (multiplicityNamer(i, j, 0), k))
     def groupStructureSubstitutions = {
       for (
         i <- 0 until orbitStructure.groupOrder;
@@ -64,16 +61,20 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     }
     def groupActionSubstitutions = ???
     def XXdualSubstitutions = ???
-    val substitutions = (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions).toMap
+
+    (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions).toMap
+  }
+
+  val root = {
 
     val XXdualEquations: Seq[QuadraticState[(Int, Int, Int)]] = ???
 
-    val associativity = substitutions.foldLeft(
+    val associativity = rootSubstitutions.foldLeft(
       SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q._1, q._2))))({
         case (system, (s, k)) => system.substitute(s, k, levelOverride = Some(0)).get
       }).factor
     val matrices = IndexedSeq.tabulate(rank, rank, rank)({
-      case (i, j, k) => substitutions.get(multiplicityNamer(i, j, k)) match {
+      case (i, j, k) => rootSubstitutions.get(multiplicityNamer(i, j, k)) match {
         case Some(m) => m
         case None => 1 // unknown entries
       }
@@ -81,7 +82,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     PartialFusionRing(
       None,
       Seq.empty,
-      Seq.tabulate(rank, rank, rank)({ case (i, j, k) => multiplicityNamer(i + 1, j + 1, k + 1) }).flatten.flatten.toSet -- substitutions.keySet,
+      Seq.tabulate(rank, rank, rank)({ case (i, j, k) => multiplicityNamer(i, j, k) }).flatten.flatten.toSet -- rootSubstitutions.keySet,
       Some(associativity.copy(quadratics = associativity.quadratics ++ XXdualEquations)),
       Some(matrices))
   }
@@ -144,7 +145,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
           (for (k <- 0 until rank) yield {
             m(i)(j)(k) match {
               case e if e == level + 1 => {
-                if (level == 0 && (i == 0 || j == 0 || (k == 0 && i == dual(j)))) {
+                if (level == 0 && (i == 0 || j == 0 || (k == 0 && i == dualData(j)))) {
                   "1"
                 } else {
                   stringNamer(multiplicityNamer(i, j, k))
@@ -228,12 +229,11 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     case object IncreaseLevel extends Upper {
       override val result = {
         val newMatrices = IndexedSeq.tabulate(rank, rank, rank)({
-          case (i, j, k) => if (i == 0 || j == 0 || (k == 0 && i == dual(j)) || matrices(i)(j)(k) <= level) {
+          case (i, j, k) if rootSubstitutions.contains(multiplicityNamer(i, j, k)) || matrices(i)(j)(k) <= level =>
             matrices(i)(j)(k)
-          } else {
-            level + 2
-          }
+          case _ => level + 2
         })
+
         PartialFusionRing(Some(pfr), Seq.empty, remaining, Some(associativity.factor), Some(newMatrices))
       }
       override def inverse = result.DecreaseLevel

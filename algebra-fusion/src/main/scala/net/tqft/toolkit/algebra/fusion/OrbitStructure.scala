@@ -4,12 +4,52 @@ import net.tqft.toolkit.algebra.magma.LoadSmallGroups
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.enumeration.Odometer
 
+case class OrbitStructureWithDuals(orbitStructure: OrbitStructure)
+
 case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: Seq[(Int, SmallFusionObject)]) {
   lazy val (group, actions) = OrbitStructures.groupsDatabase(groupOrder)(groupIndex - 1)
   lazy val elements = {
     import Ordering.Implicits._
     group.elements.toSeq.sorted
   }
+  lazy val objectTypes = (TrivialObject +:
+    Seq.fill(groupOrder - 1)(NonTrivialObject)) ++
+    actionObjectPairs.zip(orbitSizes).flatMap({
+      case ((_, objectType), multiplicity) => Seq.fill(multiplicity)(objectType)
+    })
+
+  def compatibleDualData: Iterator[IndexedSeq[Int]] = {
+    val groupInvolution = IndexedSeq.tabulate(groupOrder)({ i => (0 until groupOrder).find(j => groupMultiplication(i, j) == 0).get })
+    
+    val dualitiesByObjectType = (for(objectType <- actionObjectPairs.map(_._2).distinct) yield {
+      objectType -> {
+        val numberOfOrbits = actionObjectPairs.count(_._2 == objectType)
+        val orbitSizesOfThisType = actionObjectPairs.zip(orbitSizes).collect({
+          case ((_, obj), size) if obj == objectType => size
+        }) 
+        val zeroes = List.tabulate(numberOfOrbits)(i => List.fill(i + 1)(0))
+        def completeToSymmetricMatrix(lowerTriangularMatrix: Seq[Seq[Int]]) = {
+          List.tabulate(lowerTriangularMatrix.size, lowerTriangularMatrix.size)({
+            case (i,j) if j > i => lowerTriangularMatrix(j)(i)
+            case (i,j) => lowerTriangularMatrix(i)(j)
+          })
+        }
+        def diagonal(m: Seq[Seq[Int]]) = m.zipWithIndex.map(p => p._1(p._2))
+        def limit(lowerTriangularMatrix: List[List[Int]]): Boolean = {
+          completeToSymmetricMatrix(lowerTriangularMatrix).map(_.sum).zip(orbitSizesOfThisType).forall(p => p._1 <= p._2)
+        }        
+        Odometer(limit)(zeroes).filter(m => diagonal(m).forall(_ % 2 == 0)).map(completeToSymmetricMatrix).toStream
+      }
+    }).toMap
+    val dualities = dualitiesByObjectType.foldLeft(Stream(Map[SmallFusionObject, Seq[Seq[Int]]]()))({
+      case (bigStream, (objectType, stream)) => bigStream.flatMap(m => stream.map(d => m + (objectType -> d)))
+    })
+    def buildInvolution(m: Map[SmallFusionObject, Seq[Seq[Int]]]): IndexedSeq[Int] = {
+      ???
+    }
+    dualities.map(buildInvolution).iterator
+  }
+
   def groupMultiplication(i: Int, j: Int): Int = elements.indexOf(group.multiply(elements(i), elements(j)))
 
   def orbitSizes = for ((cosetActionIndex, _) <- actionObjectPairs) yield {
