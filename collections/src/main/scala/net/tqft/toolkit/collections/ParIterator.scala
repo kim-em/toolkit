@@ -8,7 +8,6 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import net.tqft.toolkit.Logging
 
-// thanks to Juha Heljoranta for this implementation at <http://grokbase.com/t/gg/scala-user/12bx1gp61a/traversing-iterator-elements-in-parallel>
 object ParIterator { pi =>
 
   trait ParIteratorOperations[A] {
@@ -26,17 +25,19 @@ object ParIterator { pi =>
       def map[B](f: A => B): Iterator[B] = pi.map(i)(f)
       def foreach[B](f: A => B) {
         val queue: BlockingQueue[Option[A]] = new LinkedBlockingQueue(threads)
-        
+
+        // Since synchronizing access to iterators is hard, we set up a future reading the iterator
+        //  into a blocking queue.
         Future({
-          while(i.hasNext) {
+          while (i.hasNext) {
             queue.put(Some(i.next))
           }
-          for(i <- 0 until 2*threads) {
+          for (i <- 0 until 2 * threads) {
             queue.put(None)
           }
-//          Logging.info("iterator exhausted...")
+          //          Logging.info("iterator exhausted...")
         })(ExecutionContext.fromExecutor(Executors.newSingleThreadExecutor()))
-        
+
         def work: Future[Unit] = {
           val g = Future {
             queue.take.map(a => {
@@ -46,18 +47,19 @@ object ParIterator { pi =>
           }
           g.flatMap({
             case None => {
-//             Logging.info("closing this thread...") 
-            Future.successful(())
+              //             Logging.info("closing this thread...") 
+              Future.successful(())
             }
             case Some(a) => a
           })
         }
         Await.result(Future.sequence(for (i <- 0 until threads) yield work).map(_ => ()), Duration.Inf)
-//        Logging.info("finished foreach")
+        //        Logging.info("finished foreach")
       }
     }
   }
 
+  // thanks to Juha Heljoranta for this implementation at <http://grokbase.com/t/gg/scala-user/12bx1gp61a/traversing-iterator-elements-in-parallel>
   def map[A, B](i: Iterator[A])(f: A => B)(implicit execctx: ExecutionContext): Iterator[B] = {
     val cpus = Runtime.getRuntime().availableProcessors() + 1
     val queue: BlockingQueue[Option[Future[B]]] = new LinkedBlockingQueue(cpus * cpus)
