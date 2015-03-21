@@ -11,7 +11,7 @@ import net.tqft.toolkit.collections.DeleteOne._
 import net.tqft.toolkit.orderings.LexicographicOrdering
 import net.tqft.toolkit.orderings.Orderings.RefineByable
 
-object PartialFusionRingWithInvertible {
+object PartialFusionRingWithInvertibles {
   def apply(shortString: String) = {
     import net.tqft.toolkit.Extractors._
     shortString.split(" ").toSeq match {
@@ -102,7 +102,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
   }
 
   val root = {
-
+    
     val XXdualEquations: Seq[QuadraticState[(Int, Int, Int)]] = ???
 
     val associativity = rootSubstitutions.foldLeft(
@@ -290,6 +290,8 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     }
 
     lazy val globalDimensionLowerBound: Double = {
+      ??? // TODO use lower bounds from the orbit object types
+      
       val matrixRing = Matrices.ofSize[Int](rank)
       def r(m: IndexedSeq[IndexedSeq[Int]]) = for (row <- m) yield for (x <- row) yield if (x > level) level else x
       val squares = for (m <- matrices; m0 = r(m)) yield matrixRing.multiply(m0, m0.transpose)
@@ -297,6 +299,8 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     }
 
     lazy val globalDimensionLowerBoundAfterIncreasingLevel: Double = {
+      ??? // TODO use lower bounds from the orbit object types
+
       val matrixRing = Matrices.ofSize[Int](rank)
       val squares = for (m <- matrices) yield matrixRing.multiply(m, m.transpose)
       (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).map(fixDimension).sum
@@ -359,6 +363,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     }
 
     lazy val graphPresentation = {
+      ??? // TODO decide whether we need to colour things by object type
       val colours = IndexedSeq.fill(rank)(-3) ++ IndexedSeq.fill(rank)(-2) ++ IndexedSeq.fill(rank)(-1) ++ matrices.map(_.flatten).flatten :+ level
       unlabelledGraph.colour(colours)
     }
