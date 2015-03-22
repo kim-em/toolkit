@@ -59,6 +59,10 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     Graph(3 * rank + rank * rank * rank + 1, adjacencies)
   }
 
+  def orbitIndexPairToIndex(orbit: Int, indexWithinOrbit: Int): Int = {
+    ???
+  }
+
   val rootSubstitutions = {
     def dualitySubstitutions = (for (i <- 0 until rank; j <- 0 until rank; k = if (i == dualData(j)) 1 else 0) yield (multiplicityNamer(i, j, 0), k))
     def groupStructureSubstitutions = {
@@ -70,10 +74,6 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
           if (orbitStructure.groupMultiplication(i, j) == k) 1 else 0
         }
       ) yield (multiplicityNamer(i, j, k), m)
-    }
-
-    def orbitIndexPairToIndex(orbit: Int, indexWithinOrbit: Int): Int = {
-      ???
     }
 
     def groupActionSubstitutions = {
@@ -103,7 +103,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
         Exactly(m) = objectType.XXdual;
         xd = dualData(orbitIndexPairToIndex(xOrbit, x));
         (((_, objectType), ySize), yOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
-        if(!m.contains(objectType));
+        if (!m.contains(objectType));
         y <- 0 until ySize
       ) yield {
         multiplicityNamer(orbitIndexPairToIndex(xOrbit, x), xd, orbitIndexPairToIndex(yOrbit, y)) -> 0
@@ -115,7 +115,19 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
 
   val root = {
 
-    val XXdualEquations: Seq[QuadraticState[(Int, Int, Int)]] = ???
+    val XXdualEquations: Seq[QuadraticState[(Int, Int, Int)]] = {
+      // some linear equations, expressing the known summands of XXdual
+      for (
+        (((_, objectType), xSize), xOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
+        PartialKnowledge(map) = objectType.XXdual;
+        (objectType, multiplicity) <- map;
+        x <- 0 until xSize;
+        xd = dualData(orbitIndexPairToIndex(xOrbit, x))
+      ) yield {
+        val linearTerm: LinearTerm[(Int, Int, Int)] = ???
+        QuadraticState(Quadratic(linearTerm, Seq.empty))
+      }
+    }
 
     val associativity = rootSubstitutions.foldLeft(
       SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q._1, q._2))))({
