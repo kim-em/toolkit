@@ -110,7 +110,7 @@ object PartialFusionRingWorker2 extends App {
     def verboseTargets = allTargets.map({ x =>
       {
         counter = counter + 1
-        println(s"Found target ($counter/$total) ${x.toShortString}")
+        println(s"Found target ${x.toShortString}")
         x
       }
     })
@@ -127,9 +127,9 @@ object PartialFusionRingWorker2 extends App {
 
     import net.tqft.toolkit.collections.ParIterator._
 
-    for (t <- verboseTargets) {
-//    for (t <- config.cpus.map(c => verboseTargets.parWithNumberOfThreads(c)).getOrElse(verboseTargets.par)) {
-      TreePrinter[PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing](_.toShortString, _.steps, accept)
+//    for (t <- verboseTargets) {
+    for (t <- config.cpus.map(c => verboseTargets.parWithNumberOfThreads(c)).getOrElse(verboseTargets.par)) {
+      TreePrinter[PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing](_.toAbbreviatedString, _.steps, accept)
         .to("fusion-rings2", t)
         .print(t.descendants(accept))
       println("Finished target " + t.toShortString)

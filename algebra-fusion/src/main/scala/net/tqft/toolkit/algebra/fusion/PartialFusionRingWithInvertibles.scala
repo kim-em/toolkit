@@ -24,7 +24,7 @@ object PartialFusionRingWithInvertibles {
 }
 
 case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStructure, dualData: IndexedSeq[Int], globalDimensionUpperBound: Option[Double] = None) { enumeration =>
-  
+
   val rank = orbitStructure.groupOrder + orbitStructure.orbitSizes.sum
 
   val minimumDimensions = orbitStructure.objectTypes.map(_.dimension)
@@ -114,8 +114,8 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     }
 
     val result = (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions).toMap
-//    println(enumeration)
-//    println(result)
+    //    println(enumeration)
+    //    println(result)
     result
   }
 
@@ -163,7 +163,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
       }
     }
 
-    val initialEquations = SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q._1.toString, q._2)) ++ XXdualEquations)
+    val initialEquations = SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, orbitStructure.groupOrder, multiplicityNamer _).map(q => QuadraticState(q._1.toString, q._2)) ++ XXdualEquations)
     val associativityOption = rootSubstitutions.foldLeft[Option[SystemOfQuadratics[(Int, Int, Int)]]](Some(initialEquations))({
       case (system, (s, k)) => system.flatMap(_.substitute(s, k, levelOverride = Some(0)))
     }).map(_.factor)
@@ -197,11 +197,11 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
           dualDataString,
           Int(level),
           matricesString,
-          Double(globalDimensionLowerBound))  => {
-            
-            require(rank == enumeration.rank)
-            require(os == orbitStructure)
-            
+          Double(globalDimensionLowerBound)) => {
+
+          require(rank == enumeration.rank)
+          require(os == orbitStructure)
+
           val dualData = dualDataString.split(",").toIndexedSeq.map(_.toInt)
           require(dualData == enumeration.dualData)
 
@@ -220,8 +220,10 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
                   i <- 1 until rank;
                   j <- 1 until rank;
                   k <- 1 until rank;
+                  v = multiplicityNamer(i, j, k);
+                  if !rootSubstitutions.contains(v);
                   if (matrixEntries((i - 1) * (rank - 1) * (rank - 1) + (j - 1) * (rank - 1) + (k - 1))) == lc
-                ) yield multiplicityNamer(i, j, k)).toSet
+                ) yield v).toSet
               entries.foldLeft(pfr)({ (r, z) => r.addEntryIfAssociative(z).get.result }).IncreaseLevel.result
             }
           }).previousLevel.get
@@ -309,8 +311,8 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
         val s = d.toString
         s.take(s.indexOf(".") + 3)
       }
-      def writeEntry(n: Int) = {
-        if (n == level + 1) {
+      def writeEntry(n: Int, i: Int, j: Int, k: Int) = {
+        if (n == level + 1 && !rootSubstitutions.contains(multiplicityNamer(i, j, k))) {
           "_"
         } else {
           n.toString
@@ -318,13 +320,23 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
       }
       val separator = if (level >= 10) "," else ""
 
-      
-        rank + " " +
+      val entries = matrices.zipWithIndex.map({ case (matrix, i) => matrix.zipWithIndex.map({ case (row, j) => row.zipWithIndex.map({ case (entry, k) => writeEntry(entry, i, j, k) }) }) })
+
+      rank + " " +
         orbitStructure.toShortString + " " +
         dualData.mkString(",") + " " +
         level + " " +
-        matrices.tail.map(_.tail.map(_.tail.map(writeEntry).mkString(separator)).mkString(separator)).mkString(separator) + " " +
+        entries.tail.map(_.tail.map(_.tail.mkString(separator)).mkString(separator)).mkString(separator) + " " +
         short(globalDimensionLowerBound)
+    }
+
+    def toAbbreviatedString = {
+      val shortString = toShortString
+      if (shortString.length > 250) {
+        shortString.take(240) + "..." + shortString.takeRight(7)
+      } else {
+        shortString
+      }
     }
 
     override def equals(other: Any) = {
@@ -430,7 +442,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
 
     lazy val graphPresentation = {
       val matrixColours = IndexedSeq.fill(rank)(-3) ++ IndexedSeq.fill(rank)(-2) ++ IndexedSeq.fill(rank)(-1) ++ matrices.map(_.flatten).flatten :+ level
-      val orbitColours = IndexedSeq.fill(3)(orbitStructure.objectTypes.map(Some(_))).flatten ++ IndexedSeq.fill(rank*rank*rank+1)(None) 
+      val orbitColours = IndexedSeq.fill(3)(orbitStructure.objectTypes.map(Some(_))).flatten ++ IndexedSeq.fill(rank * rank * rank + 1)(None)
       unlabelledGraph.colour(matrixColours).combineColours(orbitColours)
     }
     override lazy val automorphisms: net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
