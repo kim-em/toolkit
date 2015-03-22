@@ -75,7 +75,7 @@ object PartialFusionRingWorker2 extends App {
     def targets(enumeration: PartialFusionRingWithInvertiblesEnumeration): Iterator[enumeration.PartialFusionRing] = {
       val initialString = enumeration.root.toShortString.split(" ").take(3).mkString(" ")
       TreeReader
-        .readLeaves(new File("fusion-rings"), initialString)
+        .readLeaves(new File("fusion-rings2"), initialString)
         .filter(l => !pleaseFinishNow)
         .map(l => (l, l.split(" ")))
         .filter(_._2.size == 4)
