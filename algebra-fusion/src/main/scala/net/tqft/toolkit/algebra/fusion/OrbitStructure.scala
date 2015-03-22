@@ -121,11 +121,21 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
       actionObjectPairs.zip(orbitSizes).map({ case ((cosetActionIndex, objectType), orbitSize) => s"($cosetActionIndex, /* $orbitSize, */ $objectType)" }) +
       ")"
   }
-
 }
 
-trait DecompositionKnowledge
+sealed trait DecompositionKnowledge
 case object YouKnowNothing extends DecompositionKnowledge
+
+object PartialKnowledge {
+  def unapply(knowledge: DecompositionKnowledge): Option[Map[SmallFusionObject, Int]] = {
+    knowledge match {
+      case Exactly(map) => Some(map)
+      case AtLeast(map) => Some(map)
+      case _ => None
+    }
+  }
+}
+
 case class Exactly(map: Map[SmallFusionObject, Int]) extends DecompositionKnowledge
 case class AtLeast(map: Map[SmallFusionObject, Int]) extends DecompositionKnowledge // AtLeast must specify the exact multiplicities of any object types that appear, but other object types may also appear in XXdual.
 
