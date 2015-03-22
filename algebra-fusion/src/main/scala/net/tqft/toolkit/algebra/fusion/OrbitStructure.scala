@@ -66,7 +66,11 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
         }
         def diagonal(m: Seq[Seq[Int]]) = m.zipWithIndex.map(p => p._1(p._2))
         def limit(lowerTriangularMatrix: List[List[Int]]): Boolean = {
-          completeToSymmetricMatrix(lowerTriangularMatrix).map(_.sum).zip(orbitSizesOfThisType).forall(p => p._1 <= p._2)
+          val symmetricMatrix = completeToSymmetricMatrix(lowerTriangularMatrix)
+          import Ordering.Implicits._
+          val ordering = implicitly[Ordering[Seq[Int]]]
+          (for(i <- 0 until symmetricMatrix.size; j <- i + 1 until symmetricMatrix.size) yield ordering.lteq(symmetricMatrix(i), symmetricMatrix(j))).forall(x => x) &&
+          symmetricMatrix.map(_.sum).zip(orbitSizesOfThisType).forall(p => p._1 <= p._2)
         }
         Odometer(limit)(zeroes).filter(m => diagonal(m).forall(_ % 2 == 0)).map(completeToSymmetricMatrix).toStream
       }
