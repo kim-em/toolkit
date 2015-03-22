@@ -9,7 +9,8 @@ import scala.io.StdIn
 
 object PartialFusionRingMergeApp extends App {
 
-  val directory = new File("fusion-rings")
+  val directory1 = new File("fusion-rings")
+  val directory2 = new File("fusion-rings2")
 
   import scala.concurrent.ExecutionContext.Implicits.global
   Future {
@@ -19,12 +20,14 @@ object PartialFusionRingMergeApp extends App {
     TreeMerger.pleaseFinishNow = true
   }
 
-  TreeMerger.mergeDirectory(directory)
+  TreeMerger.mergeDirectory(directory1)
+  TreeMerger.mergeDirectory(directory2)
 
   import scala.collection.JavaConverters._
   import net.tqft.toolkit.collections.Iterators._
 
-  val brokenFiles = Files.newDirectoryStream(directory.toPath, "*.tree").iterator.asScala.map(_.toFile).toSet.par.filter(f => !TreeMerger.fileComplete(f))
+  val brokenFiles = Files.newDirectoryStream(directory1.toPath, "*.tree").iterator.asScala.map(_.toFile).toSet.par.filter(f => !TreeMerger.fileComplete(f)) ++
+    Files.newDirectoryStream(directory2.toPath, "*.tree").iterator.asScala.map(_.toFile).toSet.par.filter(f => !TreeMerger.fileComplete(f))
   if (brokenFiles.nonEmpty) {
     val delete = args.length > 0 && args(0) == "-d"
     if (delete) {

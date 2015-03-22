@@ -96,6 +96,7 @@ object PartialFusionRingWorker2 extends App {
     def allTargets = for (
       orbitStructure <- OrbitStructures(config.globalDimensionBound);
       dualData <- orbitStructure.compatibleDualData;
+      if !pleaseFinishNow;
       enumeration = PartialFusionRingWithInvertiblesEnumeration(orbitStructure, dualData, Some(config.globalDimensionBound));
       if enumeration.rootOption.nonEmpty;
       t <- targets(enumeration)
