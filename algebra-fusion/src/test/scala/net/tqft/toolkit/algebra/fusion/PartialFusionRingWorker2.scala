@@ -14,15 +14,20 @@ import scala.concurrent.Future
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 
-object PartialFusionRingWorker extends App {
+object PartialFusionRingWorker2 extends App {
 
-  case class Config(selfDualObjects: Int = 5, dualPairs: Int = 0, res: Int = 0, mod: Int = 1, globalDimensionBound: Option[Double] = None, levelBound: Option[Int] = None, stepsBound: Option[Int] = None, finishBy: Option[Long] = None, cpus: Option[Int] = None, batch: Boolean = false, measure: Boolean = true, verbose: Boolean = false)
+  case class Config(
+    globalDimensionBound: Double = 12.0,
+    levelBound: Option[Int] = None,
+    stepsBound: Option[Int] = None,
+    res: Int = 0, mod: Int = 1,
+    finishBy: Option[Long] = None,
+    cpus: Option[Int] = None,
+    batch: Boolean = false)
 
-  val parser = new scopt.OptionParser[Config]("PartialFusionRingWorker") {
+  val parser = new scopt.OptionParser[Config]("PartialFusionRingWorker2") {
     head("PartialFusionRingWorker", "1.0")
-    opt[Double]('D', "global-dimensions") action { (x, c) =>
-      c.copy(globalDimensionBound = Some(x))
-    } text ("only enumerate fusion rings with bounded global dimension")
+    help("help") text ("prints this usage text")
     opt[Int]('l', "level") valueName ("<level>") action { (x, c) =>
       c.copy(levelBound = Some(x))
     } text ("only enumerate fusion rings up to level <level>")
@@ -36,47 +41,28 @@ object PartialFusionRingWorker extends App {
       c.copy(cpus = Some((Runtime.getRuntime.availableProcessors() * x).toInt))
     } text ("run with <factor>*#cpus threads")
     opt[Unit]('q', "batch") action { (_, c) =>
-      c.copy(batch = true, measure = false)
+      c.copy(batch = true)
     } text ("disable keyboard interrupt")
-    opt[Unit]('m', "measure") action { (_, c) =>
-      c.copy(measure = true)
-    } text ("display progress through the targets (requires an extra parse of the saved state)")
     opt[Seq[Int]]('r', "resmod") valueName ("<res>,<mod>") action {
       case (Seq(r, m), c) =>
         c.copy(res = r, mod = m)
     } text ("select only work in residue class res/mod")
-    help("help") text ("prints this usage text")
-    arg[Int]("<number-of-self-dual-objects>") hidden () action { (x, c) => c.copy(selfDualObjects = x) }
-    arg[Int]("<number-of-dual-pairs>") hidden () action { (x, c) => c.copy(dualPairs = x) }
-    checkConfig { c =>
-      if (c.globalDimensionBound.nonEmpty || c.levelBound.nonEmpty || c.stepsBound.nonEmpty || c.finishBy.nonEmpty) success else failure("You have requested an infinite computation; please specify at least one bound.")
-    }
+    arg[Double]("<global-dimension-bound>") hidden () action { (x, c) => c.copy(globalDimensionBound = x) }
   }
 
   parser.parse(args, Config()) map { config =>
-    val enumeration = PartialFusionRingEnumeration(config.selfDualObjects, config.dualPairs)
 
-    val initialString = config.selfDualObjects + "," + config.dualPairs
-
-    val dir = new File("fusion-rings")
+    val dir = new File("fusion-rings2")
     if (!dir.exists) {
       dir.mkdir()
-    }
-
-    val seedFile = new File("fusion-rings/" + enumeration.root.toShortString + ".tree")
-    if (!seedFile.exists) {
-      println(s"It seems no work has been done yet for $initialString; creating a seed file.")
-      val pw = new PrintWriter(new FileOutputStream(seedFile))
-      pw.println(enumeration.root.toShortString)
-      pw.close
     }
 
     var pleaseFinishNow = false
     new File("please-stop").delete
 
-    def accept(r: enumeration.PartialFusionRing): Int = {
+    def accept(r: PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing): Int = {
       val checks = Seq(
-        config.globalDimensionBound.isEmpty || r.globalDimensionLowerBound <= config.globalDimensionBound.get,
+        r.globalDimensionLowerBound <= config.globalDimensionBound,
         config.levelBound.isEmpty || r.level < config.levelBound.get,
         config.stepsBound.isEmpty || r.steps < config.stepsBound.get,
         config.finishBy.isEmpty || System.currentTimeMillis < config.finishBy.get,
@@ -86,23 +72,40 @@ object PartialFusionRingWorker extends App {
       if (checks.forall(_ == true)) { 1 } else { 0 }
     }
 
+    def targets(enumeration: PartialFusionRingWithInvertiblesEnumeration): Iterator[enumeration.PartialFusionRing] = {
+      val initialString = enumeration.root.toShortString.split(" ").take(3).mkString(" ")
+      TreeReader
+        .readLeaves(new File("fusion-rings"), initialString)
+        .filter(l => !pleaseFinishNow)
+        .map(l => (l, l.split(" ")))
+        .filter(_._2.size == 4)
+        .filter(config.levelBound.isEmpty || _._2(1).toInt <= config.levelBound.get)
+        .filter(_._2(3).toDouble <= config.globalDimensionBound)
+        .map(_._1)
+        .map(s => enumeration.PartialFusionRing(s))
+        .filter(r => accept(r) > 0)
+        .filter(r => config.mod == 1 || r.hashCode.abs % config.mod == config.res)
+    }
+
+    def allTargets = for (
+      orbitStructure <- OrbitStructures(config.globalDimensionBound);
+      dualData <- orbitStructure.compatibleDualData;
+      enumeration = PartialFusionRingWithInvertiblesEnumeration(orbitStructure, dualData, Some(config.globalDimensionBound));
+      t <- targets(enumeration)
+    ) yield t
+
     import net.tqft.toolkit.collections.Iterators._
-    def targets = TreeReader
-      .readLeaves(new File("fusion-rings"), initialString)
-      .filter(l => !pleaseFinishNow)
-      .map(l => (l, l.split(" ")))
-      .filter(_._2.size == 4)
-      .filter(config.levelBound.isEmpty || _._2(1).toInt <= config.levelBound.get)
-      .filter(config.globalDimensionBound.isEmpty || _._2(3).toDouble <= config.globalDimensionBound.get)
-      .map(_._1)
-      .map(enumeration.PartialFusionRing.apply)
-      .filter(r => accept(r) > 0)
-      .filter(r => config.mod == 1 || r.hashCode.abs % config.mod == config.res)
 
     var counter = 0
-    val total = if (config.measure) targets.size else 0
+    val total = allTargets.size
 
-    def verboseTargets = targets.map({ x => println("Found target " + (if (config.measure) { counter = counter + 1; s"($counter/$total) " } else "") + x.toShortString); x })
+    def verboseTargets = allTargets.map({ x =>
+      {
+        counter = counter + 1
+        println(s"Found target ($counter/$total) ${x.toShortString}")
+        x
+      }
+    })
 
     if (!config.batch) {
       import scala.concurrent.ExecutionContext.Implicits.global
@@ -117,7 +120,7 @@ object PartialFusionRingWorker extends App {
     import net.tqft.toolkit.collections.ParIterator._
 
     for (t <- config.cpus.map(c => verboseTargets.parWithNumberOfThreads(c)).getOrElse(verboseTargets.par)) {
-      TreePrinter[enumeration.PartialFusionRing](_.toShortString, _.steps, accept)
+      TreePrinter[PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing](_.toShortString, _.steps, accept)
         .to("fusion-rings", t)
         .print(t.descendants(accept))
       println("Finished target " + t.toShortString)

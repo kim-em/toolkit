@@ -15,7 +15,7 @@ object PartialFusionRingWithInvertibles {
   def apply(shortString: String) = {
     import net.tqft.toolkit.Extractors._
     shortString.split(" ").toSeq match {
-      case Seq(Double(_), Int(_), OrbitStructure(os), dualDataString, Int(_), _) => {
+      case Seq(Int(_), OrbitStructure(os), dualDataString, Int(_), _, _) => {
         val dualData = dualDataString.split(",").map(_.toInt).toIndexedSeq
         PartialFusionRingWithInvertiblesEnumeration(os, dualData, None).PartialFusionRing(shortString)
       }
@@ -132,13 +132,13 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
       import net.tqft.toolkit.Extractors._
       shortString.split(" ").toSeq match {
         case Seq(
-          Double(globalDimensionLowerBound),
           Int(rank),
           OrbitStructure(os),
           dualDataString,
           Int(level),
-          matricesString) if rank == enumeration.rank && os == orbitStructure => {
-          val dualData = dualDataString.split(",").map(_.toInt)
+          matricesString,
+          Double(globalDimensionLowerBound)) if rank == enumeration.rank && os == orbitStructure => {
+          val dualData = dualDataString.split(",").toIndexedSeq.map(_.toInt)
           require(dualData == enumeration.dualData)
 
           val matrixEntries = if (!matricesString.contains(",")) {
