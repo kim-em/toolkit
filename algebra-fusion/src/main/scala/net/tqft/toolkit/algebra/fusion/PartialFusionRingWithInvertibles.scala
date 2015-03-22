@@ -96,13 +96,25 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
         multiplicityNamer(i, orbitIndexPairToIndex(xOrbit, xIndex), orbitIndexPairToIndex(yOrbit, yIndex)) -> m
       }
     }
-    def XXdualSubstitutions = ???
+    def XXdualSubstitutions = {
+      for (
+        (((_, objectType), xSize), xOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
+        x <- 0 until xSize;
+        Exactly(m) = objectType.XXdual;
+        xd = dualData(orbitIndexPairToIndex(xOrbit, x));
+        (((_, objectType), ySize), yOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
+        if(!m.contains(objectType));
+        y <- 0 until ySize
+      ) yield {
+        multiplicityNamer(orbitIndexPairToIndex(xOrbit, x), xd, orbitIndexPairToIndex(yOrbit, y)) -> 0
+      }
+    }
 
     (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions).toMap
   }
 
   val root = {
-    
+
     val XXdualEquations: Seq[QuadraticState[(Int, Int, Int)]] = ???
 
     val associativity = rootSubstitutions.foldLeft(
@@ -291,7 +303,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
 
     lazy val globalDimensionLowerBound: Double = {
       ??? // TODO use lower bounds from the orbit object types
-      
+
       val matrixRing = Matrices.ofSize[Int](rank)
       def r(m: IndexedSeq[IndexedSeq[Int]]) = for (row <- m) yield for (x <- row) yield if (x > level) level else x
       val squares = for (m <- matrices; m0 = r(m)) yield matrixRing.multiply(m0, m0.transpose)
