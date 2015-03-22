@@ -27,11 +27,11 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
 
   val rank = orbitStructure.groupOrder + orbitStructure.orbitSizes.sum
 
-  def minimumDimension(i: Int): Double = orbitStructure.objectTypes(i).dimension
-  def maximumDimension(i: Int): Option[Double] = orbitStructure.objectTypes(i) match {
+  val minimumDimensions = orbitStructure.objectTypes.map(_.dimension)
+  val maximumDimensions = orbitStructure.objectTypes.map({
     case obj: SmallFusionObjectWithDefiniteDimension => Some(obj.dimension)
     case _ => None
-  }
+  })
 
   // Fusion multiplicities are labelled by a triple (Int, Int, Int), with (x,y,z) representing the multiplicity of z in x \otimes y.
   // We don't use all rank^3 fusion multiplicities, because some must be equal by reciprocity and semisimplicity.
@@ -314,20 +314,21 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     }
 
     lazy val globalDimensionLowerBound: Double = {
-      ??? // TODO use lower bounds from the orbit object types
-
       val matrixRing = Matrices.ofSize[Int](rank)
       def r(m: IndexedSeq[IndexedSeq[Int]]) = for (row <- m) yield for (x <- row) yield if (x > level) level else x
       val squares = for (m <- matrices; m0 = r(m)) yield matrixRing.multiply(m0, m0.transpose)
-      (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).map(fixDimension).sum
+      val squaredDimensions = (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).map(fixDimension)
+      squaredDimensions.zip(minimumDimensions.map(x => x * x)).map(p => math.max(p._1, p._2)).sum
+    }
+
+    lazy val squaredDimensionsAfterIncreasingLevel: Seq[Double] = {
+      val matrixRing = Matrices.ofSize[Int](rank)
+      val squares = for (m <- matrices) yield matrixRing.multiply(m, m.transpose)
+      (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).map(fixDimension)
     }
 
     lazy val globalDimensionLowerBoundAfterIncreasingLevel: Double = {
-      ??? // TODO use lower bounds from the orbit object types
-
-      val matrixRing = Matrices.ofSize[Int](rank)
-      val squares = for (m <- matrices) yield matrixRing.multiply(m, m.transpose)
-      (for (m <- squares) yield FrobeniusPerronEigenvalues.estimate(m.toArray.map(_.toArray))).map(fixDimension).sum
+      squaredDimensionsAfterIncreasingLevel.zip(minimumDimensions.map(x => x * x)).map(p => math.max(p._1, p._2)).sum
     }
 
     trait Upper {
@@ -421,9 +422,21 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     }
 
     override lazy val upperObjects: automorphisms.ActionOnFiniteSet[Upper] = {
+      def individualDimensionsNotTooBig = {
+        squaredDimensionsAfterIncreasingLevel.zip(maximumDimensions).forall({
+          case (_, None) => true
+          case (squared, Some(max)) => squared <= max * max
+        })
+      }
+      
       new automorphisms.ActionOnFiniteSet[Upper] {
         override def elements: Seq[Upper] = {
-          (if (remaining.nonEmpty && associativity.quadratics.forall(q => (q.zero_? || q.completeSubstitution.sign == 0) && !q.completeSubstitution.impossibleAtLevel(level + 1)) && (globalDimensionUpperBound.isEmpty || globalDimensionLowerBoundAfterIncreasingLevel < globalDimensionUpperBound.get)) {
+          (if (remaining.nonEmpty &&
+            associativity.quadratics.forall(q => (q.zero_? || q.completeSubstitution.sign == 0) &&
+              !q.completeSubstitution.impossibleAtLevel(level + 1)) &&
+            (globalDimensionUpperBound.isEmpty || globalDimensionLowerBoundAfterIncreasingLevel < globalDimensionUpperBound.get) &&
+            individualDimensionsNotTooBig  
+          ) {
             Seq(IncreaseLevel)
           } else {
             Seq.empty
