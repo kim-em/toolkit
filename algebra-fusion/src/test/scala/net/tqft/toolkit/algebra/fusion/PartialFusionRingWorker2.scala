@@ -13,6 +13,7 @@ import scala.io.StdIn
 import scala.concurrent.Future
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
+import java.nio.file.Files
 
 object PartialFusionRingWorker2 extends App {
 
@@ -73,14 +74,20 @@ object PartialFusionRingWorker2 extends App {
     }
 
     def targets(enumeration: PartialFusionRingWithInvertiblesEnumeration): Iterator[enumeration.PartialFusionRing] = {
+      println(enumeration.root.toShortString)
       val initialString = enumeration.root.toShortString.split(" ").take(3).mkString(" ")
-      TreeReader
-        .readLeaves(new File("fusion-rings2"), initialString)
+
+      val leafIterator = if (Files.newDirectoryStream((new File("fusion-rings2")).toPath, initialString + "*.tree").iterator.hasNext) {
+        TreeReader.readLeaves(new File("fusion-rings2"), initialString)
+      } else {
+        Iterator(enumeration.root.toShortString)
+      }
+      leafIterator 
         .filter(l => !pleaseFinishNow)
         .map(l => (l, l.split(" ")))
-        .filter(_._2.size == 4)
-        .filter(config.levelBound.isEmpty || _._2(1).toInt <= config.levelBound.get)
-        .filter(_._2(3).toDouble <= config.globalDimensionBound)
+        .filter(_._2.size == 6)
+        .filter(config.levelBound.isEmpty || _._2(3).toInt <= config.levelBound.get)
+        .filter(_._2(5).toDouble <= config.globalDimensionBound)
         .map(_._1)
         .map(s => enumeration.PartialFusionRing(s))
         .filter(r => accept(r) > 0)
@@ -91,13 +98,14 @@ object PartialFusionRingWorker2 extends App {
       orbitStructure <- OrbitStructures(config.globalDimensionBound);
       dualData <- orbitStructure.compatibleDualData;
       enumeration = PartialFusionRingWithInvertiblesEnumeration(orbitStructure, dualData, Some(config.globalDimensionBound));
+      if enumeration.rootOption.nonEmpty;
       t <- targets(enumeration)
     ) yield t
 
     import net.tqft.toolkit.collections.Iterators._
 
     var counter = 0
-    val total = allTargets.size
+    val total = 0 // allTargets.size
 
     def verboseTargets = allTargets.map({ x =>
       {

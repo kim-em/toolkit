@@ -58,6 +58,8 @@ case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[Quadra
   def substitute(s: S, k: Int, levelOverride: Option[Int] = None): Option[SystemOfQuadratics[S]] = {
     val newQuadratics = quadratics.map(_.substitute(s, k))
     if (newQuadratics.exists(_.completeSubstitution.impossibleAtLevel(levelOverride.getOrElse(k)))) {
+//      println("associativity failed:")
+//      println(newQuadratics.find(_.completeSubstitution.impossibleAtLevel(levelOverride.getOrElse(k))).get)
       None
     } else {
       Some(SystemOfQuadratics(closedVariables + s, newQuadratics))
@@ -72,7 +74,7 @@ case class SystemOfQuadratics[S](closedVariables: Set[S], quadratics: Seq[Quadra
   }
 }
 
-case class QuadraticState[S](label: Option[(Int, Int, Int, Int)], completeSubstitution: Quadratic[S], partialSubstitutions: Map[S, Quadratic[S]]) extends Substitutable[QuadraticState[S], S] {
+case class QuadraticState[S](label: String, completeSubstitution: Quadratic[S], partialSubstitutions: Map[S, Quadratic[S]] = Map.empty[S, Quadratic[S]]) extends Substitutable[QuadraticState[S], S] {
   override def zero_? = completeSubstitution.zero_?
   override def constant_? = completeSubstitution.constant_?
   override def variables = completeSubstitution.variables
@@ -102,11 +104,6 @@ case class QuadraticState[S](label: Option[(Int, Int, Int, Int)], completeSubsti
   def factor: QuadraticState[S] = {
     QuadraticState(label, completeSubstitution.factor, Map.empty)
   }
-}
-
-object QuadraticState {
-  def apply[S](quadratic: Quadratic[S]): QuadraticState[S] = QuadraticState(None, quadratic, Map.empty)
-  def apply[S](label: (Int, Int, Int, Int), quadratic: Quadratic[S]): QuadraticState[S] = QuadraticState(Some(label), quadratic, Map.empty)
 }
 
 case class Quadratic[S](linearTerm: LinearTerm[S], quadraticTerms: Seq[QuadraticTerm[S]]) extends Substitutable[Quadratic[S], S] {

@@ -43,7 +43,7 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
     actionObjectPairs.zip(orbitSizes).flatMap({
       case ((_, objectType), multiplicity) => Seq.fill(multiplicity)(objectType)
     })
-    
+
   def compatibleDualData: Iterator[IndexedSeq[Int]] = {
     val groupInvolution = IndexedSeq.tabulate(groupOrder)({ i => (0 until groupOrder).find(j => groupMultiplication(i, j) == 0).get })
 
@@ -72,9 +72,11 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
     })
     def buildInvolution(m: Map[SmallFusionObject, Seq[Seq[Int]]]): IndexedSeq[Int] = {
       def orbitIndex(objectType: SmallFusionObject, orbitIndexWithinObjectType: Int): Int = {
-        actionObjectPairs.zipWithIndex.collect({ case ((_, obj),i) if obj == objectType => i }).apply(orbitIndexWithinObjectType)
+        actionObjectPairs.zipWithIndex.collect({ case ((_, obj), i) if obj == objectType => i }).apply(orbitIndexWithinObjectType)
       }
-      def index(orbitIndex: Int, index: Int): Int = ???
+      def index(orbitIndex: Int, index: Int): Int = {
+        groupOrder + orbitSizes.take(orbitIndex).sum + index
+      }
       val nextIndices = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
       def nextAvailableIndexInOrbit(orbitIndex: Int): Int = {
         val r = nextIndices(orbitIndex)
@@ -82,21 +84,22 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
         r
       }
       val involution = groupInvolution.toArray ++ Array.fill(orbitSizes.sum)(-1)
-      for((obj, matrix) <- m) {
+      for ((obj, matrix) <- m) {
         // first, fill in the self dual object
-        for((row, i) <- matrix.zipWithIndex) {
+        for ((row, i) <- matrix.zipWithIndex) {
           val orbit = orbitIndex(obj, i)
           val numberOfSelfDualObject = orbitSizes(orbit) - row.sum
-          for(_ <- 0 until numberOfSelfDualObject) {
+          for (_ <- 0 until numberOfSelfDualObject) {
             val r = nextAvailableIndexInOrbit(orbit)
             involution(index(orbit, r)) = index(orbit, r)
           }
         }
         // second, the dual pairs
-        for((row ,i) <- matrix.zipWithIndex; (x,j) <- row.zipWithIndex) {
+        for ((row, i) <- matrix.zipWithIndex; (x, j) <- row.zipWithIndex) {
           val orbiti = orbitIndex(obj, i)
           val orbitj = orbitIndex(obj, j)
-          if( i <= j) {
+          val n = if (i < j) { x } else if (i == j) { x / 2 } else { 0 }
+          for (_ <- 0 until n) {
             val ri = nextAvailableIndexInOrbit(orbiti)
             val rj = nextAvailableIndexInOrbit(orbitj)
             involution(index(orbiti, ri)) = index(orbitj, rj)
@@ -104,8 +107,8 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
           }
         }
       }
-      require(involution.forall(_ >=0))
-     involution
+      require(involution.forall(_ >= 0))
+      involution
     }
     dualities.map(buildInvolution).iterator
   }
@@ -138,6 +141,10 @@ object PartialKnowledge {
 
 case class Exactly(map: Map[SmallFusionObject, Int]) extends DecompositionKnowledge
 case class AtLeast(map: Map[SmallFusionObject, Int]) extends DecompositionKnowledge // AtLeast must specify the exact multiplicities of any object types that appear, but other object types may also appear in XXdual.
+
+object SmallFusionObject {
+  implicit val ordering = Ordering.by({ o: SmallFusionObject => o.dimension })
+}
 
 sealed trait SmallFusionObject {
   def dimension: Double
