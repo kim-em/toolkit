@@ -56,11 +56,11 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
         }).map(_.flatten).flatten :+
         IndexedSeq.empty // an isolated vertex, to mark with the level
     }
-    Graph(3 * rank + rank * rank * rank + 1, adjacencies)
+    Graph(3 * rank + rank * rank * rank + 1, adjacencies).colour(orbitStructure.objectTypes.toIndexedSeq)
   }
 
   def orbitIndexPairToIndex(orbit: Int, indexWithinOrbit: Int): Int = {
-    ???
+    orbitStructure.groupOrder + orbitStructure.orbitSizes.take(orbit).sum + indexWithinOrbit
   }
 
   val rootSubstitutions = {
@@ -79,13 +79,15 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     def groupActionSubstitutions = {
       for (
         i <- 0 until orbitStructure.groupOrder;
+        g = orbitStructure.elements(i);
         (((action, _), xSize), xOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
         (((_, _), ySize), yOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
         xIndex <- 0 until xSize;
         yIndex <- 0 until ySize
       ) yield {
         val m = if (xOrbit == yOrbit) {
-          if (orbitStructure.actions(action).act(orbitStructure.group.generators(i), xIndex) == yIndex) {
+          orbitStructure.group.elements
+          if (orbitStructure.actions(action).act(g, xIndex) == yIndex) {
             1
           } else {
             0
@@ -100,6 +102,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
       for (
         (((_, objectType), xSize), xOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
         x <- 0 until xSize;
+        if objectType.XXdual.isInstanceOf[Exactly];
         Exactly(m) = objectType.XXdual;
         xd = dualData(orbitIndexPairToIndex(xOrbit, x));
         (((_, objectType), ySize), yOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
@@ -110,44 +113,77 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
       }
     }
 
-    (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions).toMap
+    val result = (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions).toMap
+//    println(enumeration)
+//    println(result)
+    result
   }
 
-  val root = {
+  val rootOption = {
 
     val XXdualEquations: Seq[QuadraticState[(Int, Int, Int)]] = {
       // some linear equations, expressing the known summands of XXdual
       for (
         (((_, objectType), xSize), xOrbit) <- orbitStructure.actionObjectPairs.zip(orbitStructure.orbitSizes).zipWithIndex;
+        if objectType.XXdual.isInstanceOf[Exactly] || objectType.XXdual.isInstanceOf[AtLeast];
         PartialKnowledge(map) = objectType.XXdual;
         (objectType, multiplicity) <- map;
-        x <- 0 until xSize;
-        xd = dualData(orbitIndexPairToIndex(xOrbit, x))
+        xi <- 0 until xSize;
+        x = orbitIndexPairToIndex(xOrbit, xi);
+        xd = dualData(x)
       ) yield {
-        val linearTerm: LinearTerm[(Int, Int, Int)] = ???
-        QuadraticState(Quadratic(linearTerm, Seq.empty))
+        val terms = (objectType match {
+          case TrivialObject => {
+            Seq((x, xd, 0) -> 1)
+          }
+          case NonTrivialObject => {
+            for (k <- 1 until orbitStructure.groupOrder) yield {
+              (x, xd, k) -> 1
+            }
+          }
+          case InvolutionObject => {
+            for (
+              k <- 1 until orbitStructure.groupOrder;
+              if orbitStructure.groupMultiplication(k, k) == 0
+            ) yield {
+              (x, xd, k) -> 1
+            }
+          }
+          case _ => {
+            for (
+              (obj, k) <- orbitStructure.objectTypes.zipWithIndex;
+              if obj == objectType
+            ) yield {
+              (orbitIndexPairToIndex(xOrbit, x), xd, k) -> 1
+            }
+          }
+        }).toMap
+        val linearTerm: LinearTerm[(Int, Int, Int)] = LinearTerm(-multiplicity, terms)
+        QuadraticState(s"XXdual equation for $x, $objectType", Quadratic(linearTerm, Seq.empty))
       }
     }
 
-    val associativity = rootSubstitutions.foldLeft(
-      SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q._1, q._2))))({
-        case (system, (s, k)) => system.substitute(s, k, levelOverride = Some(0)).get
-      }).factor
+    val initialEquations = SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q._1.toString, q._2)) ++ XXdualEquations)
+    val associativityOption = rootSubstitutions.foldLeft[Option[SystemOfQuadratics[(Int, Int, Int)]]](Some(initialEquations))({
+      case (system, (s, k)) => system.flatMap(_.substitute(s, k, levelOverride = Some(0)))
+    }).map(_.factor)
     val matrices = IndexedSeq.tabulate(rank, rank, rank)({
       case (i, j, k) => rootSubstitutions.get(multiplicityNamer(i, j, k)) match {
         case Some(m) => m
         case None => 1 // unknown entries
       }
     })
-    PartialFusionRing(
-      None,
-      Seq.empty,
-      Seq.tabulate(rank, rank, rank)({ case (i, j, k) => multiplicityNamer(i, j, k) }).flatten.flatten.toSet -- rootSubstitutions.keySet,
-      Some(associativity.copy(quadratics = associativity.quadratics ++ XXdualEquations)),
-      Some(matrices))
+    associativityOption.map(associativity =>
+      PartialFusionRing(
+        None,
+        Seq.empty,
+        Seq.tabulate(rank, rank, rank)({ case (i, j, k) => multiplicityNamer(i, j, k) }).flatten.flatten.toSet -- rootSubstitutions.keySet,
+        Some(associativity),
+        Some(matrices)))
   }
+  def root = rootOption.get
 
-  private val stringNamer = {
+  private lazy val stringNamer = {
     root.remaining.toSeq.sorted.zip(('A' to 'Z') ++ ('a' to 'z')).toMap
   }
 
@@ -278,12 +314,13 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
       }
       val separator = if (level >= 10) "," else ""
 
-      short(globalDimensionLowerBound) + " " +
+      
         rank + " " +
         orbitStructure.toShortString + " " +
         dualData.mkString(",") + " " +
         level + " " +
-        matrices.tail.map(_.tail.map(_.tail.map(writeEntry).mkString(separator)).mkString(separator)).mkString(separator)
+        matrices.tail.map(_.tail.map(_.tail.map(writeEntry).mkString(separator)).mkString(separator)).mkString(separator) + " " +
+        short(globalDimensionLowerBound)
     }
 
     override def equals(other: Any) = {
@@ -388,9 +425,8 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     }
 
     lazy val graphPresentation = {
-      ??? // TODO decide whether we need to colour things by object type
       val colours = IndexedSeq.fill(rank)(-3) ++ IndexedSeq.fill(rank)(-2) ++ IndexedSeq.fill(rank)(-1) ++ matrices.map(_.flatten).flatten :+ level
-      unlabelledGraph.colour(colours)
+      unlabelledGraph.combineColours(colours)
     }
     override lazy val automorphisms: net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
       FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(graphPresentation.automorphismGroup.generators.map(_.take(rank)))
@@ -428,15 +464,14 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
           case (squared, Some(max)) => squared <= max * max
         })
       }
-      
+
       new automorphisms.ActionOnFiniteSet[Upper] {
         override def elements: Seq[Upper] = {
           (if (remaining.nonEmpty &&
             associativity.quadratics.forall(q => (q.zero_? || q.completeSubstitution.sign == 0) &&
               !q.completeSubstitution.impossibleAtLevel(level + 1)) &&
             (globalDimensionUpperBound.isEmpty || globalDimensionLowerBoundAfterIncreasingLevel < globalDimensionUpperBound.get) &&
-            individualDimensionsNotTooBig  
-          ) {
+            individualDimensionsNotTooBig) {
             Seq(IncreaseLevel)
           } else {
             Seq.empty

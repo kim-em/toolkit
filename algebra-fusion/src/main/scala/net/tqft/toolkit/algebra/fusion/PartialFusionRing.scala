@@ -63,7 +63,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
 
   val root = {
     val associativity = dualitySubstitutions.foldLeft(
-      SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q._1, q._2))))({
+      SystemOfQuadratics(Set.empty, AssociativityConstraints(rank, multiplicityNamer _).map(q => QuadraticState(q._1.toString, q._2))))({
         case (system, (s, k)) => system.substitute(s, k, levelOverride = Some(0)).get
       }).factor
     val matrices = IndexedSeq.tabulate(rank, rank, rank)({
