@@ -3,6 +3,7 @@ package net.tqft.toolkit.algebra.fusion
 import net.tqft.toolkit.algebra.magma.LoadSmallGroups
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.enumeration.Odometer
+import net.tqft.toolkit.Logging
 
 object OrbitStructure {
   def apply(shortString: String) = unapply(shortString).get
@@ -11,7 +12,7 @@ object OrbitStructure {
     try {
       shortString.split(",").toSeq match {
         case Int(groupOrder) +: Int(groupIndex) +: pairs => {
-          val AnObjectRegex = """AnObject(\d+)""".r
+          val AnObjectRegex = """AnObject\((\d+)\)""".r
           val actionObjectPairs = pairs.sliding(2, 2).toSeq.map({
             case Seq(Int(action), AnObjectRegex(Int(n))) => (action, AnObject(n))
             case Seq(Int(action), "Dimension2Object") => (action, Dimension2Object)
@@ -23,7 +24,10 @@ object OrbitStructure {
         }
       }
     } catch {
-      case e: Exception => None
+      case e: Exception => {
+        Logging.error("Problem parsing OrbitStructure: " + shortString, e)
+        None
+      }
     }
   }
 }

@@ -24,7 +24,7 @@ object PartialFusionRingWithInvertibles {
 }
 
 case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStructure, dualData: IndexedSeq[Int], globalDimensionUpperBound: Option[Double] = None) { enumeration =>
-
+  
   val rank = orbitStructure.groupOrder + orbitStructure.orbitSizes.sum
 
   val minimumDimensions = orbitStructure.objectTypes.map(_.dimension)
@@ -56,7 +56,7 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
         }).map(_.flatten).flatten :+
         IndexedSeq.empty // an isolated vertex, to mark with the level
     }
-    Graph(3 * rank + rank * rank * rank + 1, adjacencies).colour(orbitStructure.objectTypes.toIndexedSeq)
+    Graph(3 * rank + rank * rank * rank + 1, adjacencies)
   }
 
   def orbitIndexPairToIndex(orbit: Int, indexWithinOrbit: Int): Int = {
@@ -197,7 +197,11 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
           dualDataString,
           Int(level),
           matricesString,
-          Double(globalDimensionLowerBound)) if rank == enumeration.rank && os == orbitStructure => {
+          Double(globalDimensionLowerBound))  => {
+            
+            require(rank == enumeration.rank)
+            require(os == orbitStructure)
+            
           val dualData = dualDataString.split(",").toIndexedSeq.map(_.toInt)
           require(dualData == enumeration.dualData)
 
@@ -425,8 +429,9 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
     }
 
     lazy val graphPresentation = {
-      val colours = IndexedSeq.fill(rank)(-3) ++ IndexedSeq.fill(rank)(-2) ++ IndexedSeq.fill(rank)(-1) ++ matrices.map(_.flatten).flatten :+ level
-      unlabelledGraph.combineColours(colours)
+      val matrixColours = IndexedSeq.fill(rank)(-3) ++ IndexedSeq.fill(rank)(-2) ++ IndexedSeq.fill(rank)(-1) ++ matrices.map(_.flatten).flatten :+ level
+      val orbitColours = IndexedSeq.fill(3)(orbitStructure.objectTypes.map(Some(_))).flatten ++ IndexedSeq.fill(rank*rank*rank+1)(None) 
+      unlabelledGraph.colour(matrixColours).combineColours(orbitColours)
     }
     override lazy val automorphisms: net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
       FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(graphPresentation.automorphismGroup.generators.map(_.take(rank)))
