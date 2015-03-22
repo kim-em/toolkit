@@ -32,10 +32,11 @@ object ParIterator { pi =>
           while (i.hasNext) {
             queue.put(Some(i.next))
           }
+          
           for (i <- 0 until 2 * threads) {
             queue.put(None)
           }
-          //          Logging.info("iterator exhausted...")
+//                    Logging.info("iterator exhausted...")
         })(ExecutionContext.fromExecutor(Executors.newSingleThreadExecutor()))
 
         def work: Future[Unit] = {

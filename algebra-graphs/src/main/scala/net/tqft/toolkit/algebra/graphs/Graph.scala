@@ -143,6 +143,7 @@ trait ColouredGraph[V] extends Graph {
   }
 
   def combineColours[W: Ordering](colours: IndexedSeq[W]): ColouredGraph[(V, W)] = {
+    require(colours.size == numberOfVertices)
     ColouredGraph(numberOfVertices, adjacencies, vertices.zip(colours))
   }
 

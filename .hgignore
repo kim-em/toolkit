@@ -15,6 +15,7 @@ bin
 
 jobscript*
 fusion-rings/
+fusion-rings2/
 
 *.out
 */.tmpBin

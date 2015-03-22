@@ -74,7 +74,6 @@ object PartialFusionRingWorker2 extends App {
     }
 
     def targets(enumeration: PartialFusionRingWithInvertiblesEnumeration): Iterator[enumeration.PartialFusionRing] = {
-      println(enumeration.root.toShortString)
       val initialString = enumeration.root.toShortString.split(" ").take(3).mkString(" ")
 
       val leafIterator = if (Files.newDirectoryStream((new File("fusion-rings2")).toPath, initialString + "*.tree").iterator.hasNext) {
@@ -127,9 +126,10 @@ object PartialFusionRingWorker2 extends App {
 
     import net.tqft.toolkit.collections.ParIterator._
 
-    for (t <- config.cpus.map(c => verboseTargets.parWithNumberOfThreads(c)).getOrElse(verboseTargets.par)) {
+    for (t <- verboseTargets) {
+//    for (t <- config.cpus.map(c => verboseTargets.parWithNumberOfThreads(c)).getOrElse(verboseTargets.par)) {
       TreePrinter[PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing](_.toShortString, _.steps, accept)
-        .to("fusion-rings", t)
+        .to("fusion-rings2", t)
         .print(t.descendants(accept))
       println("Finished target " + t.toShortString)
     }
