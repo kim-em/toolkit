@@ -43,7 +43,7 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
     actionObjectPairs.zip(orbitSizes).flatMap({
       case ((_, objectType), multiplicity) => Seq.fill(multiplicity)(objectType)
     })
-
+    
   def compatibleDualData: Iterator[IndexedSeq[Int]] = {
     val groupInvolution = IndexedSeq.tabulate(groupOrder)({ i => (0 until groupOrder).find(j => groupMultiplication(i, j) == 0).get })
 
@@ -71,7 +71,41 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
       case (bigStream, (objectType, stream)) => bigStream.flatMap(m => stream.map(d => m + (objectType -> d)))
     })
     def buildInvolution(m: Map[SmallFusionObject, Seq[Seq[Int]]]): IndexedSeq[Int] = {
-      ???
+      def orbitIndex(objectType: SmallFusionObject, orbitIndexWithinObjectType: Int): Int = {
+        actionObjectPairs.zipWithIndex.collect({ case ((_, obj),i) if obj == objectType => i }).apply(orbitIndexWithinObjectType)
+      }
+      def index(orbitIndex: Int, index: Int): Int = ???
+      val nextIndices = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
+      def nextAvailableIndexInOrbit(orbitIndex: Int): Int = {
+        val r = nextIndices(orbitIndex)
+        nextIndices(orbitIndex) = r + 1
+        r
+      }
+      val involution = groupInvolution.toArray ++ Array.fill(orbitSizes.sum)(-1)
+      for((obj, matrix) <- m) {
+        // first, fill in the self dual object
+        for((row, i) <- matrix.zipWithIndex) {
+          val orbit = orbitIndex(obj, i)
+          val numberOfSelfDualObject = orbitSizes(orbit) - row.sum
+          for(_ <- 0 until numberOfSelfDualObject) {
+            val r = nextAvailableIndexInOrbit(orbit)
+            involution(index(orbit, r)) = index(orbit, r)
+          }
+        }
+        // second, the dual pairs
+        for((row ,i) <- matrix.zipWithIndex; (x,j) <- row.zipWithIndex) {
+          val orbiti = orbitIndex(obj, i)
+          val orbitj = orbitIndex(obj, j)
+          if( i <= j) {
+            val ri = nextAvailableIndexInOrbit(orbiti)
+            val rj = nextAvailableIndexInOrbit(orbitj)
+            involution(index(orbiti, ri)) = index(orbitj, rj)
+            involution(index(orbitj, rj)) = index(orbiti, ri)
+          }
+        }
+      }
+      require(involution.forall(_ >=0))
+     involution
     }
     dualities.map(buildInvolution).iterator
   }
