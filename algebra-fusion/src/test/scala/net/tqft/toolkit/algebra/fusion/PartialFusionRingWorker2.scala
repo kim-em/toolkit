@@ -81,7 +81,7 @@ object PartialFusionRingWorker2 extends App {
       } else {
         Iterator(enumeration.root.toShortString)
       }
-      leafIterator 
+      leafIterator
         .filter(l => !pleaseFinishNow)
         .map(l => (l, l.split(" ")))
         .filter(_._2.size == 6)
@@ -93,8 +93,10 @@ object PartialFusionRingWorker2 extends App {
         .filter(r => config.mod == 1 || r.hashCode.abs % config.mod == config.res)
     }
 
+    import net.tqft.toolkit.collections.ParIterator._
+
     def allTargets = for (
-      orbitStructure <- OrbitStructures(config.globalDimensionBound);
+      orbitStructure <- OrbitStructures(config.globalDimensionBound).par;
       dualData <- orbitStructure.compatibleDualData;
       if !pleaseFinishNow;
       enumeration = PartialFusionRingWithInvertiblesEnumeration(orbitStructure, dualData, Some(config.globalDimensionBound));
@@ -125,9 +127,6 @@ object PartialFusionRingWorker2 extends App {
       }
     }
 
-    import net.tqft.toolkit.collections.ParIterator._
-
-//    for (t <- verboseTargets) {
     for (t <- config.cpus.map(c => verboseTargets.parWithNumberOfThreads(c)).getOrElse(verboseTargets.par)) {
       TreePrinter[PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing](_.toAbbreviatedString, _.steps, accept)
         .to("fusion-rings2", t)
