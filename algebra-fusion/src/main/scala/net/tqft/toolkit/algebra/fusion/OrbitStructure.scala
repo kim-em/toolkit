@@ -69,8 +69,8 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
           val symmetricMatrix = completeToSymmetricMatrix(lowerTriangularMatrix)
           import Ordering.Implicits._
           val ordering = implicitly[Ordering[Seq[Int]]]
-          (for(i <- 0 until symmetricMatrix.size; j <- i + 1 until symmetricMatrix.size) yield ordering.lteq(symmetricMatrix(i), symmetricMatrix(j))).forall(x => x) &&
-          symmetricMatrix.map(_.sum).zip(orbitSizesOfThisType).forall(p => p._1 <= p._2)
+          (for (i <- 0 until symmetricMatrix.size; j <- i + 1 until symmetricMatrix.size) yield ordering.lteq(symmetricMatrix(i), symmetricMatrix(j))).forall(x => x) &&
+            symmetricMatrix.map(_.sum).zip(orbitSizesOfThisType).forall(p => p._1 <= p._2)
         }
         Odometer(limit)(zeroes).filter(m => diagonal(m).forall(_ % 2 == 0)).map(completeToSymmetricMatrix).toStream
       }
@@ -237,7 +237,8 @@ object OrbitStructures {
     }
 
     def limit(r: List[Int]) = {
-      r.zip(actionObjectPairs).map({ case (multiplicity, (_, _, orbitDimension)) => multiplicity * orbitDimension }).sum <= globalDimension - group.size
+      r.zip(actionObjectPairs).collect({ case (n, (_, AnObject(4), _)) => n }).sum <= 1 &&
+        r.zip(actionObjectPairs).map({ case (multiplicity, (_, _, orbitDimension)) => multiplicity * orbitDimension }).sum <= globalDimension - group.size
     }
 
     val possibilities = Odometer(limit _)(List.fill(actionObjectPairs.size)(0))

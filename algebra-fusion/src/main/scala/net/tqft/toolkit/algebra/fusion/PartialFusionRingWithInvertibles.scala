@@ -112,8 +112,21 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
         multiplicityNamer(orbitIndexPairToIndex(xOrbit, x), xd, orbitIndexPairToIndex(yOrbit, y)) -> 0
       }
     }
-
-    val result = (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions).toMap
+    
+    val forbiddenProducts = Seq(
+        (AnObject(3), AnObject(3), AnObject(3)), 
+        (AnObject(3), AnObject(3), AnObject(4)), 
+        (AnObject(3), AnObject(4), AnObject(4)))
+    def forbiddenProductsSubstitutions: Seq[((Int, Int, Int), Int)] = {
+      for(
+          (obji, i) <- orbitStructure.objectTypes.zipWithIndex;
+          (objj, j) <- orbitStructure.objectTypes.zipWithIndex;
+          (objk, k) <- orbitStructure.objectTypes.zipWithIndex;
+          if(forbiddenProducts.contains((obji, objj, objk)))
+          ) yield multiplicityNamer(i,j,k) -> 0
+    }
+    
+    val result = (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions ++ forbiddenProductsSubstitutions).toMap
     //    println(enumeration)
     //    println(result)
     result
