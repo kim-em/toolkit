@@ -14,6 +14,7 @@ import scala.concurrent.Future
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.nio.file.Files
+import java.io.FileWriter
 
 object PartialFusionRingWorker2 extends App {
 
@@ -61,6 +62,21 @@ object PartialFusionRingWorker2 extends App {
     var pleaseFinishNow = false
     new File("please-stop").delete
 
+    val impossiblePairsFile = new File("impossible-orbit-duality-pairs")
+    if(!impossiblePairsFile.exists) {
+      impossiblePairsFile.createNewFile
+    }
+    def recordImpossibleOrbitDualityPair(os: OrbitStructure, duality: IndexedSeq[Int]) {
+      val pw = new PrintWriter(new FileWriter(impossiblePairsFile, true))
+      pw.println(os.toShortString + " " + duality.mkString(","))
+      pw.close
+    }
+    val impossibleOrbitDualityPairs = Source.fromFile(impossiblePairsFile).getLines.map({ line => 
+      val os = OrbitStructure(line.split(" ").dropRight(1).mkString(" "))
+      val duality = line.split(" ").last.split(",").toIndexedSeq.map(_.toInt)
+      (os, duality)
+    })
+    
     def accept(r: PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing): Int = {
       val checks = Seq(
         r.globalDimensionLowerBound <= config.globalDimensionBound,
@@ -94,13 +110,20 @@ object PartialFusionRingWorker2 extends App {
     }
 
     import net.tqft.toolkit.collections.ParIterator._
-
+    
     def allTargets = for (
-      orbitStructure <- OrbitStructures(config.globalDimensionBound).par;
+      orbitStructure <- OrbitStructures(config.globalDimensionBound);
       dualData <- orbitStructure.compatibleDualData;
+      if(!impossibleOrbitDualityPairs.contains((orbitStructure, dualData)));
       if !pleaseFinishNow;
       enumeration = PartialFusionRingWithInvertiblesEnumeration(orbitStructure, dualData, Some(config.globalDimensionBound));
-      if enumeration.rootOption.nonEmpty;
+      if (enumeration.rootOption.nonEmpty match {
+        case true => true
+        case false => {
+          recordImpossibleOrbitDualityPair(orbitStructure, dualData)
+         false
+        }
+      });
       t <- targets(enumeration)
     ) yield t
 
@@ -128,8 +151,8 @@ object PartialFusionRingWorker2 extends App {
     }
 
     for (t <- config.cpus.map(c => verboseTargets.parWithNumberOfThreads(c)).getOrElse(verboseTargets.par)) {
-      TreePrinter[PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing](_.toAbbreviatedString, _.steps, accept)
-        .to("fusion-rings2", t)
+      TreePrinter[PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing](_.toShortString, _.steps, accept)
+        .to("fusion-rings2", t.toAbbreviatedString)
         .print(t.descendants(accept))
       println("Finished target " + t.toShortString)
     }
