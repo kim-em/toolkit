@@ -1,25 +1,43 @@
 package net.tqft.toolkit.algebra.spiders
 
-import java.nio.file.{Files,Paths}
-import java.nio.ByteBuffer
+import scala.sys.process._
+import org.apache.commons.io.IOUtils
+
 import scala.annotation.tailrec
 
-object Utils {
-  def edgeCodeToEdgeAdj(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = {
-    // Takes plantri's edge code output and converts it into a Seq of 
-    // inputs for edgeAdjToPlanarGraph
+trait Plantri {
+  private var plantriPath: String = {
+    val probePaths = for ( dir <- List(".", System.getProperty("user.home") + "/bin") ) yield new java.io.File(dir + "/plantri")
+    if ( probePaths(0).exists ) probePaths(0).toPath.toString
+    else if ( probePaths(1).exists ) probePaths(1).toPath.toString
+    else try { "which plantri".!! }
+         catch { case e: Exception => "" }
+  }
+  
+  def setPath(path: String): Unit = {plantriPath = path}
+  def getPath = plantriPath
+}
+
+object Plantri3Valent extends Plantri {
+  def parseEdgeCode(rawData: Array[Byte]): Seq[IndexedSeq[IndexedSeq[Int]]] = {
+    // Converts plantri binary edge code output into a sequence of graphs given by
+    // their edge adjacency lists.
     //
-    // Input: Path to file containing plantri edge code output 
-    
+    // Input: Path to file containing plantri edge code output
+    //
+    // Output: Seq of IndexedSeqs, each representing a single graph G.
+    //         The vth element of an IndexedSeq G is the CW sequence of edges coming
+    //         out of vertex v in G.
+
     @tailrec def splitGraphSections(pre: IndexedSeq[Int], post: Seq[IndexedSeq[Int]]): Seq[IndexedSeq[Int]] = {
       // Splits input into IndexedSeq sections per graph      
       if (pre.isEmpty) post
       else {
         // The following values depend on the header type of the section; see plantri-guide.txt for details 
-        val bodyLength = if (pre.head != 0) pre.head else ByteBuffer.wrap(Array(0, 0, pre(2), pre(3)).map(_.toByte)).getInt
+        val bodyLength = if (pre.head != 0) pre.head else java.nio.ByteBuffer.wrap(Array(0, 0, pre(2), pre(3)).map(_.toByte)).getInt
         val sectionStartIndex = if (pre.head != 0) 1 else 4
-        
-        splitGraphSections( pre.slice(bodyLength+1, pre.length+1), pre.slice(sectionStartIndex, sectionStartIndex + bodyLength) +: post )
+
+        splitGraphSections(pre.slice(bodyLength + 1, pre.length + 1), pre.slice(sectionStartIndex, sectionStartIndex + bodyLength) +: post)
       }
     }
 
@@ -27,17 +45,16 @@ object Utils {
       // Convert each graph code section from plantri output format to the input format of edgeAdjToPlanarGraph
       val iter = raw.toIterator
       return (Iterator continually { iter takeWhile (_ != -1) }
-              takeWhile { !_.isEmpty }
-              map { _.toIndexedSeq }).toIndexedSeq
+        takeWhile { !_.isEmpty }
+        map { _.toIndexedSeq }).toIndexedSeq
     }
     
-    val rawData = Files.readAllBytes(Paths.get(file)) // raw plantri binary output
-    return splitGraphSections( rawData.map(_.toInt), Seq() ).map(parseGraph(_))
+    return splitGraphSections(rawData.map(_.toInt), Seq()).map(parseGraph(_))
   }
   
-  def edgeAdjToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
-    // Convert plantri edge code output to internal PlanarGraph representation.
-    // 
+  def parseEdgeCode(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = parseEdgeCode(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
+
+  def edgeAdjListToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
     // Input:  the edge adjacency list ("edge code") of a graph G as a
     // IndexedSeq of IndexedSeqs of integers.
     // The IndexedSeq of integers at index v is a CW sequence of edges out of vertex v.
@@ -51,7 +68,7 @@ object Utils {
     //    plantri does this by default for duals of disk triangulations.
     // 
     // 2. Not guaranteed safe for graphs with loops! Will implement this later if necessary.
-    
+
     val numOfVertices = eAdjs.length
 
     // Map edges (: Int) to their endpoints (: IndexedSeq[Int])
@@ -69,35 +86,35 @@ object Utils {
     // the array (mutable!) in the second entry stores the leftward face associated to each edge.
     // We will update the arrays with face labels by traversing the graph.
     var tmpVertexFlags = eAdjs.map(L => (L.reverse, Array.fill(L.length)(-1)))
-    
+
     def traverse(vertex: Int, edgeIndex: Int, faceLabel: Int): Unit = {
       // Take a vertex and
       // *the index in tmpVertexFlags(startVertex)._1 of* an edge going out of it,
       // and traverse the boundary of the face to the left of startEdge,
       // updating the relevant entries in tmpVertexFlags with the face label as we go.
       // Traversal ends when we reach a left turn that has already been traveled. 
-            
+
       def step(currentVertex: Int, outEdge: Int): (Int, Int) = {
         // Takes the current vertex we're on, and the edge to travel down,
         // and returns a tuple of (the vertex "nextVertex" we travel to, edge "leftTurn" out of nextVertex "to the left" of outEdge)
         val tmpNextVertex = vertexPairings(outEdge).diff(Seq(currentVertex))
         val nextVertex = if (tmpNextVertex.isEmpty) vertexPairings(outEdge).head else tmpNextVertex.head // Need this check to handle loops.
-                                                                                                         // (Need more to handle nested loops however.)
+        // (Need more to handle nested loops however.)
         // Take the next edge from outEdge in the CW edge adjacencies for nextVertex 
-        val leftTurn = eAdjs(nextVertex)( (eAdjs(nextVertex).indexOf(outEdge) + 1) % eAdjs(nextVertex).length ) // This needs to be modified to handle loops properly.
-        
+        val leftTurn = eAdjs(nextVertex)((eAdjs(nextVertex).indexOf(outEdge) + 1) % eAdjs(nextVertex).length) // This needs to be modified to handle loops properly.
+
         return (nextVertex, leftTurn)
       }
-      
-      if ( tmpVertexFlags(vertex)._2(edgeIndex) != -1 ) // If the face is not labeled -1 we've already updated the
-        Unit                                            // face label for the edge out of this vertex
+
+      if (tmpVertexFlags(vertex)._2(edgeIndex) != -1) // If the face is not labeled -1 we've already updated the
+        Unit // face label for the edge out of this vertex
       else {
         tmpVertexFlags(vertex)._2(edgeIndex) = faceLabel
-        val (v,e) = step(vertex, tmpVertexFlags(vertex)._1(edgeIndex))
-        traverse(v, tmpVertexFlags(v)._1.indexOf(e) , faceLabel)
+        val (v, e) = step(vertex, tmpVertexFlags(vertex)._1(edgeIndex))
+        traverse(v, tmpVertexFlags(v)._1.indexOf(e), faceLabel)
       }
     }
-    
+
     // Traverse graph faces and update tmpVertexFlags
     var face = 0 // face label
     for (v <- 0 until numOfVertices) {
@@ -108,18 +125,40 @@ object Utils {
         untraversedFaceAt = tmpVertexFlags(v)._2.indexOf(-1)
       }
     }
-    
+
     // vertexFlags: IndexedSeq[Seq[(Int, Int)]] describes the half edges coming out of each vertex
-    val vertexFlags = for (v <- 0 until numOfVertices) yield ( tmpVertexFlags(v)._1.zip(tmpVertexFlags(v)._2) )
+    val vertexFlags = for (v <- 0 until numOfVertices) yield (tmpVertexFlags(v)._1.zip(tmpVertexFlags(v)._2))
     val outerFace = vertexFlags(0).head._2
     val labels = 0 until numOfVertices
     val loops = 0 // vertexPairings.values.count(S => S.length == 1) once we correctly implement loop functionality
-    
+
     return PlanarGraph(outerFace, vertexFlags, labels, loops)
   }
-  
+
   def check23Faces(I: IndexedSeq[Seq[(Int, Int)]]): Boolean =
     // Takes a sequence of vertex flags and checks for two and three-faces
-    I.flatten.groupBy((x:Tuple2[Int,Int]) => x._2).        // Partition half-edges into collections based on the left face they bound
-      exists(x => (x._2.length == 3 || x._2.length == 2))  // Check for three and two-faces
+    I.flatten.groupBy((x: Tuple2[Int, Int]) => x._2). // Partition half-edges into collections based on the left face they bound
+      exists(x => (x._2.length == 3 || x._2.length == 2)) // Check for three and two-faces
+  
+  def apply(bdryPts: Int, intVertices: Int)/*: Seq[PlanarGraph]*/ = {
+    // Returns a list of trivalent planar graphs with bdryPts boundary points
+    // and intVertices internal vertices.
+    
+    val totalVertices = bdryPts + intVertices
+    
+    var rawData = new java.io.ByteArrayOutputStream()
+    var log = Iterator[String]()
+    var bytesCopied = 0
+    
+    val runPlantri = Process(this.getPath + " " + totalVertices + " -P" + bdryPts + " -Edhov -c2m2") // see plantri-guide.txt for flag info
+    val ioHandler = new ProcessIO( os => (),
+                                   is => bytesCopied = IOUtils.copy(is, rawData),
+                                   is => log = scala.io.Source.fromInputStream(is).getLines )
+    runPlantri.run(ioHandler)
+    // not sure why this often doesn't work on the first go...
+    
+    (parseEdgeCode(rawData.toByteArray), log) // temporary
+    
+    // we should check the length of rawData against the plantri log output
+  }
 }
