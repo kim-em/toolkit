@@ -11,23 +11,21 @@ trait Plantri {
     if ( probePaths(0).exists ) probePaths(0).toPath.toString
     else if ( probePaths(1).exists ) probePaths(1).toPath.toString
     else try { "which plantri".!! }
-         catch { case e: Exception => "" }
+         catch { case e: Exception => "plantri" }
   }
   
-  def setPath(path: String): Unit = {plantriPath = path}
+  def setPath(path: String): Unit = { plantriPath = path }
   def getPath = plantriPath
 }
 
-object Plantri3Valent extends Plantri {
-  def parseEdgeCode(rawData: Array[Byte]): Seq[IndexedSeq[IndexedSeq[Int]]] = {
-    // Converts plantri binary edge code output into a sequence of graphs given by
-    // their edge adjacency lists.
+object Plantri extends Plantri {
+  def parseEdgeCodeBytes(rawData: Array[Byte]): Seq[IndexedSeq[IndexedSeq[Int]]] = {
+    // Converts plantri binary edge code output, passed as a byte array,
+    // into a sequence of graphs given by their edge adjacency lists.
     //
-    // Input: Path to file containing plantri edge code output
-    //
-    // Output: Seq of IndexedSeqs, each representing a single graph G.
-    //         The vth element of an IndexedSeq G is the CW sequence of edges coming
-    //         out of vertex v in G.
+    // Outputs a Seq of IndexedSeqs, each representing a single graph G.
+    // The vth element of an IndexedSeq G is the CW sequence of edges coming
+    // out of vertex v in G.
 
     @tailrec def splitGraphSections(pre: IndexedSeq[Int], post: Seq[IndexedSeq[Int]]): Seq[IndexedSeq[Int]] = {
       // Splits input into IndexedSeq sections per graph      
@@ -42,7 +40,7 @@ object Plantri3Valent extends Plantri {
     }
 
     def parseGraph(raw: IndexedSeq[Int]): IndexedSeq[IndexedSeq[Int]] = {
-      // Convert each graph code section from plantri output format to the input format of edgeAdjToPlanarGraph
+      // Convert each graph code section from plantri output format to the input format of edgeAdjListToPlanarGraph
       val iter = raw.toIterator
       return (Iterator continually { iter takeWhile (_ != -1) }
         takeWhile { !_.isEmpty }
@@ -51,8 +49,8 @@ object Plantri3Valent extends Plantri {
     
     return splitGraphSections(rawData.map(_.toInt), Seq()).map(parseGraph(_))
   }
-  
-  def parseEdgeCode(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = parseEdgeCode(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
+  // Overload to directly read an output file written by plantri
+  def parseEdgeCodeBytes(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = parseEdgeCodeBytes(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
 
   def edgeAdjListToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
     // Input:  the edge adjacency list ("edge code") of a graph G as a
@@ -140,25 +138,46 @@ object Plantri3Valent extends Plantri {
     I.flatten.groupBy((x: Tuple2[Int, Int]) => x._2). // Partition half-edges into collections based on the left face they bound
       exists(x => (x._2.length == 3 || x._2.length == 2)) // Check for three and two-faces
   
-  def apply(bdryPts: Int, intVertices: Int)/*: Seq[PlanarGraph]*/ = {
+  def apply(bdryPts: Int, intVertices: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
     // Returns a list of trivalent planar graphs with bdryPts boundary points
     // and intVertices internal vertices.
+    require(bdryPts > 2, "Number of boundary points must be > 2.")
     
+    var bytes = Array[Byte]()
+    var logIt = Iterator[String]()
     val totalVertices = bdryPts + intVertices
     
-    var rawData = new java.io.ByteArrayOutputStream()
-    var log = Iterator[String]()
-    var bytesCopied = 0
-    
-    val runPlantri = Process(this.getPath + " " + totalVertices + " -P" + bdryPts + " -Edhov -c2m2") // see plantri-guide.txt for flag info
+    val runPlantri = Process(this.getPath + " " + totalVertices + " -P" + bdryPts + " -Edho -c2m2" + { if (verbose) " -v" else "" }) // see plantri-guide.txt for flag info
     val ioHandler = new ProcessIO( os => (),
-                                   is => bytesCopied = IOUtils.copy(is, rawData),
-                                   is => log = scala.io.Source.fromInputStream(is).getLines )
+                                   is => bytes = IOUtils.toByteArray(is),
+                                   is => logIt = scala.io.Source.fromInputStream(is).getLines )
     runPlantri.run(ioHandler)
-    // not sure why this often doesn't work on the first go...
+    while (bytes.length == 0 || !logIt.hasNext) Thread.sleep(10) // Ping for result
     
-    (parseEdgeCode(rawData.toByteArray), log) // temporary
+    // (bytes, log) // Debugging
     
-    // we should check the length of rawData against the plantri log output
+    val log = logIt.toList
+    if (verbose) { // Verbose mode
+      println("Running plantri:")
+      log.map(println(_)) // Notify when plantri has finished
+      println("\nParsing output:")
+    }
+    val planarGraphs = parseEdgeCodeBytes(bytes).map(edgeAdjListToPlanarGraph(_))
+    
+    // Check that we parsed the binary correctly; should have the number of graphs reported by plantri
+    require( planarGraphs.length == log(log.length - 1).split(" ")(0).toInt, "Something went wrong parsing the plantri output." )
+    
+    return planarGraphs
+  }
+  
+  // Check plantri path is correct
+  try assert(this.getPath != "plantri")
+  catch { case e: AssertionError => this.setPath( scala.io.StdIn.readLine("WARNING: plantri not found. Please set the path:\n") ) }
+  
+  // Check plantri works
+  try assert(apply(4,4).length == 147)
+  catch {
+    case e: AssertionError => println("ERROR: The copy of plantri at " + this.getPath + " does not appear to be working.")
+    case e: java.io.IOException => println("ERROR: plantri not found!")
   }
 }
