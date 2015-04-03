@@ -123,20 +123,15 @@ object Plantri extends Plantri {
         untraversedFaceAt = tmpVertexFlags(v)._2.indexOf(-1)
       }
     }
-
+    
     // vertexFlags: IndexedSeq[Seq[(Int, Int)]] describes the half edges coming out of each vertex
     val vertexFlags = for (v <- 0 until numOfVertices) yield (tmpVertexFlags(v)._1.zip(tmpVertexFlags(v)._2))
     val outerFace = vertexFlags(0).head._2
     val labels = 0 until numOfVertices
     val loops = 0 // vertexPairings.values.count(S => S.length == 1) once we correctly implement loop functionality
-
+    
     return PlanarGraph(outerFace, vertexFlags, labels, loops)
   }
-
-  def check23Faces(I: IndexedSeq[Seq[(Int, Int)]]): Boolean =
-    // Takes a sequence of vertex flags and checks for two and three-faces
-    I.flatten.groupBy((x: Tuple2[Int, Int]) => x._2). // Partition half-edges into collections based on the left face they bound
-      exists(x => (x._2.length == 3 || x._2.length == 2)) // Check for three and two-faces
   
   def apply(bdryPts: Int, intVertices: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
     // Returns a list of trivalent planar graphs with bdryPts boundary points
@@ -160,7 +155,7 @@ object Plantri extends Plantri {
     if (verbose) { // Verbose mode
       println("Running plantri:")
       log.map(println(_)) // Notify when plantri has finished
-      println("\nParsing output:")
+      println("\nParsing output...")
     }
     val planarGraphs = parseEdgeCodeBytes(bytes).map(edgeAdjListToPlanarGraph(_))
     
