@@ -8,7 +8,7 @@ import scala.util.parsing.combinator.RegexParsers
 import scala.util.parsing.combinator.JavaTokenParsers
 
 // flags veer to the left
-// edges are ordered clockwise around each vertex
+// edges are ordered anti?clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
   //  verify
 
@@ -57,9 +57,9 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       }
     }
   }
-
+  
   def numberOfBoundaryPoints = vertexFlags(0).size
-
+  
   def numberOfVertices = vertexFlags.size
   def numberOfInternalVertices = numberOfVertices - 1
 
@@ -121,6 +121,10 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   lazy val boundaryEdges = vertexFlags(0).map(_._1)
   lazy val boundaryFaces = vertexFlags(0).map(_._2)
+  
+  def internalFacesSizeAtMost(n: Int): Seq[Int] = faceEdgeIncidences.filter(_._2.size <= n).keys.toSeq intersect internalFaceSet
+  lazy val hasTinyFace = internalFacesSizeAtMost(3).nonEmpty
+  lazy val hasSmallFace = internalFacesSizeAtMost(4).nonEmpty
 
   type EdgeFace = (Int, Int)
 
