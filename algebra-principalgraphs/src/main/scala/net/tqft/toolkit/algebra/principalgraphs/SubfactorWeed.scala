@@ -244,7 +244,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
               val limit = { row: List[Int] =>
                 // FIXME we're only doing the simply laced case for now
-                val result = row.forall(_ <= 1) && (pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
+                val result = /* row.forall(_ <= 1) && */(pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
                   pair(graph).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
                 //                if (result) {
                 //                  Logging.info(s"  considering new row (on graph $graph): " + row.mkString("x"))
@@ -263,7 +263,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
           def uppersAddingDualPairVerticesToGraph(graph: Int): Iterator[Upper] = {
             def limit(bigraph: Bigraph) = { row: List[Int] =>
               // FIXME we're only doing the simply laced case for now
-              row.forall(_ <= 1) && (pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !bigraph.inclusions.last.contains(row))) &&
+              /* row.forall(_ <= 1) && */(pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !bigraph.inclusions.last.contains(row))) &&
                 bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
             }
             val firstLimit = { row0: List[Int] =>
