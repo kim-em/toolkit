@@ -74,7 +74,7 @@ object Plantri extends Plantri {
     // but I can't help thinking that using mutable.Set and going through eAdjs once for each vertex
     // and updating the corresponding edge set might be better.
     val vertexPairings = eAdjs.flatten.distinct. // get distinct edges
-      map((e: Int) => (e, (for (v <- 0 until numOfVertices if eAdjs(v).contains(e)) yield v))).
+      map((e: Int) => (e, (for (v <- 0 until numOfVertices if eAdjs(v) contains e) yield v))).
       toMap
 
     // Temporary variable (: IndexedSeq[(IndexedSeq[Int], Array[Int])]) en route to constructing final vertexFlags.
@@ -85,7 +85,7 @@ object Plantri extends Plantri {
     // We will update the arrays with face labels by traversing the graph.
     var tmpVertexFlags = eAdjs.map(L => (L.reverse, Array.fill(L.length)(-1)))
 
-    def traverse(vertex: Int, edgeIndex: Int, faceLabel: Int): Unit = {
+    @tailrec def traverse(vertex: Int, edgeIndex: Int, faceLabel: Int): Unit = {
       // Take a vertex and
       // *the index in tmpVertexFlags(startVertex)._1 of* an edge going out of it,
       // and traverse the boundary of the face to the left of startEdge,
@@ -95,7 +95,7 @@ object Plantri extends Plantri {
       def step(currentVertex: Int, outEdge: Int): (Int, Int) = {
         // Takes the current vertex we're on, and the edge to travel down,
         // and returns a tuple of (the vertex "nextVertex" we travel to, edge "leftTurn" out of nextVertex "to the left" of outEdge)
-        val tmpNextVertex = vertexPairings(outEdge).diff(Seq(currentVertex))
+        val tmpNextVertex = vertexPairings(outEdge) diff Seq(currentVertex)
         val nextVertex = if (tmpNextVertex.isEmpty) vertexPairings(outEdge).head else tmpNextVertex.head // Need this check to handle loops.
         // (Need more to handle nested loops however.)
         // Take the next edge from outEdge in the CW edge adjacencies for nextVertex 
@@ -105,7 +105,7 @@ object Plantri extends Plantri {
       }
 
       if (tmpVertexFlags(vertex)._2(edgeIndex) != -1) // If the face is not labeled -1 we've already updated the
-        Unit // face label for the edge out of this vertex
+        Unit                                          // face label for the edge out of this vertex
       else {
         tmpVertexFlags(vertex)._2(edgeIndex) = faceLabel
         val (v, e) = step(vertex, tmpVertexFlags(vertex)._1(edgeIndex))
@@ -133,16 +133,16 @@ object Plantri extends Plantri {
     return PlanarGraph(outerFace, vertexFlags, labels, loops)
   }
   
-  def apply(bdryPts: Int, intVertices: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
-    // Returns a list of trivalent planar graphs with bdryPts boundary points
-    // and intVertices internal vertices.
-    require(bdryPts > 2, "Number of boundary points must be > 2.")
+  def apply(n: Int, k: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
+    // Returns a sequence of connected trivalent planar graphs with n boundary points and k internal faces.
+    
+    require(n > 2, "Number of boundary points must be > 2.")
     
     var bytes = Array[Byte]()
     var logIt = Iterator[String]()
-    val totalVertices = bdryPts + intVertices
+    val totalVertices = n + k
     
-    val runPlantri = Process(this.getPath + " " + totalVertices + " -P" + bdryPts + " -Edho -c2m2" + { if (verbose) " -v" else "" }) // see plantri-guide.txt for flag info
+    val runPlantri = Process(this.getPath + " " + totalVertices + " -P" + n + " -Edho -c2m2" + { if (verbose) " -v" else "" }) // see plantri-guide.txt for flag info
     val ioHandler = new ProcessIO( os => (),
                                    is => bytes = IOUtils.toByteArray(is),
                                    is => logIt = scala.io.Source.fromInputStream(is).getLines )
