@@ -5,7 +5,7 @@ import scala.math._
 import breeze.linalg._
 
 object DrawPlanarGraph {
-  def apply(G: PlanarGraph, radius: Double = 2.0, vertexPtSize: Double = 2, scale: Double = 1): String = {
+  def apply(G: PlanarGraph, radius: Double = 2.0, vertexLabels: Boolean = false, imageScale: Double = 1): String = {
     // Use Tutte's barycenter method to draw planar graphs.
     // Outputs LaTeX tikz code.
     
@@ -47,11 +47,8 @@ object DrawPlanarGraph {
     if (!nonperipheralVertices.isEmpty) {
       val A = DenseMatrix.zeros[Double](numOfVertices, numOfVertices) -
               diag( DenseVector.tabulate(numOfVertices) {
-                i => ( G.neighboursOf(vertexAtIndex(i)).distinct.length +
-                       (if (G.neighboursOf(0) contains vertexAtIndex(i)) -1 else 0)
-                     ).toDouble
-              })
-                     // ^ 0 doesn't exist in the graph we're drawing, so don't count any edge adjacent to it
+                i => ( G.neighboursOf(vertexAtIndex(i)).distinct diff Seq(0) ).length.toDouble
+              }) // 0 doesn't exist in the graph we're drawing, so don't count any edge adjacent to it
       for (i <- 0 until numOfVertices) {
         val neighbours = G.neighboursOf(vertexAtIndex(i)).distinct diff List(0)
         for (n <- neighbours.distinct) { A(i, indexOfVertex(n)) = 1.0 }
@@ -81,14 +78,14 @@ object DrawPlanarGraph {
     
     // Write the tikz!
     var tikzString = s"""\\begin{tikzpicture}
-                        |[scale=$scale, every node/.style={circle, fill=black, inner sep=0pt, outer sep=0pt, minimum size=${vertexPtSize}pt}]""".stripMargin
+                        |[scale=$imageScale, every node/.style={circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=1pt}]""".stripMargin
     // Draw boundary points
     for (i <- 0 until peripheralVertices.length) for (j <- 0 until bdryPts(i).length) {
       tikzString = tikzString ++ s"\n\\node (${peripheralVertices(i)}-$j) at ${bdryPts(i)(j)} {};"
     }
     // Draw graph vertices
     for (i <- 0 until vertexCoords.length) {
-      tikzString = tikzString ++ s"\n\\node (${vertexAtIndex(i)}) at ${vertexCoords(i)} {};"
+      tikzString = tikzString ++ s"\n\\node (${vertexAtIndex(i)}) at ${vertexCoords(i)} {${if (vertexLabels) vertexAtIndex(i) else ""}};"
     }
     // Draw internal edges:
     val edgePairsString = edgePairs map ( (p:(Int,Int)) => "%d/%d".format(p._1,p._2) ) mkString ","
