@@ -132,10 +132,12 @@ object PartialFusionRingWorker2 extends App {
     var counter = 0
     val total = 0 // allTargets.size
 
+    def now = new java.util.Date().toString
+    
     def verboseTargets = allTargets.map({ x =>
       {
         counter = counter + 1
-        println(s"Found target ${x.toShortString}")
+        println(now + s" Found target ${x.toShortString}")
         x
       }
     })
@@ -154,7 +156,7 @@ object PartialFusionRingWorker2 extends App {
       TreePrinter[PartialFusionRingWithInvertiblesEnumeration#PartialFusionRing](_.toShortString, _.steps, accept)
         .to("fusion-rings2", t.toAbbreviatedString)
         .print(t.descendants(accept))
-      println("Finished target " + t.toShortString)
+      println(now + " Finished target " + t.toShortString)
     }
 
     for (t <- config.finishBy) {
