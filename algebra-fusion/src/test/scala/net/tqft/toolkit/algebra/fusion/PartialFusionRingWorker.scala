@@ -101,8 +101,10 @@ object PartialFusionRingWorker extends App {
 
     var counter = 0
     val total = if (config.measure) targets.size else 0
+    
+    def now = new java.util.Date().toString
 
-    def verboseTargets = targets.map({ x => println("Found target " + (if (config.measure) { counter = counter + 1; s"($counter/$total) " } else "") + x.toShortString); x })
+    def verboseTargets = targets.map({ x => println(now + " Found target " + (if (config.measure) { counter = counter + 1; s"($counter/$total) " } else "") + x.toShortString); x })
 
     if (!config.batch) {
       import scala.concurrent.ExecutionContext.Implicits.global
@@ -120,7 +122,7 @@ object PartialFusionRingWorker extends App {
       TreePrinter[enumeration.PartialFusionRing](_.toShortString, _.steps, accept)
         .to("fusion-rings", t)
         .print(t.descendants(accept))
-      println("Finished target " + t.toShortString)
+      println(now + " Finished target " + t.toShortString)
     }
 
     for (t <- config.finishBy) {
