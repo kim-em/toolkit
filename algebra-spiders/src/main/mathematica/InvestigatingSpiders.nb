@@ -10,14 +10,19 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[   2143739,      63849]
-NotebookOptionsPosition[   2133390,      63553]
-NotebookOutlinePosition[   2133770,      63570]
-CellTagsIndexPosition[   2133727,      63567]
+NotebookDataLength[   2142394,      63823]
+NotebookOptionsPosition[   2131183,      63502]
+NotebookOutlinePosition[   2131565,      63519]
+CellTagsIndexPosition[   2131522,      63516]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
+
+Cell[CellGroupData[{
+Cell["Scala interface", "Subsection",
+ CellChangeTimes->{{3.639695149466408*^9, 3.639695154413146*^9}}],
+
 Cell[BoxData[
  RowBox[{"<<", "JLink`"}]], "Input",
  CellChangeTimes->{{3.6206146301899137`*^9, 3.620614636801032*^9}}],
@@ -512,28 +517,6 @@ Cell[BoxData[
    3.6206170967028437`*^9}, 3.620617130508194*^9, {3.620617266650272*^9, 
    3.620617268825653*^9}, {3.6206177802090197`*^9, 3.620617783193287*^9}}],
 
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{
-  "ScalaSingleton", "[", "\"\<scala.collection.immutable.Nil\>\"", "]"}], "@", 
-  RowBox[{
-   RowBox[{"$colon$colon", "[", 
-    RowBox[{"MakeJavaObject", "[", "1", "]"}], "]"}], "@", 
-   RowBox[{
-    RowBox[{"$colon$colon", "[", 
-     RowBox[{"MakeJavaObject", "[", "\"\<foo\>\"", "]"}], "]"}], "@", 
-    RowBox[{"toString", "[", "]"}]}]}]}]], "Input",
- CellChangeTimes->{{3.622232028180785*^9, 3.622232074408193*^9}, {
-  3.622232168284019*^9, 3.62223218637533*^9}}],
-
-Cell[BoxData["\<\"List(foo, 1)\"\>"], "Output",
- CellChangeTimes->{{3.622232032534257*^9, 3.622232075443475*^9}, {
-   3.622232169232863*^9, 3.622232186814014*^9}, 3.622251301388956*^9, 
-   3.6224200272948637`*^9}]
-}, Open  ]],
-
 Cell[BoxData[
  RowBox[{
   RowBox[{"Fraction", "=", 
@@ -651,418 +634,13 @@ Cell[BoxData[{
   3.622189492574689*^9}, {3.622189562653119*^9, 3.62218958961937*^9}, {
   3.622189696640812*^9, 3.622189759715749*^9}, {3.6221900765629587`*^9, 
   3.6221900801376333`*^9}, {3.6221905840693808`*^9, 3.622190607516776*^9}, {
-  3.6222317371583138`*^9, 3.622231763047621*^9}}],
+  3.6222317371583138`*^9, 3.622231763047621*^9}}]
+}, Closed]],
 
 Cell[CellGroupData[{
 
-Cell[BoxData[
- RowBox[{"QES", "=", 
-  RowBox[{
-  "ScalaSingleton", "[", 
-   "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\>\"\
-", "]"}]}]], "Input",
- CellChangeTimes->{{3.620615724074917*^9, 3.6206157397366543`*^9}, {
-  3.620615771243806*^9, 3.620615772051776*^9}}],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\[LeftGuillemet]", 
-   RowBox[{"JavaObject", "[", 
-    RowBox[{
-    "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
-     "examples", ".", "QuantumExceptionalSeries$"}], "]"}], 
-   "\[RightGuillemet]"}],
-  JLink`Objects`vm1`JavaObject29100476171550721]], "Output",
- CellChangeTimes->{{3.620615740186701*^9, 3.620615772915757*^9}, 
-   3.621066550545342*^9, 3.621209636556823*^9, 3.6218975758553247`*^9, 
-   3.6221842064823*^9, 3.622185158198531*^9, 3.622222123316766*^9, 
-   3.622231492032773*^9, 3.622251303299952*^9, 3.622420027412388*^9}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"QES", "=", 
-  RowBox[{"ScalaCaseClass", "[", 
-   RowBox[{
-   "\"\<net.tqft.toolkit.algebra.spiders.examples.QuotientSpider\>\"", ",", 
-    RowBox[{
-     RowBox[{"AsScalaObject", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{
-         RowBox[{"ScalaCaseClass", "[", 
-          RowBox[{
-          "\"\<net.tqft.toolkit.algebra.spiders.VertexType\>\"", ",", "3", 
-           ",", "1"}], "]"}], "\[Rule]", 
-         RowBox[{"QES", "@", 
-          RowBox[{
-           RowBox[{"ring", "[", "]"}], "@", 
-           RowBox[{"one", "[", "]"}]}]}]}], ",", 
-        RowBox[{
-         RowBox[{"ScalaCaseClass", "[", 
-          RowBox[{
-          "\"\<net.tqft.toolkit.algebra.spiders.VertexType\>\"", ",", "4", 
-           ",", "2"}], "]"}], "\[Rule]", 
-         RowBox[{"QES", "@", 
-          RowBox[{
-           RowBox[{"ring", "[", "]"}], "@", 
-           RowBox[{"one", "[", "]"}]}]}]}]}], "}"}], "]"}], "@", 
-     RowBox[{"toSeq", "[", "]"}]}], ",", 
-    RowBox[{"QES", "@", 
-     RowBox[{"reductions", "[", "]"}]}]}], "]"}]}]], "Input",
- CellChangeTimes->{{3.621068587028577*^9, 3.621068602835289*^9}, {
-  3.62106866015073*^9, 3.6210686703645363`*^9}, {3.621068766225059*^9, 
-  3.621068819789645*^9}}],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\[LeftGuillemet]", 
-   RowBox[{"JavaObject", "[", 
-    RowBox[{
-    "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
-     "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
-  JLink`Objects`vm1`JavaObject10535021580386306]], "Output",
- CellChangeTimes->{{3.621068770667886*^9, 3.621068823139434*^9}, 
-   3.6212096373506002`*^9, 3.6218975765222816`*^9, 3.6221842071884127`*^9, 
-   3.622185158874752*^9, 3.622222124011695*^9, 3.6222314927737083`*^9, 
-   3.622251303935506*^9, 3.622420027471686*^9}]
-}, Open  ]],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"NamedPolyhedron", "[", 
-   SubscriptBox["p", "k_"], "]"}], ":=", 
-  RowBox[{
-   RowBox[{
-   "ScalaSingleton", "[", 
-    "\"\<net.tqft.toolkit.algebra.spiders.PolyhedronNamer\>\"", "]"}], "@", 
-   RowBox[{
-    RowBox[{"byName", "[", 
-     RowBox[{"\"\<p\>\"", "<>", 
-      RowBox[{"ToString", "[", "k", "]"}]}], "]"}], "@", 
-    RowBox[{"get", "[", "]"}]}]}]}]], "Input",
- CellChangeTimes->{{3.622426264200357*^9, 3.622426286312983*^9}}],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"NamedPolyhedron", "[", 
-   SubscriptBox["p", "1"], "]"}], "@", 
-  RowBox[{"toString", "[", "]"}]}]], "Input",
- CellChangeTimes->{{3.622426289196702*^9, 3.622426298630727*^9}}],
-
-Cell[BoxData["\<\"PlanarGraph(7,Vector(List(), List((3,8), (4,7), (5,9), \
-(6,10)), List((4,9), (3,7), (6,8), (5,10))),ArrayBuffer(2, 2),0)\"\>"], \
-"Output",
- CellChangeTimes->{{3.6224262938233223`*^9, 3.622426299062028*^9}}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"NamedPolyhedron", "[", 
-   SubscriptBox["p", "2"], "]"}], "@", 
-  RowBox[{"toString", "[", "]"}]}]], "Input",
- CellChangeTimes->{{3.622426307339096*^9, 3.622426307401773*^9}}],
-
-Cell[BoxData["\<\"PlanarGraph(14,Vector(List(), List((6,14), (7,18), \
-(10,15)), List((6,18), (11,14), (8,16)), List((7,15), (9,18), (13,17)), \
-List((8,18), (12,16), (9,17)), List((10,14), (13,15), (12,17), \
-(11,16))),ArrayBuffer(1, 1, 1, 1, 2),0)\"\>"], "Output",
- CellChangeTimes->{3.6224263078522797`*^9}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"Factor", "[", 
-  RowBox[{
-   RowBox[{"FromScalaObject", "[", 
-    RowBox[{
-     RowBox[{
-     "ScalaSingleton", "[", 
-      "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\
-\>\"", "]"}], "@", 
-     RowBox[{"t", "[", "]"}]}], "]"}], 
-   RowBox[{"FromScalaObject", "[", 
-    RowBox[{
-     RowBox[{
-     "ScalaSingleton", "[", 
-      "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\
-\>\"", "]"}], "@", 
-     RowBox[{"b", "[", "]"}]}], "]"}], 
-   RowBox[{"FromScalaObject", "[", 
-    RowBox[{
-     RowBox[{
-     "ScalaSingleton", "[", 
-      "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\
-\>\"", "]"}], "@", 
-     RowBox[{"d", "[", "]"}]}], "]"}]}], "]"}]], "Input",
- CellChangeTimes->{{3.622426891163959*^9, 3.6224269491030827`*^9}}],
-
-Cell[BoxData[
- RowBox[{"-", 
-  FractionBox[
-   RowBox[{
-    RowBox[{"(", 
-     RowBox[{"1", "+", 
-      SuperscriptBox["w", "2"]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      SuperscriptBox["v", "2"], "+", 
-      SuperscriptBox["w", "2"]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{"1", "+", "w", "+", 
-      SuperscriptBox["w", "2"]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      RowBox[{"-", "1"}], "+", 
-      RowBox[{"v", " ", 
-       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{"1", "+", 
-      RowBox[{"v", " ", 
-       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{"1", "+", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", 
-       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      SuperscriptBox["v", "2"], "-", 
-      SuperscriptBox["w", "5"]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      SuperscriptBox["v", "4"], "+", 
-      SuperscriptBox["v", "6"], "+", 
-      RowBox[{
-       SuperscriptBox["v", "4"], " ", "w"}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "6"], " ", "w"}], "+", 
-      SuperscriptBox["w", "3"], "-", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", 
-       SuperscriptBox["w", "3"]}], "-", 
-      RowBox[{
-       SuperscriptBox["v", "4"], " ", 
-       SuperscriptBox["w", "3"]}], "-", 
-      RowBox[{
-       SuperscriptBox["v", "6"], " ", 
-       SuperscriptBox["w", "3"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "8"], " ", 
-       SuperscriptBox["w", "3"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", 
-       SuperscriptBox["w", "4"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "4"], " ", 
-       SuperscriptBox["w", "4"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", 
-       SuperscriptBox["w", "5"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "4"], " ", 
-       SuperscriptBox["w", "5"]}]}], ")"}]}], 
-   RowBox[{
-    RowBox[{"(", 
-     RowBox[{
-      RowBox[{"-", "1"}], "+", "v"}], ")"}], " ", 
-    SuperscriptBox["v", "6"], " ", 
-    RowBox[{"(", 
-     RowBox[{"1", "+", "v"}], ")"}], " ", 
-    SuperscriptBox["w", "13"], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      RowBox[{"-", "1"}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", "w"}]}], ")"}]}]]}]], "Output",
- CellChangeTimes->{{3.622426893257017*^9, 3.6224269495635557`*^9}}]
-}, Open  ]],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"Tet", "=", 
-   RowBox[{
-    RowBox[{
-    "ScalaSingleton", "[", 
-     "\"\<net.tqft.toolkit.algebra.spiders.PlanarGraph\>\"", "]"}], "@", 
-    RowBox[{"tetrahedron", "[", "]"}]}]}], ";"}]], "Input",
- CellChangeTimes->{{3.622427679019273*^9, 3.622427680234441*^9}}],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"TetEvaluation", "=", 
-  RowBox[{"Factor", "[", 
-   RowBox[{"FromScalaObject", "[", 
-    RowBox[{"QES", "@", 
-     RowBox[{
-      RowBox[{"allEvaluations", "[", "Tet", "]"}], "@", 
-      RowBox[{"next", "[", "]"}]}]}], "]"}], "]"}]}]], "Input",
- CellChangeTimes->{{3.622427666963928*^9, 3.6224277638184147`*^9}}],
-
-Cell[BoxData[
- RowBox[{"-", 
-  FractionBox[
-   RowBox[{
-    RowBox[{"(", 
-     RowBox[{"1", "+", 
-      SuperscriptBox["w", "2"]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      SuperscriptBox["v", "2"], "+", 
-      SuperscriptBox["w", "2"]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{"1", "+", "w", "+", 
-      SuperscriptBox["w", "2"]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      RowBox[{"-", "1"}], "+", 
-      RowBox[{"v", " ", 
-       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{"1", "+", 
-      RowBox[{"v", " ", 
-       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{"1", "+", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", 
-       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      SuperscriptBox["v", "2"], "-", 
-      SuperscriptBox["w", "5"]}], ")"}], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      SuperscriptBox["v", "4"], "+", 
-      SuperscriptBox["v", "6"], "+", 
-      RowBox[{
-       SuperscriptBox["v", "4"], " ", "w"}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "6"], " ", "w"}], "+", 
-      SuperscriptBox["w", "3"], "-", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", 
-       SuperscriptBox["w", "3"]}], "-", 
-      RowBox[{
-       SuperscriptBox["v", "4"], " ", 
-       SuperscriptBox["w", "3"]}], "-", 
-      RowBox[{
-       SuperscriptBox["v", "6"], " ", 
-       SuperscriptBox["w", "3"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "8"], " ", 
-       SuperscriptBox["w", "3"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", 
-       SuperscriptBox["w", "4"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "4"], " ", 
-       SuperscriptBox["w", "4"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", 
-       SuperscriptBox["w", "5"]}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "4"], " ", 
-       SuperscriptBox["w", "5"]}]}], ")"}]}], 
-   RowBox[{
-    RowBox[{"(", 
-     RowBox[{
-      RowBox[{"-", "1"}], "+", "v"}], ")"}], " ", 
-    SuperscriptBox["v", "6"], " ", 
-    RowBox[{"(", 
-     RowBox[{"1", "+", "v"}], ")"}], " ", 
-    SuperscriptBox["w", "13"], " ", 
-    RowBox[{"(", 
-     RowBox[{
-      RowBox[{"-", "1"}], "+", 
-      RowBox[{
-       SuperscriptBox["v", "2"], " ", "w"}]}], ")"}]}]]}]], "Output",
- CellChangeTimes->{{3.6224276827167063`*^9, 3.622427722437667*^9}, {
-  3.622427752948535*^9, 3.622427775959838*^9}}]
-}, Open  ]],
-
-Cell[BoxData[
- RowBox[{"(*", " ", 
-  RowBox[{
-  "TODO", " ", "we", " ", "have", " ", "to", " ", "tell", " ", "it", " ", 
-   "how", " ", "to", " ", "do", " ", "the", " ", "twisted", " ", 
-   "tetrahedron", " ", "by", " ", "hand"}], " ", "*)"}]], "Input",
- CellChangeTimes->{{3.6224288015132933`*^9, 3.6224288171968813`*^9}}],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"NamedPolyhedron", "[", 
-   SubscriptBox["p", "3"], "]"}], "@", 
-  RowBox[{"toString", "[", "]"}]}]], "Input",
- CellChangeTimes->{{3.622426335989565*^9, 3.622426336044423*^9}}],
-
-Cell[BoxData["\<\"PlanarGraph(12,Vector(List(), List((5,14), (6,15), (7,16)), \
-List((5,15), (9,14), (8,12)), List((7,14), (10,16), (11,13), (9,12)), \
-List((10,13), (6,16), (8,15), (11,12))),ArrayBuffer(1, 1, 2, 2),0)\"\>"], \
-"Output",
- CellChangeTimes->{3.6224263366099253`*^9}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"With", "[", 
-  RowBox[{
-   RowBox[{"{", 
-    RowBox[{"\[Lambda]", "=", 
-     RowBox[{"-", 
-      FractionBox[
-       RowBox[{
-        RowBox[{"(", 
-         RowBox[{
-          SuperscriptBox["w", "7"], "-", 
-          RowBox[{
-           SuperscriptBox["v", "2"], " ", 
-           SuperscriptBox["w", "7"]}], "-", 
-          RowBox[{
-           SuperscriptBox["v", "2"], " ", 
-           SuperscriptBox["w", "8"]}], "+", 
-          RowBox[{
-           SuperscriptBox["v", "4"], " ", 
-           SuperscriptBox["w", "8"]}]}], ")"}], " ", 
-        SubscriptBox["p", "1"]}], 
-       RowBox[{
-        RowBox[{"(", 
-         RowBox[{"1", "+", 
-          SuperscriptBox["w", "2"]}], ")"}], " ", 
-        RowBox[{"(", 
-         RowBox[{
-          SuperscriptBox["v", "2"], "-", 
-          SuperscriptBox["w", "5"], "-", 
-          RowBox[{
-           SuperscriptBox["v", "4"], " ", 
-           SuperscriptBox["w", "6"]}], "+", 
-          RowBox[{
-           SuperscriptBox["v", "2"], " ", 
-           SuperscriptBox["w", "11"]}]}], ")"}]}]]}]}], "}"}], ",", 
-   RowBox[{"Together", "[", 
-    RowBox[{
-     RowBox[{"FromScalaObject", "[", 
-      RowBox[{"AsScalaObject", "[", 
-       RowBox[{"\[Lambda]", ",", "\"\<MultivariableRationalFunction\>\""}], 
-       "]"}], "]"}], "-", "\[Lambda]"}], "]"}]}], "]"}]], "Input",
- CellChangeTimes->{{3.622231669632331*^9, 3.622231680436728*^9}, {
-  3.622232313432637*^9, 3.622232358140156*^9}}],
-
-Cell[BoxData["0"], "Output",
- CellChangeTimes->{
-  3.6222316813122063`*^9, 3.622231766215562*^9, {3.622232310819356*^9, 
-   3.622232358847797*^9}, 3.622251304419622*^9, 3.622420027693503*^9}]
-}, Open  ]],
+Cell["Manipulating spiders", "Subsection",
+ CellChangeTimes->{{3.639695197863172*^9, 3.6396952047707233`*^9}}],
 
 Cell[BoxData[{
  RowBox[{
@@ -1464,118 +1042,6 @@ Cell[BoxData[
   3.621213182060973*^9}, {3.6219053543307333`*^9, 3.621905355321931*^9}, {
   3.621905775538089*^9, 3.6219057765212517`*^9}, {3.622184381956562*^9, 
   3.622184395355117*^9}}],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"DeclarePolynomialNonZero", "[", 
-   SuperscriptBox[
-    RowBox[{"(", 
-     RowBox[{"4", "-", 
-      SuperscriptBox["y", "4"]}], ")"}], "2"], "]"}], "[", 
-  RowBox[{
-   RowBox[{"DeclarePolynomialZero", "[", 
-    SuperscriptBox[
-     RowBox[{"(", 
-      RowBox[{
-       SuperscriptBox["x", "2"], "-", "1"}], ")"}], "3"], "]"}], "[", 
-   RowBox[{
-    RowBox[{"DeclarePolynomialNonZero", "[", 
-     RowBox[{"x", "-", "1"}], "]"}], "[", 
-    RowBox[{"Manifold", "[", 
-     RowBox[{
-      RowBox[{"{", "}"}], ",", 
-      RowBox[{"{", "}"}]}], "]"}], "]"}], "]"}], "]"}]], "Input",
- CellChangeTimes->{{3.62068741612333*^9, 3.6206874266493998`*^9}, {
-  3.6206878904371777`*^9, 3.620687933889065*^9}, {3.620690477190682*^9, 
-  3.62069050591083*^9}, {3.621037646749793*^9, 3.621037649501741*^9}, {
-  3.621037912111821*^9, 3.6210379127508*^9}, {3.6210380933688*^9, 
-  3.6210380936323566`*^9}, {3.6221843974826193`*^9, 3.6221844277822313`*^9}}],
-
-Cell[CellGroupData[{
-
-Cell[BoxData["\<\"We find the factors \\(\\\\{x-1,x+1\\\\}\\) and then \
-require that at least one is zero.\"\>"], "Print",
- CellChangeTimes->{
-  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
-   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
-   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
-   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
-   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
-   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
-   3.6224200280631657`*^9}],
-
-Cell[BoxData["\<\"Adding \\(x-1\\) to the ideal would render a nonzero \
-quantity zero, so we reject this possibility.\"\>"], "Print",
- CellChangeTimes->{
-  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
-   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
-   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
-   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
-   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
-   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
-   3.622420028064823*^9}],
-
-Cell[BoxData["\<\"Adjoining \\(x+1\\) the ideal we obtain a new Groebner \
-basis \\(\\\\{x+1\\\\}\\) with respect to which the nonzero quantities reduce \
-to \\(\\\\{-2\\\\}\\).\"\>"], "Print",
- CellChangeTimes->{
-  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
-   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
-   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
-   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
-   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
-   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
-   3.6224200280671988`*^9}],
-
-Cell[BoxData["\<\"We find the factors \
-\\(\\\\left\\\\{y^2-2,y^2+2\\\\right\\\\}\\) and then require that each is \
-nonzero.\"\>"], "Print",
- CellChangeTimes->{
-  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
-   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
-   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
-   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
-   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
-   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
-   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
-   3.622420028069536*^9}]
-}, Open  ]],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{"Manifold", "[", 
-   RowBox[{
-    RowBox[{"{", 
-     RowBox[{"1", "+", "x"}], "}"}], ",", 
-    RowBox[{"{", 
-     RowBox[{
-      RowBox[{"-", "2"}], ",", 
-      RowBox[{
-       RowBox[{"-", "2"}], "+", 
-       SuperscriptBox["y", "2"]}], ",", 
-      RowBox[{"2", "+", 
-       SuperscriptBox["y", "2"]}]}], "}"}]}], "]"}], "}"}]], "Output",
- CellChangeTimes->{
-  3.62068742711943*^9, {3.620687726955532*^9, 3.620687733756226*^9}, {
-   3.620687887064025*^9, 3.620687934529914*^9}, {3.620688146859085*^9, 
-   3.620688159946445*^9}, {3.620688208181449*^9, 3.620688229688406*^9}, {
-   3.6206882731383142`*^9, 3.620688299063766*^9}, {3.6206904753818073`*^9, 
-   3.620690506376266*^9}, 3.6210376531975737`*^9, {3.621037750499095*^9, 
-   3.621037775907113*^9}, 3.621037913374065*^9, 3.621038046112183*^9, {
-   3.62103809462465*^9, 3.621038120735487*^9}, 3.6210381834914217`*^9, {
-   3.6210382428145742`*^9, 3.6210382582374287`*^9}, 3.621066906118433*^9, {
-   3.621066991920648*^9, 3.621067008164126*^9}, 3.621067072459331*^9, 
-   3.6210671408283377`*^9, 3.6210671971040163`*^9, 3.6210672760510798`*^9, 
-   3.6210673761115847`*^9, 3.62106740983578*^9, 3.6212098351071863`*^9, 
-   3.621218715176608*^9, 3.6218977665153637`*^9, 3.622184441189625*^9, 
-   3.6221854615319357`*^9, 3.622222485719769*^9, 3.622231493744279*^9, 
-   3.622251305093144*^9, 3.6224200280719557`*^9}]
-}, Open  ]],
 
 Cell[BoxData[
  RowBox[{
@@ -2702,6 +2168,609 @@ Cell[BoxData[
 
 Cell[CellGroupData[{
 
+Cell["Testing", "Subsubsection",
+ CellChangeTimes->{{3.6396952351135263`*^9, 3.6396952379334106`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"DeclarePolynomialNonZero", "[", 
+   SuperscriptBox[
+    RowBox[{"(", 
+     RowBox[{"4", "-", 
+      SuperscriptBox["y", "4"]}], ")"}], "2"], "]"}], "[", 
+  RowBox[{
+   RowBox[{"DeclarePolynomialZero", "[", 
+    SuperscriptBox[
+     RowBox[{"(", 
+      RowBox[{
+       SuperscriptBox["x", "2"], "-", "1"}], ")"}], "3"], "]"}], "[", 
+   RowBox[{
+    RowBox[{"DeclarePolynomialNonZero", "[", 
+     RowBox[{"x", "-", "1"}], "]"}], "[", 
+    RowBox[{"Manifold", "[", 
+     RowBox[{
+      RowBox[{"{", "}"}], ",", 
+      RowBox[{"{", "}"}]}], "]"}], "]"}], "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.62068741612333*^9, 3.6206874266493998`*^9}, {
+  3.6206878904371777`*^9, 3.620687933889065*^9}, {3.620690477190682*^9, 
+  3.62069050591083*^9}, {3.621037646749793*^9, 3.621037649501741*^9}, {
+  3.621037912111821*^9, 3.6210379127508*^9}, {3.6210380933688*^9, 
+  3.6210380936323566`*^9}, {3.6221843974826193`*^9, 3.6221844277822313`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"We find the factors \\(\\\\{x-1,x+1\\\\}\\) and then \
+require that at least one is zero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
+   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
+   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
+   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
+   3.6224200280631657`*^9, 3.6396952729567747`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"computing GroebnerBasis[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"-", "1"}], "+", "x"}], "}"}], "\[InvisibleSpace]", "\<\", \"\>",
+    "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"v", ",", "w"}], "}"}], "\[InvisibleSpace]", "\<\"]\"\>"}],
+  SequenceForm[
+  "computing GroebnerBasis[", {-1 + $CellContext`x}, 
+   ", ", {$CellContext`v, $CellContext`w}, "]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
+   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
+   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
+   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
+   3.6224200280631657`*^9, 3.639695272968523*^9}],
+
+Cell[BoxData["\<\"Adjoining \\(x-1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{
+  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
+   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
+   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
+   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
+   3.6224200280631657`*^9, 3.639695272988138*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"computing GroebnerBasis[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"1", "+", "x"}], "}"}], "\[InvisibleSpace]", "\<\", \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"v", ",", "w"}], "}"}], "\[InvisibleSpace]", "\<\"]\"\>"}],
+  SequenceForm[
+  "computing GroebnerBasis[", {1 + $CellContext`x}, 
+   ", ", {$CellContext`v, $CellContext`w}, "]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
+   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
+   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
+   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
+   3.6224200280631657`*^9, 3.639695272999001*^9}],
+
+Cell[BoxData["\<\"Adjoining \\(x+1\\) to the ideal we obtain a new Groebner \
+basis \\(\\\\{x+1\\\\}\\) with respect to which the nonzero quantities reduce \
+to \\(\\\\{-2\\\\}\\).\"\>"], "Print",
+ CellChangeTimes->{
+  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
+   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
+   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
+   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
+   3.6224200280631657`*^9, 3.639695273006455*^9}],
+
+Cell[BoxData["\<\"We find the factors \
+\\(\\\\left\\\\{y^2-2,y^2+2\\\\right\\\\}\\) and then require that each is \
+nonzero.\"\>"], "Print",
+ CellChangeTimes->{
+  3.621038120734383*^9, 3.621038183490004*^9, {3.621038242811536*^9, 
+   3.621038258234301*^9}, 3.621066906083696*^9, {3.621066991917202*^9, 
+   3.621067008159792*^9}, 3.621067072452342*^9, 3.6210671408220387`*^9, 
+   3.6210671970936527`*^9, 3.6210672760404787`*^9, 3.6210673760134153`*^9, 
+   3.621067409823371*^9, 3.6212098350400553`*^9, 3.6212187151692743`*^9, 
+   3.621897766429531*^9, 3.622184441146317*^9, 3.622185461466338*^9, 
+   3.622222485680483*^9, 3.622231493736858*^9, 3.622251305038172*^9, 
+   3.6224200280631657`*^9, 3.6396952730151367`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"Manifold", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", "+", "x"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"-", "2"}], ",", 
+      RowBox[{
+       RowBox[{"-", "2"}], "+", 
+       SuperscriptBox["y", "2"]}], ",", 
+      RowBox[{"2", "+", 
+       SuperscriptBox["y", "2"]}]}], "}"}]}], "]"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.62068742711943*^9, {3.620687726955532*^9, 3.620687733756226*^9}, {
+   3.620687887064025*^9, 3.620687934529914*^9}, {3.620688146859085*^9, 
+   3.620688159946445*^9}, {3.620688208181449*^9, 3.620688229688406*^9}, {
+   3.6206882731383142`*^9, 3.620688299063766*^9}, {3.6206904753818073`*^9, 
+   3.620690506376266*^9}, 3.6210376531975737`*^9, {3.621037750499095*^9, 
+   3.621037775907113*^9}, 3.621037913374065*^9, 3.621038046112183*^9, {
+   3.62103809462465*^9, 3.621038120735487*^9}, 3.6210381834914217`*^9, {
+   3.6210382428145742`*^9, 3.6210382582374287`*^9}, 3.621066906118433*^9, {
+   3.621066991920648*^9, 3.621067008164126*^9}, 3.621067072459331*^9, 
+   3.6210671408283377`*^9, 3.6210671971040163`*^9, 3.6210672760510798`*^9, 
+   3.6210673761115847`*^9, 3.62106740983578*^9, 3.6212098351071863`*^9, 
+   3.621218715176608*^9, 3.6218977665153637`*^9, 3.622184441189625*^9, 
+   3.6221854615319357`*^9, 3.622222485719769*^9, 3.622231493744279*^9, 
+   3.622251305093144*^9, 3.6224200280719557`*^9, 3.639695273026292*^9}]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Setting up the quantum exceptional series", "Subsection",
+ CellChangeTimes->{{3.639695162227044*^9, 3.6396951739258413`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"QES", "=", 
+   RowBox[{
+   "ScalaSingleton", "[", 
+    "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\>\
+\"", "]"}]}], ";"}], "\n", 
+ RowBox[{"QES", "=", 
+  RowBox[{"ScalaCaseClass", "[", 
+   RowBox[{
+   "\"\<net.tqft.toolkit.algebra.spiders.examples.QuotientSpider\>\"", ",", 
+    RowBox[{
+     RowBox[{"AsScalaObject", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"ScalaCaseClass", "[", 
+          RowBox[{
+          "\"\<net.tqft.toolkit.algebra.spiders.VertexType\>\"", ",", "3", 
+           ",", "1"}], "]"}], "\[Rule]", 
+         RowBox[{"QES", "@", 
+          RowBox[{
+           RowBox[{"ring", "[", "]"}], "@", 
+           RowBox[{"one", "[", "]"}]}]}]}], ",", 
+        RowBox[{
+         RowBox[{"ScalaCaseClass", "[", 
+          RowBox[{
+          "\"\<net.tqft.toolkit.algebra.spiders.VertexType\>\"", ",", "4", 
+           ",", "2"}], "]"}], "\[Rule]", 
+         RowBox[{"QES", "@", 
+          RowBox[{
+           RowBox[{"ring", "[", "]"}], "@", 
+           RowBox[{"one", "[", "]"}]}]}]}]}], "}"}], "]"}], "@", 
+     RowBox[{"toSeq", "[", "]"}]}], ",", 
+    RowBox[{"QES", "@", 
+     RowBox[{"reductions", "[", "]"}]}]}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.620615724074917*^9, 3.6206157397366543`*^9}, {
+  3.620615771243806*^9, 3.620615772051776*^9}, {3.639694342676299*^9, 
+  3.6396943626221237`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{
+    "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
+     "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject10535021580386305]], "Output",
+ CellChangeTimes->{{3.621068770667886*^9, 3.621068823139434*^9}, 
+   3.6212096373506002`*^9, 3.6218975765222816`*^9, 3.6221842071884127`*^9, 
+   3.622185158874752*^9, 3.622222124011695*^9, 3.6222314927737083`*^9, 
+   3.622251303935506*^9, 3.622420027471686*^9, 3.6396943662419033`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+  "ScalaSingleton", "[", 
+   "\"\<net.tqft.toolkit.algebra.spiders.PolyhedronNamer\>\"", "]"}], "@", 
+  RowBox[{
+   RowBox[{"names", "[", "]"}], "@", 
+   RowBox[{"toList", "[", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6396943936891327`*^9, 3.639694409418089*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{"scala", ".", "collection", ".", "immutable", ".", "Nil$"}], 
+    "]"}], "\[RightGuillemet]"}],
+  JLink`Objects`vm1`JavaObject7944347118993409]], "Output",
+ CellChangeTimes->{{3.639694390450611*^9, 3.639694409829364*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"NamedPolyhedron", "[", 
+   SubscriptBox["p", "k_"], "]"}], ":=", 
+  RowBox[{
+   RowBox[{
+   "ScalaSingleton", "[", 
+    "\"\<net.tqft.toolkit.algebra.spiders.PolyhedronNamer\>\"", "]"}], "@", 
+   RowBox[{
+    RowBox[{"byName", "[", 
+     RowBox[{"\"\<p\>\"", "<>", 
+      RowBox[{"ToString", "[", "k", "]"}]}], "]"}], "@", 
+    RowBox[{"get", "[", "]"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.622426264200357*^9, 3.622426286312983*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"NamedPolyhedron", "[", 
+   SubscriptBox["p", "1"], "]"}], "@", 
+  RowBox[{"toString", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.622426289196702*^9, 3.622426298630727*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Java", "::", "excptn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"A Java exception occurred: \
+\[NoBreak]\\!\\(\\\"java.util.NoSuchElementException: None.get\\\\n\\\\tat \
+scala.None$.get(Option.scala:322)\\\\n\\\\tat \
+scala.None$.get(Option.scala:320)\\\"\\)\[NoBreak].\"\>"}]], "Message", "MSG",
+ 
+ CellChangeTimes->{3.6396943700001*^9}],
+
+Cell[BoxData[
+ RowBox[{"$Failed", "[", 
+  RowBox[{"toString", "[", "]"}], "]"}]], "Output",
+ CellChangeTimes->{{3.6224262938233223`*^9, 3.622426299062028*^9}, 
+   3.6396943700052347`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"NamedPolyhedron", "[", 
+   SubscriptBox["p", "2"], "]"}], "@", 
+  RowBox[{"toString", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.622426307339096*^9, 3.622426307401773*^9}}],
+
+Cell[BoxData["\<\"PlanarGraph(14,Vector(List(), List((6,14), (7,18), \
+(10,15)), List((6,18), (11,14), (8,16)), List((7,15), (9,18), (13,17)), \
+List((8,18), (12,16), (9,17)), List((10,14), (13,15), (12,17), \
+(11,16))),ArrayBuffer(1, 1, 1, 1, 2),0)\"\>"], "Output",
+ CellChangeTimes->{3.6224263078522797`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Factor", "[", 
+  RowBox[{
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{
+     RowBox[{
+     "ScalaSingleton", "[", 
+      "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\
+\>\"", "]"}], "@", 
+     RowBox[{"t", "[", "]"}]}], "]"}], 
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{
+     RowBox[{
+     "ScalaSingleton", "[", 
+      "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\
+\>\"", "]"}], "@", 
+     RowBox[{"b", "[", "]"}]}], "]"}], 
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{
+     RowBox[{
+     "ScalaSingleton", "[", 
+      "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\
+\>\"", "]"}], "@", 
+     RowBox[{"d", "[", "]"}]}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.622426891163959*^9, 3.6224269491030827`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"1", "+", 
+      SuperscriptBox["w", "2"]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      SuperscriptBox["v", "2"], "+", 
+      SuperscriptBox["w", "2"]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", "w", "+", 
+      SuperscriptBox["w", "2"]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"-", "1"}], "+", 
+      RowBox[{"v", " ", 
+       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", 
+      RowBox[{"v", " ", 
+       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", 
+       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      SuperscriptBox["v", "2"], "-", 
+      SuperscriptBox["w", "5"]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      SuperscriptBox["v", "4"], "+", 
+      SuperscriptBox["v", "6"], "+", 
+      RowBox[{
+       SuperscriptBox["v", "4"], " ", "w"}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "6"], " ", "w"}], "+", 
+      SuperscriptBox["w", "3"], "-", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", 
+       SuperscriptBox["w", "3"]}], "-", 
+      RowBox[{
+       SuperscriptBox["v", "4"], " ", 
+       SuperscriptBox["w", "3"]}], "-", 
+      RowBox[{
+       SuperscriptBox["v", "6"], " ", 
+       SuperscriptBox["w", "3"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "8"], " ", 
+       SuperscriptBox["w", "3"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", 
+       SuperscriptBox["w", "4"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "4"], " ", 
+       SuperscriptBox["w", "4"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", 
+       SuperscriptBox["w", "5"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "4"], " ", 
+       SuperscriptBox["w", "5"]}]}], ")"}]}], 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"-", "1"}], "+", "v"}], ")"}], " ", 
+    SuperscriptBox["v", "6"], " ", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", "v"}], ")"}], " ", 
+    SuperscriptBox["w", "13"], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"-", "1"}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", "w"}]}], ")"}]}]]}]], "Output",
+ CellChangeTimes->{{3.622426893257017*^9, 3.6224269495635557`*^9}, 
+   3.639694847186884*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Tet", "=", 
+   RowBox[{
+    RowBox[{
+    "ScalaSingleton", "[", 
+     "\"\<net.tqft.toolkit.algebra.spiders.PlanarGraph\>\"", "]"}], "@", 
+    RowBox[{"tetrahedron", "[", "]"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.622427679019273*^9, 3.622427680234441*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"TetEvaluation", "=", 
+  RowBox[{"Factor", "[", 
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{"QES", "@", 
+     RowBox[{
+      RowBox[{"allEvaluations", "[", "Tet", "]"}], "@", 
+      RowBox[{"next", "[", "]"}]}]}], "]"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.622427666963928*^9, 3.6224277638184147`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"1", "+", 
+      SuperscriptBox["w", "2"]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      SuperscriptBox["v", "2"], "+", 
+      SuperscriptBox["w", "2"]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", "w", "+", 
+      SuperscriptBox["w", "2"]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"-", "1"}], "+", 
+      RowBox[{"v", " ", 
+       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", 
+      RowBox[{"v", " ", 
+       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", 
+       SuperscriptBox["w", "3"]}]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      SuperscriptBox["v", "2"], "-", 
+      SuperscriptBox["w", "5"]}], ")"}], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      SuperscriptBox["v", "4"], "+", 
+      SuperscriptBox["v", "6"], "+", 
+      RowBox[{
+       SuperscriptBox["v", "4"], " ", "w"}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "6"], " ", "w"}], "+", 
+      SuperscriptBox["w", "3"], "-", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", 
+       SuperscriptBox["w", "3"]}], "-", 
+      RowBox[{
+       SuperscriptBox["v", "4"], " ", 
+       SuperscriptBox["w", "3"]}], "-", 
+      RowBox[{
+       SuperscriptBox["v", "6"], " ", 
+       SuperscriptBox["w", "3"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "8"], " ", 
+       SuperscriptBox["w", "3"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", 
+       SuperscriptBox["w", "4"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "4"], " ", 
+       SuperscriptBox["w", "4"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", 
+       SuperscriptBox["w", "5"]}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "4"], " ", 
+       SuperscriptBox["w", "5"]}]}], ")"}]}], 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"-", "1"}], "+", "v"}], ")"}], " ", 
+    SuperscriptBox["v", "6"], " ", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", "v"}], ")"}], " ", 
+    SuperscriptBox["w", "13"], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"-", "1"}], "+", 
+      RowBox[{
+       SuperscriptBox["v", "2"], " ", "w"}]}], ")"}]}]]}]], "Output",
+ CellChangeTimes->{{3.6224276827167063`*^9, 3.622427722437667*^9}, {
+   3.622427752948535*^9, 3.622427775959838*^9}, 3.639694871872491*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{
+  "TODO", " ", "we", " ", "have", " ", "to", " ", "tell", " ", "it", " ", 
+   "how", " ", "to", " ", "do", " ", "the", " ", "twisted", " ", 
+   "tetrahedron", " ", "by", " ", "hand"}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.6224288015132933`*^9, 3.6224288171968813`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"NamedPolyhedron", "[", 
+   SubscriptBox["p", "3"], "]"}], "@", 
+  RowBox[{"toString", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.622426335989565*^9, 3.622426336044423*^9}}],
+
+Cell[BoxData["\<\"PlanarGraph(12,Vector(List(), List((5,14), (6,15), (7,16)), \
+List((5,15), (9,14), (8,12)), List((7,14), (10,16), (11,13), (9,12)), \
+List((10,13), (6,16), (8,15), (11,12))),ArrayBuffer(1, 1, 2, 2),0)\"\>"], \
+"Output",
+ CellChangeTimes->{3.6224263366099253`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"\[Lambda]", "=", 
+     RowBox[{"-", 
+      FractionBox[
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          SuperscriptBox["w", "7"], "-", 
+          RowBox[{
+           SuperscriptBox["v", "2"], " ", 
+           SuperscriptBox["w", "7"]}], "-", 
+          RowBox[{
+           SuperscriptBox["v", "2"], " ", 
+           SuperscriptBox["w", "8"]}], "+", 
+          RowBox[{
+           SuperscriptBox["v", "4"], " ", 
+           SuperscriptBox["w", "8"]}]}], ")"}], " ", 
+        SubscriptBox["p", "1"]}], 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"1", "+", 
+          SuperscriptBox["w", "2"]}], ")"}], " ", 
+        RowBox[{"(", 
+         RowBox[{
+          SuperscriptBox["v", "2"], "-", 
+          SuperscriptBox["w", "5"], "-", 
+          RowBox[{
+           SuperscriptBox["v", "4"], " ", 
+           SuperscriptBox["w", "6"]}], "+", 
+          RowBox[{
+           SuperscriptBox["v", "2"], " ", 
+           SuperscriptBox["w", "11"]}]}], ")"}]}]]}]}], "}"}], ",", 
+   RowBox[{"Together", "[", 
+    RowBox[{
+     RowBox[{"FromScalaObject", "[", 
+      RowBox[{"AsScalaObject", "[", 
+       RowBox[{"\[Lambda]", ",", "\"\<MultivariableRationalFunction\>\""}], 
+       "]"}], "]"}], "-", "\[Lambda]"}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.622231669632331*^9, 3.622231680436728*^9}, {
+  3.622232313432637*^9, 3.622232358140156*^9}}],
+
+Cell[BoxData["0"], "Output",
+ CellChangeTimes->{
+  3.6222316813122063`*^9, 3.622231766215562*^9, {3.622232310819356*^9, 
+   3.622232358847797*^9}, 3.622251304419622*^9, 3.622420027693503*^9, 
+   3.6396951336088953`*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Investigating the quantum exceptional series", "Subsection",
+ CellChangeTimes->{{3.639695241848319*^9, 3.639695253031905*^9}}],
+
+Cell[CellGroupData[{
+
 Cell[BoxData[
  RowBox[{"initialState", "=", 
   RowBox[{"buildSpiderAnalysis", "[", 
@@ -2731,7 +2800,7 @@ Cell[BoxData[
       RowBox[{
       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
         "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject10535021580386306], ",", 
+    JLink`Objects`vm1`JavaObject10535021580386305], ",", 
    RowBox[{"Manifold", "[", 
     RowBox[{
      RowBox[{"{", "}"}], ",", 
@@ -2748,7 +2817,7 @@ Cell[BoxData[
    3.6212102200099363`*^9, {3.621220568300658*^9, 3.6212206325253363`*^9}, 
    3.621897767229074*^9, 3.621897911999242*^9, 3.622184441977714*^9, 
    3.6221855560575237`*^9, 3.6222224867827597`*^9, 3.622231512442863*^9, 
-   3.622251306168079*^9, 3.622420028834278*^9}]
+   3.622251306168079*^9, 3.622420028834278*^9, 3.639695366082652*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -2807,13 +2876,14 @@ Cell[BoxData[
 Cell[CellGroupData[{
 
 Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(2,Vector(Vector((1,2), (1,3))),ArrayBuffer(),0), insisting that \
-it is independent.\"\>"], "Print",
+PlanarGraph(2,Vector(List((1,2), (1,3))),List(),0), insisting that it is \
+independent.\"\>"], "Print",
  CellChangeTimes->{3.621897918673015*^9, 3.6218979877819643`*^9, 
   3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
   3.622184449104488*^9, 3.622185567597465*^9, 3.622222497543223*^9, 
   3.62223151888586*^9, 3.622251309997014*^9, 3.622255741777782*^9, 
-  3.622420031850741*^9, 3.622420534372521*^9, 3.622423295488741*^9}],
+  3.622420031850741*^9, 3.622420534372521*^9, 3.622423295488741*^9, 
+  3.639695387998652*^9}],
 
 Cell[BoxData["\<\"The number of independent diagrams of size \\(2\\) has now \
 hit the upper bound of \\(1\\)\"\>"], "Print",
@@ -2821,7 +2891,8 @@ hit the upper bound of \\(1\\)\"\>"], "Print",
   3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
   3.622184449104488*^9, 3.622185567597465*^9, 3.622222497543223*^9, 
   3.62223151888586*^9, 3.622251309997014*^9, 3.622255741777782*^9, 
-  3.622420031850741*^9, 3.622420534372521*^9, 3.622423295490685*^9}],
+  3.622420031850741*^9, 3.622420534372521*^9, 3.622423295488741*^9, 
+  3.639695388010215*^9}],
 
 Cell[BoxData["\<\"We now insist that the matrix of inner products of the \
 independent diagrams of size \\(2\\) is non-zero.\"\>"], "Print",
@@ -2829,16 +2900,62 @@ independent diagrams of size \\(2\\) is non-zero.\"\>"], "Print",
   3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
   3.622184449104488*^9, 3.622185567597465*^9, 3.622222497543223*^9, 
   3.62223151888586*^9, 3.622251309997014*^9, 3.622255741777782*^9, 
-  3.622420031850741*^9, 3.622420534372521*^9, 3.622423295493664*^9}],
+  3.622420031850741*^9, 3.622420534372521*^9, 3.622423295488741*^9, 
+  3.639695388020915*^9}],
 
-Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{-1,w^2+1,v w^3-1,v \
+Cell[BoxData[
+ RowBox[{
+  SuperscriptBox["v", "2"], "+", 
+  RowBox[{
+   SuperscriptBox["v", "2"], " ", 
+   SuperscriptBox["w", "2"]}], "-", 
+  SuperscriptBox["w", "5"], "-", 
+  RowBox[{
+   SuperscriptBox["v", "4"], " ", 
+   SuperscriptBox["w", "6"]}], "-", 
+  SuperscriptBox["w", "7"], "-", 
+  RowBox[{
+   SuperscriptBox["v", "4"], " ", 
+   SuperscriptBox["w", "8"]}], "+", 
+  RowBox[{
+   SuperscriptBox["v", "2"], " ", 
+   SuperscriptBox["w", "11"]}], "+", 
+  RowBox[{
+   SuperscriptBox["v", "2"], " ", 
+   SuperscriptBox["w", "13"]}]}]], "Print",
+ CellChangeTimes->{3.621897918673015*^9, 3.6218979877819643`*^9, 
+  3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
+  3.622184449104488*^9, 3.622185567597465*^9, 3.622222497543223*^9, 
+  3.62223151888586*^9, 3.622251309997014*^9, 3.622255741777782*^9, 
+  3.622420031850741*^9, 3.622420534372521*^9, 3.622423295488741*^9, 
+  3.639695388542207*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  SuperscriptBox["w", "7"], " ", 
+  RowBox[{"(", 
+   RowBox[{"1", "-", 
+    SuperscriptBox["v", "2"], "-", 
+    RowBox[{
+     SuperscriptBox["v", "2"], " ", "w"}], "+", 
+    RowBox[{
+     SuperscriptBox["v", "4"], " ", "w"}]}], ")"}]}]], "Print",
+ CellChangeTimes->{3.621897918673015*^9, 3.6218979877819643`*^9, 
+  3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
+  3.622184449104488*^9, 3.622185567597465*^9, 3.622222497543223*^9, 
+  3.62223151888586*^9, 3.622251309997014*^9, 3.622255741777782*^9, 
+  3.622420031850741*^9, 3.622420534372521*^9, 3.622423295488741*^9, 
+  3.6396953885517187`*^9}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{w^2+1,v w^3-1,v \
 w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that each is nonzero.\"\>"], \
 "Print",
  CellChangeTimes->{3.621897918673015*^9, 3.6218979877819643`*^9, 
   3.621898046919179*^9, 3.6218981573082047`*^9, 3.621905861885702*^9, 
   3.622184449104488*^9, 3.622185567597465*^9, 3.622222497543223*^9, 
   3.62223151888586*^9, 3.622251309997014*^9, 3.622255741777782*^9, 
-  3.622420031850741*^9, 3.622420534372521*^9, 3.6224232955603228`*^9}]
+  3.622420031850741*^9, 3.622420534372521*^9, 3.622423295488741*^9, 
+  3.639695388564226*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -2854,7 +2971,7 @@ Cell[BoxData[
            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
              ".", "examples", ".", "QuotientSpider"}], "]"}], 
           "\[RightGuillemet]"}],
-         JLink`Objects`vm1`JavaObject10535021580386306], ",", 
+         JLink`Objects`vm1`JavaObject10535021580386305], ",", 
         RowBox[{"Manifold", "[", 
          RowBox[{
           RowBox[{"{", "}"}], ",", 
@@ -2883,7 +3000,7 @@ Cell[BoxData[
             RowBox[{
             "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
              "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-          JLink`Objects`vm1`JavaObject7178064790290437], "}"}], ",", 
+          JLink`Objects`vm1`JavaObject7178064790290433], "}"}], ",", 
         RowBox[{"{", "}"}], ",", 
         RowBox[{"{", "}"}], ",", 
         RowBox[{"{", "}"}]}], "]"}]}
@@ -2912,7 +3029,7 @@ Cell[BoxData[
    3.621905861935985*^9, 3.6221844491112967`*^9, 3.622185567696499*^9, 
    3.622222497635007*^9, 3.622231519149254*^9, 3.622251310425378*^9, 
    3.622255741829569*^9, 3.622420031924988*^9, 3.622420534383051*^9, 
-   3.6224232955641108`*^9}]
+   3.6224232955641108`*^9, 3.63969538857402*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2935,425 +3052,239 @@ Cell[BoxData[
 Cell[CellGroupData[{
 
 Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(8,Vector(List((4,8), (3,11)), List((3,8), (5,11), (7,9), (6,10)), \
-List((5,9), (4,11), (6,8), (7,10))),List(2, 2),0), insisting that it is \
+PlanarGraph(8,Vector(List((4,8), (3,11)), List((6,10), (3,8), (5,11), (7,9)), \
+List((4,11), (6,8), (7,10), (5,9))),List(2, 2),0), insisting that it is \
 dependent.\"\>"], "Print",
  CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
    3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
    3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
-   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9}],
-
-Cell[BoxData["\<\"We find a candidate relation \\(\\\\left\\\\{\\\\frac{p_1 \
-(v-1) (v+1) w^7 \\\\left(v^2 w-1\\\\right)}{\\\\left(w^2+1\\\\right) \
-\\\\left(v w^3-1\\\\right) \\\\left(v w^3+1\\\\right) \
-\\\\left(v^2-w^5\\\\right)},1\\\\right\\\\}\\)\"\>"], "Print",
- CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
-   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
-   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
-   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359444227*^9}],
-
-Cell[BoxData["\<\"The candidate relation has non-trivial inner products with \
-some of the diagrams appearing in it; we set these to zero first before \
-proceeding.\"\>"], "Print",
- CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
-   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
-   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
-   3.622420947024716*^9, 3.62242330970674*^9, 3.622423360708866*^9}],
-
-Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{p_1 v^8 w^{16}-2 p_1 \
-v^6 w^{16}-2 p_1 v^6 w^{15}+p_1 v^4 w^{16}+4 p_1 v^4 w^{15}+p_1 v^4 w^{14}-2 \
-p_1 v^2 w^{15}-2 p_1 v^2 w^{14}+p_1 w^{14}-v^8 w^{16}-2 v^8 w^{14}-v^8 \
-w^{12}+2 v^6 w^{21}+4 v^6 w^{19}+2 v^6 w^{17}+2 v^6 w^{10}+4 v^6 w^8+2 v^6 \
-w^6-v^4 w^{26}-2 v^4 w^{24}-v^4 w^{22}-4 v^4 w^{15}-8 v^4 w^{13}-4 v^4 \
-w^{11}-v^4 w^4-2 v^4 w^2-v^4+2 v^2 w^{20}+4 v^2 w^{18}+2 v^2 w^{16}+2 v^2 \
-w^9+4 v^2 w^7+2 v^2 w^5-w^{14}-2 w^{12}-w^{10},p_1 v^8 w^{16}-2 p_1 v^6 \
-w^{16}-2 p_1 v^6 w^{15}+p_1 v^4 w^{16}+4 p_1 v^4 w^{15}+p_1 v^4 w^{14}-2 p_1 \
-v^2 w^{15}-2 p_1 v^2 w^{14}+p_1 w^{14}+v^8 w^{16}+2 v^8 w^{14}+v^8 w^{12}-2 \
-v^6 w^{21}-4 v^6 w^{19}-2 v^6 w^{17}-2 v^6 w^{10}-4 v^6 w^8-2 v^6 w^6+v^4 \
-w^{26}+2 v^4 w^{24}+v^4 w^{22}+4 v^4 w^{15}+8 v^4 w^{13}+4 v^4 w^{11}+v^4 \
-w^4+2 v^4 w^2+v^4-2 v^2 w^{20}-4 v^2 w^{18}-2 v^2 w^{16}-2 v^2 w^9-4 v^2 \
-w^7-2 v^2 w^5+w^{14}+2 w^{12}+w^{10}\\\\right\\\\}\\) and then require that \
-at least one is zero.\"\>"], "Print",
- CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
-   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
-   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
-   3.622420947024716*^9, 3.62242330970674*^9, 3.622423360809205*^9}],
-
-Cell[BoxData["\<\"Adjoining \\(p_1 v^8 w^{16}-2 p_1 v^6 w^{16}-2 p_1 v^6 \
-w^{15}+p_1 v^4 w^{16}+4 p_1 v^4 w^{15}+p_1 v^4 w^{14}-2 p_1 v^2 w^{15}-2 p_1 \
-v^2 w^{14}+p_1 w^{14}-v^8 w^{16}-2 v^8 w^{14}-v^8 w^{12}+2 v^6 w^{21}+4 v^6 \
-w^{19}+2 v^6 w^{17}+2 v^6 w^{10}+4 v^6 w^8+2 v^6 w^6-v^4 w^{26}-2 v^4 \
-w^{24}-v^4 w^{22}-4 v^4 w^{15}-8 v^4 w^{13}-4 v^4 w^{11}-v^4 w^4-2 v^4 \
-w^2-v^4+2 v^2 w^{20}+4 v^2 w^{18}+2 v^2 w^{16}+2 v^2 w^9+4 v^2 w^7+2 v^2 \
-w^5-w^{14}-2 w^{12}-w^{10}\\) to the ideal we obtain a new Groebner basis \\(\
-\\\\left\\\\{p_1 v^8 w^{16}-2 p_1 v^6 w^{16}-2 p_1 v^6 w^{15}+p_1 v^4 \
-w^{16}+4 p_1 v^4 w^{15}+p_1 v^4 w^{14}-2 p_1 v^2 w^{15}-2 p_1 v^2 w^{14}+p_1 \
-w^{14}-v^8 w^{16}-2 v^8 w^{14}-v^8 w^{12}+2 v^6 w^{21}+4 v^6 w^{19}+2 v^6 \
-w^{17}+2 v^6 w^{10}+4 v^6 w^8+2 v^6 w^6-v^4 w^{26}-2 v^4 w^{24}-v^4 w^{22}-4 \
-v^4 w^{15}-8 v^4 w^{13}-4 v^4 w^{11}-v^4 w^4-2 v^4 w^2-v^4+2 v^2 w^{20}+4 v^2 \
-w^{18}+2 v^2 w^{16}+2 v^2 w^9+4 v^2 w^7+2 v^2 w^5-w^{14}-2 \
-w^{12}-w^{10}\\\\right\\\\}\\) with respect to which the nonzero quantities \
-reduce to \\(\\\\left\\\\{w^2+1,v w^3-1,v \
-w^3+1,v^2-w^5\\\\right\\\\}\\).\"\>"], "Print",
- CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
-   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
-   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
-   3.622420947024716*^9, 3.62242330970674*^9, 3.622423360923099*^9}],
-
-Cell[BoxData["\<\"Adjoining \\(p_1 v^8 w^{16}-2 p_1 v^6 w^{16}-2 p_1 v^6 \
-w^{15}+p_1 v^4 w^{16}+4 p_1 v^4 w^{15}+p_1 v^4 w^{14}-2 p_1 v^2 w^{15}-2 p_1 \
-v^2 w^{14}+p_1 w^{14}+v^8 w^{16}+2 v^8 w^{14}+v^8 w^{12}-2 v^6 w^{21}-4 v^6 \
-w^{19}-2 v^6 w^{17}-2 v^6 w^{10}-4 v^6 w^8-2 v^6 w^6+v^4 w^{26}+2 v^4 \
-w^{24}+v^4 w^{22}+4 v^4 w^{15}+8 v^4 w^{13}+4 v^4 w^{11}+v^4 w^4+2 v^4 \
-w^2+v^4-2 v^2 w^{20}-4 v^2 w^{18}-2 v^2 w^{16}-2 v^2 w^9-4 v^2 w^7-2 v^2 \
-w^5+w^{14}+2 w^{12}+w^{10}\\) to the ideal we obtain a new Groebner basis \\(\
-\\\\left\\\\{p_1 v^8 w^{16}-2 p_1 v^6 w^{16}-2 p_1 v^6 w^{15}+p_1 v^4 \
-w^{16}+4 p_1 v^4 w^{15}+p_1 v^4 w^{14}-2 p_1 v^2 w^{15}-2 p_1 v^2 w^{14}+p_1 \
-w^{14}+v^8 w^{16}+2 v^8 w^{14}+v^8 w^{12}-2 v^6 w^{21}-4 v^6 w^{19}-2 v^6 \
-w^{17}-2 v^6 w^{10}-4 v^6 w^8-2 v^6 w^6+v^4 w^{26}+2 v^4 w^{24}+v^4 w^{22}+4 \
-v^4 w^{15}+8 v^4 w^{13}+4 v^4 w^{11}+v^4 w^4+2 v^4 w^2+v^4-2 v^2 w^{20}-4 v^2 \
-w^{18}-2 v^2 w^{16}-2 v^2 w^9-4 v^2 w^7-2 v^2 w^5+w^{14}+2 \
-w^{12}+w^{10}\\\\right\\\\}\\) with respect to which the nonzero quantities \
-reduce to \\(\\\\left\\\\{w^2+1,v w^3-1,v \
-w^3+1,v^2-w^5\\\\right\\\\}\\).\"\>"], "Print",
- CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
-   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
-   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
-   3.622420947024716*^9, 3.62242330970674*^9, 3.622423361032383*^9}],
-
-Cell[BoxData["\<\"We now add this relation to the set of reducing \
-relations.\"\>"], "Print",
- CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
-   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
-   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
-   3.622420947024716*^9, 3.62242330970674*^9, 3.6224233610905733`*^9}],
-
-Cell[BoxData["\<\"We now add this relation to the set of reducing \
-relations.\"\>"], "Print",
- CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
-   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
-   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
-   3.622420947024716*^9, 3.62242330970674*^9, 3.622423361396487*^9}]
-}, Open  ]],
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695442921851*^9}],
 
 Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{
-   RowBox[{"SpiderAnalysis", "[", 
+ RowBox[{
+  RowBox[{"-", 
+   RowBox[{"(", 
     RowBox[{
-     InterpretationBox[
-      RowBox[{"\[LeftGuillemet]", 
-       RowBox[{"JavaObject", "[", 
-        RowBox[{
-        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
-         ".", "examples", ".", "QuotientSpider"}], "]"}], 
-       "\[RightGuillemet]"}],
-      JLink`Objects`vm1`JavaObject5530686647697416], ",", 
-     RowBox[{"Manifold", "[", 
-      RowBox[{
-       RowBox[{"{", 
-        RowBox[{
-         RowBox[{"-", 
-          SuperscriptBox["v", "4"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "2"]}], "-", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "4"]}], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "5"]}], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "6"]}], "+", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "7"]}], "+", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "8"]}], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "9"]}], "-", 
-         SuperscriptBox["w", "10"], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "10"]}], "-", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "11"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["w", "12"]}], "-", 
-         RowBox[{
-          SuperscriptBox["v", "8"], " ", 
-          SuperscriptBox["w", "12"]}], "-", 
-         RowBox[{"8", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "13"]}], "-", 
-         SuperscriptBox["w", "14"], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "8"], " ", 
-          SuperscriptBox["w", "14"]}], "-", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "15"]}], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "16"]}], "-", 
-         RowBox[{
-          SuperscriptBox["v", "8"], " ", 
-          SuperscriptBox["w", "16"]}], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "17"]}], "+", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "18"]}], "+", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "19"]}], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "20"]}], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "21"]}], "-", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "22"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "24"]}], "-", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "26"]}], "+", 
-         RowBox[{
-          SuperscriptBox["w", "14"], " ", 
-          SubscriptBox["p", "1"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "14"], " ", 
-          SubscriptBox["p", "1"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "14"], " ", 
-          SubscriptBox["p", "1"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "15"], " ", 
-          SubscriptBox["p", "1"]}], "+", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "15"], " ", 
-          SubscriptBox["p", "1"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "15"], " ", 
-          SubscriptBox["p", "1"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "16"], " ", 
-          SubscriptBox["p", "1"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "16"], " ", 
-          SubscriptBox["p", "1"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "8"], " ", 
-          SuperscriptBox["w", "16"], " ", 
-          SubscriptBox["p", "1"]}]}], "}"}], ",", 
-       RowBox[{"{", 
-        RowBox[{
-         RowBox[{"1", "+", 
-          SuperscriptBox["w", "2"]}], ",", 
-         RowBox[{
-          RowBox[{"-", "1"}], "+", 
-          RowBox[{"v", " ", 
-           SuperscriptBox["w", "3"]}]}], ",", 
-         RowBox[{"1", "+", 
-          RowBox[{"v", " ", 
-           SuperscriptBox["w", "3"]}]}], ",", 
-         RowBox[{
-          SuperscriptBox["v", "2"], "-", 
-          SuperscriptBox["w", "5"]}]}], "}"}]}], "]"}], ",", 
-     RowBox[{"{", 
-      RowBox[{
-      "1", ",", "0", ",", "1", ",", "1", ",", "5", ",", "16", ",", "80"}], 
-      "}"}], ",", 
-     RowBox[{"{", 
-      InterpretationBox[
-       RowBox[{"\[LeftGuillemet]", 
-        RowBox[{"JavaObject", "[", 
-         RowBox[{
-         "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
-          ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-       JLink`Objects`vm1`JavaObject7178064790290437], "}"}], ",", 
-     RowBox[{"{", "}"}], ",", 
-     RowBox[{"{", "}"}], ",", 
-     RowBox[{"{", "}"}]}], "]"}], ",", 
-   RowBox[{"SpiderAnalysis", "[", 
+     SuperscriptBox["w", "7"], "-", 
+     RowBox[{
+      SuperscriptBox["v", "2"], " ", 
+      SuperscriptBox["w", "7"]}], "-", 
+     RowBox[{
+      SuperscriptBox["v", "2"], " ", 
+      SuperscriptBox["w", "8"]}], "+", 
+     RowBox[{
+      SuperscriptBox["v", "4"], " ", 
+      SuperscriptBox["w", "8"]}]}], ")"}]}], " ", 
+  SubscriptBox["p", "1"]}]], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443141404*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"1", "+", 
+    SuperscriptBox["w", "2"]}], ")"}], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    SuperscriptBox["v", "2"], "-", 
+    SuperscriptBox["w", "5"], "-", 
     RowBox[{
-     InterpretationBox[
-      RowBox[{"\[LeftGuillemet]", 
-       RowBox[{"JavaObject", "[", 
-        RowBox[{
-        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
-         ".", "examples", ".", "QuotientSpider"}], "]"}], 
-       "\[RightGuillemet]"}],
-      JLink`Objects`vm1`JavaObject5530686647697417], ",", 
-     RowBox[{"Manifold", "[", 
-      RowBox[{
-       RowBox[{"{", 
-        RowBox[{
-         SuperscriptBox["v", "4"], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "2"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "4"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "5"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "6"]}], "-", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "7"]}], "-", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "8"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "9"]}], "+", 
-         SuperscriptBox["w", "10"], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "10"]}], "+", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "11"]}], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["w", "12"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "8"], " ", 
-          SuperscriptBox["w", "12"]}], "+", 
-         RowBox[{"8", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "13"]}], "+", 
-         SuperscriptBox["w", "14"], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "8"], " ", 
-          SuperscriptBox["w", "14"]}], "+", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "15"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "16"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "8"], " ", 
-          SuperscriptBox["w", "16"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "17"]}], "-", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "18"]}], "-", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "19"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "20"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "21"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "22"]}], "+", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "24"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "26"]}], "+", 
-         RowBox[{
-          SuperscriptBox["w", "14"], " ", 
-          SubscriptBox["p", "1"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "14"], " ", 
-          SubscriptBox["p", "1"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "14"], " ", 
-          SubscriptBox["p", "1"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "2"], " ", 
-          SuperscriptBox["w", "15"], " ", 
-          SubscriptBox["p", "1"]}], "+", 
-         RowBox[{"4", " ", 
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "15"], " ", 
-          SubscriptBox["p", "1"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "15"], " ", 
-          SubscriptBox["p", "1"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "4"], " ", 
-          SuperscriptBox["w", "16"], " ", 
-          SubscriptBox["p", "1"]}], "-", 
-         RowBox[{"2", " ", 
-          SuperscriptBox["v", "6"], " ", 
-          SuperscriptBox["w", "16"], " ", 
-          SubscriptBox["p", "1"]}], "+", 
-         RowBox[{
-          SuperscriptBox["v", "8"], " ", 
-          SuperscriptBox["w", "16"], " ", 
-          SubscriptBox["p", "1"]}]}], "}"}], ",", 
-       RowBox[{"{", 
-        RowBox[{
-         RowBox[{"1", "+", 
-          SuperscriptBox["w", "2"]}], ",", 
-         RowBox[{
-          RowBox[{"-", "1"}], "+", 
-          RowBox[{"v", " ", 
-           SuperscriptBox["w", "3"]}]}], ",", 
-         RowBox[{"1", "+", 
-          RowBox[{"v", " ", 
-           SuperscriptBox["w", "3"]}]}], ",", 
-         RowBox[{
-          SuperscriptBox["v", "2"], "-", 
-          SuperscriptBox["w", "5"]}]}], "}"}]}], "]"}], ",", 
-     RowBox[{"{", 
-      RowBox[{
-      "1", ",", "0", ",", "1", ",", "1", ",", "5", ",", "16", ",", "80"}], 
-      "}"}], ",", 
-     RowBox[{"{", 
-      InterpretationBox[
-       RowBox[{"\[LeftGuillemet]", 
-        RowBox[{"JavaObject", "[", 
-         RowBox[{
-         "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
-          ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-       JLink`Objects`vm1`JavaObject7178064790290437], "}"}], ",", 
-     RowBox[{"{", "}"}], ",", 
-     RowBox[{"{", "}"}], ",", 
-     RowBox[{"{", "}"}]}], "]"}]}], "}"}]], "Output",
- CellChangeTimes->{
-  3.6219036825531483`*^9, 3.6219050777901697`*^9, 3.621905138312026*^9, 
-   3.621905866789145*^9, 3.621905909067068*^9, 3.621905961588876*^9, 
-   3.62218558906469*^9, 3.622186817140542*^9, 3.622186903372287*^9, 
-   3.6221869438649273`*^9, 3.622190745432495*^9, 3.6222225127515182`*^9, 
-   3.622231535216655*^9, 3.622231646271886*^9, 3.622232381314659*^9, 
-   3.622250488538813*^9, {3.622250541444191*^9, 3.622250583022504*^9}, 
-   3.6222513131383963`*^9, 3.6222557438059063`*^9, 3.622420616342643*^9, {
-   3.622420685279932*^9, 3.622420697096053*^9}, 3.6224207403372707`*^9, 
-   3.6224209495426826`*^9, 3.622423312092092*^9, 3.6224233616547117`*^9}]
+     SuperscriptBox["v", "4"], " ", 
+     SuperscriptBox["w", "6"]}], "+", 
+    RowBox[{
+     SuperscriptBox["v", "2"], " ", 
+     SuperscriptBox["w", "11"]}]}], ")"}]}]], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.6396954431534557`*^9}],
+
+Cell[BoxData["1"], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.6396954431631203`*^9}],
+
+Cell[BoxData["1"], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443173852*^9}],
+
+Cell[BoxData["\<\"We find a candidate relation \\(\\\\left\\\\{\\\\frac{p_1 \
+\\\\left(-v^4\\\\right) w^8+p_1 v^2 w^8+p_1 v^2 w^7-p_1 w^7}{-v^4 w^8-v^4 \
+w^6+v^2 w^{13}+v^2 w^{11}+v^2 w^2+v^2-w^7-w^5},1\\\\right\\\\}\\)\"\>"], \
+"Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.6396954431844378`*^9}],
+
+Cell[BoxData["\<\"This has denominators, \\(\\\\left\\\\{-v^4 w^8-v^4 w^6+v^2 \
+w^{13}+v^2 w^{11}+v^2 w^2+v^2-w^7-w^5\\\\right\\\\}\\), and we first consider \
+the possibility that one of these vanishes.\"\>"], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443192519*^9}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{-1,w^2+1,v w^3-1,v \
+w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that at least one is \
+zero.\"\>"], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443201769*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"computing GroebnerBasis[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"-", "1"}], "}"}], "\[InvisibleSpace]", "\<\", \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"v", ",", "w"}], "}"}], "\[InvisibleSpace]", "\<\"]\"\>"}],
+  SequenceForm[
+  "computing GroebnerBasis[", {-1}, ", ", {$CellContext`v, $CellContext`w}, 
+   "]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443212986*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"computing GroebnerBasis[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"1", "+", 
+     SuperscriptBox["w", "2"]}], "}"}], "\[InvisibleSpace]", "\<\", \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"v", ",", "w"}], "}"}], "\[InvisibleSpace]", "\<\"]\"\>"}],
+  SequenceForm[
+  "computing GroebnerBasis[", {1 + $CellContext`w^2}, 
+   ", ", {$CellContext`v, $CellContext`w}, "]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.6396954432240677`*^9}],
+
+Cell[BoxData["\<\"Adjoining \\(w^2+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.6396954432329397`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"computing GroebnerBasis[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"-", "1"}], "+", 
+     RowBox[{"v", " ", 
+      SuperscriptBox["w", "3"]}]}], "}"}], "\[InvisibleSpace]", "\<\", \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"v", ",", "w"}], "}"}], "\[InvisibleSpace]", "\<\"]\"\>"}],
+  SequenceForm[
+  "computing GroebnerBasis[", {-1 + $CellContext`v $CellContext`w^3}, 
+   ", ", {$CellContext`v, $CellContext`w}, "]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443243308*^9}],
+
+Cell[BoxData["\<\"Adjoining \\(v w^3-1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443254343*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"computing GroebnerBasis[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"1", "+", 
+     RowBox[{"v", " ", 
+      SuperscriptBox["w", "3"]}]}], "}"}], "\[InvisibleSpace]", "\<\", \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"v", ",", "w"}], "}"}], "\[InvisibleSpace]", "\<\"]\"\>"}],
+  SequenceForm[
+  "computing GroebnerBasis[", {1 + $CellContext`v $CellContext`w^3}, 
+   ", ", {$CellContext`v, $CellContext`w}, "]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443263294*^9}],
+
+Cell[BoxData["\<\"Adjoining \\(v w^3+1\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443271545*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"computing GroebnerBasis[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     SuperscriptBox["v", "2"], "-", 
+     SuperscriptBox["w", "5"]}], "}"}], "\[InvisibleSpace]", "\<\", \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"v", ",", "w"}], "}"}], "\[InvisibleSpace]", "\<\"]\"\>"}],
+  SequenceForm[
+  "computing GroebnerBasis[", {$CellContext`v^2 - $CellContext`w^5}, 
+   ", ", {$CellContext`v, $CellContext`w}, "]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443282928*^9}],
+
+Cell[BoxData["\<\"Adjoining \\(v^2-w^5\\) to the ideal would render a nonzero \
+quantity zero, so we reject this possibility.\"\>"], "Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443294112*^9}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{w^2+1,v w^3-1,v \
+w^3+1,v^2-w^5\\\\right\\\\}\\) and then require that each is nonzero.\"\>"], \
+"Print",
+ CellChangeTimes->{{3.622250568307672*^9, 3.622250582738893*^9}, 
+   3.622251312576201*^9, 3.6222557434422894`*^9, 3.6224205441473303`*^9, {
+   3.622420685189958*^9, 3.622420697006022*^9}, 3.622420736786662*^9, 
+   3.622420947024716*^9, 3.62242330970674*^9, 3.622423359394031*^9, 
+   3.639695443302105*^9}]
+}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -4098,7 +4029,7 @@ Cell[BoxData[
          DynamicBox[ToBoxes[
            FEPrivate`FrontEndResource["FEStrings", "sizeExplanation"], 
            StandardForm],
-          ImageSizeCache->{278., {2., 8.}}],
+          ImageSizeCache->{284., {2., 8.}}],
          StripOnInput->False,
          DynamicUpdating->True], "Panel",
         StripOnInput->False,
@@ -4163,7 +4094,7 @@ Cell[BoxData[
            DynamicBox[ToBoxes[
              FEPrivate`FrontEndResource["FEStrings", "sizeShowLess"], 
              StandardForm],
-            ImageSizeCache->{49., {1., 8.}}],
+            ImageSizeCache->{47., {0., 8.}}],
            StripOnInput->False,
            DynamicUpdating->True], "Panel",
           StripOnInput->False,
@@ -4182,7 +4113,7 @@ Cell[BoxData[
            DynamicBox[ToBoxes[
              FEPrivate`FrontEndResource["FEStrings", "sizeShowMore"], 
              StandardForm],
-            ImageSizeCache->{52., {1., 8.}}],
+            ImageSizeCache->{53., {0., 8.}}],
            StripOnInput->False,
            DynamicUpdating->True], "Panel",
           StripOnInput->False,
@@ -4201,7 +4132,7 @@ Cell[BoxData[
            DynamicBox[ToBoxes[
              FEPrivate`FrontEndResource["FEStrings", "sizeShowAll"], 
              StandardForm],
-            ImageSizeCache->{82., {2., 8.}}],
+            ImageSizeCache->{39., {0., 8.}}],
            StripOnInput->False,
            DynamicUpdating->True], "Panel",
           StripOnInput->False,
@@ -4220,7 +4151,7 @@ Cell[BoxData[
            DynamicBox[ToBoxes[
              FEPrivate`FrontEndResource["FEStrings", "sizeChangeLimit"], 
              StandardForm],
-            ImageSizeCache->{74., {1., 8.}}],
+            ImageSizeCache->{69., {0., 8.}}],
            StripOnInput->False,
            DynamicUpdating->True], "Panel",
           StripOnInput->False,
@@ -60390,34 +60321,36 @@ Cell[BoxData[
      SubscriptBox["p", "1"], ",", "v", ",", "w"}], "}"}], 
    "\[InvisibleSpace]", "\<\"]\"\>"}],
   SequenceForm[
-  "computing GroebnerBasis[", {-$CellContext`v^4 - 
-    2 $CellContext`v^4 $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + 
-    2 $CellContext`v^2 $CellContext`w^5 + 2 $CellContext`v^6 $CellContext`w^6 + 
-    4 $CellContext`v^2 $CellContext`w^7 + 4 $CellContext`v^6 $CellContext`w^8 + 
-    2 $CellContext`v^2 $CellContext`w^9 - $CellContext`w^10 + 
-    2 $CellContext`v^6 $CellContext`w^10 - 
-    4 $CellContext`v^4 $CellContext`w^11 - 
-    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - 
-    8 $CellContext`v^4 $CellContext`w^13 - $CellContext`w^14 - 
-    2 $CellContext`v^8 $CellContext`w^14 - 
-    4 $CellContext`v^4 $CellContext`w^15 + 
-    2 $CellContext`v^2 $CellContext`w^16 - $CellContext`v^8 $CellContext`w^16 + 
-    2 $CellContext`v^6 $CellContext`w^17 + 
-    4 $CellContext`v^2 $CellContext`w^18 + 
-    4 $CellContext`v^6 $CellContext`w^19 + 
-    2 $CellContext`v^2 $CellContext`w^20 + 
-    2 $CellContext`v^6 $CellContext`w^21 - $CellContext`v^4 $CellContext`w^22 - 
-    2 $CellContext`v^4 $CellContext`w^24 - $CellContext`v^4 $CellContext`w^26 + \
-$CellContext`w^14 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^2 $CellContext`w^14 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^14 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^2 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + 
-    4 $CellContext`v^4 $CellContext`w^15 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^6 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^16 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^6 $CellContext`w^16 
-    Subscript[$CellContext`p, 1] + $CellContext`v^8 $CellContext`w^16 
+  "computing GroebnerBasis[", {-$CellContext`v^4 - (
+     2 $CellContext`v^4) $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + \
+(2 $CellContext`v^2) $CellContext`w^5 + (
+      2 $CellContext`v^6) $CellContext`w^6 + (
+      4 $CellContext`v^2) $CellContext`w^7 + (
+      4 $CellContext`v^6) $CellContext`w^8 + (
+      2 $CellContext`v^2) $CellContext`w^9 - $CellContext`w^10 + (
+      2 $CellContext`v^6) $CellContext`w^10 - (
+     4 $CellContext`v^4) $CellContext`w^11 - 
+    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - (
+     8 $CellContext`v^4) $CellContext`w^13 - $CellContext`w^14 - (
+     2 $CellContext`v^8) $CellContext`w^14 - (
+     4 $CellContext`v^4) $CellContext`w^15 + (
+      2 $CellContext`v^2) $CellContext`w^16 - $CellContext`v^8 \
+$CellContext`w^16 + (2 $CellContext`v^6) $CellContext`w^17 + (
+      4 $CellContext`v^2) $CellContext`w^18 + (
+      4 $CellContext`v^6) $CellContext`w^19 + (
+      2 $CellContext`v^2) $CellContext`w^20 + (
+      2 $CellContext`v^6) $CellContext`w^21 - $CellContext`v^4 \
+$CellContext`w^22 - (
+     2 $CellContext`v^4) $CellContext`w^24 - $CellContext`v^4 \
+$CellContext`w^26 + $CellContext`w^14 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^14) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^14) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ((4 $CellContext`v^4) $CellContext`w^15) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^16) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^16) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^8 $CellContext`w^16) 
      Subscript[$CellContext`p, 1], 1 + $CellContext`w^2}, ", ", {
     Subscript[$CellContext`p, 1], $CellContext`v, $CellContext`w}, "]"],
   Editable->False]], "Print",
@@ -60561,34 +60494,36 @@ Cell[BoxData[
      SubscriptBox["p", "1"], ",", "v", ",", "w"}], "}"}], 
    "\[InvisibleSpace]", "\<\"]\"\>"}],
   SequenceForm[
-  "computing GroebnerBasis[", {-$CellContext`v^4 - 
-    2 $CellContext`v^4 $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + 
-    2 $CellContext`v^2 $CellContext`w^5 + 2 $CellContext`v^6 $CellContext`w^6 + 
-    4 $CellContext`v^2 $CellContext`w^7 + 4 $CellContext`v^6 $CellContext`w^8 + 
-    2 $CellContext`v^2 $CellContext`w^9 - $CellContext`w^10 + 
-    2 $CellContext`v^6 $CellContext`w^10 - 
-    4 $CellContext`v^4 $CellContext`w^11 - 
-    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - 
-    8 $CellContext`v^4 $CellContext`w^13 - $CellContext`w^14 - 
-    2 $CellContext`v^8 $CellContext`w^14 - 
-    4 $CellContext`v^4 $CellContext`w^15 + 
-    2 $CellContext`v^2 $CellContext`w^16 - $CellContext`v^8 $CellContext`w^16 + 
-    2 $CellContext`v^6 $CellContext`w^17 + 
-    4 $CellContext`v^2 $CellContext`w^18 + 
-    4 $CellContext`v^6 $CellContext`w^19 + 
-    2 $CellContext`v^2 $CellContext`w^20 + 
-    2 $CellContext`v^6 $CellContext`w^21 - $CellContext`v^4 $CellContext`w^22 - 
-    2 $CellContext`v^4 $CellContext`w^24 - $CellContext`v^4 $CellContext`w^26 + \
-$CellContext`w^14 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^2 $CellContext`w^14 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^14 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^2 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + 
-    4 $CellContext`v^4 $CellContext`w^15 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^6 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^16 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^6 $CellContext`w^16 
-    Subscript[$CellContext`p, 1] + $CellContext`v^8 $CellContext`w^16 
+  "computing GroebnerBasis[", {-$CellContext`v^4 - (
+     2 $CellContext`v^4) $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + \
+(2 $CellContext`v^2) $CellContext`w^5 + (
+      2 $CellContext`v^6) $CellContext`w^6 + (
+      4 $CellContext`v^2) $CellContext`w^7 + (
+      4 $CellContext`v^6) $CellContext`w^8 + (
+      2 $CellContext`v^2) $CellContext`w^9 - $CellContext`w^10 + (
+      2 $CellContext`v^6) $CellContext`w^10 - (
+     4 $CellContext`v^4) $CellContext`w^11 - 
+    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - (
+     8 $CellContext`v^4) $CellContext`w^13 - $CellContext`w^14 - (
+     2 $CellContext`v^8) $CellContext`w^14 - (
+     4 $CellContext`v^4) $CellContext`w^15 + (
+      2 $CellContext`v^2) $CellContext`w^16 - $CellContext`v^8 \
+$CellContext`w^16 + (2 $CellContext`v^6) $CellContext`w^17 + (
+      4 $CellContext`v^2) $CellContext`w^18 + (
+      4 $CellContext`v^6) $CellContext`w^19 + (
+      2 $CellContext`v^2) $CellContext`w^20 + (
+      2 $CellContext`v^6) $CellContext`w^21 - $CellContext`v^4 \
+$CellContext`w^22 - (
+     2 $CellContext`v^4) $CellContext`w^24 - $CellContext`v^4 \
+$CellContext`w^26 + $CellContext`w^14 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^14) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^14) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ((4 $CellContext`v^4) $CellContext`w^15) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^16) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^16) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^8 $CellContext`w^16) 
      Subscript[$CellContext`p, 1], -1 + $CellContext`v $CellContext`w^3}, 
    ", ", {
     Subscript[$CellContext`p, 1], $CellContext`v, $CellContext`w}, "]"],
@@ -60732,34 +60667,36 @@ Cell[BoxData[
      SubscriptBox["p", "1"], ",", "v", ",", "w"}], "}"}], 
    "\[InvisibleSpace]", "\<\"]\"\>"}],
   SequenceForm[
-  "computing GroebnerBasis[", {-$CellContext`v^4 - 
-    2 $CellContext`v^4 $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + 
-    2 $CellContext`v^2 $CellContext`w^5 + 2 $CellContext`v^6 $CellContext`w^6 + 
-    4 $CellContext`v^2 $CellContext`w^7 + 4 $CellContext`v^6 $CellContext`w^8 + 
-    2 $CellContext`v^2 $CellContext`w^9 - $CellContext`w^10 + 
-    2 $CellContext`v^6 $CellContext`w^10 - 
-    4 $CellContext`v^4 $CellContext`w^11 - 
-    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - 
-    8 $CellContext`v^4 $CellContext`w^13 - $CellContext`w^14 - 
-    2 $CellContext`v^8 $CellContext`w^14 - 
-    4 $CellContext`v^4 $CellContext`w^15 + 
-    2 $CellContext`v^2 $CellContext`w^16 - $CellContext`v^8 $CellContext`w^16 + 
-    2 $CellContext`v^6 $CellContext`w^17 + 
-    4 $CellContext`v^2 $CellContext`w^18 + 
-    4 $CellContext`v^6 $CellContext`w^19 + 
-    2 $CellContext`v^2 $CellContext`w^20 + 
-    2 $CellContext`v^6 $CellContext`w^21 - $CellContext`v^4 $CellContext`w^22 - 
-    2 $CellContext`v^4 $CellContext`w^24 - $CellContext`v^4 $CellContext`w^26 + \
-$CellContext`w^14 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^2 $CellContext`w^14 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^14 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^2 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + 
-    4 $CellContext`v^4 $CellContext`w^15 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^6 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^16 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^6 $CellContext`w^16 
-    Subscript[$CellContext`p, 1] + $CellContext`v^8 $CellContext`w^16 
+  "computing GroebnerBasis[", {-$CellContext`v^4 - (
+     2 $CellContext`v^4) $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + \
+(2 $CellContext`v^2) $CellContext`w^5 + (
+      2 $CellContext`v^6) $CellContext`w^6 + (
+      4 $CellContext`v^2) $CellContext`w^7 + (
+      4 $CellContext`v^6) $CellContext`w^8 + (
+      2 $CellContext`v^2) $CellContext`w^9 - $CellContext`w^10 + (
+      2 $CellContext`v^6) $CellContext`w^10 - (
+     4 $CellContext`v^4) $CellContext`w^11 - 
+    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - (
+     8 $CellContext`v^4) $CellContext`w^13 - $CellContext`w^14 - (
+     2 $CellContext`v^8) $CellContext`w^14 - (
+     4 $CellContext`v^4) $CellContext`w^15 + (
+      2 $CellContext`v^2) $CellContext`w^16 - $CellContext`v^8 \
+$CellContext`w^16 + (2 $CellContext`v^6) $CellContext`w^17 + (
+      4 $CellContext`v^2) $CellContext`w^18 + (
+      4 $CellContext`v^6) $CellContext`w^19 + (
+      2 $CellContext`v^2) $CellContext`w^20 + (
+      2 $CellContext`v^6) $CellContext`w^21 - $CellContext`v^4 \
+$CellContext`w^22 - (
+     2 $CellContext`v^4) $CellContext`w^24 - $CellContext`v^4 \
+$CellContext`w^26 + $CellContext`w^14 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^14) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^14) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ((4 $CellContext`v^4) $CellContext`w^15) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^16) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^16) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^8 $CellContext`w^16) 
      Subscript[$CellContext`p, 1], 1 + $CellContext`v $CellContext`w^3}, 
    ", ", {
     Subscript[$CellContext`p, 1], $CellContext`v, $CellContext`w}, "]"],
@@ -60903,34 +60840,36 @@ Cell[BoxData[
      SubscriptBox["p", "1"], ",", "v", ",", "w"}], "}"}], 
    "\[InvisibleSpace]", "\<\"]\"\>"}],
   SequenceForm[
-  "computing GroebnerBasis[", {-$CellContext`v^4 - 
-    2 $CellContext`v^4 $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + 
-    2 $CellContext`v^2 $CellContext`w^5 + 2 $CellContext`v^6 $CellContext`w^6 + 
-    4 $CellContext`v^2 $CellContext`w^7 + 4 $CellContext`v^6 $CellContext`w^8 + 
-    2 $CellContext`v^2 $CellContext`w^9 - $CellContext`w^10 + 
-    2 $CellContext`v^6 $CellContext`w^10 - 
-    4 $CellContext`v^4 $CellContext`w^11 - 
-    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - 
-    8 $CellContext`v^4 $CellContext`w^13 - $CellContext`w^14 - 
-    2 $CellContext`v^8 $CellContext`w^14 - 
-    4 $CellContext`v^4 $CellContext`w^15 + 
-    2 $CellContext`v^2 $CellContext`w^16 - $CellContext`v^8 $CellContext`w^16 + 
-    2 $CellContext`v^6 $CellContext`w^17 + 
-    4 $CellContext`v^2 $CellContext`w^18 + 
-    4 $CellContext`v^6 $CellContext`w^19 + 
-    2 $CellContext`v^2 $CellContext`w^20 + 
-    2 $CellContext`v^6 $CellContext`w^21 - $CellContext`v^4 $CellContext`w^22 - 
-    2 $CellContext`v^4 $CellContext`w^24 - $CellContext`v^4 $CellContext`w^26 + \
-$CellContext`w^14 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^2 $CellContext`w^14 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^14 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^2 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + 
-    4 $CellContext`v^4 $CellContext`w^15 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^6 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^16 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^6 $CellContext`w^16 
-    Subscript[$CellContext`p, 1] + $CellContext`v^8 $CellContext`w^16 
+  "computing GroebnerBasis[", {-$CellContext`v^4 - (
+     2 $CellContext`v^4) $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + \
+(2 $CellContext`v^2) $CellContext`w^5 + (
+      2 $CellContext`v^6) $CellContext`w^6 + (
+      4 $CellContext`v^2) $CellContext`w^7 + (
+      4 $CellContext`v^6) $CellContext`w^8 + (
+      2 $CellContext`v^2) $CellContext`w^9 - $CellContext`w^10 + (
+      2 $CellContext`v^6) $CellContext`w^10 - (
+     4 $CellContext`v^4) $CellContext`w^11 - 
+    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - (
+     8 $CellContext`v^4) $CellContext`w^13 - $CellContext`w^14 - (
+     2 $CellContext`v^8) $CellContext`w^14 - (
+     4 $CellContext`v^4) $CellContext`w^15 + (
+      2 $CellContext`v^2) $CellContext`w^16 - $CellContext`v^8 \
+$CellContext`w^16 + (2 $CellContext`v^6) $CellContext`w^17 + (
+      4 $CellContext`v^2) $CellContext`w^18 + (
+      4 $CellContext`v^6) $CellContext`w^19 + (
+      2 $CellContext`v^2) $CellContext`w^20 + (
+      2 $CellContext`v^6) $CellContext`w^21 - $CellContext`v^4 \
+$CellContext`w^22 - (
+     2 $CellContext`v^4) $CellContext`w^24 - $CellContext`v^4 \
+$CellContext`w^26 + $CellContext`w^14 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^14) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^14) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ((4 $CellContext`v^4) $CellContext`w^15) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^16) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^16) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^8 $CellContext`w^16) 
      Subscript[$CellContext`p, 1], $CellContext`v^2 - $CellContext`w^5}, 
    ", ", {
     Subscript[$CellContext`p, 1], $CellContext`v, $CellContext`w}, "]"],
@@ -61979,308 +61918,317 @@ Cell[BoxData[
      SubscriptBox["p", "1"], ",", "v", ",", "w"}], "}"}], 
    "\[InvisibleSpace]", "\<\"]\"\>"}],
   SequenceForm[
-  "computing GroebnerBasis[", {-$CellContext`v^4 - 
-    2 $CellContext`v^4 $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + 
-    2 $CellContext`v^2 $CellContext`w^5 + 2 $CellContext`v^6 $CellContext`w^6 + 
-    4 $CellContext`v^2 $CellContext`w^7 + 4 $CellContext`v^6 $CellContext`w^8 + 
-    2 $CellContext`v^2 $CellContext`w^9 - $CellContext`w^10 + 
-    2 $CellContext`v^6 $CellContext`w^10 - 
-    4 $CellContext`v^4 $CellContext`w^11 - 
-    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - 
-    8 $CellContext`v^4 $CellContext`w^13 - $CellContext`w^14 - 
-    2 $CellContext`v^8 $CellContext`w^14 - 
-    4 $CellContext`v^4 $CellContext`w^15 + 
-    2 $CellContext`v^2 $CellContext`w^16 - $CellContext`v^8 $CellContext`w^16 + 
-    2 $CellContext`v^6 $CellContext`w^17 + 
-    4 $CellContext`v^2 $CellContext`w^18 + 
-    4 $CellContext`v^6 $CellContext`w^19 + 
-    2 $CellContext`v^2 $CellContext`w^20 + 
-    2 $CellContext`v^6 $CellContext`w^21 - $CellContext`v^4 $CellContext`w^22 - 
-    2 $CellContext`v^4 $CellContext`w^24 - $CellContext`v^4 $CellContext`w^26 + \
-$CellContext`w^14 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^2 $CellContext`w^14 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^14 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^2 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + 
-    4 $CellContext`v^4 $CellContext`w^15 Subscript[$CellContext`p, 1] - 
-    2 $CellContext`v^6 $CellContext`w^15 
-    Subscript[$CellContext`p, 1] + $CellContext`v^4 $CellContext`w^16 
-     Subscript[$CellContext`p, 1] - 2 $CellContext`v^6 $CellContext`w^16 
-    Subscript[$CellContext`p, 1] + $CellContext`v^8 $CellContext`w^16 
-     Subscript[$CellContext`p, 1], (-2) $CellContext`v^8 - $CellContext`v^10 - 
-    2 $CellContext`v^8 $CellContext`w - $CellContext`v^10 $CellContext`w - \
-$CellContext`v^6 $CellContext`w^2 - 5 $CellContext`v^8 $CellContext`w^2 - 
-    2 $CellContext`v^10 $CellContext`w^2 - $CellContext`v^4 $CellContext`w^3 - 
-    3 $CellContext`v^8 $CellContext`w^3 - 
-    2 $CellContext`v^10 $CellContext`w^3 - $CellContext`v^12 $CellContext`w^3 - 
-    4 $CellContext`v^6 $CellContext`w^4 - 5 $CellContext`v^8 $CellContext`w^4 - 
-    2 $CellContext`v^10 $CellContext`w^4 - 
-    2 $CellContext`v^4 $CellContext`w^5 + 3 $CellContext`v^6 $CellContext`w^5 - 
-    2 $CellContext`v^10 $CellContext`w^5 - 
-    2 $CellContext`v^12 $CellContext`w^5 - $CellContext`v^6 $CellContext`w^6 - 
-    2 $CellContext`v^8 $CellContext`w^6 + 
-    2 $CellContext`v^10 $CellContext`w^6 + 
-    2 $CellContext`v^12 $CellContext`w^6 + $CellContext`v^4 $CellContext`w^7 + 
-    7 $CellContext`v^6 $CellContext`w^7 + 
-    3 $CellContext`v^10 $CellContext`w^7 + $CellContext`v^12 $CellContext`w^7 + 
-    2 $CellContext`v^18 $CellContext`w^7 - 
-    2 $CellContext`v^20 $CellContext`w^7 + 
-    2 $CellContext`v^2 $CellContext`w^8 + 3 $CellContext`v^6 $CellContext`w^8 + 
-    4 $CellContext`v^8 $CellContext`w^8 + 
-    12 $CellContext`v^10 $CellContext`w^8 + 
-    3 $CellContext`v^12 $CellContext`w^8 + 
-    2 $CellContext`v^18 $CellContext`w^8 - 
-    4 $CellContext`v^20 $CellContext`w^8 + 
-    2 $CellContext`v^22 $CellContext`w^8 + 
-    8 $CellContext`v^4 $CellContext`w^9 + 
-    10 $CellContext`v^6 $CellContext`w^9 + $CellContext`v^8 $CellContext`w^9 + 
-    6 $CellContext`v^10 $CellContext`w^9 + 
-    3 $CellContext`v^12 $CellContext`w^9 + 
-    2 $CellContext`v^14 $CellContext`w^9 + 
-    2 $CellContext`v^16 $CellContext`w^9 + 
-    2 $CellContext`v^18 $CellContext`w^9 - 
-    6 $CellContext`v^20 $CellContext`w^9 + 
-    2 $CellContext`v^22 $CellContext`w^9 + 
-    3 $CellContext`v^2 $CellContext`w^10 + 
-    2 $CellContext`v^4 $CellContext`w^10 + 
-    2 $CellContext`v^6 $CellContext`w^10 + 
-    12 $CellContext`v^8 $CellContext`w^10 + 
-    13 $CellContext`v^10 $CellContext`w^10 + 
-    4 $CellContext`v^12 $CellContext`w^10 + 
-    2 $CellContext`v^16 $CellContext`w^10 - 
-    2 $CellContext`v^18 $CellContext`w^10 - 
-    2 $CellContext`v^20 $CellContext`w^10 + 
-    2 $CellContext`v^22 $CellContext`w^10 + 
-    8 $CellContext`v^4 $CellContext`w^11 + 
-    9 $CellContext`v^6 $CellContext`w^11 - $CellContext`v^8 $CellContext`w^11 + 
-    5 $CellContext`v^12 $CellContext`w^11 + 
-    3 $CellContext`v^14 $CellContext`w^11 + 
-    4 $CellContext`v^16 $CellContext`w^11 - 
-    4 $CellContext`v^18 $CellContext`w^11 - 
-    2 $CellContext`v^22 $CellContext`w^11 + 
-    2 $CellContext`v^24 $CellContext`w^11 + $CellContext`v^4 \
-$CellContext`w^12 + 7 $CellContext`v^6 $CellContext`w^12 + 
-    6 $CellContext`v^8 $CellContext`w^12 + 
-    3 $CellContext`v^10 $CellContext`w^12 + 
-    3 $CellContext`v^12 $CellContext`w^12 - $CellContext`v^14 \
-$CellContext`w^12 - 2 $CellContext`v^18 $CellContext`w^12 + 
-    4 $CellContext`v^20 $CellContext`w^12 - 
-    4 $CellContext`v^22 $CellContext`w^12 + 
-    2 $CellContext`v^24 $CellContext`w^12 - $CellContext`w^13 + 
-    2 $CellContext`v^4 $CellContext`w^13 - 
-    14 $CellContext`v^8 $CellContext`w^13 + 
-    3 $CellContext`v^12 $CellContext`w^13 + 
-    2 $CellContext`v^18 $CellContext`w^13 - 
-    4 $CellContext`v^20 $CellContext`w^13 - 
-    2 $CellContext`v^22 $CellContext`w^13 + 
-    4 $CellContext`v^24 $CellContext`w^13 - 
-    4 $CellContext`v^2 $CellContext`w^14 - 
-    7 $CellContext`v^4 $CellContext`w^14 + 
-    6 $CellContext`v^6 $CellContext`w^14 - 
-    5 $CellContext`v^8 $CellContext`w^14 - 
-    4 $CellContext`v^10 $CellContext`w^14 - 
-    8 $CellContext`v^12 $CellContext`w^14 - 
-    3 $CellContext`v^14 $CellContext`w^14 + 
-    4 $CellContext`v^18 $CellContext`w^14 - 
-    4 $CellContext`v^20 $CellContext`w^14 + 
-    6 $CellContext`v^22 $CellContext`w^14 - 
-    8 $CellContext`v^24 $CellContext`w^14 + 
-    4 $CellContext`v^26 $CellContext`w^14 + 
-    4 $CellContext`v^28 $CellContext`w^14 - 
-    6 $CellContext`v^30 $CellContext`w^14 + 
-    2 $CellContext`v^34 $CellContext`w^14 - $CellContext`w^15 - 
-    3 $CellContext`v^2 $CellContext`w^15 - $CellContext`v^4 $CellContext`w^15 - 
-    16 $CellContext`v^6 $CellContext`w^15 - 
-    19 $CellContext`v^8 $CellContext`w^15 - 
-    2 $CellContext`v^10 $CellContext`w^15 - 
-    2 $CellContext`v^12 $CellContext`w^15 - 
-    3 $CellContext`v^14 $CellContext`w^15 + 
-    3 $CellContext`v^16 $CellContext`w^15 - 
-    6 $CellContext`v^18 $CellContext`w^15 + 
-    8 $CellContext`v^22 $CellContext`w^15 - 
-    16 $CellContext`v^24 $CellContext`w^15 + 
-    20 $CellContext`v^26 $CellContext`w^15 - 
-    4 $CellContext`v^28 $CellContext`w^15 - 
-    14 $CellContext`v^30 $CellContext`w^15 + 
-    12 $CellContext`v^32 $CellContext`w^15 + 
-    2 $CellContext`v^34 $CellContext`w^15 - 
-    4 $CellContext`v^36 $CellContext`w^15 - 
-    5 $CellContext`v^2 $CellContext`w^16 - 
-    9 $CellContext`v^4 $CellContext`w^16 - 
-    4 $CellContext`v^6 $CellContext`w^16 - 
-    5 $CellContext`v^8 $CellContext`w^16 - 
-    12 $CellContext`v^10 $CellContext`w^16 - 
-    11 $CellContext`v^12 $CellContext`w^16 - 
-    4 $CellContext`v^14 $CellContext`w^16 + 
-    2 $CellContext`v^16 $CellContext`w^16 - 
-    6 $CellContext`v^18 $CellContext`w^16 + 
-    16 $CellContext`v^20 $CellContext`w^16 - 
-    10 $CellContext`v^22 $CellContext`w^16 - 
-    12 $CellContext`v^24 $CellContext`w^16 + 
-    26 $CellContext`v^26 $CellContext`w^16 - 
-    18 $CellContext`v^28 $CellContext`w^16 - 
-    6 $CellContext`v^30 $CellContext`w^16 + 
-    18 $CellContext`v^32 $CellContext`w^16 - 
-    6 $CellContext`v^34 $CellContext`w^16 - 
-    4 $CellContext`v^36 $CellContext`w^16 + 
-    2 $CellContext`v^38 $CellContext`w^16 - 
-    3 $CellContext`v^2 $CellContext`w^17 - 
-    5 $CellContext`v^4 $CellContext`w^17 - 
-    19 $CellContext`v^6 $CellContext`w^17 - 
-    12 $CellContext`v^8 $CellContext`w^17 - 
-    6 $CellContext`v^10 $CellContext`w^17 - 
-    3 $CellContext`v^14 $CellContext`w^17 - 
-    5 $CellContext`v^16 $CellContext`w^17 + 
-    12 $CellContext`v^20 $CellContext`w^17 - 
-    22 $CellContext`v^22 $CellContext`w^17 + 
-    22 $CellContext`v^24 $CellContext`w^17 - 
-    2 $CellContext`v^26 $CellContext`w^17 - 
-    16 $CellContext`v^28 $CellContext`w^17 + 
-    12 $CellContext`v^30 $CellContext`w^17 + 
-    8 $CellContext`v^32 $CellContext`w^17 - 
-    14 $CellContext`v^34 $CellContext`w^17 + 
-    2 $CellContext`v^36 $CellContext`w^17 + 
-    2 $CellContext`v^38 $CellContext`w^17 - 
-    2 $CellContext`v^2 $CellContext`w^18 - 
-    3 $CellContext`v^4 $CellContext`w^18 - 
-    2 $CellContext`v^6 $CellContext`w^18 - 
-    12 $CellContext`v^8 $CellContext`w^18 - 
-    11 $CellContext`v^10 $CellContext`w^18 - 
-    2 $CellContext`v^12 $CellContext`w^18 - 
-    3 $CellContext`v^14 $CellContext`w^18 - 
-    6 $CellContext`v^16 $CellContext`w^18 + 
-    14 $CellContext`v^18 $CellContext`w^18 - 
-    4 $CellContext`v^20 $CellContext`w^18 - 
-    16 $CellContext`v^22 $CellContext`w^18 + 
-    30 $CellContext`v^24 $CellContext`w^18 - 
-    30 $CellContext`v^26 $CellContext`w^18 + 
-    18 $CellContext`v^28 $CellContext`w^18 - 
-    12 $CellContext`v^32 $CellContext`w^18 + 
-    10 $CellContext`v^36 $CellContext`w^18 - 
-    4 $CellContext`v^38 $CellContext`w^18 + 
-    2 $CellContext`v^2 $CellContext`w^19 - 
-    5 $CellContext`v^4 $CellContext`w^19 - 
-    5 $CellContext`v^6 $CellContext`w^19 - 
-    4 $CellContext`v^8 $CellContext`w^19 + 
-    6 $CellContext`v^10 $CellContext`w^19 - 
-    4 $CellContext`v^14 $CellContext`w^19 - 
-    4 $CellContext`v^16 $CellContext`w^19 + 
-    10 $CellContext`v^18 $CellContext`w^19 - 
-    14 $CellContext`v^20 $CellContext`w^19 + 
-    10 $CellContext`v^22 $CellContext`w^19 + 
-    12 $CellContext`v^24 $CellContext`w^19 - 
-    28 $CellContext`v^26 $CellContext`w^19 + 
-    22 $CellContext`v^28 $CellContext`w^19 - 
-    12 $CellContext`v^30 $CellContext`w^19 + 
-    10 $CellContext`v^34 $CellContext`w^19 - 
-    4 $CellContext`v^36 $CellContext`w^19 - 
-    4 $CellContext`v^38 $CellContext`w^19 + 
-    2 $CellContext`v^40 $CellContext`w^19 + 
-    6 $CellContext`v^4 $CellContext`w^20 + 
-    8 $CellContext`v^6 $CellContext`w^20 - 
-    11 $CellContext`v^8 $CellContext`w^20 + $CellContext`v^12 \
-$CellContext`w^20 + $CellContext`v^14 $CellContext`w^20 + 
-    2 $CellContext`v^16 $CellContext`w^20 + 
-    2 $CellContext`v^18 $CellContext`w^20 - 
-    8 $CellContext`v^20 $CellContext`w^20 + 
-    14 $CellContext`v^22 $CellContext`w^20 - 
-    18 $CellContext`v^24 $CellContext`w^20 + 
-    4 $CellContext`v^26 $CellContext`w^20 + 
-    14 $CellContext`v^28 $CellContext`w^20 - 
-    16 $CellContext`v^30 $CellContext`w^20 + 
-    8 $CellContext`v^32 $CellContext`w^20 + 
-    2 $CellContext`v^34 $CellContext`w^20 - 
-    6 $CellContext`v^36 $CellContext`w^20 + 
-    2 $CellContext`v^38 $CellContext`w^20 + 
-    3 $CellContext`v^2 $CellContext`w^21 + 
-    3 $CellContext`v^4 $CellContext`w^21 + 
-    3 $CellContext`v^6 $CellContext`w^21 + 
-    8 $CellContext`v^8 $CellContext`w^21 + 
-    12 $CellContext`v^10 $CellContext`w^21 + $CellContext`v^12 \
-$CellContext`w^21 - $CellContext`v^14 $CellContext`w^21 + 
-    2 $CellContext`v^16 $CellContext`w^21 - 
-    6 $CellContext`v^18 $CellContext`w^21 + 
-    6 $CellContext`v^20 $CellContext`w^21 + 
-    6 $CellContext`v^22 $CellContext`w^21 - 
-    20 $CellContext`v^24 $CellContext`w^21 + 
-    24 $CellContext`v^26 $CellContext`w^21 - 
-    10 $CellContext`v^28 $CellContext`w^21 - 
-    10 $CellContext`v^30 $CellContext`w^21 + 
-    14 $CellContext`v^32 $CellContext`w^21 - 
-    8 $CellContext`v^34 $CellContext`w^21 + 
-    2 $CellContext`v^38 $CellContext`w^21 + 
-    10 $CellContext`v^4 $CellContext`w^22 + 
-    10 $CellContext`v^6 $CellContext`w^22 + 
-    2 $CellContext`v^8 $CellContext`w^22 + 
-    3 $CellContext`v^10 $CellContext`w^22 + 
-    4 $CellContext`v^12 $CellContext`w^22 + 
-    3 $CellContext`v^14 $CellContext`w^22 + 
-    4 $CellContext`v^16 $CellContext`w^22 - 
-    6 $CellContext`v^18 $CellContext`w^22 + 
-    6 $CellContext`v^20 $CellContext`w^22 - 
-    6 $CellContext`v^22 $CellContext`w^22 - 
-    6 $CellContext`v^24 $CellContext`w^22 + 
-    20 $CellContext`v^26 $CellContext`w^22 - 
-    16 $CellContext`v^28 $CellContext`w^22 + 
-    10 $CellContext`v^32 $CellContext`w^22 - 
-    8 $CellContext`v^34 $CellContext`w^22 + 
-    2 $CellContext`v^36 $CellContext`w^22 + $CellContext`v^2 \
-$CellContext`w^23 + 5 $CellContext`v^4 $CellContext`w^23 + 
-    9 $CellContext`v^6 $CellContext`w^23 + 
-    13 $CellContext`v^8 $CellContext`w^23 + 
-    6 $CellContext`v^10 $CellContext`w^23 + 
-    4 $CellContext`v^12 $CellContext`w^23 + 
-    2 $CellContext`v^16 $CellContext`w^23 - 
-    4 $CellContext`v^18 $CellContext`w^23 + 
-    6 $CellContext`v^20 $CellContext`w^23 - 
-    6 $CellContext`v^22 $CellContext`w^23 + 
-    2 $CellContext`v^24 $CellContext`w^23 + 
-    4 $CellContext`v^26 $CellContext`w^23 - 
-    8 $CellContext`v^28 $CellContext`w^23 + 
-    4 $CellContext`v^30 $CellContext`w^23 + 
-    2 $CellContext`v^32 $CellContext`w^23 - 
-    4 $CellContext`v^34 $CellContext`w^23 + 
-    2 $CellContext`v^36 $CellContext`w^23 + 
-    4 $CellContext`v^4 $CellContext`w^24 + 
-    6 $CellContext`v^6 $CellContext`w^24 + 
-    2 $CellContext`v^8 $CellContext`w^24 + 
-    5 $CellContext`v^10 $CellContext`w^24 + 
-    6 $CellContext`v^12 $CellContext`w^24 + $CellContext`v^14 \
-$CellContext`w^24 + 2 $CellContext`v^16 $CellContext`w^24 - 
-    2 $CellContext`v^18 $CellContext`w^24 - 
-    4 $CellContext`v^22 $CellContext`w^24 + 
-    4 $CellContext`v^24 $CellContext`w^24 + 
-    9 $CellContext`v^6 $CellContext`w^25 + 
-    4 $CellContext`v^8 $CellContext`w^25 + 
-    3 $CellContext`v^10 $CellContext`w^25 + $CellContext`v^12 \
-$CellContext`w^25 + 2 $CellContext`v^18 $CellContext`w^25 - 
-    2 $CellContext`v^20 $CellContext`w^25 - 
-    2 $CellContext`v^22 $CellContext`w^25 + 
-    2 $CellContext`v^24 $CellContext`w^25 - $CellContext`v^6 \
-$CellContext`w^26 - 3 $CellContext`v^8 $CellContext`w^26 + 
-    5 $CellContext`v^10 $CellContext`w^26 + 
-    2 $CellContext`v^12 $CellContext`w^26 + 
-    2 $CellContext`v^18 $CellContext`w^26 - 
-    6 $CellContext`v^20 $CellContext`w^26 + 
-    2 $CellContext`v^22 $CellContext`w^26 + 
-    2 $CellContext`v^24 $CellContext`w^26 - 
-    2 $CellContext`v^4 $CellContext`w^27 + $CellContext`v^6 $CellContext`w^27 - 
-    2 $CellContext`v^8 $CellContext`w^27 - 
-    2 $CellContext`v^12 $CellContext`w^27 + 
-    2 $CellContext`v^18 $CellContext`w^27 - 
-    4 $CellContext`v^20 $CellContext`w^27 + 
-    2 $CellContext`v^22 $CellContext`w^27 - 
-    5 $CellContext`v^6 $CellContext`w^28 - 
-    4 $CellContext`v^8 $CellContext`w^28 - 
-    2 $CellContext`v^20 $CellContext`w^28 + 
-    2 $CellContext`v^22 $CellContext`w^28 - $CellContext`v^4 \
-$CellContext`w^29 - 2 $CellContext`v^6 $CellContext`w^29 - 
-    4 $CellContext`v^8 $CellContext`w^29 - 
-    2 $CellContext`v^10 $CellContext`w^29 - $CellContext`v^12 \
-$CellContext`w^29 - 2 $CellContext`v^6 $CellContext`w^30 - 
-    3 $CellContext`v^8 $CellContext`w^30 - $CellContext`v^10 \
-$CellContext`w^30 - $CellContext`v^6 $CellContext`w^31 - 
-    4 $CellContext`v^8 $CellContext`w^31 - $CellContext`v^10 \
+  "computing GroebnerBasis[", {-$CellContext`v^4 - (
+     2 $CellContext`v^4) $CellContext`w^2 - $CellContext`v^4 $CellContext`w^4 + \
+(2 $CellContext`v^2) $CellContext`w^5 + (
+      2 $CellContext`v^6) $CellContext`w^6 + (
+      4 $CellContext`v^2) $CellContext`w^7 + (
+      4 $CellContext`v^6) $CellContext`w^8 + (
+      2 $CellContext`v^2) $CellContext`w^9 - $CellContext`w^10 + (
+      2 $CellContext`v^6) $CellContext`w^10 - (
+     4 $CellContext`v^4) $CellContext`w^11 - 
+    2 $CellContext`w^12 - $CellContext`v^8 $CellContext`w^12 - (
+     8 $CellContext`v^4) $CellContext`w^13 - $CellContext`w^14 - (
+     2 $CellContext`v^8) $CellContext`w^14 - (
+     4 $CellContext`v^4) $CellContext`w^15 + (
+      2 $CellContext`v^2) $CellContext`w^16 - $CellContext`v^8 \
+$CellContext`w^16 + (2 $CellContext`v^6) $CellContext`w^17 + (
+      4 $CellContext`v^2) $CellContext`w^18 + (
+      4 $CellContext`v^6) $CellContext`w^19 + (
+      2 $CellContext`v^2) $CellContext`w^20 + (
+      2 $CellContext`v^6) $CellContext`w^21 - $CellContext`v^4 \
+$CellContext`w^22 - (
+     2 $CellContext`v^4) $CellContext`w^24 - $CellContext`v^4 \
+$CellContext`w^26 + $CellContext`w^14 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^14) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^14) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^2) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ((4 $CellContext`v^4) $CellContext`w^15) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^15) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^4 $CellContext`w^16) 
+     Subscript[$CellContext`p, 1] - ((2 $CellContext`v^6) $CellContext`w^16) 
+    Subscript[$CellContext`p, 1] + ($CellContext`v^8 $CellContext`w^16) 
+     Subscript[$CellContext`p, 
+       1], (-2) $CellContext`v^8 - $CellContext`v^10 - (
+     2 $CellContext`v^8) $CellContext`w - $CellContext`v^10 $CellContext`w - \
+$CellContext`v^6 $CellContext`w^2 - (5 $CellContext`v^8) $CellContext`w^2 - (
+     2 $CellContext`v^10) $CellContext`w^2 - $CellContext`v^4 \
+$CellContext`w^3 - (3 $CellContext`v^8) $CellContext`w^3 - (
+     2 $CellContext`v^10) $CellContext`w^3 - $CellContext`v^12 \
+$CellContext`w^3 - (4 $CellContext`v^6) $CellContext`w^4 - (
+     5 $CellContext`v^8) $CellContext`w^4 - (
+     2 $CellContext`v^10) $CellContext`w^4 - (
+     2 $CellContext`v^4) $CellContext`w^5 + (
+      3 $CellContext`v^6) $CellContext`w^5 - (
+     2 $CellContext`v^10) $CellContext`w^5 - (
+     2 $CellContext`v^12) $CellContext`w^5 - $CellContext`v^6 \
+$CellContext`w^6 - (
+     2 $CellContext`v^8) $CellContext`w^6 + (
+      2 $CellContext`v^10) $CellContext`w^6 + (
+      2 $CellContext`v^12) $CellContext`w^6 + $CellContext`v^4 \
+$CellContext`w^7 + (7 $CellContext`v^6) $CellContext`w^7 + (
+      3 $CellContext`v^10) $CellContext`w^7 + $CellContext`v^12 \
+$CellContext`w^7 + (2 $CellContext`v^18) $CellContext`w^7 - (
+     2 $CellContext`v^20) $CellContext`w^7 + (
+      2 $CellContext`v^2) $CellContext`w^8 + (
+      3 $CellContext`v^6) $CellContext`w^8 + (
+      4 $CellContext`v^8) $CellContext`w^8 + (
+      12 $CellContext`v^10) $CellContext`w^8 + (
+      3 $CellContext`v^12) $CellContext`w^8 + (
+      2 $CellContext`v^18) $CellContext`w^8 - (
+     4 $CellContext`v^20) $CellContext`w^8 + (
+      2 $CellContext`v^22) $CellContext`w^8 + (
+      8 $CellContext`v^4) $CellContext`w^9 + (
+      10 $CellContext`v^6) $CellContext`w^9 + $CellContext`v^8 \
+$CellContext`w^9 + (6 $CellContext`v^10) $CellContext`w^9 + (
+      3 $CellContext`v^12) $CellContext`w^9 + (
+      2 $CellContext`v^14) $CellContext`w^9 + (
+      2 $CellContext`v^16) $CellContext`w^9 + (
+      2 $CellContext`v^18) $CellContext`w^9 - (
+     6 $CellContext`v^20) $CellContext`w^9 + (
+      2 $CellContext`v^22) $CellContext`w^9 + (
+      3 $CellContext`v^2) $CellContext`w^10 + (
+      2 $CellContext`v^4) $CellContext`w^10 + (
+      2 $CellContext`v^6) $CellContext`w^10 + (
+      12 $CellContext`v^8) $CellContext`w^10 + (
+      13 $CellContext`v^10) $CellContext`w^10 + (
+      4 $CellContext`v^12) $CellContext`w^10 + (
+      2 $CellContext`v^16) $CellContext`w^10 - (
+     2 $CellContext`v^18) $CellContext`w^10 - (
+     2 $CellContext`v^20) $CellContext`w^10 + (
+      2 $CellContext`v^22) $CellContext`w^10 + (
+      8 $CellContext`v^4) $CellContext`w^11 + (
+      9 $CellContext`v^6) $CellContext`w^11 - $CellContext`v^8 \
+$CellContext`w^11 + (5 $CellContext`v^12) $CellContext`w^11 + (
+      3 $CellContext`v^14) $CellContext`w^11 + (
+      4 $CellContext`v^16) $CellContext`w^11 - (
+     4 $CellContext`v^18) $CellContext`w^11 - (
+     2 $CellContext`v^22) $CellContext`w^11 + (
+      2 $CellContext`v^24) $CellContext`w^11 + $CellContext`v^4 \
+$CellContext`w^12 + (7 $CellContext`v^6) $CellContext`w^12 + (
+      6 $CellContext`v^8) $CellContext`w^12 + (
+      3 $CellContext`v^10) $CellContext`w^12 + (
+      3 $CellContext`v^12) $CellContext`w^12 - $CellContext`v^14 \
+$CellContext`w^12 - (
+     2 $CellContext`v^18) $CellContext`w^12 + (
+      4 $CellContext`v^20) $CellContext`w^12 - (
+     4 $CellContext`v^22) $CellContext`w^12 + (
+      2 $CellContext`v^24) $CellContext`w^12 - $CellContext`w^13 + (
+      2 $CellContext`v^4) $CellContext`w^13 - (
+     14 $CellContext`v^8) $CellContext`w^13 + (
+      3 $CellContext`v^12) $CellContext`w^13 + (
+      2 $CellContext`v^18) $CellContext`w^13 - (
+     4 $CellContext`v^20) $CellContext`w^13 - (
+     2 $CellContext`v^22) $CellContext`w^13 + (
+      4 $CellContext`v^24) $CellContext`w^13 - (
+     4 $CellContext`v^2) $CellContext`w^14 - (
+     7 $CellContext`v^4) $CellContext`w^14 + (
+      6 $CellContext`v^6) $CellContext`w^14 - (
+     5 $CellContext`v^8) $CellContext`w^14 - (
+     4 $CellContext`v^10) $CellContext`w^14 - (
+     8 $CellContext`v^12) $CellContext`w^14 - (
+     3 $CellContext`v^14) $CellContext`w^14 + (
+      4 $CellContext`v^18) $CellContext`w^14 - (
+     4 $CellContext`v^20) $CellContext`w^14 + (
+      6 $CellContext`v^22) $CellContext`w^14 - (
+     8 $CellContext`v^24) $CellContext`w^14 + (
+      4 $CellContext`v^26) $CellContext`w^14 + (
+      4 $CellContext`v^28) $CellContext`w^14 - (
+     6 $CellContext`v^30) $CellContext`w^14 + (
+      2 $CellContext`v^34) $CellContext`w^14 - $CellContext`w^15 - (
+     3 $CellContext`v^2) $CellContext`w^15 - $CellContext`v^4 \
+$CellContext`w^15 - (16 $CellContext`v^6) $CellContext`w^15 - (
+     19 $CellContext`v^8) $CellContext`w^15 - (
+     2 $CellContext`v^10) $CellContext`w^15 - (
+     2 $CellContext`v^12) $CellContext`w^15 - (
+     3 $CellContext`v^14) $CellContext`w^15 + (
+      3 $CellContext`v^16) $CellContext`w^15 - (
+     6 $CellContext`v^18) $CellContext`w^15 + (
+      8 $CellContext`v^22) $CellContext`w^15 - (
+     16 $CellContext`v^24) $CellContext`w^15 + (
+      20 $CellContext`v^26) $CellContext`w^15 - (
+     4 $CellContext`v^28) $CellContext`w^15 - (
+     14 $CellContext`v^30) $CellContext`w^15 + (
+      12 $CellContext`v^32) $CellContext`w^15 + (
+      2 $CellContext`v^34) $CellContext`w^15 - (
+     4 $CellContext`v^36) $CellContext`w^15 - (
+     5 $CellContext`v^2) $CellContext`w^16 - (
+     9 $CellContext`v^4) $CellContext`w^16 - (
+     4 $CellContext`v^6) $CellContext`w^16 - (
+     5 $CellContext`v^8) $CellContext`w^16 - (
+     12 $CellContext`v^10) $CellContext`w^16 - (
+     11 $CellContext`v^12) $CellContext`w^16 - (
+     4 $CellContext`v^14) $CellContext`w^16 + (
+      2 $CellContext`v^16) $CellContext`w^16 - (
+     6 $CellContext`v^18) $CellContext`w^16 + (
+      16 $CellContext`v^20) $CellContext`w^16 - (
+     10 $CellContext`v^22) $CellContext`w^16 - (
+     12 $CellContext`v^24) $CellContext`w^16 + (
+      26 $CellContext`v^26) $CellContext`w^16 - (
+     18 $CellContext`v^28) $CellContext`w^16 - (
+     6 $CellContext`v^30) $CellContext`w^16 + (
+      18 $CellContext`v^32) $CellContext`w^16 - (
+     6 $CellContext`v^34) $CellContext`w^16 - (
+     4 $CellContext`v^36) $CellContext`w^16 + (
+      2 $CellContext`v^38) $CellContext`w^16 - (
+     3 $CellContext`v^2) $CellContext`w^17 - (
+     5 $CellContext`v^4) $CellContext`w^17 - (
+     19 $CellContext`v^6) $CellContext`w^17 - (
+     12 $CellContext`v^8) $CellContext`w^17 - (
+     6 $CellContext`v^10) $CellContext`w^17 - (
+     3 $CellContext`v^14) $CellContext`w^17 - (
+     5 $CellContext`v^16) $CellContext`w^17 + (
+      12 $CellContext`v^20) $CellContext`w^17 - (
+     22 $CellContext`v^22) $CellContext`w^17 + (
+      22 $CellContext`v^24) $CellContext`w^17 - (
+     2 $CellContext`v^26) $CellContext`w^17 - (
+     16 $CellContext`v^28) $CellContext`w^17 + (
+      12 $CellContext`v^30) $CellContext`w^17 + (
+      8 $CellContext`v^32) $CellContext`w^17 - (
+     14 $CellContext`v^34) $CellContext`w^17 + (
+      2 $CellContext`v^36) $CellContext`w^17 + (
+      2 $CellContext`v^38) $CellContext`w^17 - (
+     2 $CellContext`v^2) $CellContext`w^18 - (
+     3 $CellContext`v^4) $CellContext`w^18 - (
+     2 $CellContext`v^6) $CellContext`w^18 - (
+     12 $CellContext`v^8) $CellContext`w^18 - (
+     11 $CellContext`v^10) $CellContext`w^18 - (
+     2 $CellContext`v^12) $CellContext`w^18 - (
+     3 $CellContext`v^14) $CellContext`w^18 - (
+     6 $CellContext`v^16) $CellContext`w^18 + (
+      14 $CellContext`v^18) $CellContext`w^18 - (
+     4 $CellContext`v^20) $CellContext`w^18 - (
+     16 $CellContext`v^22) $CellContext`w^18 + (
+      30 $CellContext`v^24) $CellContext`w^18 - (
+     30 $CellContext`v^26) $CellContext`w^18 + (
+      18 $CellContext`v^28) $CellContext`w^18 - (
+     12 $CellContext`v^32) $CellContext`w^18 + (
+      10 $CellContext`v^36) $CellContext`w^18 - (
+     4 $CellContext`v^38) $CellContext`w^18 + (
+      2 $CellContext`v^2) $CellContext`w^19 - (
+     5 $CellContext`v^4) $CellContext`w^19 - (
+     5 $CellContext`v^6) $CellContext`w^19 - (
+     4 $CellContext`v^8) $CellContext`w^19 + (
+      6 $CellContext`v^10) $CellContext`w^19 - (
+     4 $CellContext`v^14) $CellContext`w^19 - (
+     4 $CellContext`v^16) $CellContext`w^19 + (
+      10 $CellContext`v^18) $CellContext`w^19 - (
+     14 $CellContext`v^20) $CellContext`w^19 + (
+      10 $CellContext`v^22) $CellContext`w^19 + (
+      12 $CellContext`v^24) $CellContext`w^19 - (
+     28 $CellContext`v^26) $CellContext`w^19 + (
+      22 $CellContext`v^28) $CellContext`w^19 - (
+     12 $CellContext`v^30) $CellContext`w^19 + (
+      10 $CellContext`v^34) $CellContext`w^19 - (
+     4 $CellContext`v^36) $CellContext`w^19 - (
+     4 $CellContext`v^38) $CellContext`w^19 + (
+      2 $CellContext`v^40) $CellContext`w^19 + (
+      6 $CellContext`v^4) $CellContext`w^20 + (
+      8 $CellContext`v^6) $CellContext`w^20 - (
+     11 $CellContext`v^8) $CellContext`w^20 + $CellContext`v^12 \
+$CellContext`w^20 + $CellContext`v^14 $CellContext`w^20 + (
+      2 $CellContext`v^16) $CellContext`w^20 + (
+      2 $CellContext`v^18) $CellContext`w^20 - (
+     8 $CellContext`v^20) $CellContext`w^20 + (
+      14 $CellContext`v^22) $CellContext`w^20 - (
+     18 $CellContext`v^24) $CellContext`w^20 + (
+      4 $CellContext`v^26) $CellContext`w^20 + (
+      14 $CellContext`v^28) $CellContext`w^20 - (
+     16 $CellContext`v^30) $CellContext`w^20 + (
+      8 $CellContext`v^32) $CellContext`w^20 + (
+      2 $CellContext`v^34) $CellContext`w^20 - (
+     6 $CellContext`v^36) $CellContext`w^20 + (
+      2 $CellContext`v^38) $CellContext`w^20 + (
+      3 $CellContext`v^2) $CellContext`w^21 + (
+      3 $CellContext`v^4) $CellContext`w^21 + (
+      3 $CellContext`v^6) $CellContext`w^21 + (
+      8 $CellContext`v^8) $CellContext`w^21 + (
+      12 $CellContext`v^10) $CellContext`w^21 + $CellContext`v^12 \
+$CellContext`w^21 - $CellContext`v^14 $CellContext`w^21 + (
+      2 $CellContext`v^16) $CellContext`w^21 - (
+     6 $CellContext`v^18) $CellContext`w^21 + (
+      6 $CellContext`v^20) $CellContext`w^21 + (
+      6 $CellContext`v^22) $CellContext`w^21 - (
+     20 $CellContext`v^24) $CellContext`w^21 + (
+      24 $CellContext`v^26) $CellContext`w^21 - (
+     10 $CellContext`v^28) $CellContext`w^21 - (
+     10 $CellContext`v^30) $CellContext`w^21 + (
+      14 $CellContext`v^32) $CellContext`w^21 - (
+     8 $CellContext`v^34) $CellContext`w^21 + (
+      2 $CellContext`v^38) $CellContext`w^21 + (
+      10 $CellContext`v^4) $CellContext`w^22 + (
+      10 $CellContext`v^6) $CellContext`w^22 + (
+      2 $CellContext`v^8) $CellContext`w^22 + (
+      3 $CellContext`v^10) $CellContext`w^22 + (
+      4 $CellContext`v^12) $CellContext`w^22 + (
+      3 $CellContext`v^14) $CellContext`w^22 + (
+      4 $CellContext`v^16) $CellContext`w^22 - (
+     6 $CellContext`v^18) $CellContext`w^22 + (
+      6 $CellContext`v^20) $CellContext`w^22 - (
+     6 $CellContext`v^22) $CellContext`w^22 - (
+     6 $CellContext`v^24) $CellContext`w^22 + (
+      20 $CellContext`v^26) $CellContext`w^22 - (
+     16 $CellContext`v^28) $CellContext`w^22 + (
+      10 $CellContext`v^32) $CellContext`w^22 - (
+     8 $CellContext`v^34) $CellContext`w^22 + (
+      2 $CellContext`v^36) $CellContext`w^22 + $CellContext`v^2 \
+$CellContext`w^23 + (5 $CellContext`v^4) $CellContext`w^23 + (
+      9 $CellContext`v^6) $CellContext`w^23 + (
+      13 $CellContext`v^8) $CellContext`w^23 + (
+      6 $CellContext`v^10) $CellContext`w^23 + (
+      4 $CellContext`v^12) $CellContext`w^23 + (
+      2 $CellContext`v^16) $CellContext`w^23 - (
+     4 $CellContext`v^18) $CellContext`w^23 + (
+      6 $CellContext`v^20) $CellContext`w^23 - (
+     6 $CellContext`v^22) $CellContext`w^23 + (
+      2 $CellContext`v^24) $CellContext`w^23 + (
+      4 $CellContext`v^26) $CellContext`w^23 - (
+     8 $CellContext`v^28) $CellContext`w^23 + (
+      4 $CellContext`v^30) $CellContext`w^23 + (
+      2 $CellContext`v^32) $CellContext`w^23 - (
+     4 $CellContext`v^34) $CellContext`w^23 + (
+      2 $CellContext`v^36) $CellContext`w^23 + (
+      4 $CellContext`v^4) $CellContext`w^24 + (
+      6 $CellContext`v^6) $CellContext`w^24 + (
+      2 $CellContext`v^8) $CellContext`w^24 + (
+      5 $CellContext`v^10) $CellContext`w^24 + (
+      6 $CellContext`v^12) $CellContext`w^24 + $CellContext`v^14 \
+$CellContext`w^24 + (2 $CellContext`v^16) $CellContext`w^24 - (
+     2 $CellContext`v^18) $CellContext`w^24 - (
+     4 $CellContext`v^22) $CellContext`w^24 + (
+      4 $CellContext`v^24) $CellContext`w^24 + (
+      9 $CellContext`v^6) $CellContext`w^25 + (
+      4 $CellContext`v^8) $CellContext`w^25 + (
+      3 $CellContext`v^10) $CellContext`w^25 + $CellContext`v^12 \
+$CellContext`w^25 + (2 $CellContext`v^18) $CellContext`w^25 - (
+     2 $CellContext`v^20) $CellContext`w^25 - (
+     2 $CellContext`v^22) $CellContext`w^25 + (
+      2 $CellContext`v^24) $CellContext`w^25 - $CellContext`v^6 \
+$CellContext`w^26 - (
+     3 $CellContext`v^8) $CellContext`w^26 + (
+      5 $CellContext`v^10) $CellContext`w^26 + (
+      2 $CellContext`v^12) $CellContext`w^26 + (
+      2 $CellContext`v^18) $CellContext`w^26 - (
+     6 $CellContext`v^20) $CellContext`w^26 + (
+      2 $CellContext`v^22) $CellContext`w^26 + (
+      2 $CellContext`v^24) $CellContext`w^26 - (
+     2 $CellContext`v^4) $CellContext`w^27 + $CellContext`v^6 \
+$CellContext`w^27 - (2 $CellContext`v^8) $CellContext`w^27 - (
+     2 $CellContext`v^12) $CellContext`w^27 + (
+      2 $CellContext`v^18) $CellContext`w^27 - (
+     4 $CellContext`v^20) $CellContext`w^27 + (
+      2 $CellContext`v^22) $CellContext`w^27 - (
+     5 $CellContext`v^6) $CellContext`w^28 - (
+     4 $CellContext`v^8) $CellContext`w^28 - (
+     2 $CellContext`v^20) $CellContext`w^28 + (
+      2 $CellContext`v^22) $CellContext`w^28 - $CellContext`v^4 \
+$CellContext`w^29 - (2 $CellContext`v^6) $CellContext`w^29 - (
+     4 $CellContext`v^8) $CellContext`w^29 - (
+     2 $CellContext`v^10) $CellContext`w^29 - $CellContext`v^12 \
+$CellContext`w^29 - (2 $CellContext`v^6) $CellContext`w^30 - (
+     3 $CellContext`v^8) $CellContext`w^30 - $CellContext`v^10 \
+$CellContext`w^30 - $CellContext`v^6 $CellContext`w^31 - (
+     4 $CellContext`v^8) $CellContext`w^31 - $CellContext`v^10 \
 $CellContext`w^31 - $CellContext`v^8 $CellContext`w^32 - $CellContext`v^8 \
 $CellContext`w^33}, ", ", {
     Subscript[$CellContext`p, 1], $CellContext`v, $CellContext`w}, "]"],
@@ -63550,12 +63498,13 @@ Cell[BoxData[
  CellChangeTimes->{{3.621898576052128*^9, 3.621898577131125*^9}, {
    3.622185033794241*^9, 3.622185039131727*^9}, {3.622185072546669*^9, 
    3.6221850745965652`*^9}, 3.6222507208546543`*^9}]
+}, Open  ]]
 },
 Evaluator->"Local (2)",
 WindowSize->{1888, 1315},
 WindowMargins->{{0, Automatic}, {Automatic, 0}},
-FrontEndVersion->"9.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (January 25, \
-2013)",
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
 StyleDefinitions->"Default.nb"
 ]
 (* End of Notebook Content *)
@@ -63569,288 +63518,313 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[557, 20, 118, 2, 28, "Input"],
-Cell[678, 24, 364, 9, 28, "Input"],
-Cell[1045, 35, 190, 4, 28, "Input"],
-Cell[1238, 41, 2081, 54, 97, "Input"],
-Cell[3322, 97, 713, 18, 80, "Input"],
-Cell[4038, 117, 2815, 69, 165, "Input"],
-Cell[6856, 188, 1479, 36, 131, "Input"],
-Cell[8338, 226, 137, 2, 28, "Input"],
-Cell[8478, 230, 183, 4, 28, "Input"],
-Cell[8664, 236, 455, 12, 28, "Input"],
-Cell[9122, 250, 1539, 39, 46, "Input"],
-Cell[10664, 291, 932, 24, 28, "Input"],
-Cell[11599, 317, 1421, 35, 49, "Input"],
-Cell[13023, 354, 499, 11, 28, "Input"],
-Cell[13525, 367, 518, 13, 46, "Input"],
-Cell[14046, 382, 552, 14, 28, "Input"],
-Cell[14601, 398, 460, 11, 28, "Input"],
-Cell[15064, 411, 138, 2, 28, "Input"],
-Cell[15205, 415, 1950, 46, 97, "Input"],
-Cell[17158, 463, 236, 5, 28, "Input"],
-Cell[17397, 470, 428, 9, 46, "Input"],
-Cell[17828, 481, 270, 7, 28, "Input"],
-Cell[18101, 490, 933, 22, 28, "Input"],
 Cell[CellGroupData[{
-Cell[19059, 516, 501, 12, 28, "Input"],
-Cell[19563, 530, 213, 3, 28, "Output"]
+Cell[579, 22, 103, 1, 44, "Subsection"],
+Cell[685, 25, 118, 2, 28, "Input"],
+Cell[806, 29, 364, 9, 28, "Input"],
+Cell[1173, 40, 190, 4, 28, "Input"],
+Cell[1366, 46, 2081, 54, 97, "Input"],
+Cell[3450, 102, 713, 18, 80, "Input"],
+Cell[4166, 122, 2815, 69, 165, "Input"],
+Cell[6984, 193, 1479, 36, 131, "Input"],
+Cell[8466, 231, 137, 2, 28, "Input"],
+Cell[8606, 235, 183, 4, 28, "Input"],
+Cell[8792, 241, 455, 12, 28, "Input"],
+Cell[9250, 255, 1539, 39, 46, "Input"],
+Cell[10792, 296, 932, 24, 28, "Input"],
+Cell[11727, 322, 1421, 35, 49, "Input"],
+Cell[13151, 359, 499, 11, 28, "Input"],
+Cell[13653, 372, 518, 13, 46, "Input"],
+Cell[14174, 387, 552, 14, 28, "Input"],
+Cell[14729, 403, 460, 11, 28, "Input"],
+Cell[15192, 416, 138, 2, 28, "Input"],
+Cell[15333, 420, 1950, 46, 97, "Input"],
+Cell[17286, 468, 236, 5, 28, "Input"],
+Cell[17525, 475, 428, 9, 46, "Input"],
+Cell[17956, 486, 270, 7, 28, "Input"],
+Cell[18229, 495, 933, 22, 28, "Input"],
+Cell[19165, 519, 259, 7, 28, "Input"],
+Cell[19427, 528, 3971, 108, 152, "Input"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[23435, 641, 110, 1, 36, "Subsection"],
+Cell[23548, 644, 302, 7, 46, "Input"],
+Cell[23853, 653, 428, 12, 53, "Input"],
+Cell[24284, 667, 127, 2, 28, "Input"],
+Cell[24414, 671, 1120, 25, 46, "Input"],
+Cell[25537, 698, 458, 13, 28, "Input"],
+Cell[25998, 713, 468, 13, 28, "Input"],
+Cell[26469, 728, 2376, 55, 148, "Input"],
+Cell[28848, 785, 4258, 99, 282, "Input"],
+Cell[33109, 886, 493, 13, 28, "Input"],
+Cell[33605, 901, 2499, 59, 149, "Input"],
+Cell[36107, 962, 2312, 51, 148, "Input"],
+Cell[38422, 1015, 478, 13, 28, "Input"],
+Cell[38903, 1030, 660, 13, 28, "Input"],
+Cell[39566, 1045, 524, 14, 28, "Input"],
+Cell[40093, 1061, 2148, 50, 165, "Input"],
+Cell[42244, 1113, 317, 6, 28, "Input"],
+Cell[42564, 1121, 1684, 46, 63, "Input"],
+Cell[44251, 1169, 528, 13, 28, "Input"],
+Cell[44782, 1184, 502, 13, 28, "Input"],
+Cell[45287, 1199, 347, 8, 28, "Input"],
+Cell[45637, 1209, 794, 23, 31, "Input"],
+Cell[46434, 1234, 7084, 164, 472, "Input"],
+Cell[53521, 1400, 281, 7, 28, "Input"],
+Cell[53805, 1409, 435, 12, 28, "Input"],
+Cell[54243, 1423, 2168, 49, 128, "Input"],
+Cell[56414, 1474, 1507, 38, 80, "Input"],
+Cell[57924, 1514, 2525, 55, 165, "Input"],
+Cell[60452, 1571, 1612, 37, 97, "Input"],
+Cell[62067, 1610, 4813, 112, 234, "Input"],
+Cell[66883, 1724, 276, 7, 28, "Input"],
+Cell[67162, 1733, 442, 12, 28, "Input"],
+Cell[67607, 1747, 1901, 49, 97, "Input"],
+Cell[69511, 1798, 4805, 113, 250, "Input"],
+Cell[74319, 1913, 2245, 55, 97, "Input"],
+Cell[76567, 1970, 506, 12, 63, "Input"],
+Cell[77076, 1984, 286, 7, 28, "Input"],
+Cell[77365, 1993, 1910, 48, 97, "Input"],
+Cell[79278, 2043, 1798, 47, 97, "Input"],
+Cell[81079, 2092, 1423, 36, 80, "Input"],
+Cell[82505, 2130, 1390, 36, 80, "Input"],
+Cell[CellGroupData[{
+Cell[83920, 2170, 102, 1, 35, "Subsubsection"],
+Cell[CellGroupData[{
+Cell[84047, 2175, 967, 24, 36, "Input"],
+Cell[CellGroupData[{
+Cell[85039, 2203, 700, 10, 22, "Print"],
+Cell[85742, 2215, 1049, 21, 22, "Print"],
+Cell[86794, 2238, 712, 10, 22, "Print"],
+Cell[87509, 2250, 1027, 20, 22, "Print"],
+Cell[88539, 2272, 771, 11, 22, "Print"],
+Cell[89313, 2285, 718, 11, 22, "Print"]
 }, Open  ]],
-Cell[19791, 536, 259, 7, 28, "Input"],
-Cell[20053, 545, 3971, 108, 153, "Input"],
-Cell[CellGroupData[{
-Cell[24049, 657, 291, 7, 28, "Input"],
-Cell[24343, 666, 610, 12, 28, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[24990, 683, 1231, 32, 46, "Input"],
-Cell[26224, 717, 581, 11, 28, "Output"]
-}, Open  ]],
-Cell[26820, 731, 471, 13, 35, "Input"],
-Cell[CellGroupData[{
-Cell[27316, 748, 210, 5, 28, "Input"],
-Cell[27529, 755, 226, 3, 28, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[27792, 763, 210, 5, 28, "Input"],
-Cell[28005, 770, 310, 4, 46, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[28352, 779, 828, 24, 46, "Input"],
-Cell[29183, 805, 2369, 78, 57, "Output"]
-}, Open  ]],
-Cell[31567, 886, 299, 8, 28, "Input"],
-Cell[CellGroupData[{
-Cell[31891, 898, 335, 8, 28, "Input"],
-Cell[32229, 908, 2418, 79, 57, "Output"]
-}, Open  ]],
-Cell[34662, 990, 323, 6, 28, "Input"],
-Cell[CellGroupData[{
-Cell[35010, 1000, 210, 5, 28, "Input"],
-Cell[35223, 1007, 281, 4, 28, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[35541, 1016, 1451, 42, 59, "Input"],
-Cell[36995, 1060, 191, 3, 28, "Output"]
-}, Open  ]],
-Cell[37201, 1066, 302, 7, 46, "Input"],
-Cell[37506, 1075, 428, 12, 53, "Input"],
-Cell[37937, 1089, 127, 2, 28, "Input"],
-Cell[38067, 1093, 1120, 25, 46, "Input"],
-Cell[39190, 1120, 458, 13, 28, "Input"],
-Cell[39651, 1135, 468, 13, 28, "Input"],
-Cell[40122, 1150, 2376, 55, 148, "Input"],
-Cell[42501, 1207, 4258, 99, 283, "Input"],
-Cell[46762, 1308, 493, 13, 28, "Input"],
-Cell[47258, 1323, 2499, 59, 149, "Input"],
-Cell[49760, 1384, 2312, 51, 148, "Input"],
-Cell[52075, 1437, 478, 13, 28, "Input"],
-Cell[52556, 1452, 660, 13, 28, "Input"],
-Cell[CellGroupData[{
-Cell[53241, 1469, 967, 24, 36, "Input"],
-Cell[CellGroupData[{
-Cell[54233, 1497, 676, 10, 22, "Print"],
-Cell[54912, 1509, 685, 10, 22, "Print"],
-Cell[55600, 1521, 746, 11, 22, "Print"],
-Cell[56349, 1534, 692, 11, 22, "Print"]
-}, Open  ]],
-Cell[57056, 1548, 1400, 28, 35, "Output"]
-}, Open  ]],
-Cell[58471, 1579, 524, 14, 28, "Input"],
-Cell[58998, 1595, 2148, 50, 165, "Input"],
-Cell[61149, 1647, 317, 6, 28, "Input"],
-Cell[61469, 1655, 1684, 46, 63, "Input"],
-Cell[63156, 1703, 528, 13, 28, "Input"],
-Cell[63687, 1718, 502, 13, 28, "Input"],
-Cell[64192, 1733, 347, 8, 28, "Input"],
-Cell[64542, 1743, 794, 23, 31, "Input"],
-Cell[65339, 1768, 7084, 164, 472, "Input"],
-Cell[72426, 1934, 281, 7, 28, "Input"],
-Cell[72710, 1943, 435, 12, 28, "Input"],
-Cell[73148, 1957, 2168, 49, 129, "Input"],
-Cell[75319, 2008, 1507, 38, 80, "Input"],
-Cell[76829, 2048, 2525, 55, 165, "Input"],
-Cell[79357, 2105, 1612, 37, 97, "Input"],
-Cell[80972, 2144, 4813, 112, 234, "Input"],
-Cell[85788, 2258, 276, 7, 28, "Input"],
-Cell[86067, 2267, 442, 12, 28, "Input"],
-Cell[86512, 2281, 1901, 49, 97, "Input"],
-Cell[88416, 2332, 4805, 113, 250, "Input"],
-Cell[93224, 2447, 2245, 55, 97, "Input"],
-Cell[95472, 2504, 506, 12, 63, "Input"],
-Cell[95981, 2518, 286, 7, 28, "Input"],
-Cell[96270, 2527, 1910, 48, 97, "Input"],
-Cell[98183, 2577, 1798, 47, 97, "Input"],
-Cell[99984, 2626, 1423, 36, 80, "Input"],
-Cell[101410, 2664, 1390, 36, 80, "Input"],
-Cell[CellGroupData[{
-Cell[102825, 2704, 696, 18, 28, "Input"],
-Cell[103524, 2724, 1072, 26, 28, "Output"]
-}, Open  ]],
-Cell[104611, 2753, 1167, 27, 80, "Input"],
-Cell[CellGroupData[{
-Cell[105803, 2784, 841, 20, 28, "Input"],
-Cell[CellGroupData[{
-Cell[106669, 2808, 503, 7, 22, "Print"],
-Cell[107175, 2817, 468, 6, 22, "Print"],
-Cell[107646, 2825, 483, 6, 22, "Print"],
-Cell[108132, 2833, 507, 7, 22, "Print"]
-}, Open  ]],
-Cell[108654, 2843, 2981, 71, 46, "Output"]
+Cell[90046, 2299, 1422, 28, 35, "Output"]
+}, Open  ]]
+}, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[111672, 2919, 611, 13, 28, "Input"],
+Cell[91529, 2334, 131, 1, 44, "Subsection"],
 Cell[CellGroupData[{
-Cell[112308, 2936, 509, 7, 22, "Print"],
-Cell[112820, 2945, 548, 7, 22, "Print"],
-Cell[113371, 2954, 461, 6, 22, "Print"],
-Cell[113835, 2962, 1309, 17, 70, "Print"],
-Cell[115147, 2981, 1428, 19, 86, "Print"],
-Cell[116578, 3002, 1428, 19, 86, "Print"],
-Cell[118009, 3023, 377, 5, 22, "Print"],
-Cell[118389, 3030, 375, 5, 22, "Print"]
-}, Open  ]],
-Cell[118779, 3038, 11977, 317, 145, "Output"]
+Cell[91685, 2339, 1415, 38, 63, "Input"],
+Cell[93103, 2379, 605, 11, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[130793, 3360, 340, 8, 28, "Input"],
-Cell[131136, 3370, 182, 3, 28, "Output"]
+Cell[93745, 2395, 300, 8, 28, "Input"],
+Cell[94048, 2405, 329, 7, 28, "Output"]
+}, Open  ]],
+Cell[94392, 2415, 471, 13, 35, "Input"],
+Cell[CellGroupData[{
+Cell[94888, 2432, 210, 5, 28, "Input"],
+Cell[95101, 2439, 394, 10, 60, "Message"],
+Cell[95498, 2451, 187, 4, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[131355, 3378, 971, 23, 28, "Input"],
-Cell[CellGroupData[{
-Cell[132351, 3405, 419, 6, 22, "Print"],
-Cell[132773, 3413, 356, 5, 22, "Print"],
-Cell[133132, 3420, 373, 5, 22, "Print"],
-Cell[133508, 3427, 416, 6, 22, "Print"],
-Cell[133927, 3435, 417, 6, 22, "Print"],
-Cell[134347, 3443, 356, 5, 22, "Print"],
-Cell[134706, 3450, 373, 5, 22, "Print"],
-Cell[135082, 3457, 418, 6, 22, "Print"]
-}, Open  ]],
-Cell[135515, 3466, 14380, 361, 70, "Output"]
+Cell[95722, 2460, 210, 5, 28, "Input"],
+Cell[95935, 2467, 310, 4, 46, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[149932, 3832, 391, 9, 28, "Input"],
-Cell[150326, 3843, 134, 3, 28, "Output"]
+Cell[96282, 2476, 828, 24, 46, "Input"],
+Cell[97113, 2502, 2395, 79, 57, "Output"]
+}, Open  ]],
+Cell[99523, 2584, 299, 8, 28, "Input"],
+Cell[CellGroupData[{
+Cell[99847, 2596, 335, 8, 28, "Input"],
+Cell[100185, 2606, 2441, 79, 57, "Output"]
+}, Open  ]],
+Cell[102641, 2688, 323, 6, 28, "Input"],
+Cell[CellGroupData[{
+Cell[102989, 2698, 210, 5, 31, "Input"],
+Cell[103202, 2705, 281, 4, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[150497, 3851, 389, 9, 28, "Input"],
-Cell[150889, 3862, 162, 4, 28, "Output"]
+Cell[103520, 2714, 1451, 42, 59, "Input"],
+Cell[104974, 2758, 219, 4, 28, "Output"]
+}, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[151088, 3871, 1148, 31, 28, "Input"],
-Cell[152239, 3904, 1659, 39, 46, "Output"]
+Cell[105242, 2768, 132, 1, 44, "Subsection"],
+Cell[CellGroupData[{
+Cell[105399, 2773, 696, 18, 28, "Input"],
+Cell[106098, 2793, 1094, 26, 28, "Output"]
+}, Open  ]],
+Cell[107207, 2822, 1167, 27, 80, "Input"],
+Cell[CellGroupData[{
+Cell[108399, 2853, 841, 20, 28, "Input"],
+Cell[CellGroupData[{
+Cell[109265, 2877, 519, 8, 22, "Print"],
+Cell[109787, 2887, 493, 7, 22, "Print"],
+Cell[110283, 2896, 508, 7, 22, "Print"],
+Cell[110794, 2905, 916, 25, 23, "Print"],
+Cell[111713, 2932, 640, 15, 26, "Print"],
+Cell[112356, 2949, 527, 8, 22, "Print"]
+}, Open  ]],
+Cell[112898, 2960, 3002, 71, 46, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[153935, 3948, 527, 11, 28, "Input"],
+Cell[115937, 3036, 611, 13, 28, "Input"],
 Cell[CellGroupData[{
-Cell[154487, 3963, 474, 7, 22, "Print"],
-Cell[154964, 3972, 474, 7, 22, "Print"],
-Cell[155441, 3981, 538, 8, 22, "Print"],
-Cell[155982, 3991, 539, 8, 22, "Print"],
-Cell[156524, 4001, 507, 7, 22, "Print"],
-Cell[157034, 4010, 434, 6, 22, "Print"],
-Cell[157471, 4018, 448, 6, 22, "Print"],
-Cell[157922, 4026, 474, 7, 22, "Print"],
-Cell[158399, 4035, 474, 7, 22, "Print"],
-Cell[158876, 4044, 538, 8, 22, "Print"],
-Cell[159417, 4054, 541, 8, 22, "Print"],
-Cell[159961, 4064, 511, 7, 22, "Print"],
-Cell[160475, 4073, 436, 6, 22, "Print"],
-Cell[160914, 4081, 449, 6, 22, "Print"]
-}, Open  ]],
-Cell[161378, 4090, 6394, 170, 140, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[167809, 4265, 518, 14, 28, "Input"],
-Cell[168330, 4281, 412, 8, 28, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[168779, 4294, 469, 13, 28, "Input"],
-Cell[169251, 4309, 1723, 26, 148, "Output"]
+Cell[116573, 3053, 535, 8, 22, "Print"],
+Cell[117111, 3063, 738, 20, 26, "Print"],
+Cell[117852, 3085, 709, 19, 26, "Print"],
+Cell[118564, 3106, 336, 5, 21, "Print"],
+Cell[118903, 3113, 334, 5, 21, "Print"],
+Cell[119240, 3120, 546, 8, 22, "Print"],
+Cell[119789, 3130, 526, 7, 22, "Print"],
+Cell[120318, 3139, 474, 7, 22, "Print"],
+Cell[120795, 3148, 738, 16, 22, "Print"],
+Cell[121536, 3166, 790, 17, 26, "Print"],
+Cell[122329, 3185, 448, 6, 22, "Print"],
+Cell[122780, 3193, 852, 19, 26, "Print"],
+Cell[123635, 3214, 448, 6, 22, "Print"],
+Cell[124086, 3222, 830, 18, 26, "Print"],
+Cell[124919, 3242, 448, 6, 22, "Print"],
+Cell[125370, 3250, 830, 18, 26, "Print"],
+Cell[126203, 3270, 448, 6, 22, "Print"],
+Cell[126654, 3278, 466, 7, 22, "Print"]
+}, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[171011, 4340, 571, 14, 28, "Input"],
-Cell[CellGroupData[{
-Cell[171607, 4358, 368, 5, 22, "Print"],
-Cell[171978, 4365, 307191, 9601, 2454, "Print"],
-Cell[479172, 13968, 46825, 1421, 338, "Print"],
-Cell[526000, 15391, 302655, 9451, 2436, "Print"],
-Cell[828658, 24844, 46825, 1421, 338, "Print"],
-Cell[875486, 26267, 347116, 10808, 2796, "Print"],
-Cell[1222605, 37077, 47954, 1459, 358, "Print"],
-Cell[1270562, 38538, 269671, 7947, 1990, "Print"],
-Cell[1540236, 46487, 47048, 1428, 358, "Print"],
-Cell[1587287, 47917, 45569, 1384, 334, "Print"],
-Cell[1632859, 49303, 39502, 1187, 280, "Print"],
-Cell[1672364, 50492, 116, 2, 21, "Print"],
-Cell[1672483, 50496, 116, 2, 21, "Print"]
-}, Open  ]],
-Cell[1672614, 50501, 124, 2, 28, "Output"]
+Cell[127169, 3291, 340, 8, 28, "Input"],
+Cell[127512, 3301, 182, 3, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1672775, 50508, 626, 15, 28, "Input"],
+Cell[127731, 3309, 971, 23, 28, "Input"],
 Cell[CellGroupData[{
-Cell[1673426, 50527, 523, 7, 22, "Print"],
-Cell[1673952, 50536, 33542, 1016, 226, "Print"],
-Cell[1707497, 51554, 37324, 1188, 276, "Print"],
-Cell[1744824, 52744, 33542, 1016, 226, "Print"],
-Cell[1778369, 53762, 37322, 1188, 276, "Print"],
-Cell[1815694, 54952, 5001, 153, 46, "Print"],
-Cell[1820698, 55107, 39989, 1200, 300, "Print"],
-Cell[1860690, 56309, 5001, 153, 46, "Print"],
-Cell[1865694, 56464, 39989, 1200, 300, "Print"],
-Cell[1905686, 57666, 31231, 937, 246, "Print"],
-Cell[1936920, 58605, 39989, 1200, 300, "Print"],
-Cell[1976912, 59807, 350, 5, 21, "Print"],
-Cell[1977265, 59814, 350, 5, 21, "Print"],
-Cell[1977618, 59821, 18862, 247, 1194, "Print"],
-Cell[1996483, 60070, 9692, 127, 609, "Print"],
-Cell[2006178, 60199, 5051, 67, 309, "Print"],
-Cell[2011232, 60268, 6390, 159, 46, "Print"],
-Cell[2017625, 60429, 462, 6, 22, "Print"],
-Cell[2018090, 60437, 6460, 162, 46, "Print"],
-Cell[2024553, 60601, 464, 6, 22, "Print"],
-Cell[2025020, 60609, 6437, 161, 46, "Print"],
-Cell[2031460, 60772, 464, 6, 22, "Print"],
-Cell[2031927, 60780, 6437, 161, 46, "Print"],
-Cell[2038367, 60943, 464, 6, 22, "Print"],
-Cell[2038834, 60951, 51645, 1340, 260, "Print"]
+Cell[128727, 3336, 419, 6, 22, "Print"],
+Cell[129149, 3344, 356, 5, 22, "Print"],
+Cell[129508, 3351, 373, 5, 22, "Print"],
+Cell[129884, 3358, 416, 6, 22, "Print"],
+Cell[130303, 3366, 417, 6, 22, "Print"],
+Cell[130723, 3374, 356, 5, 22, "Print"],
+Cell[131082, 3381, 373, 5, 22, "Print"],
+Cell[131458, 3388, 418, 6, 22, "Print"]
 }, Open  ]],
-Cell[2090494, 62294, 353, 5, 28, "Output"]
+Cell[131891, 3397, 14380, 361, 59, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2090884, 62304, 36164, 1027, 324, "Input"],
-Cell[2127051, 63333, 126, 2, 28, "Output"]
-}, Open  ]],
-Cell[2127192, 63338, 492, 12, 28, "Input"],
-Cell[CellGroupData[{
-Cell[2127709, 63354, 238, 6, 28, "Input"],
-Cell[2127950, 63362, 205, 5, 28, "Output"]
+Cell[146308, 3763, 391, 9, 28, "Input"],
+Cell[146702, 3774, 134, 3, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2128192, 63372, 414, 13, 35, "Input"],
-Cell[2128609, 63387, 310, 10, 35, "Output"]
+Cell[146873, 3782, 389, 9, 28, "Input"],
+Cell[147265, 3793, 162, 4, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2128956, 63402, 437, 14, 35, "Input"],
-Cell[2129396, 63418, 288, 10, 35, "Output"]
+Cell[147464, 3802, 1148, 31, 28, "Input"],
+Cell[148615, 3835, 1659, 39, 46, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2129721, 63433, 437, 14, 35, "Input"],
-Cell[2130161, 63449, 400, 14, 35, "Output"]
+Cell[150311, 3879, 527, 11, 28, "Input"],
+Cell[CellGroupData[{
+Cell[150863, 3894, 474, 7, 22, "Print"],
+Cell[151340, 3903, 474, 7, 22, "Print"],
+Cell[151817, 3912, 538, 8, 22, "Print"],
+Cell[152358, 3922, 539, 8, 22, "Print"],
+Cell[152900, 3932, 507, 7, 22, "Print"],
+Cell[153410, 3941, 434, 6, 22, "Print"],
+Cell[153847, 3949, 448, 6, 22, "Print"],
+Cell[154298, 3957, 474, 7, 22, "Print"],
+Cell[154775, 3966, 474, 7, 22, "Print"],
+Cell[155252, 3975, 538, 8, 22, "Print"],
+Cell[155793, 3985, 541, 8, 22, "Print"],
+Cell[156337, 3995, 511, 7, 22, "Print"],
+Cell[156851, 4004, 436, 6, 22, "Print"],
+Cell[157290, 4012, 449, 6, 22, "Print"]
+}, Open  ]],
+Cell[157754, 4021, 6394, 170, 129, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2130598, 63468, 311, 10, 35, "Input"],
-Cell[2130912, 63480, 400, 14, 35, "Output"]
+Cell[164185, 4196, 518, 14, 28, "Input"],
+Cell[164706, 4212, 412, 8, 28, "Output"]
 }, Open  ]],
-Cell[2131327, 63497, 329, 8, 28, "Input"],
-Cell[2131659, 63507, 333, 7, 28, "Input"],
-Cell[2131995, 63516, 331, 7, 28, "Input"],
-Cell[2132329, 63525, 333, 7, 28, "Input"],
-Cell[2132665, 63534, 333, 7, 28, "Input"],
-Cell[2133001, 63543, 385, 8, 28, "Input"]
+Cell[CellGroupData[{
+Cell[165155, 4225, 469, 13, 28, "Input"],
+Cell[165627, 4240, 1723, 26, 148, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[167387, 4271, 571, 14, 28, "Input"],
+Cell[CellGroupData[{
+Cell[167983, 4289, 368, 5, 22, "Print"],
+Cell[168354, 4296, 307191, 9601, 2454, "Print"],
+Cell[475548, 13899, 46825, 1421, 338, "Print"],
+Cell[522376, 15322, 302655, 9451, 2436, "Print"],
+Cell[825034, 24775, 46825, 1421, 338, "Print"],
+Cell[871862, 26198, 347116, 10808, 2796, "Print"],
+Cell[1218981, 37008, 47954, 1459, 358, "Print"],
+Cell[1266938, 38469, 269671, 7947, 1990, "Print"],
+Cell[1536612, 46418, 47048, 1428, 358, "Print"],
+Cell[1583663, 47848, 45569, 1384, 334, "Print"],
+Cell[1629235, 49234, 39502, 1187, 280, "Print"],
+Cell[1668740, 50423, 116, 2, 21, "Print"],
+Cell[1668859, 50427, 116, 2, 21, "Print"]
+}, Open  ]],
+Cell[1668990, 50432, 124, 2, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1669151, 50439, 626, 15, 28, "Input"],
+Cell[CellGroupData[{
+Cell[1669802, 50458, 523, 7, 22, "Print"],
+Cell[1670328, 50467, 33542, 1016, 226, "Print"],
+Cell[1703873, 51485, 37324, 1188, 276, "Print"],
+Cell[1741200, 52675, 33542, 1016, 226, "Print"],
+Cell[1774745, 53693, 37322, 1188, 276, "Print"],
+Cell[1812070, 54883, 5001, 153, 46, "Print"],
+Cell[1817074, 55038, 39989, 1200, 300, "Print"],
+Cell[1857066, 56240, 5001, 153, 46, "Print"],
+Cell[1862070, 56395, 39989, 1200, 300, "Print"],
+Cell[1902062, 57597, 31231, 937, 246, "Print"],
+Cell[1933296, 58536, 39989, 1200, 300, "Print"],
+Cell[1973288, 59738, 350, 5, 21, "Print"],
+Cell[1973641, 59745, 350, 5, 21, "Print"],
+Cell[1973994, 59752, 18862, 247, 1194, "Print"],
+Cell[1992859, 60001, 9692, 127, 609, "Print"],
+Cell[2002554, 60130, 5051, 67, 309, "Print"],
+Cell[2007608, 60199, 6481, 161, 46, "Print"],
+Cell[2014092, 60362, 462, 6, 22, "Print"],
+Cell[2014557, 60370, 6551, 164, 46, "Print"],
+Cell[2021111, 60536, 464, 6, 22, "Print"],
+Cell[2021578, 60544, 6528, 163, 46, "Print"],
+Cell[2028109, 60709, 464, 6, 22, "Print"],
+Cell[2028576, 60717, 6528, 163, 46, "Print"],
+Cell[2035107, 60882, 464, 6, 22, "Print"],
+Cell[2035574, 60890, 52686, 1349, 260, "Print"]
+}, Open  ]],
+Cell[2088275, 62242, 353, 5, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2088665, 62252, 36164, 1027, 324, "Input"],
+Cell[2124832, 63281, 126, 2, 28, "Output"]
+}, Open  ]],
+Cell[2124973, 63286, 492, 12, 28, "Input"],
+Cell[CellGroupData[{
+Cell[2125490, 63302, 238, 6, 28, "Input"],
+Cell[2125731, 63310, 205, 5, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2125973, 63320, 414, 13, 35, "Input"],
+Cell[2126390, 63335, 310, 10, 35, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2126737, 63350, 437, 14, 35, "Input"],
+Cell[2127177, 63366, 288, 10, 35, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2127502, 63381, 437, 14, 35, "Input"],
+Cell[2127942, 63397, 400, 14, 35, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2128379, 63416, 311, 10, 35, "Input"],
+Cell[2128693, 63428, 400, 14, 35, "Output"]
+}, Open  ]],
+Cell[2129108, 63445, 329, 8, 28, "Input"],
+Cell[2129440, 63455, 333, 7, 28, "Input"],
+Cell[2129776, 63464, 331, 7, 28, "Input"],
+Cell[2130110, 63473, 333, 7, 28, "Input"],
+Cell[2130446, 63482, 333, 7, 28, "Input"],
+Cell[2130782, 63491, 385, 8, 28, "Input"]
+}, Open  ]]
 }
 ]
 *)
