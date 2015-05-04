@@ -781,6 +781,8 @@ object PlanarGraph {
   val tetrahedron = spider.multiply(star(3), polygon(3), 3)
   val cube = spider.multiply(polygon(4), polygon(4), 4)
 
+  val twistedTetrahedron = spider.multiply(polygon(4), star(4, 2), 4)
+  
   lazy val dodecahedron = {
     val penta5fork = {
       def f(g: PlanarGraph) = spider.rotate(spider.multiply(star(3), g, 1), 1)
