@@ -120,7 +120,10 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   }
 
   lazy val boundaryEdges = vertexFlags(0).map(_._1)
-  lazy val boundaryFaces = vertexFlags(0).map(_._2)
+  lazy val boundaryFaces = vertexFlags(0) match {
+    case Nil => Seq(outerFace)
+    case other => other.map(_._2)
+  }
 
   type EdgeFace = (Int, Int)
 
