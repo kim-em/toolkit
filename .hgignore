@@ -17,5 +17,7 @@ jobscript*
 fusion-rings/
 fusion-rings2/
 
+algebra-spiders/src/main/mathematica/groebnerCalculations.m
+
 *.out
 */.tmpBin
