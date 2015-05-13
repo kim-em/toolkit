@@ -3,101 +3,129 @@ package net.tqft.toolkit.algebra.spiders
 import net.tqft.toolkit.algebra.spiders._
 import scala.math._
 import breeze.linalg._
+import java.nio.charset.StandardCharsets
+import java.nio.file.{Paths, Files}
+import scala.sys.process._
 
 object DrawPlanarGraph {
-  def apply(G: PlanarGraph, radius: Double = 2.0, vertexLabels: Boolean = false, imageScale: Double = 1): String = {
-    // Use Tutte's barycenter method to draw planar graphs.
-    // Outputs LaTeX tikz code.
+  def apply(G: PlanarGraph, expansion: Double = 1.4, maxBend: Double = 45, imageScale: Double = 1.5): String = {
+    // Outputs LaTeX TikZ code
+    // expansion controls how closely to "pull" the graph to the boundary
+    // maxBendAngle is the largest angle through which to bend multiple edges
+    // Doesn't handle self-edges, doesn't draw free loops
     
-    // A bit messy: we need to ignore the 0th vertex of the graph, this throws all our indices off by one.
-    // Helper functions:
-    def indexOfVertex(v: Int) = v - 1
-    def vertexAtIndex(i: Int) = i + 1
+    assert(G.vertexFlags(0).nonEmpty, "We don't yet handle non-boundary connected graphs")
+    if (G.loops > 0) println(s"Warning: graph has ${G.loops} loops which are not shown")
+    
     def round(x: Double, n: Int): Double = rint(x * pow(10, n)) / pow(10, n) // Rounds x to n decimal places, used to round coordinate values
+    def boundaryPoint(i: Int) = G.numberOfVertices + i // Boundary points are listed after the zeroth and the internal vertices.
+                                                       // So if the internal vertices are 1, ..., k, then
+                                                       // the 0th, ..., (n-1)th boundary points (in clockwise order around the 0 vertex)
+                                                       // are labeled k+1, ..., k+n, in anticlockwise order around the disk boundary.
+    def sortTuple(t: Tuple2[Int, Int]) = if (t._1 <= t._2) t else (t._2, t._1)
 
-    val numOfVertices = G.numberOfVertices - 1 // Remember to ignore 0 !!
-    val peripheralVertices = G.neighboursOf(0).distinct // Vertices of outermost cycle; these are the ones adjacent to the boundary points
-    val nonperipheralVertices = G.vertices diff peripheralVertices diff List(0) // All internal vertices
-    //Debug
-    //println("Peripheral vertices: " + peripheralVertices)
-    //println("Nonperipheral vertices: " + nonperipheralVertices)
-    
-    val vertexCoords = Array.fill(numOfVertices)((0.0, 0.0))
-    
-    val bdryPts = Array.fill(peripheralVertices.length)( Seq[(Double, Double)]( )) // ith sequence corresponds to the bdry pts adjacent to ith entry of peripheralVertices
-    
-    // Handle boundary points & outermost vertices of planar graph
-    for (k <- 0 until peripheralVertices.length) {
-      // First place peripheral vertices
-      val theta = 2 * k * Pi / peripheralVertices.length
-      val x = round(radius * cos(theta), 6)
-      val y = round(radius * sin(theta), 6)
-      vertexCoords(indexOfVertex(peripheralVertices(k))) = (x, y)
-      
-      // Then place boundary points adjacent to each peripheral vertex
-      val n = G.neighboursOf(peripheralVertices(k)).count(_ == 0)
-      bdryPts(k) = ( for ( k <- 1 to n )
-                             yield ( round(0.2 * radius * cos(theta + Pi/2 - k*Pi/(n+1)), 6) + x ,
-                                     round(0.2 * radius * sin(theta + Pi/2 - k*Pi/(n+1)), 6) + y)
-                          ).toSeq
-    }
-    //vertexCoords.map(println(_)) //Debug
+    // Compute edges as (vertex, vertex) pairs, and vertex adjacencies of the internal vertices.
+    var edgesToDraw = Seq[(Int, Int)]()
+    val vertexAdjs = (for (v <- G.vertices) yield G.neighboursOf(v)).map(_.toArray) // Vertices adjacent to each vertex, CW order. Includes zero, doesn't include boundary points.
 
-    // If there are vertices remaining, place them by barycentric mapping
-    if (!nonperipheralVertices.isEmpty) {
-      val A = DenseMatrix.zeros[Double](numOfVertices, numOfVertices) -
-              diag( DenseVector.tabulate(numOfVertices) {
-                i => ( G.neighboursOf(vertexAtIndex(i)).distinct diff Seq(0) ).length.toDouble
-              }) // 0 doesn't exist in the graph we're drawing, so don't count any edge adjacent to it
-      for (i <- 0 until numOfVertices) {
-        val neighbours = G.neighboursOf(vertexAtIndex(i)).distinct diff List(0)
-        for (n <- neighbours.distinct) { A(i, indexOfVertex(n)) = 1.0 }
-      }
-      //println("A:\n" + A) //Debug
-      
-      // Solve linear system for coords of nonperipheral vertices 
-      val B = A(::, nonperipheralVertices.toList.map(indexOfVertex(_))).toDenseMatrix
-      val x = -A * DenseVector(vertexCoords.map(_._1))
-      val y = -A * DenseVector(vertexCoords.map(_._2))
-      val nonperipheralXs = B \ x
-      val nonperipheralYs = B \ y
-      //println(B); println(nonperipheralXs); println(nonperipheralYs)
-      
-      // Update vertexCoords
-      for (i <- 0 until nonperipheralVertices.length) {
-        vertexCoords(indexOfVertex(nonperipheralVertices(i))) = (round(nonperipheralXs(i), 6), round(nonperipheralYs(i), 6))
-      }
-      //vertexCoords.map(println(_))
-    }
+    val vertexFlagsWithRightwardFaces = for (i <- 0 until G.numberOfBoundaryPoints)
+      yield (G.vertexFlags.head(i)._1, G.vertexFlags.head( (i+1) % G.vertexFlags.head.length )._2) // Used to find loops at zero
     
-    // Get graph edges. For now, just one per connected pair of vertices. Will implement multiple edges soon.
-    var edgePairs = Seq[(Int,Int)]()
-    for (pair <- G.edgeVertexIncidences.values) {
-      if (pair._1 != 0 && pair._2 != 0) edgePairs = pair +: edgePairs
+    // Get boundary-connected edges.
+    for (k <- 0 until G.numberOfBoundaryPoints) {
+      val edge = G.vertexFlags.head(k)._1
+      val target = G.target(0, edge)
+      if (target != 0) { // If target is an internal vertex
+        edgesToDraw = (target, boundaryPoint(k)) +: edgesToDraw // Add edge
+        // And update adjacency to the correct boundary point
+        val index = G.vertexFlags(target).indexOf(G.vertexFlags(target).find(_._1 == edge).get)
+        assert(index != -1, "Problem parsing boundary edges")
+        vertexAdjs(target)(index) = boundaryPoint(k)
+      } else { // Else we have a loop at zero, i.e. an edge with both endpoints on the boundary
+        val targetBoundaryPointIndex = vertexFlagsWithRightwardFaces.indexOf(G.vertexFlags.head(k), k)
+        if (targetBoundaryPointIndex != -1) {
+          edgesToDraw = (boundaryPoint(k), boundaryPoint(targetBoundaryPointIndex)) +: edgesToDraw
+        }
+      }
     }
+    // Append internal edges and ensure each tuple is sorted
+    edgesToDraw = (edgesToDraw ++ (for (e <- G.internalEdges) yield G.edgeVertexIncidences(e))).map(sortTuple)
     
-    // Write the tikz!
+    // Now handle drawing coordinates
+    // Fix coords of boundary points and calculate coords of internal vertices as the weighted barycenters of their neighbours.
+    val boundaryPointCoords = for (k <- 0 until G.numberOfBoundaryPoints)
+                              yield (round(cos(Pi - 2*Pi*k / G.numberOfBoundaryPoints), 6),
+                                     round(sin(Pi - 2*Pi*k / G.numberOfBoundaryPoints), 6))
+
+    val internalVertexCoords =
+      if (G.numberOfInternalVertices != 0) {
+        val M = DenseMatrix.zeros[Double](G.numberOfInternalVertices, G.numberOfInternalVertices + G.numberOfBoundaryPoints)
+        for (v <- 1 until vertexAdjs.length) {
+          M(v - 1, v - 1) = -vertexAdjs(v).distinct.length // M(v-1,v-1) = -#neighbours of vertex v (we don't need the coords of the zeroth vertex) 
+          for (w <- vertexAdjs(v)) { // M(v,w) = 1 for all neighbours w of v, modulo appropriate indexing
+            M(v - 1, w - 1) = if (w > G.numberOfInternalVertices) expansion else 1.0 // Weight boundary points more heavily to pull graph closer to boundary 
+          }
+        }
+        val bxs = DenseVector(boundaryPointCoords.map(_._1).toArray)
+        val bys = DenseVector(boundaryPointCoords.map(_._2).toArray)
+        val A = M(::, 0 until G.numberOfInternalVertices)
+        val B = M(::, G.numberOfInternalVertices until G.numberOfInternalVertices + G.numberOfBoundaryPoints)
+        val intxs = A \ -(B * bxs)
+        val intys = A \ -(B * bys)
+        for (v <- 0 until G.numberOfInternalVertices) yield (round(intxs(v), 6), round(intys(v), 6))
+      } else IndexedSeq.empty
+    
+    // Write the TikZ
     var tikzString = s"""\\begin{tikzpicture}
-                        |[scale=$imageScale, every node/.style={circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=1pt}]""".stripMargin
-    // Draw boundary points
-    for (i <- 0 until peripheralVertices.length) for (j <- 0 until bdryPts(i).length) {
-      tikzString = tikzString ++ s"\n\\node (${peripheralVertices(i)}-$j) at ${bdryPts(i)(j)} {};"
+                        |[scale=$imageScale, every node/.style={draw, circle, fill=none, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}]
+                        |\\draw[gray, dashed] (0,0) circle (1.0);\n""".stripMargin
+    // Place boundary points
+    for (i <- 0 until G.numberOfBoundaryPoints) {
+      tikzString = tikzString ++ s"\\node (${boundaryPoint(i)}) at ${boundaryPointCoords(i)} {};\n"
     }
-    // Draw graph vertices
-    for (i <- 0 until vertexCoords.length) {
-      tikzString = tikzString ++ s"\n\\node (${vertexAtIndex(i)}) at ${vertexCoords(i)} {${if (vertexLabels) vertexAtIndex(i) else ""}};"
+    // Place internal vertices
+    for (i <- 0 until G.numberOfInternalVertices) {
+      tikzString = tikzString ++ s"\\node (${i+1}) at ${internalVertexCoords(i)} {};\n"
     }
-    // Draw internal edges:
-    val edgePairsString = edgePairs map ( (p:(Int,Int)) => "%d/%d".format(p._1,p._2) ) mkString ","
-    // Draw boundary edges:
-    val bdryEdgesString = (for (i <- 0 until peripheralVertices.length; j <- 0 until bdryPts(i).length)
-                             yield s"${peripheralVertices(i)}/${peripheralVertices(i)}-$j"
-                           ) mkString ","
-    // Wrap up:
-    tikzString = tikzString ++ s"""\n\\foreach \\from/\\to in {$edgePairsString,$bdryEdgesString}
-                                  |\\draw (\\from) -- (\\to);
-                                  |\\end{tikzpicture}""".stripMargin
-
+    
+    // Draw edges between vertices.
+    // Need to bend multi-edges and boundary edges appropriately. For now we set a fixed maximum bend angle passed as a parameter,
+    // might need to look at this code again if edges start to cross.
+    def drawEdgeTikz(endpoints: (Int, Int), multiplicity: Int, maxBendAngle: Double): String = {
+      val d = 2*maxBendAngle/(multiplicity-1)
+      val angles = if ( multiplicity % 2 == 0 ) (for (i <- 0 to multiplicity/2 - 1) yield d/2 + i*d).flatMap( (x) => Seq(x,-x) )
+                   else 0.0 +: (for (i <- 1 to (multiplicity-1)/2) yield i * d).flatMap( (x) => Seq(x,-x) )
+      return angles.map( (x) => s"\\draw (${endpoints._1}) to [bend right=${x}] (${endpoints._2});\n").mkString
+    }
+    
+    val edgesWithMultiplicities = edgesToDraw.map( (x) => (x, edgesToDraw.count((y)=>y==x)) ).distinct
+    
+    for ((e,m) <- edgesWithMultiplicities) {
+      if (e._1 > G.numberOfInternalVertices) { // Edge with both endpoints on boundary
+        val bendAngle = if (e._2 - e._1 == G.numberOfBoundaryPoints/2) 0 else if (e._1 == 1 && e._2 > G.numberOfBoundaryPoints/2) -45 else 45 // Bend edge a little, unless it's a diagonal 
+        tikzString = tikzString ++ s"\\draw (${e._1}) to [bend right=$bendAngle] (${e._2});\n"
+      }
+      else { // All other edges
+        tikzString = tikzString ++ drawEdgeTikz(e, m, maxBend) // Change maximum bend angle here if needed. 45 degrees should generally be okay for trivalent graphs.
+      }
+    }
+    
+    tikzString = tikzString ++ "\\end{tikzpicture}"
     return tikzString
+  }
+  
+  def pdf(Gs: Seq[PlanarGraph], pdfPath: String, expansion: Double = 1.4, maxBend: Double = 45, imageScale: Double = 2.0): Unit = {
+    // Writes TikZ to tex file and runs pdflatex
+    val outputStr = Gs.map((x)=>DrawPlanarGraph(x, expansion, maxBend, imageScale)).mkString(
+        "\\documentclass{article}\n\\usepackage{tikz}\n\\begin{document}",
+        "\\bigskip\\bigskip\n\n",
+        "\n\\end{document}")
+    val dir = pdfPath.reverse.dropWhile(_!='/').reverse
+    val texPath = pdfPath.stripSuffix(".pdf") ++ ".tex"
+    Files.write(Paths.get(texPath),(outputStr).getBytes(StandardCharsets.UTF_8))
+    try s"pdflatex -output-directory=$dir $texPath".!!
+    catch {
+      case e:java.lang.Exception => { println("Error: Problem running pdflatex! Maybe check the filename and that the path exists?"); throw e }
+    }
   }
 }
