@@ -8,9 +8,11 @@ import java.nio.file.{Paths, Files}
 import scala.sys.process._
 
 object DrawPlanarGraph {
-  def apply(G: PlanarGraph, expansion: Double = 1.4, maxBend: Double = 45, imageScale: Double = 1.5): String = {
+  def apply(G: PlanarGraph, boundaryWeight: Double = 1.0, maxBend: Double = 45, imageScale: Double = 1.5): String = {
     // Outputs LaTeX TikZ code
-    // expansion controls how closely to "pull" the graph to the boundary
+    // boundaryWeight controls how much to weight the boundary points when calculating the positions of the internal vertices.
+    // Weight > 1 (~1.4) is generally good for single component graphs with many internal edges, but may output poor results
+    // for graphs with multiple components.
     // maxBendAngle is the largest angle through which to bend multiple edges
     // Doesn't handle self-edges, doesn't draw free loops
     
@@ -63,7 +65,7 @@ object DrawPlanarGraph {
         for (v <- 1 until vertexAdjs.length) {
           M(v - 1, v - 1) = -vertexAdjs(v).distinct.length // M(v-1,v-1) = -#neighbours of vertex v (we don't need the coords of the zeroth vertex) 
           for (w <- vertexAdjs(v)) { // M(v,w) = 1 for all neighbours w of v, modulo appropriate indexing
-            M(v - 1, w - 1) = if (w > G.numberOfInternalVertices) expansion else 1.0 // Weight boundary points more heavily to pull graph closer to boundary 
+            M(v - 1, w - 1) = if (w > G.numberOfInternalVertices) boundaryWeight else 1.0 // Weight boundary points more heavily to pull graph closer to boundary 
           }
         }
         val bxs = DenseVector(boundaryPointCoords.map(_._1).toArray)
@@ -114,10 +116,10 @@ object DrawPlanarGraph {
     return tikzString
   }
   
-  def pdf(Gs: Seq[PlanarGraph], pdfPath: String, expansion: Double = 1.4, maxBend: Double = 45, imageScale: Double = 2.0): Unit = {
+  def pdf(Gs: Seq[PlanarGraph], pdfPath: String, boundaryWeight: Double = 1.0, maxBend: Double = 45, imageScale: Double = 1.5): Unit = {
     // Writes TikZ to tex file and runs pdflatex
-    val outputStr = Gs.map((x)=>DrawPlanarGraph(x, expansion, maxBend, imageScale)).mkString(
-        "\\documentclass{article}\n\\usepackage{tikz}\n\\begin{document}",
+    val outputStr = Gs.map((x)=>DrawPlanarGraph(x, boundaryWeight, maxBend, imageScale)).mkString(
+        "\\documentclass{article}\n\\usepackage{tikz}\n\\begin{document}\n",
         "\\bigskip\\bigskip\n\n",
         "\n\\end{document}")
     val dir = pdfPath.reverse.dropWhile(_!='/').reverse
