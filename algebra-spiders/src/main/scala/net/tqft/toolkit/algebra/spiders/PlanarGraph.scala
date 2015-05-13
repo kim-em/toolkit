@@ -8,7 +8,7 @@ import scala.util.parsing.combinator.RegexParsers
 import scala.util.parsing.combinator.JavaTokenParsers
 
 // flags veer to the left
-// edges are ordered anti?clockwise around each vertex
+// edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
   //  verify
 

@@ -53,19 +53,22 @@ object Plantri extends Plantri {
   def parseEdgeCodeBytes(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = parseEdgeCodeBytes(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
 
   def edgeAdjListToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
+    // Constructs a PlanarGraph instance for a graph from its edge adjacency list.
+    // 
     // Input:  the edge adjacency list ("edge code") of a graph G as a
-    // IndexedSeq of IndexedSeqs of integers.
-    // The IndexedSeq of integers at index v is a CW sequence of edges out of vertex v.
+    // IndexedSeq of IndexedSeqs of integers, where
+    // the IndexedSeq of integers at index v is a CW sequence of edges out of vertex v.
     //
     // NOTES:
-    // 0. This code guaranteed safe for duals of disk triangulations output by plantri,
-    //    but is not guaranteed to work for all types of plantri output.
+    // 1. This code guaranteed safe for duals of disk triangulations output by plantri,
+    //    but is not guaranteed to work for other types of plantri output.
     // 
-    // 1. In order to correctly get the outerFace parameter for PlanarGraph we require
+    // 2. In order to correctly get the outerFace parameter for PlanarGraph we require
     //    the first vertex in the edge code to be on the outer face.
     //    plantri does this by default for duals of disk triangulations.
-    // 
-    // 2. Not guaranteed safe for graphs with loops! Will implement this later if necessary.
+    //
+    // 3. Does not work properly on graphs with self-edges (edges beginning and ending on the same vertex).
+    //    Will implement this later if needed.
 
     val numOfVertices = eAdjs.length
 
@@ -79,11 +82,11 @@ object Plantri extends Plantri {
 
     // Temporary variable (: IndexedSeq[(IndexedSeq[Int], Array[Int])]) en route to constructing final vertexFlags.
     // Construct IndexedSeq of tuples; the tuple (IndexedSeq, Array) in the v-th entry describes
-    // the ACW cyclic ordering of (edge, leftward face) pairings ("flags") around vertex v.
-    // The IndexedSeq in the first entry stores the ACW cyclic edge adjacencies, and
+    // the CW cyclic ordering of (edge, leftward face) pairings ("flags") around vertex v.
+    // The IndexedSeq in the first entry stores the CW cyclic edge adjacencies, and
     // the array (mutable!) in the second entry stores the leftward face associated to each edge.
     // We will update the arrays with face labels by traversing the graph.
-    var tmpVertexFlags = eAdjs.map(L => (L.reverse, Array.fill(L.length)(-1)))
+    var tmpVertexFlags = eAdjs.map(L => (L, Array.fill(L.length)(-1)))
 
     @tailrec def traverse(vertex: Int, edgeIndex: Int, faceLabel: Int): Unit = {
       // Take a vertex and
@@ -96,10 +99,10 @@ object Plantri extends Plantri {
         // Takes the current vertex we're on, and the edge to travel down,
         // and returns a tuple of (the vertex "nextVertex" we travel to, edge "leftTurn" out of nextVertex "to the left" of outEdge)
         val tmpNextVertex = vertexPairings(outEdge) diff Seq(currentVertex)
-        val nextVertex = if (tmpNextVertex.isEmpty) vertexPairings(outEdge).head else tmpNextVertex.head // Need this check to handle loops.
+        val nextVertex = if (tmpNextVertex.isEmpty) vertexPairings(outEdge).head else tmpNextVertex.head // Need this check to handle self-edges.
         // (Need more to handle nested loops however.)
         // Take the next edge from outEdge in the CW edge adjacencies for nextVertex 
-        val leftTurn = eAdjs(nextVertex)((eAdjs(nextVertex).indexOf(outEdge) + 1) % eAdjs(nextVertex).length) // This needs to be modified to handle loops properly.
+        val leftTurn = eAdjs(nextVertex)((eAdjs(nextVertex).indexOf(outEdge) + 1) % eAdjs(nextVertex).length) // This needs to be modified to handle self-edges properly.
 
         return (nextVertex, leftTurn)
       }
@@ -127,8 +130,8 @@ object Plantri extends Plantri {
     // vertexFlags: IndexedSeq[Seq[(Int, Int)]] describes the half edges coming out of each vertex
     val vertexFlags = for (v <- 0 until numOfVertices) yield (tmpVertexFlags(v)._1.zip(tmpVertexFlags(v)._2))
     val outerFace = vertexFlags(0).head._2
-    val labels = 0 until numOfVertices
-    val loops = 0 // vertexPairings.values.count(S => S.length == 1) once we correctly implement loop functionality
+    val labels = 1 until numOfVertices
+    val loops = 0
     
     return PlanarGraph(outerFace, vertexFlags, labels, loops)
   }
