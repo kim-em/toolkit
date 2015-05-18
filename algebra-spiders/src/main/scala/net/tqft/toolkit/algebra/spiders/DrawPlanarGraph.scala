@@ -6,6 +6,7 @@ import breeze.linalg._
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Paths, Files}
 import scala.sys.process._
+import scala.annotation._
 
 object DrawPlanarGraph {
   def apply(G: PlanarGraph, boundaryWeight: Double = 1.0, maxBend: Double = 45, imageScale: Double = 1.5): String = {
@@ -56,9 +57,8 @@ object DrawPlanarGraph {
     // Now handle drawing coordinates
     // Fix coords of boundary points and calculate coords of internal vertices as the weighted barycenters of their neighbours.
     val boundaryPointCoords = for (k <- 0 until G.numberOfBoundaryPoints)
-                              yield (round(cos(Pi - 2*Pi*k / G.numberOfBoundaryPoints), 6),
-                                     round(sin(Pi - 2*Pi*k / G.numberOfBoundaryPoints), 6))
-
+                              yield (round(cos(Pi + 2*Pi*k / G.numberOfBoundaryPoints), 6),
+                                     round(sin(Pi + 2*Pi*k / G.numberOfBoundaryPoints), 6))
     val internalVertexCoords =
       if (G.numberOfInternalVertices != 0) {
         val M = DenseMatrix.zeros[Double](G.numberOfInternalVertices, G.numberOfInternalVertices + G.numberOfBoundaryPoints)
@@ -97,18 +97,28 @@ object DrawPlanarGraph {
       val d = 2*maxBendAngle/(multiplicity-1)
       val angles = if ( multiplicity % 2 == 0 ) (for (i <- 0 to multiplicity/2 - 1) yield d/2 + i*d).flatMap( (x) => Seq(x,-x) )
                    else 0.0 +: (for (i <- 1 to (multiplicity-1)/2) yield i * d).flatMap( (x) => Seq(x,-x) )
-      return angles.map( (x) => s"\\draw (${endpoints._1}) to [bend right=${x}] (${endpoints._2});\n").mkString
+      return angles.map( (x) => s"\\draw (${endpoints._1}) to [bend left=${x}] (${endpoints._2});\n").mkString
     }
+    
+    def bend(u: Int, v: Int): Double =
+      // Messy; calculate bend angle for edges u -> v with both u and v on the boundary.
+      // Linearly interpolate between bend angle of 45 degrees for adjacent boundary points and 20 degrees for points that are one shy of forming a diagonal
+      if (v - u == G.numberOfBoundaryPoints/2) 0
+      else if (G.numberOfBoundaryPoints == 4) {
+        if (u == G.numberOfInternalVertices + 1 && v > G.numberOfInternalVertices + G.numberOfBoundaryPoints/2) -45
+        else 45
+      }
+      else if (v - u < G.numberOfBoundaryPoints/2) 45 + 50*(v - u - 1)/(4-G.numberOfBoundaryPoints)
+      else -bend( u, 2*(u + G.numberOfBoundaryPoints/2)-v )
     
     val edgesWithMultiplicities = edgesToDraw.map( (x) => (x, edgesToDraw.count((y)=>y==x)) ).distinct
     
     for ((e,m) <- edgesWithMultiplicities) {
       if (e._1 > G.numberOfInternalVertices) { // Edge with both endpoints on boundary
-        val bendAngle = if (e._2 - e._1 == G.numberOfBoundaryPoints/2) 0 else if (e._1 == 1 && e._2 > G.numberOfBoundaryPoints/2) -45 else 45 // Bend edge a little, unless it's a diagonal 
-        tikzString = tikzString ++ s"\\draw (${e._1}) to [bend right=$bendAngle] (${e._2});\n"
+        tikzString = tikzString ++ s"\\draw (${e._1}) to [bend left=${bend(e._1, e._2)}] (${e._2});\n"
       }
       else { // All other edges
-        tikzString = tikzString ++ drawEdgeTikz(e, m, maxBend) // Change maximum bend angle here if needed. 45 degrees should generally be okay for trivalent graphs.
+        tikzString = tikzString ++ drawEdgeTikz(e, m, maxBend)
       }
     }
     
