@@ -12,6 +12,22 @@ import scala.util.parsing.combinator.JavaTokenParsers
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
   //  verify
 
+  require(isAlternating_?)
+
+  def isAlternating_? = {
+    if (vertexFlags.tail.map(_.size).forall(_ == 4) && labels.forall(_ == 2)) {
+      (for (
+        edge <- edgeSet;
+        (v1, v2) = edgeVertexIncidences(edge);
+        if v1 != 0 && v2 != 0
+      ) yield {
+        (vertexFlags(v1).indexWhere(_._1 == edge) + vertexFlags(v2).indexWhere(_._1 == edge) + 1) % 2
+      }).forall(_ == 0)
+    } else {
+      true
+    }
+  }
+
   def verify = {
     // There are many things we might check here!
     require(loops >= 0)
@@ -240,7 +256,6 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     } else {
       resultFlags(0)(0)._2
     }
-    val result = PlanarGraph(newOuterFace, resultFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
 
     val vertexRotations = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
 
@@ -255,21 +270,25 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
     import net.tqft.toolkit.arithmetic.Mod._
 
-    val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(0))
+    val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), resultFlags(0))
 
     // Now, we check all the vertex rotations, fixing any that were rotated by an forbidden amount... This is a hack.
     val fixedFlags = for (i <- 1 until graph.numberOfVertices) yield {
-      val k = packed.vertexFlags(i).size
-      val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
+//      val k = packed.vertexFlags(i).size
+//      val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
+      val k = resultFlags(i).size
+      val j = identifyRotation(packed.vertexFlags(labelling(i)), resultFlags(i).map(p => (labelling(p._1), labelling(p._2))))
 
       val j0 = j mod packed.labels(i - 1)
 
       vertexRotations(k) = (vertexRotations(k) + j - j0) mod k
 
-      result.vertexFlags(i).rotateLeft(-j0)
+      resultFlags(i).rotateLeft(-j0)
     }
 
-    val fixedResult = result.copy(vertexFlags = result.vertexFlags.head +: fixedFlags)
+    //    val result = PlanarGraph(newOuterFace, resultFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
+
+    val fixedResult = PlanarGraph(newOuterFace, resultFlags.head +: fixedFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
 
     val finalResult = DiagramSpider.graphSpider.rotate(fixedResult, -boundaryRotation)
     val rotation = Rotation(Map() ++ vertexRotations)
@@ -785,7 +804,9 @@ object PlanarGraph {
   val cube = spider.multiply(polygon(4), polygon(4), 4)
 
   val twistedTetrahedron = spider.multiply(polygon(4), star(4, 2), 4)
-  
+
+  val hopfStrand = spider.multiply(star(4, 2), star(4, 2), 3)
+
   lazy val dodecahedron = {
     val penta5fork = {
       def f(g: PlanarGraph) = spider.rotate(spider.multiply(star(3), g, 1), 1)
