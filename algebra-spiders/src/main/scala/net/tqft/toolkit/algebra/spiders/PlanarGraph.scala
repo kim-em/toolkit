@@ -12,8 +12,6 @@ import scala.util.parsing.combinator.JavaTokenParsers
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
   //  verify
 
-  require(isAlternating_?)
-
   def isAlternating_? = {
     if (vertexFlags.tail.map(_.size).forall(_ == 4) && labels.forall(_ == 2)) {
       (for (

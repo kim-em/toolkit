@@ -42,11 +42,11 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
     monogonReduction,
     bigonReduction,
     triangleReduction,
-//    curlReduction1,
+    curlReduction1,
     twistedVertexReduction1,
-//    curlReduction2,
-    twistedVertexReduction2//,
-//    Reidemeister2Reduction
+    curlReduction2,
+    twistedVertexReduction2,
+    Reidemeister2Reduction
     )
 
   def actionOfBraiding(basis: Seq[PlanarGraph]) = {
