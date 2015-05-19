@@ -1,10 +1,10 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
 import scala.language.reflectiveCalls
-
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
 
 abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverField[R] {
   override lazy val vertexTypes = Seq(VertexType(3, 1), VertexType(4, 2))
@@ -42,11 +42,12 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
     monogonReduction,
     bigonReduction,
     triangleReduction,
-    curlReduction1,
+//    curlReduction1,
     twistedVertexReduction1,
-    curlReduction2,
-    twistedVertexReduction2,
-    Reidemeister2Reduction)
+//    curlReduction2,
+    twistedVertexReduction2//,
+//    Reidemeister2Reduction
+    )
 
   def actionOfBraiding(basis: Seq[PlanarGraph]) = {
     val m1 = Matrix(basis.size, innerProductMatrix(basis, basis.map(x => diagramSpider.multiply(x, crossing, 2))))
@@ -117,5 +118,16 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
       }).ensuring(_ != -1)
     }
   }
+}
 
+object BraidedTrivalentSpider extends BraidedTrivalentSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
+  override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
+  override def ring = implicitly[Field[MultivariableRationalFunction[Fraction[BigInt], String]]]
+
+  override val omega = ring.one
+
+  override val d: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("d" -> 1) -> 1)
+  override val b: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("b" -> 1) -> 1)
+  override val t: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("t" -> 1) -> 1)
+  override val z: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("z" -> 1) -> 1)
 }
