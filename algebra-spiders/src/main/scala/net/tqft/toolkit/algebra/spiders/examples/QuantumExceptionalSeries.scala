@@ -20,7 +20,7 @@ object QuantumExceptionalSeries extends BraidedTrivalentSpider[MultivariableRati
 
   override val d = -((brace(0, 2) * bracket(1, 5) * bracket(1, -6)) / (bracket(1, 0) * bracket(1, -1)))
   override val b = (brace(1, 2) * brace(1, -3) * bracket(0, 3)) / bracket(0, 1)
-  override val t = brace(0, 1) * ((v + (v ^ (-1))) * ((w ^ 2) * (v ^ (-1)) + (w ^ (-2)) * v)) + ((v ^ 4) - (v ^ 2) - 1 - (v ^ (-2)) + (v ^ (-4)))
+  override val t = brace(0, 1) * ((v + (v ^ (-1))) * ((w ^ 2) * (v ^ (-1)) + (w ^ (-2)) * v) + (v ^ 4) - (v ^ 2) - 1 - (v ^ (-2)) + (v ^ (-4)))
   override def z = -(v ^ 6)
 
   override def reductions = super.reductions
