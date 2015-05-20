@@ -10,7 +10,13 @@ trait Spider[A] {
 
   def circumference(a: A): Int
 
-  def stitchAt(a: A, k: Int): A = rotate(stitch(rotate(a, 1 - k)), k - 1)
+  def stitchAt(a: A, k: Int): A = {
+//    println("stitching, a = " + a)
+    val result = rotate(stitch(rotate(a, 1 - k)), k - 1)
+//    println(s"stitching at $k")
+//    println("result = "  +result)
+    result
+  }
   def stitchesAt(a: A, k: Int, m: Int): A = (k until k - m by -1).foldLeft(a)(stitchAt)
 
   def multiply(a1: A, a2: A, m: Int): A = {
@@ -18,6 +24,7 @@ trait Spider[A] {
   }
 
   def innerProduct(a1: A, a2: A): A = {
+//    println(s"computing inner product of a1 = $a1, a2 = $a2")
     multiply(a1, a2, circumference(a1))
   }
   def normSquared(a: A): A = {

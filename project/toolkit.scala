@@ -262,7 +262,7 @@ object Dependencies {
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0-M6"
 	val spire = "org.spire-math" %% "spire" % "0.7.1"
 	object omath {
-		val parser = "org.omath" %% "omath-parser" % "0.0.1-SNAPSHOT"
+		val parser = "org.omath" %% "omath-parser" % "0.0.1"
 	}
 }
 

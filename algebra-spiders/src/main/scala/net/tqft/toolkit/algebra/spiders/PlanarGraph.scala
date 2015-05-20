@@ -11,7 +11,7 @@ import scala.util.parsing.combinator.JavaTokenParsers
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
   //  verify
-
+  
   def isAlternating_? = {
     if (vertexFlags.tail.map(_.size).forall(_ == 4) && labels.forall(_ == 2)) {
       (for (
@@ -277,7 +277,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       val k = resultFlags(i).size
       val j = identifyRotation(packed.vertexFlags(labelling(i)), resultFlags(i).map(p => (labelling(p._1), labelling(p._2))))
 
-      val j0 = j mod packed.labels(i - 1)
+      val j0 = j mod packed.labels(labelling(i) - 1)
 
       vertexRotations(k) = (vertexRotations(k) + j - j0) mod k
 

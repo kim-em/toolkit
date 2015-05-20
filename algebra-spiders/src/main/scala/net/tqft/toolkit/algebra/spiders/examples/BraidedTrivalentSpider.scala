@@ -26,14 +26,14 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
   private lazy val bigonReduction = Reduction(PlanarGraph.polygon(2), Map(PlanarGraph.strand -> b))
   private lazy val triangleReduction = Reduction(PlanarGraph.polygon(3), Map(PlanarGraph.star(3) -> t))
 
-  protected val vertex = PlanarGraph.star(3, 1)
-  protected val crossing = PlanarGraph.star(4, 2)
+   val vertex = PlanarGraph.star(3, 1)
+   val crossing = PlanarGraph.star(4, 2)
 
-  private lazy val curlReduction1 = Reduction(diagramSpider.stitch(crossing), Map(PlanarGraph.strand -> ring.power(z, 2)))
-  private lazy val twistedVertexReduction1 = Reduction(diagramSpider.multiply(crossing, vertex, 2), Map(vertex -> z))
-  private lazy val curlReduction2 = Reduction(diagramSpider.stitch(diagramSpider.rotate(crossing, 1)), Map(PlanarGraph.strand -> ring.power(z, -2)))
-  private lazy val twistedVertexReduction2 = Reduction(diagramSpider.multiply(diagramSpider.rotate(crossing, 1), vertex, 2), Map(vertex -> ring.power(z, -1)))
-  private lazy val Reidemeister2Reduction = Reduction(
+   lazy val curlReduction1 = Reduction(diagramSpider.stitch(crossing), Map(PlanarGraph.strand -> ring.power(z, -2)))
+   lazy val twistedVertexReduction1 = Reduction(diagramSpider.multiply(crossing, vertex, 2), Map(vertex -> ring.power(z,-1)))
+   lazy val curlReduction2 = Reduction(diagramSpider.stitch(diagramSpider.rotate(crossing, 1)), Map(PlanarGraph.strand -> ring.power(z, 2)))
+   lazy val twistedVertexReduction2 = Reduction(diagramSpider.multiply(diagramSpider.rotate(crossing, 1), vertex, 2), Map(vertex -> ring.power(z, 1)))
+   lazy val Reidemeister2Reduction = Reduction(
     diagramSpider.multiply(crossing, diagramSpider.rotate(crossing, 1), 2),
     Map(PlanarGraph.two_strands_vertical -> ring.one))
 
