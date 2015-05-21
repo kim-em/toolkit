@@ -8,7 +8,7 @@ package object spiders {
   }
 
   object TrivalentGraphs {
-    val graphs = GraphsGeneratedBy(Seq((3, 1)))
+    val graphs = GraphsGeneratedBy(Seq((3, 0, 1)))
 
     private val tinyFaces = for (i <- 1 to 3) yield PlanarGraph.polygon(i)
     private val smallFaces = for (i <- 1 to 4) yield PlanarGraph.polygon(i)

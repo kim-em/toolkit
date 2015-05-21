@@ -11,9 +11,9 @@ import scala.util.parsing.combinator.JavaTokenParsers
 // edges are ordered clockwise around each vertex
 case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[(Int, Int)], loops: Int) { graph =>
   //  verify
-  
+
   def isAlternating_? = {
-    if (vertexFlags.tail.map(_.size).forall(_ == 4) && labels.forall(_ == 2)) {
+    if (vertexFlags.tail.map(_.size).forall(_ == 4) && labels.forall(_._2 == 2)) {
       (for (
         edge <- edgeSet;
         (v1, v2) = edgeVertexIncidences(edge);
@@ -272,8 +272,8 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
     // Now, we check all the vertex rotations, fixing any that were rotated by an forbidden amount... This is a hack.
     val fixedFlags = for (i <- 1 until graph.numberOfVertices) yield {
-//      val k = packed.vertexFlags(i).size
-//      val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
+      //      val k = packed.vertexFlags(i).size
+      //      val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
       val k = resultFlags(i).size
       val j = identifyRotation(packed.vertexFlags(labelling(i)), resultFlags(i).map(p => (labelling(p._1), labelling(p._2))))
 
@@ -286,7 +286,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
     //    val result = PlanarGraph(newOuterFace, resultFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
 
-    val fixedResult = PlanarGraph(newOuterFace, resultFlags.head +: fixedFlags, labelling.take(packed.numberOfVertices).permute((-1,-1) +: packed.labels).tail, graph.loops)
+    val fixedResult = PlanarGraph(newOuterFace, resultFlags.head +: fixedFlags, labelling.take(packed.numberOfVertices).permute((-1, -1) +: packed.labels).tail, graph.loops)
 
     val finalResult = DiagramSpider.graphSpider.rotate(fixedResult, -boundaryRotation)
     val rotation = Rotation(Map() ++ vertexRotations)
@@ -488,7 +488,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
         val newInternalFlags = vertexFlags.zipWithIndex.tail.collect({
           case (flags, i) if !verticesToDelete.contains(i) => flags.map(updateFlag(i, false))
         })
-        val newLabels = ((-1,-1) +: labels).zipWithIndex.collect({ case (l, i) if !verticesToDelete.contains(i) => l }).tail
+        val newLabels = ((-1, -1) +: labels).zipWithIndex.collect({ case (l, i) if !verticesToDelete.contains(i) => l }).tail
         val result = PlanarGraph(if (numberOfBoundaryPoints == 0) newFace else outerFace, newExternalFlag +: newInternalFlags, newLabels, loops - loopsToDelete)
         require(result.numberOfBoundaryPoints == boundaryEdgesAndFacesToDelete.size + graph.numberOfBoundaryPoints)
         result
@@ -771,7 +771,7 @@ object PlanarGraph {
       import net.tqft.toolkit.arithmetic.Mod._
       val flags = IndexedSeq.tabulate(k)(i => (i + k + 1, i + 3 * k + 1)) +:
         IndexedSeq.tabulate(k)(i => IndexedSeq((i + 2 * k + 1, 4 * k + 1), (i + k + 1, (i + 1 mod k) + 3 * k + 1), ((i - 1 mod k) + 2 * k + 1, i + 3 * k + 1)))
-      PlanarGraph(3 * k + 1, flags, IndexedSeq.fill(k)((0,1)), 0)
+      PlanarGraph(3 * k + 1, flags, IndexedSeq.fill(k)((1, 0)), 0)
     }
   }
 
@@ -780,11 +780,12 @@ object PlanarGraph {
     (polygon_ _).memo
   }
 
-  private def star_(k: Int, r: Int) = {
+  private def star_(t: (Int, Int, Int)) = {
+    val (k, l, r) = t
     val flags = IndexedSeq(
       Seq.tabulate(k)(i => (i + 2, i + k + 2)),
       Seq.tabulate(k)(i => (i + 2, ((i + 1) % k) + k + 2)).reverse)
-    PlanarGraph(k + 2, flags, IndexedSeq((0,r)), 0)
+    PlanarGraph(k + 2, flags, IndexedSeq((r, l)), 0)
   }
 
   private val starCache = {
@@ -792,7 +793,7 @@ object PlanarGraph {
     Memo(star_ _)
   }
 
-  def star(k: Int, r: Int = 1) = starCache(k, r)
+  def star(k: Int, l: Int = 0, r: Int = 1) = starCache((k, l, r))
 
   val I = spider.multiply(spider.rotate(star(3), 1), spider.rotate(star(3), -1), 1)
   val H = spider.rotate(I, 1)

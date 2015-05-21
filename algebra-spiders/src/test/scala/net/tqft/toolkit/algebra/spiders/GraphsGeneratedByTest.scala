@@ -6,8 +6,8 @@ import org.scalatest._
 
 @RunWith(classOf[JUnitRunner])
 class GraphsGeneratedByTest extends FlatSpec with Matchers with IsomorphismMatchers {
-  val trivalentEnumerator = GraphsGeneratedBy(Seq((3, 1)))
-  val tetravalentEnumerator = GraphsGeneratedBy(Seq((4, 1)))
+  val trivalentEnumerator = GraphsGeneratedBy(Seq((3, 0, 1)))
+  val tetravalentEnumerator = GraphsGeneratedBy(Seq((4, 0, 1)))
 
   val freeTetravalent = tetravalentEnumerator.avoiding(Seq())
   val withoutSmallFaces = trivalentEnumerator.avoiding(for (i <- 1 to 4) yield PlanarGraph.polygon(i))
