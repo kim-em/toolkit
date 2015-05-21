@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import java.io.FileWriter
+import java.io.PrintWriter
 package object spiders {
   implicit class RichSeq[A](x: Seq[A]) {
     def most = x.dropRight(1)
@@ -7,6 +9,8 @@ package object spiders {
     def secondLast = x(x.size - 2)
   }
 
+  val pw = new PrintWriter(new FileWriter("/Users/scott/spiders.log"))
+  
   object TrivalentGraphs {
     val graphs = GraphsGeneratedBy(Seq((3, 0, 1)))
 
