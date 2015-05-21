@@ -7,6 +7,7 @@ trait Spider[A] {
   def tensor(a1: A, a2: A): A
   def tensorProduct(as: Seq[A]): A = as.reduce(tensor)
   def stitch(a: A): A
+  //def assembleAlongPlanarPartition(partition: Seq[Seq[Int]], ds: Seq[A]): A
 
   def circumference(a: A): Int
 
