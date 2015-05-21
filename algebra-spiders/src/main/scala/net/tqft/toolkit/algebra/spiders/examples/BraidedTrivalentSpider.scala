@@ -26,8 +26,8 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
   private lazy val bigonReduction = Reduction(PlanarGraph.polygon(2), Map(PlanarGraph.strand -> b))
   private lazy val triangleReduction = Reduction(PlanarGraph.polygon(3), Map(PlanarGraph.star(3) -> t))
 
-   val vertex = PlanarGraph.star(3, 1)
-   val crossing = PlanarGraph.star(4, 2)
+   val vertex = PlanarGraph.star(3, 0, 1)
+   val crossing = PlanarGraph.star(4, 0, 2)
 
    lazy val curlReduction1 = Reduction(diagramSpider.stitch(crossing), Map(PlanarGraph.strand -> ring.power(z, -2)))
    lazy val twistedVertexReduction1 = Reduction(diagramSpider.multiply(crossing, vertex, 2), Map(vertex -> ring.power(z,-1)))

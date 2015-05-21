@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    240453,       5879]
-NotebookOptionsPosition[    236191,       5742]
-NotebookOutlinePosition[    236551,       5758]
-CellTagsIndexPosition[    236508,       5755]
+NotebookDataLength[    245847,       6084]
+NotebookOptionsPosition[    242916,       5985]
+NotebookOutlinePosition[    243271,       6001]
+CellTagsIndexPosition[    243228,       5998]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -66,6 +66,36 @@ Cell[BoxData[
 
 Cell[CellGroupData[{
 
+Cell[BoxData["\<\"Found some new closed diagrams... trying all possible \
+evaluations.\"\>"], "Print",
+ CellChangeTimes->{3.641068855143517*^9, 3.641071002671831*^9, 
+  3.6410710608717003`*^9, 3.641081239336713*^9, 3.6410822324317627`*^9, 
+  3.641082386026952*^9, 3.641087472523363*^9, 3.641089496074432*^9, 
+  3.6411526342070723`*^9, 3.641154309907474*^9, 3.6411566482057323`*^9, 
+  3.6411607685461063`*^9, 3.641161586395585*^9, 3.641162613786551*^9, 
+  3.6411644154739513`*^9, 3.641198930517502*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Considering a new closed diagram: \"\>", "\[InvisibleSpace]", 
+   InterpretationBox[
+    RowBox[{"\[LeftGuillemet]", 
+     RowBox[{"JavaObject", "[", 
+      RowBox[{
+      "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
+        "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+    JLink`Objects`vm1`JavaObject29280695549427719]}],
+  SequenceForm[
+  "Considering a new closed diagram: ", 
+   JLink`Objects`vm1`JavaObject29280695549427719],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.641068855143517*^9, 3.641071002671831*^9, 
+  3.6410710608717003`*^9, 3.641081239336713*^9, 3.6410822324317627`*^9, 
+  3.641082386026952*^9, 3.641087472523363*^9, 3.641089496074432*^9, 
+  3.6411526342070723`*^9, 3.641154309907474*^9, 3.6411566482057323`*^9, 
+  3.6411607685461063`*^9, 3.641161586395585*^9, 3.641162613786551*^9, 
+  3.6411644154739513`*^9, 3.641198930518989*^9}],
+
 Cell[BoxData["\<\"We now consider the diagram \
 PlanarGraph(2,Vector(List((1,2), (1,3))),List(),0), insisting that it is \
 independent.\"\>"], "Print",
@@ -74,7 +104,7 @@ independent.\"\>"], "Print",
   3.641082386026952*^9, 3.641087472523363*^9, 3.641089496074432*^9, 
   3.6411526342070723`*^9, 3.641154309907474*^9, 3.6411566482057323`*^9, 
   3.6411607685461063`*^9, 3.641161586395585*^9, 3.641162613786551*^9, 
-  3.6411644154739513`*^9}],
+  3.6411644154739513`*^9, 3.641198930545006*^9}],
 
 Cell[BoxData["\<\"The number of independent diagrams of size \\(2\\) has now \
 hit the upper bound of \\(1\\)\"\>"], "Print",
@@ -83,7 +113,7 @@ hit the upper bound of \\(1\\)\"\>"], "Print",
   3.641082386026952*^9, 3.641087472523363*^9, 3.641089496074432*^9, 
   3.6411526342070723`*^9, 3.641154309907474*^9, 3.6411566482057323`*^9, 
   3.6411607685461063`*^9, 3.641161586395585*^9, 3.641162613786551*^9, 
-  3.641164415479789*^9}],
+  3.6411644154739513`*^9, 3.641198930546463*^9}],
 
 Cell[BoxData["\<\"We now insist that the matrix of inner products of the \
 independent diagrams of size \\(2\\) is non-zero.\"\>"], "Print",
@@ -92,7 +122,45 @@ independent diagrams of size \\(2\\) is non-zero.\"\>"], "Print",
   3.641082386026952*^9, 3.641087472523363*^9, 3.641089496074432*^9, 
   3.6411526342070723`*^9, 3.641154309907474*^9, 3.6411566482057323`*^9, 
   3.6411607685461063`*^9, 3.641161586395585*^9, 3.641162613786551*^9, 
-  3.641164415487115*^9}]
+  3.6411644154739513`*^9, 3.641198930548115*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"matrix: \"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"{", "d", "}"}], "}"}]}],
+  SequenceForm["matrix: ", {{$CellContext`d}}],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.641068855143517*^9, 3.641071002671831*^9, 
+  3.6410710608717003`*^9, 3.641081239336713*^9, 3.6410822324317627`*^9, 
+  3.641082386026952*^9, 3.641087472523363*^9, 3.641089496074432*^9, 
+  3.6411526342070723`*^9, 3.641154309907474*^9, 3.6411566482057323`*^9, 
+  3.6411607685461063`*^9, 3.641161586395585*^9, 3.641162613786551*^9, 
+  3.6411644154739513`*^9, 3.641198930549818*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"determinant: \"\>", "\[InvisibleSpace]", "d"}],
+  SequenceForm["determinant: ", $CellContext`d],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.641068855143517*^9, 3.641071002671831*^9, 
+  3.6410710608717003`*^9, 3.641081239336713*^9, 3.6410822324317627`*^9, 
+  3.641082386026952*^9, 3.641087472523363*^9, 3.641089496074432*^9, 
+  3.6411526342070723`*^9, 3.641154309907474*^9, 3.6411566482057323`*^9, 
+  3.6411607685461063`*^9, 3.641161586395585*^9, 3.641162613786551*^9, 
+  3.6411644154739513`*^9, 3.641198930551176*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"determinant: \"\>", "\[InvisibleSpace]", "d"}],
+  SequenceForm["determinant: ", $CellContext`d],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.641068855143517*^9, 3.641071002671831*^9, 
+  3.6410710608717003`*^9, 3.641081239336713*^9, 3.6410822324317627`*^9, 
+  3.641082386026952*^9, 3.641087472523363*^9, 3.641089496074432*^9, 
+  3.6411526342070723`*^9, 3.641154309907474*^9, 3.6411566482057323`*^9, 
+  3.6411607685461063`*^9, 3.641161586395585*^9, 3.641162613786551*^9, 
+  3.6411644154739513`*^9, 3.6411989305525208`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -105,17 +173,18 @@ Cell[BoxData[
        RowBox[{
        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
         ".", "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
-     JLink`Objects`vm1`JavaObject16215167519948801], ",", 
+     JLink`Objects`vm1`JavaObject23188713215361025], ",", 
     RowBox[{"Manifold", "[", 
      RowBox[{
       RowBox[{"{", 
        RowBox[{
+        RowBox[{"b", "\[Rule]", "1"}], ",", 
         RowBox[{
          SubscriptBox["p", "1"], "\[Rule]", 
-         RowBox[{"b", " ", "d", " ", "t"}]}], ",", 
+         RowBox[{"d", " ", "t"}]}], ",", 
         RowBox[{
-         SubscriptBox["p", "2"], "\[Rule]", 
-         RowBox[{"b", " ", "d", " ", "t"}]}]}], "}"}], ",", 
+         SubscriptBox["p", "3"], "\[Rule]", 
+         RowBox[{"d", " ", "t"}]}]}], "}"}], ",", 
       RowBox[{"{", "}"}], ",", 
       RowBox[{"{", 
        RowBox[{"d", ",", "z"}], "}"}]}], "]"}], ",", 
@@ -136,6 +205,16 @@ Cell[BoxData[
      RowBox[{"{", "}"}],
      Short], ",", 
     TagBox[
+     RowBox[{"{", 
+      InterpretationBox[
+       RowBox[{"\[LeftGuillemet]", 
+        RowBox[{"JavaObject", "[", 
+         RowBox[{
+         "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+          ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+       JLink`Objects`vm1`JavaObject29280695549427719], "}"}],
+     Short], ",", 
+    TagBox[
      RowBox[{"{", "}"}],
      Short], ",", 
     TagBox[
@@ -146,7 +225,7 @@ Cell[BoxData[
   3.641082386057774*^9, 3.641087472561462*^9, 3.6410894967556763`*^9, 
   3.641152634718041*^9, 3.641154309937242*^9, 3.6411566486866426`*^9, 
   3.6411607685742903`*^9, 3.641161586428299*^9, 3.641162613814302*^9, 
-  3.641164415494931*^9}]
+  3.641164415494931*^9, 3.641198930554432*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -168,113 +247,6 @@ Cell[BoxData[
   3.622250575973856*^9}, {3.622420942391214*^9, 3.622420943892847*^9}, {
   3.641004925885804*^9, 3.641004929428852*^9}}],
 
-Cell[CellGroupData[{
-
-Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(8,Vector(List((4,8), (3,11)), List((3,8), (5,11), (7,9), (6,10)), \
-List((5,9), (4,11), (6,8), (7,10))),List(2, 2),0), insisting that it is \
-dependent.\"\>"], "Print",
- CellChangeTimes->{3.641071015965357*^9, 3.641071061717863*^9, 
-  3.64108124024413*^9, 3.641082245428451*^9, 3.641082386877548*^9, 
-  3.6410874734051723`*^9, 3.641089497799446*^9, 3.64115263576928*^9, 
-  3.641154310831108*^9, 3.641156649633441*^9, 3.641160769426078*^9, 
-  3.641161587254477*^9, 3.641162614694717*^9, 3.641164416304183*^9}],
-
-Cell[BoxData["\<\"We find a candidate relation \\(\\\\{-b t,1\\\\}\\)\"\>"], \
-"Print",
- CellChangeTimes->{3.641071015965357*^9, 3.641071061717863*^9, 
-  3.64108124024413*^9, 3.641082245428451*^9, 3.641082386877548*^9, 
-  3.6410874734051723`*^9, 3.641089497799446*^9, 3.64115263576928*^9, 
-  3.641154310831108*^9, 3.641156649633441*^9, 3.641160769426078*^9, 
-  3.641161587254477*^9, 3.641162614694717*^9, 3.6411644163774776`*^9}],
-
-Cell[BoxData["\<\"starting innerProductMatrix\"\>"], "Print",
- CellChangeTimes->{3.641071015965357*^9, 3.641071061717863*^9, 
-  3.64108124024413*^9, 3.641082245428451*^9, 3.641082386877548*^9, 
-  3.6410874734051723`*^9, 3.641089497799446*^9, 3.64115263576928*^9, 
-  3.641154310831108*^9, 3.641156649633441*^9, 3.641160769426078*^9, 
-  3.641161587254477*^9, 3.641162614694717*^9, 3.641164416388607*^9}],
-
-Cell[BoxData["\<\"QuotientSpider(ArrayBuffer((VertexType(3,1),Fraction(\
-MultivariablePolynomial(Map(Map() -> Fraction(1, 1))), \
-MultivariablePolynomial(Map(Map() -> Fraction(1, 1))))), \
-(VertexType(4,2),Fraction(MultivariablePolynomial(Map(Map() -> Fraction(1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))), \
-List(Reduction(PlanarGraph(1,Vector(Vector()),Vector(),1), \
-Map(PlanarGraph(1,Vector(Vector()),Vector(),0) -> d)), \
-Reduction(PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
-(3,4))),Vector(1),0), Map(PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), \
-(2,4), (3,4))),Vector(1),0) -> 0)), \
-Reduction(PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
-(6,7)), Vector((6,9), (4,7), (5,8))),Vector(1, 1),0), \
-Map(PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0) -> b)), \
-Reduction(PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), \
-Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), \
-Vector((9,13), (6,10), (8,12))),Vector(1, 1, 1),0), \
-Map(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector(1),0) -> t)), Reduction(PlanarGraph(6,Vector(List((2,6), \
-(3,7)), List((4,6), (4,9), (3,6), (2,7))),Vector(2),0), \
-Map(PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0) -> ((1)) / \
-(z^2))), Reduction(PlanarGraph(6,Vector(List((8,6), (4,8), (5,9)), \
-List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), (8,8))),Vector(2, 1),0), \
-Map(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector(1),0) -> ((1)) / (z))), \
-Reduction(PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector(2),0), Map(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0) -> z^2)), Reduction(PlanarGraph(7,Vector(List((8,7), \
-(5,9), (2,6)), List((5,6), (4,9), (3,8), (2,7)), List((3,7), (4,8), \
-(8,9))),Vector(2, 1),0), Map(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), \
-List((4,5), (3,7), (2,6))),Vector(1),0) -> z)), \
-Reduction(PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), (5,9)), \
-List((5,6), (4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), \
-(2,6))),Vector(2, 2),0), Map(PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
-(1,0))),Vector(),0) -> (1))))))\"\>"], "Print",
- CellChangeTimes->{3.641071015965357*^9, 3.641071061717863*^9, 
-  3.64108124024413*^9, 3.641082245428451*^9, 3.641082386877548*^9, 
-  3.6410874734051723`*^9, 3.641089497799446*^9, 3.64115263576928*^9, 
-  3.641154310831108*^9, 3.641156649633441*^9, 3.641160769426078*^9, 
-  3.641161587254477*^9, 3.641162614694717*^9, 3.641164416398984*^9}],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{"\<\"PlanarGraph(2,Vector(List((1,2), (1,3))),List(),0)\"\>", 
-   ",", "\<\"PlanarGraph(8,Vector(List((4,8), (3,11)), List((3,8), (5,11), \
-(7,9), (6,10)), List((5,9), (4,11), (6,8), (7,10))),List(2, 2),0)\"\>"}], 
-  "}"}]], "Print",
- CellChangeTimes->{3.641071015965357*^9, 3.641071061717863*^9, 
-  3.64108124024413*^9, 3.641082245428451*^9, 3.641082386877548*^9, 
-  3.6410874734051723`*^9, 3.641089497799446*^9, 3.64115263576928*^9, 
-  3.641154310831108*^9, 3.641156649633441*^9, 3.641160769426078*^9, 
-  3.641161587254477*^9, 3.641162614694717*^9, 3.6411644164110518`*^9}],
-
-Cell[BoxData["\<\"finished innerProductMatrix\"\>"], "Print",
- CellChangeTimes->{3.641071015965357*^9, 3.641071061717863*^9, 
-  3.64108124024413*^9, 3.641082245428451*^9, 3.641082386877548*^9, 
-  3.6410874734051723`*^9, 3.641089497799446*^9, 3.64115263576928*^9, 
-  3.641154310831108*^9, 3.641156649633441*^9, 3.641160769426078*^9, 
-  3.641161587254477*^9, 3.641162614694717*^9, 3.641164416476565*^9}],
-
-Cell[BoxData["\<\"We now add this relation to the set of reducing \
-relations.\"\>"], "Print",
- CellChangeTimes->{3.641071015965357*^9, 3.641071061717863*^9, 
-  3.64108124024413*^9, 3.641082245428451*^9, 3.641082386877548*^9, 
-  3.6410874734051723`*^9, 3.641089497799446*^9, 3.64115263576928*^9, 
-  3.641154310831108*^9, 3.641156649633441*^9, 3.641160769426078*^9, 
-  3.641161587254477*^9, 3.641162614694717*^9, 3.641164416486719*^9}],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\<\"byte counts: \"\>", "\[InvisibleSpace]", 
-   RowBox[{"{", "80", "}"}]}],
-  SequenceForm["byte counts: ", {80}],
-  Editable->False]], "Print",
- CellChangeTimes->{3.641071015965357*^9, 3.641071061717863*^9, 
-  3.64108124024413*^9, 3.641082245428451*^9, 3.641082386877548*^9, 
-  3.6410874734051723`*^9, 3.641089497799446*^9, 3.64115263576928*^9, 
-  3.641154310831108*^9, 3.641156649633441*^9, 3.641160769426078*^9, 
-  3.641161587254477*^9, 3.641162614694717*^9, 3.641164416496117*^9}]
-}, Open  ]],
-
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
@@ -285,17 +257,26 @@ Cell[BoxData[
        RowBox[{
        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
         ".", "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
-     JLink`Objects`vm1`JavaObject7553862516867074], ",", 
+     JLink`Objects`vm1`JavaObject8406995409305602], ",", 
     RowBox[{"Manifold", "[", 
      RowBox[{
       RowBox[{"{", 
        RowBox[{
+        RowBox[{"b", "\[Rule]", "1"}], ",", 
         RowBox[{
          SubscriptBox["p", "1"], "\[Rule]", 
-         RowBox[{"b", " ", "d", " ", "t"}]}], ",", 
+         RowBox[{"d", " ", "t"}]}], ",", 
         RowBox[{
-         SubscriptBox["p", "2"], "\[Rule]", 
-         RowBox[{"b", " ", "d", " ", "t"}]}]}], "}"}], ",", 
+         SubscriptBox["p", "3"], "\[Rule]", 
+         RowBox[{"d", " ", "t"}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "4"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["t", "2"]}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "5"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["t", "2"]}]}]}], "}"}], ",", 
       RowBox[{"{", "}"}], ",", 
       RowBox[{"{", 
        RowBox[{"d", ",", "z"}], "}"}]}], "]"}], ",", 
@@ -320,7 +301,31 @@ Cell[BoxData[
          RowBox[{
          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-       JLink`Objects`vm1`JavaObject31975445490565123], "}"}],
+       JLink`Objects`vm1`JavaObject2213081774030851], "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", 
+      RowBox[{
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+         "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject19151368426094597], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject29535921296637957]}], "}"}],
      Short], ",", 
     TagBox[
      RowBox[{"{", 
@@ -328,8 +333,7 @@ Cell[BoxData[
        RowBox[{
         RowBox[{"{", 
          RowBox[{
-          RowBox[{
-           RowBox[{"-", "b"}], " ", "t"}], ",", 
+          RowBox[{"-", "t"}], ",", 
           InterpretationBox[
            RowBox[{"\[LeftGuillemet]", 
             RowBox[{"JavaObject", "[", 
@@ -345,7 +349,7 @@ Cell[BoxData[
              RowBox[{
              "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
               "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-           JLink`Objects`vm1`JavaObject31975445490565123]}], "}"}]}], "}"}], 
+           JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
       "}"}],
      Short], ",", 
     TagBox[
@@ -356,7 +360,7 @@ Cell[BoxData[
   3.6410823871089773`*^9, 3.641087473746201*^9, 3.6410894986142397`*^9, 
   3.641152636588368*^9, 3.641154311147656*^9, 3.641156650844912*^9, 
   3.641160769702455*^9, 3.6411615875650043`*^9, 3.6411626149231253`*^9, 
-  3.641164416563045*^9}]
+  3.641164416563045*^9, 3.641198934611312*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -386,14 +390,42 @@ Cell[BoxData[
 
 Cell[CellGroupData[{
 
-Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(5,Vector(List((2,5), (4,6), (3,7)), List((2,6), (3,5), \
-(4,7))),List(1),0), insisting that it is independent.\"\>"], "Print",
+Cell[BoxData["\<\"Found some new closed diagrams... trying all possible \
+evaluations.\"\>"], "Print",
  CellChangeTimes->{3.641071072887073*^9, 3.641081241338369*^9, 
   3.6410822536178703`*^9, 3.641082394680059*^9, 3.641087475264209*^9, 
   3.641089499570237*^9, 3.641152637545971*^9, 3.641154311990604*^9, 
   3.641156658281983*^9, 3.641160773982983*^9, 3.641161591507759*^9, 
-  3.6411626157595253`*^9, 3.641164417447308*^9}],
+  3.6411626157595253`*^9, 3.641164417447308*^9, 3.641198954084859*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Considering a new closed diagram: \"\>", "\[InvisibleSpace]", 
+   InterpretationBox[
+    RowBox[{"\[LeftGuillemet]", 
+     RowBox[{"JavaObject", "[", 
+      RowBox[{
+      "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
+        "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+    JLink`Objects`vm1`JavaObject29350325156577293]}],
+  SequenceForm[
+  "Considering a new closed diagram: ", 
+   JLink`Objects`vm1`JavaObject29350325156577293],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.641071072887073*^9, 3.641081241338369*^9, 
+  3.6410822536178703`*^9, 3.641082394680059*^9, 3.641087475264209*^9, 
+  3.641089499570237*^9, 3.641152637545971*^9, 3.641154311990604*^9, 
+  3.641156658281983*^9, 3.641160773982983*^9, 3.641161591507759*^9, 
+  3.6411626157595253`*^9, 3.641164417447308*^9, 3.641198954086316*^9}],
+
+Cell[BoxData["\<\"We now consider the diagram \
+PlanarGraph(5,Vector(List((2,5), (4,6), (3,7)), List((2,6), (3,5), \
+(4,7))),List((1,0)),0), insisting that it is independent.\"\>"], "Print",
+ CellChangeTimes->{3.641071072887073*^9, 3.641081241338369*^9, 
+  3.6410822536178703`*^9, 3.641082394680059*^9, 3.641087475264209*^9, 
+  3.641089499570237*^9, 3.641152637545971*^9, 3.641154311990604*^9, 
+  3.641156658281983*^9, 3.641160773982983*^9, 3.641161591507759*^9, 
+  3.6411626157595253`*^9, 3.641164417447308*^9, 3.641198954088238*^9}],
 
 Cell[BoxData["\<\"The number of independent diagrams of size \\(3\\) has now \
 hit the upper bound of \\(1\\)\"\>"], "Print",
@@ -401,7 +433,7 @@ hit the upper bound of \\(1\\)\"\>"], "Print",
   3.6410822536178703`*^9, 3.641082394680059*^9, 3.641087475264209*^9, 
   3.641089499570237*^9, 3.641152637545971*^9, 3.641154311990604*^9, 
   3.641156658281983*^9, 3.641160773982983*^9, 3.641161591507759*^9, 
-  3.6411626157595253`*^9, 3.641164417456091*^9}],
+  3.6411626157595253`*^9, 3.641164417447308*^9, 3.641198954090397*^9}],
 
 Cell[BoxData["\<\"We now insist that the matrix of inner products of the \
 independent diagrams of size \\(3\\) is non-zero.\"\>"], "Print",
@@ -409,15 +441,44 @@ independent diagrams of size \\(3\\) is non-zero.\"\>"], "Print",
   3.6410822536178703`*^9, 3.641082394680059*^9, 3.641087475264209*^9, 
   3.641089499570237*^9, 3.641152637545971*^9, 3.641154311990604*^9, 
   3.641156658281983*^9, 3.641160773982983*^9, 3.641161591507759*^9, 
-  3.6411626157595253`*^9, 3.6411644174647017`*^9}],
+  3.6411626157595253`*^9, 3.641164417447308*^9, 3.6411989540923977`*^9}],
 
-Cell[BoxData["\<\"We find the factors \\(\\\\{b,d\\\\}\\) and then require \
-that each is nonzero.\"\>"], "Print",
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"matrix: \"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{"b", " ", "d"}], "}"}], "}"}]}],
+  SequenceForm["matrix: ", {{$CellContext`b $CellContext`d}}],
+  Editable->False]], "Print",
  CellChangeTimes->{3.641071072887073*^9, 3.641081241338369*^9, 
   3.6410822536178703`*^9, 3.641082394680059*^9, 3.641087475264209*^9, 
   3.641089499570237*^9, 3.641152637545971*^9, 3.641154311990604*^9, 
   3.641156658281983*^9, 3.641160773982983*^9, 3.641161591507759*^9, 
-  3.6411626157595253`*^9, 3.641164417527843*^9}]
+  3.6411626157595253`*^9, 3.641164417447308*^9, 3.6411989541320457`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"determinant: \"\>", "\[InvisibleSpace]", 
+   RowBox[{"b", " ", "d"}]}],
+  SequenceForm["determinant: ", $CellContext`b $CellContext`d],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.641071072887073*^9, 3.641081241338369*^9, 
+  3.6410822536178703`*^9, 3.641082394680059*^9, 3.641087475264209*^9, 
+  3.641089499570237*^9, 3.641152637545971*^9, 3.641154311990604*^9, 
+  3.641156658281983*^9, 3.641160773982983*^9, 3.641161591507759*^9, 
+  3.6411626157595253`*^9, 3.641164417447308*^9, 3.641198954133623*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"determinant: \"\>", "\[InvisibleSpace]", "d"}],
+  SequenceForm["determinant: ", $CellContext`d],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.641071072887073*^9, 3.641081241338369*^9, 
+  3.6410822536178703`*^9, 3.641082394680059*^9, 3.641087475264209*^9, 
+  3.641089499570237*^9, 3.641152637545971*^9, 3.641154311990604*^9, 
+  3.641156658281983*^9, 3.641160773982983*^9, 3.641161591507759*^9, 
+  3.6411626157595253`*^9, 3.641164417447308*^9, 3.641198954136458*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -430,20 +491,29 @@ Cell[BoxData[
        RowBox[{
        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
         ".", "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
-     JLink`Objects`vm1`JavaObject7553862516867074], ",", 
+     JLink`Objects`vm1`JavaObject8406995409305602], ",", 
     RowBox[{"Manifold", "[", 
      RowBox[{
       RowBox[{"{", 
        RowBox[{
+        RowBox[{"b", "\[Rule]", "1"}], ",", 
         RowBox[{
          SubscriptBox["p", "1"], "\[Rule]", 
-         RowBox[{"b", " ", "d", " ", "t"}]}], ",", 
+         RowBox[{"d", " ", "t"}]}], ",", 
         RowBox[{
-         SubscriptBox["p", "2"], "\[Rule]", 
-         RowBox[{"b", " ", "d", " ", "t"}]}]}], "}"}], ",", 
+         SubscriptBox["p", "3"], "\[Rule]", 
+         RowBox[{"d", " ", "t"}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "4"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["t", "2"]}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "5"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["t", "2"]}]}]}], "}"}], ",", 
       RowBox[{"{", "}"}], ",", 
       RowBox[{"{", 
-       RowBox[{"b", ",", "d", ",", "z"}], "}"}]}], "]"}], ",", 
+       RowBox[{"d", ",", "z"}], "}"}]}], "]"}], ",", 
     RowBox[{"{", 
      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}], 
     ",", 
@@ -463,7 +533,7 @@ Cell[BoxData[
           RowBox[{
           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
            ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-        JLink`Objects`vm1`JavaObject28817835899748355]}], "}"}],
+        JLink`Objects`vm1`JavaObject9966186364141571]}], "}"}],
      Short], ",", 
     TagBox[
      RowBox[{"{", 
@@ -473,7 +543,37 @@ Cell[BoxData[
          RowBox[{
          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-       JLink`Objects`vm1`JavaObject31975445490565123], "}"}],
+       JLink`Objects`vm1`JavaObject2213081774030851], "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", 
+      RowBox[{
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+         "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject19151368426094597], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+         "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject29535921296637957], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject29350325156577293]}], "}"}],
      Short], ",", 
     TagBox[
      RowBox[{"{", 
@@ -481,8 +581,7 @@ Cell[BoxData[
        RowBox[{
         RowBox[{"{", 
          RowBox[{
-          RowBox[{
-           RowBox[{"-", "b"}], " ", "t"}], ",", 
+          RowBox[{"-", "t"}], ",", 
           InterpretationBox[
            RowBox[{"\[LeftGuillemet]", 
             RowBox[{"JavaObject", "[", 
@@ -498,7 +597,7 @@ Cell[BoxData[
              RowBox[{
              "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
               "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-           JLink`Objects`vm1`JavaObject31975445490565123]}], "}"}]}], "}"}], 
+           JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
       "}"}],
      Short], ",", 
     TagBox[
@@ -508,7 +607,8 @@ Cell[BoxData[
   3.64108124146369*^9, 3.641082253735867*^9, 3.641082394806477*^9, 
   3.6410874753006477`*^9, 3.64108949970501*^9, 3.641152637690261*^9, 
   3.641154312070929*^9, 3.641156658409792*^9, 3.6411607740979958`*^9, 
-  3.641161591610339*^9, 3.641162615890067*^9, 3.6411644175390673`*^9}]
+  3.641161591610339*^9, 3.641162615890067*^9, 3.6411644175390673`*^9, 
+  3.641198954141307*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -555,21 +655,21 @@ Cell[BoxData[
       RowBox[{
       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
         "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject4581793550303237], ",", 
+    JLink`Objects`vm1`JavaObject14767442811158533], ",", 
    InterpretationBox[
     RowBox[{"\[LeftGuillemet]", 
      RowBox[{"JavaObject", "[", 
       RowBox[{
       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".",
         "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-    JLink`Objects`vm1`JavaObject24676276799275013]}], "}"}]], "Output",
+    JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}]], "Output",
  CellChangeTimes->{
   3.6410689227609158`*^9, {3.6410710385484333`*^9, 3.641071043777499*^9}, 
    3.641071077988196*^9, 3.641081243027631*^9, 3.641082264771615*^9, 
    3.641082396464711*^9, 3.641087476971861*^9, 3.641089501297721*^9, 
    3.641152639887776*^9, 3.6411543135710707`*^9, 3.6411566694503803`*^9, 
    3.641160779351954*^9, 3.641161595210834*^9, 3.641162617404022*^9, 
-   3.6411644190114727`*^9}]
+   3.6411644190114727`*^9, 3.641198972089665*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -589,110 +689,6 @@ Cell[BoxData[
    3.6397751144924803`*^9, 3.6410051085771637`*^9, {3.6410053932197866`*^9, 
    3.6410053960575953`*^9}}],
 
-Cell[CellGroupData[{
-
-Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(3,Vector(List((1,3), (1,5), (2,3), (2,4))),List(),0), insisting \
-that it is independent.\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419125799*^9}],
-
-Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(3,Vector(List((1,3), (2,5), (2,4), (1,5))),List(),0), insisting \
-that it is independent.\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419135889*^9}],
-
-Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), List((4,8), (6,10), \
-(7,9)), List((3,11), (7,8), (5,9))),List(1, 1),0), insisting that it is \
-independent.\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419148098*^9}],
-
-Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(8,Vector(List((6,8), (4,9), (3,11), (5,10)), List((3,10), (4,11), \
-(7,9)), List((5,8), (7,10), (6,9))),List(1, 1),0), insisting that it is \
-independent.\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419160451*^9}],
-
-Cell[BoxData["\<\"The number of independent diagrams of size \\(4\\) has now \
-hit the upper bound of \\(4\\)\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419173581*^9}],
-
-Cell[BoxData["\<\"We now insist that the matrix of inner products of the \
-independent diagrams of size \\(4\\) is non-zero.\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419187087*^9}],
-
-Cell[BoxData["\<\"beginning PolynomialReduce calculation...\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419328519*^9}],
-
-Cell[BoxData["\<\"finishing PolynomialReduce calculation...\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419342032*^9}],
-
-Cell[BoxData["\<\"We find the factors \\(\\\\{b,d,b d-2 b-d t+t,b d+d \
-t+t\\\\}\\) and then require that each is nonzero.\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419355165*^9}],
-
-Cell[BoxData["\<\"beginning PolynomialReduce calculation...\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.6411644193678417`*^9}],
-
-Cell[BoxData["\<\"finishing PolynomialReduce calculation...\"\>"], "Print",
- CellChangeTimes->{3.641071044477845*^9, 3.641071078928617*^9, 
-  3.641081243270155*^9, 3.6410822648961067`*^9, 3.6410823965616293`*^9, 
-  3.641087477071484*^9, 3.641088298588022*^9, 3.641089501530691*^9, 
-  3.641152640298542*^9, 3.641154313662717*^9, 3.641156669581386*^9, 
-  3.64116078023555*^9, 3.6411615961474953`*^9, 3.641162617539011*^9, 
-  3.641164419378477*^9}]
-}, Open  ]],
-
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
@@ -703,27 +699,32 @@ Cell[BoxData[
        RowBox[{
        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
         ".", "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
-     JLink`Objects`vm1`JavaObject7553862516867074], ",", 
+     JLink`Objects`vm1`JavaObject8406995409305602], ",", 
     RowBox[{"Manifold", "[", 
      RowBox[{
       RowBox[{"{", 
        RowBox[{
+        RowBox[{"b", "\[Rule]", "1"}], ",", 
         RowBox[{
          SubscriptBox["p", "1"], "\[Rule]", 
-         RowBox[{"b", " ", "d", " ", "t"}]}], ",", 
-        RowBox[{
-         SubscriptBox["p", "2"], "\[Rule]", 
-         RowBox[{"b", " ", "d", " ", "t"}]}]}], "}"}], ",", 
-      RowBox[{"{", "}"}], ",", 
-      RowBox[{"{", 
-       RowBox[{"b", ",", "d", ",", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"-", "2"}], " ", "b"}], "+", 
-         RowBox[{"b", " ", "d"}], "+", "t", "-", 
          RowBox[{"d", " ", "t"}]}], ",", 
         RowBox[{
-         RowBox[{"b", " ", "d"}], "+", "t", "+", 
+         SubscriptBox["p", "3"], "\[Rule]", 
+         RowBox[{"d", " ", "t"}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "4"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["t", "2"]}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "5"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["t", "2"]}]}]}], "}"}], ",", 
+      RowBox[{"{", "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"d", ",", 
+        RowBox[{"2", "-", "d", "-", "t", "+", 
+         RowBox[{"d", " ", "t"}]}], ",", 
+        RowBox[{"d", "+", "t", "+", 
          RowBox[{"d", " ", "t"}]}], ",", "z"}], "}"}]}], "]"}], ",", 
     RowBox[{"{", 
      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}], 
@@ -743,9 +744,11 @@ Cell[BoxData[
          RowBox[{"JavaObject", "[", 
           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
          "\[RightGuillemet]"}],
-        JLink`Objects`vm1`JavaObject28817835899748355], ",", 
+        JLink`Objects`vm1`JavaObject9966186364141571], ",", 
        InterpretationBox[
-        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}],
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+         "\[RightGuillemet]"}],
         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
        InterpretationBox[
@@ -753,14 +756,14 @@ Cell[BoxData[
          RowBox[{"JavaObject", "[", 
           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
          "\[RightGuillemet]"}],
-        JLink`Objects`vm1`JavaObject4581793550303237], ",", 
+        JLink`Objects`vm1`JavaObject14767442811158533], ",", 
        InterpretationBox[
         RowBox[{"\[LeftGuillemet]", 
          RowBox[{"JavaObject", "[", 
           RowBox[{
           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
            ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-        JLink`Objects`vm1`JavaObject24676276799275013]}], "}"}],
+        JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
      Short], ",", 
     TagBox[
      RowBox[{"{", 
@@ -770,7 +773,26 @@ Cell[BoxData[
          RowBox[{
          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-       JLink`Objects`vm1`JavaObject31975445490565123], "}"}],
+       JLink`Objects`vm1`JavaObject2213081774030851], "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", 
+      RowBox[{
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+       RowBox[{"\[LeftSkeleton]", "8", "\[RightSkeleton]"}], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject4492736128352261]}], "}"}],
      Short], ",", 
     TagBox[
      RowBox[{"{", 
@@ -778,8 +800,7 @@ Cell[BoxData[
        RowBox[{
         RowBox[{"{", 
          RowBox[{
-          RowBox[{
-           RowBox[{"-", "b"}], " ", "t"}], ",", 
+          RowBox[{"-", "t"}], ",", 
           InterpretationBox[
            RowBox[{"\[LeftGuillemet]", 
             RowBox[{"JavaObject", "[", 
@@ -795,7 +816,7 @@ Cell[BoxData[
              RowBox[{
              "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
               "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
-           JLink`Objects`vm1`JavaObject31975445490565123]}], "}"}]}], "}"}], 
+           JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
       "}"}],
      Short], ",", 
     TagBox[
@@ -806,7 +827,7 @@ Cell[BoxData[
   3.641087477416264*^9, 3.641088298749859*^9, 3.641089502150446*^9, 
   3.641152641035008*^9, 3.6411543140149527`*^9, 3.641156670201931*^9, 
   3.641160780566983*^9, 3.641161596469368*^9, 3.641162617830937*^9, 
-  3.641164419386869*^9}]
+  3.641164419386869*^9, 3.6411989737881947`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -823,1260 +844,1775 @@ Cell[BoxData[
    3.6410882011952953`*^9, 3.641088209268736*^9}, {3.6410884356592903`*^9, 
    3.641088440257083*^9}, 3.64115459251882*^9}],
 
-Cell[CellGroupData[{
-
-Cell[BoxData["\<\"We now consider the diagram \
-PlanarGraph(6,Vector(List((2,6), (3,7), (4,8), (5,9)), List((5,6), (4,9), \
-(3,8), (2,7))),Vector(2),0), insisting that it is dependent.\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167248669208*^9}],
-
-Cell[BoxData["\<\"We find a candidate relation \\(\\\\left\\\\{\\\\frac{b^2 d \
-z^3-b^2 d+b^2 z^4-b^2 z^3-b^2 z+b^2-b d t z+b t z^4+b t z^3+d t^2-t^2 \
-z^4}{b^2 d^2 z^2-2 b^2 d z^2-2 b t z^2-d^2 t^2 z^2+t^2 z^2},\\\\frac{-b^2 d \
-z^4+b^2 d z+b^2 z^4-b^2 z^3-b^2 z+b^2-b d t z^3+b t z+b t+d t^2 z^4-t^2}{b^2 \
-d^2 z^2-2 b^2 d z^2-2 b t z^2-d^2 t^2 z^2+t^2 z^2},\\\\frac{-b d^2 z+b d \
-z^4+b d z-b z^4+b z^3+b z-b+d^2 t z^3-d t+t z^4-t z^3}{b^2 d^2 z^2-2 b^2 d \
-z^2-2 b t z^2-d^2 t^2 z^2+t^2 z^2},\\\\frac{-b d^2 z^3+b d z^3+b d-b z^4+b \
-z^3+b z-b+d^2 t z-d t z^4-t z+t}{b^2 d^2 z^2-2 b^2 d z^2-2 b t z^2-d^2 t^2 \
-z^2+t^2 z^2},1\\\\right\\\\}\\)\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.6411672488658857`*^9}],
-
-Cell[BoxData["\<\"This has denominators, \\(\\\\left\\\\{b^2 d^2 z^2-2 b^2 d \
-z^2-2 b t z^2-d^2 t^2 z^2+t^2 z^2\\\\right\\\\}\\), and we first consider the \
-possibility that one of these vanishes.\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.6411672489213963`*^9}],
-
-Cell[BoxData["\<\"We find the factors \\(\\\\{b d-2 b-d t+t,b d+d \
-t+t,z\\\\}\\) and then require that at least one is zero.\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167248928542*^9}],
-
-Cell[BoxData["\<\"We find the factors \\(\\\\{b d-2 b-d t+t,b d+d \
-t+t,z\\\\}\\) and then require that each is nonzero.\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167248938168*^9}],
-
-Cell[BoxData["\<\"starting innerProductMatrix\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.64116724894794*^9}],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{"\<\"PlanarGraph(3,Vector(List((1,3), (1,5), (2,3), \
-(2,4))),List(),0)\"\>", 
-   ",", "\<\"PlanarGraph(3,Vector(List((1,3), (2,5), (2,4), (1,5))),List(),0)\
-\"\>", ",", "\<\"PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), \
-List((4,8), (6,10), (7,9)), List((3,11), (7,8), (5,9))),List(1, 1),0)\"\>", 
-   ",", "\<\"PlanarGraph(8,Vector(List((6,8), (4,9), (3,11), (5,10)), \
-List((3,10), (4,11), (7,9)), List((5,8), (7,10), (6,9))),List(1, 1),0)\"\>", 
-   ",", "\<\"PlanarGraph(6,Vector(List((2,6), (3,7), (4,8), (5,9)), \
-List((5,6), (4,9), (3,8), (2,7))),Vector(2),0)\"\>"}], "}"}]], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167248955522*^9}],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{"\<\"PlanarGraph(7,Vector(List((3,7), (4,8), (5,9), (2,6)), \
-List((5,6), (4,9), (3,8), (2,7))),Vector(2),0)\"\>", 
-   ",", "\<\"PlanarGraph(8,Vector(List((4,8), (5,9), (2,6), (3,7)), \
-List((5,6), (4,9), (3,8), (2,7))),Vector(2),0)\"\>", 
-   ",", "\<\"PlanarGraph(9,Vector(List((5,9), (2,6), (3,7), (4,8)), \
-List((5,6), (4,9), (3,8), (2,7))),Vector(2),0)\"\>"}], "}"}]], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.6411672489651527`*^9}],
-
-Cell[BoxData["\<\"finished innerProductMatrix\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167255376212*^9}],
-
-Cell[BoxData["\<\"The candidate relation has non-trivial inner products with \
-some of the diagrams appearing in it; we set these to zero first before \
-proceeding.\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.6411672553872337`*^9}],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", 
-   RowBox[{
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d"}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", "z"}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "3"], " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "3"], " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", "d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"b", " ", "d", " ", 
-     SuperscriptBox["t", "3"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"b", " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["t", "3"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "6"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "7"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "8"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "8"]}]}], ",", 
-   RowBox[{
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d"}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", "z"}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", "d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "6"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "7"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "8"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}], "-", 
-    RowBox[{"2", " ", "b", " ", "t", " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}], "+", 
-    RowBox[{
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}], "-", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}]}], ",", 
-   RowBox[{
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d"}], "+", 
-    RowBox[{"b", " ", "d", " ", "t"}], "-", 
-    RowBox[{"d", " ", 
-     SuperscriptBox["t", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", "z"}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", "z"}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "2"]}], "+", 
-    RowBox[{"b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "3"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "4"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"3", " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{
-     SuperscriptBox["d", "4"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "5"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "6"]}], "+", 
-    RowBox[{"b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "8"]}], "+", 
-    RowBox[{"b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{"d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "8"]}]}], ",", 
-   RowBox[{
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d"}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", "z"}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "3"], " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "3"], " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", "d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"b", " ", "d", " ", 
-     SuperscriptBox["t", "3"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"b", " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["t", "3"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "6"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "7"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "8"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "8"]}]}], ",", 
-   RowBox[{
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d"}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", "z"}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", "d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "6"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "7"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "8"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}], "-", 
-    RowBox[{"2", " ", "b", " ", "t", " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}], "+", 
-    RowBox[{
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}], "-", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"], " ", 
-     SubscriptBox["p", "1"]}]}], ",", 
-   RowBox[{
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d"}], "+", 
-    RowBox[{"b", " ", "d", " ", "t"}], "-", 
-    RowBox[{"d", " ", 
-     SuperscriptBox["t", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", "z"}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", "z"}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "2"]}], "+", 
-    RowBox[{"b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "3"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "4"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"3", " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{
-     SuperscriptBox["d", "4"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "5"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "6"]}], "+", 
-    RowBox[{"b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "8"]}], "+", 
-    RowBox[{"b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{"d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "8"]}]}]}], "}"}]], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167255421019*^9}],
-
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   RowBox[{
+   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
     RowBox[{
-     SuperscriptBox["b", "2"], " ", "d"}], "+", 
-    RowBox[{"b", " ", "d", " ", "t"}], "-", 
-    RowBox[{"d", " ", 
-     SuperscriptBox["t", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", "z"}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", "z"}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "2"]}], "+", 
-    RowBox[{"b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "3"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "4"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"3", " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{
-     SuperscriptBox["d", "4"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "5"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "6"]}], "+", 
-    RowBox[{"b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "8"]}], "+", 
-    RowBox[{"b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{"d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "8"]}]}], ",", 
-   RowBox[{
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d"}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", "z"}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "2"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "2"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "3"]}], "+", 
-    RowBox[{"4", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "3"], " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "3"], " ", 
-     SuperscriptBox["d", "3"], " ", "t", " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", "d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "4"]}], "+", 
-    RowBox[{"b", " ", "d", " ", 
-     SuperscriptBox["t", "3"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"b", " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["t", "3"], " ", 
-     SuperscriptBox["z", "4"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-     SuperscriptBox["z", "5"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "6"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "3"], " ", 
-     SuperscriptBox["z", "6"]}], "-", 
-    RowBox[{"2", " ", 
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "7"]}], "-", 
-    RowBox[{"2", " ", "b", " ", 
-     SuperscriptBox["d", "2"], " ", "t", " ", 
-     SuperscriptBox["z", "7"]}], "+", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", "d", " ", 
-     SuperscriptBox["z", "8"]}], "-", 
-    RowBox[{
-     SuperscriptBox["b", "2"], " ", 
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["z", "8"]}], "+", 
-    RowBox[{
-     SuperscriptBox["d", "2"], " ", 
-     SuperscriptBox["t", "2"], " ", 
-     SuperscriptBox["z", "8"]}]}]}], "}"}]], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167255435507*^9}],
-
-Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{d,b^2 d^3 z^4-4 b^2 d^2 \
-z^4+2 b^2 d z^7+2 b^2 d z+b^2 z^8-2 b^2 z^7+b^2 z^6-2 b^2 z^5+4 b^2 z^4-2 b^2 \
-z^3+b^2 z^2-2 b^2 z+b^2+b d^2 t z^6+b d^2 t z^2-2 b d t z^5-2 b d t z^4-2 b d \
-t z^3+b t z^8+2 b t z^7-b t z^6-b t z^2+2 b t z+b t-d^3 t^2 z^4+3 d t^2 \
-z^4-t^2 z^8-t^2\\\\right\\\\}\\) and then require that at least one is \
-zero.\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167255537259*^9}],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\<\"computing GroebnerBasis[\"\>", "\[InvisibleSpace]", 
-   RowBox[{"{", 
-    RowBox[{
-     SuperscriptBox["b", "2"], "+", 
-     RowBox[{"b", " ", "t"}], "-", 
-     SuperscriptBox["t", "2"], "-", 
-     RowBox[{"2", " ", 
-      SuperscriptBox["b", "2"], " ", "z"}], "+", 
-     RowBox[{"2", " ", 
-      SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "+", 
-     RowBox[{"2", " ", "b", " ", "t", " ", "z"}], "+", 
-     RowBox[{
-      SuperscriptBox["b", "2"], " ", 
-      SuperscriptBox["z", "2"]}], "-", 
-     RowBox[{"b", " ", "t", " ", 
-      SuperscriptBox["z", "2"]}], "+", 
-     RowBox[{"b", " ", 
-      SuperscriptBox["d", "2"], " ", "t", " ", 
-      SuperscriptBox["z", "2"]}], "-", 
-     RowBox[{"2", " ", 
-      SuperscriptBox["b", "2"], " ", 
-      SuperscriptBox["z", "3"]}], "-", 
-     RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-      SuperscriptBox["z", "3"]}], "+", 
-     RowBox[{"4", " ", 
-      SuperscriptBox["b", "2"], " ", 
-      SuperscriptBox["z", "4"]}], "-", 
-     RowBox[{"4", " ", 
-      SuperscriptBox["b", "2"], " ", 
-      SuperscriptBox["d", "2"], " ", 
-      SuperscriptBox["z", "4"]}], "+", 
-     RowBox[{
-      SuperscriptBox["b", "2"], " ", 
-      SuperscriptBox["d", "3"], " ", 
-      SuperscriptBox["z", "4"]}], "-", 
-     RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-      SuperscriptBox["z", "4"]}], "+", 
-     RowBox[{"3", " ", "d", " ", 
-      SuperscriptBox["t", "2"], " ", 
-      SuperscriptBox["z", "4"]}], "-", 
-     RowBox[{
-      SuperscriptBox["d", "3"], " ", 
-      SuperscriptBox["t", "2"], " ", 
-      SuperscriptBox["z", "4"]}], "-", 
-     RowBox[{"2", " ", 
-      SuperscriptBox["b", "2"], " ", 
-      SuperscriptBox["z", "5"]}], "-", 
-     RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-      SuperscriptBox["z", "5"]}], "+", 
-     RowBox[{
-      SuperscriptBox["b", "2"], " ", 
-      SuperscriptBox["z", "6"]}], "-", 
-     RowBox[{"b", " ", "t", " ", 
-      SuperscriptBox["z", "6"]}], "+", 
-     RowBox[{"b", " ", 
-      SuperscriptBox["d", "2"], " ", "t", " ", 
-      SuperscriptBox["z", "6"]}], "-", 
-     RowBox[{"2", " ", 
-      SuperscriptBox["b", "2"], " ", 
-      SuperscriptBox["z", "7"]}], "+", 
-     RowBox[{"2", " ", 
-      SuperscriptBox["b", "2"], " ", "d", " ", 
-      SuperscriptBox["z", "7"]}], "+", 
-     RowBox[{"2", " ", "b", " ", "t", " ", 
-      SuperscriptBox["z", "7"]}], "+", 
-     RowBox[{
-      SuperscriptBox["b", "2"], " ", 
-      SuperscriptBox["z", "8"]}], "+", 
-     RowBox[{"b", " ", "t", " ", 
-      SuperscriptBox["z", "8"]}], "-", 
-     RowBox[{
-      SuperscriptBox["t", "2"], " ", 
-      SuperscriptBox["z", "8"]}]}], "}"}], "\[InvisibleSpace]", "\<\", \"\>", 
-   "\[InvisibleSpace]", 
-   RowBox[{"{", 
-    RowBox[{"b", ",", "d", ",", "t", ",", "z"}], "}"}], 
-   "\[InvisibleSpace]", "\<\"]\"\>"}],
-  SequenceForm[
-  "computing GroebnerBasis[", {$CellContext`b^2 + $CellContext`b \
-$CellContext`t - $CellContext`t^2 - 2 $CellContext`b^2 $CellContext`z + 
-    2 $CellContext`b^2 $CellContext`d $CellContext`z + 
-    2 $CellContext`b $CellContext`t $CellContext`z + $CellContext`b^2 \
-$CellContext`z^2 - $CellContext`b $CellContext`t $CellContext`z^2 + \
-$CellContext`b $CellContext`d^2 $CellContext`t $CellContext`z^2 - 
-    2 $CellContext`b^2 $CellContext`z^3 - 
-    2 $CellContext`b $CellContext`d $CellContext`t $CellContext`z^3 + 
-    4 $CellContext`b^2 $CellContext`z^4 - 
-    4 $CellContext`b^2 $CellContext`d^2 $CellContext`z^4 + $CellContext`b^2 \
-$CellContext`d^3 $CellContext`z^4 - 
-    2 $CellContext`b $CellContext`d $CellContext`t $CellContext`z^4 + 
-    3 $CellContext`d $CellContext`t^2 $CellContext`z^4 - $CellContext`d^3 \
-$CellContext`t^2 $CellContext`z^4 - 2 $CellContext`b^2 $CellContext`z^5 - 
-    2 $CellContext`b $CellContext`d $CellContext`t $CellContext`z^5 + \
-$CellContext`b^2 $CellContext`z^6 - $CellContext`b $CellContext`t \
-$CellContext`z^6 + $CellContext`b $CellContext`d^2 $CellContext`t \
-$CellContext`z^6 - 2 $CellContext`b^2 $CellContext`z^7 + 
-    2 $CellContext`b^2 $CellContext`d $CellContext`z^7 + 
-    2 $CellContext`b $CellContext`t $CellContext`z^7 + $CellContext`b^2 \
-$CellContext`z^8 + $CellContext`b $CellContext`t $CellContext`z^8 - \
-$CellContext`t^2 $CellContext`z^8}, 
-   ", ", {$CellContext`b, $CellContext`d, $CellContext`t, $CellContext`z}, 
-   "]"],
-  Editable->False]], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167255549675*^9}],
-
-Cell[BoxData["\<\"Adjoining \\(b^2 d^3 z^4-4 b^2 d^2 z^4+2 b^2 d z^7+2 b^2 d \
-z+b^2 z^8-2 b^2 z^7+b^2 z^6-2 b^2 z^5+4 b^2 z^4-2 b^2 z^3+b^2 z^2-2 b^2 \
-z+b^2+b d^2 t z^6+b d^2 t z^2-2 b d t z^5-2 b d t z^4-2 b d t z^3+b t z^8+2 b \
-t z^7-b t z^6-b t z^2+2 b t z+b t-d^3 t^2 z^4+3 d t^2 z^4-t^2 z^8-t^2\\) to \
-the ideal we obtain a new Groebner basis \\(\\\\left\\\\{b^2 d^3 z^4-4 b^2 \
-d^2 z^4+2 b^2 d z^7+2 b^2 d z+b^2 z^8-2 b^2 z^7+b^2 z^6-2 b^2 z^5+4 b^2 z^4-2 \
-b^2 z^3+b^2 z^2-2 b^2 z+b^2+b d^2 t z^6+b d^2 t z^2-2 b d t z^5-2 b d t z^4-2 \
-b d t z^3+b t z^8+2 b t z^7-b t z^6-b t z^2+2 b t z+b t-d^3 t^2 z^4+3 d t^2 \
-z^4-t^2 z^8-t^2\\\\right\\\\}\\) with respect to which the nonzero quantities \
-reduce to \\(\\\\{b,d,b d-2 b-d t+t,b d+d t+t,z\\\\}\\).\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167255653207*^9}],
-
-Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{d,b^3 d^2 t z^4-2 b^3 d \
-t z^4-b^2 d^2 z^6-b^2 d^2 z^2-b^2 d z^8+b^2 d z^6+2 b^2 d z^5+2 b^2 d z^3+b^2 \
-d z^2-b^2 d-2 b^2 t^2 z^4+b^2 z^8-2 b^2 z^7+b^2 z^6-2 b^2 z^5+4 b^2 z^4-2 b^2 \
-z^3+b^2 z^2-2 b^2 z+b^2-b d^2 t^3 z^4+2 b d^2 t z^4-2 b d t z^7-2 b d t z+b \
-t^3 z^4+2 b t z^5+2 b t z^3+d t^2 z^8+d t^2-2 t^2 z^4\\\\right\\\\}\\) and \
-then require that at least one is zero.\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167255735422*^9}],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\<\"computing GroebnerBasis[\"\>", "\[InvisibleSpace]", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{
-      SuperscriptBox["b", "2"], "+", 
-      RowBox[{"b", " ", "t"}], "-", 
-      SuperscriptBox["t", "2"], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "z"}], "+", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "+", 
-      RowBox[{"2", " ", "b", " ", "t", " ", "z"}], "+", 
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject11600656016080897], ",", 
+     RowBox[{"Manifold", "[", 
       RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "2"]}], "-", 
-      RowBox[{"b", " ", "t", " ", 
-       SuperscriptBox["z", "2"]}], "+", 
-      RowBox[{"b", " ", 
-       SuperscriptBox["d", "2"], " ", "t", " ", 
-       SuperscriptBox["z", "2"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "3"]}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "3"]}], "+", 
-      RowBox[{"4", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"4", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["d", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "+", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"b", "\[Rule]", "1"}], ",", 
+         RowBox[{"t", "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"2", " ", 
+             SuperscriptBox["d", "2"]}], "-", 
+            SuperscriptBox["d", "4"], "+", 
+            RowBox[{"4", " ", "d", " ", 
+             SubscriptBox["p", "6"]}], "+", 
+            RowBox[{"2", " ", 
+             SubsuperscriptBox["p", "6", "2"]}], "+", 
+            RowBox[{"2", " ", "d", " ", 
+             SubsuperscriptBox["p", "6", "2"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", 
+            SuperscriptBox["d", "2"], " ", 
+            RowBox[{"(", 
+             RowBox[{"2", "+", "d"}], ")"}]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "1"], "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"2", " ", 
+             SuperscriptBox["d", "2"]}], "-", 
+            SuperscriptBox["d", "4"], "+", 
+            RowBox[{"4", " ", "d", " ", 
+             SubscriptBox["p", "6"]}], "+", 
+            RowBox[{"2", " ", 
+             SubsuperscriptBox["p", "6", "2"]}], "+", 
+            RowBox[{"2", " ", "d", " ", 
+             SubsuperscriptBox["p", "6", "2"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", "d", " ", 
+            RowBox[{"(", 
+             RowBox[{"2", "+", "d"}], ")"}]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "3"], "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"2", " ", 
+             SuperscriptBox["d", "2"]}], "-", 
+            SuperscriptBox["d", "4"], "+", 
+            RowBox[{"4", " ", "d", " ", 
+             SubscriptBox["p", "6"]}], "+", 
+            RowBox[{"2", " ", 
+             SubsuperscriptBox["p", "6", "2"]}], "+", 
+            RowBox[{"2", " ", "d", " ", 
+             SubsuperscriptBox["p", "6", "2"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", "d", " ", 
+            RowBox[{"(", 
+             RowBox[{"2", "+", "d"}], ")"}]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "4"], "\[Rule]", 
+          FractionBox[
+           SuperscriptBox[
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "2"}], " ", 
+               SuperscriptBox["d", "2"]}], "+", 
+              SuperscriptBox["d", "4"], "-", 
+              RowBox[{"4", " ", "d", " ", 
+               SubscriptBox["p", "6"]}], "-", 
+              RowBox[{"2", " ", 
+               SubsuperscriptBox["p", "6", "2"]}], "-", 
+              RowBox[{"2", " ", "d", " ", 
+               SubsuperscriptBox["p", "6", "2"]}]}], ")"}], "2"], 
+           RowBox[{
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"-", "1"}], "+", "d"}], ")"}], "2"], " ", 
+            SuperscriptBox["d", "3"], " ", 
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{"2", "+", "d"}], ")"}], "2"]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "5"], "\[Rule]", 
+          FractionBox[
+           SuperscriptBox[
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "2"}], " ", 
+               SuperscriptBox["d", "2"]}], "+", 
+              SuperscriptBox["d", "4"], "-", 
+              RowBox[{"4", " ", "d", " ", 
+               SubscriptBox["p", "6"]}], "-", 
+              RowBox[{"2", " ", 
+               SubsuperscriptBox["p", "6", "2"]}], "-", 
+              RowBox[{"2", " ", "d", " ", 
+               SubsuperscriptBox["p", "6", "2"]}]}], ")"}], "2"], 
+           RowBox[{
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"-", "1"}], "+", "d"}], ")"}], "2"], " ", 
+            SuperscriptBox["d", "3"], " ", 
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{"2", "+", "d"}], ")"}], "2"]}]]}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", "+", 
+         SuperscriptBox["z", "2"]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "+", "d"}], ",", "d", ",", 
+         RowBox[{"2", "+", "d"}], ",", "z", ",", 
+         RowBox[{
+          RowBox[{"6", " ", 
+           SuperscriptBox["d", "2"]}], "-", 
+          RowBox[{"2", " ", 
+           SuperscriptBox["d", "4"]}], "+", 
+          RowBox[{"4", " ", "d", " ", 
+           SubscriptBox["p", "6"]}], "+", 
+          RowBox[{"2", " ", 
+           SubsuperscriptBox["p", "6", "2"]}], "+", 
+          RowBox[{"2", " ", "d", " ", 
+           SubsuperscriptBox["p", "6", "2"]}]}], ",", 
+         RowBox[{
+          RowBox[{"2", " ", 
+           SuperscriptBox["d", "2"]}], "+", 
+          RowBox[{"4", " ", "d", " ", 
+           SubscriptBox["p", "6"]}], "+", 
+          RowBox[{"4", " ", 
+           SuperscriptBox["d", "2"], " ", 
+           SubscriptBox["p", "6"]}], "+", 
+          RowBox[{"2", " ", 
+           SubsuperscriptBox["p", "6", "2"]}], "+", 
+          RowBox[{"4", " ", "d", " ", 
+           SubsuperscriptBox["p", "6", "2"]}], "+", 
+          RowBox[{"2", " ", 
+           SuperscriptBox["d", "2"], " ", 
+           SubsuperscriptBox["p", "6", "2"]}]}]}], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}],
+      ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7178064790290435], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9966186364141571], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
+        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject14767442811158533], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject2213081774030851], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+        RowBox[{"\[LeftSkeleton]", "13", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7318745689096215]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "t"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject7178064790290435]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            FractionBox[
+             RowBox[{
+              SuperscriptBox["d", "2"], "+", 
+              RowBox[{"2", " ", 
+               RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}]}]}], 
+             RowBox[{
+              RowBox[{"2", " ", "d"}], "+", 
+              RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], "+", 
+              RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}]}]], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+              "\[RightGuillemet]"}],
+             JLink`Objects`vm1`JavaObject22091399117668355]}], "}"}], ",", 
+          RowBox[{"\[LeftSkeleton]", "4", "\[RightSkeleton]"}]}], "}"}]}], 
+       "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", "}"}],
+      Short]}], "]"}], ",", 
+   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+    RowBox[{
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject12334920974204929], ",", 
+     RowBox[{"Manifold", "[", 
       RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["d", "3"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "4"]}], "+", 
-      RowBox[{"3", " ", "d", " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"b", "\[Rule]", "1"}], ",", 
+         RowBox[{"d", "\[Rule]", 
+          RowBox[{"-", "2"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "1"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", "t"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "3"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", "t"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "4"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", 
+           SuperscriptBox["t", "2"]}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "5"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", 
+           SuperscriptBox["t", "2"]}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "6"], "\[Rule]", 
+          RowBox[{"-", "2"}]}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", "+", 
+         SuperscriptBox["z", "2"]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"4", "-", 
+          RowBox[{"3", " ", "t"}]}], ",", 
+         RowBox[{
+          RowBox[{"-", "2"}], "-", "t"}], ",", "z"}], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}],
+      ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7178064790290435], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9966186364141571], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
+        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject14767442811158533], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject2213081774030851], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+        RowBox[{"\[LeftSkeleton]", "13", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7318745689096215]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "t"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject7178064790290435]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "1"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+              "\[RightGuillemet]"}],
+             JLink`Objects`vm1`JavaObject22091399117668355]}], "}"}], ",", 
+          RowBox[{"\[LeftSkeleton]", "4", "\[RightSkeleton]"}]}], "}"}]}], 
+       "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", "}"}],
+      Short]}], "]"}], ",", 
+   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+    RowBox[{
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject13886638132297729], ",", 
+     RowBox[{"Manifold", "[", 
       RowBox[{
-       SuperscriptBox["d", "3"], " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "5"]}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "5"]}], "+", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"b", "\[Rule]", "1"}], ",", 
+         RowBox[{"d", "\[Rule]", "1"}], ",", 
+         RowBox[{"z", "\[Rule]", 
+          RowBox[{"-", "1"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "1"], "\[Rule]", "t"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "3"], "\[Rule]", "t"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "4"], "\[Rule]", 
+          SuperscriptBox["t", "2"]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "5"], "\[Rule]", 
+          SuperscriptBox["t", "2"]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "6"], "\[Rule]", 
+          FractionBox["1", "2"]}]}], "}"}], ",", 
+       RowBox[{"{", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", "+", 
+         RowBox[{"2", " ", "t"}]}], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}],
+      ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7178064790290435], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9966186364141571], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
+        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject14767442811158533], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject2213081774030851], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+        RowBox[{"\[LeftSkeleton]", "13", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7318745689096215]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "t"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject7178064790290435]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], "}"}]}], "}"}],
+      
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", "}"}],
+      Short]}], "]"}], ",", 
+   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+    RowBox[{
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject13886638132297730], ",", 
+     RowBox[{"Manifold", "[", 
       RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "6"]}], "-", 
-      RowBox[{"b", " ", "t", " ", 
-       SuperscriptBox["z", "6"]}], "+", 
-      RowBox[{"b", " ", 
-       SuperscriptBox["d", "2"], " ", "t", " ", 
-       SuperscriptBox["z", "6"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "7"]}], "+", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "7"]}], "+", 
-      RowBox[{"2", " ", "b", " ", "t", " ", 
-       SuperscriptBox["z", "7"]}], "+", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"b", "\[Rule]", "1"}], ",", 
+         RowBox[{"d", "\[Rule]", "1"}], ",", 
+         RowBox[{"z", "\[Rule]", "1"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "1"], "\[Rule]", "t"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "3"], "\[Rule]", "t"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "4"], "\[Rule]", 
+          SuperscriptBox["t", "2"]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "5"], "\[Rule]", 
+          SuperscriptBox["t", "2"]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "6"], "\[Rule]", 
+          FractionBox["1", "2"]}]}], "}"}], ",", 
+       RowBox[{"{", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", "+", 
+         RowBox[{"2", " ", "t"}]}], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}],
+      ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7178064790290435], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9966186364141571], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
+        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject14767442811158533], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject2213081774030851], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+        RowBox[{"\[LeftSkeleton]", "13", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7318745689096215]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "t"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject7178064790290435]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], "}"}]}], "}"}],
+      
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", "}"}],
+      Short]}], "]"}], ",", 
+   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+    RowBox[{
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject1649927859994625], ",", 
+     RowBox[{"Manifold", "[", 
       RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "8"]}], "+", 
-      RowBox[{"b", " ", "t", " ", 
-       SuperscriptBox["z", "8"]}], "-", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"b", "\[Rule]", "1"}], ",", 
+         RowBox[{"d", "\[Rule]", "1"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "1"], "\[Rule]", "t"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "3"], "\[Rule]", "t"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "4"], "\[Rule]", 
+          SuperscriptBox["t", "2"]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "5"], "\[Rule]", 
+          SuperscriptBox["t", "2"]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "6"], "\[Rule]", 
+          RowBox[{"-", 
+           FractionBox["1", "2"]}]}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", "+", 
+         SuperscriptBox["z", "2"]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"1", "+", 
+          RowBox[{"2", " ", "t"}]}], ",", "z"}], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}],
+      ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7178064790290435], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9966186364141571], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
+        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject14767442811158533], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject2213081774030851], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+        RowBox[{"\[LeftSkeleton]", "13", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7318745689096215]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "t"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject7178064790290435]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            FractionBox["1", "2"], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+              "\[RightGuillemet]"}],
+             JLink`Objects`vm1`JavaObject22091399117668355]}], "}"}], ",", 
+          RowBox[{"\[LeftSkeleton]", "4", "\[RightSkeleton]"}]}], "}"}]}], 
+       "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", "}"}],
+      Short]}], "]"}], ",", 
+   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+    RowBox[{
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject22504407669145601], ",", 
+     RowBox[{"Manifold", "[", 
       RowBox[{
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "8"]}]}], ",", 
-     RowBox[{
-      SuperscriptBox["b", "2"], "-", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"b", "\[Rule]", "1"}], ",", 
+         RowBox[{"t", "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"2", " ", 
+             SuperscriptBox["d", "2"]}], "-", 
+            SuperscriptBox["d", "4"], "-", 
+            RowBox[{"4", " ", "d", " ", 
+             SubscriptBox["p", "6"]}], "+", 
+            RowBox[{"2", " ", 
+             SubsuperscriptBox["p", "6", "2"]}], "+", 
+            RowBox[{"2", " ", "d", " ", 
+             SubsuperscriptBox["p", "6", "2"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", 
+            SuperscriptBox["d", "2"], " ", 
+            RowBox[{"(", 
+             RowBox[{"2", "+", "d"}], ")"}]}]]}], ",", 
+         RowBox[{"z", "\[Rule]", 
+          RowBox[{"-", "1"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "1"], "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"2", " ", 
+             SuperscriptBox["d", "2"]}], "-", 
+            SuperscriptBox["d", "4"], "-", 
+            RowBox[{"4", " ", "d", " ", 
+             SubscriptBox["p", "6"]}], "+", 
+            RowBox[{"2", " ", 
+             SubsuperscriptBox["p", "6", "2"]}], "+", 
+            RowBox[{"2", " ", "d", " ", 
+             SubsuperscriptBox["p", "6", "2"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", "d", " ", 
+            RowBox[{"(", 
+             RowBox[{"2", "+", "d"}], ")"}]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "3"], "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"2", " ", 
+             SuperscriptBox["d", "2"]}], "-", 
+            SuperscriptBox["d", "4"], "-", 
+            RowBox[{"4", " ", "d", " ", 
+             SubscriptBox["p", "6"]}], "+", 
+            RowBox[{"2", " ", 
+             SubsuperscriptBox["p", "6", "2"]}], "+", 
+            RowBox[{"2", " ", "d", " ", 
+             SubsuperscriptBox["p", "6", "2"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", "d", " ", 
+            RowBox[{"(", 
+             RowBox[{"2", "+", "d"}], ")"}]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "4"], "\[Rule]", 
+          FractionBox[
+           SuperscriptBox[
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "2"}], " ", 
+               SuperscriptBox["d", "2"]}], "+", 
+              SuperscriptBox["d", "4"], "+", 
+              RowBox[{"4", " ", "d", " ", 
+               SubscriptBox["p", "6"]}], "-", 
+              RowBox[{"2", " ", 
+               SubsuperscriptBox["p", "6", "2"]}], "-", 
+              RowBox[{"2", " ", "d", " ", 
+               SubsuperscriptBox["p", "6", "2"]}]}], ")"}], "2"], 
+           RowBox[{
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"-", "1"}], "+", "d"}], ")"}], "2"], " ", 
+            SuperscriptBox["d", "3"], " ", 
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{"2", "+", "d"}], ")"}], "2"]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "5"], "\[Rule]", 
+          FractionBox[
+           SuperscriptBox[
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "2"}], " ", 
+               SuperscriptBox["d", "2"]}], "+", 
+              SuperscriptBox["d", "4"], "+", 
+              RowBox[{"4", " ", "d", " ", 
+               SubscriptBox["p", "6"]}], "-", 
+              RowBox[{"2", " ", 
+               SubsuperscriptBox["p", "6", "2"]}], "-", 
+              RowBox[{"2", " ", "d", " ", 
+               SubsuperscriptBox["p", "6", "2"]}]}], ")"}], "2"], 
+           RowBox[{
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"-", "1"}], "+", "d"}], ")"}], "2"], " ", 
+            SuperscriptBox["d", "3"], " ", 
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{"2", "+", "d"}], ")"}], "2"]}]]}]}], "}"}], ",", 
+       RowBox[{"{", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "+", "d"}], ",", "d", ",", 
+         RowBox[{"2", "+", "d"}], ",", 
+         RowBox[{
+          RowBox[{"6", " ", 
+           SuperscriptBox["d", "2"]}], "-", 
+          RowBox[{"2", " ", 
+           SuperscriptBox["d", "4"]}], "-", 
+          RowBox[{"4", " ", "d", " ", 
+           SubscriptBox["p", "6"]}], "+", 
+          RowBox[{"2", " ", 
+           SubsuperscriptBox["p", "6", "2"]}], "+", 
+          RowBox[{"2", " ", "d", " ", 
+           SubsuperscriptBox["p", "6", "2"]}]}], ",", 
+         RowBox[{
+          RowBox[{"2", " ", 
+           SuperscriptBox["d", "2"]}], "-", 
+          RowBox[{"4", " ", "d", " ", 
+           SubscriptBox["p", "6"]}], "-", 
+          RowBox[{"4", " ", 
+           SuperscriptBox["d", "2"], " ", 
+           SubscriptBox["p", "6"]}], "+", 
+          RowBox[{"2", " ", 
+           SubsuperscriptBox["p", "6", "2"]}], "+", 
+          RowBox[{"4", " ", "d", " ", 
+           SubsuperscriptBox["p", "6", "2"]}], "+", 
+          RowBox[{"2", " ", 
+           SuperscriptBox["d", "2"], " ", 
+           SubsuperscriptBox["p", "6", "2"]}]}]}], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}],
+      ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7178064790290435], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9966186364141571], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
+        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject14767442811158533], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject2213081774030851], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+        RowBox[{"\[LeftSkeleton]", "13", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7318745689096215]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "t"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject7178064790290435]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], "}"}]}], "}"}],
+      
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", "}"}],
+      Short]}], "]"}], ",", 
+   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+    RowBox[{
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject22504407669145602], ",", 
+     RowBox[{"Manifold", "[", 
       RowBox[{
-       SuperscriptBox["b", "2"], " ", "d"}], "+", 
-      RowBox[{"d", " ", 
-       SuperscriptBox["t", "2"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "z"}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", "z"}], "+", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"b", "\[Rule]", "1"}], ",", 
+         RowBox[{"t", "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"2", " ", 
+             SuperscriptBox["d", "2"]}], "-", 
+            SuperscriptBox["d", "4"], "-", 
+            RowBox[{"4", " ", "d", " ", 
+             SubscriptBox["p", "6"]}], "+", 
+            RowBox[{"2", " ", 
+             SubsuperscriptBox["p", "6", "2"]}], "+", 
+            RowBox[{"2", " ", "d", " ", 
+             SubsuperscriptBox["p", "6", "2"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", 
+            SuperscriptBox["d", "2"], " ", 
+            RowBox[{"(", 
+             RowBox[{"2", "+", "d"}], ")"}]}]]}], ",", 
+         RowBox[{"z", "\[Rule]", "1"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "1"], "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"2", " ", 
+             SuperscriptBox["d", "2"]}], "-", 
+            SuperscriptBox["d", "4"], "-", 
+            RowBox[{"4", " ", "d", " ", 
+             SubscriptBox["p", "6"]}], "+", 
+            RowBox[{"2", " ", 
+             SubsuperscriptBox["p", "6", "2"]}], "+", 
+            RowBox[{"2", " ", "d", " ", 
+             SubsuperscriptBox["p", "6", "2"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", "d", " ", 
+            RowBox[{"(", 
+             RowBox[{"2", "+", "d"}], ")"}]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "3"], "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"2", " ", 
+             SuperscriptBox["d", "2"]}], "-", 
+            SuperscriptBox["d", "4"], "-", 
+            RowBox[{"4", " ", "d", " ", 
+             SubscriptBox["p", "6"]}], "+", 
+            RowBox[{"2", " ", 
+             SubsuperscriptBox["p", "6", "2"]}], "+", 
+            RowBox[{"2", " ", "d", " ", 
+             SubsuperscriptBox["p", "6", "2"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", "d", " ", 
+            RowBox[{"(", 
+             RowBox[{"2", "+", "d"}], ")"}]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "4"], "\[Rule]", 
+          FractionBox[
+           SuperscriptBox[
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "2"}], " ", 
+               SuperscriptBox["d", "2"]}], "+", 
+              SuperscriptBox["d", "4"], "+", 
+              RowBox[{"4", " ", "d", " ", 
+               SubscriptBox["p", "6"]}], "-", 
+              RowBox[{"2", " ", 
+               SubsuperscriptBox["p", "6", "2"]}], "-", 
+              RowBox[{"2", " ", "d", " ", 
+               SubsuperscriptBox["p", "6", "2"]}]}], ")"}], "2"], 
+           RowBox[{
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"-", "1"}], "+", "d"}], ")"}], "2"], " ", 
+            SuperscriptBox["d", "3"], " ", 
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{"2", "+", "d"}], ")"}], "2"]}]]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "5"], "\[Rule]", 
+          FractionBox[
+           SuperscriptBox[
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "2"}], " ", 
+               SuperscriptBox["d", "2"]}], "+", 
+              SuperscriptBox["d", "4"], "+", 
+              RowBox[{"4", " ", "d", " ", 
+               SubscriptBox["p", "6"]}], "-", 
+              RowBox[{"2", " ", 
+               SubsuperscriptBox["p", "6", "2"]}], "-", 
+              RowBox[{"2", " ", "d", " ", 
+               SubsuperscriptBox["p", "6", "2"]}]}], ")"}], "2"], 
+           RowBox[{
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"-", "1"}], "+", "d"}], ")"}], "2"], " ", 
+            SuperscriptBox["d", "3"], " ", 
+            SuperscriptBox[
+             RowBox[{"(", 
+              RowBox[{"2", "+", "d"}], ")"}], "2"]}]]}]}], "}"}], ",", 
+       RowBox[{"{", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "+", "d"}], ",", "d", ",", 
+         RowBox[{"2", "+", "d"}], ",", 
+         RowBox[{
+          RowBox[{"6", " ", 
+           SuperscriptBox["d", "2"]}], "-", 
+          RowBox[{"2", " ", 
+           SuperscriptBox["d", "4"]}], "-", 
+          RowBox[{"4", " ", "d", " ", 
+           SubscriptBox["p", "6"]}], "+", 
+          RowBox[{"2", " ", 
+           SubsuperscriptBox["p", "6", "2"]}], "+", 
+          RowBox[{"2", " ", "d", " ", 
+           SubsuperscriptBox["p", "6", "2"]}]}], ",", 
+         RowBox[{
+          RowBox[{"2", " ", 
+           SuperscriptBox["d", "2"]}], "-", 
+          RowBox[{"4", " ", "d", " ", 
+           SubscriptBox["p", "6"]}], "-", 
+          RowBox[{"4", " ", 
+           SuperscriptBox["d", "2"], " ", 
+           SubscriptBox["p", "6"]}], "+", 
+          RowBox[{"2", " ", 
+           SubsuperscriptBox["p", "6", "2"]}], "+", 
+          RowBox[{"4", " ", "d", " ", 
+           SubsuperscriptBox["p", "6", "2"]}], "+", 
+          RowBox[{"2", " ", 
+           SuperscriptBox["d", "2"], " ", 
+           SubsuperscriptBox["p", "6", "2"]}]}]}], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}],
+      ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7178064790290435], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9966186364141571], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
+        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject14767442811158533], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject2213081774030851], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+        RowBox[{"\[LeftSkeleton]", "13", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7318745689096215]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "t"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject7178064790290435]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], "}"}]}], "}"}],
+      
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", "}"}],
+      Short]}], "]"}], ",", 
+   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+    RowBox[{
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject4607995820376065], ",", 
+     RowBox[{"Manifold", "[", 
       RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "2"]}], "+", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"b", "\[Rule]", "1"}], ",", 
+         RowBox[{"d", "\[Rule]", 
+          RowBox[{"-", "2"}]}], ",", 
+         RowBox[{"z", "\[Rule]", 
+          RowBox[{"-", "1"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "1"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", "t"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "3"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", "t"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "4"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", 
+           SuperscriptBox["t", "2"]}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "5"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", 
+           SuperscriptBox["t", "2"]}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "6"], "\[Rule]", "2"}]}], "}"}], ",", 
+       RowBox[{"{", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"4", "-", 
+          RowBox[{"3", " ", "t"}]}], ",", 
+         RowBox[{
+          RowBox[{"-", "2"}], "-", "t"}]}], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}],
+      ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7178064790290435], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9966186364141571], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
+        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject14767442811158533], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject2213081774030851], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+        RowBox[{"\[LeftSkeleton]", "13", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7318745689096215]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "t"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject7178064790290435]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+              "\[RightGuillemet]"}],
+             JLink`Objects`vm1`JavaObject22091399117668355]}], "}"}], ",", 
+          RowBox[{"\[LeftSkeleton]", "3", "\[RightSkeleton]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}],
+             JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}]}], 
+         "}"}]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", "}"}],
+      Short]}], "]"}], ",", 
+   RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+    RowBox[{
+     InterpretationBox[
+      RowBox[{"\[LeftGuillemet]", 
+       RowBox[{"JavaObject", "[", 
+        RowBox[{
+        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+         ".", "examples", ".", "QuotientSpider"}], "]"}], 
+       "\[RightGuillemet]"}],
+      JLink`Objects`vm1`JavaObject4607995820376066], ",", 
+     RowBox[{"Manifold", "[", 
       RowBox[{
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "2"]}], "-", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["d", "2"], " ", 
-       SuperscriptBox["z", "2"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "3"]}], "+", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "3"]}], "+", 
-      RowBox[{"2", " ", "b", " ", "t", " ", 
-       SuperscriptBox["z", "3"]}], "+", 
-      RowBox[{"4", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "3"], " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "4"]}], "+", 
-      RowBox[{"2", " ", "b", " ", 
-       SuperscriptBox["d", "2"], " ", "t", " ", 
-       SuperscriptBox["z", "4"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "3"], " ", 
-       SuperscriptBox["d", "2"], " ", "t", " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "+", 
-      RowBox[{"b", " ", 
-       SuperscriptBox["t", "3"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"b", " ", 
-       SuperscriptBox["d", "2"], " ", 
-       SuperscriptBox["t", "3"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "5"]}], "+", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "5"]}], "+", 
-      RowBox[{"2", " ", "b", " ", "t", " ", 
-       SuperscriptBox["z", "5"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "6"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "6"]}], "-", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["d", "2"], " ", 
-       SuperscriptBox["z", "6"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "7"]}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "7"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "8"]}], "-", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "8"]}], "+", 
-      RowBox[{"d", " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "8"]}]}]}], "}"}], 
-   "\[InvisibleSpace]", "\<\", \"\>", "\[InvisibleSpace]", 
-   RowBox[{"{", 
-    RowBox[{"b", ",", "d", ",", "t", ",", "z"}], "}"}], 
-   "\[InvisibleSpace]", "\<\"]\"\>"}],
-  SequenceForm[
-  "computing GroebnerBasis[", {$CellContext`b^2 + $CellContext`b \
-$CellContext`t - $CellContext`t^2 - 2 $CellContext`b^2 $CellContext`z + 
-    2 $CellContext`b^2 $CellContext`d $CellContext`z + 
-    2 $CellContext`b $CellContext`t $CellContext`z + $CellContext`b^2 \
-$CellContext`z^2 - $CellContext`b $CellContext`t $CellContext`z^2 + \
-$CellContext`b $CellContext`d^2 $CellContext`t $CellContext`z^2 - 
-    2 $CellContext`b^2 $CellContext`z^3 - 
-    2 $CellContext`b $CellContext`d $CellContext`t $CellContext`z^3 + 
-    4 $CellContext`b^2 $CellContext`z^4 - 
-    4 $CellContext`b^2 $CellContext`d^2 $CellContext`z^4 + $CellContext`b^2 \
-$CellContext`d^3 $CellContext`z^4 - 
-    2 $CellContext`b $CellContext`d $CellContext`t $CellContext`z^4 + 
-    3 $CellContext`d $CellContext`t^2 $CellContext`z^4 - $CellContext`d^3 \
-$CellContext`t^2 $CellContext`z^4 - 2 $CellContext`b^2 $CellContext`z^5 - 
-    2 $CellContext`b $CellContext`d $CellContext`t $CellContext`z^5 + \
-$CellContext`b^2 $CellContext`z^6 - $CellContext`b $CellContext`t \
-$CellContext`z^6 + $CellContext`b $CellContext`d^2 $CellContext`t \
-$CellContext`z^6 - 2 $CellContext`b^2 $CellContext`z^7 + 
-    2 $CellContext`b^2 $CellContext`d $CellContext`z^7 + 
-    2 $CellContext`b $CellContext`t $CellContext`z^7 + $CellContext`b^2 \
-$CellContext`z^8 + $CellContext`b $CellContext`t $CellContext`z^8 - \
-$CellContext`t^2 $CellContext`z^8, $CellContext`b^2 - $CellContext`b^2 \
-$CellContext`d + $CellContext`d $CellContext`t^2 - 
-    2 $CellContext`b^2 $CellContext`z - 
-    2 $CellContext`b $CellContext`d $CellContext`t $CellContext`z + \
-$CellContext`b^2 $CellContext`z^2 + $CellContext`b^2 $CellContext`d \
-$CellContext`z^2 - $CellContext`b^2 $CellContext`d^2 $CellContext`z^2 - 
-    2 $CellContext`b^2 $CellContext`z^3 + 
-    2 $CellContext`b^2 $CellContext`d $CellContext`z^3 + 
-    2 $CellContext`b $CellContext`t $CellContext`z^3 + 
-    4 $CellContext`b^2 $CellContext`z^4 - 
-    2 $CellContext`b^3 $CellContext`d $CellContext`t $CellContext`z^4 + 
-    2 $CellContext`b $CellContext`d^2 $CellContext`t $CellContext`z^4 + \
-$CellContext`b^3 $CellContext`d^2 $CellContext`t $CellContext`z^4 - 
-    2 $CellContext`t^2 $CellContext`z^4 - 
-    2 $CellContext`b^2 $CellContext`t^2 $CellContext`z^4 + $CellContext`b \
-$CellContext`t^3 $CellContext`z^4 - $CellContext`b $CellContext`d^2 \
-$CellContext`t^3 $CellContext`z^4 - 2 $CellContext`b^2 $CellContext`z^5 + 
-    2 $CellContext`b^2 $CellContext`d $CellContext`z^5 + 
-    2 $CellContext`b $CellContext`t $CellContext`z^5 + $CellContext`b^2 \
-$CellContext`z^6 + $CellContext`b^2 $CellContext`d $CellContext`z^6 - \
-$CellContext`b^2 $CellContext`d^2 $CellContext`z^6 - 
-    2 $CellContext`b^2 $CellContext`z^7 - 
-    2 $CellContext`b $CellContext`d $CellContext`t $CellContext`z^7 + \
-$CellContext`b^2 $CellContext`z^8 - $CellContext`b^2 $CellContext`d \
-$CellContext`z^8 + $CellContext`d $CellContext`t^2 $CellContext`z^8}, 
-   ", ", {$CellContext`b, $CellContext`d, $CellContext`t, $CellContext`z}, 
-   "]"],
-  Editable->False]], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.6411672557554207`*^9}],
-
-Cell[BoxData["\<\"beginning GroebnerBasis calculation...\"\>"], "Print",
- CellChangeTimes->{3.641088317106749*^9, 3.641088443486415*^9, 
-  3.641089503809765*^9, 3.6411526419183817`*^9, 3.641154315014853*^9, 
-  3.641154593873268*^9, 3.641155167510253*^9, 3.641160783287237*^9, 
-  3.641161599232071*^9, 3.6411626223061657`*^9, 3.641164419464839*^9, 
-  3.6411666238036423`*^9, 3.641166853857552*^9, 3.641167195776561*^9, 
-  3.641167255764042*^9}]
-}, Open  ]],
-
-Cell[BoxData["$Aborted"], "Output",
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"b", "\[Rule]", "1"}], ",", 
+         RowBox[{"d", "\[Rule]", 
+          RowBox[{"-", "2"}]}], ",", 
+         RowBox[{"z", "\[Rule]", "1"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "1"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", "t"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "3"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", "t"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "4"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", 
+           SuperscriptBox["t", "2"]}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "5"], "\[Rule]", 
+          RowBox[{
+           RowBox[{"-", "2"}], " ", 
+           SuperscriptBox["t", "2"]}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "6"], "\[Rule]", "2"}]}], "}"}], ",", 
+       RowBox[{"{", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"4", "-", 
+          RowBox[{"3", " ", "t"}]}], ",", 
+         RowBox[{
+          RowBox[{"-", "2"}], "-", "t"}]}], "}"}]}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], "}"}],
+      ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7178064790290435], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9966186364141571], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject22091399117668355], ",", 
+        RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+          "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject14767442811158533], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject11850094630404101]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject2213081774030851], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject29280695549427719], ",", 
+        RowBox[{"\[LeftSkeleton]", "13", "\[RightSkeleton]"}], ",", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject7318745689096215]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "t"}], ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject7178064790290435]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject2213081774030851]}], "}"}]}], "}"}], 
+        ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+              "\[RightGuillemet]"}],
+             JLink`Objects`vm1`JavaObject22091399117668355]}], "}"}], ",", 
+          RowBox[{"\[LeftSkeleton]", "3", "\[RightSkeleton]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}],
+             JLink`Objects`vm1`JavaObject12607528051408897]}], "}"}]}], 
+         "}"}]}], "}"}],
+      Short], ",", 
+     TagBox[
+      RowBox[{"{", "}"}],
+      Short]}], "]"}]}], "}"}]], "Output",
  CellChangeTimes->{3.641071137941312*^9, 3.641081245884981*^9, 
   3.641082277892735*^9, 3.6410824011463623`*^9, 3.641087491739986*^9, 
   3.6410882212663393`*^9, 3.641088318975322*^9, 3.641088444309225*^9, 
@@ -2084,300 +2620,7 @@ Cell[BoxData["$Aborted"], "Output",
   3.6411545966432734`*^9, 3.641155170463241*^9, 3.6411607991552963`*^9, 
   3.641161614914721*^9, 3.641162636850574*^9, 3.6411666017029963`*^9, 
   3.641166677405061*^9, 3.641167189443825*^9, 3.641167244488611*^9, 
-  3.64116977097407*^9}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"Together", "[", 
-  RowBox[{
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{
-      SuperscriptBox["b", "2"], "+", 
-      RowBox[{"b", " ", "t"}], "-", 
-      SuperscriptBox["t", "2"], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "z"}], "+", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "d", " ", "z"}], "+", 
-      RowBox[{"2", " ", "b", " ", "t", " ", "z"}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "2"]}], "-", 
-      RowBox[{"b", " ", "t", " ", 
-       SuperscriptBox["z", "2"]}], "+", 
-      RowBox[{"b", " ", 
-       SuperscriptBox["d", "2"], " ", "t", " ", 
-       SuperscriptBox["z", "2"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "3"]}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "3"]}], "+", 
-      RowBox[{"4", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"4", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["d", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["d", "3"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "4"]}], "+", 
-      RowBox[{"3", " ", "d", " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{
-       SuperscriptBox["d", "3"], " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "5"]}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "5"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "6"]}], "-", 
-      RowBox[{"b", " ", "t", " ", 
-       SuperscriptBox["z", "6"]}], "+", 
-      RowBox[{"b", " ", 
-       SuperscriptBox["d", "2"], " ", "t", " ", 
-       SuperscriptBox["z", "6"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "7"]}], "+", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "7"]}], "+", 
-      RowBox[{"2", " ", "b", " ", "t", " ", 
-       SuperscriptBox["z", "7"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "8"]}], "+", 
-      RowBox[{"b", " ", "t", " ", 
-       SuperscriptBox["z", "8"]}], "-", 
-      RowBox[{
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "8"]}]}], ",", 
-     RowBox[{
-      SuperscriptBox["b", "2"], "-", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", "d"}], "+", 
-      RowBox[{"d", " ", 
-       SuperscriptBox["t", "2"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "z"}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", "z"}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "2"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "2"]}], "-", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["d", "2"], " ", 
-       SuperscriptBox["z", "2"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "3"]}], "+", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "3"]}], "+", 
-      RowBox[{"2", " ", "b", " ", "t", " ", 
-       SuperscriptBox["z", "3"]}], "+", 
-      RowBox[{"4", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "3"], " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "4"]}], "+", 
-      RowBox[{"2", " ", "b", " ", 
-       SuperscriptBox["d", "2"], " ", "t", " ", 
-       SuperscriptBox["z", "4"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "3"], " ", 
-       SuperscriptBox["d", "2"], " ", "t", " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "4"]}], "+", 
-      RowBox[{"b", " ", 
-       SuperscriptBox["t", "3"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"b", " ", 
-       SuperscriptBox["d", "2"], " ", 
-       SuperscriptBox["t", "3"], " ", 
-       SuperscriptBox["z", "4"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "5"]}], "+", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "5"]}], "+", 
-      RowBox[{"2", " ", "b", " ", "t", " ", 
-       SuperscriptBox["z", "5"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "6"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "6"]}], "-", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["d", "2"], " ", 
-       SuperscriptBox["z", "6"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "7"]}], "-", 
-      RowBox[{"2", " ", "b", " ", "d", " ", "t", " ", 
-       SuperscriptBox["z", "7"]}], "+", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", 
-       SuperscriptBox["z", "8"]}], "-", 
-      RowBox[{
-       SuperscriptBox["b", "2"], " ", "d", " ", 
-       SuperscriptBox["z", "8"]}], "+", 
-      RowBox[{"d", " ", 
-       SuperscriptBox["t", "2"], " ", 
-       SuperscriptBox["z", "8"]}]}]}], "}"}], "/.", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"b", "\[Rule]", "1"}], ",", 
-     RowBox[{"d", "\[Rule]", 
-      RowBox[{
-       SuperscriptBox["q", "10"], "+", 
-       SuperscriptBox["q", "8"], "+", 
-       SuperscriptBox["q", "2"], "+", "1", "+", 
-       SuperscriptBox["q", 
-        RowBox[{"-", "2"}]], "+", 
-       SuperscriptBox["q", 
-        RowBox[{"-", "8"}]], "+", 
-       SuperscriptBox["q", 
-        RowBox[{"-", "10"}]]}]}], ",", 
-     RowBox[{"t", "\[Rule]", 
-      RowBox[{"-", 
-       FractionBox[
-        RowBox[{
-         SuperscriptBox["q", "2"], "-", "1", "+", 
-         SuperscriptBox["q", 
-          RowBox[{"-", "2"}]]}], 
-        RowBox[{
-         SuperscriptBox["q", "4"], "+", 
-         SuperscriptBox["q", 
-          RowBox[{"-", "4"}]]}]]}]}], ",", 
-     RowBox[{"z", "\[Rule]", 
-      RowBox[{"-", 
-       SuperscriptBox["q", 
-        RowBox[{"-", "6"}]]}]}]}], "}"}]}], "]"}]], "Input",
- CellChangeTimes->{{3.641169778452227*^9, 3.641169784873547*^9}}],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{"0", ",", 
-   RowBox[{
-    FractionBox["1", 
-     RowBox[{
-      SuperscriptBox["q", "58"], " ", 
-      SuperscriptBox[
-       RowBox[{"(", 
-        RowBox[{"1", "+", 
-         SuperscriptBox["q", "8"]}], ")"}], "2"]}]], 
-    RowBox[{"(", 
-     RowBox[{
-      RowBox[{"-", "1"}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["q", "2"]}], "-", 
-      SuperscriptBox["q", "4"], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["q", "6"]}], "-", 
-      RowBox[{"4", " ", 
-       SuperscriptBox["q", "8"]}], "-", 
-      RowBox[{"5", " ", 
-       SuperscriptBox["q", "10"]}], "-", 
-      RowBox[{"8", " ", 
-       SuperscriptBox["q", "12"]}], "-", 
-      RowBox[{"7", " ", 
-       SuperscriptBox["q", "14"]}], "-", 
-      RowBox[{"8", " ", 
-       SuperscriptBox["q", "16"]}], "-", 
-      RowBox[{"14", " ", 
-       SuperscriptBox["q", "18"]}], "-", 
-      RowBox[{"15", " ", 
-       SuperscriptBox["q", "20"]}], "-", 
-      RowBox[{"18", " ", 
-       SuperscriptBox["q", "22"]}], "-", 
-      RowBox[{"19", " ", 
-       SuperscriptBox["q", "24"]}], "-", 
-      RowBox[{"20", " ", 
-       SuperscriptBox["q", "26"]}], "-", 
-      RowBox[{"28", " ", 
-       SuperscriptBox["q", "28"]}], "-", 
-      RowBox[{"28", " ", 
-       SuperscriptBox["q", "30"]}], "-", 
-      RowBox[{"28", " ", 
-       SuperscriptBox["q", "32"]}], "-", 
-      RowBox[{"32", " ", 
-       SuperscriptBox["q", "34"]}], "-", 
-      RowBox[{"32", " ", 
-       SuperscriptBox["q", "36"]}], "-", 
-      RowBox[{"36", " ", 
-       SuperscriptBox["q", "38"]}], "-", 
-      RowBox[{"36", " ", 
-       SuperscriptBox["q", "40"]}], "-", 
-      RowBox[{"32", " ", 
-       SuperscriptBox["q", "42"]}], "-", 
-      RowBox[{"36", " ", 
-       SuperscriptBox["q", "44"]}], "-", 
-      RowBox[{"36", " ", 
-       SuperscriptBox["q", "46"]}], "-", 
-      RowBox[{"32", " ", 
-       SuperscriptBox["q", "48"]}], "-", 
-      RowBox[{"32", " ", 
-       SuperscriptBox["q", "50"]}], "-", 
-      RowBox[{"28", " ", 
-       SuperscriptBox["q", "52"]}], "-", 
-      RowBox[{"28", " ", 
-       SuperscriptBox["q", "54"]}], "-", 
-      RowBox[{"28", " ", 
-       SuperscriptBox["q", "56"]}], "-", 
-      RowBox[{"20", " ", 
-       SuperscriptBox["q", "58"]}], "-", 
-      RowBox[{"19", " ", 
-       SuperscriptBox["q", "60"]}], "-", 
-      RowBox[{"18", " ", 
-       SuperscriptBox["q", "62"]}], "-", 
-      RowBox[{"15", " ", 
-       SuperscriptBox["q", "64"]}], "-", 
-      RowBox[{"14", " ", 
-       SuperscriptBox["q", "66"]}], "-", 
-      RowBox[{"8", " ", 
-       SuperscriptBox["q", "68"]}], "-", 
-      RowBox[{"7", " ", 
-       SuperscriptBox["q", "70"]}], "-", 
-      RowBox[{"8", " ", 
-       SuperscriptBox["q", "72"]}], "-", 
-      RowBox[{"5", " ", 
-       SuperscriptBox["q", "74"]}], "-", 
-      RowBox[{"4", " ", 
-       SuperscriptBox["q", "76"]}], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["q", "78"]}], "-", 
-      SuperscriptBox["q", "80"], "-", 
-      RowBox[{"2", " ", 
-       SuperscriptBox["q", "82"]}], "-", 
-      SuperscriptBox["q", "84"]}], ")"}]}]}], "}"}]], "Output",
- CellChangeTimes->{3.6411697854673843`*^9}]
+  3.64116977097407*^9, 3.6411990013624887`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -5740,10 +5983,10 @@ Cell[BoxData[
   3.641152715668324*^9, 3.6411543546972647`*^9}]
 }, Open  ]]
 },
-WindowSize->{1402, 1350},
-WindowMargins->{{Automatic, 532}, {Automatic, 0}},
-FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
-2014)",
+WindowSize->{1440, 851},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"9.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (January 25, \
+2013)",
 StyleDefinitions->"Default.nb"
 ]
 (* End of Notebook Content *)
@@ -5761,125 +6004,87 @@ Cell[558, 20, 1026, 21, 28, "Input"],
 Cell[CellGroupData[{
 Cell[1609, 45, 822, 19, 28, "Input"],
 Cell[CellGroupData[{
-Cell[2456, 68, 528, 8, 22, "Print"],
-Cell[2987, 78, 500, 7, 22, "Print"],
-Cell[3490, 87, 515, 7, 22, "Print"]
+Cell[2456, 68, 501, 7, 22, "Print"],
+Cell[2960, 77, 939, 19, 22, "Print"],
+Cell[3902, 98, 550, 8, 22, "Print"],
+Cell[4455, 108, 524, 7, 22, "Print"],
+Cell[4982, 117, 539, 7, 22, "Print"],
+Cell[5524, 126, 617, 12, 21, "Print"],
+Cell[6144, 140, 574, 10, 21, "Print"],
+Cell[6721, 152, 576, 10, 21, "Print"]
 }, Open  ]],
-Cell[4020, 97, 1862, 51, 46, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[5919, 153, 682, 15, 28, "Input"],
-Cell[CellGroupData[{
-Cell[6626, 172, 568, 8, 38, "Print"],
-Cell[7197, 182, 429, 6, 22, "Print"],
-Cell[7629, 190, 401, 5, 22, "Print"],
-Cell[8033, 197, 2578, 38, 214, "Print"],
-Cell[10614, 237, 614, 10, 22, "Print"],
-Cell[11231, 249, 401, 5, 21, "Print"],
-Cell[11635, 256, 434, 6, 22, "Print"],
-Cell[12072, 264, 530, 10, 22, "Print"]
-}, Open  ]],
-Cell[12617, 277, 3082, 81, 63, "Output"]
+Cell[7312, 165, 2276, 62, 46, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[15736, 363, 925, 21, 28, "Input"],
-Cell[CellGroupData[{
-Cell[16686, 388, 508, 7, 22, "Print"],
-Cell[17197, 397, 447, 6, 22, "Print"],
-Cell[17647, 405, 464, 6, 22, "Print"],
-Cell[18114, 413, 436, 6, 22, "Print"]
-}, Open  ]],
-Cell[18565, 422, 3412, 88, 80, "Output"]
+Cell[9625, 232, 682, 15, 28, "Input"],
+Cell[10310, 249, 4348, 113, 91, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[22014, 515, 758, 17, 28, "Input"],
-Cell[22775, 534, 1638, 37, 46, "Output"]
+Cell[14695, 367, 925, 21, 28, "Input"],
+Cell[CellGroupData[{
+Cell[15645, 392, 446, 6, 22, "Print"],
+Cell[16094, 400, 884, 18, 22, "Print"],
+Cell[16981, 420, 534, 7, 22, "Print"],
+Cell[17518, 429, 469, 6, 22, "Print"],
+Cell[17990, 437, 486, 6, 22, "Print"],
+Cell[18479, 445, 605, 12, 21, "Print"],
+Cell[19087, 459, 558, 10, 21, "Print"],
+Cell[19648, 471, 519, 9, 21, "Print"]
+}, Open  ]],
+Cell[20182, 483, 4937, 127, 108, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[24450, 576, 619, 13, 28, "Input"],
-Cell[CellGroupData[{
-Cell[25094, 593, 535, 8, 22, "Print"],
-Cell[25632, 603, 535, 8, 22, "Print"],
-Cell[26170, 613, 599, 9, 38, "Print"],
-Cell[26772, 624, 600, 9, 38, "Print"],
-Cell[27375, 635, 495, 7, 22, "Print"],
-Cell[27873, 644, 510, 7, 22, "Print"],
-Cell[28386, 653, 445, 6, 22, "Print"],
-Cell[28834, 661, 445, 6, 22, "Print"],
-Cell[29282, 669, 508, 7, 22, "Print"],
-Cell[29793, 678, 447, 6, 22, "Print"],
-Cell[30243, 686, 445, 6, 22, "Print"]
-}, Open  ]],
-Cell[30703, 695, 4467, 113, 80, "Output"]
+Cell[25156, 615, 758, 17, 28, "Input"],
+Cell[25917, 634, 1661, 37, 46, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[35207, 813, 477, 10, 28, "Input"],
-Cell[CellGroupData[{
-Cell[35709, 827, 571, 8, 22, "Print"],
-Cell[36283, 837, 1035, 14, 69, "Print"],
-Cell[37321, 853, 587, 8, 22, "Print"],
-Cell[37911, 863, 512, 7, 22, "Print"],
-Cell[38426, 872, 507, 7, 22, "Print"],
-Cell[38936, 881, 431, 6, 22, "Print"],
-Cell[39370, 889, 1012, 16, 70, "Print"],
-Cell[40385, 907, 793, 13, 54, "Print"],
-Cell[41181, 922, 432, 6, 21, "Print"],
-Cell[41616, 930, 553, 8, 22, "Print"],
-Cell[42172, 940, 19791, 562, 190, "Print"],
-Cell[61966, 1504, 6660, 185, 82, "Print"],
-Cell[68629, 1691, 779, 11, 38, "Print"],
-Cell[69411, 1704, 4750, 110, 46, "Print"],
-Cell[74164, 1816, 1149, 15, 70, "Print"],
-Cell[75316, 1833, 821, 11, 54, "Print"],
-Cell[76140, 1846, 9486, 221, 80, "Print"],
-Cell[85629, 2069, 443, 6, 22, "Print"]
-}, Open  ]],
-Cell[86087, 2078, 547, 8, 28, "Output"]
+Cell[27615, 676, 619, 13, 28, "Input"],
+Cell[28237, 691, 5479, 138, 130, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[86671, 2091, 6803, 191, 144, "Input"],
-Cell[93477, 2284, 3144, 95, 84, "Output"]
+Cell[33753, 834, 477, 10, 28, "Input"],
+Cell[34233, 846, 69113, 1776, 1527, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[96658, 2384, 1260, 36, 54, "Input"],
-Cell[97921, 2422, 234, 4, 28, "Output"]
+Cell[103383, 2627, 1260, 36, 54, "Input"],
+Cell[104646, 2665, 234, 4, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[98192, 2431, 400, 8, 28, "Input"],
-Cell[98595, 2441, 55287, 1401, 1018, "Output"]
+Cell[104917, 2674, 400, 8, 28, "Input"],
+Cell[105320, 2684, 55287, 1401, 995, "Output"]
 }, Open  ]],
-Cell[153897, 3845, 594, 15, 28, "Input"],
-Cell[154494, 3862, 1040, 32, 54, "Input"],
+Cell[160622, 4088, 594, 15, 28, "Input"],
+Cell[161219, 4105, 1040, 32, 54, "Input"],
 Cell[CellGroupData[{
-Cell[155559, 3898, 275, 5, 28, "Input"],
-Cell[155837, 3905, 213, 4, 28, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[156087, 3914, 313, 7, 28, "Input"],
-Cell[156403, 3923, 2806, 83, 85, "Output"]
+Cell[162284, 4141, 275, 5, 28, "Input"],
+Cell[162562, 4148, 213, 4, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[159246, 4011, 439, 12, 28, "Input"],
-Cell[159688, 4025, 1644, 51, 61, "Output"]
+Cell[162812, 4157, 313, 7, 28, "Input"],
+Cell[163128, 4166, 2806, 83, 85, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[161369, 4081, 346, 7, 28, "Input"],
-Cell[161718, 4090, 2954, 48, 96, "Message"],
-Cell[164675, 4140, 3112, 51, 78, "Message"],
-Cell[167790, 4193, 10027, 228, 254, "Output"]
+Cell[165971, 4254, 439, 12, 28, "Input"],
+Cell[166413, 4268, 1644, 51, 61, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[177854, 4426, 892, 26, 28, "Input"],
-Cell[178749, 4454, 2518, 73, 51, "Output"]
+Cell[168094, 4324, 346, 7, 28, "Input"],
+Cell[168443, 4333, 2954, 48, 96, "Message"],
+Cell[171400, 4383, 3112, 51, 78, "Message"],
+Cell[174515, 4436, 10027, 228, 254, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[181304, 4532, 237, 5, 28, "Input"],
-Cell[181544, 4539, 2952, 48, 96, "Message"],
-Cell[184499, 4589, 12524, 283, 265, "Output"]
+Cell[184579, 4669, 892, 26, 28, "Input"],
+Cell[185474, 4697, 2518, 73, 51, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[197060, 4877, 1023, 26, 63, "Input"],
-Cell[198086, 4905, 38089, 834, 813, "Output"]
+Cell[188029, 4775, 237, 5, 28, "Input"],
+Cell[188269, 4782, 2952, 48, 96, "Message"],
+Cell[191224, 4832, 12524, 283, 265, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[203785, 5120, 1023, 26, 63, "Input"],
+Cell[204811, 5148, 38089, 834, 813, "Output"]
 }, Open  ]]
 }
 ]
