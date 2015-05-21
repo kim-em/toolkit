@@ -7,7 +7,7 @@ import net.tqft.toolkit.algebra.matrices._
 import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
 
 abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverField[R] {
-  override lazy val vertexTypes = Seq(VertexType(3, 1), VertexType(4, 2))
+  override lazy val vertexTypes = Seq(VertexType(3, 0, 1), VertexType(4, 0, 2))
 
   def d: R
   def b: R

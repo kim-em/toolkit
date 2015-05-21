@@ -10,10 +10,10 @@ import java.io.ObjectOutputStream
 import java.io.ByteArrayInputStream
 import java.io.ObjectInputStream
 
-case class VertexType(perimeter: Int, allowedRotationStep: Int)
+case class VertexType(perimeter: Int, label: Int, allowedRotationStep: Int)
 
 object VertexType {
-  implicit def lift(p: (Int, Int)) = VertexType(p._1, p._2)
+  implicit def lift(p: (Int, Int, Int)) = VertexType(p._1, p._2, p._3)
 }
 
 case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
@@ -72,7 +72,7 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
             c = spider.rotate(
               spider.multiply(
                 spider.rotate(graph, Seq(graph.numberOfBoundaryPoints - 1, j).max),
-                spider.rotate(PlanarGraph.star(v.perimeter, v.allowedRotationStep), k),
+                spider.rotate(PlanarGraph.star(v.perimeter, v.label, v.allowedRotationStep), k),
                 connectivity),
               -j);
             if c.dangle == v.perimeter - connectivity;

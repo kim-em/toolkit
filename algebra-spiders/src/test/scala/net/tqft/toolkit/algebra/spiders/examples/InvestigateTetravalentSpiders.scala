@@ -12,7 +12,7 @@ object InvestigateTetravalentSpiders extends App {
 
   val ring: Ring[MultivariablePolynomial[Fraction[BigInt], String]] = implicitly
 
-  val lowestWeightTetravalentSpider = QuotientSpider.withLowestWeightGenerators(Seq((VertexType(4, 1), ring.one)))
+  val lowestWeightTetravalentSpider = QuotientSpider.withLowestWeightGenerators(Seq((VertexType(4, 0, 1), ring.one)))
 
   val p1 = MultivariablePolynomial(Map(Map("p1" -> 1) -> Fraction[BigInt](1, 1)))
   val p2 = MultivariablePolynomial(Map(Map("p2" -> 1) -> Fraction[BigInt](1, 1)))

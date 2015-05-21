@@ -6,7 +6,7 @@ import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.numberfields.NumberField
 
 abstract class TrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverField[R] {
-  override lazy val vertexTypes = Seq(VertexType(3, 1))
+  override lazy val vertexTypes = Seq(VertexType(3, 0, 1))
 
   def d: R
   def b: R
