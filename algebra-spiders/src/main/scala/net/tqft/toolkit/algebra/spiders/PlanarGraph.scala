@@ -9,7 +9,7 @@ import scala.util.parsing.combinator.JavaTokenParsers
 
 // flags veer to the left
 // edges are ordered clockwise around each vertex
-case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
+case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[(Int, Int)], loops: Int) { graph =>
   //  verify
   
   def isAlternating_? = {
@@ -277,7 +277,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       val k = resultFlags(i).size
       val j = identifyRotation(packed.vertexFlags(labelling(i)), resultFlags(i).map(p => (labelling(p._1), labelling(p._2))))
 
-      val j0 = j mod packed.labels(labelling(i) - 1)
+      val j0 = j mod packed.labels(labelling(i) - 1)._1
 
       vertexRotations(k) = (vertexRotations(k) + j - j0) mod k
 
@@ -286,7 +286,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
     //    val result = PlanarGraph(newOuterFace, resultFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
 
-    val fixedResult = PlanarGraph(newOuterFace, resultFlags.head +: fixedFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
+    val fixedResult = PlanarGraph(newOuterFace, resultFlags.head +: fixedFlags, labelling.take(packed.numberOfVertices).permute((-1,-1) +: packed.labels).tail, graph.loops)
 
     val finalResult = DiagramSpider.graphSpider.rotate(fixedResult, -boundaryRotation)
     val rotation = Rotation(Map() ++ vertexRotations)
@@ -488,7 +488,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
         val newInternalFlags = vertexFlags.zipWithIndex.tail.collect({
           case (flags, i) if !verticesToDelete.contains(i) => flags.map(updateFlag(i, false))
         })
-        val newLabels = (0 +: labels).zipWithIndex.collect({ case (l, i) if !verticesToDelete.contains(i) => l }).tail
+        val newLabels = ((-1,-1) +: labels).zipWithIndex.collect({ case (l, i) if !verticesToDelete.contains(i) => l }).tail
         val result = PlanarGraph(if (numberOfBoundaryPoints == 0) newFace else outerFace, newExternalFlag +: newInternalFlags, newLabels, loops - loopsToDelete)
         require(result.numberOfBoundaryPoints == boundaryEdgesAndFacesToDelete.size + graph.numberOfBoundaryPoints)
         result
@@ -590,7 +590,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
             packedShape.degree(sourceVertex) != graph.degree(targetVertex) ||
             packedShape.labels(sourceVertex - 1) != graph.labels(targetVertex - 1) ||
             !compareSelfLoops(packedShape.vertexFlags(sourceVertex), graph.vertexFlags(targetVertex).rotateLeft(rotation)) ||
-            (rotation mod packedShape.labels(sourceVertex - 1)) != 0) {
+            (rotation mod packedShape.labels(sourceVertex - 1)._1) != 0) {
             //            Logging.info(s"rejecting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
             None
           } else {
@@ -741,7 +741,7 @@ object PlanarGraph {
     def planarGraph: Parser[PlanarGraph] = ("PlanarGraph(" ~> whitespace ~>
       (int <~ "," <~ whitespace) ~
       (indexedSeq(seq(pair(int))) <~ "," <~ whitespace) ~
-      (seq(int) <~ "," <~ whitespace) ~
+      (seq(pair(int)) <~ "," <~ whitespace) ~
       int <~ whitespace <~ ")") ^^ {
         case outerFace ~ vertexFlags ~ labels ~ loops => PlanarGraph(outerFace, vertexFlags, labels, loops)
       }
@@ -771,7 +771,7 @@ object PlanarGraph {
       import net.tqft.toolkit.arithmetic.Mod._
       val flags = IndexedSeq.tabulate(k)(i => (i + k + 1, i + 3 * k + 1)) +:
         IndexedSeq.tabulate(k)(i => IndexedSeq((i + 2 * k + 1, 4 * k + 1), (i + k + 1, (i + 1 mod k) + 3 * k + 1), ((i - 1 mod k) + 2 * k + 1, i + 3 * k + 1)))
-      PlanarGraph(3 * k + 1, flags, IndexedSeq.fill(k)(1), 0)
+      PlanarGraph(3 * k + 1, flags, IndexedSeq.fill(k)((0,1)), 0)
     }
   }
 
@@ -784,7 +784,7 @@ object PlanarGraph {
     val flags = IndexedSeq(
       Seq.tabulate(k)(i => (i + 2, i + k + 2)),
       Seq.tabulate(k)(i => (i + 2, ((i + 1) % k) + k + 2)).reverse)
-    PlanarGraph(k + 2, flags, IndexedSeq(r), 0)
+    PlanarGraph(k + 2, flags, IndexedSeq((0,r)), 0)
   }
 
   private val starCache = {

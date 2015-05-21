@@ -40,7 +40,7 @@ class GraphsGeneratedByTest extends FlatSpec with Matchers with IsomorphismMatch
     diagrams.size should equal(6)
   }
 
-  val R2 = PlanarGraph(9, Vector(List((3, 9), (5, 13), (6, 11), (4, 12)), List((3, 13), (4, 9), (7, 12), (8, 10)), List((5, 11), (8, 13), (7, 10), (6, 12))), IndexedSeq(1, 1), 0)
+  val R2 = PlanarGraph(9, Vector(List((3, 9), (5, 13), (6, 11), (4, 12)), List((3, 13), (4, 9), (7, 12), (8, 10)), List((5, 11), (8, 13), (7, 10), (6, 12))), IndexedSeq((1,0), (1,0)), 0)
   val smallTetravalent = tetravalentEnumerator.avoiding(Seq(R1, R2))
 
   "byNumberOfVertices" should "find 5 small tetravalent diagrams with 6 boundary points and no vertices" in {
