@@ -79,7 +79,7 @@ object DrawPlanarGraph {
     
     // Write the TikZ
     var tikzString = s"""\\begin{tikzpicture}
-                        |[scale=$imageScale, every node/.style={draw, circle, fill=none, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}]
+                        |[scale=$imageScale, every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}]
                         |\\draw[gray, dashed] (0,0) circle (1.0);\n""".stripMargin
     // Place boundary points
     for (i <- 0 until G.numberOfBoundaryPoints) {
