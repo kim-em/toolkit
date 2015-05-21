@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[    167284,       4156]
-NotebookOptionsPosition[    161485,       3990]
-NotebookOutlinePosition[    161845,       4006]
-CellTagsIndexPosition[    161802,       4003]
+NotebookDataLength[    157659,       3981]
+NotebookOptionsPosition[    151983,       3818]
+NotebookOutlinePosition[    152343,       3834]
+CellTagsIndexPosition[    152300,       3831]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -749,7 +749,7 @@ Cell[BoxData[
    3.641087422352951*^9, 3.6410894790397367`*^9, 3.641152602862134*^9, 
    3.641156633724721*^9, 3.641160567097775*^9, 3.641161391497315*^9, 
    3.641163762650857*^9, 3.6411641053358927`*^9, 3.6411705732145977`*^9, 
-   3.641170649260696*^9, 3.641178002797408*^9}]
+   3.641170649260696*^9, 3.641178002797408*^9, 3.6411803654477453`*^9}]
 }, Open  ]],
 
 Cell[BoxData[{
@@ -1681,15 +1681,17 @@ Cell[BoxData[{
   RowBox[{"SpiderAnalysis", "[", 
    RowBox[{
    "spider", ",", "manifold", ",", "dimensionBounds", ",", 
-    "independentDiagrams", ",", "dependentDiagrams", ",", "reducingRelations",
-     ",", "nonReducingRelations"}], "]"}]}]}], "Input",
+    "independentDiagrams", ",", "dependentDiagrams", ",", "closedDiagrams", 
+    ",", "reducingRelations", ",", "nonReducingRelations"}], 
+   "]"}]}]}], "Input",
  CellChangeTimes->{{3.620686834670459*^9, 3.620686885654628*^9}, {
   3.6206869327631817`*^9, 3.6206869404999533`*^9}, {3.620686978831314*^9, 
   3.6206869819675417`*^9}, {3.620687016059319*^9, 3.620687258507056*^9}, {
   3.621070286747486*^9, 3.6210703001813507`*^9}, {3.621210406533744*^9, 
   3.6212105438578167`*^9}, {3.6212204884690657`*^9, 3.6212205000619917`*^9}, {
   3.621220609217463*^9, 3.621220623567325*^9}, {3.621896929150733*^9, 
-  3.6218969381322117`*^9}, {3.641178876989626*^9, 3.641178889140676*^9}}],
+  3.6218969381322117`*^9}, {3.641178876989626*^9, 3.641178889140676*^9}, {
+  3.64118031520989*^9, 3.641180316527817*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -1855,7 +1857,7 @@ Cell[BoxData[
         RowBox[{"s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
         "@", 
         RowBox[{
-         RowBox[{"allEvaluations", "[", "]"}], "@", 
+         RowBox[{"allEvaluations", "[", "d", "]"}], "@", 
          RowBox[{"toSeq", "[", "]"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", 
      RowBox[{
       RowBox[{"AppendClosedDiagram", "[", "d", "]"}], "[", 
@@ -1872,8 +1874,8 @@ Cell[BoxData[
          "]"}], "]"}], "[", "s", "]"}], "]"}]}]}], "\[IndentingNewLine]", 
    "]"}]}]], "Input",
  CellChangeTimes->{{3.641178974545657*^9, 3.64117899791991*^9}, {
-  3.64117902960489*^9, 3.641179040437148*^9}, {3.641179072273327*^9, 
-  3.641179125128031*^9}}],
+   3.64117902960489*^9, 3.641179040437148*^9}, {3.641179072273327*^9, 
+   3.641179125128031*^9}, 3.6411803499108267`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -1945,15 +1947,20 @@ Cell[BoxData[
      RowBox[{"closedDiagrams", "=", 
       RowBox[{
        RowBox[{
-        RowBox[{"s", "@", 
+        RowBox[{
+         RowBox[{"s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+         "@", 
          RowBox[{
           RowBox[{"diagramSpider", "[", "]"}], "@", 
           RowBox[{
            RowBox[{"innerProduct", "[", 
             RowBox[{"d", ",", "#"}], "]"}], "@", 
-           RowBox[{"canonicalForm", "[", "]"}]}]}]}], "&"}], "/@", 
+           RowBox[{
+            RowBox[{"canonicalFormWithDefect", "[", "]"}], "@", 
+            RowBox[{"U1", "[", "]"}]}]}]}]}], "&"}], "/@", 
        RowBox[{"(", 
         RowBox[{
+         RowBox[{"{", "d", "}"}], "~", "Join", "~", 
          RowBox[{
           RowBox[{"IndependentDiagrams", "[", "k", "]"}], "[", "s", "]"}], 
          "~", "Join", "~", 
@@ -1961,9 +1968,31 @@ Cell[BoxData[
           RowBox[{"DependentDiagrams", "[", "k", "]"}], "[", "s", "]"}]}], 
         ")"}]}]}], ";", "\[IndentingNewLine]", 
      RowBox[{"closedDiagrams", "=", 
-      RowBox[{"Complement", "[", 
-       RowBox[{"closedDiagrams", ",", 
-        RowBox[{"ClosedDiagrams", "[", "s", "]"}]}], "]"}]}], ";", 
+      RowBox[{
+       RowBox[{"Complement", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"#", "@", 
+              RowBox[{"hashCode", "[", "]"}]}], ",", "#"}], "}"}], "&"}], "/@",
+           "closedDiagrams"}], ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"#", "@", 
+              RowBox[{"hashCode", "[", "]"}]}], ",", "#"}], "}"}], "&"}], "/@", 
+          RowBox[{"ClosedDiagrams", "[", "s", "]"}]}], ",", 
+         RowBox[{"SameTest", "->", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"First", "[", "#1", "]"}], " ", "===", " ", 
+             RowBox[{"First", "[", "#2", "]"}]}], " ", "&"}], ")"}]}]}], 
+        "]"}], "\[LeftDoubleBracket]", 
+       RowBox[{"All", ",", "2"}], "\[RightDoubleBracket]"}]}], ";", 
      "\[IndentingNewLine]", 
      RowBox[{"If", "[", 
       RowBox[{
@@ -2133,7 +2162,8 @@ linearly independent or linearly dependent.\>\"", "]"}], ";",
    3.6221845333389797`*^9, 3.622184615248272*^9}, {3.641069839033166*^9, 
    3.641069839206719*^9}, {3.64107025276422*^9, 3.641070257810486*^9}, {
    3.641179465442556*^9, 3.6411796450507174`*^9}, {3.641179861019335*^9, 
-   3.641179900599883*^9}}],
+   3.641179900599883*^9}, {3.641180340383136*^9, 3.641180344929475*^9}, {
+   3.641180423334853*^9, 3.641180531995886*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -3440,7 +3470,7 @@ Cell[BoxData[
    3.641152609764319*^9, 3.641154580941002*^9, 3.641156640878007*^9, 
    3.641160574101695*^9, 3.641161398780363*^9, 3.641163770068304*^9, 
    3.641164114194503*^9, 3.641170580005129*^9, 3.6411706553992*^9, 
-   3.641178012473444*^9}]
+   3.641178012473444*^9, 3.64118037637318*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -3478,7 +3508,7 @@ Cell[BoxData[
    3.641089490656151*^9, 3.6411526114931507`*^9, 3.641156642756731*^9, 
    3.641160576209597*^9, 3.6411614005495253`*^9, 3.641163771421193*^9, 
    3.641164115526466*^9, 3.641170581767336*^9, 3.64117065723877*^9, 
-   3.641178014382045*^9}]
+   3.641178014382045*^9, 3.6411803795241747`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -3501,7 +3531,8 @@ Cell[BoxData[
   3.641082048301297*^9, 3.64108743070877*^9, 3.641089491000091*^9, 
   3.641152611810439*^9, 3.64115664306225*^9, 3.641160576642459*^9, 
   3.641161400891111*^9, 3.641163773044032*^9, 3.641164117153881*^9, 
-  3.641170582094253*^9, 3.6411706575931177`*^9, 3.641178014766699*^9}]
+  3.641170582094253*^9, 3.6411706575931177`*^9, 3.641178014766699*^9, 
+  3.6411803799368773`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -3554,7 +3585,8 @@ Cell[BoxData[
    3.6410820484875307`*^9, 3.6410874309266787`*^9, 3.6410894911630173`*^9, 
    3.641152612029334*^9, 3.641156643223991*^9, 3.641160576871707*^9, 
    3.6411614010891447`*^9, 3.6411637745371923`*^9, 3.641164121616514*^9, 
-   3.641170582296472*^9, 3.641170657794484*^9, 3.641178014974351*^9}]
+   3.641170582296472*^9, 3.641170657794484*^9, 3.641178014974351*^9, 
+   3.641180380165724*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -3604,27 +3636,8 @@ Cell[BoxData[
   3.641082378929584*^9, 3.641087430984048*^9, 3.641089491199991*^9, 
   3.641152612082631*^9, 3.6411566432733393`*^9, 3.64116057691609*^9, 
   3.641161401138818*^9, 3.641163774646083*^9, 3.641164121712599*^9, 
-  3.6411705823248253`*^9, 3.641170657844158*^9, 3.6411780150269814`*^9}],
-
-Cell[BoxData["\<\"beginning PolynomialReduce calculation...\"\>"], "Print",
- CellChangeTimes->{3.6409986663967752`*^9, 3.6409987689412937`*^9, 
-  3.6410044025163183`*^9, 3.641004695410653*^9, 3.6410061588577843`*^9, 
-  3.641021796541811*^9, 3.641021899343761*^9, 3.6410248884944572`*^9, 
-  3.641026546103854*^9, 3.6410660835686617`*^9, 3.641082048542728*^9, 
-  3.641082378929584*^9, 3.641087430984048*^9, 3.641089491199991*^9, 
-  3.641152612082631*^9, 3.6411566432733393`*^9, 3.64116057691609*^9, 
-  3.641161401138818*^9, 3.641163774646083*^9, 3.641164121712599*^9, 
-  3.6411705823248253`*^9, 3.641170657844158*^9, 3.641178015034389*^9}],
-
-Cell[BoxData["\<\"finishing PolynomialReduce calculation...\"\>"], "Print",
- CellChangeTimes->{3.6409986663967752`*^9, 3.6409987689412937`*^9, 
-  3.6410044025163183`*^9, 3.641004695410653*^9, 3.6410061588577843`*^9, 
-  3.641021796541811*^9, 3.641021899343761*^9, 3.6410248884944572`*^9, 
-  3.641026546103854*^9, 3.6410660835686617`*^9, 3.641082048542728*^9, 
-  3.641082378929584*^9, 3.641087430984048*^9, 3.641089491199991*^9, 
-  3.641152612082631*^9, 3.6411566432733393`*^9, 3.64116057691609*^9, 
-  3.641161401138818*^9, 3.641163774646083*^9, 3.641164121712599*^9, 
-  3.6411705823248253`*^9, 3.641170657844158*^9, 3.641178015044633*^9}],
+  3.6411705823248253`*^9, 3.641170657844158*^9, 3.6411780150269814`*^9, 
+  3.6411803802348557`*^9}],
 
 Cell[BoxData[
  InterpretationBox[
@@ -3644,27 +3657,8 @@ Cell[BoxData[
   3.641082378929584*^9, 3.641087430984048*^9, 3.641089491199991*^9, 
   3.641152612082631*^9, 3.6411566432733393`*^9, 3.64116057691609*^9, 
   3.641161401138818*^9, 3.641163774646083*^9, 3.641164121712599*^9, 
-  3.6411705823248253`*^9, 3.641170657844158*^9, 3.6411780150538273`*^9}],
-
-Cell[BoxData["\<\"beginning PolynomialReduce calculation...\"\>"], "Print",
- CellChangeTimes->{3.6409986663967752`*^9, 3.6409987689412937`*^9, 
-  3.6410044025163183`*^9, 3.641004695410653*^9, 3.6410061588577843`*^9, 
-  3.641021796541811*^9, 3.641021899343761*^9, 3.6410248884944572`*^9, 
-  3.641026546103854*^9, 3.6410660835686617`*^9, 3.641082048542728*^9, 
-  3.641082378929584*^9, 3.641087430984048*^9, 3.641089491199991*^9, 
-  3.641152612082631*^9, 3.6411566432733393`*^9, 3.64116057691609*^9, 
-  3.641161401138818*^9, 3.641163774646083*^9, 3.641164121712599*^9, 
-  3.6411705823248253`*^9, 3.641170657844158*^9, 3.641178015063465*^9}],
-
-Cell[BoxData["\<\"finishing PolynomialReduce calculation...\"\>"], "Print",
- CellChangeTimes->{3.6409986663967752`*^9, 3.6409987689412937`*^9, 
-  3.6410044025163183`*^9, 3.641004695410653*^9, 3.6410061588577843`*^9, 
-  3.641021796541811*^9, 3.641021899343761*^9, 3.6410248884944572`*^9, 
-  3.641026546103854*^9, 3.6410660835686617`*^9, 3.641082048542728*^9, 
-  3.641082378929584*^9, 3.641087430984048*^9, 3.641089491199991*^9, 
-  3.641152612082631*^9, 3.6411566432733393`*^9, 3.64116057691609*^9, 
-  3.641161401138818*^9, 3.641163774646083*^9, 3.641164121712599*^9, 
-  3.6411705823248253`*^9, 3.641170657844158*^9, 3.641178015073901*^9}]
+  3.6411705823248253`*^9, 3.641170657844158*^9, 3.6411780150269814`*^9, 
+  3.641180380242486*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -3688,7 +3682,8 @@ Cell[BoxData[
   3.641082378988954*^9, 3.641087431053567*^9, 3.6410894912584133`*^9, 
   3.641152612156068*^9, 3.6411566432936296`*^9, 3.6411605769792624`*^9, 
   3.641161401192215*^9, 3.641163774697742*^9, 3.641164121764028*^9, 
-  3.64117058237773*^9, 3.6411706578880663`*^9, 3.641178015085209*^9}]
+  3.64117058237773*^9, 3.6411706578880663`*^9, 3.641178015085209*^9, 
+  3.641180380253956*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -3711,7 +3706,7 @@ Cell[BoxData[
  CellChangeTimes->{{3.641156738691033*^9, 3.641156748392284*^9}, 
    3.641160577043126*^9, 3.641161401247992*^9, 3.641163774750629*^9, 
    3.641164121825707*^9, 3.6411705824250298`*^9, 3.641170657936001*^9, 
-   3.64117801513766*^9}]
+   3.64117801513766*^9, 3.6411803803060904`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -3736,7 +3731,7 @@ Cell[BoxData[
  CellChangeTimes->{{3.641156756724012*^9, 3.6411567626374598`*^9}, 
    3.641160577260359*^9, 3.641161401418051*^9, 3.641163774929882*^9, 
    3.6411641220368567`*^9, 3.64117058261407*^9, 3.641170658135626*^9, 
-   3.6411780153955593`*^9}]
+   3.6411780153955593`*^9, 3.641180380543633*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -3762,229 +3757,62 @@ Cell[BoxData[
  CellChangeTimes->{{3.641156785559897*^9, 3.6411567990968943`*^9}, 
    3.6411605774872932`*^9, 3.641161401465024*^9, 3.641163775000134*^9, 
    3.641164122110661*^9, 3.641170582664468*^9, 3.641170658188657*^9, 
-   3.6411780156580677`*^9}]
+   3.6411780156580677`*^9, 3.6411803807618217`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"Methods", "[", "BT", "]"}]], "Input",
- CellChangeTimes->{{3.6411567177164373`*^9, 3.6411567211492157`*^9}}],
+ RowBox[{"BT", "@", 
+  RowBox[{"allEvaluations", "[", 
+   RowBox[{"AsScalaObject", "[", 
+    RowBox[{"{", 
+     RowBox[{"TwistedTet", "\[Rule]", 
+      RowBox[{"AsScalaObject", "[", 
+       RowBox[{"1", ",", "\"\<MultivariableRationalFunction\>\""}], "]"}]}], 
+     "}"}], "]"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.641180653102666*^9, 3.641180693641224*^9}}],
 
 Cell[BoxData[
- TagBox[
-  TagBox[GridBox[{
-     {"\<\"Object add(Object, Object)\"\>"},
-     {"\<\"Object add(Object, Object, scala.collection.Seq)\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.spiders.examples.QuotientSpider \
-addReduction(net.tqft.toolkit.algebra.spiders.Reduction)\"\>"},
-     {"\<\"scala.collection.immutable.Map add(scala.collection.immutable.Map, \
-scala.collection.immutable.Map)\"\>"},
-     {"\<\"double add$mcD$sp(double, double)\"\>"},
-     {"\<\"double add$mcD$sp(double, double, scala.collection.Seq)\"\>"},
-     {"\<\"float add$mcF$sp(float, float)\"\>"},
-     {"\<\"float add$mcF$sp(float, float, scala.collection.Seq)\"\>"},
-     {"\<\"int add$mcI$sp(int, int)\"\>"},
-     {"\<\"int add$mcI$sp(int, int, scala.collection.Seq)\"\>"},
-     {"\<\"long add$mcJ$sp(long, long)\"\>"},
-     {"\<\"long add$mcJ$sp(long, long, scala.collection.Seq)\"\>"},
-     {"\<\"scala.collection.Iterator allEvaluations(Object)\"\>"},
-     {"\<\"scala.collection.Seq \
-allInnerProductEvaluations(net.tqft.toolkit.algebra.spiders.PlanarGraph, \
-net.tqft.toolkit.algebra.spiders.PlanarGraph)\"\>"},
-     {"\<\"scala.collection.Seq \
-allInnerProductEvaluations(scala.collection.immutable.Map, \
-net.tqft.toolkit.algebra.spiders.PlanarGraph)\"\>"},
-     {"\<\"scala.collection.Seq \
-allInnerProductEvaluations(scala.collection.immutable.Map, \
-scala.collection.Seq)\"\>"},
-     {"\<\"scala.collection.Iterator \
-allReplacements(net.tqft.toolkit.algebra.spiders.Reduction, \
-net.tqft.toolkit.algebra.spiders.PlanarGraph)\"\>"},
-     {"\<\"scala.collection.Iterator \
-allReplacements(net.tqft.toolkit.algebra.spiders.Reduction, Object)\"\>"},
-     {"\<\"scala.collection.Iterator \
-allReplacementsRepeated(scala.collection.Seq, scala.collection.immutable.Map)\
-\"\>"},
-     {"\<\"scala.collection.Iterator allReplacements(scala.collection.Seq, \
-scala.collection.immutable.Map)\"\>"},
-     {"\<\"static net.tqft.toolkit.algebra.spiders.examples.QuotientSpider \
-apply(scala.collection.Seq, scala.collection.Seq)\"\>"},
-     {"\<\"static scala.collection.Seq apply$default$2()\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.spiders.\
-PlanarGraphReductionSpiderOverField$Basis basis(int, \
-scala.collection.Seq)\"\>"},
-     {"\<\"boolean canEqual(Object)\"\>"},
-     {"\<\"Object canonicalForm(Object)\"\>"},
-     {"\<\"scala.collection.immutable.Map \
-canonicalForm(scala.collection.immutable.Map)\"\>"},
-     {"\<\"int circumference(Object)\"\>"},
-     {"\<\"int circumference(scala.collection.immutable.Map)\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.Field coefficientRing()\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.Ring coefficientRing()\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.AdditiveMonoid coefficients()\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.Module coefficients()\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.ModuleOverRig coefficients()\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.spiders.examples.QuotientSpider \
-copy(scala.collection.Seq, scala.collection.Seq)\"\>"},
-     {"\<\"scala.collection.Seq copy$default$1()\"\>"},
-     {"\<\"scala.collection.Seq copy$default$2()\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.spiders.DiagramSpider \
-diagramSpider()\"\>"},
-     {"\<\"Object eigenvalue(int)\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.Fraction eigenvalue(int)\"\>"},
-     {"\<\"Object \
-eigenvalue(net.tqft.toolkit.algebra.spiders.Rotation)\"\>"},
-     {"\<\"Object empty()\"\>"},
-     {"\<\"scala.collection.immutable.Map empty()\"\>"},
-     {"\<\"boolean equals(Object)\"\>"},
-     {"\<\"Object evaluatedInnerProduct(Object, Object)\"\>"},
-     {"\<\"Object evaluatedInnerProduct(scala.collection.immutable.Map, \
-scala.collection.immutable.Map)\"\>"},
-     {"\<\"Object evaluate(Object)\"\>"},
-     {"\<\"Object evaluate(scala.collection.immutable.Map)\"\>"},
-     {"\<\"scala.collection.Seq extraReductions()\"\>"},
-     {"\<\"scala.collection.Seq generators()\"\>"},
-     {"\<\"Class getClass()\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.spiders.GraphsGeneratedBy graphs()\"\>"},
-     {"\<\"int hashCode()\"\>"},
-     {"\<\"scala.collection.Seq innerProductMatrix(scala.collection.Seq)\"\>"},
-     {"\<\"scala.collection.Seq innerProductMatrix(scala.collection.Seq, \
-scala.collection.Seq)\"\>"},
-     {"\<\"Object innerProduct(Object, Object)\"\>"},
-     {"\<\"scala.collection.Seq \
-innerProductsOfLinearCombinationsMatrix(scala.collection.Seq, \
-scala.collection.Seq)\"\>"},
-     {"\<\"Object multiply(Object, Object, int)\"\>"},
-     {"\<\"Object negate(Object)\"\>"},
-     {"\<\"scala.collection.immutable.Map \
-negate(scala.collection.immutable.Map)\"\>"},
-     {"\<\"double negate$mcD$sp(double)\"\>"},
-     {"\<\"float negate$mcF$sp(float)\"\>"},
-     {"\<\"int negate$mcI$sp(int)\"\>"},
-     {"\<\"long negate$mcJ$sp(long)\"\>"},
-     {"\<\"void \
-net$tqft$toolkit$algebra$spiders$CachingEvaluableSpider$_setter_$net$tqft$\
-toolkit$algebra$spiders$CachingEvaluableSpider$$cache_$eq(scala.collection.\
-mutable.Map)\"\>"},
-     {"\<\"scala.collection.mutable.Map \
-net$tqft$toolkit$algebra$spiders$CachingEvaluableSpider$$cache()\"\>"},
-     {"\<\"Object \
-net$tqft$toolkit$algebra$spiders$CachingEvaluableSpider$$super$\
-evaluatedInnerProduct(Object, Object)\"\>"},
-     {"\<\"Object \
-net$tqft$toolkit$algebra$spiders$LinearSpider$$super$innerProduct(Object, \
-Object)\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.Ring \
-net$tqft$toolkit$algebra$spiders$PlanarGraphReductionSpider$$ring$1()\"\>"},
-     {"\<\"void \
-net$tqft$toolkit$algebra$spiders$PolyhedronNamer$_setter_$polyhedronOrdering_$\
-eq(scala.math.Ordering)\"\>"},
-     {"\<\"void \
-net$tqft$toolkit$algebra$spiders$PolyhedronNamer$_setter_$\
-sphericalEquivalents_$eq(scala.Function1)\"\>"},
-     {"\<\"scala.collection.immutable.Map \
-net$tqft$toolkit$algebra$spiders$ReductionSpider$$super$canonicalForm(scala.\
-collection.immutable.Map)\"\>"},
-     {"\<\"scala.collection.immutable.Map \
-net$tqft$toolkit$algebra$spiders$ReductionSpider$$super$stitch(scala.\
-collection.immutable.Map)\"\>"},
-     {"\<\"Object normSquared(Object)\"\>"},
-     {"\<\"void notify()\"\>"},
-     {"\<\"void notifyAll()\"\>"},
-     {"\<\"scala.math.Ordering polyhedronOrdering()\"\>"},
-     {"\<\"scala.collection.Seq polyhedronReductions()\"\>"},
-     {"\<\"int productArity()\"\>"},
-     {"\<\"Object productElement(int)\"\>"},
-     {"\<\"scala.collection.Iterator productIterator()\"\>"},
-     {"\<\"String productPrefix()\"\>"},
-     {"\<\"scala.collection.Seq reducedDiagrams(int, int)\"\>"},
-     {"\<\"scala.collection.Seq reducedDiagrams(int, \
-scala.collection.immutable.Map)\"\>"},
-     {"\<\"boolean \
-reducibleDiagram_$qmark(net.tqft.toolkit.algebra.spiders.PlanarGraph)\"\>"},
-     {"\<\"scala.collection.Seq reductions()\"\>"},
-     {"\<\"scala.collection.immutable.Map \
-replace(net.tqft.toolkit.algebra.spiders.Reduction, \
-scala.collection.immutable.Map)\"\>"},
-     {"\<\"scala.collection.immutable.Map \
-replaceRepeatedly(scala.collection.Seq, \
-scala.collection.immutable.Map)\"\>"},
-     {"\<\"scala.collection.immutable.Map replace(scala.collection.Seq, \
-scala.collection.immutable.Map)\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.Field ring()\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.Ring ring()\"\>"},
-     {"\<\"Object rotate(Object, int)\"\>"},
-     {"\<\"scala.collection.immutable.Map \
-rotate(scala.collection.immutable.Map, int)\"\>"},
-     {"\<\"Object scalarMultiply(Object, Object)\"\>"},
-     {"\<\"scala.collection.immutable.Map scalarMultiply(Object, \
-scala.collection.immutable.Map)\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.spiders.PlanarGraph \
-sphericalCanonicalForm(net.tqft.toolkit.algebra.spiders.PlanarGraph)\"\>"},
-     {"\<\"scala.Function1 sphericalEquivalents()\"\>"},
-     {"\<\"Object stitchAt(Object, int)\"\>"},
-     {"\<\"Object stitchesAt(Object, int, int)\"\>"},
-     {"\<\"Object stitch(Object)\"\>"},
-     {"\<\"scala.collection.immutable.Map \
-stitch(scala.collection.immutable.Map)\"\>"},
-     {"\<\"Object strand()\"\>"},
-     {"\<\"scala.collection.immutable.Map strand()\"\>"},
-     {"\<\"Object subtract(Object, Object)\"\>"},
-     {"\<\"double subtract$mcD$sp(double, double)\"\>"},
-     {"\<\"float subtract$mcF$sp(float, float)\"\>"},
-     {"\<\"int subtract$mcI$sp(int, int)\"\>"},
-     {"\<\"long subtract$mcJ$sp(long, long)\"\>"},
-     {"\<\"Object sum(scala.collection.GenTraversableOnce)\"\>"},
-     {"\<\"double sum$mcD$sp(scala.collection.GenTraversableOnce)\"\>"},
-     {"\<\"float sum$mcF$sp(scala.collection.GenTraversableOnce)\"\>"},
-     {"\<\"int sum$mcI$sp(scala.collection.GenTraversableOnce)\"\>"},
-     {"\<\"long sum$mcJ$sp(scala.collection.GenTraversableOnce)\"\>"},
-     {"\<\"Object tensor(Object, Object)\"\>"},
-     {"\<\"Object tensorProduct(scala.collection.Seq)\"\>"},
-     {"\<\"scala.collection.immutable.Map \
-tensor(scala.collection.immutable.Map, scala.collection.immutable.Map)\"\>"},
-     {"\<\"String toString()\"\>"},
-     {"\<\"static scala.Option \
-unapply(net.tqft.toolkit.algebra.spiders.examples.QuotientSpider)\"\>"},
-     {"\<\"Object variableToPolynomial(String)\"\>"},
-     {"\<\"net.tqft.toolkit.algebra.Fraction \
-variableToPolynomial(String)\"\>"},
-     {"\<\"scala.collection.Seq vertexTypes()\"\>"},
-     {"\<\"void wait(long, int) throws InterruptedException\"\>"},
-     {"\<\"void wait(long) throws InterruptedException\"\>"},
-     {"\<\"void wait() throws InterruptedException\"\>"},
-     {"\<\"static net.tqft.toolkit.algebra.spiders.examples.QuotientSpider \
-withLowestWeightGenerators(scala.collection.Seq)\"\>"},
-     {"\<\"Object zero()\"\>"},
-     {"\<\"scala.collection.immutable.Map zero()\"\>"},
-     {"\<\"double zero$mcD$sp()\"\>"},
-     {"\<\"float zero$mcF$sp()\"\>"},
-     {"\<\"int zero$mcI$sp()\"\>"},
-     {"\<\"long zero$mcJ$sp()\"\>"},
-     {"\<\"boolean zero_$qmark(Object)\"\>"},
-     {"\<\"boolean zero_$qmark$mcD$sp(double)\"\>"},
-     {"\<\"boolean zero_$qmark$mcF$sp(float)\"\>"},
-     {"\<\"boolean zero_$qmark$mcI$sp(int)\"\>"},
-     {"\<\"boolean zero_$qmark$mcJ$sp(long)\"\>"},
-     {"\<\"static scala.collection.Seq $lessinit$greater$default$2()\"\>"}
-    },
-    GridBoxAlignment->{
-     "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
-      "RowsIndexed" -> {}},
-    GridBoxSpacings->{"Columns" -> {
-        Offset[0.27999999999999997`], {
-         Offset[0.5599999999999999]}, 
-        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
-        Offset[0.2], {
-         Offset[0.4]}, 
-        Offset[0.2]}, "RowsIndexed" -> {}}],
-   Column],
-  Function[BoxForm`e$, 
-   TableForm[BoxForm`e$]]]], "Output",
- CellChangeTimes->{3.641156721492679*^9, 3.64116057758875*^9, 
-  3.641161401550426*^9, 3.641163775085751*^9, 3.641164122203805*^9, 
-  3.6411705827499332`*^9, 3.64117065828403*^9, 3.641178015779889*^9}]
+ RowBox[{
+  StyleBox[
+   RowBox[{"Java", "::", "excptn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"A Java exception occurred: \
+\[NoBreak]\\!\\(\\\"java.lang.ClassCastException: \
+scala.collection.immutable.Map$Map1 cannot be cast to \
+net.tqft.toolkit.algebra.spiders.PlanarGraph\\\\n\\\\tat \
+net.tqft.toolkit.algebra.spiders.SubstitutionSpider$\
+PlanarGraphMapSubstitutionSpider.allReplacements(SubstitutionSpider.scala:48)\
+\\\\n\\\\tat \
+net.tqft.toolkit.algebra.spiders.SubstitutionSpider$$anonfun$replace$2.apply(\
+SubstitutionSpider.scala:15)\\\\n\\\\tat \
+net.tqft.toolkit.algebra.spiders.SubstitutionSpider$$anonfun$replace$2.apply(\
+SubstitutionSpider.scala:13)\\\\n\\\\tat \
+scala.collection.TraversableLike$WithFilter$$anonfun$foreach$1.apply(\
+TraversableLike.scala:778)\\\\n\\\\tat \
+scala.collection.immutable.Map$Map1.foreach(Map.scala:116)\\\\n\\\\tat \
+scala.collection.TraversableLike$WithFilter.foreach(TraversableLike.scala:777)\
+\\\\n\\\\tat \
+net.tqft.toolkit.algebra.spiders.SubstitutionSpider$class.replace(\
+SubstitutionSpider.scala:13)\\\\n\\\\tat \
+net.tqft.toolkit.algebra.spiders.SubstitutionSpider$\
+PlanarGraphMapSubstitutionSpider.replace(SubstitutionSpider.scala:48)\\\\n\\\\\
+tat net.tqft.toolkit.algebra.spiders.SubstitutionSpider$$anonfun$\
+allReplacements$1.apply(SubstitutionSpider.scala:40)\\\\n\\\\tat \
+net.tqft.toolkit.algebra.spiders.SubstitutionSpider$$anonfun$allReplacements$\
+1.apply(SubstitutionSpider.scala:40)\\\\n\\\\tat \
+scala.collection.Iterator$$anon$11.next(Iterator.scala:363)\\\\n\\\\tat \
+scala.collection.Iterator$$anon$13.hasNext(Iterator.scala:407)\\\\n\\\\tat \
+scala.collection.Iterator$$anon$11.hasNext(Iterator.scala:362)\\\\n\\\\tat \
+scala.collection.Iterator$$anon$11.hasNext(Iterator.scala:362)\\\\n\\\\tat \
+scala.collection.Iterator$class.toString(Iterator.scala:1173)\\\\n\\\\tat \
+scala.collection.AbstractIterator.toString(Iterator.scala:1177)\\\"\\)\
+\[NoBreak].\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.641180676594777*^9}],
+
+Cell[BoxData["$Failed"], "Output",
+ CellChangeTimes->{{3.641180650887816*^9, 3.641180676600515*^9}}]
 }, Open  ]]
 }, Open  ]]
 },
@@ -4035,127 +3863,124 @@ Cell[20950, 562, 319, 9, 28, "Input"],
 Cell[21272, 573, 5870, 146, 288, "Input"],
 Cell[CellGroupData[{
 Cell[27167, 723, 300, 8, 28, "Input"],
-Cell[27470, 733, 1093, 18, 28, "Output"]
+Cell[27470, 733, 1117, 18, 28, "Output"]
 }, Open  ]],
-Cell[28578, 754, 1851, 44, 233, "Input"],
-Cell[30432, 800, 2475, 65, 182, "Input"],
-Cell[32910, 867, 140, 2, 28, "Input"],
-Cell[33053, 871, 138, 2, 28, "Input"],
-Cell[33194, 875, 471, 13, 35, "Input"]
+Cell[28602, 754, 1851, 44, 233, "Input"],
+Cell[30456, 800, 2475, 65, 182, "Input"],
+Cell[32934, 867, 140, 2, 28, "Input"],
+Cell[33077, 871, 138, 2, 28, "Input"],
+Cell[33218, 875, 471, 13, 35, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[33702, 893, 107, 1, 64, "Section"],
-Cell[33812, 896, 302, 7, 46, "Input"],
-Cell[34117, 905, 428, 12, 53, "Input"],
-Cell[34548, 919, 127, 2, 28, "Input"],
-Cell[34678, 923, 1120, 25, 46, "Input"],
-Cell[35801, 950, 1577, 42, 111, "Input"],
-Cell[37381, 994, 468, 13, 28, "Input"],
-Cell[37852, 1009, 2559, 59, 148, "Input"],
-Cell[40414, 1070, 154, 2, 28, "Input"],
-Cell[40571, 1074, 9175, 186, 502, "Input"],
-Cell[49749, 1262, 7411, 166, 451, "Input"],
-Cell[57163, 1430, 339, 7, 28, "Input"],
-Cell[57505, 1439, 493, 13, 28, "Input"],
-Cell[58001, 1454, 256, 7, 31, "Input"],
-Cell[58260, 1463, 2499, 59, 149, "Input"],
-Cell[60762, 1524, 2955, 65, 179, "Input"],
-Cell[63720, 1591, 563, 14, 28, "Input"],
-Cell[64286, 1607, 660, 13, 46, "Input"],
-Cell[64949, 1622, 524, 14, 28, "Input"],
-Cell[65476, 1638, 2321, 53, 199, "Input"],
-Cell[67800, 1693, 1200, 28, 63, "Input"],
-Cell[69003, 1723, 317, 6, 28, "Input"],
-Cell[69323, 1731, 1779, 47, 63, "Input"],
-Cell[71105, 1780, 528, 13, 28, "Input"],
-Cell[71636, 1795, 502, 13, 28, "Input"],
-Cell[72141, 1810, 474, 12, 28, "Input"],
-Cell[72618, 1824, 244, 5, 28, "Input"],
-Cell[72865, 1831, 427, 9, 28, "Input"],
-Cell[73295, 1842, 1314, 33, 80, "Input"],
-Cell[74612, 1877, 511, 15, 28, "Input"],
-Cell[75126, 1894, 794, 23, 31, "Input"],
-Cell[75923, 1919, 9355, 216, 591, "Input"],
-Cell[85281, 2137, 399, 9, 28, "Input"],
-Cell[85683, 2148, 435, 12, 28, "Input"],
-Cell[86121, 2162, 236, 5, 28, "Input"],
-Cell[86360, 2169, 2405, 53, 128, "Input"],
-Cell[88768, 2224, 2156, 51, 80, "Input"],
-Cell[90927, 2277, 2525, 55, 165, "Input"],
-Cell[93455, 2334, 2335, 53, 199, "Input"],
-Cell[95793, 2389, 2195, 57, 148, "Input"],
-Cell[97991, 2448, 7199, 164, 367, "Input"],
-Cell[105193, 2614, 251, 6, 28, "Input"],
-Cell[105447, 2622, 276, 7, 28, "Input"],
-Cell[105726, 2631, 442, 12, 28, "Input"],
-Cell[106171, 2645, 1817, 46, 131, "Input"],
-Cell[107991, 2693, 362, 9, 28, "Input"],
-Cell[108356, 2704, 438, 13, 28, "Input"],
-Cell[108797, 2719, 9179, 224, 573, "Input"],
-Cell[117979, 2945, 140, 3, 28, "Input"],
-Cell[118122, 2950, 4664, 114, 165, "Input"],
-Cell[122789, 3066, 1057, 26, 80, "Input"],
-Cell[123849, 3094, 286, 7, 28, "Input"],
-Cell[124138, 3103, 1965, 49, 97, "Input"],
-Cell[126106, 3154, 1857, 48, 97, "Input"],
-Cell[127966, 3204, 1478, 37, 80, "Input"],
-Cell[129447, 3243, 1447, 37, 80, "Input"],
-Cell[130897, 3282, 1167, 27, 97, "Input"],
-Cell[132067, 3311, 521, 14, 28, "Input"],
+Cell[33726, 893, 107, 1, 64, "Section"],
+Cell[33836, 896, 302, 7, 46, "Input"],
+Cell[34141, 905, 428, 12, 53, "Input"],
+Cell[34572, 919, 127, 2, 28, "Input"],
+Cell[34702, 923, 1120, 25, 46, "Input"],
+Cell[35825, 950, 1577, 42, 111, "Input"],
+Cell[37405, 994, 468, 13, 28, "Input"],
+Cell[37876, 1009, 2559, 59, 148, "Input"],
+Cell[40438, 1070, 154, 2, 28, "Input"],
+Cell[40595, 1074, 9175, 186, 502, "Input"],
+Cell[49773, 1262, 7411, 166, 451, "Input"],
+Cell[57187, 1430, 339, 7, 28, "Input"],
+Cell[57529, 1439, 493, 13, 28, "Input"],
+Cell[58025, 1454, 256, 7, 31, "Input"],
+Cell[58284, 1463, 2499, 59, 149, "Input"],
+Cell[60786, 1524, 2955, 65, 179, "Input"],
+Cell[63744, 1591, 563, 14, 28, "Input"],
+Cell[64310, 1607, 660, 13, 46, "Input"],
+Cell[64973, 1622, 524, 14, 28, "Input"],
+Cell[65500, 1638, 2396, 55, 199, "Input"],
+Cell[67899, 1695, 1200, 28, 63, "Input"],
+Cell[69102, 1725, 317, 6, 28, "Input"],
+Cell[69422, 1733, 1779, 47, 63, "Input"],
+Cell[71204, 1782, 528, 13, 28, "Input"],
+Cell[71735, 1797, 502, 13, 28, "Input"],
+Cell[72240, 1812, 474, 12, 28, "Input"],
+Cell[72717, 1826, 244, 5, 28, "Input"],
+Cell[72964, 1833, 427, 9, 28, "Input"],
+Cell[73394, 1844, 1345, 33, 80, "Input"],
+Cell[74742, 1879, 511, 15, 28, "Input"],
+Cell[75256, 1896, 794, 23, 31, "Input"],
+Cell[76053, 1921, 10430, 244, 591, "Input"],
+Cell[86486, 2167, 399, 9, 28, "Input"],
+Cell[86888, 2178, 435, 12, 28, "Input"],
+Cell[87326, 2192, 236, 5, 28, "Input"],
+Cell[87565, 2199, 2405, 53, 128, "Input"],
+Cell[89973, 2254, 2156, 51, 80, "Input"],
+Cell[92132, 2307, 2525, 55, 165, "Input"],
+Cell[94660, 2364, 2335, 53, 199, "Input"],
+Cell[96998, 2419, 2195, 57, 148, "Input"],
+Cell[99196, 2478, 7199, 164, 367, "Input"],
+Cell[106398, 2644, 251, 6, 28, "Input"],
+Cell[106652, 2652, 276, 7, 28, "Input"],
+Cell[106931, 2661, 442, 12, 28, "Input"],
+Cell[107376, 2675, 1817, 46, 131, "Input"],
+Cell[109196, 2723, 362, 9, 28, "Input"],
+Cell[109561, 2734, 438, 13, 28, "Input"],
+Cell[110002, 2749, 9179, 224, 573, "Input"],
+Cell[119184, 2975, 140, 3, 28, "Input"],
+Cell[119327, 2980, 4664, 114, 165, "Input"],
+Cell[123994, 3096, 1057, 26, 80, "Input"],
+Cell[125054, 3124, 286, 7, 28, "Input"],
+Cell[125343, 3133, 1965, 49, 97, "Input"],
+Cell[127311, 3184, 1857, 48, 97, "Input"],
+Cell[129171, 3234, 1478, 37, 80, "Input"],
+Cell[130652, 3273, 1447, 37, 80, "Input"],
+Cell[132102, 3312, 1167, 27, 97, "Input"],
+Cell[133272, 3341, 521, 14, 28, "Input"],
 Cell[CellGroupData[{
-Cell[132613, 3329, 102, 1, 35, "Subsubsection"],
-Cell[132718, 3332, 1073, 27, 35, "Input"]
+Cell[133818, 3359, 102, 1, 35, "Subsubsection"],
+Cell[133923, 3362, 1073, 27, 35, "Input"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[133840, 3365, 112, 1, 64, "Section"],
-Cell[133955, 3368, 459, 10, 28, "Input"],
+Cell[135045, 3395, 112, 1, 64, "Section"],
+Cell[135160, 3398, 459, 10, 28, "Input"],
 Cell[CellGroupData[{
-Cell[134439, 3382, 1352, 33, 63, "Input"],
-Cell[135794, 3417, 1545, 25, 28, "Output"]
+Cell[135644, 3412, 1352, 33, 63, "Input"],
+Cell[136999, 3447, 1566, 25, 28, "Output"]
 }, Open  ]],
-Cell[137354, 3445, 299, 8, 28, "Input"],
+Cell[138580, 3475, 299, 8, 28, "Input"],
 Cell[CellGroupData[{
-Cell[137678, 3457, 516, 12, 28, "Input"],
-Cell[138197, 3471, 568, 9, 28, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[138802, 3485, 332, 8, 28, "Input"],
-Cell[139137, 3495, 544, 8, 28, "Output"]
-}, Open  ]],
-Cell[139696, 3506, 413, 10, 28, "Input"],
-Cell[140112, 3518, 240, 6, 28, "Input"],
-Cell[CellGroupData[{
-Cell[140377, 3528, 536, 12, 28, "Input"],
-Cell[140916, 3542, 926, 14, 28, "Output"]
+Cell[138904, 3487, 516, 12, 28, "Input"],
+Cell[139423, 3501, 592, 9, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[141879, 3561, 778, 23, 28, "Input"],
-Cell[CellGroupData[{
-Cell[142682, 3588, 929, 18, 22, "Print"],
-Cell[143614, 3608, 637, 8, 22, "Print"],
-Cell[144254, 3618, 637, 8, 22, "Print"],
-Cell[144894, 3628, 929, 18, 22, "Print"],
-Cell[145826, 3648, 637, 8, 22, "Print"],
-Cell[146466, 3658, 637, 8, 22, "Print"]
+Cell[140052, 3515, 332, 8, 28, "Input"],
+Cell[140387, 3525, 571, 9, 28, "Output"]
 }, Open  ]],
-Cell[147118, 3669, 968, 21, 28, "Output"]
+Cell[140973, 3537, 413, 10, 28, "Input"],
+Cell[141389, 3549, 240, 6, 28, "Input"],
+Cell[CellGroupData[{
+Cell[141654, 3559, 536, 12, 28, "Input"],
+Cell[142193, 3573, 952, 15, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[148123, 3695, 204, 5, 28, "Input"],
-Cell[148330, 3702, 531, 11, 28, "Output"]
+Cell[143182, 3593, 778, 23, 28, "Input"],
+Cell[CellGroupData[{
+Cell[143985, 3620, 956, 19, 22, "Print"],
+Cell[144944, 3641, 954, 19, 22, "Print"]
+}, Open  ]],
+Cell[145913, 3663, 993, 22, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[148898, 3718, 495, 13, 28, "Input"],
-Cell[149396, 3733, 287, 5, 28, "Output"]
+Cell[146943, 3690, 204, 5, 28, "Input"],
+Cell[147150, 3697, 555, 11, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[149720, 3743, 503, 14, 28, "Input"],
-Cell[150226, 3759, 288, 5, 28, "Output"]
+Cell[147742, 3713, 495, 13, 28, "Input"],
+Cell[148240, 3728, 309, 5, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[150551, 3769, 131, 2, 28, "Input"],
-Cell[150685, 3773, 10772, 213, 2336, "Output"]
+Cell[148586, 3738, 503, 14, 28, "Input"],
+Cell[149092, 3754, 312, 5, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[149441, 3764, 378, 9, 28, "Input"],
+Cell[149822, 3775, 2030, 36, 305, "Message"],
+Cell[151855, 3813, 100, 1, 28, "Output"]
 }, Open  ]]
 }, Open  ]]
 }
