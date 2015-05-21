@@ -98,42 +98,6 @@ object DiagramSpider {
     }
   }
 
-  def assembleAlongPlanarPartition(partition: Seq[Seq[Int]], ds: Seq[PlanarGraph]): PlanarGraph = {
-    // partition is a planar partition of 0, ..., n-1
-    // Validity checks
-    require(partition.head.head == 0, "Begin partition from 0")
-    require(isContiguous(partition.flatten.sorted), "Not a planar partition")
-    require(isSorted(for (s <- partition) yield s.head), "Give partition in anticlockwise sequential order")
-    require(partition.length == ds.length, "Partition does not match graphs")
-    for (k <- 0 until partition.length) {
-      require(isSorted(partition(k)), s"Partition cell $k needs to be sorted")
-      require(partition(k).length == ds(k).numberOfBoundaryPoints, s"Graph in index $k does not have the correct number of boundary points")
-    }
-
-    def isSorted(S: Seq[Int]): Boolean = (S == S.sorted)
-    def isContiguous(S: Seq[Int]): Boolean = (S == (S.head to S.last).toSeq)
-    def mod(a: Int, b: Int): Int = ((a % b) + b) % b
-
-    def assemble(partition: Seq[Seq[Int]], ds: Seq[PlanarGraph]): PlanarGraph = {
-      if (partition.length == 1) {
-        require(isContiguous(partition.head), "Invalid partition")
-        return ds.head
-      } else if (isContiguous(partition.head)) {
-        val newPartition = partition.tail.map(_.map((x: Int) => x - partition.head.length))
-        return DiagramSpider.graphSpider.tensor(assemble(newPartition, ds.tail), ds.head)
-      } else {
-        val n = partition.flatten.length
-        val zipped = partition zip ds
-        val newPartitionAndGraphs = zipped.map((X: Tuple2[Seq[Int], PlanarGraph]) =>
-          (X._1.map((x: Int) => mod(x - 1, n)).sorted, if (partition.head == X._1) DiagramSpider.graphSpider.rotate(X._2, 1) else X._2)).
-          sortWith((X1: Tuple2[Seq[Int], PlanarGraph], X2: Tuple2[Seq[Int], PlanarGraph]) => X1._1.head < X2._1.head).
-          unzip
-        return DiagramSpider.graphSpider.rotate(assemble(newPartitionAndGraphs._1, newPartitionAndGraphs._2), -1)
-      }
-    }
-
-    assemble(partition, ds)
-  }
 
   implicit class DiskDiagramSpider[A](spider: DiagramSpider[A]) extends Spider.DiskSpider[A](spider) with DiagramSpider[Disk[A]] {
     override def canonicalFormWithDefect(disk: Disk[A]) = {
