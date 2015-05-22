@@ -13,22 +13,28 @@ abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.Pl
     }
   }
 
-//  def allInnerProductEvaluations(d1: PlanarGraph, d2: PlanarGraph): Seq[R] = {
-//    allEvaluations(diagramSpider.innerProduct(d1, d2)).toSeq
-//  }
-//  def allInnerProductEvaluations(m: Map[PlanarGraph, R], d2: PlanarGraph): Seq[R] = {
-//    val terms = m.toSeq.map(p => (allInnerProductEvaluations(p._1, d2), p._2))
-//    terms.foldLeft(Seq(ring.zero))({
-//      case (partialSums, (nextTerms, coefficient)) => {
-//        for(x <- partialSums; y <- nextTerms) yield {
-//          ring.add(x, ring.multiply(y, coefficient))
-//        }
-//      } 
-//    })
-//  }
-//  def allInnerProductEvaluations(m: Map[PlanarGraph, R], diagrams: Seq[PlanarGraph]): Seq[R] = {
-//    for(d <- diagrams; r <- allInnerProductEvaluations(m, d)) yield r
-//  }
+  def allInnerProductEvaluations(d1: PlanarGraph, d2: PlanarGraph): Seq[R] = {
+    pw.println("computing all inner products of")
+    pw.println(d1)
+    pw.println(d2)
+    pw.println("with reductions")
+    pw.println(reductions)
+    pw.flush
+    allEvaluations(diagramSpider.innerProduct(d1, d2)).toList
+  }
+  def allInnerProductEvaluations(m: Map[PlanarGraph, R], d2: PlanarGraph): Seq[R] = {
+    val terms = m.toSeq.par.map(p => (allInnerProductEvaluations(p._1, d2), p._2)).seq
+    terms.foldLeft(Seq(ring.zero))({
+      case (partialSums, (nextTerms, coefficient)) => {
+        for(x <- partialSums; y <- nextTerms) yield {
+          ring.add(x, ring.multiply(y, coefficient))
+        }
+      } 
+    })
+  }
+  def allInnerProductEvaluations(m: Map[PlanarGraph, R], diagrams: Seq[PlanarGraph]): Seq[R] = {
+    (for(d <- diagrams.par; r <- allInnerProductEvaluations(m, d)) yield r).seq
+  }
   
   def innerProductMatrix(diagrams1: Seq[PlanarGraph], diagrams2: Seq[PlanarGraph]): Seq[Seq[R]] = {
     def ring = implicitly[Ring[R]]
