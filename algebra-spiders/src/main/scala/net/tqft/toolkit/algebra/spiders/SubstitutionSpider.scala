@@ -14,10 +14,10 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
       import net.tqft.toolkit.collections.Iterators._
       val m: Map[A, R] = allReplacements(reduction)(a).headOption match {
         case Some(replacement) => {
-          pw.println("Found a replacement:")
-          pw.println("reduction = " + reduction)
-          pw.println("a = " + a)
-          pw.flush
+//          pw.println("Found a replacement:")
+//          pw.println("reduction = " + reduction)
+//          pw.println("a = " + a)
+//          pw.flush
           replacement
         }
         case None => Map(a -> ring.one)

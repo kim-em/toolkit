@@ -9,7 +9,7 @@ package object spiders {
     def secondLast = x(x.size - 2)
   }
 
-  val pw = new PrintWriter(new FileWriter("/Users/scott/spiders.log"))
+//  val pw = new PrintWriter(new FileWriter("/Users/scott/spiders.log"))
   
   object TrivalentGraphs {
     val graphs = GraphsGeneratedBy(Seq((3, 0, 1)))
