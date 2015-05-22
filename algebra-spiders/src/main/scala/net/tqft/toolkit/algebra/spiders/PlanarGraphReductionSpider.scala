@@ -14,12 +14,12 @@ abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.Pl
   }
 
   def allInnerProductEvaluations(d1: PlanarGraph, d2: PlanarGraph): Seq[R] = {
-    pw.println("computing all inner products of")
-    pw.println(d1)
-    pw.println(d2)
-    pw.println("with reductions")
-    pw.println(reductions)
-    pw.flush
+//    pw.println("computing all inner products of")
+//    pw.println(d1)
+//    pw.println(d2)
+//    pw.println("with reductions")
+//    pw.println(reductions)
+//    pw.flush
     allEvaluations(diagramSpider.innerProduct(d1, d2)).toList
   }
   def allInnerProductEvaluations(m: Map[PlanarGraph, R], d2: PlanarGraph): Seq[R] = {

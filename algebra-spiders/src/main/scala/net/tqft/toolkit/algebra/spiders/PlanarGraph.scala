@@ -802,7 +802,7 @@ object PlanarGraph {
   val tetrahedron = spider.multiply(star(3), polygon(3), 3)
   val cube = spider.multiply(polygon(4), polygon(4), 4)
 
-  val twistedTetrahedron = spider.multiply(polygon(4), star(4, 2), 4)
+  val twistedTetrahedron = spider.multiply(polygon(4), star(4, 0, 2), 4)
 
   val hopfStrand = spider.multiply(star(4, 2), star(4, 2), 3)
 
