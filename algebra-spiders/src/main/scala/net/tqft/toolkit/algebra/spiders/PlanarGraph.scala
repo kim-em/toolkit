@@ -795,6 +795,8 @@ object PlanarGraph {
 
   def star(k: Int, l: Int = 0, r: Int = 1) = starCache((k, l, r))
 
+  val trivalentVertex = star(3)
+
   val I = spider.multiply(spider.rotate(star(3), 1), spider.rotate(star(3), -1), 1)
   val H = spider.rotate(I, 1)
 
@@ -802,10 +804,22 @@ object PlanarGraph {
   val tetrahedron = spider.multiply(star(3), polygon(3), 3)
   val cube = spider.multiply(polygon(4), polygon(4), 4)
 
-  val twistedTetrahedron = spider.multiply(polygon(4), star(4, 0, 2), 4)
+  val crossing = star(4, 0, 2)
 
-  val hopfStrand = spider.multiply(star(4, 2), star(4, 2), 3)
+  val twistetTheta = spider.multiply(I, crossing, 4)
+  val twistedTetrahedron = spider.multiply(polygon(4), crossing, 4)
 
+  val hopfStrand = spider.multiply(crossing, crossing, 3)
+  val hopfLink = spider.stitch(hopfStrand)
+
+  val Reidemeister1a = Seq(spider.stitch(crossing), strand)
+  val Reidemeister1b = Seq(spider.stitch(spider.rotate(crossing, 1)), strand)
+  val Reidemeister2 = Seq(spider.multiply(crossing, spider.rotate(crossing, 1), 2), two_strands_vertical)
+
+  lazy val Reidemeister3 = ???
+  lazy val Reidemeister4a = ???
+  lazy val Reidemeister4b = ???
+  
   lazy val dodecahedron = {
     val penta5fork = {
       def f(g: PlanarGraph) = spider.rotate(spider.multiply(star(3), g, 1), 1)
