@@ -705,7 +705,7 @@ object PlanarGraph {
     Ordering.by({ x: PlanarGraph => (x.outerFace, x.vertexFlags, x.labels, x.loops) })
   }
 
-  private def spider = implicitly[Spider[PlanarGraph]]
+  def spider = implicitly[Spider[PlanarGraph]]
 
   val empty = {
     PlanarGraph(1, IndexedSeq(IndexedSeq.empty), IndexedSeq.empty, 0)
@@ -804,28 +804,39 @@ object PlanarGraph {
   val tetrahedron = spider.multiply(star(3), polygon(3), 3)
   val cube = spider.multiply(polygon(4), polygon(4), 4)
 
+  val tetravalentVertex = star(4)
+  val bowtie = spider.stitch(spider.stitch(tetravalentVertex))
+  
   val crossing = star(4, 0, 2)
+  val inverseCrossing = spider.rotate(crossing, 1)
 
-  val twistedTheta = spider.multiply(I, crossing, 4)
+  val positiveTwistedLoop = spider.stitch(spider.stitch(crossing))
+  val positiveTwistedTheta = spider.multiply(I, crossing, 4)
   val twistedTetrahedron = spider.multiply(polygon(4), crossing, 4)
 
   val hopfStrand = spider.multiply(crossing, crossing, 3)
   val hopfLink = spider.stitch(hopfStrand)
 
-  val Reidemeister1a = Seq(spider.stitch(crossing), strand)
-  val Reidemeister1b = Seq(spider.stitch(spider.rotate(crossing, 1)), strand)
-  val Reidemeister2 = Seq(spider.multiply(crossing, spider.rotate(crossing, 1), 2), two_strands_vertical)
+  val positiveTwist = spider.stitch(crossing)
+  val negativeTwist = spider.stitch(spider.rotate(crossing, 1))
+
+  val positiveTwistedTrivalentVertex = spider.multiply(spider.rotate(crossing, 1), trivalentVertex, 2)
+  val negativeTwistedTrivalentVertex = spider.multiply(crossing, trivalentVertex, 2)
+
+  val Reidemeister1a = Seq(strand, positiveTwist)
+  val Reidemeister1b = Seq(strand, negativeTwist)
+  val Reidemeister2 = Seq(two_strands_vertical, spider.multiply(crossing, spider.rotate(crossing, 1), 2))
 
   lazy val Reidemeister3 = {
     val tangle = spider.multiply(spider.rotate(spider.multiply(crossing, spider.rotate(crossing, 1), 1), -1), crossing, 2)
     Seq(tangle, spider.rotate(tangle, 3))
   }
   lazy val Reidemeister4a = Seq(
-    spider.multiply(spider.rotate(spider.multiply(crossing, spider.rotate(crossing, 1), 1), -1), trivalentVertex, 2),
-    spider.rotate(spider.multiply(trivalentVertex, crossing, 1), 1))
+    spider.rotate(spider.multiply(trivalentVertex, crossing, 1), 1),
+    spider.multiply(spider.rotate(spider.multiply(crossing, spider.rotate(crossing, 1), 1), -1), trivalentVertex, 2))
   lazy val Reidemeister4b = Seq(
-    spider.multiply(spider.rotate(spider.multiply(spider.rotate(crossing, 1), crossing, 1), -1), trivalentVertex, 2),
-    spider.rotate(spider.multiply(trivalentVertex, spider.rotate(crossing, 1), 1), 1))
+    spider.rotate(spider.multiply(trivalentVertex, spider.rotate(crossing, 1), 1), 1),
+    spider.multiply(spider.rotate(spider.multiply(spider.rotate(crossing, 1), crossing, 1), -1), trivalentVertex, 2))
 
   lazy val dodecahedron = {
     val penta5fork = {
