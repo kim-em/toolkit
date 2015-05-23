@@ -1,0 +1,1 @@
+nci_account -v | grep ssm251
