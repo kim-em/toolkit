@@ -806,7 +806,7 @@ object PlanarGraph {
 
   val crossing = star(4, 0, 2)
 
-  val twistetTheta = spider.multiply(I, crossing, 4)
+  val twistedTheta = spider.multiply(I, crossing, 4)
   val twistedTetrahedron = spider.multiply(polygon(4), crossing, 4)
 
   val hopfStrand = spider.multiply(crossing, crossing, 3)
@@ -816,10 +816,17 @@ object PlanarGraph {
   val Reidemeister1b = Seq(spider.stitch(spider.rotate(crossing, 1)), strand)
   val Reidemeister2 = Seq(spider.multiply(crossing, spider.rotate(crossing, 1), 2), two_strands_vertical)
 
-  lazy val Reidemeister3 = ???
-  lazy val Reidemeister4a = ???
-  lazy val Reidemeister4b = ???
-  
+  lazy val Reidemeister3 = {
+    val tangle = spider.multiply(spider.rotate(spider.multiply(crossing, spider.rotate(crossing, 1), 1), -1), crossing, 2)
+    Seq(tangle, spider.rotate(tangle, 3))
+  }
+  lazy val Reidemeister4a = Seq(
+    spider.multiply(spider.rotate(spider.multiply(crossing, spider.rotate(crossing, 1), 1), -1), trivalentVertex, 2),
+    spider.rotate(spider.multiply(trivalentVertex, crossing, 1), 1))
+  lazy val Reidemeister4b = Seq(
+    spider.multiply(spider.rotate(spider.multiply(spider.rotate(crossing, 1), crossing, 1), -1), trivalentVertex, 2),
+    spider.rotate(spider.multiply(trivalentVertex, spider.rotate(crossing, 1), 1), 1))
+
   lazy val dodecahedron = {
     val penta5fork = {
       def f(g: PlanarGraph) = spider.rotate(spider.multiply(star(3), g, 1), 1)
