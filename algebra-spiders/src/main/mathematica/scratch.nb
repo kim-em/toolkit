@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    593297,      15390]
-NotebookOptionsPosition[    591248,      15330]
-NotebookOutlinePosition[    591605,      15346]
-CellTagsIndexPosition[    591562,      15343]
+NotebookDataLength[    593567,      15397]
+NotebookOptionsPosition[    591475,      15336]
+NotebookOutlinePosition[    591832,      15352]
+CellTagsIndexPosition[    591789,      15349]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -15325,7 +15325,13 @@ Cell[BoxData[
    11135525056338529173363021 $CellContext`t^16, " to the Groebner basis"],
   Editable->False]], "Print",
  CellChangeTimes->{3.64146479868148*^9}]
-}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData["$Aborted"], "Output",
+ CellChangeTimes->{
+  3.641447343851878*^9, {3.641447400006962*^9, 3.641447408832301*^9}, 
+   3.641447490177806*^9, 3.641447620382497*^9, 3.6414647621656713`*^9, 
+   3.641466349434785*^9}]
 }, Open  ]]
 },
 WindowSize->{775, 855},
@@ -15390,7 +15396,8 @@ Cell[586947, 15222, 598, 16, 24, "Print"],
 Cell[587548, 15240, 923, 25, 44, "Print"],
 Cell[588474, 15267, 187, 2, 38, "Print"],
 Cell[588664, 15271, 2556, 55, 166, "Print"]
-}, Open  ]]
+}, Open  ]],
+Cell[591235, 15329, 224, 4, 28, "Output"]
 }, Open  ]]
 }
 ]
