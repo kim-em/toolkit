@@ -47,11 +47,64 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
     true
   }
 
-  trait Action[B] {
+  override def elements: Set[A]
+  
+  trait Action[B] { action =>
     def act(a: A, b: B): B
-    def orbit(b: B): Set[B] = ???
+    def orbits(elements: Set[B]): Set[Orbit] = bruteForceOrbits(finiteGroup.elements, elements)
+    
+    type Orbit =  net.tqft.toolkit.algebra.grouptheory.Orbit[A, B]
+    
+    protected def bruteForceOrbits(generators: Set[A], elements: Set[B]) = {
+      class O(val representative: B) extends Orbit {
+        override def stabilizer = ???
+        override lazy val elements = extendElements(Seq.empty, Seq(representative)).toSet
+
+        override def hashCode = elements.hashCode
+        override def equals(other: Any) = {
+          other match {
+            case other: Orbit => other.elements == elements
+            case _ => false
+          }
+        }
+
+        @scala.annotation.tailrec
+        private def extendElements(elements: Seq[B], newestElements: GenSeq[B]): Seq[B] = {
+          if (newestElements.isEmpty) {
+            elements
+          } else {
+            val allElements = (elements ++ newestElements).distinct;
+            extendElements(allElements, (for (b <- newestElements; a <- generators) yield act(a, b)).distinct.filterNot(allElements.contains))
+          }
+        }
+      }
+
+      @scala.annotation.tailrec
+      def extractOrbits(objects: Set[B], orbits: Set[Orbit]): Set[Orbit] = {
+        if (objects.isEmpty) {
+          orbits
+        } else {
+          val newOrbit = new O(objects.head)
+          extractOrbits(objects diff newOrbit.elements, orbits + newOrbit)
+        }
+      }
+
+      extractOrbits(elements, Set())
+    }
+
   }
 
+  def trivialAction[B] = new Action[B] {
+    override def act(a: A, b: B) = b
+    override def orbits(set: Set[B]) = set.map(b => Orbit.singleton(finiteGroup, b))
+  }
+
+  protected class ConjugationAction extends Action[A] {
+    override def act(a: A, b: A) = multiply(inverse(a), b, a)
+  }
+  
+  def conjugationAction = new ConjugationAction
+  
   private trait Subgroup extends FiniteGroup[A] {
     override def one = finiteGroup.one
     override def inverse(a: A) = finiteGroup.inverse(a)
@@ -66,7 +119,7 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
     }
   }
 
-  private class FinitelyGeneratedSubgroup(val generators: Set[A]) extends Subgroup with FinitelyGeneratedFiniteGroup[A] {
+  private class FinitelyGeneratedSubgroup(val generators: Seq[A]) extends Subgroup with FinitelyGeneratedFiniteGroup[A] {
   }
 
   def subgroup(elements: Set[A]): FiniteGroup[A] = {
@@ -75,24 +128,24 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
       override val elements = _elements
     }
   }
-  def subgroupGeneratedBy(generators: Set[A]): FinitelyGeneratedFiniteGroup[A] = new FinitelyGeneratedSubgroup(generators)
+  def subgroupGeneratedBy(generators: Seq[A]): FinitelyGeneratedFiniteGroup[A] = new FinitelyGeneratedSubgroup(generators)
 
   def subgroups: Set[FiniteGroup[A]] = {
     def build(G: FinitelyGeneratedSubgroup, elts: List[A]): Set[FinitelyGeneratedSubgroup] = {
-      (for (i <- 0 until elts.size; e = elts(i); h = new FinitelyGeneratedSubgroup(G.generators + e); k <- build(h, elts.drop(i + 1).filterNot(h.elements))) yield k).toSet + G
+      (for (i <- 0 until elts.size; e = elts(i); h = new FinitelyGeneratedSubgroup(G.generators :+ e); k <- build(h, elts.drop(i + 1).filterNot(h.elements))) yield k).toSet + G
     }
-    build(new FinitelyGeneratedSubgroup(Set.empty), (elements - one).toList).asInstanceOf[Set[FiniteGroup[A]]]
+    build(new FinitelyGeneratedSubgroup(Seq.empty), (elements - one).toList).asInstanceOf[Set[FiniteGroup[A]]]
   }
   def subgroupsUpToConjugacy: Set[FiniteGroup[A]] = {
-    val action = new GroupAction[A, Subgroup] {
-      def act(a: A, G: Subgroup) = new Subgroup {
+    val action = new Action[Subgroup] {
+      override def act(a: A, G: Subgroup) = new Subgroup {
         override val elements = G.elements.map(g => finiteGroup.multiply(finiteGroup.inverse(a), g, a))
       }
     }
-    action.orbits(elements, subgroups.asInstanceOf[Set[Subgroup]]).map(_.representative.asInstanceOf[FiniteGroup[A]])
+    action.orbits(subgroups.asInstanceOf[Set[Subgroup]]).map(_.representative.asInstanceOf[FiniteGroup[A]])
   }
 
-  protected def unsortedConjugacyClasses = GroupActions.conjugationAction(finiteGroup).orbits(elements, elements).toSeq
+  protected def unsortedConjugacyClasses = finiteGroup.conjugationAction.orbits(elements).toSeq
 
   lazy val conjugacyClasses = unsortedConjugacyClasses.sortBy({ c => (c.representative != one, c.elements.size) })
   lazy val conjugacyClassOrders = for (c <- conjugacyClasses) yield orderOfElement(c.representative)

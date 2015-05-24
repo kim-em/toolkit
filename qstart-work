@@ -1,5 +1,5 @@
 cat <<EOT > jobscript
-#PBS -l walltime=48:00:00,mem=3500MB
+#PBS -l walltime=48:00:00,mem=16GB
 #PBS -l ncpus=16
 #PBS -l wd
 #PBS -M nci-notify@tqft.net
@@ -7,5 +7,5 @@ cat <<EOT > jobscript
 module load dot
 module load java
 EOT
-echo /home/251/ssm251/projects/toolkit/start-work -q $* >> jobscript
+echo /home/251/ssm251/projects/toolkit/start-work -q -c 8 $* >> jobscript
 qsub jobscript

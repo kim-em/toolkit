@@ -6,7 +6,9 @@ import scala.io.Source
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
 import net.tqft.toolkit.Throttle
-import scala.slick.driver.MySQLDriver.simple._
+import slick.driver.MySQLDriver.api._
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 trait WikiMap extends scala.collection.mutable.Map[String, String] {
   private class Revision(tag: Tag, tablePrefix: String) extends Table[(Int, Int)](tag, tablePrefix + "revision") {
@@ -102,17 +104,29 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
   override def get(key: String): Option[String] = {
     val result = (if (_jdbc != null) {
       try {
-        import scala.slick.driver.MySQLDriver.simple._
-        Database.forURL(_jdbc, driver = "com.mysql.jdbc.Driver") withSession { implicit session =>
-          (for (
+        val db = Database.forURL(_jdbc, driver = "com.mysql.jdbc.Driver")
+        val query = for (
             p <- Pages;
             if p.page_title === key.replaceAll(" ", "_").stripPrefix("Data:");
             r <- Revisions;
             if r.rev_id === p.page_latest;
             t <- Texts;
             if t.old_id === r.rev_text_id
-          ) yield t.old_text).firstOption
-        }
+          ) yield t.old_text
+          
+        Await.result(db.run(query.result), Duration.Inf).headOption
+        
+        
+//        Database.forURL(_jdbc, driver = "com.mysql.jdbc.Driver") withSession { implicit session =>
+//          (for (
+//            p <- Pages;
+//            if p.page_title === key.replaceAll(" ", "_").stripPrefix("Data:");
+//            r <- Revisions;
+//            if r.rev_id === p.page_latest;
+//            t <- Texts;
+//            if t.old_id === r.rev_text_id
+//          ) yield t.old_text)
+//        }
       } catch {
         case e: Exception =>
           Logging.error("Exception while reading from SQL: ", e)

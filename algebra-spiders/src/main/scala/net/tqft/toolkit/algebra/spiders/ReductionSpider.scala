@@ -13,9 +13,10 @@ trait ReductionSpider[A, R] extends SubstitutionSpider[A, R] {
   }
 
   def allEvaluations(diagram: A) = {
-    // this version to too expensive:
-//    allReplacementsRepeated(reductions)(Map(diagram -> ring.one)).map(canonicalForm).map(evaluate)
-    allReplacements(reductions)(Map(diagram -> ring.one)).map(canonicalForm).map(evaluate)
+    allReplacementsRepeated(reductions)(Map(diagram -> ring.one)).map(canonicalForm).map(evaluate)
+  }
+  def allOneStepEvaluations(diagram: A) = {
+    allReplacements(reductions)(Map(diagram -> ring.one)).map(evaluate)
   }
 }
 

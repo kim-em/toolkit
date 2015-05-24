@@ -4,13 +4,9 @@ import net.tqft.toolkit.algebra._
 
 trait EquivalenceClass[A] extends Finite[A] {
   def representative: A
+  override def elements: Set[A]
   
   def contains(a: A) = elements.contains(a)
-//  final def contains(a: Any) = a match { // type parameter here ought to be a: A, but I ran into <https://issues.scala-lang.org/browse/SI-6522>
-//    case a: A => typedContains(a)
-//    case _ => false
-//  }
-//  def typedContains(a: A) = elements.contains(a)
 
   def leastRepresentative(implicit o: Ordering[A]) = elements.min
 
@@ -35,5 +31,13 @@ object EquivalenceClass {
 
 trait Orbit[A, B] extends EquivalenceClass[B] {
   def stabilizer: FiniteGroup[A]
+}
+
+object Orbit {
+  def singleton[A, B](group: FiniteGroup[A], b: B) = new Orbit[A, B] {
+    override def representative = b
+    override def elements = Set(b)
+    override def stabilizer= group
+  }
 }
 

@@ -15,6 +15,7 @@ import java.io.BufferedReader
 import java.io.FileReader
 import java.io.FileWriter
 import net.tqft.toolkit.Logging
+import net.tqft.toolkit.collections.Iterators._
 
 case class TreePrinter[A](stringify: A => String, level: A => Int, accept: A => Double = { a: A => 1 }, out: PrintWriter = new PrintWriter(System.out)) {
   def to(pw: Writer): TreePrinter[A] = this.copy(out = new PrintWriter(pw))
@@ -22,7 +23,9 @@ case class TreePrinter[A](stringify: A => String, level: A => Int, accept: A => 
   def to(filename: String): TreePrinter[A] = to(new File(filename))
   def to(file: File): TreePrinter[A] = to(new PrintStream(new FileOutputStream(file)))
   def to(directory: String, a: A): TreePrinter[A] = to(new File(directory), a)
-  def to(directory: File, a: A): TreePrinter[A] = to(directory.toPath.resolve(stringify(a) + ".tree").toFile)
+  def to(directory: String, filename: String): TreePrinter[A] = to(new File(directory), filename)
+  def to(directory: File, a: A): TreePrinter[A] = to(directory, stringify(a))
+  def to(directory: File, filename: String): TreePrinter[A] = to(directory.toPath.resolve(filename + ".tree").toFile)
 
   def print(iterator: Iterator[A]) {
     val stack = scala.collection.mutable.Stack[(A, Double)]()
@@ -140,48 +143,144 @@ object TreeReader {
         .asScala
         .map(_.toFile)
 
-      for (file <- files) verify(file, prefix, delete && file.getName.split(" ")(2).filterNot(_ == '?').nonEmpty)
+      for (file <- files) verify(file, prefix, delete && file.getName.split(" ")(2).filterNot(_ == '_').nonEmpty)
     } else {
       val lines = TreeHelper.lines(file)
       def parse(line: String) = {
-        val s = line.trim.split(" ")
-        (line, s(1).toInt, s(2).zipWithIndex.collect({ case ('?', i) => i }).toSet)
+        import net.tqft.toolkit.Extractors._
+        val Seq(objects, Int(level), matrices, _) = line.trim.split(" ").toSeq
+        val Seq(Int(selfDual), Int(dualPairs)) = objects.split(",").toSeq
+        val rank = selfDual + 2 * dualPairs
+        val matrixEntries = if (matrices.contains(",") || rank == 2) {
+          matrices.split(",")
+        } else {
+          require(level < 10)
+          matrices.toCharArray().map(_.toString)
+        }
+        (line, level, matrixEntries.zipWithIndex.collect({ case ("_", i) => i }).toSet)
       }
-      var stack: List[(String, Int, Set[Int])] = parse(lines.next) :: Nil
-      var s = 1
 
-      for ((line, lineNo) <- lines.zipWithIndex) {
-        val i = indenting(line)
-        if (i != s && i != s - 1) {
-          println(s"Indenting problem in $file:")
-          println(stack.head._1)
-          println(line)
+      try {
+        var stack: List[(String, Int, Set[Int])] = parse(lines.next) :: Nil
+        var s = 1
+
+        for ((line, lineNo) <- lines.zipWithIndex) {
+          val i = indenting(line)
+          if (i != s && i != s - 1) {
+            println(s"Indenting problem in $file:")
+            println(stack.head._1)
+            println(line)
+            if (delete) {
+              println("Deleting!")
+              file.delete
+            }
+          }
+          if (line.trim == ".") {
+            stack = stack.tail
+            s = s - 1
+          } else {
+            if (i == s - 1) {
+              stack = stack.tail
+              s = s - 1
+            }
+            val p = parse(line)
+            if (p._2 > stack.head._2 || p._3.forall(i => stack.head._3.contains(i))) {
+              // looks good
+              stack = p :: stack
+              s = s + 1
+            } else {
+              println(s"Invalid child in $file:")
+              println(stack.head)
+              println(p)
+              if (delete) {
+                println("Deleting!")
+                file.delete
+              }
+            }
+          }
+        }
+      } catch {
+        case e: Exception => {
+          println(s"Invalid syntax in $file:")
+          println(e)
           if (delete) {
             println("Deleting!")
             file.delete
           }
         }
-        if (line.trim == ".") {
-          stack = stack.tail
-          s = s - 1
+      }
+    }
+  }
+  def verify2(file: File, prefix: String = "", delete: Boolean = false) {
+    if (file.isDirectory) {
+      import scala.collection.JavaConverters._
+
+      def files = Files.newDirectoryStream(file.toPath, prefix + "*.tree")
+        .iterator
+        .asScala
+        .map(_.toFile)
+
+      for (file <- files) verify2(file, prefix, delete && file.getName.split(" ")(4).filterNot(_ == '_').nonEmpty)
+    } else {
+      val lines = TreeHelper.lines(file)
+      def parse(line: String) = {
+        import net.tqft.toolkit.Extractors._
+        val Seq(Int(rank), _, _, Int(level), matrices, _) = line.trim.split(" ").toSeq
+        val matrixEntries = if (matrices.contains(",") || rank == 2) {
+          matrices.split(",")
         } else {
-          if (i == s - 1) {
-            stack = stack.tail
-            s = s - 1
-          }
-          val p = parse(line)
-          if (p._2 > stack.head._2 || p._3.forall(i => stack.head._3.contains(i))) {
-            // looks good
-            stack = p :: stack
-            s = s + 1
-          } else {
-            println(s"Invalid child in $file:")
-            println(stack.head)
-            println(p)
+          require(level < 10)
+          matrices.toCharArray().map(_.toString)
+        }
+        (line, level, matrixEntries.zipWithIndex.collect({ case ("_", i) => i }).toSet)
+      }
+
+      try {
+        var stack: List[(String, Int, Set[Int])] = parse(lines.next) :: Nil
+        var s = 1
+
+        for ((line, lineNo) <- lines.zipWithIndex) {
+          val i = indenting(line)
+          if (i != s && i != s - 1) {
+            println(s"Indenting problem in $file:")
+            println(stack.head._1)
+            println(line)
             if (delete) {
               println("Deleting!")
               file.delete
             }
+          }
+          if (line.trim == ".") {
+            stack = stack.tail
+            s = s - 1
+          } else {
+            if (i == s - 1) {
+              stack = stack.tail
+              s = s - 1
+            }
+            val p = parse(line)
+            if (p._2 > stack.head._2 || p._3.forall(i => stack.head._3.contains(i))) {
+              // looks good
+              stack = p :: stack
+              s = s + 1
+            } else {
+              println(s"Invalid child in $file:")
+              println(stack.head)
+              println(p)
+              if (delete) {
+                println("Deleting!")
+                file.delete
+              }
+            }
+          }
+        }
+      } catch {
+        case e: Exception => {
+          println(s"Invalid syntax in $file:")
+          println(e)
+          if (delete) {
+            println("Deleting!")
+            file.delete
           }
         }
       }
@@ -294,98 +393,7 @@ object TreeMerger {
     }
   }
 
-  //  def mergeFiles(toMerge: Set[File], filenamer: String => String = { s => s }, outputDir: File = new File(System.getProperty("user.dir"))): Set[File] = {
-  //    println(s"Merging ${toMerge.size} files.")
-  //    val firstLines = toMerge.map(f => (TreeHelper.firstLine(f), f)).toMap
-  //    def findMatchingLineInFile(f: File): Option[File] = {
-  //      val reader = new BufferedReader(new FileReader(f))
-  //      var found: Option[File] = None
-  //      var currentLine: String = null
-  //      while (found.isEmpty && { currentLine = reader.readLine; currentLine != null }) {
-  //        found = firstLines.get(currentLine.trim)
-  //        if (found.nonEmpty && found.get == f) found = None
-  //      }
-  //      reader.close
-  //      found
-  //    }
-  //    def findMatchingLinesInFile(f: File): Iterator[File] = {
-  //      TreeHelper.lines(f).flatMap(line => firstLines.get(line.trim)).filter(_ != f)
-  //    }
-  //    val pairs = toMerge.par.flatMap({ f => findMatchingLinesInFile(f).map(g => (f, g)) }).seq
-  //    //    val pairsWithOverlaps = toMerge.par.map({ f => (f, findMatchingLineInFile(f))}).collect({ case (f, Some(g)) => (f,g) }).seq
-  //    //    println(s"Found ${pairsWithOverlaps.size} pairs (with overlaps) of files to merge.")
-  //    //    val (mergingFiles, pairs) = pairsWithOverlaps.foldLeft((Set.empty[File], List.empty[(File, File)]))({ case ((seen, pairsSoFar), (f,g)) => if(seen.contains(f) || seen.contains(g)) (seen, pairsSoFar) else (seen + f + g, (f,g) :: pairsSoFar)})
-  //    println(s"Found ${pairs.size} pairs of files to merge.")
-  //    val newFiles = for ((f, g) <- pairs; if f.exists && g.exists) yield {
-  //      val tmp = File.createTempFile("tree-merger-tmp", ".tree")
-  //      println(s"merging $f <--- $g")
-  //      require(merge(f, g, new PrintWriter(new FileOutputStream(tmp))))
-  //      //      println(s"deleting $f")
-  //      f.delete
-  //      //      println(s"deleting $g")
-  //      g.delete
-  //      val newPath = outputDir.toPath.resolve(filenamer(TreeHelper.firstLine(tmp)) + ".tree")
-  //      //      println(s"writing $newPath")
-  //      Files.move(tmp.toPath, newPath)
-  //      newPath.toFile
-  //    }
-  //    if (newFiles.nonEmpty && !pleaseFinishNow) {
-  //      mergeFiles((toMerge ++ newFiles).filter(_.exists), filenamer, outputDir)
-  //    } else {
-  //      toMerge
-  //    }
-  //  }
 
-  //  def merge(tree1: File, tree2: File, out: Writer): Boolean = {
-  //    merge(TreeHelper.lines(tree1), TreeHelper.lines(tree2), out)
-  //  }
-  //  def merge(tree1: String, tree2: String, out: Writer): Boolean = {
-  //    merge(Source.fromString(tree1).getLines, Source.fromString(tree2).getLines, out)
-  //  }
-
-  trait PeekableIterator[A] extends Iterator[A] {
-    def peek: Option[A]
-  }
-
-  object PeekableIterator {
-    implicit class Peekable[A](iterator: Iterator[A]) {
-      def peekable: PeekableIterator[A] = {
-        iterator match {
-          case iterator: PeekableIterator[A] => iterator
-          case _ => apply(iterator)
-        }
-      }
-    }
-
-    def apply[A](iterator: Iterator[A]): PeekableIterator[A] = PeekableIteratorImplementation(iterator)
-    private case class PeekableIteratorImplementation[A](iterator: Iterator[A], var nextOption: Option[A] = None) extends PeekableIterator[A] {
-      override def hasNext = nextOption.nonEmpty || iterator.hasNext
-      override def next = {
-        nextOption match {
-          case Some(a) => {
-            nextOption = None
-            a
-          }
-          case None => iterator.next
-        }
-      }
-      override def peek: Option[A] = {
-        nextOption match {
-          case Some(a) => Some(a)
-          case None => {
-            if (iterator.hasNext) {
-              nextOption = Some(iterator.next)
-              nextOption
-            } else {
-              None
-            }
-          }
-        }
-      }
-      override def map[B](f: A => B) = PeekableIteratorImplementation(iterator.map(f), nextOption.map(f))
-    }
-
-  }
 
   trait Simplifiable[X] { self: X =>
     def simplify: X
@@ -481,38 +489,5 @@ object TreeMerger {
 
   private def indenting(s: String) = s.indexWhere { _ != ' ' }
 
-  //  def merge(tree1: Iterator[String], tree2: Iterator[String], out: Writer): Boolean = {
-  //    val pw = new PrintWriter(out)
-  //    val (head, offset) = {
-  //      val untrimmedHead = tree2.next
-  //      (untrimmedHead.trim, indenting(untrimmedHead))
-  //    }
-  //    var merged = false
-  //    for (x <- tree1) {
-  //      if (x.trim == head) {
-  //        merged = true
-  //        val shift = indenting(x) - offset
-  //        val padding = if (shift > 0) Seq.fill(shift)(" ").mkString else ""
-  //        pw.println(x)
-  //        def shiftString(s: String) = {
-  //          if (shift <= 0) {
-  //            s.drop(-shift)
-  //          } else {
-  //            padding + s
-  //          }
-  //        }
-  //
-  //        for (y <- mergeIterators(tree1, tree2.map(shiftString))) {
-  //          pw.println(y)
-  //        }
-  //      } else {
-  //        pw.println(x)
-  //      }
-  //    }
-  //    // make sure we exhaust the iterator
-  //    for (x <- tree2) {}
-  //    pw.close
-  //    merged
-  //  }
 
 }
