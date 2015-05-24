@@ -26,7 +26,9 @@ object Toolkit extends Build {
         `algebra-graphs`,
         `algebra-numberfields`,
         `algebra-mathematica`,
+        `algebra-magma`,
         `algebra-spiders`,
+        `algebra-fusion`,
         `algebra-principalgraphs`,
         `algebra-enumeration`,
         `algebra-experimental`, 
@@ -78,6 +80,10 @@ object Toolkit extends Build {
     base = file("algebra-mathematica"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (mathematica, `algebra-polynomials`)
 
+  lazy val `algebra-magma` = Project(id = "toolkit-algebra-magma",
+    base = file("algebra-magma"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (`algebra-groups`)
+
   lazy val `algebra-categories` = Project(id = "toolkit-algebra-categories",
     base = file("algebra-categories"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (algebra, `algebra-polynomials`)
@@ -107,6 +113,10 @@ object Toolkit extends Build {
                   )
     ) dependsOn (algebra, mathematica, amazon, `algebra-mathematica`, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
 
+  lazy val `algebra-fusion` = Project(id = "toolkit-algebra-fusion",
+      base = file("algebra-fusion"),
+      settings = buildSettings ++ Seq(libraryDependencies ++= Seq(scopt))) dependsOn (functions, collections, algebra, `algebra-graphs`, `algebra-enumeration`, `algebra-magma`)
+
   lazy val `algebra-bugs` = Project(id = "toolkit-algebra-bugs",
     base = file("algebra-bugs"),
     settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (mathematica, `algebra-mathematica`)
@@ -121,7 +131,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
     base = file("algebra-experimental"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs, scopt))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
+    settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
 
   lazy val functions = Project(id = "toolkit-functions",
     base = file("functions"),
@@ -151,8 +161,7 @@ object BuildSettings {
 
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.18-SNAPSHOT"
- // val buildScalaVersion = "2.10.4"
-  val buildScalaVersion = "2.11.5"
+  val buildScalaVersion = "2.11.6"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -169,7 +178,8 @@ object BuildSettings {
     javaOptions in run += "-Xmx8G",
     connectInput in run := true,
     baseDirectory in run := file("."),
-    EclipseKeys.withSource := true
+    EclipseKeys.withSource := true,
+    EclipseKeys.eclipseOutput := Some(".target")
   )
 
   val dependsOnCompiler = libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) => deps :+ ("org.scala-lang" % "scala-compiler" % sv) }
@@ -247,11 +257,11 @@ object Dependencies {
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
 	val mapdb = "org.mapdb" % "mapdb" % "0.9.9"
-	val slick = "com.typesafe.slick" %% "slick" % "2.1.0"
+	val slick = "com.typesafe.slick" %% "slick" % "3.0.0-RC1"
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0-M6"
 	val spire = "org.spire-math" %% "spire" % "0.7.1"
 	object omath {
-		val parser = "org.omath" %% "omath-parser" % "0.0.1-SNAPSHOT"
+		val parser = "org.omath" %% "omath-parser" % "0.0.1"
 	}
 	object scalanlp {
 	    val breeze = "org.scalanlp" %% "breeze" % "0.11.2"

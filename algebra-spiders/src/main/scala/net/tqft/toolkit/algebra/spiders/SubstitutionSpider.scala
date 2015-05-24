@@ -12,7 +12,16 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
     val newMap = scala.collection.mutable.Map[A, R]()
     for ((a, r) <- element) {
       import net.tqft.toolkit.collections.Iterators._
-      val m: Map[A, R] = allReplacements(reduction)(a).headOption.getOrElse(Map(a -> ring.one))
+      val m: Map[A, R] = allReplacements(reduction)(a).headOption match {
+        case Some(replacement) => {
+//          pw.println("Found a replacement:")
+//          pw.println("reduction = " + reduction)
+//          pw.println("a = " + a)
+//          pw.flush
+          replacement
+        }
+        case None => Map(a -> ring.one)
+      }
       for ((b, t) <- m) {
         val p = ring.multiply(r, t)
         newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)

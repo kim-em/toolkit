@@ -10,8 +10,8 @@ object ExceptionalRelations extends App {
   // PlanarGraph(7,Vector(List(), List((6,10), (3,8), (4,7), (5,9)), List((3,7), (6,8), (5,10), (4,9))),ArrayBuffer(2, 2),0)
   
   val basis = QuantumExceptionalSeries.basis(4, (QuantumExceptionalSeries.reducedDiagrams(4, Map.empty[VertexType, Int]) ++
-    QuantumExceptionalSeries.reducedDiagrams(4, Map(VertexType(3, 1) -> 2)) ++
-    QuantumExceptionalSeries.reducedDiagrams(4, Map(VertexType(4, 2) -> 1)).headOption).ensuring(_.size == 5))
+    QuantumExceptionalSeries.reducedDiagrams(4, Map(VertexType(3, 0, 1) -> 2)) ++
+    QuantumExceptionalSeries.reducedDiagrams(4, Map(VertexType(4, 0, 2) -> 1)).headOption).ensuring(_.size == 5))
   import MathematicaForm._
   implicit val mf = implicitly[MathematicaForm[Seq[MultivariableRationalFunction[Fraction[BigInt], String]]]]
   for (r <- basis.innerProducts) {

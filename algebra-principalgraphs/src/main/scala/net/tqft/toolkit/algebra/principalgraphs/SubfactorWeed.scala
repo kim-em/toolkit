@@ -149,7 +149,7 @@ object SubfactorWeed {
 case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigraphsWithDuals) extends SubfactorWeed { weed =>
 
   override lazy val lowerObjects = {
-    new automorphisms.Action[Lower] {
+    new automorphisms.ActionOnFiniteSet[Lower] {
       override val elements: Stream[Lower] =
         decreaseDepthSet.getOrElse(
           (for (i <- (0 to 1).toStream; k <- 0 until pair(i).bigraph.rankAtMaximalDepth; if pair(i).dualData.last(k) != k - 1) yield {
@@ -214,7 +214,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
   }
 
   override def upperObjects = {
-    new automorphisms.Action[Upper] {
+    new automorphisms.ActionOnFiniteSet[Upper] {
       override val elements: Stream[Upper] = {
         val allUppers: Iterator[Upper] = {
           def uppersAddingVerticesToGraph(graph: Int): Iterator[Upper] = {
@@ -244,7 +244,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
               val limit = { row: List[Int] =>
                 // FIXME we're only doing the simply laced case for now
-                val result = row.forall(_ <= 1) && (pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
+                val result = /* row.forall(_ <= 1) && */(pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
                   pair(graph).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
                 //                if (result) {
                 //                  Logging.info(s"  considering new row (on graph $graph): " + row.mkString("x"))
@@ -263,7 +263,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
           def uppersAddingDualPairVerticesToGraph(graph: Int): Iterator[Upper] = {
             def limit(bigraph: Bigraph) = { row: List[Int] =>
               // FIXME we're only doing the simply laced case for now
-              row.forall(_ <= 1) && (pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !bigraph.inclusions.last.contains(row))) &&
+              /* row.forall(_ <= 1) && */(pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !bigraph.inclusions.last.contains(row))) &&
                 bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
             }
             val firstLimit = { row0: List[Int] =>
@@ -353,7 +353,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraphsWithDuals) extends SubfactorWeed { weed =>
 
   override lazy val lowerObjects = {
-    new automorphisms.Action[Lower] {
+    new automorphisms.ActionOnFiniteSet[Lower] {
       override val elements: Stream[Lower] =
         decreaseDepthSet.getOrElse(
           for (k <- (0 until pair.g0.bigraph.rankAtMaximalDepth).iterator.toStream) yield DeleteDualPairAtOddDepth(k))
@@ -389,8 +389,8 @@ case class OddDepthSubfactorWeed(indexLimit: Double, pair: OddDepthPairOfBigraph
     Ordering.by({ o: lowerObjects.Orbit => o.representative })
   }
 
-  override def upperObjects: automorphisms.Action[Upper] = {
-    new automorphisms.Action[Upper] {
+  override def upperObjects: automorphisms.ActionOnFiniteSet[Upper] = {
+    new automorphisms.ActionOnFiniteSet[Upper] {
       override val elements: Stream[Upper] = {
         def uppersAddingVerticesToGraph: Iterator[Upper] = {
 

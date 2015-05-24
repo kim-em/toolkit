@@ -18,7 +18,6 @@ case class Bigraph(rankAtDepthZero: Int, inclusions: Seq[Seq[Seq[Int]]], evenDep
     inclusions = inclusions.most :+ (inclusions.last :+ row),
     evenDepthTwoStepNeighbours = evenDepthTwoStepNeighbours.map({ n =>
       if (depth % 2 == 0) {
-        // FIXME
         val newVertex = (depth / 2, rankAtMaximalDepth)
         val newVertexNeighbours = ListBuffer[(Int, Int)]()
         n.updated(n.size - 2,

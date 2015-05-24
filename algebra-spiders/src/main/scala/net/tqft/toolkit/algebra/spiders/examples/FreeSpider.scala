@@ -5,6 +5,7 @@ import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
 import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 
 abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
   def generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])]
@@ -35,11 +36,12 @@ object QuotientSpider {
 
 case class QuotientSpider(
   generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])],
-  extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty) extends FreeSpider {
-  override def reductions = super.reductions ++ extraReductions
+  extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty
+) extends FreeSpider {  
+  override def reductions = extraReductions ++ super.reductions
 
   def addReduction(reduction: Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]) = {
-    copy(extraReductions = extraReductions :+ reduction)
+    copy(extraReductions = reduction +: extraReductions)
   }
 
   def reducibleDiagram_?(p: PlanarGraph): Boolean = {

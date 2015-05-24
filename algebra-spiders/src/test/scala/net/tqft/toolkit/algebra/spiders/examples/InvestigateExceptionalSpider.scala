@@ -14,7 +14,7 @@ object InvestigateExceptionalSpider extends App {
   val ring: Ring[MultivariablePolynomial[Fraction[BigInt], String]] = implicitly
 
   val exceptionalSpider = QuotientSpider(
-    Seq((VertexType(3, 1), ring.one), (VertexType(4, 2), ring.one)),
+    Seq((VertexType(3, 0, 1), ring.one), (VertexType(4, 0, 2), ring.one)),
     QuantumExceptionalSeries.reductions)
 
   val invertible: Seq[MultivariablePolynomial[Fraction[BigInt], String]] = Seq()
@@ -22,10 +22,10 @@ object InvestigateExceptionalSpider extends App {
   val independentDiagrams = Seq[(Int, Map[VertexType, Int])](
     (0, Map()),
     (2, Map()),
-    (3, Map(VertexType(3, 1) -> 1)),
+    (3, Map(VertexType(3, 0, 1) -> 1)),
     (4, Map()),
-    (4, Map(VertexType(3, 1) -> 2)),
-    (4, Map(VertexType(4, 2) -> 1))).flatMap(p => exceptionalSpider.reducedDiagrams(p._1, p._2)).init
+    (4, Map(VertexType(3, 0, 1) -> 2)),
+    (4, Map(VertexType(4, 0, 2) -> 1))).flatMap(p => exceptionalSpider.reducedDiagrams(p._1, p._2)).init
 
   val initialData = {
     val base = SpiderData(
@@ -48,5 +48,5 @@ object InvestigateExceptionalSpider extends App {
     withIndependentDiagrams
   }
 
-  initialData.flatMap(s => s.considerDiagrams(4, Map(VertexType(4, 2) -> 1)))
+  initialData.flatMap(s => s.considerDiagrams(4, Map(VertexType(4, 0, 2) -> 1)))
 }

@@ -1,13 +1,13 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
 import scala.language.reflectiveCalls
-
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.matrices._
+import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
 
 abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverField[R] {
-  override lazy val vertexTypes = Seq(VertexType(3, 1), VertexType(4, 2))
+  override lazy val vertexTypes = Seq(VertexType(3, 0, 1), VertexType(4, 0, 2))
 
   def d: R
   def b: R
@@ -26,14 +26,14 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
   private lazy val bigonReduction = Reduction(PlanarGraph.polygon(2), Map(PlanarGraph.strand -> b))
   private lazy val triangleReduction = Reduction(PlanarGraph.polygon(3), Map(PlanarGraph.star(3) -> t))
 
-  protected val vertex = PlanarGraph.star(3, 1)
-  protected val crossing = PlanarGraph.star(4, 2)
+   val vertex = PlanarGraph.star(3, 0, 1)
+   val crossing = PlanarGraph.star(4, 0, 2)
 
-  private lazy val curlReduction1 = Reduction(diagramSpider.stitch(crossing), Map(PlanarGraph.strand -> ring.power(z, 2)))
-  private lazy val twistedVertexReduction1 = Reduction(diagramSpider.multiply(crossing, vertex, 2), Map(vertex -> z))
-  private lazy val curlReduction2 = Reduction(diagramSpider.stitch(diagramSpider.rotate(crossing, 1)), Map(PlanarGraph.strand -> ring.power(z, 2)))
-  private lazy val twistedVertexReduction2 = Reduction(diagramSpider.multiply(diagramSpider.rotate(crossing, 1), vertex, 2), Map(vertex -> z))
-  private lazy val Reidemeister2Reduction = Reduction(
+   lazy val curlReduction1 = Reduction(diagramSpider.stitch(crossing), Map(PlanarGraph.strand -> ring.power(z, -2)))
+   lazy val twistedVertexReduction1 = Reduction(diagramSpider.multiply(crossing, vertex, 2), Map(vertex -> ring.power(z,-1)))
+   lazy val curlReduction2 = Reduction(diagramSpider.stitch(diagramSpider.rotate(crossing, 1)), Map(PlanarGraph.strand -> ring.power(z, 2)))
+   lazy val twistedVertexReduction2 = Reduction(diagramSpider.multiply(diagramSpider.rotate(crossing, 1), vertex, 2), Map(vertex -> ring.power(z, 1)))
+   lazy val Reidemeister2Reduction = Reduction(
     diagramSpider.multiply(crossing, diagramSpider.rotate(crossing, 1), 2),
     Map(PlanarGraph.two_strands_vertical -> ring.one))
 
@@ -62,19 +62,19 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
       val diagramsWithCrossing = diagrams.map(x => diagramSpider.multiply(x, crossing, 2))
       innerProductMatrix(diagrams, diagramsWithCrossing)
     }
-//    lazy val actionOfBraiding = {
-//      val m1 = Matrix(diagrams.size, crossingInnerProducts)
-//      val matrices = Matrices.matricesOver(diagrams.size)(ring)
-//      matrices.multiply(m1, Matrix(diagrams.size, inverseInnerProducts)).entries.seq
-//    }
-//    def verifyActionOfBraiding = {
-//      val s1 = Matrix(diagrams.size, actionOfBraiding)
-//      val matrices = Matrices.matricesOver(diagrams.size)(ring)
-//      val rho = Matrix(diagrams.size, actionOfRotation)
-//      val s2 = matrices.multiply(rho.inverse.get, s1, rho)
-//
-//      matrices.multiply(s1, s2, s1) == matrices.multiply(s2, s1, s2)
-//    }
+    //    lazy val actionOfBraiding = {
+    //      val m1 = Matrix(diagrams.size, crossingInnerProducts)
+    //      val matrices = Matrices.matricesOver(diagrams.size)(ring)
+    //      matrices.multiply(m1, Matrix(diagrams.size, inverseInnerProducts)).entries.seq
+    //    }
+    //    def verifyActionOfBraiding = {
+    //      val s1 = Matrix(diagrams.size, actionOfBraiding)
+    //      val matrices = Matrices.matricesOver(diagrams.size)(ring)
+    //      val rho = Matrix(diagrams.size, actionOfRotation)
+    //      val s2 = matrices.multiply(rho.inverse.get, s1, rho)
+    //
+    //      matrices.multiply(s1, s2, s1) == matrices.multiply(s2, s1, s2)
+    //    }
   }
 
   trait BasisWithPlatElement extends Basis {
@@ -117,5 +117,16 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
       }).ensuring(_ != -1)
     }
   }
+}
 
+object BraidedTrivalentSpider extends BraidedTrivalentSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
+  override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
+  override def ring = implicitly[Field[MultivariableRationalFunction[Fraction[BigInt], String]]]
+
+  override val omega = ring.one
+
+  override val d: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("d" -> 1) -> 1)
+  override val b: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("b" -> 1) -> 1)
+  override val t: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("t" -> 1) -> 1)
+  override val z: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("z" -> 1) -> 1)
 }

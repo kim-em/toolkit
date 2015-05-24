@@ -2,72 +2,36 @@ package net.tqft.toolkit.algebra.grouptheory
 
 import scala.collection.GenSeq
 import scala.collection.GenSet
+import net.tqft.toolkit.algebra.Finite
 
 trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
-  def generators: Set[A]
-  override def unsortedConjugacyClasses = GroupActions.conjugationAction(fgFiniteGroup).orbits(generators, elements).toSeq
+  def generators: Seq[A]
+  override def unsortedConjugacyClasses = fgFiniteGroup.conjugationAction.orbits(elements).toSeq
 
-  override lazy val elements = {
+  override def conjugationAction = new super.ConjugationAction with Action[A]
+
+  lazy val elementsAsWordsInGenerators = {
     @scala.annotation.tailrec
-    def extendElements(generators: Set[A], elementsSoFar: Set[A], newestElements: GenSet[A]): Set[A] = {
-//      FiniteGroup.info("... found " + elementsSoFar.size + " elements of the group so far.")
+    def extendElements(generators: Seq[A], elementsSoFar: Map[A, Seq[Int]], newestElements: Map[A, Seq[Int]]): Map[A, Seq[Int]] = {
+      //      FiniteGroup.info("... found " + elementsSoFar.size + " elements of the group so far.")
       if (newestElements.isEmpty) {
         elementsSoFar
       } else {
-        val allElements = elementsSoFar union newestElements;
-        extendElements(generators, allElements, (for (b <- newestElements; a <- generators) yield multiply(a, b)) diff allElements)
+        val allElements = elementsSoFar ++ newestElements;
+        extendElements(generators, allElements, (for ((b, w) <- newestElements; (a, i) <- generators.zipWithIndex) yield (multiply(a, b) -> (i +: w))).toMap -- allElements.keysIterator)
       }
     }
 
-    extendElements(generators, Set(one), generators)
+    extendElements(generators, Map.empty, Map(one -> Seq.empty))
   }
+  override def elements = elementsAsWordsInGenerators.keySet
 
   trait Action[B] extends super.Action[B] { action =>
-    def elements: Seq[B]
+    override def orbits(set: Set[B]) = bruteForceOrbits(generators.toSet, set)
+  }
 
-    trait Orbit extends net.tqft.toolkit.algebra.grouptheory.Orbit[A, B]
-
-    def orbits: Set[Orbit] = {
-      //      for(a <- elements; g <- generators) {
-      //        require(elements.contains(act(g, a)))
-      //      }
-
-      class O(val representative: B) extends Orbit {
-        override def stabilizer = ???
-        override lazy val elements = extendElements(Seq.empty, Seq(representative)).toSet
-
-        override def hashCode = elements.hashCode
-        override def equals(other: Any) = {
-          other match {
-            case other: FinitelyGeneratedFiniteGroup[A]#Action[B]#Orbit => other.elements == elements
-            case _ => false
-          }
-        }
-
-        @scala.annotation.tailrec
-        private def extendElements(elements: Seq[B], newestElements: GenSeq[B]): Seq[B] = {
-          if (newestElements.isEmpty) {
-            elements
-          } else {
-            val allElements = (elements ++ newestElements).distinct;
-            extendElements(allElements, (for (b <- newestElements; a <- generators) yield act(a, b)).distinct.filterNot(allElements.contains))
-          }
-        }
-      }
-
-      @scala.annotation.tailrec
-      def extractOrbits(objects: Set[B], orbits: Set[Orbit]): Set[Orbit] = {
-        if (objects.isEmpty) {
-          orbits
-        } else {
-          val newOrbit = new O(objects.head)
-          extractOrbits(objects diff newOrbit.elements, orbits + newOrbit)
-        }
-      }
-
-      extractOrbits(action.elements.toSet, Set())
-    }
-
+  trait ActionOnFiniteSet[B] extends Action[B] with Finite[B] {
+    def allOrbits = orbits(elements.toSet)
   }
 }
 

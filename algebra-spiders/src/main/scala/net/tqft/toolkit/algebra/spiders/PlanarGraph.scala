@@ -9,8 +9,22 @@ import scala.util.parsing.combinator.JavaTokenParsers
 
 // flags veer to the left
 // edges are ordered clockwise around each vertex
-case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[Int], loops: Int) { graph =>
+case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[(Int, Int)], loops: Int) { graph =>
   //  verify
+
+  def isAlternating_? = {
+    if (vertexFlags.tail.map(_.size).forall(_ == 4) && labels.forall(_._2 == 2)) {
+      (for (
+        edge <- edgeSet;
+        (v1, v2) = edgeVertexIncidences(edge);
+        if v1 != 0 && v2 != 0
+      ) yield {
+        (vertexFlags(v1).indexWhere(_._1 == edge) + vertexFlags(v2).indexWhere(_._1 == edge) + 1) % 2
+      }).forall(_ == 0)
+    } else {
+      true
+    }
+  }
 
   def verify = {
     // There are many things we might check here!
@@ -120,13 +134,15 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   }
 
   lazy val boundaryEdges = vertexFlags(0).map(_._1)
-  lazy val boundaryFaces = vertexFlags(0).map(_._2)
-  
+  lazy val boundaryFaces = vertexFlags(0) match {
+    case Nil => Seq(outerFace)
+    case other => other.map(_._2)
+  }
+
   def internalFacesSizeAtMost(n: Int): Seq[Int] = faceEdgeIncidences.filter(_._2.size <= n).keys.toSeq intersect internalFaceSet
   // Note faceEdgeIncidences is a Set, so the above function doesn't count edge multiplicity.
   // But this is fine since the only kind of edge with multiplicity > 1 is a bridge (of multiplicity 2).
   lazy val hasTinyFace = internalFacesSizeAtMost(3).nonEmpty
-  lazy val hasSmallFace = internalFacesSizeAtMost(4).nonEmpty
 
   type EdgeFace = (Int, Int)
 
@@ -243,7 +259,6 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     } else {
       resultFlags(0)(0)._2
     }
-    val result = PlanarGraph(newOuterFace, resultFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
 
     val vertexRotations = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
 
@@ -258,21 +273,25 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
     import net.tqft.toolkit.arithmetic.Mod._
 
-    val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(0))
+    val boundaryRotation = identifyRotation(packed.vertexFlags(0).map(p => (inv(p._1), inv(p._2))), resultFlags(0))
 
     // Now, we check all the vertex rotations, fixing any that were rotated by an forbidden amount... This is a hack.
     val fixedFlags = for (i <- 1 until graph.numberOfVertices) yield {
-      val k = packed.vertexFlags(i).size
-      val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
+      //      val k = packed.vertexFlags(i).size
+      //      val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
+      val k = resultFlags(i).size
+      val j = identifyRotation(packed.vertexFlags(labelling(i)), resultFlags(i).map(p => (labelling(p._1), labelling(p._2))))
 
-      val j0 = j mod packed.labels(i - 1)
+      val j0 = j mod packed.labels(labelling(i) - 1)._1
 
       vertexRotations(k) = (vertexRotations(k) + j - j0) mod k
 
-      result.vertexFlags(i).rotateLeft(-j0)
+      resultFlags(i).rotateLeft(-j0)
     }
 
-    val fixedResult = result.copy(vertexFlags = result.vertexFlags.head +: fixedFlags)
+    //    val result = PlanarGraph(newOuterFace, resultFlags, labelling.take(packed.numberOfVertices).permute(0 +: packed.labels).tail, graph.loops)
+
+    val fixedResult = PlanarGraph(newOuterFace, resultFlags.head +: fixedFlags, labelling.take(packed.numberOfVertices).permute((-1, -1) +: packed.labels).tail, graph.loops)
 
     val finalResult = DiagramSpider.graphSpider.rotate(fixedResult, -boundaryRotation)
     val rotation = Rotation(Map() ++ vertexRotations)
@@ -474,7 +493,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
         val newInternalFlags = vertexFlags.zipWithIndex.tail.collect({
           case (flags, i) if !verticesToDelete.contains(i) => flags.map(updateFlag(i, false))
         })
-        val newLabels = (0 +: labels).zipWithIndex.collect({ case (l, i) if !verticesToDelete.contains(i) => l }).tail
+        val newLabels = ((-1, -1) +: labels).zipWithIndex.collect({ case (l, i) if !verticesToDelete.contains(i) => l }).tail
         val result = PlanarGraph(if (numberOfBoundaryPoints == 0) newFace else outerFace, newExternalFlag +: newInternalFlags, newLabels, loops - loopsToDelete)
         require(result.numberOfBoundaryPoints == boundaryEdgesAndFacesToDelete.size + graph.numberOfBoundaryPoints)
         result
@@ -576,7 +595,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
             packedShape.degree(sourceVertex) != graph.degree(targetVertex) ||
             packedShape.labels(sourceVertex - 1) != graph.labels(targetVertex - 1) ||
             !compareSelfLoops(packedShape.vertexFlags(sourceVertex), graph.vertexFlags(targetVertex).rotateLeft(rotation)) ||
-            (rotation mod packedShape.labels(sourceVertex - 1)) != 0) {
+            (rotation mod packedShape.labels(sourceVertex - 1)._1) != 0) {
             //            Logging.info(s"rejecting mapVertex($sourceVertex, $targetVertex, $rotation, $partial)")
             None
           } else {
@@ -691,7 +710,7 @@ object PlanarGraph {
     Ordering.by({ x: PlanarGraph => (x.outerFace, x.vertexFlags, x.labels, x.loops) })
   }
 
-  private def spider = implicitly[Spider[PlanarGraph]]
+  def spider = implicitly[Spider[PlanarGraph]]
 
   val empty = {
     PlanarGraph(1, IndexedSeq(IndexedSeq.empty), IndexedSeq.empty, 0)
@@ -727,7 +746,7 @@ object PlanarGraph {
     def planarGraph: Parser[PlanarGraph] = ("PlanarGraph(" ~> whitespace ~>
       (int <~ "," <~ whitespace) ~
       (indexedSeq(seq(pair(int))) <~ "," <~ whitespace) ~
-      (seq(int) <~ "," <~ whitespace) ~
+      (seq(pair(int)) <~ "," <~ whitespace) ~
       int <~ whitespace <~ ")") ^^ {
         case outerFace ~ vertexFlags ~ labels ~ loops => PlanarGraph(outerFace, vertexFlags, labels, loops)
       }
@@ -757,7 +776,7 @@ object PlanarGraph {
       import net.tqft.toolkit.arithmetic.Mod._
       val flags = IndexedSeq.tabulate(k)(i => (i + k + 1, i + 3 * k + 1)) +:
         IndexedSeq.tabulate(k)(i => IndexedSeq((i + 2 * k + 1, 4 * k + 1), (i + k + 1, (i + 1 mod k) + 3 * k + 1), ((i - 1 mod k) + 2 * k + 1, i + 3 * k + 1)))
-      PlanarGraph(3 * k + 1, flags, IndexedSeq.fill(k)(1), 0)
+      PlanarGraph(3 * k + 1, flags, IndexedSeq.fill(k)((1, 0)), 0)
     }
   }
 
@@ -766,11 +785,12 @@ object PlanarGraph {
     (polygon_ _).memo
   }
 
-  private def star_(k: Int, r: Int) = {
+  private def star_(t: (Int, Int, Int)) = {
+    val (k, l, r) = t
     val flags = IndexedSeq(
       Seq.tabulate(k)(i => (i + 2, i + k + 2)),
       Seq.tabulate(k)(i => (i + 2, ((i + 1) % k) + k + 2)).reverse)
-    PlanarGraph(k + 2, flags, IndexedSeq(r), 0)
+    PlanarGraph(k + 2, flags, IndexedSeq((r, l)), 0)
   }
 
   private val starCache = {
@@ -778,7 +798,9 @@ object PlanarGraph {
     Memo(star_ _)
   }
 
-  def star(k: Int, r: Int = 1) = starCache(k, r)
+  def star(k: Int, l: Int = 0, r: Int = 1) = starCache((k, l, r))
+
+  val trivalentVertex = star(3)
 
   val I = spider.multiply(spider.rotate(star(3), 1), spider.rotate(star(3), -1), 1)
   val H = spider.rotate(I, 1)
@@ -786,6 +808,40 @@ object PlanarGraph {
   val theta = spider.multiply(star(3), star(3), 3)
   val tetrahedron = spider.multiply(star(3), polygon(3), 3)
   val cube = spider.multiply(polygon(4), polygon(4), 4)
+
+  val tetravalentVertex = star(4)
+  val bowtie = spider.stitch(spider.stitch(tetravalentVertex))
+  
+  val crossing = star(4, 0, 2)
+  val inverseCrossing = spider.rotate(crossing, 1)
+
+  val positiveTwistedLoop = spider.stitch(spider.stitch(crossing))
+  val positiveTwistedTheta = spider.multiply(I, crossing, 4)
+  val twistedTetrahedron = spider.multiply(polygon(4), crossing, 4)
+
+  val hopfStrand = spider.multiply(crossing, crossing, 3)
+  val hopfLink = spider.stitch(hopfStrand)
+
+  val positiveTwist = spider.stitch(crossing)
+  val negativeTwist = spider.stitch(spider.rotate(crossing, 1))
+
+  val positiveTwistedTrivalentVertex = spider.multiply(spider.rotate(crossing, 1), trivalentVertex, 2)
+  val negativeTwistedTrivalentVertex = spider.multiply(crossing, trivalentVertex, 2)
+
+  val Reidemeister1a = Seq(strand, positiveTwist)
+  val Reidemeister1b = Seq(strand, negativeTwist)
+  val Reidemeister2 = Seq(two_strands_vertical, spider.multiply(crossing, spider.rotate(crossing, 1), 2))
+
+  lazy val Reidemeister3 = {
+    val tangle = spider.multiply(spider.rotate(spider.multiply(crossing, spider.rotate(crossing, 1), 1), -1), crossing, 2)
+    Seq(tangle, spider.rotate(tangle, 3))
+  }
+  lazy val Reidemeister4a = Seq(
+    spider.rotate(spider.multiply(trivalentVertex, crossing, 1), 1),
+    spider.multiply(spider.rotate(spider.multiply(crossing, spider.rotate(crossing, 1), 1), -1), trivalentVertex, 2))
+  lazy val Reidemeister4b = Seq(
+    spider.rotate(spider.multiply(trivalentVertex, spider.rotate(crossing, 1), 1), 1),
+    spider.multiply(spider.rotate(spider.multiply(spider.rotate(crossing, 1), crossing, 1), -1), trivalentVertex, 2))
 
   lazy val dodecahedron = {
     val penta5fork = {
