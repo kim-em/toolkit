@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[    219181,       5371]
-NotebookOptionsPosition[    213867,       5233]
-NotebookOutlinePosition[    214225,       5249]
-CellTagsIndexPosition[    214182,       5246]
+NotebookDataLength[    226342,       5541]
+NotebookOptionsPosition[    220516,       5390]
+NotebookOutlinePosition[    220874,       5406]
+CellTagsIndexPosition[    220831,       5403]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -854,9 +854,166 @@ Cell[BoxData[{
  CellChangeTimes->{{3.639792407173942*^9, 3.63979259847049*^9}, {
   3.639880981253808*^9, 3.639880982630843*^9}}],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  RowBox[{"SaveGroebnerCalculations", "[", "]"}]], "Input",
  CellChangeTimes->{{3.639792491945012*^9, 3.6397924965109262`*^9}}],
+
+Cell["\<\
+Syntax::sntue: Unexpected end of file (probably unfinished expression) 
+     (line 37209 of \
+\"/Users/scott/projects/toolkit/algebra-spiders/src/main/mathematica/\
+groebnerCalculations.m\").\
+\>", "Message", "MSG",
+ CellChangeTimes->{3.641512659871174*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(Null \
+\[LeftDoubleBracket] 1 \[RightDoubleBracket]\\)\[NoBreak] is longer than \
+depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\
+\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
+\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6415126600419083`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Join", "::", "heads"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Heads \[NoBreak]\\!\\(List\\)\[NoBreak] and \
+\[NoBreak]\\!\\(Part\\)\[NoBreak] at positions \[NoBreak]\\!\\(1\\)\[NoBreak] \
+and \[NoBreak]\\!\\(2\\)\[NoBreak] are expected to be the same. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/heads\\\", \
+ButtonNote -> \\\"Join::heads\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.641512660113698*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DownValues", "::", "vlist"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Cannot set \[NoBreak]\\!\\(DownValues[cachedGroebnerBasis]\
+\\)\[NoBreak] to \
+\[NoBreak]\\!\\(Join[\\(\\(\\(\\({\\(\\(HoldPattern[\\(\\(cachedGroebnerBasis[\
+\\(\\(ideal_, variables_\\)\\)]\\)\\)]\\)\\) \[RuleDelayed] \
+\\(\\((\\(\\(cachedGroebnerBasis[\\(\\(ideal, variables\\)\\)]\\)\\) = \
+\\(\\(Module[\\(\\(\\(\\({result}\\)\\), \\(\\(\\(\\(result = \
+\\(\\(GroebnerBasis[\\(\\(\[LeftSkeleton] 2 \
+\[RightSkeleton]\\)\\)]\\)\\)\\)\\) ; \
+result\\)\\)\\)\\)]\\)\\))\\)\\)}\\)\\), \\(\\(Null \[LeftDoubleBracket] 1 \
+\[RightDoubleBracket]\\)\\)\\)\\)]\\)\[NoBreak]; value must be a list of \
+rules. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/DownValues/vlist\\\", ButtonNote -> \
+\\\"DownValues::vlist\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.641512660160646*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(Null \
+\[LeftDoubleBracket] 1 \[RightDoubleBracket]\\)\[NoBreak] is longer than \
+depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\
+\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
+\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.641512660243061*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Join", "::", "heads"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Heads \[NoBreak]\\!\\(List\\)\[NoBreak] and \
+\[NoBreak]\\!\\(Part\\)\[NoBreak] at positions \[NoBreak]\\!\\(1\\)\[NoBreak] \
+and \[NoBreak]\\!\\(2\\)\[NoBreak] are expected to be the same. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/heads\\\", \
+ButtonNote -> \\\"Join::heads\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.641512660304121*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(Null \
+\[LeftDoubleBracket] 2 \[RightDoubleBracket]\\)\[NoBreak] is longer than \
+depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\
+\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
+\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6415126603375196`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Part :: \
+partd\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.641512660387682*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Join", "::", "heads"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Heads \[NoBreak]\\!\\(List\\)\[NoBreak] and \
+\[NoBreak]\\!\\(Part\\)\[NoBreak] at positions \[NoBreak]\\!\\(1\\)\[NoBreak] \
+and \[NoBreak]\\!\\(2\\)\[NoBreak] are expected to be the same. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/heads\\\", \
+ButtonNote -> \\\"Join::heads\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6415126603916883`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Join :: \
+heads\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.641512660444727*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DownValues", "::", "vlist"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Cannot set \
+\[NoBreak]\\!\\(DownValues[cachedPolynomialReduce]\\)\[NoBreak] to \[NoBreak]\
+\\!\\(Join[\\(\\(\\(\\({\\(\\(HoldPattern[\\(\\(cachedPolynomialReduce[\\(\\(\
+polynomial_, basis_, variables_\\)\\)]\\)\\)]\\)\\) \[RuleDelayed] \\(\\((\\(\
+\\(cachedPolynomialReduce[\\(\\(polynomial, basis, variables\\)\\)]\\)\\) = \
+\\(\\(Module[\\(\\(\\(\\({result}\\)\\), \\(\\(\\(\\(result = \
+\\(\\(PolynomialReduce[\\(\\(\[LeftSkeleton] 3 \
+\[RightSkeleton]\\)\\)]\\)\\)\\)\\) ; \
+result\\)\\)\\)\\)]\\)\\))\\)\\)}\\)\\), \\(\\(Null \[LeftDoubleBracket] 2 \
+\[RightDoubleBracket]\\)\\)\\)\\)]\\)\[NoBreak]; value must be a list of \
+rules. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/DownValues/vlist\\\", ButtonNote -> \
+\\\"DownValues::vlist\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.641512660450837*^9}]
+}, Open  ]],
 
 Cell[BoxData[
  RowBox[{"LoadGroebnerCalculations", "[", "]"}]], "Input",
@@ -5278,100 +5435,113 @@ Cell[21451, 575, 319, 9, 28, "Input"],
 Cell[21773, 586, 5870, 146, 288, "Input"],
 Cell[27646, 734, 2150, 53, 233, "Input"],
 Cell[29799, 789, 2475, 65, 182, "Input"],
-Cell[32277, 856, 140, 2, 28, "Input"],
-Cell[32420, 860, 138, 2, 28, "Input"],
-Cell[32561, 864, 471, 13, 35, "Input"]
+Cell[CellGroupData[{
+Cell[32299, 858, 140, 2, 28, "Input"],
+Cell[32442, 862, 267, 6, 37, "Message"],
+Cell[32712, 870, 512, 11, 24, "Message"],
+Cell[33227, 883, 566, 11, 24, "Message"],
+Cell[33796, 896, 994, 19, 41, "Message"],
+Cell[34793, 917, 510, 11, 24, "Message"],
+Cell[35306, 930, 566, 11, 24, "Message"],
+Cell[35875, 943, 512, 11, 24, "Message"],
+Cell[36390, 956, 528, 11, 24, "Message"],
+Cell[36921, 969, 568, 11, 24, "Message"],
+Cell[37492, 982, 528, 11, 24, "Message"],
+Cell[38023, 995, 1031, 19, 42, "Message"]
+}, Open  ]],
+Cell[39069, 1017, 138, 2, 28, "Input"],
+Cell[39210, 1021, 471, 13, 35, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[33069, 882, 107, 1, 64, "Section"],
-Cell[33179, 885, 302, 7, 46, "Input"],
-Cell[33484, 894, 428, 12, 53, "Input"],
-Cell[33915, 908, 127, 2, 28, "Input"],
-Cell[34045, 912, 1120, 25, 46, "Input"],
-Cell[35168, 939, 563, 14, 28, "Input"],
-Cell[35734, 955, 781, 14, 46, "Input"],
-Cell[36518, 971, 546, 14, 28, "Input"],
-Cell[37067, 987, 547, 15, 28, "Input"],
-Cell[37617, 1004, 2246, 56, 145, "Input"],
-Cell[39866, 1062, 490, 13, 28, "Input"],
-Cell[40359, 1077, 5375, 117, 268, "Input"],
-Cell[45737, 1196, 154, 2, 28, "Input"],
-Cell[45894, 1200, 4541, 90, 266, "Input"],
-Cell[50438, 1292, 8834, 185, 490, "Input"],
-Cell[59275, 1479, 2072, 50, 131, "Input"],
-Cell[61350, 1531, 2051, 51, 179, "Input"],
-Cell[63404, 1584, 4942, 111, 318, "Input"],
-Cell[68349, 1697, 1020, 25, 80, "Input"],
-Cell[69372, 1724, 3942, 94, 213, "Input"],
-Cell[73317, 1820, 1787, 46, 149, "Input"],
-Cell[75107, 1868, 4895, 110, 336, "Input"],
-Cell[80005, 1980, 493, 13, 28, "Input"],
-Cell[80501, 1995, 325, 8, 31, "Input"],
-Cell[80829, 2005, 2761, 64, 132, "Input"],
-Cell[83593, 2071, 3468, 77, 195, "Input"],
-Cell[87064, 2150, 524, 14, 28, "Input"],
-Cell[87591, 2166, 2709, 64, 216, "Input"],
-Cell[90303, 2232, 1289, 28, 63, "Input"],
-Cell[91595, 2262, 1006, 25, 80, "Input"],
-Cell[92604, 2289, 3079, 81, 97, "Input"],
-Cell[95686, 2372, 528, 13, 28, "Input"],
-Cell[96217, 2387, 502, 13, 28, "Input"],
-Cell[96722, 2402, 561, 14, 28, "Input"],
-Cell[97286, 2418, 244, 5, 28, "Input"],
-Cell[97533, 2425, 427, 9, 28, "Input"],
-Cell[97963, 2436, 4553, 101, 331, "Input"],
-Cell[102519, 2539, 511, 15, 28, "Input"],
-Cell[103033, 2556, 8425, 189, 522, "Input"],
-Cell[111461, 2747, 2377, 65, 148, "Input"],
-Cell[113841, 2814, 2236, 62, 133, "Input"],
-Cell[116080, 2878, 1499, 42, 47, "Input"],
-Cell[117582, 2922, 663, 15, 46, "Input"],
-Cell[118248, 2939, 13274, 286, 744, "Input"],
-Cell[131525, 3227, 1285, 32, 148, "Input"],
-Cell[132813, 3261, 425, 12, 28, "Input"],
-Cell[133241, 3275, 473, 10, 28, "Input"],
-Cell[133717, 3287, 142, 2, 28, "Input"],
-Cell[133862, 3291, 293, 6, 28, "Input"],
-Cell[134158, 3299, 476, 12, 28, "Input"],
-Cell[134637, 3313, 256, 6, 28, "Input"],
-Cell[134896, 3321, 1893, 51, 131, "Input"],
-Cell[136792, 3374, 305, 6, 28, "Input"],
-Cell[137100, 3382, 348, 10, 28, "Input"],
-Cell[137451, 3394, 2104, 56, 131, "Input"],
-Cell[139558, 3452, 3234, 71, 182, "Input"],
-Cell[142795, 3525, 2401, 55, 114, "Input"],
-Cell[145199, 3582, 13761, 284, 709, "Input"],
-Cell[158963, 3868, 2195, 57, 148, "Input"],
-Cell[161161, 3927, 12585, 267, 625, "Input"],
-Cell[173749, 4196, 251, 6, 28, "Input"],
-Cell[174003, 4204, 588, 17, 28, "Input"],
-Cell[174594, 4223, 332, 8, 28, "Input"],
-Cell[174929, 4233, 475, 13, 28, "Input"],
-Cell[175407, 4248, 2222, 54, 114, "Input"],
-Cell[177632, 4304, 362, 9, 28, "Input"],
-Cell[177997, 4315, 438, 13, 28, "Input"],
-Cell[178438, 4330, 991, 29, 28, "Input"],
-Cell[179432, 4361, 1405, 43, 63, "Input"],
-Cell[180840, 4406, 711, 20, 28, "Input"],
-Cell[181554, 4428, 11674, 259, 658, "Input"],
-Cell[193231, 4689, 140, 3, 28, "Input"],
-Cell[193374, 4694, 4540, 107, 148, "Input"],
-Cell[197917, 4803, 1057, 26, 80, "Input"],
-Cell[198977, 4831, 286, 7, 28, "Input"],
-Cell[199266, 4840, 577, 15, 28, "Input"],
-Cell[199846, 4857, 336, 8, 28, "Input"],
-Cell[200185, 4867, 1625, 36, 97, "Input"],
-Cell[201813, 4905, 1944, 49, 97, "Input"],
-Cell[203760, 4956, 1542, 38, 80, "Input"],
-Cell[205305, 4996, 1685, 41, 97, "Input"],
-Cell[206993, 5039, 1306, 32, 97, "Input"],
-Cell[208302, 5073, 1539, 37, 63, "Input"],
-Cell[209844, 5112, 249, 7, 28, "Input"],
-Cell[210096, 5121, 453, 12, 28, "Input"],
-Cell[210552, 5135, 579, 17, 28, "Input"],
-Cell[211134, 5154, 1392, 36, 80, "Input"],
-Cell[212529, 5192, 548, 15, 46, "Input"],
-Cell[213080, 5209, 771, 21, 28, "Input"]
+Cell[39718, 1039, 107, 1, 64, "Section"],
+Cell[39828, 1042, 302, 7, 46, "Input"],
+Cell[40133, 1051, 428, 12, 53, "Input"],
+Cell[40564, 1065, 127, 2, 28, "Input"],
+Cell[40694, 1069, 1120, 25, 46, "Input"],
+Cell[41817, 1096, 563, 14, 28, "Input"],
+Cell[42383, 1112, 781, 14, 46, "Input"],
+Cell[43167, 1128, 546, 14, 28, "Input"],
+Cell[43716, 1144, 547, 15, 28, "Input"],
+Cell[44266, 1161, 2246, 56, 145, "Input"],
+Cell[46515, 1219, 490, 13, 28, "Input"],
+Cell[47008, 1234, 5375, 117, 268, "Input"],
+Cell[52386, 1353, 154, 2, 28, "Input"],
+Cell[52543, 1357, 4541, 90, 266, "Input"],
+Cell[57087, 1449, 8834, 185, 490, "Input"],
+Cell[65924, 1636, 2072, 50, 131, "Input"],
+Cell[67999, 1688, 2051, 51, 179, "Input"],
+Cell[70053, 1741, 4942, 111, 318, "Input"],
+Cell[74998, 1854, 1020, 25, 80, "Input"],
+Cell[76021, 1881, 3942, 94, 213, "Input"],
+Cell[79966, 1977, 1787, 46, 149, "Input"],
+Cell[81756, 2025, 4895, 110, 336, "Input"],
+Cell[86654, 2137, 493, 13, 28, "Input"],
+Cell[87150, 2152, 325, 8, 31, "Input"],
+Cell[87478, 2162, 2761, 64, 132, "Input"],
+Cell[90242, 2228, 3468, 77, 195, "Input"],
+Cell[93713, 2307, 524, 14, 28, "Input"],
+Cell[94240, 2323, 2709, 64, 216, "Input"],
+Cell[96952, 2389, 1289, 28, 63, "Input"],
+Cell[98244, 2419, 1006, 25, 80, "Input"],
+Cell[99253, 2446, 3079, 81, 97, "Input"],
+Cell[102335, 2529, 528, 13, 28, "Input"],
+Cell[102866, 2544, 502, 13, 28, "Input"],
+Cell[103371, 2559, 561, 14, 28, "Input"],
+Cell[103935, 2575, 244, 5, 28, "Input"],
+Cell[104182, 2582, 427, 9, 28, "Input"],
+Cell[104612, 2593, 4553, 101, 331, "Input"],
+Cell[109168, 2696, 511, 15, 28, "Input"],
+Cell[109682, 2713, 8425, 189, 522, "Input"],
+Cell[118110, 2904, 2377, 65, 148, "Input"],
+Cell[120490, 2971, 2236, 62, 133, "Input"],
+Cell[122729, 3035, 1499, 42, 47, "Input"],
+Cell[124231, 3079, 663, 15, 46, "Input"],
+Cell[124897, 3096, 13274, 286, 744, "Input"],
+Cell[138174, 3384, 1285, 32, 148, "Input"],
+Cell[139462, 3418, 425, 12, 28, "Input"],
+Cell[139890, 3432, 473, 10, 28, "Input"],
+Cell[140366, 3444, 142, 2, 28, "Input"],
+Cell[140511, 3448, 293, 6, 28, "Input"],
+Cell[140807, 3456, 476, 12, 28, "Input"],
+Cell[141286, 3470, 256, 6, 28, "Input"],
+Cell[141545, 3478, 1893, 51, 131, "Input"],
+Cell[143441, 3531, 305, 6, 28, "Input"],
+Cell[143749, 3539, 348, 10, 28, "Input"],
+Cell[144100, 3551, 2104, 56, 131, "Input"],
+Cell[146207, 3609, 3234, 71, 182, "Input"],
+Cell[149444, 3682, 2401, 55, 114, "Input"],
+Cell[151848, 3739, 13761, 284, 709, "Input"],
+Cell[165612, 4025, 2195, 57, 148, "Input"],
+Cell[167810, 4084, 12585, 267, 625, "Input"],
+Cell[180398, 4353, 251, 6, 28, "Input"],
+Cell[180652, 4361, 588, 17, 28, "Input"],
+Cell[181243, 4380, 332, 8, 28, "Input"],
+Cell[181578, 4390, 475, 13, 28, "Input"],
+Cell[182056, 4405, 2222, 54, 114, "Input"],
+Cell[184281, 4461, 362, 9, 28, "Input"],
+Cell[184646, 4472, 438, 13, 28, "Input"],
+Cell[185087, 4487, 991, 29, 28, "Input"],
+Cell[186081, 4518, 1405, 43, 63, "Input"],
+Cell[187489, 4563, 711, 20, 28, "Input"],
+Cell[188203, 4585, 11674, 259, 658, "Input"],
+Cell[199880, 4846, 140, 3, 28, "Input"],
+Cell[200023, 4851, 4540, 107, 148, "Input"],
+Cell[204566, 4960, 1057, 26, 80, "Input"],
+Cell[205626, 4988, 286, 7, 28, "Input"],
+Cell[205915, 4997, 577, 15, 28, "Input"],
+Cell[206495, 5014, 336, 8, 28, "Input"],
+Cell[206834, 5024, 1625, 36, 97, "Input"],
+Cell[208462, 5062, 1944, 49, 97, "Input"],
+Cell[210409, 5113, 1542, 38, 80, "Input"],
+Cell[211954, 5153, 1685, 41, 97, "Input"],
+Cell[213642, 5196, 1306, 32, 97, "Input"],
+Cell[214951, 5230, 1539, 37, 63, "Input"],
+Cell[216493, 5269, 249, 7, 28, "Input"],
+Cell[216745, 5278, 453, 12, 28, "Input"],
+Cell[217201, 5292, 579, 17, 28, "Input"],
+Cell[217783, 5311, 1392, 36, 80, "Input"],
+Cell[219178, 5349, 548, 15, 46, "Input"],
+Cell[219729, 5366, 771, 21, 28, "Input"]
 }, Open  ]]
 }
 ]
