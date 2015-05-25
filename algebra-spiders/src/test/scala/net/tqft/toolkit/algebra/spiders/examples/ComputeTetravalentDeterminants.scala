@@ -13,6 +13,9 @@ object ComputeTetravalentDeterminants extends App {
   {
     lazy val diagrams4 = TetravalentSpider.reducedDiagrams(4, 0) ++ TetravalentSpider.reducedDiagrams(4, 1) ++ TetravalentSpider.reducedDiagrams(4, 2)
 
+    for(d <- diagrams4) {
+      println(d)
+    }
     require(diagrams4.size == 5)
 
     val m1 = Matrix(4, TetravalentSpider.innerProductMatrix(diagrams4.dropRight(1), diagrams4.dropRight(1)))
