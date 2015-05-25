@@ -1,0 +1,425 @@
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[         0,          0]
+NotebookDataLength[     16143,        424]
+NotebookOptionsPosition[     15485,        397]
+NotebookOutlinePosition[     15841,        413]
+CellTagsIndexPosition[     15798,        410]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "Trivalent", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Trivalent", ":=", 
+  RowBox[{"Trivalent", "=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "Trivalent", "}"}], ",", 
+     RowBox[{
+      RowBox[{"Trivalent", "=", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"DeclareDimensionBounds", "[", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "0", ",", "1", ",", "1"}], "}"}], "]"}], "[", 
+         RowBox[{"emptySpiderAnalysis", "[", 
+          RowBox[{
+           RowBox[{"FreeSpider", "[", 
+            RowBox[{"{", 
+             RowBox[{"{", 
+              RowBox[{"3", ",", "0", ",", "1", ",", "1"}], "}"}], "}"}], 
+            "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"d", ",", "t"}], "}"}]}], "]"}], "]"}], "}"}]}], ";", 
+      RowBox[{"Trivalent", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{"{", 
+          RowBox[{"PlanarGraphs", "@", 
+           RowBox[{"empty", "[", "]"}]}], "}"}], "]"}], "[", "Trivalent", 
+        "]"}]}], ";", 
+      RowBox[{"Trivalent", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{"{", 
+          RowBox[{"polygon", "[", "1", "]"}], "}"}], "]"}], "[", "Trivalent", 
+        "]"}]}], ";", 
+      RowBox[{"Trivalent", "=", 
+       RowBox[{
+        RowBox[{"DeclarePolynomialNonZero", "[", "d", "]"}], "[", 
+        RowBox[{
+         RowBox[{"DeclarePolynomialZero", "[", 
+          RowBox[{"d", "-", 
+           RowBox[{"Name", "[", 
+            RowBox[{"PlanarGraphs", "@", 
+             RowBox[{"loop", "[", "]"}]}], "]"}]}], "]"}], "[", "Trivalent", 
+         "]"}], "]"}]}], ";", 
+      RowBox[{"Trivalent", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"PlanarGraphs", "@", 
+            RowBox[{"strand", "[", "]"}]}], ",", 
+           RowBox[{"polygon", "[", "2", "]"}]}], "}"}], "]"}], "[", 
+        "Trivalent", "]"}]}], ";", 
+      RowBox[{"Trivalent", "=", 
+       RowBox[{
+        RowBox[{"DeclarePolynomialsZero", "[", 
+         RowBox[{"{", 
+          RowBox[{"d", "-", 
+           RowBox[{"Name", "[", 
+            RowBox[{"PlanarGraphs", "@", 
+             RowBox[{"theta", "[", "]"}]}], "]"}]}], "}"}], "]"}], "[", 
+        "Trivalent", "]"}]}], ";", 
+      RowBox[{"Trivalent", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"PlanarGraphs", "@", 
+            RowBox[{"trivalentVertex", "[", "]"}]}], ",", 
+           RowBox[{"polygon", "[", "3", "]"}]}], "}"}], "]"}], "[", 
+        "Trivalent", "]"}]}], ";", 
+      RowBox[{"Trivalent", "=", 
+       RowBox[{
+        RowBox[{"DeclarePolynomialsZero", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"d", " ", "t"}], "-", 
+           RowBox[{"Name", "[", 
+            RowBox[{"PlanarGraphs", "@", 
+             RowBox[{"tetrahedron", "[", "]"}]}], "]"}]}], "}"}], "]"}], "[", 
+        "Trivalent", "]"}]}], ";", "Trivalent"}]}], "\[IndentingNewLine]", 
+    "]"}]}]}]}], "Input",
+ CellChangeTimes->{{3.641372915737521*^9, 3.641372956243671*^9}, {
+  3.641442259233123*^9, 3.641442261599432*^9}, {3.641462594569065*^9, 
+  3.641462607333253*^9}}],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{
+   RowBox[{"TODO", " ", "Construct", " ", "Fib"}], ",", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"and", " ", "explain", " ", "why", " ", "we", " ", "assume", " ", 
+      SuperscriptBox["t", "2"]}], "-", "t", "-", "1"}], "\[NotEqual]", 
+    RowBox[{"0", " ", "in", " ", "what", " ", 
+     RowBox[{"follows", "."}]}]}]}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.641501930651746*^9, 3.641501946899279*^9}}],
+
+Cell[BoxData[{
+ RowBox[{"SO3Categories", ":=", 
+  RowBox[{"SO3Categories", "=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "SO3Categories", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"SO3Categories", "=", 
+       RowBox[{
+        RowBox[{"DeclarePolynomialNonZero", "[", 
+         RowBox[{
+          SuperscriptBox["t", "2"], "-", "t", "-", "1"}], "]"}], "[", 
+        RowBox[{
+         RowBox[{"DeclareDimensionBounds", "[", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "3"}], "}"}], 
+          "]"}], "[", "Trivalent", "]"}], "]"}]}], ";", 
+      RowBox[{"SO3Categories", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
+            RowBox[{
+            "SO3Categories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "4", ",", "0"}], "]"}], "~", 
+          "Join", "~", 
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
+            RowBox[{
+            "SO3Categories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "4", ",", "2"}], "]"}], "~", 
+          "Join", "~", 
+          RowBox[{"{", 
+           RowBox[{"polygon", "[", "4", "]"}], "}"}]}], "]"}], "[", 
+        "SO3Categories", "]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Length", "[", "SO3Categories", "]"}], "\[NotEqual]", "2"}], 
+        ",", 
+        RowBox[{
+         RowBox[{
+         "Print", "[", 
+          "\"\<Something went wrong while building the SO(3) categories!\>\"",
+           "]"}], ";", 
+         RowBox[{"Abort", "[", "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "Now", " ", "split", " ", "out", " ", "the", " ", "2", " ", "cases", 
+        " ", "carefully"}], " ", "*)"}], "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", "dMinusOne", "}"}], ",", 
+         RowBox[{"{", "SO3", "}"}]}], "}"}], "=", 
+       RowBox[{"{", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Cases", "[", 
+          RowBox[{"SO3Categories", ",", 
+           RowBox[{"s_", "/;", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Length", "[", 
+               RowBox[{
+                RowBox[{"IndependentDiagrams", "[", "4", "]"}], "[", "s", 
+                "]"}], "]"}], "\[Equal]", "3"}], "\[And]", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"d", "+", "1"}], ",", 
+                 RowBox[{
+                  RowBox[{"2", "t"}], "-", "3"}]}], "}"}], "]"}], "===", 
+              RowBox[{"{", 
+               RowBox[{"0", ",", "0"}], "}"}]}]}]}]}], "]"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Cases", "[", 
+          RowBox[{"SO3Categories", ",", "\[IndentingNewLine]", 
+           RowBox[{"s_", "/;", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Length", "[", 
+               RowBox[{
+                RowBox[{"IndependentDiagrams", "[", "4", "]"}], "[", "s", 
+                "]"}], "]"}], "\[Equal]", "3"}], "\[And]", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
+               RowBox[{
+                RowBox[{"2", "t"}], "-", "3"}], "]"}], "=!=", "0"}]}]}]}], 
+          "]"}]}], "\[IndentingNewLine]", "}"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{"dMinusOne", ",", "SO3"}], "}"}]}]}], "\[IndentingNewLine]", 
+    "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dMinusOne", ":=", 
+   RowBox[{"dMinusOne", "=", 
+    RowBox[{
+    "SO3Categories", "\[LeftDoubleBracket]", "1", 
+     "\[RightDoubleBracket]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SO3", ":=", 
+   RowBox[{"SO3", "=", 
+    RowBox[{
+    "SO3Categories", "\[LeftDoubleBracket]", "2", 
+     "\[RightDoubleBracket]"}]}]}], ";"}]}], "Input",
+ CellChangeTimes->{
+  3.641459038994296*^9, {3.641461623787282*^9, 3.6414616490026817`*^9}, {
+   3.641461825065963*^9, 3.641461835844819*^9}, {3.6414624794747267`*^9, 
+   3.641462579024472*^9}, {3.641462616597766*^9, 3.6414626239517603`*^9}, {
+   3.641462763556884*^9, 3.64146281290095*^9}, {3.641463004508328*^9, 
+   3.6414630047289467`*^9}, {3.6415018934491*^9, 3.641501928862713*^9}}],
+
+Cell[BoxData[
+ RowBox[{"CubicTrivalentCategories", ":=", 
+  RowBox[{"CubicTrivalentCategories", "=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"CubicTrivalentCategories", ",", "diagrams"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"CubicTrivalentCategories", "=", 
+       RowBox[{
+        RowBox[{"DeclarePolynomialsNonZero", "[", 
+         RowBox[{"{", 
+          RowBox[{"2", "-", "d", "-", "t", "+", 
+           RowBox[{"d", " ", "t"}]}], "}"}], "]"}], "[", 
+        RowBox[{
+         RowBox[{"DeclareDimensionBounds", "[", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4"}], "}"}], 
+          "]"}], "[", "Trivalent", "]"}], "]"}]}], ";", 
+      RowBox[{"diagrams", "=", 
+       RowBox[{
+        RowBox[{"ReducedDiagrams", "[", 
+         RowBox[{
+          RowBox[{
+          "CubicTrivalentCategories", "\[LeftDoubleBracket]", "1", 
+           "\[RightDoubleBracket]"}], ",", "4", ",", "0"}], "]"}], "~", 
+        "Join", "~", 
+        RowBox[{"ReducedDiagrams", "[", 
+         RowBox[{
+          RowBox[{
+          "CubicTrivalentCategories", "\[LeftDoubleBracket]", "1", 
+           "\[RightDoubleBracket]"}], ",", "4", ",", "2"}], "]"}], "~", 
+        "Join", "~", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"polygon", "[", "4", "]"}], ",", 
+          RowBox[{"PlanarGraphs", "@", 
+           RowBox[{"twoSquares", "[", "]"}]}]}], "}"}]}]}], ";", 
+      RowBox[{"CubicTrivalentCategories", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", "diagrams", "]"}], "[", 
+        "CubicTrivalentCategories", "]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Length", "[", "CubicTrivalentCategories", "]"}], 
+         "\[NotEqual]", "4"}], ",", 
+        RowBox[{
+         RowBox[{
+         "Print", "[", 
+          "\"\<Something went wrong while building the cubic trivalent \
+categories!\>\"", "]"}], ";", 
+         RowBox[{"Abort", "[", "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", "CubicTrivalentCategories"}]}], 
+    "\[IndentingNewLine]", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.641464276460454*^9, 3.641464283075357*^9}, 
+   3.641464698260182*^9, {3.641502032976528*^9, 3.641502040502906*^9}, {
+   3.641505614440804*^9, 3.641505614720086*^9}, {3.6415149256276283`*^9, 
+   3.6415149309010887`*^9}, {3.641514980668971*^9, 3.64151499431006*^9}, {
+   3.641515159536223*^9, 3.641515213182044*^9}}],
+
+Cell[BoxData[
+ RowBox[{"CubicTrivalentCategory", ":=", 
+  RowBox[{"CubicTrivalentCategory", "=", 
+   RowBox[{
+    RowBox[{"DeclarePolynomialNonZero", "[", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        SuperscriptBox["d", "2"], "-", "1"}], ")"}], 
+      RowBox[{"(", 
+       RowBox[{
+        SuperscriptBox["d", "2"], "-", "d", "-", "1"}], ")"}]}], "]"}], "[", 
+    "CubicTrivalentCategories", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6415150372482347`*^9, 3.641515059166243*^9}, {
+  3.641515216444886*^9, 3.641515222964799*^9}, {3.641515329384267*^9, 
+  3.641515338552021*^9}}],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "ABACategories", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ABACategories", ":=", 
+  RowBox[{"ABACategories", "=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "ABACategories", "}"}], ",", 
+     RowBox[{
+      RowBox[{"ABACategories", "=", 
+       RowBox[{
+        RowBox[{"DeclareDimensionBounds", "[", 
+         RowBox[{"{", 
+          RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "8"}], 
+          "}"}], "]"}], "[", "CubicTrivalentCategory", "]"}]}], ";", 
+      RowBox[{"ABACategories", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
+            RowBox[{
+            "ABACategories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "5", ",", "1"}], "]"}], "~", 
+          "Join", "~", 
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
+            RowBox[{
+            "ABACategories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "5", ",", "3"}], "]"}], "~", 
+          "Join", "~", 
+          RowBox[{"{", 
+           RowBox[{"polygon", "[", "5", "]"}], "}"}]}], "]"}], "[", 
+        "ABACategories", "]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", "ABACategories"}]}], "\[IndentingNewLine]", 
+    "]"}]}]}]}], "Input",
+ CellChangeTimes->{{3.641446896789958*^9, 3.6414469014255447`*^9}, {
+  3.641464724819446*^9, 3.641464730793577*^9}, {3.641464777748125*^9, 
+  3.641464779385914*^9}, {3.641505042633699*^9, 3.6415050441320972`*^9}, {
+  3.641505710026083*^9, 3.641505710892991*^9}, {3.6415128028148623`*^9, 
+  3.641512802869955*^9}, {3.641515367799028*^9, 3.641515390962347*^9}, {
+  3.641515434510562*^9, 3.641515453758073*^9}, {3.6415162104986553`*^9, 
+  3.6415162151472*^9}, {3.641516247697321*^9, 3.641516249472855*^9}}],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "G2Categories", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"G2Categories", ":=", 
+  RowBox[{"G2Categories", "=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "G2Categories", "}"}], ",", 
+     RowBox[{
+      RowBox[{"G2Categories", "=", 
+       RowBox[{
+        RowBox[{"DeclarePolynomialNonZero", "[", 
+         RowBox[{
+          SuperscriptBox["t", "2"], "-", "t", "-", "1"}], "]"}], "[", 
+        RowBox[{
+         RowBox[{"DeclareDimensionBounds", "[", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], 
+           "}"}], "]"}], "[", "CubicTrivalentCategory", "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"G2Categories", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
+            RowBox[{
+            "G2Categories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "5", ",", "1"}], "]"}], "~", 
+          "Join", "~", 
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
+            RowBox[{
+            "G2Categories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "5", ",", "3"}], "]"}], "~", 
+          "Join", "~", 
+          RowBox[{"{", 
+           RowBox[{"polygon", "[", "5", "]"}], "}"}]}], "]"}], "[", 
+        "G2Categories", "]"}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", "G2Categories"}]}], "\[IndentingNewLine]", 
+    "]"}]}]}]}], "Input",
+ CellChangeTimes->{{3.641515470910804*^9, 3.641515478320644*^9}, {
+  3.6415156273287563`*^9, 3.641515674654346*^9}, {3.6415162512654667`*^9, 
+  3.641516257921082*^9}}]
+},
+WindowSize->{824, 851},
+WindowMargins->{{4, Automatic}, {Automatic, 0}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[400, 13, 3276, 86, 301, "Input"],
+Cell[3679, 101, 457, 10, 31, "Input"],
+Cell[4139, 113, 4569, 115, 402, "Input"],
+Cell[8711, 230, 2557, 61, 267, "Input"],
+Cell[11271, 293, 592, 15, 69, "Input"],
+Cell[11866, 310, 1880, 41, 182, "Input"],
+Cell[13749, 353, 1732, 42, 214, "Input"]
+}
+]
+*)
+
