@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[    220755,       5409]
-NotebookOptionsPosition[    215339,       5268]
-NotebookOutlinePosition[    215678,       5283]
-CellTagsIndexPosition[    215635,       5280]
+NotebookDataLength[    221047,       5412]
+NotebookOptionsPosition[    215631,       5271]
+NotebookOutlinePosition[    215970,       5286]
+CellTagsIndexPosition[    215927,       5283]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -3109,70 +3109,72 @@ diagram is both independent and dependent!\>\"", "]"}], ";",
                 "@", 
                 RowBox[{"reducibleDiagramU$qmark", "[", "d", "]"}]}], ",", 
                "\[IndentingNewLine]", 
-               RowBox[{"{", "s", "}"}]}], "]"}], ";", "\[IndentingNewLine]", 
-             RowBox[{"If", "[", 
-              RowBox[{
-               RowBox[{"!", "secondPass"}], ",", "\[IndentingNewLine]", 
-               RowBox[{"Print", "[", 
-                RowBox[{"\"\<We now consider the diagram \>\"", ",", 
-                 RowBox[{"d", "@", 
-                  RowBox[{"toString", "[", "]"}]}], ",", 
-                 RowBox[{"If", "[", 
-                  RowBox[{
-                  "insistIndependent", ",", 
-                   "\"\<, insisting that it is independent.\>\"", ",", 
-                   RowBox[{"If", "[", 
+               RowBox[{"{", "s", "}"}], ",", "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"If", "[", 
+                 RowBox[{
+                  RowBox[{"!", "secondPass"}], ",", "\[IndentingNewLine]", 
+                  RowBox[{"Print", "[", 
+                   RowBox[{"\"\<We now consider the diagram \>\"", ",", 
+                    RowBox[{"d", "@", 
+                    RowBox[{"toString", "[", "]"}]}], ",", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    "insistIndependent", ",", 
+                    "\"\<, insisting that it is independent.\>\"", ",", 
+                    RowBox[{"If", "[", 
                     RowBox[{
                     "insistDependent", ",", 
                     "\"\<, insisting that it is dependent.\>\"", ",", 
                     "\"\<.\>\""}], "]"}]}], "]"}]}], "]"}], ",", 
-               "\[IndentingNewLine]", 
-               RowBox[{"Print", "[", 
-                RowBox[{
-                "\"\<We return to considering the diagram \>\"", ",", "d", 
-                 ",", "\"\<.\>\""}], "]"}]}], "\[IndentingNewLine]", "]"}], 
-             ";", "\[IndentingNewLine]", 
-             RowBox[{"pairings", "=", 
-              RowBox[{
-               RowBox[{
-                RowBox[{
-                "ComputePairingsWithReducingRelations", "[", "d", "]"}], "[", 
-                "s", "]"}], "~", "Join", "~", 
-               RowBox[{
-                RowBox[{
-                "ComputePairingsWithNonReducingRelations", "[", "d", "]"}], 
-                "[", "s", "]"}]}]}], ";", "\[IndentingNewLine]", 
-             RowBox[{"Print", "[", 
-              RowBox[{"\"\<pairings: \>\"", ",", "pairings"}], "]"}], ";", 
-             "\[IndentingNewLine]", 
-             RowBox[{"If", "[", 
-              RowBox[{
-               RowBox[{
-                RowBox[{"Length", "[", "pairings", "]"}], ">", "0"}], ",", 
-               "\[IndentingNewLine]", 
-               RowBox[{
-                RowBox[{"ConsiderDiagram", "[", 
-                 RowBox[{"d", ",", 
-                  RowBox[{"\"\<SecondPass\>\"", "\[Rule]", "True"}], ",", 
-                  RowBox[{
-                  "\"\<InsistIndependent\>\"", "\[Rule]", 
-                   "insistIndependent"}], ",", 
-                  RowBox[{
-                  "\"\<InsistDependent\>\"", "\[Rule]", "insistDependent"}]}],
-                  "]"}], "[", 
-                RowBox[{
-                 RowBox[{"DeclarePolynomialsZero", "[", 
-                  RowBox[{"Numerator", "[", 
-                   RowBox[{"Together", "[", "pairings", "]"}], "]"}], "]"}], 
-                 "[", "s", "]"}], "]"}], ",", "\[IndentingNewLine]", 
-               RowBox[{"If", "[", 
-                RowBox[{
-                 RowBox[{"!", "insistDependent"}], ",", "\[IndentingNewLine]", 
-                 RowBox[{"If", "[", 
-                  RowBox[{
-                   RowBox[{"!", "insistIndependent"}], ",", 
-                   "\[IndentingNewLine]", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{"Print", "[", 
                    RowBox[{
+                   "\"\<We return to considering the diagram \>\"", ",", "d", 
+                    ",", "\"\<.\>\""}], "]"}]}], "\[IndentingNewLine]", "]"}],
+                 ";", "\[IndentingNewLine]", 
+                RowBox[{"pairings", "=", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{
+                   "ComputePairingsWithReducingRelations", "[", "d", "]"}], 
+                   "[", "s", "]"}], "~", "Join", "~", 
+                  RowBox[{
+                   RowBox[{
+                   "ComputePairingsWithNonReducingRelations", "[", "d", "]"}],
+                    "[", "s", "]"}]}]}], ";", "\[IndentingNewLine]", 
+                RowBox[{"Print", "[", 
+                 RowBox[{"\"\<pairings: \>\"", ",", "pairings"}], "]"}], ";", 
+                "\[IndentingNewLine]", 
+                RowBox[{"If", "[", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"Length", "[", "pairings", "]"}], ">", "0"}], ",", 
+                  "\[IndentingNewLine]", 
+                  RowBox[{
+                   RowBox[{"ConsiderDiagram", "[", 
+                    RowBox[{"d", ",", 
+                    RowBox[{"\"\<SecondPass\>\"", "\[Rule]", "True"}], ",", 
+                    RowBox[{
+                    "\"\<InsistIndependent\>\"", "\[Rule]", 
+                    "insistIndependent"}], ",", 
+                    RowBox[{
+                    "\"\<InsistDependent\>\"", "\[Rule]", 
+                    "insistDependent"}]}], "]"}], "[", 
+                   RowBox[{
+                    RowBox[{"DeclarePolynomialsZero", "[", 
+                    RowBox[{"Numerator", "[", 
+                    RowBox[{"Together", "[", "pairings", "]"}], "]"}], "]"}], 
+                    "[", "s", "]"}], "]"}], ",", "\[IndentingNewLine]", 
+                  RowBox[{"If", "[", 
+                   RowBox[{
+                    RowBox[{"!", "insistDependent"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{"!", "insistIndependent"}], ",", 
+                    "\[IndentingNewLine]", 
+                    RowBox[{
                     RowBox[{
                     "Print", "[", 
                     "\"\<We consider separately the possibilities that it is \
@@ -3185,16 +3187,17 @@ linearly independent or linearly dependent.\>\"", "]"}], ";",
                     RowBox[{
                     RowBox[{"ConsiderDependentDiagram", "[", "d", "]"}], "[", 
                     "s", "]"}]}]}], ",", "\[IndentingNewLine]", 
-                   RowBox[{
+                    RowBox[{
                     RowBox[{"ConsiderIndependentDiagram", "[", "d", "]"}], 
                     "[", "s", "]"}]}], "\[IndentingNewLine]", "]"}], ",", 
-                 "\[IndentingNewLine]", 
-                 RowBox[{
-                  RowBox[{"ConsiderDependentDiagram", "[", "d", "]"}], "[", 
-                  "s", "]"}]}], "\[IndentingNewLine]", "]"}]}], 
-              "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", 
-           "]"}]}]}], "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
-      "]"}]}]}], "\[IndentingNewLine]", "]"}]}]], "Input",
+                    "\[IndentingNewLine]", 
+                    RowBox[{
+                    RowBox[{"ConsiderDependentDiagram", "[", "d", "]"}], "[", 
+                    "s", "]"}]}], "\[IndentingNewLine]", "]"}]}], 
+                 "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", 
+              "]"}]}]}], "\[IndentingNewLine]", "]"}]}]}], 
+        "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",
  CellChangeTimes->{{3.621068196430439*^9, 3.6210682301294727`*^9}, {
    3.6210694056502666`*^9, 3.621069575852037*^9}, {3.621069617289014*^9, 
    3.6210696204062233`*^9}, 3.6210696823972597`*^9, {3.621069728519867*^9, 
@@ -3221,7 +3224,7 @@ linearly independent or linearly dependent.\>\"", "]"}], ";",
    3.641377225099921*^9, 3.64137722557605*^9}, {3.6414416820384207`*^9, 
    3.641441693541503*^9}, {3.641452022603973*^9, 3.641452023954932*^9}, {
    3.6414543456865273`*^9, 3.6414544444090357`*^9}, {3.64146150121657*^9, 
-   3.641461506846863*^9}}],
+   3.641461506846863*^9}, {3.641501150536818*^9, 3.641501154194331*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -5360,56 +5363,56 @@ Cell[111455, 2748, 2377, 65, 133, "Input"],
 Cell[113835, 2815, 2236, 62, 121, "Input"],
 Cell[116074, 2879, 1499, 42, 44, "Input"],
 Cell[117576, 2923, 663, 15, 43, "Input"],
-Cell[118242, 2940, 12982, 283, 644, "Input"],
-Cell[131227, 3225, 1285, 32, 133, "Input"],
-Cell[132515, 3259, 425, 12, 27, "Input"],
-Cell[132943, 3273, 473, 10, 27, "Input"],
-Cell[133419, 3285, 142, 2, 27, "Input"],
-Cell[133564, 3289, 293, 6, 27, "Input"],
-Cell[133860, 3297, 476, 12, 27, "Input"],
-Cell[134339, 3311, 256, 6, 27, "Input"],
-Cell[134598, 3319, 1893, 51, 122, "Input"],
-Cell[136494, 3372, 305, 6, 27, "Input"],
-Cell[136802, 3380, 348, 10, 27, "Input"],
-Cell[137153, 3392, 2104, 56, 122, "Input"],
-Cell[139260, 3450, 3234, 71, 163, "Input"],
-Cell[142497, 3523, 2401, 55, 118, "Input"],
-Cell[144901, 3580, 13761, 284, 628, "Input"],
-Cell[158665, 3866, 2195, 57, 133, "Input"],
-Cell[160863, 3925, 12585, 267, 555, "Input"],
-Cell[173451, 4194, 251, 6, 27, "Input"],
+Cell[118242, 2940, 13274, 286, 659, "Input"],
+Cell[131519, 3228, 1285, 32, 133, "Input"],
+Cell[132807, 3262, 425, 12, 27, "Input"],
+Cell[133235, 3276, 473, 10, 27, "Input"],
+Cell[133711, 3288, 142, 2, 27, "Input"],
+Cell[133856, 3292, 293, 6, 27, "Input"],
+Cell[134152, 3300, 476, 12, 27, "Input"],
+Cell[134631, 3314, 256, 6, 27, "Input"],
+Cell[134890, 3322, 1893, 51, 122, "Input"],
+Cell[136786, 3375, 305, 6, 27, "Input"],
+Cell[137094, 3383, 348, 10, 27, "Input"],
+Cell[137445, 3395, 2104, 56, 122, "Input"],
+Cell[139552, 3453, 3234, 71, 163, "Input"],
+Cell[142789, 3526, 2401, 55, 118, "Input"],
+Cell[145193, 3583, 13761, 284, 628, "Input"],
+Cell[158957, 3869, 2195, 57, 133, "Input"],
+Cell[161155, 3928, 12585, 267, 555, "Input"],
+Cell[173743, 4197, 251, 6, 27, "Input"],
 Cell[CellGroupData[{
-Cell[173727, 4204, 588, 17, 27, "Input"],
-Cell[174318, 4223, 865, 15, 23, "Message"],
-Cell[175186, 4240, 865, 15, 23, "Message"]
+Cell[174019, 4207, 588, 17, 27, "Input"],
+Cell[174610, 4226, 865, 15, 23, "Message"],
+Cell[175478, 4243, 865, 15, 23, "Message"]
 }, Open  ]],
-Cell[176066, 4258, 332, 8, 27, "Input"],
-Cell[176401, 4268, 475, 13, 27, "Input"],
-Cell[176879, 4283, 2222, 54, 103, "Input"],
-Cell[179104, 4339, 362, 9, 27, "Input"],
-Cell[179469, 4350, 438, 13, 27, "Input"],
-Cell[179910, 4365, 991, 29, 27, "Input"],
-Cell[180904, 4396, 1405, 43, 58, "Input"],
-Cell[182312, 4441, 711, 20, 27, "Input"],
-Cell[183026, 4463, 11674, 259, 583, "Input"],
-Cell[194703, 4724, 140, 3, 27, "Input"],
-Cell[194846, 4729, 4540, 107, 133, "Input"],
-Cell[199389, 4838, 1057, 26, 73, "Input"],
-Cell[200449, 4866, 286, 7, 27, "Input"],
-Cell[200738, 4875, 577, 15, 43, "Input"],
-Cell[201318, 4892, 336, 8, 27, "Input"],
-Cell[201657, 4902, 1625, 36, 88, "Input"],
-Cell[203285, 4940, 1944, 49, 88, "Input"],
-Cell[205232, 4991, 1542, 38, 73, "Input"],
-Cell[206777, 5031, 1685, 41, 88, "Input"],
-Cell[208465, 5074, 1306, 32, 88, "Input"],
-Cell[209774, 5108, 1539, 37, 58, "Input"],
-Cell[211316, 5147, 249, 7, 27, "Input"],
-Cell[211568, 5156, 453, 12, 27, "Input"],
-Cell[212024, 5170, 579, 17, 27, "Input"],
-Cell[212606, 5189, 1392, 36, 73, "Input"],
-Cell[214001, 5227, 548, 15, 43, "Input"],
-Cell[214552, 5244, 771, 21, 27, "Input"]
+Cell[176358, 4261, 332, 8, 27, "Input"],
+Cell[176693, 4271, 475, 13, 27, "Input"],
+Cell[177171, 4286, 2222, 54, 103, "Input"],
+Cell[179396, 4342, 362, 9, 27, "Input"],
+Cell[179761, 4353, 438, 13, 27, "Input"],
+Cell[180202, 4368, 991, 29, 27, "Input"],
+Cell[181196, 4399, 1405, 43, 58, "Input"],
+Cell[182604, 4444, 711, 20, 27, "Input"],
+Cell[183318, 4466, 11674, 259, 583, "Input"],
+Cell[194995, 4727, 140, 3, 27, "Input"],
+Cell[195138, 4732, 4540, 107, 133, "Input"],
+Cell[199681, 4841, 1057, 26, 73, "Input"],
+Cell[200741, 4869, 286, 7, 27, "Input"],
+Cell[201030, 4878, 577, 15, 43, "Input"],
+Cell[201610, 4895, 336, 8, 27, "Input"],
+Cell[201949, 4905, 1625, 36, 88, "Input"],
+Cell[203577, 4943, 1944, 49, 88, "Input"],
+Cell[205524, 4994, 1542, 38, 73, "Input"],
+Cell[207069, 5034, 1685, 41, 88, "Input"],
+Cell[208757, 5077, 1306, 32, 88, "Input"],
+Cell[210066, 5111, 1539, 37, 58, "Input"],
+Cell[211608, 5150, 249, 7, 27, "Input"],
+Cell[211860, 5159, 453, 12, 27, "Input"],
+Cell[212316, 5173, 579, 17, 27, "Input"],
+Cell[212898, 5192, 1392, 36, 73, "Input"],
+Cell[214293, 5230, 548, 15, 43, "Input"],
+Cell[214844, 5247, 771, 21, 27, "Input"]
 }, Open  ]]
 }
 ]
