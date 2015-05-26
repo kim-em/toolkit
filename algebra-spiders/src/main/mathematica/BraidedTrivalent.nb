@@ -10,15 +10,16 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     18740,        467]
-NotebookOptionsPosition[     18315,        449]
-NotebookOutlinePosition[     18674,        465]
-CellTagsIndexPosition[     18631,        462]
+NotebookDataLength[     20820,        515]
+NotebookOptionsPosition[     20353,        496]
+NotebookOutlinePosition[     20713,        512]
+CellTagsIndexPosition[     20670,        509]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell[BoxData[
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "BraidedTrivalent", "]"}], "\[IndentingNewLine]", 
  RowBox[{"BraidedTrivalent", ":=", 
   RowBox[{"BraidedTrivalent", "=", 
    RowBox[{"Module", "[", 
@@ -44,47 +45,40 @@ Cell[BoxData[
            RowBox[{"h", ",", "t", ",", "d", ",", "z"}], "}"}]}], "]"}], 
         "]"}]}], ";", "\[IndentingNewLine]", 
       RowBox[{"(*", " ", 
+       RowBox[{"0", "-", 
+        RowBox[{"boundary", " ", "points"}]}], " ", "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"BraidedTrivalent", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{"{", 
+          RowBox[{"PlanarGraphs", "@", 
+           RowBox[{"empty", "[", "]"}]}], "}"}], "]"}], "[", 
+        "BraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
        RowBox[{"1", "-", 
         RowBox[{"boundary", " ", "point"}]}], " ", "*)"}], 
       "\[IndentingNewLine]", 
       RowBox[{"BraidedTrivalent", "=", 
        RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"polygon", "[", "1", "]"}], "]"}], "[", "BraidedTrivalent", 
-        "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{"{", 
+          RowBox[{"polygon", "[", "1", "]"}], "}"}], "]"}], "[", 
+        "BraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
       RowBox[{"(*", " ", 
        RowBox[{"2", "-", 
         RowBox[{"boundary", " ", "points"}]}], " ", "*)"}], 
       "\[IndentingNewLine]", 
       RowBox[{"BraidedTrivalent", "=", 
        RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{
-          RowBox[{"PlanarGraphs", "@", 
-           RowBox[{"strand", "[", "]"}]}], ",", 
-          RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}], 
-        "[", "BraidedTrivalent", "]"}]}], ";", 
-      RowBox[{"BraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"DeclarePolynomialsZero", "[", 
-         RowBox[{"{", 
+        RowBox[{"DeclarePolynomialNonZero", "[", "d", "]"}], "[", 
+        RowBox[{
+         RowBox[{"DeclarePolynomialZero", "[", 
           RowBox[{"d", "-", 
            RowBox[{"Name", "[", 
             RowBox[{"PlanarGraphs", "@", 
-             RowBox[{"loop", "[", "]"}]}], "]"}]}], "}"}], "]"}], "[", 
-        "BraidedTrivalent", "]"}]}], ";", 
-      RowBox[{"BraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"PlanarGraphs", "@", 
-          RowBox[{"positiveTwist", "[", "]"}]}], "]"}], "[", 
-        "BraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"BraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"PlanarGraphs", "@", 
-          RowBox[{"negativeTwist", "[", "]"}]}], "]"}], "[", 
-        "BraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
+             RowBox[{"loop", "[", "]"}]}], "]"}]}], "]"}], "[", 
+         "BraidedTrivalent", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
       RowBox[{"BraidedTrivalent", "=", 
        RowBox[{
         RowBox[{"DeclarePolynomialsZero", "[", 
@@ -97,11 +91,6 @@ Cell[BoxData[
          "]"}], "[", "BraidedTrivalent", "]"}]}], ";", 
       RowBox[{"BraidedTrivalent", "=", 
        RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"polygon", "[", "2", "]"}], "]"}], "[", "BraidedTrivalent", 
-        "]"}]}], ";", 
-      RowBox[{"BraidedTrivalent", "=", 
-       RowBox[{
         RowBox[{"DeclarePolynomialsZero", "[", 
          RowBox[{"{", 
           RowBox[{"d", "-", 
@@ -109,35 +98,23 @@ Cell[BoxData[
             RowBox[{"PlanarGraphs", "@", 
              RowBox[{"theta", "[", "]"}]}], "]"}]}], "}"}], "]"}], "[", 
         "BraidedTrivalent", "]"}]}], ";", 
+      RowBox[{"BraidedTrivalent", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"PlanarGraphs", "@", 
+            RowBox[{"strand", "[", "]"}]}], ",", 
+           RowBox[{"PlanarGraphs", "@", 
+            RowBox[{"positiveTwist", "[", "]"}]}], ",", 
+           RowBox[{"PlanarGraphs", "@", 
+            RowBox[{"negativeTwist", "[", "]"}]}], ",", 
+           RowBox[{"polygon", "[", "2", "]"}]}], "}"}], "]"}], "[", 
+        "BraidedTrivalent", "]"}]}], ";", 
       RowBox[{"(*", " ", 
        RowBox[{"3", "-", 
         RowBox[{"boundary", " ", "points"}]}], " ", "*)"}], 
       "\[IndentingNewLine]", 
-      RowBox[{"BraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{
-          RowBox[{"PlanarGraphs", "@", 
-           RowBox[{"trivalentVertex", "[", "]"}]}], ",", 
-          RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}], 
-        "[", "BraidedTrivalent", "]"}]}], ";", 
-      RowBox[{"BraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"polygon", "[", "3", "]"}], "]"}], "[", "BraidedTrivalent", 
-        "]"}]}], ";", 
-      RowBox[{"BraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"PlanarGraphs", "@", 
-          RowBox[{"positiveTwistedTrivalentVertex", "[", "]"}]}], "]"}], "[", 
-        "BraidedTrivalent", "]"}]}], ";", 
-      RowBox[{"BraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"PlanarGraphs", "@", 
-          RowBox[{"negativeTwistedTrivalentVertex", "[", "]"}]}], "]"}], "[", 
-        "BraidedTrivalent", "]"}]}], ";", 
       RowBox[{"BraidedTrivalent", "=", 
        RowBox[{
         RowBox[{"DeclarePolynomialsZero", "[", 
@@ -147,7 +124,20 @@ Cell[BoxData[
            RowBox[{"Name", "[", 
             RowBox[{"PlanarGraphs", "@", 
              RowBox[{"tetrahedron", "[", "]"}]}], "]"}]}], "}"}], "]"}], "[", 
-        "BraidedTrivalent", "]"}]}], ";", 
+        "BraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"BraidedTrivalent", "=", 
+       RowBox[{
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"PlanarGraphs", "@", 
+            RowBox[{"trivalentVertex", "[", "]"}]}], ",", 
+           RowBox[{"polygon", "[", "3", "]"}], ",", 
+           RowBox[{"PlanarGraphs", "@", 
+            RowBox[{"positiveTwistedTrivalentVertex", "[", "]"}]}], ",", 
+           RowBox[{"PlanarGraphs", "@", 
+            RowBox[{"negativeTwistedTrivalentVertex", "[", "]"}]}]}], "}"}], 
+         "]"}], "[", "BraidedTrivalent", "]"}]}], ";", 
       RowBox[{"(*", " ", 
        RowBox[{"4", "-", 
         RowBox[{"boundary", " ", "points"}]}], " ", "*)"}], 
@@ -185,8 +175,17 @@ Cell[BoxData[
       "\[IndentingNewLine]", 
       RowBox[{"BraidedTrivalent", "=", 
        RowBox[{
+        RowBox[{"DeclarePolynomialsZero", "[", 
+         RowBox[{"{", 
+          RowBox[{"h", "-", 
+           RowBox[{"Name", "[", 
+            RowBox[{"PlanarGraphs", "@", 
+             RowBox[{"hopfLink", "[", "]"}]}], "]"}]}], "}"}], "]"}], "[", 
+        "BraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"BraidedTrivalent", "=", 
+       RowBox[{
         RowBox[{"DeclarePolynomialEitherZeroOrNonZero", "[", "z", "]"}], "[", 
-        "BraidedTrivalent", "]"}]}], ";", 
+        "BraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
       RowBox[{"(*", " ", 
        RowBox[{"5", "-", 
         RowBox[{"boundary", " ", "points"}]}], " ", "*)"}], 
@@ -220,7 +219,7 @@ Cell[BoxData[
                RowBox[{"Reidemeister4b", "[", "]"}]}], ",", "1"}], "]"}]}], 
            "}"}], "]"}], "]"}], "[", "BraidedTrivalent", "]"}]}], ";", 
       "\[IndentingNewLine]", "BraidedTrivalent"}]}], "\[IndentingNewLine]", 
-    "]"}]}]}]], "Input",
+    "]"}]}]}]}], "Input",
  CellChangeTimes->{{3.641353597315523*^9, 3.641353644329657*^9}, {
    3.641353883288809*^9, 3.641353883320471*^9}, {3.641354319026155*^9, 
    3.641354367601969*^9}, {3.641355165755567*^9, 3.6413551674240828`*^9}, {
@@ -236,7 +235,9 @@ Cell[BoxData[
    3.641367271734473*^9, 3.641367279694028*^9}, {3.641367311572377*^9, 
    3.641367311947414*^9}, 3.641367707605783*^9, {3.641368046162134*^9, 
    3.6413680543091497`*^9}, {3.6413694526679173`*^9, 3.641369470513915*^9}, {
-   3.6413793627406893`*^9, 3.641379400032186*^9}}],
+   3.6413793627406893`*^9, 3.641379400032186*^9}, {3.641516370983005*^9, 
+   3.6415165656893787`*^9}, {3.6415180184114647`*^9, 3.641518025116322*^9}, {
+   3.641518635221932*^9, 3.641518641607397*^9}}],
 
 Cell[BoxData[
  RowBox[{"SymmetricTrivalent", ":=", 
@@ -286,169 +287,215 @@ Cell[BoxData[
   3.641379439939431*^9}}],
 
 Cell[BoxData[
- RowBox[{"BraidedSO3", ":=", 
-  RowBox[{"BraidedSO3", "=", 
+ RowBox[{"BraidedSO3Categories", ":=", 
+  RowBox[{"BraidedSO3Categories", "=", 
    RowBox[{"Module", "[", 
     RowBox[{
-     RowBox[{"{", "BraidedSO3", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", "BraidedSO3Categories", "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{
-      RowBox[{"BraidedSO3", "=", 
+      RowBox[{"BraidedSO3Categories", "=", 
        RowBox[{
-        RowBox[{"DeclareDimensionBounds", "[", 
-         RowBox[{"{", 
-          RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "3"}], "}"}], "]"}],
-         "[", "BraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"BraidedSO3", "=", 
+        RowBox[{"DeclarePolynomialNonZero", "[", 
+         RowBox[{
+          SuperscriptBox["t", "2"], "-", "t", "-", "1"}], "]"}], "[", 
+        RowBox[{
+         RowBox[{"DeclareDimensionBounds", "[", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "3"}], "}"}], 
+          "]"}], "[", "BraidedTrivalent", "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"BraidedSO3Categories", "=", 
        RowBox[{
         RowBox[{"ConsiderDiagrams", "[", 
-         RowBox[{
-          RowBox[{
-           RowBox[{"ReducedDiagrams", "[", 
-            RowBox[{
-             RowBox[{
-             "BraidedSO3", "\[LeftDoubleBracket]", "1", 
-              "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "0"}], 
-            "]"}], "~", "Join", "~", 
-           RowBox[{"Take", "[", 
-            RowBox[{
-             RowBox[{"ReducedDiagrams", "[", 
-              RowBox[{
-               RowBox[{
-               "BraidedSO3", "\[LeftDoubleBracket]", "1", 
-                "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "2"}], 
-              "]"}], ",", "1"}], "]"}]}], ",", 
-          RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}], 
-        "[", "BraidedSO3", "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"BraidedSO3", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
          RowBox[{
           RowBox[{"ReducedDiagrams", "[", 
            RowBox[{
             RowBox[{
-            "BraidedSO3", "\[LeftDoubleBracket]", "1", 
+            "BraidedSO3Categories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "0"}], "]"}],
+           "~", "Join", "~", 
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
+            RowBox[{
+            "BraidedSO3Categories", "\[LeftDoubleBracket]", "1", 
              "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "2"}], "]"}],
-           "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], "]"}], "[",
-         "BraidedSO3", "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"BraidedSO3", "=", 
+           "~", "Join", "~", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"polygon", "[", "4", "]"}], ",", 
+            RowBox[{"PlanarGraphs", "@", 
+             RowBox[{"crossing", "[", "]"}]}]}], "}"}]}], "]"}], "[", 
+        "BraidedSO3Categories", "]"}]}], ";", "\[IndentingNewLine]", 
+      "BraidedSO3Categories"}]}], "\[IndentingNewLine]", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.641379495716503*^9, 3.641379728842643*^9}, {
+  3.641518428980837*^9, 3.6415184771782303`*^9}, {3.6415188068414803`*^9, 
+  3.641518823067256*^9}}],
+
+Cell[BoxData[
+ RowBox[{"CubicBraidedTrivalentCategories", ":=", 
+  RowBox[{"CubicBraidedTrivalentCategories", "=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "CubicBraidedTrivalentCategories", "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"CubicBraidedTrivalentCategories", "=", 
        RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"polygon", "[", "4", "]"}], "]"}], "[", "BraidedSO3", 
-        "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"BraidedSO3", "=", 
+        RowBox[{"DeclarePolynomialsNonZero", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"2", "-", "d", "-", "t", "+", 
+            RowBox[{"d", " ", "t"}]}], ",", 
+           RowBox[{"d", "+", "t", "+", 
+            RowBox[{"d", " ", "t"}]}]}], "}"}], "]"}], "[", 
+        RowBox[{
+         RowBox[{"DeclareDimensionBounds", "[", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4"}], "}"}], 
+          "]"}], "[", "BraidedTrivalent", "]"}], "]"}]}], ";", 
+      RowBox[{"CubicBraidedTrivalentCategories", "=", 
        RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"PlanarGraphs", "@", 
-          RowBox[{"crossing", "[", "]"}]}], "]"}], "[", "BraidedSO3", "]"}]}],
-       ";", "\[IndentingNewLine]", "BraidedSO3"}]}], "\[IndentingNewLine]", 
+        RowBox[{"ConsiderDiagrams", "[", 
+         RowBox[{
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
+            RowBox[{
+            "CubicBraidedTrivalentCategories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "0"}], "]"}],
+           "~", "Join", "~", 
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
+            RowBox[{
+            "CubicBraidedTrivalentCategories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "2"}], "]"}],
+           "~", "Join", "~", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"polygon", "[", "4", "]"}], ",", 
+            RowBox[{"PlanarGraphs", "@", 
+             RowBox[{"crossing", "[", "]"}]}]}], "}"}]}], "]"}], "[", 
+        "CubicBraidedTrivalentCategories", "]"}]}], ";", 
+      "CubicBraidedTrivalentCategories"}]}], "\[IndentingNewLine]", 
     "]"}]}]}]], "Input",
- CellChangeTimes->{{3.641379495716503*^9, 3.641379728842643*^9}}],
+ CellChangeTimes->{{3.6415191229682493`*^9, 3.641519175886633*^9}, {
+  3.641519241361096*^9, 3.6415192709238*^9}}],
 
 Cell[BoxData[
  RowBox[{"CubicBraidedTrivalent", ":=", 
   RowBox[{"CubicBraidedTrivalent", "=", 
-   RowBox[{"Module", "[", 
-    RowBox[{
-     RowBox[{"{", "CubicBraidedTrivalent", "}"}], ",", "\[IndentingNewLine]", 
-     
-     RowBox[{
-      RowBox[{"CubicBraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"DeclareDimensionBounds", "[", 
-         RowBox[{"{", 
-          RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4"}], "}"}], "]"}],
-         "[", "BraidedTrivalent", "]"}]}], ";", 
-      RowBox[{"CubicBraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagrams", "[", 
+   RowBox[{"Cases", "[", 
+    RowBox[{"CubicBraidedTrivalentCategories", ",", 
+     RowBox[{"s_", "/;", 
+      RowBox[{
+       RowBox[{"s", "\[LeftDoubleBracket]", 
+        RowBox[{"2", ",", "2"}], "\[RightDoubleBracket]"}], "===", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "1"}], "-", "t", "+", 
+         SuperscriptBox["t", "2"], "+", 
+         RowBox[{"2", " ", "z"}], "-", 
+         RowBox[{"2", " ", "d", " ", "z"}], "-", 
+         RowBox[{"2", " ", "t", " ", "z"}], "-", 
+         SuperscriptBox["z", "2"], "+", 
+         RowBox[{"t", " ", 
+          SuperscriptBox["z", "2"]}], "-", 
          RowBox[{
-          RowBox[{
-           RowBox[{"FromScalaObject", "[", 
-            RowBox[{
-             RowBox[{"ReducedDiagrams", "[", 
-              RowBox[{
-               RowBox[{
-               "CubicBraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-                "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "0"}], 
-              "]"}], ",", "1"}], "]"}], "~", "Join", "~", 
-           RowBox[{"FromScalaObject", "[", 
-            RowBox[{
-             RowBox[{"ReducedDiagrams", "[", 
-              RowBox[{
-               RowBox[{
-               "CubicBraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-                "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "2"}], 
-              "]"}], ",", "1"}], "]"}]}], ",", 
-          RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}], 
-        "[", "CubicBraidedTrivalent", "]"}]}], ";", 
-      RowBox[{"CubicBraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"polygon", "[", "4", "]"}], "]"}], "[", 
-        "CubicBraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"CubicBraidedTrivalent", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"PlanarGraphs", "@", 
-          RowBox[{"crossing", "[", "]"}]}], "]"}], "[", 
-        "CubicBraidedTrivalent", "]"}]}], ";", "\[IndentingNewLine]", 
-      "CubicBraidedTrivalent"}]}], "\[IndentingNewLine]", "]"}]}]}]], "Input",\
-
- CellChangeTimes->{{3.6413788995613117`*^9, 3.6413789384914703`*^9}, {
-  3.6413799830022583`*^9, 3.64138002317213*^9}, {3.641380101604083*^9, 
-  3.641380104039578*^9}}],
+          SuperscriptBox["d", "2"], " ", "t", " ", 
+          SuperscriptBox["z", "2"]}], "+", 
+         RowBox[{"2", " ", 
+          SuperscriptBox["z", "3"]}], "+", 
+         RowBox[{"2", " ", "d", " ", "t", " ", 
+          SuperscriptBox["z", "3"]}], "-", 
+         RowBox[{"4", " ", 
+          SuperscriptBox["z", "4"]}], "+", 
+         RowBox[{"4", " ", 
+          SuperscriptBox["d", "2"], " ", 
+          SuperscriptBox["z", "4"]}], "-", 
+         RowBox[{
+          SuperscriptBox["d", "3"], " ", 
+          SuperscriptBox["z", "4"]}], "+", 
+         RowBox[{"2", " ", "d", " ", "t", " ", 
+          SuperscriptBox["z", "4"]}], "-", 
+         RowBox[{"3", " ", "d", " ", 
+          SuperscriptBox["t", "2"], " ", 
+          SuperscriptBox["z", "4"]}], "+", 
+         RowBox[{
+          SuperscriptBox["d", "3"], " ", 
+          SuperscriptBox["t", "2"], " ", 
+          SuperscriptBox["z", "4"]}], "+", 
+         RowBox[{"2", " ", 
+          SuperscriptBox["z", "5"]}], "+", 
+         RowBox[{"2", " ", "d", " ", "t", " ", 
+          SuperscriptBox["z", "5"]}], "-", 
+         SuperscriptBox["z", "6"], "+", 
+         RowBox[{"t", " ", 
+          SuperscriptBox["z", "6"]}], "-", 
+         RowBox[{
+          SuperscriptBox["d", "2"], " ", "t", " ", 
+          SuperscriptBox["z", "6"]}], "+", 
+         RowBox[{"2", " ", 
+          SuperscriptBox["z", "7"]}], "-", 
+         RowBox[{"2", " ", "d", " ", 
+          SuperscriptBox["z", "7"]}], "-", 
+         RowBox[{"2", " ", "t", " ", 
+          SuperscriptBox["z", "7"]}], "-", 
+         SuperscriptBox["z", "8"], "-", 
+         RowBox[{"t", " ", 
+          SuperscriptBox["z", "8"]}], "+", 
+         RowBox[{
+          SuperscriptBox["t", "2"], " ", 
+          SuperscriptBox["z", "8"]}]}], "}"}]}]}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6415195373363934`*^9, 3.641519553630777*^9}, {
+  3.641519597774955*^9, 3.641519599205867*^9}}],
 
 Cell[BoxData[
- RowBox[{"BraidedG2", ":=", 
-  RowBox[{"BraidedG2", "=", 
+ RowBox[{"BraidedG2Categories", ":=", 
+  RowBox[{"BraidedG2Categories", "=", 
    RowBox[{"Module", "[", 
     RowBox[{
      RowBox[{"{", "BraidedG2", "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{
-      RowBox[{"BraidedG2", "=", 
+      RowBox[{"BraidedG2Categories", "=", 
        RowBox[{
-        RowBox[{"DeclareDimensionBounds", "[", 
-         RowBox[{"{", 
-          RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], 
-          "}"}], "]"}], "[", "CubicBraidedTrivalent", "]"}]}], ";", 
+        RowBox[{"DeclarePolynomialNonZero", "[", 
+         RowBox[{
+          SuperscriptBox["t", "2"], "-", "t", "-", "1"}], "]"}], "[", 
+        RowBox[{
+         RowBox[{"DeclareDimensionBounds", "[", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4", ",", "10"}], 
+           "}"}], "]"}], "[", "CubicBraidedTrivalent", "]"}], "]"}]}], ";", 
       "\[IndentingNewLine]", 
-      RowBox[{"BraidedG2", "=", 
+      RowBox[{"BraidedG2Categories", "=", 
        RowBox[{
         RowBox[{"ConsiderDiagrams", "[", 
          RowBox[{
-          RowBox[{
-           RowBox[{"FromScalaObject", "[", 
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
             RowBox[{
-             RowBox[{"ReducedDiagrams", "[", 
-              RowBox[{
-               RowBox[{
-               "BraidedG2", "\[LeftDoubleBracket]", "1", 
-                "\[RightDoubleBracket]"}], ",", "5", ",", "0", ",", "1"}], 
-              "]"}], ",", "1"}], "]"}], "~", "Join", "~", 
-           RowBox[{"FromScalaObject", "[", 
+            "BraidedG2Categories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "5", ",", "0", ",", "1"}], "]"}],
+           "~", "Join", "~", 
+          RowBox[{"ReducedDiagrams", "[", 
+           RowBox[{
             RowBox[{
-             RowBox[{"ReducedDiagrams", "[", 
-              RowBox[{
-               RowBox[{
-               "BraidedG2", "\[LeftDoubleBracket]", "1", 
-                "\[RightDoubleBracket]"}], ",", "5", ",", "0", ",", "3"}], 
-              "]"}], ",", "1"}], "]"}]}], ",", 
-          RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}], 
-        "[", "BraidedG2", "]"}]}], ";", 
-      RowBox[{"BraidedG2", "=", 
-       RowBox[{
-        RowBox[{"ConsiderDiagram", "[", 
-         RowBox[{"polygon", "[", "5", "]"}], "]"}], "[", "BraidedG2", "]"}]}],
-       ";", "\[IndentingNewLine]", "BraidedG2"}]}], "\[IndentingNewLine]", 
-    "]"}]}]}]], "Input",
+            "BraidedG2Categories", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}], ",", "5", ",", "0", ",", "3"}], "]"}],
+           "~", "Join", "~", 
+          RowBox[{"{", 
+           RowBox[{"polygon", "[", "5", "]"}], "}"}]}], "]"}], "[", 
+        "BraidedG2Categories", "]"}]}], ";", "\[IndentingNewLine]", 
+      "BraidedG2Categories"}]}], "\[IndentingNewLine]", "]"}]}]}]], "Input",
  CellChangeTimes->{{3.6413785358492823`*^9, 3.641378548147191*^9}, {
   3.6413786501765747`*^9, 3.641378650517874*^9}, {3.641378768842989*^9, 
   3.641378798116075*^9}, {3.6413789461879683`*^9, 3.64137896731705*^9}, {
   3.641380031195654*^9, 3.641380055671423*^9}, {3.641380116557624*^9, 
-  3.6413801192552023`*^9}, {3.6413801506581783`*^9, 3.641380179061335*^9}}]
+  3.6413801192552023`*^9}, {3.6413801506581783`*^9, 3.641380179061335*^9}, {
+  3.641519288737294*^9, 3.641519326196383*^9}, {3.6415202106904488`*^9, 
+  3.641520213399475*^9}}]
 },
 WindowSize->{1088, 761},
-WindowMargins->{{Automatic, 44}, {37, Automatic}},
+WindowMargins->{{303, Automatic}, {Automatic, 39}},
 FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
 2014)",
 StyleDefinitions->"Default.nb"
@@ -464,11 +511,12 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 9179, 218, 590, "Input"],
-Cell[9740, 240, 1894, 45, 148, "Input"],
-Cell[11637, 287, 2379, 57, 182, "Input"],
-Cell[14019, 346, 2230, 52, 182, "Input"],
-Cell[16252, 400, 2059, 47, 148, "Input"]
+Cell[558, 20, 9386, 219, 641, "Input"],
+Cell[9947, 241, 1894, 45, 148, "Input"],
+Cell[11844, 288, 1847, 43, 147, "Input"],
+Cell[13694, 333, 2001, 47, 148, "Input"],
+Cell[15698, 382, 2626, 66, 95, "Input"],
+Cell[18327, 450, 2022, 44, 147, "Input"]
 }
 ]
 *)
