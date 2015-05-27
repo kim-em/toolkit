@@ -6,7 +6,9 @@ syntax: glob
 .cache
 .classpath
 .settings/org.scala-ide.sdt.core.prefs
+.project
 
+.target
 target
 .target
 lib_managed
@@ -21,3 +23,5 @@ algebra-spiders/src/main/mathematica/groebnerCalculations.m
 
 *.out
 */.tmpBin
+
+.worksheet

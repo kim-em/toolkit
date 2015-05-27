@@ -71,9 +71,9 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       }
     }
   }
-
+  
   def numberOfBoundaryPoints = vertexFlags(0).size
-
+  
   def numberOfVertices = vertexFlags.size
   def numberOfInternalVertices = numberOfVertices - 1
 
@@ -138,6 +138,11 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     case Nil => Seq(outerFace)
     case other => other.map(_._2)
   }
+
+  def internalFacesSizeAtMost(n: Int): Seq[Int] = faceEdgeIncidences.filter(_._2.size <= n).keys.toSeq intersect internalFaceSet
+  // Note faceEdgeIncidences is a Set, so the above function doesn't count edge multiplicity.
+  // But this is fine since the only kind of edge with multiplicity > 1 is a bridge (of multiplicity 2).
+  lazy val hasTinyFace = internalFacesSizeAtMost(3).nonEmpty
 
   type EdgeFace = (Int, Int)
 

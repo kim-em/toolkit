@@ -108,7 +108,7 @@ object Toolkit extends Build {
       base = file("algebra-spiders"),
       settings = buildSettings ++ 
                   Seq(
-                    libraryDependencies ++= Seq(scala.parser, mapdb),
+                    libraryDependencies ++= Seq(scala.parser, mapdb, scalanlp.breeze, scalanlp.breezenatives),
                     retrieveManaged := true
                   )
     ) dependsOn (algebra, mathematica, amazon, `algebra-mathematica`, `algebra-polynomials`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
@@ -262,6 +262,10 @@ object Dependencies {
 	val spire = "org.spire-math" %% "spire" % "0.7.1"
 	object omath {
 		val parser = "org.omath" %% "omath-parser" % "0.0.1"
+	}
+	object scalanlp {
+	    val breeze = "org.scalanlp" %% "breeze" % "0.11.2"
+        val breezenatives = "org.scalanlp" %% "breeze-natives" % "0.11.2"
 	}
 }
 
