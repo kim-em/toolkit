@@ -19,7 +19,7 @@ trait Plantri {
 }
 
 object Plantri extends Plantri {
-  def parseEdgeCodeBytes(rawData: Array[Byte]): Seq[IndexedSeq[IndexedSeq[Int]]] = {
+  private def parseEdgeCodeBytes(rawData: Array[Byte]): Seq[IndexedSeq[IndexedSeq[Int]]] = {
     // Converts plantri binary edge code output, passed as a byte array,
     // into a sequence of graphs given by their edge adjacency lists.
     //
@@ -50,9 +50,9 @@ object Plantri extends Plantri {
     return splitGraphSections(rawData.map(_.toInt), Seq()).map(parseGraph(_))
   }
   // Overload to directly read an output file written by plantri
-  def parseEdgeCodeBytes(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = parseEdgeCodeBytes(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
+  private def parseEdgeCodeBytes(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = parseEdgeCodeBytes(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
 
-  def edgeAdjListToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
+  private def edgeAdjListToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
     // Constructs a PlanarGraph instance for a graph from its edge adjacency list.
     // 
     // Input:  the edge adjacency list ("edge code") of a graph G as a
@@ -133,10 +133,12 @@ object Plantri extends Plantri {
     val labels = 1 until numOfVertices
     val loops = 0
     
-    return PlanarGraph(outerFace, vertexFlags, labels, loops)
+    return PlanarGraph(outerFace, vertexFlags, Seq.fill(numOfVertices)((1,0)), loops)
   }
   
-  def apply(n: Int, k: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
+  def connectedPlanarTrivalentGraphs(numberOfBoundaryPoints: Int, numberOfInternalFaces: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
+    val n = numberOfBoundaryPoints
+    val k = numberOfInternalFaces
     // Returns a sequence of connected trivalent planar graphs with n boundary points and k internal faces.
     
     require(n > 2, "Number of boundary points must be > 2.")
@@ -173,7 +175,7 @@ object Plantri extends Plantri {
   catch { case e: AssertionError => this.setPath( scala.io.StdIn.readLine("WARNING: plantri not found. Please set the path:\n") ) }
   
   // Check plantri works
-  try assert(apply(4,4).length == 147)
+  try assert(connectedPlanarTrivalentGraphs(4,4).length == 147)
   catch {
     case e: AssertionError => println("ERROR: The copy of plantri at " + this.getPath + " does not appear to be working.")
     case e: java.io.IOException => println("ERROR: plantri not found!")
