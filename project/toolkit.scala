@@ -229,12 +229,12 @@ object Resolvers {
 }
 
 object Dependencies {
-	val junit = "junit" % "junit" % "4.11" % "test"
-	val slf4j = "org.slf4j" % "slf4j-log4j12" % "1.6.1"
-	val apfloat = "org.apfloat" % "apfloat" % "1.6.3"		// arbitrary precision integers and floats; much better than BigInt and BigDecimal
+	val junit = "junit" % "junit" % "4.12" % "test"
+	val slf4j = "org.slf4j" % "slf4j-log4j12" % "1.7.12"
+	val apfloat = "org.apfloat" % "apfloat" % "1.8.2"		// arbitrary precision integers and floats; much better than BigInt and BigDecimal
 	object commons {
-		val math = "org.apache.commons" % "commons-math" % "2.2"	// simplex algorithm
-		val logging = "commons-logging" % "commons-logging" % "1.1.1"
+		val math = "org.apache.commons" % "commons-math3" % "3.5"	// simplex algorithm
+		val logging = "commons-logging" % "commons-logging" % "1.2"
 		val io = "commons-io" % "commons-io" % "2.4"
 	}
 	object scala {
@@ -253,12 +253,12 @@ object Dependencies {
 		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.40.0"
 	}
 	object lift {
-		val util = "net.liftweb" %% "lift-util" % "2.6-RC2"
+		val util = "net.liftweb" %% "lift-util" % "2.6"
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
-	val mapdb = "org.mapdb" % "mapdb" % "0.9.9"
-	val slick = "com.typesafe.slick" %% "slick" % "3.0.0-RC1"
-	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0-M6"
+	val mapdb = "org.mapdb" % "mapdb" % "1.0.7"
+	val slick = "com.typesafe.slick" %% "slick" % "3.0.0"
+	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.2"
 	val spire = "org.spire-math" %% "spire" % "0.7.1"
 	object omath {
 		val parser = "org.omath" %% "omath-parser" % "0.0.1"
