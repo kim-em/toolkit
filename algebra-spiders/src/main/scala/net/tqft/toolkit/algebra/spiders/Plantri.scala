@@ -7,19 +7,19 @@ import scala.annotation.tailrec
 
 trait Plantri {
   private var plantriPath: String = {
-    val probePaths = for ( dir <- List(".", System.getProperty("user.home") + "/bin") ) yield new java.io.File(dir + "/plantri")
-    if ( probePaths(0).exists ) probePaths(0).toPath.toString
-    else if ( probePaths(1).exists ) probePaths(1).toPath.toString
+    val probePaths = for (dir <- List(".", System.getProperty("user.home") + "/bin")) yield new java.io.File(dir + "/plantri")
+    if (probePaths(0).exists) probePaths(0).toPath.toString
+    else if (probePaths(1).exists) probePaths(1).toPath.toString
     else try { "which plantri".!! }
-         catch { case e: Exception => "plantri" }
+    catch { case e: Exception => "plantri" }
   }
-  
+
   def setPath(path: String): Unit = { plantriPath = path }
   def getPath = plantriPath
 }
 
 object Plantri extends Plantri {
-  def parseEdgeCodeBytes(rawData: Array[Byte]): Seq[IndexedSeq[IndexedSeq[Int]]] = {
+  private def parseEdgeCodeBytes(rawData: Array[Byte]): Seq[IndexedSeq[IndexedSeq[Int]]] = {
     // Converts plantri binary edge code output, passed as a byte array,
     // into a sequence of graphs given by their edge adjacency lists.
     //
@@ -46,13 +46,13 @@ object Plantri extends Plantri {
         takeWhile { !_.isEmpty }
         map { _.toIndexedSeq }).toIndexedSeq
     }
-    
+
     return splitGraphSections(rawData.map(_.toInt), Seq()).map(parseGraph(_))
   }
   // Overload to directly read an output file written by plantri
-  def parseEdgeCodeBytes(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = parseEdgeCodeBytes(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
+  private def parseEdgeCodeBytes(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = parseEdgeCodeBytes(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
 
-  def edgeAdjListToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
+  private def edgeAdjListToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
     // Constructs a PlanarGraph instance for a graph from its edge adjacency list.
     // 
     // Input:  the edge adjacency list ("edge code") of a graph G as a
@@ -108,7 +108,7 @@ object Plantri extends Plantri {
       }
 
       if (tmpVertexFlags(vertex)._2(edgeIndex) != -1) // If the face is not labeled -1 we've already updated the
-        Unit                                          // face label for the edge out of this vertex
+        Unit // face label for the edge out of this vertex
       else {
         tmpVertexFlags(vertex)._2(edgeIndex) = faceLabel
         val (v, e) = step(vertex, tmpVertexFlags(vertex)._1(edgeIndex))
@@ -126,34 +126,35 @@ object Plantri extends Plantri {
         untraversedFaceAt = tmpVertexFlags(v)._2.indexOf(-1)
       }
     }
-    
+
     // vertexFlags: IndexedSeq[Seq[(Int, Int)]] describes the half edges coming out of each vertex
     val vertexFlags = for (v <- 0 until numOfVertices) yield (tmpVertexFlags(v)._1.zip(tmpVertexFlags(v)._2))
     val outerFace = vertexFlags(0).head._2
-    val labels = for (i <- 1 until numOfVertices) yield (i,0)
     val loops = 0
-    
-    return PlanarGraph(outerFace, vertexFlags, labels, loops)
+
+    return PlanarGraph(outerFace, vertexFlags, Seq.fill(numOfVertices)((1, 0)), loops)
   }
-  
-  def apply(n: Int, k: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
+
+  def connectedPlanarTrivalentGraphs(numberOfBoundaryPoints: Int, numberOfInternalFaces: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
+    val n = numberOfBoundaryPoints
+    val k = numberOfInternalFaces
     // Returns a sequence of connected trivalent planar graphs with n boundary points and k internal faces.
-    
+
     require(n > 2, "Number of boundary points must be > 2.")
-    
+
     var bytes = Array[Byte]()
     var logIt = Iterator[String]()
     val totalVertices = n + k
-    
+
     val runPlantri = Process(this.getPath + " " + totalVertices + " -P" + n + " -Edho -c2m2" + { if (verbose) " -v" else "" }) // see plantri-guide.txt for flag info
-    val ioHandler = new ProcessIO( os => (),
-                                   is => bytes = IOUtils.toByteArray(is),
-                                   is => logIt = scala.io.Source.fromInputStream(is).getLines )
+    val ioHandler = new ProcessIO(os => (),
+      is => bytes = IOUtils.toByteArray(is),
+      is => logIt = scala.io.Source.fromInputStream(is).getLines)
     runPlantri.run(ioHandler)
     while (bytes.length == 0 || !logIt.hasNext) Thread.sleep(10) // Ping for result
-    
+
     // (bytes, log) // Debugging
-    
+
     val log = logIt.toList
     if (verbose) { // Verbose mode
       println("Running plantri:")
@@ -161,21 +162,21 @@ object Plantri extends Plantri {
       println("\nParsing output...")
     }
     val planarGraphs = parseEdgeCodeBytes(bytes).map(edgeAdjListToPlanarGraph(_))
-    
+
     // Check that we parsed the binary correctly; should have the number of graphs reported by plantri
-    require( planarGraphs.length == log(log.length - 1).split(" ")(0).toInt, "Something went wrong parsing the plantri output." )
-    
+    require(planarGraphs.length == log(log.length - 1).split(" ")(0).toInt, "Something went wrong parsing the plantri output.")
+
     return planarGraphs
   }
-  
+
   // Check plantri path is correct
   try assert(this.getPath != "plantri")
-  catch { case e: AssertionError => this.setPath( scala.io.StdIn.readLine("WARNING: plantri not found. Please set the path:\n") ) }
-  
+  catch { case e: AssertionError => this.setPath(scala.io.StdIn.readLine("WARNING: plantri not found. Please set the path:\n")) }
+
   // Check plantri works
-  try assert(apply(4,4).length == 147)
+  try assert(connectedPlanarTrivalentGraphs(4, 4).length == 147)
   catch {
-    case e: AssertionError => println("ERROR: The copy of plantri at " + this.getPath + " does not appear to be working.")
+    case e: AssertionError      => println("ERROR: The copy of plantri at " + this.getPath + " does not appear to be working.")
     case e: java.io.IOException => println("ERROR: plantri not found!")
   }
 }

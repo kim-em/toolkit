@@ -809,9 +809,11 @@ object PlanarGraph {
   val tetrahedron = spider.multiply(star(3), polygon(3), 3)
   val cube = spider.multiply(polygon(4), polygon(4), 4)
 
+  val twoSquares = spider.multiply(polygon(4), H, 2)
+
   val tetravalentVertex = star(4)
   val bowtie = spider.stitch(spider.stitch(tetravalentVertex))
-  
+
   val crossing = star(4, 0, 2)
   val inverseCrossing = spider.rotate(crossing, 1)
 

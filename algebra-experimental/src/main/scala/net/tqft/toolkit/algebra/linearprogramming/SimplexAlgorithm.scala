@@ -4,11 +4,6 @@ import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.OrderedField
 import net.tqft.toolkit.collections.NonStrictIterable
-import org.apache.commons.math.optimization.linear.LinearConstraint
-import org.apache.commons.math.optimization.linear.LinearObjectiveFunction
-import org.apache.commons.math.optimization.linear.Relationship
-import org.apache.commons.math.optimization.linear.SimplexSolver
-import org.apache.commons.math.optimization.GoalType
 
 trait LinearProgrammingHelper extends net.tqft.toolkit.Logging {
   //  def initialSimplex[B](m: Matrix[B], c: List[B])(implicit field: Field[B]): List[Int] = {
@@ -167,8 +162,8 @@ object SimplexAlgorithm extends LinearProgrammingHelper {
 }
 
 object CommonsSimplexSolver {
-  import org.apache.commons.math.optimization.linear._
-  import org.apache.commons.math.optimization.GoalType
+  import org.apache.commons.math3.optimization.linear._
+  import org.apache.commons.math3.optimization.GoalType
   import scala.collection.JavaConversions._
 
   def apply(m: Matrix[Double], c: List[Double]) = {
@@ -183,7 +178,7 @@ object CommonsSimplexSolver {
         solver.setMaxIterations(Integer.MAX_VALUE)
         Some(solver.optimize(function, constraints, GoalType.MAXIMIZE, true))
       } catch {
-        case e: org.apache.commons.math.optimization.linear.NoFeasibleSolutionException => None
+        case e: org.apache.commons.math3.optimization.linear.NoFeasibleSolutionException => None
       }
 
     result map { r => r.getPoint.toList }
