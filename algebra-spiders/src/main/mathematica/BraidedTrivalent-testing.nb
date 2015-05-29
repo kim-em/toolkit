@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    358601,       9026]
-NotebookOptionsPosition[    357262,       8974]
-NotebookOutlinePosition[    357621,       8990]
-CellTagsIndexPosition[    357578,       8987]
+NotebookDataLength[    359501,       9046]
+NotebookOptionsPosition[    358164,       8994]
+NotebookOutlinePosition[    358521,       9010]
+CellTagsIndexPosition[    358478,       9007]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -38,16 +38,18 @@ Cell[BoxData[
        RowBox[{
        "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
         ".", "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
-     JLink`Objects`vm1`JavaObject10762385992187905], ",", 
+     JLink`Objects`vm1`JavaObject23385341331243009], ",", 
     RowBox[{"Manifold", "[", 
      RowBox[{
       RowBox[{"{", 
        RowBox[{
         RowBox[{
-         SubscriptBox["p", "1"], "\[Rule]", 
-         RowBox[{"d", " ", "t"}]}], ",", 
+         SubscriptBox["p", "1"], "\[Rule]", "0"}], ",", 
         RowBox[{
-         SubscriptBox["p", "3"], "\[Rule]", "0"}], ",", 
+         SubscriptBox["p", "2"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "3"], "\[Rule]", 
+         RowBox[{"d", " ", "z"}]}], ",", 
         RowBox[{
          SubscriptBox["p", "4"], "\[Rule]", "d"}], ",", 
         RowBox[{
@@ -56,18 +58,18 @@ Cell[BoxData[
           SuperscriptBox["z", "2"]}]}], ",", 
         RowBox[{
          SubscriptBox["p", "6"], "\[Rule]", 
-         RowBox[{"d", " ", 
-          SuperscriptBox["z", "4"]}]}], ",", 
+         FractionBox["d", 
+          SuperscriptBox["z", "2"]]}], ",", 
         RowBox[{
          SubscriptBox["p", "7"], "\[Rule]", 
          RowBox[{"d", " ", 
           SuperscriptBox["z", "4"]}]}], ",", 
         RowBox[{
-         SubscriptBox["p", "8"], "\[Rule]", 
-         FractionBox["d", 
-          SuperscriptBox["z", "2"]]}], ",", 
+         SubscriptBox["p", "8"], "\[Rule]", "d"}], ",", 
         RowBox[{
-         SubscriptBox["p", "9"], "\[Rule]", "d"}], ",", 
+         SubscriptBox["p", "9"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["z", "2"]}]}], ",", 
         RowBox[{
          SubscriptBox["p", "10"], "\[Rule]", 
          FractionBox["d", 
@@ -75,50 +77,52 @@ Cell[BoxData[
         RowBox[{
          SubscriptBox["p", "11"], "\[Rule]", 
          FractionBox["d", 
-          SuperscriptBox["z", "4"]]}], ",", 
-        RowBox[{
-         SubscriptBox["p", "12"], "\[Rule]", 
-         RowBox[{"d", " ", "z"}]}], ",", 
-        RowBox[{
-         SubscriptBox["p", "13"], "\[Rule]", "d"}], ",", 
-        RowBox[{
-         SubscriptBox["p", "14"], "\[Rule]", 
-         RowBox[{"d", " ", 
-          SuperscriptBox["z", "2"]}]}], ",", 
-        RowBox[{
-         SubscriptBox["p", "15"], "\[Rule]", 
-         FractionBox["d", 
           SuperscriptBox["z", "2"]]}], ",", 
         RowBox[{
-         SubscriptBox["p", "16"], "\[Rule]", "d"}], ",", 
+         SubscriptBox["p", "12"], "\[Rule]", "d"}], ",", 
         RowBox[{
-         SubscriptBox["p", "17"], "\[Rule]", 
+         SubscriptBox["p", "13"], "\[Rule]", 
          RowBox[{"d", " ", 
-          SuperscriptBox["t", "2"]}]}], ",", 
+          SuperscriptBox["z", "4"]}]}], ",", 
         RowBox[{
-         SubscriptBox["p", "18"], "\[Rule]", 
+         SubscriptBox["p", "14"], "\[Rule]", 
+         FractionBox["d", 
+          SuperscriptBox["z", "4"]]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "15"], "\[Rule]", 
+         RowBox[{"d", " ", "t"}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "16"], "\[Rule]", 
          FractionBox["d", "z"]}], ",", 
         RowBox[{
-         SubscriptBox["p", "19"], "\[Rule]", 
+         SubscriptBox["p", "17"], "\[Rule]", 
+         RowBox[{"d", " ", "t", " ", "z"}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "18"], "\[Rule]", 
          FractionBox[
           RowBox[{"d", " ", "t"}], "z"]}], ",", 
         RowBox[{
-         SubscriptBox["p", "20"], "\[Rule]", 
-         FractionBox["d", 
-          SuperscriptBox["z", "2"]]}], ",", 
+         SubscriptBox["p", "19"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["t", "2"]}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "20"], "\[Rule]", "d"}], ",", 
         RowBox[{
          SubscriptBox["p", "21"], "\[Rule]", 
          FractionBox["d", 
           SuperscriptBox["z", "2"]]}], ",", 
         RowBox[{
          SubscriptBox["p", "22"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["z", "2"]}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "23"], "\[Rule]", 
          FractionBox["d", 
           SuperscriptBox["z", "2"]]}], ",", 
         RowBox[{
-         SubscriptBox["p", "23"], "\[Rule]", 
-         RowBox[{"d", " ", "t", " ", "z"}]}], ",", 
-        RowBox[{
-         SubscriptBox["p", "24"], "\[Rule]", "d"}], ",", 
+         SubscriptBox["p", "24"], "\[Rule]", 
+         FractionBox["d", 
+          SuperscriptBox["z", "2"]]}], ",", 
         RowBox[{
          SubscriptBox["p", "25"], "\[Rule]", 
          RowBox[{"d", " ", 
@@ -129,108 +133,106 @@ Cell[BoxData[
           SuperscriptBox["z", "2"]}]}], ",", 
         RowBox[{
          SubscriptBox["p", "27"], "\[Rule]", 
-         RowBox[{"d", " ", 
-          SuperscriptBox["z", "2"]}]}], ",", 
-        RowBox[{
-         SubscriptBox["p", "28"], "\[Rule]", 
          SuperscriptBox["d", "2"]}], ",", 
         RowBox[{
-         SubscriptBox["p", "29"], "\[Rule]", 
+         SubscriptBox["p", "28"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "29"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "30"], "\[Rule]", 
          SuperscriptBox["d", "2"]}], ",", 
         RowBox[{
-         SubscriptBox["p", "30"], "\[Rule]", "d"}], ",", 
-        RowBox[{
-         SubscriptBox["p", "31"], "\[Rule]", "d"}], ",", 
-        RowBox[{
-         SubscriptBox["p", "32"], "\[Rule]", 
+         SubscriptBox["p", "31"], "\[Rule]", 
          SuperscriptBox["d", "2"]}], ",", 
         RowBox[{
-         SubscriptBox["p", "33"], "\[Rule]", "0"}], ",", 
+         SubscriptBox["p", "32"], "\[Rule]", "0"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "33"], "\[Rule]", "h"}], ",", 
         RowBox[{
          SubscriptBox["p", "34"], "\[Rule]", 
-         SubscriptBox["p", "47"]}], ",", 
+         FractionBox[
+          SubscriptBox["p", "47"], "z"]}], ",", 
         RowBox[{
          SubscriptBox["p", "35"], "\[Rule]", 
-         FractionBox[
-          SubscriptBox["p", "47"], "z"]}], ",", 
+         SubscriptBox["p", "47"]}], ",", 
         RowBox[{
          SubscriptBox["p", "36"], "\[Rule]", 
-         FractionBox[
-          SubscriptBox["p", "47"], "z"]}], ",", 
+         SubscriptBox["p", "37"]}], ",", 
         RowBox[{
-         SubscriptBox["p", "37"], "\[Rule]", 
+         SubscriptBox["p", "38"], "\[Rule]", 
+         SuperscriptBox["d", "2"]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "39"], "\[Rule]", 
          RowBox[{"d", " ", 
           SuperscriptBox["z", "2"]}]}], ",", 
         RowBox[{
-         SubscriptBox["p", "38"], "\[Rule]", 
-         SubscriptBox["p", "39"]}], ",", 
-        RowBox[{
          SubscriptBox["p", "40"], "\[Rule]", 
-         SuperscriptBox["d", "2"]}], ",", 
-        RowBox[{
-         SubscriptBox["p", "41"], "\[Rule]", 
          SubscriptBox["p", "47"]}], ",", 
         RowBox[{
-         SubscriptBox["p", "42"], "\[Rule]", 
-         SubscriptBox["p", "43"]}], ",", 
-        RowBox[{
-         SubscriptBox["p", "44"], "\[Rule]", 
-         FractionBox["d", 
-          SuperscriptBox["z", "2"]]}], ",", 
-        RowBox[{
-         SubscriptBox["p", "45"], "\[Rule]", 
+         SubscriptBox["p", "41"], "\[Rule]", 
          FractionBox[
           SubscriptBox["p", "47"], "z"]}], ",", 
         RowBox[{
-         SubscriptBox["p", "46"], "\[Rule]", 
+         SubscriptBox["p", "42"], "\[Rule]", 
+         FractionBox[
+          SubscriptBox["p", "47"], "z"]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "43"], "\[Rule]", 
+         SubscriptBox["p", "44"]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "45"], "\[Rule]", 
          SuperscriptBox["d", "2"]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "46"], "\[Rule]", 
+         FractionBox["d", 
+          SuperscriptBox["z", "2"]]}], ",", 
         TagBox[
          RowBox[{
-          RowBox[{"tt", "[", "57", "]"}], "\[Rule]", 
+          RowBox[{"tt", "[", "10", "]"}], "\[Rule]", 
           RowBox[{"-", 
            SuperscriptBox["z", "2"]}]}],
          Short], ",", 
         TagBox[
          RowBox[{
-          RowBox[{"tt", "[", "58", "]"}], "\[Rule]", 
+          RowBox[{"tt", "[", "11", "]"}], "\[Rule]", 
           RowBox[{"-", 
            FractionBox["1", 
             SuperscriptBox["z", "2"]]}]}],
          Short], ",", 
         TagBox[
          RowBox[{
-          RowBox[{"tt", "[", "59", "]"}], "\[Rule]", 
+          RowBox[{"tt", "[", "12", "]"}], "\[Rule]", 
           RowBox[{"-", "1"}]}],
          Short], ",", 
         TagBox[
          RowBox[{
-          RowBox[{"tt", "[", "60", "]"}], "\[Rule]", 
+          RowBox[{"tt", "[", "13", "]"}], "\[Rule]", 
           RowBox[{"-", "t"}]}],
          Short], ",", 
         TagBox[
          RowBox[{
-          RowBox[{"tt", "[", "61", "]"}], "\[Rule]", 
+          RowBox[{"tt", "[", "14", "]"}], "\[Rule]", 
           RowBox[{"-", 
            FractionBox["1", "z"]}]}],
          Short], ",", 
         TagBox[
          RowBox[{
-          RowBox[{"tt", "[", "62", "]"}], "\[Rule]", 
+          RowBox[{"tt", "[", "15", "]"}], "\[Rule]", 
           RowBox[{"-", "z"}]}],
          Short], ",", 
         TagBox[
          RowBox[{
-          RowBox[{"tt", "[", "63", "]"}], "\[Rule]", 
+          RowBox[{"tt", "[", "16", "]"}], "\[Rule]", 
           RowBox[{"-", "1"}]}],
          Short], ",", 
         TagBox[
          RowBox[{
-          RowBox[{"tt", "[", "64", "]"}], "\[Rule]", 
+          RowBox[{"tt", "[", "17", "]"}], "\[Rule]", 
           RowBox[{"-", "1"}]}],
          Short], ",", 
         TagBox[
          RowBox[{
-          RowBox[{"tt", "[", "65", "]"}], "\[Rule]", 
+          RowBox[{"tt", "[", "18", "]"}], "\[Rule]", 
           RowBox[{"-", "1"}]}],
          Short]}], "}"}], ",", 
       RowBox[{"{", "}"}], ",", 
@@ -250,6 +252,12 @@ Cell[BoxData[
           RowBox[{
           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
            ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject13962315472830465], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+         "\[RightGuillemet]"}],
         JLink`Objects`vm1`JavaObject6558186421092353], ",", 
        InterpretationBox[
         RowBox[{"\[LeftGuillemet]", 
@@ -281,6 +289,89 @@ Cell[BoxData[
     TagBox[
      RowBox[{"{", "}"}],
      Short], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"{", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject13962315472830465], "}"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9579416757731329], "}"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject6558186421092353], ",", 
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject25647011181101057], ",", 
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject24508753613160449], ",", 
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject21345252333846529]}], "}"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject34409394179407873], ",", 
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject29364749888126977], ",", 
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject23078756130226177], ",", 
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject923170957688833]}], "}"}], "}"}]}], 
+     "}"}], ",", 
     TagBox[
      RowBox[{"{", 
       RowBox[{
@@ -293,29 +384,20 @@ Cell[BoxData[
             "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
              "spiders", ".", "examples", ".", "QuotientSpider"}], "]"}], 
            "\[RightGuillemet]"}],
-          JLink`Objects`vm1`JavaObject25315878849478663], ",", 
+          JLink`Objects`vm1`JavaObject25315878849478658], ",", 
          RowBox[{"{", 
           RowBox[{"{", 
            RowBox[{"1", ",", 
             InterpretationBox[
              RowBox[{"\[LeftGuillemet]", 
               RowBox[{"JavaObject", "[", 
-               RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
-              "\[RightGuillemet]"}],
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
              JLink`Objects`vm1`JavaObject9579416757731329]}], "}"}], "}"}]}], 
         "}"}], ",", 
-       RowBox[{"\[LeftSkeleton]", "8", "\[RightSkeleton]"}], ",", 
-       RowBox[{"{", 
-        RowBox[{
-         InterpretationBox[
-          RowBox[{"\[LeftGuillemet]", 
-           RowBox[{
-            RowBox[{"\[LeftSkeleton]", "10", "\[RightSkeleton]"}], "[", 
-            RowBox[{"\[LeftSkeleton]", "56", "\[RightSkeleton]"}], "]"}], 
-           "\[RightGuillemet]"}],
-          JLink`Objects`vm1`JavaObject23166452164984833], ",", 
-         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}]}], "}"}]}], 
-      "}"}],
+       RowBox[{"\[LeftSkeleton]", "9", "\[RightSkeleton]"}]}], "}"}],
      Short], ",", 
     TagBox[
      RowBox[{"{", "}"}],
@@ -324,7 +406,7 @@ Cell[BoxData[
   3.641355863911981*^9, 3.6413619252784433`*^9, 3.641362223810245*^9, 
   3.6413622594507513`*^9, 3.641362328086639*^9, 3.6413664866812983`*^9, 
   3.641367201660449*^9, 3.641367336954544*^9, 3.641367680137774*^9, 
-  3.641369497175016*^9}]
+  3.641369497175016*^9, 3.641801849961876*^9, 3.641802159345942*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -344,11 +426,13 @@ Cell[BoxData[
         "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
          ".", "examples", ".", "QuotientSpider"}], "]"}], 
        "\[RightGuillemet]"}],
-      JLink`Objects`vm1`JavaObject24964111716581377], ",", 
+      JLink`Objects`vm1`JavaObject23385341331243009], ",", 
      RowBox[{"Manifold", "[", 
       RowBox[{
        RowBox[{"{", 
         RowBox[{
+         RowBox[{"h", "\[Rule]", 
+          SuperscriptBox["d", "2"]}], ",", 
          RowBox[{"z", "\[Rule]", 
           RowBox[{"-", "1"}]}], ",", 
          RowBox[{
@@ -356,19 +440,22 @@ Cell[BoxData[
          RowBox[{
           SubscriptBox["p", "2"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "3"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "3"], "\[Rule]", 
+          RowBox[{"-", "d"}]}], ",", 
          RowBox[{
           SubscriptBox["p", "4"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "5"], "\[Rule]", 
-          RowBox[{"d", " ", "t"}]}], ",", 
+          SubscriptBox["p", "5"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "6"], "\[Rule]", 
-          RowBox[{"d", " ", 
-           SuperscriptBox["t", "2"]}]}], ",", 
+          SubscriptBox["p", "6"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "10"], "\[Rule]", 
-          RowBox[{"-", "d"}]}], ",", 
+          SubscriptBox["p", "7"], "\[Rule]", "d"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "8"], "\[Rule]", "d"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "9"], "\[Rule]", "d"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "10"], "\[Rule]", "d"}], ",", 
          RowBox[{
           SubscriptBox["p", "11"], "\[Rule]", "d"}], ",", 
          RowBox[{
@@ -378,26 +465,29 @@ Cell[BoxData[
          RowBox[{
           SubscriptBox["p", "14"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "15"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "15"], "\[Rule]", 
+          RowBox[{"d", " ", "t"}]}], ",", 
          RowBox[{
-          SubscriptBox["p", "16"], "\[Rule]", "d"}], ",", 
-         RowBox[{
-          SubscriptBox["p", "17"], "\[Rule]", "d"}], ",", 
-         RowBox[{
-          SubscriptBox["p", "18"], "\[Rule]", "d"}], ",", 
-         RowBox[{
-          SubscriptBox["p", "19"], "\[Rule]", "d"}], ",", 
-         RowBox[{
-          SubscriptBox["p", "20"], "\[Rule]", 
+          SubscriptBox["p", "16"], "\[Rule]", 
           RowBox[{"-", "d"}]}], ",", 
          RowBox[{
-          SubscriptBox["p", "21"], "\[Rule]", 
+          SubscriptBox["p", "17"], "\[Rule]", 
           RowBox[{
            RowBox[{"-", "d"}], " ", "t"}]}], ",", 
          RowBox[{
-          SubscriptBox["p", "22"], "\[Rule]", 
+          SubscriptBox["p", "18"], "\[Rule]", 
           RowBox[{
            RowBox[{"-", "d"}], " ", "t"}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "19"], "\[Rule]", 
+          RowBox[{"d", " ", 
+           SuperscriptBox["t", "2"]}]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "20"], "\[Rule]", "d"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "21"], "\[Rule]", "d"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "22"], "\[Rule]", "d"}], ",", 
          RowBox[{
           SubscriptBox["p", "23"], "\[Rule]", "d"}], ",", 
          RowBox[{
@@ -407,7 +497,8 @@ Cell[BoxData[
          RowBox[{
           SubscriptBox["p", "26"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "27"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "27"], "\[Rule]", 
+          SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
           SubscriptBox["p", "28"], "\[Rule]", "d"}], ",", 
          RowBox[{
@@ -416,95 +507,88 @@ Cell[BoxData[
           SubscriptBox["p", "30"], "\[Rule]", 
           SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
-          SubscriptBox["p", "31"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "31"], "\[Rule]", 
+          SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
-          SubscriptBox["p", "32"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "32"], "\[Rule]", "0"}], ",", 
          RowBox[{
           SubscriptBox["p", "33"], "\[Rule]", 
           SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
           SubscriptBox["p", "34"], "\[Rule]", 
-          SuperscriptBox["d", "2"]}], ",", 
+          RowBox[{"-", 
+           SubscriptBox["p", "47"]}]}], ",", 
          RowBox[{
-          SubscriptBox["p", "35"], "\[Rule]", "0"}], ",", 
+          SubscriptBox["p", "35"], "\[Rule]", 
+          SubscriptBox["p", "47"]}], ",", 
          RowBox[{
           SubscriptBox["p", "36"], "\[Rule]", 
-          RowBox[{"-", 
-           SubscriptBox["p", "49"]}]}], ",", 
-         RowBox[{
-          SubscriptBox["p", "37"], "\[Rule]", 
-          SubscriptBox["p", "49"]}], ",", 
+          SubscriptBox["p", "37"]}], ",", 
          RowBox[{
           SubscriptBox["p", "38"], "\[Rule]", 
-          SubscriptBox["p", "39"]}], ",", 
+          SuperscriptBox["d", "2"]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "39"], "\[Rule]", "d"}], ",", 
          RowBox[{
           SubscriptBox["p", "40"], "\[Rule]", 
-          SuperscriptBox["d", "2"]}], ",", 
+          SubscriptBox["p", "47"]}], ",", 
          RowBox[{
-          SubscriptBox["p", "41"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "41"], "\[Rule]", 
+          RowBox[{"-", 
+           SubscriptBox["p", "47"]}]}], ",", 
          RowBox[{
           SubscriptBox["p", "42"], "\[Rule]", 
-          SubscriptBox["p", "49"]}], ",", 
+          RowBox[{"-", 
+           SubscriptBox["p", "47"]}]}], ",", 
          RowBox[{
           SubscriptBox["p", "43"], "\[Rule]", 
-          RowBox[{"-", 
-           SubscriptBox["p", "49"]}]}], ",", 
-         RowBox[{
-          SubscriptBox["p", "44"], "\[Rule]", 
-          RowBox[{"-", 
-           SubscriptBox["p", "49"]}]}], ",", 
+          SubscriptBox["p", "44"]}], ",", 
          RowBox[{
           SubscriptBox["p", "45"], "\[Rule]", 
-          SubscriptBox["p", "46"]}], ",", 
-         RowBox[{
-          SubscriptBox["p", "47"], "\[Rule]", 
           SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
-          SubscriptBox["p", "48"], "\[Rule]", "d"}], ",", 
-         RowBox[{
-          SubscriptBox["p", "50"], "\[Rule]", 
-          SuperscriptBox["d", "2"]}], ",", 
+          SubscriptBox["p", "46"], "\[Rule]", "d"}], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "141", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "10", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "142", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "11", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "143", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "12", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "144", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "13", "]"}], "\[Rule]", 
            RowBox[{"-", "t"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "145", "]"}], "\[Rule]", "1"}],
+           RowBox[{"tt", "[", "14", "]"}], "\[Rule]", "1"}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "146", "]"}], "\[Rule]", "1"}],
+           RowBox[{"tt", "[", "15", "]"}], "\[Rule]", "1"}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "147", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "16", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "148", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "17", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "149", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "18", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short]}], "}"}], ",", 
        RowBox[{"{", "}"}], ",", 
@@ -548,29 +632,7 @@ Cell[BoxData[
            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
              ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
          JLink`Objects`vm1`JavaObject9579416757731329], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftGuillemet]", 
-          RowBox[{"JavaObject", "[", 
-           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
-          "\[RightGuillemet]"}],
-         JLink`Objects`vm1`JavaObject25647011181101057], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftGuillemet]", 
-          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
-          "\[RightGuillemet]"}],
-         JLink`Objects`vm1`JavaObject24508753613160449], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}],
-         JLink`Objects`vm1`JavaObject21345252333846529], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}],
-         JLink`Objects`vm1`JavaObject29364749888126977], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftGuillemet]", 
-          RowBox[{"JavaObject", "[", 
-           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
-          "\[RightGuillemet]"}],
-         JLink`Objects`vm1`JavaObject23078756130226177], ",", 
+        RowBox[{"\[LeftSkeleton]", "5", "\[RightSkeleton]"}], ",", 
         InterpretationBox[
          RowBox[{"\[LeftGuillemet]", 
           RowBox[{"JavaObject", "[", 
@@ -690,18 +752,7 @@ Cell[BoxData[
                  "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
               JLink`Objects`vm1`JavaObject9579416757731329]}], "}"}], "}"}]}],
           "}"}], ",", 
-        RowBox[{"\[LeftSkeleton]", "8", "\[RightSkeleton]"}], ",", 
-        RowBox[{"{", 
-         RowBox[{
-          InterpretationBox[
-           RowBox[{"\[LeftGuillemet]", 
-            RowBox[{"JavaObject", "[", 
-             RowBox[{"\[LeftSkeleton]", "56", "\[RightSkeleton]"}], "]"}], 
-            "\[RightGuillemet]"}],
-           JLink`Objects`vm1`JavaObject13939059281887233], ",", 
-          RowBox[{"{", 
-           RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], "}"}]}], 
-         "}"}]}], "}"}],
+        RowBox[{"\[LeftSkeleton]", "9", "\[RightSkeleton]"}]}], "}"}],
       Short], ",", 
      TagBox[
       RowBox[{"{", 
@@ -737,11 +788,13 @@ Cell[BoxData[
         "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
          ".", "examples", ".", "QuotientSpider"}], "]"}], 
        "\[RightGuillemet]"}],
-      JLink`Objects`vm1`JavaObject24964111716581377], ",", 
+      JLink`Objects`vm1`JavaObject23385341331243009], ",", 
      RowBox[{"Manifold", "[", 
       RowBox[{
        RowBox[{"{", 
         RowBox[{
+         RowBox[{"h", "\[Rule]", 
+          SuperscriptBox["d", "2"]}], ",", 
          RowBox[{"z", "\[Rule]", "1"}], ",", 
          RowBox[{
           SubscriptBox["p", "1"], "\[Rule]", "0"}], ",", 
@@ -752,12 +805,15 @@ Cell[BoxData[
          RowBox[{
           SubscriptBox["p", "4"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "5"], "\[Rule]", 
-          RowBox[{"d", " ", "t"}]}], ",", 
+          SubscriptBox["p", "5"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "6"], "\[Rule]", 
-          RowBox[{"d", " ", 
-           SuperscriptBox["t", "2"]}]}], ",", 
+          SubscriptBox["p", "6"], "\[Rule]", "d"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "7"], "\[Rule]", "d"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "8"], "\[Rule]", "d"}], ",", 
+         RowBox[{
+          SubscriptBox["p", "9"], "\[Rule]", "d"}], ",", 
          RowBox[{
           SubscriptBox["p", "10"], "\[Rule]", "d"}], ",", 
          RowBox[{
@@ -769,23 +825,26 @@ Cell[BoxData[
          RowBox[{
           SubscriptBox["p", "14"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "15"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "15"], "\[Rule]", 
+          RowBox[{"d", " ", "t"}]}], ",", 
          RowBox[{
           SubscriptBox["p", "16"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "17"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "17"], "\[Rule]", 
+          RowBox[{"d", " ", "t"}]}], ",", 
          RowBox[{
-          SubscriptBox["p", "18"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "18"], "\[Rule]", 
+          RowBox[{"d", " ", "t"}]}], ",", 
          RowBox[{
-          SubscriptBox["p", "19"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "19"], "\[Rule]", 
+          RowBox[{"d", " ", 
+           SuperscriptBox["t", "2"]}]}], ",", 
          RowBox[{
           SubscriptBox["p", "20"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "21"], "\[Rule]", 
-          RowBox[{"d", " ", "t"}]}], ",", 
+          SubscriptBox["p", "21"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "22"], "\[Rule]", 
-          RowBox[{"d", " ", "t"}]}], ",", 
+          SubscriptBox["p", "22"], "\[Rule]", "d"}], ",", 
          RowBox[{
           SubscriptBox["p", "23"], "\[Rule]", "d"}], ",", 
          RowBox[{
@@ -795,7 +854,8 @@ Cell[BoxData[
          RowBox[{
           SubscriptBox["p", "26"], "\[Rule]", "d"}], ",", 
          RowBox[{
-          SubscriptBox["p", "27"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "27"], "\[Rule]", 
+          SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
           SubscriptBox["p", "28"], "\[Rule]", "d"}], ",", 
          RowBox[{
@@ -804,94 +864,87 @@ Cell[BoxData[
           SubscriptBox["p", "30"], "\[Rule]", 
           SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
-          SubscriptBox["p", "31"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "31"], "\[Rule]", 
+          SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
-          SubscriptBox["p", "32"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "32"], "\[Rule]", "0"}], ",", 
          RowBox[{
           SubscriptBox["p", "33"], "\[Rule]", 
           SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
           SubscriptBox["p", "34"], "\[Rule]", 
-          SuperscriptBox["d", "2"]}], ",", 
+          SubscriptBox["p", "47"]}], ",", 
          RowBox[{
-          SubscriptBox["p", "35"], "\[Rule]", "0"}], ",", 
+          SubscriptBox["p", "35"], "\[Rule]", 
+          SubscriptBox["p", "47"]}], ",", 
          RowBox[{
           SubscriptBox["p", "36"], "\[Rule]", 
-          SubscriptBox["p", "49"]}], ",", 
-         RowBox[{
-          SubscriptBox["p", "37"], "\[Rule]", 
-          SubscriptBox["p", "49"]}], ",", 
+          SubscriptBox["p", "37"]}], ",", 
          RowBox[{
           SubscriptBox["p", "38"], "\[Rule]", 
-          SubscriptBox["p", "39"]}], ",", 
+          SuperscriptBox["d", "2"]}], ",", 
+         RowBox[{
+          SubscriptBox["p", "39"], "\[Rule]", "d"}], ",", 
          RowBox[{
           SubscriptBox["p", "40"], "\[Rule]", 
-          SuperscriptBox["d", "2"]}], ",", 
+          SubscriptBox["p", "47"]}], ",", 
          RowBox[{
-          SubscriptBox["p", "41"], "\[Rule]", "d"}], ",", 
+          SubscriptBox["p", "41"], "\[Rule]", 
+          SubscriptBox["p", "47"]}], ",", 
          RowBox[{
           SubscriptBox["p", "42"], "\[Rule]", 
-          SubscriptBox["p", "49"]}], ",", 
+          SubscriptBox["p", "47"]}], ",", 
          RowBox[{
           SubscriptBox["p", "43"], "\[Rule]", 
-          SubscriptBox["p", "49"]}], ",", 
-         RowBox[{
-          SubscriptBox["p", "44"], "\[Rule]", 
-          SubscriptBox["p", "49"]}], ",", 
+          SubscriptBox["p", "44"]}], ",", 
          RowBox[{
           SubscriptBox["p", "45"], "\[Rule]", 
-          SubscriptBox["p", "46"]}], ",", 
-         RowBox[{
-          SubscriptBox["p", "47"], "\[Rule]", 
           SuperscriptBox["d", "2"]}], ",", 
          RowBox[{
-          SubscriptBox["p", "48"], "\[Rule]", "d"}], ",", 
-         RowBox[{
-          SubscriptBox["p", "50"], "\[Rule]", 
-          SuperscriptBox["d", "2"]}], ",", 
+          SubscriptBox["p", "46"], "\[Rule]", "d"}], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "141", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "10", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "142", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "11", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "143", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "12", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "144", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "13", "]"}], "\[Rule]", 
            RowBox[{"-", "t"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "145", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "14", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "146", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "15", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "147", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "16", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "148", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "17", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short], ",", 
          TagBox[
           RowBox[{
-           RowBox[{"tt", "[", "149", "]"}], "\[Rule]", 
+           RowBox[{"tt", "[", "18", "]"}], "\[Rule]", 
            RowBox[{"-", "1"}]}],
           Short]}], "}"}], ",", 
        RowBox[{"{", "}"}], ",", 
@@ -935,29 +988,7 @@ Cell[BoxData[
            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
              ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
          JLink`Objects`vm1`JavaObject9579416757731329], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftGuillemet]", 
-          RowBox[{"JavaObject", "[", 
-           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
-          "\[RightGuillemet]"}],
-         JLink`Objects`vm1`JavaObject25647011181101057], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftGuillemet]", 
-          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
-          "\[RightGuillemet]"}],
-         JLink`Objects`vm1`JavaObject24508753613160449], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}],
-         JLink`Objects`vm1`JavaObject21345252333846529], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}],
-         JLink`Objects`vm1`JavaObject29364749888126977], ",", 
-        InterpretationBox[
-         RowBox[{"\[LeftGuillemet]", 
-          RowBox[{"JavaObject", "[", 
-           RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
-          "\[RightGuillemet]"}],
-         JLink`Objects`vm1`JavaObject23078756130226177], ",", 
+        RowBox[{"\[LeftSkeleton]", "5", "\[RightSkeleton]"}], ",", 
         InterpretationBox[
          RowBox[{"\[LeftGuillemet]", 
           RowBox[{"JavaObject", "[", 
@@ -1077,18 +1108,7 @@ Cell[BoxData[
                  "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
               JLink`Objects`vm1`JavaObject9579416757731329]}], "}"}], "}"}]}],
           "}"}], ",", 
-        RowBox[{"\[LeftSkeleton]", "8", "\[RightSkeleton]"}], ",", 
-        RowBox[{"{", 
-         RowBox[{
-          InterpretationBox[
-           RowBox[{"\[LeftGuillemet]", 
-            RowBox[{"JavaObject", "[", 
-             RowBox[{"\[LeftSkeleton]", "56", "\[RightSkeleton]"}], "]"}], 
-            "\[RightGuillemet]"}],
-           JLink`Objects`vm1`JavaObject13939059281887233], ",", 
-          RowBox[{"{", 
-           RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], "}"}]}], 
-         "}"}]}], "}"}],
+        RowBox[{"\[LeftSkeleton]", "9", "\[RightSkeleton]"}]}], "}"}],
       Short], ",", 
      TagBox[
       RowBox[{"{", 
@@ -1115,7 +1135,7 @@ Cell[BoxData[
             JLink`Objects`vm1`JavaObject6015160636407809]}], "}"}]}], "}"}], 
        "}"}],
       Short]}], "]"}]}], "}"}]], "Output",
- CellChangeTimes->{3.6415183681550703`*^9}]
+ CellChangeTimes->{3.6415183681550703`*^9, 3.64180216798417*^9}]
 }, Open  ]]
 }, Open  ]],
 
@@ -8972,8 +8992,8 @@ Cell[BoxData["BraidedG2Categories"], "Input",
   3.641520052230041*^9}}]
 }, Open  ]]
 },
-WindowSize->{1931, 890},
-WindowMargins->{{20, Automatic}, {Automatic, 44}},
+WindowSize->{1440, 851},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
 FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
 2014)",
 StyleDefinitions->"Default.nb"
@@ -8993,40 +9013,40 @@ Cell[CellGroupData[{
 Cell[580, 22, 101, 1, 64, "Section"],
 Cell[CellGroupData[{
 Cell[706, 27, 108, 1, 28, "Input"],
-Cell[817, 30, 10438, 296, 216, "Output"]
+Cell[817, 30, 14099, 378, 339, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[11292, 331, 110, 1, 28, "Input"],
-Cell[11405, 334, 30600, 783, 445, "Output"]
+Cell[14953, 413, 110, 1, 28, "Input"],
+Cell[15066, 416, 27841, 721, 534, "Output"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[42054, 1123, 105, 1, 64, "Section"],
-Cell[42162, 1126, 138, 2, 28, "Input"]
+Cell[42956, 1143, 105, 1, 64, "Section"],
+Cell[43064, 1146, 138, 2, 28, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[42337, 1133, 92, 1, 64, "Section"],
-Cell[42432, 1136, 57, 0, 28, "Input"],
+Cell[43239, 1153, 92, 1, 64, "Section"],
+Cell[43334, 1156, 57, 0, 28, "Input"],
 Cell[CellGroupData[{
-Cell[42514, 1140, 585, 16, 28, "Input"],
-Cell[43102, 1158, 296072, 7337, 367, "Output"]
+Cell[43416, 1160, 585, 16, 28, "Input"],
+Cell[44004, 1178, 296072, 7337, 367, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[339211, 8500, 534, 15, 28, "Input"],
-Cell[339748, 8517, 13614, 340, 194, "Output"]
+Cell[340113, 8520, 534, 15, 28, "Input"],
+Cell[340650, 8537, 13614, 340, 194, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[353399, 8862, 155, 2, 28, "Input"],
-Cell[353557, 8866, 70, 1, 28, "Output"]
+Cell[354301, 8882, 155, 2, 28, "Input"],
+Cell[354459, 8886, 70, 1, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[353664, 8872, 2970, 79, 56, "Input"],
-Cell[356637, 8953, 192, 5, 28, "Output"]
+Cell[354566, 8892, 2970, 79, 56, "Input"],
+Cell[357539, 8973, 192, 5, 28, "Output"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[356878, 8964, 153, 2, 50, "Section"],
-Cell[357034, 8968, 212, 3, 28, "Input"]
+Cell[357780, 8984, 153, 2, 50, "Section"],
+Cell[357936, 8988, 212, 3, 28, "Input"]
 }, Open  ]]
 }
 ]
