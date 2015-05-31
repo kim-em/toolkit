@@ -3,10 +3,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[         0,          0]
-NotebookDataLength[     16143,        424]
-NotebookOptionsPosition[     15485,        397]
-NotebookOutlinePosition[     15841,        413]
-CellTagsIndexPosition[     15798,        410]
+NotebookDataLength[     17225,        449]
+NotebookOptionsPosition[     16567,        422]
+NotebookOutlinePosition[     16923,        438]
+CellTagsIndexPosition[     16880,        435]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -236,6 +236,11 @@ Cell[BoxData[
      RowBox[{"{", 
       RowBox[{"CubicTrivalentCategories", ",", "diagrams"}], "}"}], ",", 
      "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{"TODO", " ", "explicit", " ", "non"}], "-", 
+       RowBox[{"zero", " ", "polynomials", " ", "no", " ", "longer", " ", 
+        RowBox[{"necessary", "?"}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
      RowBox[{
       RowBox[{"CubicTrivalentCategories", "=", 
        RowBox[{
@@ -246,8 +251,18 @@ Cell[BoxData[
         RowBox[{
          RowBox[{"DeclareDimensionBounds", "[", 
           RowBox[{"{", 
-           RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4"}], "}"}], 
-          "]"}], "[", "Trivalent", "]"}], "]"}]}], ";", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"1", ",", "1"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"0", ",", "0"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"1", ",", "1"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"1", ",", "1"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"4", ",", "4"}], "}"}]}], "}"}], "]"}], "[", "Trivalent",
+          "]"}], "]"}]}], ";", 
       RowBox[{"diagrams", "=", 
        RowBox[{
         RowBox[{"ReducedDiagrams", "[", 
@@ -289,7 +304,8 @@ categories!\>\"", "]"}], ";",
    3.641464698260182*^9, {3.641502032976528*^9, 3.641502040502906*^9}, {
    3.641505614440804*^9, 3.641505614720086*^9}, {3.6415149256276283`*^9, 
    3.6415149309010887`*^9}, {3.641514980668971*^9, 3.64151499431006*^9}, {
-   3.641515159536223*^9, 3.641515213182044*^9}}],
+   3.641515159536223*^9, 3.641515213182044*^9}, {3.642061312107821*^9, 
+   3.6420613273633623`*^9}}],
 
 Cell[BoxData[
  RowBox[{"CubicTrivalentCategory", ":=", 
@@ -357,7 +373,16 @@ Cell[BoxData[{
   RowBox[{"G2Categories", "=", 
    RowBox[{"Module", "[", 
     RowBox[{
-     RowBox[{"{", "G2Categories", "}"}], ",", 
+     RowBox[{"{", "G2Categories", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{"TODO", " ", "explicit", " ", "non"}], "-", 
+       RowBox[{"zero", " ", "polynomials", " ", "no", " ", "longer", " ", 
+        RowBox[{"necessary", "?", " ", 
+         RowBox[{"(", 
+          RowBox[{
+          "Changing", " ", "the", " ", "lower", " ", "bound", " ", "to", " ", 
+           "9"}], " "}]}]}]}], "*)"}], 
      RowBox[{
       RowBox[{"G2Categories", "=", 
        RowBox[{
@@ -393,7 +418,7 @@ Cell[BoxData[{
     "]"}]}]}]}], "Input",
  CellChangeTimes->{{3.641515470910804*^9, 3.641515478320644*^9}, {
   3.6415156273287563`*^9, 3.641515674654346*^9}, {3.6415162512654667`*^9, 
-  3.641516257921082*^9}}]
+  3.641516257921082*^9}, {3.64206135644945*^9, 3.642061364043145*^9}}]
 },
 WindowSize->{824, 851},
 WindowMargins->{{4, Automatic}, {Automatic, 0}},
@@ -415,10 +440,10 @@ Notebook[{
 Cell[400, 13, 3276, 86, 301, "Input"],
 Cell[3679, 101, 457, 10, 31, "Input"],
 Cell[4139, 113, 4569, 115, 402, "Input"],
-Cell[8711, 230, 2557, 61, 267, "Input"],
-Cell[11271, 293, 592, 15, 69, "Input"],
-Cell[11866, 310, 1880, 41, 182, "Input"],
-Cell[13749, 353, 1732, 42, 214, "Input"]
+Cell[8711, 230, 3195, 77, 284, "Input"],
+Cell[11909, 309, 592, 15, 69, "Input"],
+Cell[12504, 326, 1880, 41, 182, "Input"],
+Cell[14387, 369, 2176, 51, 231, "Input"]
 }
 ]
 *)
