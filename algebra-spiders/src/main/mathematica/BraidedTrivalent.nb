@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     20820,        515]
-NotebookOptionsPosition[     20353,        496]
-NotebookOutlinePosition[     20713,        512]
-CellTagsIndexPosition[     20670,        509]
+NotebookDataLength[     21457,        531]
+NotebookOptionsPosition[     20990,        512]
+NotebookOutlinePosition[     21350,        528]
+CellTagsIndexPosition[     21307,        525]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -338,6 +338,11 @@ Cell[BoxData[
     RowBox[{
      RowBox[{"{", "CubicBraidedTrivalentCategories", "}"}], ",", 
      "\[IndentingNewLine]", 
+     RowBox[{"(*", " ", 
+      RowBox[{
+       RowBox[{"TODO", " ", "explicit", " ", "non"}], "-", 
+       RowBox[{"zero", " ", "polynomials", " ", "no", " ", "longer", " ", 
+        RowBox[{"necessary", "?"}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
      RowBox[{
       RowBox[{"CubicBraidedTrivalentCategories", "=", 
        RowBox[{
@@ -351,8 +356,18 @@ Cell[BoxData[
         RowBox[{
          RowBox[{"DeclareDimensionBounds", "[", 
           RowBox[{"{", 
-           RowBox[{"1", ",", "0", ",", "1", ",", "1", ",", "4"}], "}"}], 
-          "]"}], "[", "BraidedTrivalent", "]"}], "]"}]}], ";", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"1", ",", "1"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"0", ",", "0"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"1", ",", "1"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"1", ",", "1"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"4", ",", "4"}], "}"}]}], "}"}], "]"}], "[", 
+         "BraidedTrivalent", "]"}], "]"}]}], ";", 
       RowBox[{"CubicBraidedTrivalentCategories", "=", 
        RowBox[{
         RowBox[{"ConsiderDiagrams", "[", 
@@ -378,7 +393,8 @@ Cell[BoxData[
       "CubicBraidedTrivalentCategories"}]}], "\[IndentingNewLine]", 
     "]"}]}]}]], "Input",
  CellChangeTimes->{{3.6415191229682493`*^9, 3.641519175886633*^9}, {
-  3.641519241361096*^9, 3.6415192709238*^9}}],
+  3.641519241361096*^9, 3.6415192709238*^9}, {3.642061183307687*^9, 
+  3.6420612432262583`*^9}}],
 
 Cell[BoxData[
  RowBox[{"CubicBraidedTrivalent", ":=", 
@@ -514,9 +530,9 @@ Notebook[{
 Cell[558, 20, 9386, 219, 641, "Input"],
 Cell[9947, 241, 1894, 45, 148, "Input"],
 Cell[11844, 288, 1847, 43, 147, "Input"],
-Cell[13694, 333, 2001, 47, 148, "Input"],
-Cell[15698, 382, 2626, 66, 95, "Input"],
-Cell[18327, 450, 2022, 44, 147, "Input"]
+Cell[13694, 333, 2638, 63, 165, "Input"],
+Cell[16335, 398, 2626, 66, 95, "Input"],
+Cell[18964, 466, 2022, 44, 147, "Input"]
 }
 ]
 *)
