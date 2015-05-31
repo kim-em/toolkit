@@ -1,0 +1,220 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      6557,        210]
+NotebookOptionsPosition[      5925,        186]
+NotebookOutlinePosition[      6281,        202]
+CellTagsIndexPosition[      6238,        199]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Length", "[", 
+   RowBox[{"ReducedDiagrams", "[", 
+    RowBox[{
+     RowBox[{
+     "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
+      "\[RightDoubleBracket]"}], ",", "6", ",", "0", ",", "0"}], "]"}], "]"}],
+   "\[Equal]", "5"}]], "Input",
+ CellChangeTimes->{{3.642004607118956*^9, 3.642004640097369*^9}}],
+
+Cell[BoxData[
+ RowBox[{"S", "=", 
+  RowBox[{"PlanarGraphs", "@", 
+   RowBox[{"spider", "[", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6420046505711327`*^9, 3.6420046611369753`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Table", "[", 
+  RowBox[{
+   RowBox[{"S", "@", 
+    RowBox[{"rotate", "[", 
+     RowBox[{
+      RowBox[{"S", "@", 
+       RowBox[{"tensor", "[", 
+        RowBox[{
+         RowBox[{"PlanarGraphs", "@", 
+          RowBox[{"crossing", "[", "]"}]}], ",", 
+         RowBox[{"PlanarGraphs", "@", 
+          RowBox[{"strand", "[", "]"}]}]}], "]"}]}], ",", "k"}], "]"}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{"k", ",", "0", ",", "5"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.642004644976843*^9, 3.642004682348959*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Table", "[", 
+  RowBox[{
+   RowBox[{"S", "@", 
+    RowBox[{"rotate", "[", 
+     RowBox[{
+      RowBox[{"S", "@", 
+       RowBox[{"multiply", "[", 
+        RowBox[{
+         RowBox[{"PlanarGraphs", "@", 
+          RowBox[{"crossing", "[", "]"}]}], ",", 
+         RowBox[{"PlanarGraphs", "@", 
+          RowBox[{"inverseCrossing", "[", "]"}]}], ",", "1"}], "]"}]}], ",", 
+      "k"}], "]"}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{"k", ",", "0", ",", "2"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.642004688626657*^9, 3.642004723286614*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"PlanarGraphs", "@", 
+   RowBox[{
+    RowBox[{"Reidemeister3", "[", "]"}], "@", 
+    RowBox[{"head", "[", "]"}]}]}], "}"}]], "Input",
+ CellChangeTimes->{{3.642004732698048*^9, 3.6420047583651114`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Length", "[", 
+   RowBox[{"ReducedDiagrams", "[", 
+    RowBox[{
+     RowBox[{
+     "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
+      "\[RightDoubleBracket]"}], ",", "6", ",", "0", ",", "2"}], "]"}], "]"}],
+   "\[Equal]", "15"}]], "Input",
+ CellChangeTimes->{{3.642004784157447*^9, 3.6420047874039392`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"S", "@", 
+  RowBox[{"multiply", "[", 
+   RowBox[{
+    RowBox[{"S", "@", 
+     RowBox[{"rotate", "[", 
+      RowBox[{
+       RowBox[{"S", "@", 
+        RowBox[{"multiply", "[", 
+         RowBox[{
+          RowBox[{"PlanarGraphs", "@", 
+           RowBox[{"crossing", "[", "]"}]}], ",", 
+          RowBox[{"PlanarGraphs", "@", 
+           RowBox[{"trivalentVertex", "[", "]"}]}], ",", "1"}], "]"}]}], ",", 
+       "2"}], "]"}]}], ",", 
+    RowBox[{"PlanarGraphs", "@", 
+     RowBox[{"trivalentVertex", "[", "]"}]}], ",", "1"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.642004963505582*^9, 3.642005025639277*^9}}],
+
+Cell[BoxData[
+ RowBox[{"S", "@", 
+  RowBox[{"multiply", "[", 
+   RowBox[{
+    RowBox[{"PlanarGraphs", "@", 
+     RowBox[{"crossing", "[", "]"}]}], ",", 
+    RowBox[{"S", "@", 
+     RowBox[{"rotate", "[", 
+      RowBox[{
+       RowBox[{"S", "@", 
+        RowBox[{"multiply", "[", 
+         RowBox[{
+          RowBox[{"PlanarGraphs", "@", 
+           RowBox[{"crossing", "[", "]"}]}], ",", 
+          RowBox[{"S", "@", 
+           RowBox[{"rotate", "[", 
+            RowBox[{
+             RowBox[{"S", "@", 
+              RowBox[{"tensor", "[", 
+               RowBox[{
+                RowBox[{"PlanarGraphs", "@", 
+                 RowBox[{"trivalentVertex", "[", "]"}]}], ",", 
+                RowBox[{"PlanarGraphs", "@", 
+                 RowBox[{"trivalentVertex", "[", "]"}]}]}], "]"}]}], ",", 
+             "1"}], "]"}]}], ",", "2"}], "]"}]}], ",", "3"}], "]"}]}], ",", 
+    "2"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.642005064697052*^9, 3.642005112555222*^9}, {
+  3.642005146610015*^9, 3.642005160347471*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Table", "[", 
+  RowBox[{
+   RowBox[{"S", "@", 
+    RowBox[{"rotate", "[", 
+     RowBox[{
+      RowBox[{"S", "@", 
+       RowBox[{"multiply", "[", 
+        RowBox[{
+         RowBox[{"PlanarGraphs", "@", 
+          RowBox[{"I", "[", "]"}]}], ",", 
+         RowBox[{"PlanarGraphs", "@", 
+          RowBox[{"crossing", "[", "]"}]}], ",", "1"}], "]"}]}], ",", "k"}], 
+     "]"}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{"k", ",", "0", ",", "6"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.642005180060382*^9, 3.64200520060898*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Table", "[", 
+  RowBox[{
+   RowBox[{"S", "@", 
+    RowBox[{"rotate", "[", 
+     RowBox[{
+      RowBox[{"S", "@", 
+       RowBox[{"multiply", "[", 
+        RowBox[{
+         RowBox[{"PlanarGraphs", "@", 
+          RowBox[{"H", "[", "]"}]}], ",", 
+         RowBox[{"PlanarGraphs", "@", 
+          RowBox[{"crossing", "[", "]"}]}], ",", "1"}], "]"}]}], ",", "k"}], 
+     "]"}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{"k", ",", "0", ",", "6"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.6420052059512453`*^9, 3.642005206379781*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Length", "[", 
+   RowBox[{"ReducedDiagrams", "[", 
+    RowBox[{
+     RowBox[{
+     "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
+      "\[RightDoubleBracket]"}], ",", "6", ",", "0", ",", "4"}], "]"}], "]"}],
+   "\[Equal]", "14"}]], "Input",
+ CellChangeTimes->{{3.6420048695835133`*^9, 3.642004870787673*^9}}]
+},
+WindowSize->{673, 829},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 344, 9, 28, "Input"],
+Cell[905, 31, 182, 4, 28, "Input"],
+Cell[1090, 37, 541, 15, 63, "Input"],
+Cell[1634, 54, 569, 16, 80, "Input"],
+Cell[2206, 72, 240, 6, 28, "Input"],
+Cell[2449, 80, 347, 9, 28, "Input"],
+Cell[2799, 91, 634, 17, 114, "Input"],
+Cell[3436, 110, 1020, 27, 97, "Input"],
+Cell[4459, 139, 553, 16, 63, "Input"],
+Cell[5015, 157, 556, 16, 63, "Input"],
+Cell[5574, 175, 347, 9, 28, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
