@@ -130,9 +130,10 @@ object Plantri extends Plantri {
     // vertexFlags: IndexedSeq[Seq[(Int, Int)]] describes the half edges coming out of each vertex
     val vertexFlags = for (v <- 0 until numOfVertices) yield (tmpVertexFlags(v)._1.zip(tmpVertexFlags(v)._2))
     val outerFace = vertexFlags(0).head._2
+    val labels = Seq.fill(numOfVertices)((1, 0))
     val loops = 0
 
-    return PlanarGraph(outerFace, vertexFlags, Seq.fill(numOfVertices)((1, 0)), loops)
+    return PlanarGraph(outerFace, vertexFlags, labels, loops)
   }
 
   def connectedPlanarTrivalentGraphs(numberOfBoundaryPoints: Int, numberOfInternalFaces: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
