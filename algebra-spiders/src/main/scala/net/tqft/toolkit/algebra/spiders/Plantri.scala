@@ -136,7 +136,7 @@ object Plantri extends Plantri {
     return PlanarGraph(outerFace, vertexFlags, labels, loops)
   }
 
-  def connectedPlanarTrivalentGraphs(numberOfBoundaryPoints: Int, numberOfInternalFaces: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
+  def connectedTrivalentPlanarGraphs(numberOfBoundaryPoints: Int, numberOfInternalFaces: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
     val n = numberOfBoundaryPoints
     val k = numberOfInternalFaces
     // Returns a sequence of connected trivalent planar graphs with n boundary points and k internal faces.
@@ -175,7 +175,7 @@ object Plantri extends Plantri {
   catch { case e: AssertionError => this.setPath(scala.io.StdIn.readLine("WARNING: plantri not found. Please set the path:\n")) }
 
   // Check plantri works
-  try assert(connectedPlanarTrivalentGraphs(4, 4).length == 147)
+  try assert(connectedTrivalentPlanarGraphs(4, 4).length == 147)
   catch {
     case e: AssertionError      => println("ERROR: The copy of plantri at " + this.getPath + " does not appear to be working.")
     case e: java.io.IOException => println("ERROR: plantri not found!")
