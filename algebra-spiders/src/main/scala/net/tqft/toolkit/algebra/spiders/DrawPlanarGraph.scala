@@ -38,7 +38,7 @@ trait DrawPlanarGraph {
   var pdflatexPath = getProgramPath("pdflatex", List("/usr/texbin"))
   var pdfcropPath = getProgramPath("pdfcrop", List("/usr/texbin"))
 
-  def apply(G: PlanarGraph, crossings: Map[Int, Int] = Map.empty): String = {
+  def apply(G: PlanarGraph, crossings: Map[Int, Int] = Map.empty, hideDiskBoundary: Boolean = false): String = {
     // Draws regular, closed and knotted PlanarGraphs by doing some preprocessing and then calling draw.
     // Draws over and undercrossings with or without orientations labeled, according to the parameter crossings: Map[vertex: Int, sign: Int].
     // sign > 0, < 0, = 0 means positive, negative, unoriented crossing resp.
@@ -46,7 +46,7 @@ trait DrawPlanarGraph {
     var modifiedVertexFlags = G.vertexFlags
     var decoratedEdges = Map[Int, String]()
     var decoratedVertices = Map[Int, String]()
-    var hideBoundary = false
+    var hideBoundaryEdges = false
 
     // Process closed graphs with > 1 internal vertices (closed graphs with 1 internal vertex are handled nicely by draw).
     // For each vertex of the outer face we attach an edge to the external vertex, which is hidden when drawn.
@@ -64,7 +64,7 @@ trait DrawPlanarGraph {
       }
       val modifiedExternalVertexFlags = cyclicReverse(outerFaceVertexEdges).map((t: (Int, Int)) => (-t._1, -t._1))
       modifiedVertexFlags = modifiedExternalVertexFlags +: modifiedInternalVertexFlags
-      hideBoundary = true
+      hideBoundaryEdges = true
     }
     
     // Process knotted graphs
@@ -145,10 +145,10 @@ trait DrawPlanarGraph {
       }
     }
 
-    draw(new PlanarGraph(G.outerFace, modifiedVertexFlags, G.labels, G.loops), decoratedEdges, decoratedVertices, hideBoundary)
+    draw(new PlanarGraph(G.outerFace, modifiedVertexFlags, G.labels, G.loops), decoratedEdges, decoratedVertices, hideBoundaryEdges, hideDiskBoundary)
   }
 
-  private def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundary: Boolean): String = {
+  private def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundaryEdges: Boolean, hideDiskBoundary: Boolean): String = {
     // Draws planar graphs, outputs LaTeX TikZ code.
     // Allows fine control of edge and internal vertex styles via decoratedEdges and decoratedVertices.
     // hideBoundary hides all vertices and edges connected to the boundary. Used mainly to draw closed graphs.
@@ -236,10 +236,10 @@ trait DrawPlanarGraph {
                         |[scale=$imageScale,${if (globalStyle != "") s"$globalStyle," else ""}
                         |->-/.style={decoration={markings, mark=at position .5 with{\\arrow{>}}}, postaction={decorate}},
                         |-<-/.style={decoration={markings, mark=at position .5 with{\\arrow{<}}}, postaction={decorate}}]
-                        |\\draw[gray, dashed] (0,0) circle (1.0);\n""".stripMargin
+                        |${if (!hideDiskBoundary) "\\draw[gray, dashed] (0,0) circle (1.0);\n" else ""} """.stripMargin
     // Place boundary points
     for (i <- 0 until G.numberOfBoundaryPoints) {
-      tikzString = tikzString ++ s"\\node${if (hideBoundary) "[draw=none, minimum size=0pt]" else ""} (${boundaryPoint(i)}) at ${boundaryPointCoords(i)} {};\n"
+      tikzString = tikzString ++ s"\\node${if (hideBoundaryEdges) "[draw=none, minimum size=0pt]" else ""} (${boundaryPoint(i)}) at ${boundaryPointCoords(i)} {};\n"
     }
     // Place internal vertices
     val dVs = decoratedVertices.keySet
@@ -268,7 +268,7 @@ trait DrawPlanarGraph {
         val inAngle = secondEdgeIndex * 360 / G.degree(u) + vertexRotations(u - 1)
         s"\\draw[out=$outAngle, in=$inAngle, loop${if (dEs contains edge) s", ${decoratedEdges(edge)}" else ""}] ($u) to ($u);\n"
       } else { // Ordinary edge
-        if (hideBoundary && (G.boundaryEdges contains edge)) // Hide boundary edges if required
+        if (hideBoundaryEdges && (G.boundaryEdges contains edge)) // Hide boundary edges if required
           ""
         else
           s"\\draw[out=${getAngle(edge, u)}, in=${getAngle(edge, v)}${if (dEs contains edge) s", ${decoratedEdges(edge)}" else ""}] ($u) to ($v);\n"
@@ -280,14 +280,14 @@ trait DrawPlanarGraph {
     return tikzString
   }
 
-  def pdf(pdfPath: String, g: PlanarGraph, crossings: Map[Int, Int] = Map.empty) {
-    pdfMultiple(pdfPath, Seq(g), Seq(crossings))
+  def pdf(pdfPath: String, g: PlanarGraph, crossings: Map[Int, Int] = Map.empty, hideDiskBoundary: Boolean = false) {
+    pdfMultiple(pdfPath, Seq(g), Seq(crossings), hideDiskBoundary)
   }
 
-  def pdfMultiple(pdfPath: String, Gs: Seq[PlanarGraph], crossings: Seq[Map[Int, Int]] = Seq.empty): Unit = {
+  def pdfMultiple(pdfPath: String, Gs: Seq[PlanarGraph], crossings: Seq[Map[Int, Int]] = Seq.empty, hideDiskBoundary: Boolean = false): Unit = {
     // Writes TikZ to tex file and runs pdflatex
     val processedCrossings = if (crossings.isEmpty) for (i <- 0 until Gs.length) yield Map[Int, Int]() else crossings // Hacky! :\
-    val outputStr = (Gs zip processedCrossings).map((t: (PlanarGraph, Map[Int, Int])) => DrawPlanarGraph(t._1, t._2)).mkString(
+    val outputStr = (Gs zip processedCrossings).map((t: (PlanarGraph, Map[Int, Int])) => DrawPlanarGraph(t._1, t._2, hideDiskBoundary)).mkString(
       "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
       "\\bigskip\\bigskip\n\n",
       "\n\\end{document}")
