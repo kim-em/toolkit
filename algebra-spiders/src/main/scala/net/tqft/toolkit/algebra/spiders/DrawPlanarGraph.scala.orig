@@ -73,26 +73,23 @@ trait DrawPlanarGraph {
       def start(edge: Int) = G.edgeVertexIncidences(edge)._1
       def end(edge: Int) = G.edgeVertexIncidences(edge)._2
       
-      crossings.keys.map((v) => assert(G.degree(v) == 4, s"Vertex $v doesn't appear to be a crossing..."))
+      crossings.keys.map((v) => assert(G.degree(v) == 4))
       // Decorate vertices as crossings
       decoratedVertices = crossings.mapValues(_ => "minimum size=0pt")
       // Decorate crossing edges
       var undercrossings = Seq[(Int, Int, Int)]() // (edge, vertex, index) means "edge" undercrosses at the endpoint "vertex".
         // "index" is used to distinguish between positive and negative loops.
       var overcrossings = Seq[(Int, Int)]() // (edge, vertex). Index not needed.
-      
-      for (vertex <- crossings.keys; i <- List(1, 3)) {
+      for (vertex <- crossings.keys; i <- List(1, 3); j <- List(0,2)) {
         undercrossings = (cyclicReverse(G.edgesAdjacentTo(vertex))(i), vertex, i) +: undercrossings
-      }
-      for (vertex <- crossings.keys; i <- List(0,2)) {
-        overcrossings = (cyclicReverse(G.edgesAdjacentTo(vertex))(i), vertex) +: overcrossings
+        overcrossings = (cyclicReverse(G.edgesAdjacentTo(vertex))(j), vertex) +: overcrossings
       } // 0th and 2th edges are overcrossings; 1th and 3th are undercrossings
-      
       def notAnUndercrossing(edge: Int): Boolean = {
         val undercrossingEdges = undercrossings.map(_._1)
         !undercrossingEdges.contains(edge)
       }
       overcrossings = overcrossings.filter((t) => notAnUndercrossing(t._1))
+      println(undercrossings)
 
       // Process undercrossings: shorten TikZ edges at the correct end and add arrows to indicate orientation if needed
       for ((edge, endpoint, i) <- undercrossings) {
@@ -101,26 +98,28 @@ trait DrawPlanarGraph {
             if (i == 1) {
               if (G.edgesAdjacentTo(endpoint).head == edge) { // Inward undercrossing of negative twist
                 assert(sign(endpoint) <= 0, s"The crossing at vertex $endpoint is either negative or nonoriented!")
-                "shorten >=2.5pt" + (if (sign(endpoint) < 0) ", ->-" else "")
+                "shorten >=2.5pt" + (if (sign(endpoint) < 0) ", ->" else "")
               }
               else { // Outward undercrossing, positive twist
                 assert(sign(endpoint) >= 0, s"The crossing at vertex $endpoint is either positive or nonoriented!")
-                "shorten <=2.5pt" + (if (sign(endpoint) > 0) ", ->-" else "")
+                "shorten <=2.5pt" + (if (sign(endpoint) > 0) ", ->" else "")
               }
             } else {
               if (G.edgesAdjacentTo(endpoint).head == edge) { // Inward undercrossing, positive twist
                 assert(sign(endpoint) >= 0, s"The crossing at vertex $endpoint is either positive or nonoriented!")
-                "shorten >=2.5pt" + (if (sign(endpoint) > 0) ", ->-" else "")
+                "shorten >=2.5pt" + (if (sign(endpoint) > 0) ", ->" else "")
               }
               else { // Outward undercrossing, negative twist
                 assert(sign(endpoint) <= 0, s"The crossing at vertex $endpoint is either negative or nonoriented!")
-                "shorten >=2.5pt" + (if (sign(endpoint) < 0) ", -<-" else "")
+                "shorten >=2.5pt" + (if (sign(endpoint) < 0) ", <-" else "")
               }
             }
           } else { // Edge is not a loop
             ( // Shorten at the correct end
-              if (endpoint == start(edge)) "shorten <=2.5pt"
-              else "shorten >=2.5pt"
+              if (start(edge) == 0 || end(edge) == 0) "shorten <=2.5pt"
+                // Boundary-connected edge; in "draw" the boundary vertex is always the end vertex, so shorten edge at the start
+              else if (endpoint == start(edge)) "shorten <=2.5pt" else "shorten >=2.5pt"
+                // Internal edge
             ) +
             ( // Add arrows to indicate orientation, if needed
               if (sign(endpoint) == 0) ""
@@ -129,20 +128,23 @@ trait DrawPlanarGraph {
                 || (i == 1 && sign(endpoint) < 0 && start(edge) != endpoint)
                 || (i == 3 && sign(endpoint) > 0 && start(edge) != endpoint)
                 || (i == 3 && sign(endpoint) < 0 && start(edge) == endpoint)
-                ) ", ->-"
-              else ", -<-"
+                ) ", ->"
+              else ", <-"
             )
           }
         decoratedEdges = decoratedEdges.updated(edge, if (decoratedEdges.isDefinedAt(edge)) decoratedEdges(edge) ++ s", $styleStr" else styleStr)
       }
+      /*
       // Process overcrossings if crossings are oriented
       for ((edge, endpoint) <- overcrossings if sign(endpoint) != 0) {
         val styleStr = if 
           (  (G.vertexFlags(endpoint).head._1 == edge && start(edge) == endpoint)
           || (G.vertexFlags(endpoint).head._1 != edge && G.edgeVertexIncidences(edge)._2 == endpoint)
-          ) "->-" else "-<-" 
+          ) "->" else "<-" 
         decoratedEdges = decoratedEdges.updated(edge, if (decoratedEdges.isDefinedAt(edge)) decoratedEdges(edge) ++ s", $styleStr" else styleStr)
       }
+      * 
+      */
     }
 
     draw(new PlanarGraph(G.outerFace, modifiedVertexFlags, G.labels, G.loops), decoratedEdges, decoratedVertices, hideBoundary)
@@ -174,8 +176,7 @@ trait DrawPlanarGraph {
       val edge = G.vertexFlags.head(k)._1
       val target = G.target(0, edge)
       if (target != 0) { // If target is an internal vertex
-        edgeEndpts = (edge, if (G.edgeVertexIncidences(edge)._1 == 0) (boundaryPoint(k), target) else (target, boundaryPoint(k))) +: edgeEndpts
-          // Add edge, ensuring the new label for the boundary point replaces the original 0 label. 
+        edgeEndpts = (edge, (target, boundaryPoint(k))) +: edgeEndpts // Add edge, ensuring that the boundary vertex is the second entry
         // And update adjacency to the correct boundary point
         val index = G.vertexFlags(target).indexOf(G.vertexFlags(target).find(_._1 == edge).get)
         assert(index != -1, "Problem parsing boundary edges")
@@ -233,9 +234,7 @@ trait DrawPlanarGraph {
 
     // WRITE TikZ
     var tikzString = s"""\\begin{tikzpicture}
-                        |[scale=$imageScale,${if (globalStyle != "") s"$globalStyle," else ""}
-                        |->-/.style={decoration={markings, mark=at position .5 with{\\arrow{>}}}, postaction={decorate}},
-                        |-<-/.style={decoration={markings, mark=at position .5 with{\\arrow{<}}}, postaction={decorate}}]
+                        |[scale=$imageScale${if (globalStyle != "") s", $globalStyle" else ""}]
                         |\\draw[gray, dashed] (0,0) circle (1.0);\n""".stripMargin
     // Place boundary points
     for (i <- 0 until G.numberOfBoundaryPoints) {
@@ -288,7 +287,7 @@ trait DrawPlanarGraph {
     // Writes TikZ to tex file and runs pdflatex
     val processedCrossings = if (crossings.isEmpty) for (i <- 0 until Gs.length) yield Map[Int, Int]() else crossings // Hacky! :\
     val outputStr = (Gs zip processedCrossings).map((t: (PlanarGraph, Map[Int, Int])) => DrawPlanarGraph(t._1, t._2)).mkString(
-      "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
+      "\\documentclass{article}\n\\usepackage{tikz}\n\\pagestyle{empty}\\begin{document}\n",
       "\\bigskip\\bigskip\n\n",
       "\n\\end{document}")
     
