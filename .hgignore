@@ -20,6 +20,7 @@ fusion-rings/
 fusion-rings2/
 
 algebra-spiders/src/main/mathematica/groebnerCalculations.m
+algebra-spiders/src/main/mathematica/graphs/
 
 *.out
 */.tmpBin
