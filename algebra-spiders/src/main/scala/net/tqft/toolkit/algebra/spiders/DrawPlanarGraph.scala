@@ -17,11 +17,15 @@ trait DrawPlanarGraph {
   def boundaryWeight: Double
   def imageScale: Double
   def globalStyle: String
+  def drawBoundary: Boolean
 
-  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
-  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
-  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
-
+  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary)
+  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary)
+  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary)
+  def showBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, true)
+  def hideBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, false)
+  
+  
   private def round(x: Double, n: Int): Double = rint(x * pow(10, n)) / pow(10, n) // Rounds x to n decimal places, used to round coordinate values
   private def sortTuple(t: Tuple2[Int, Int]) = if (t._1 <= t._2) t else (t._2, t._1)
   private def cyclicReverse[A](xs: Seq[A]) = xs.head +: xs.tail.reverse
@@ -38,7 +42,7 @@ trait DrawPlanarGraph {
   var pdflatexPath = getProgramPath("pdflatex", List("/usr/texbin"))
   var pdfcropPath = getProgramPath("pdfcrop", List("/usr/texbin"))
 
-  def apply(G: PlanarGraph, crossings: Map[Int, Int] = Map.empty, hideDiskBoundary: Boolean = false): String = {
+  def apply(G: PlanarGraph, crossings: Map[Int, Int] = Map.empty): String = {
     // Draws regular, closed and knotted PlanarGraphs by doing some preprocessing and then calling draw.
     // Draws over and undercrossings with or without orientations labeled, according to the parameter crossings: Map[vertex: Int, sign: Int].
     // sign > 0, < 0, = 0 means positive, negative, unoriented crossing resp.
@@ -145,10 +149,10 @@ trait DrawPlanarGraph {
       }
     }
 
-    draw(new PlanarGraph(G.outerFace, modifiedVertexFlags, G.labels, G.loops), decoratedEdges, decoratedVertices, hideBoundaryEdges, hideDiskBoundary)
+    draw(new PlanarGraph(G.outerFace, modifiedVertexFlags, G.labels, G.loops), decoratedEdges, decoratedVertices, hideBoundaryEdges)
   }
 
-  private def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundaryEdges: Boolean, hideDiskBoundary: Boolean): String = {
+  private def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundaryEdges: Boolean): String = {
     // Draws planar graphs, outputs LaTeX TikZ code.
     // Allows fine control of edge and internal vertex styles via decoratedEdges and decoratedVertices.
     // hideBoundary hides all vertices and edges connected to the boundary. Used mainly to draw closed graphs.
@@ -236,7 +240,7 @@ trait DrawPlanarGraph {
                         |[scale=$imageScale,${if (globalStyle != "") s"$globalStyle," else ""}
                         |->-/.style={decoration={markings, mark=at position .5 with{\\arrow{>}}}, postaction={decorate}},
                         |-<-/.style={decoration={markings, mark=at position .5 with{\\arrow{<}}}, postaction={decorate}}]
-                        |${if (!hideDiskBoundary) "\\draw[gray, dashed] (0,0) circle (1.0);\n" else ""} """.stripMargin
+                        |${if (drawBoundary) "\\draw[gray, dashed] (0,0) circle (1.0);\n" else ""} """.stripMargin
     // Place boundary points
     for (i <- 0 until G.numberOfBoundaryPoints) {
       tikzString = tikzString ++ s"\\node${if (hideBoundaryEdges) "[draw=none, minimum size=0pt]" else ""} (${boundaryPoint(i)}) at ${boundaryPointCoords(i)} {};\n"
@@ -280,14 +284,14 @@ trait DrawPlanarGraph {
     return tikzString
   }
 
-  def pdf(pdfPath: String, g: PlanarGraph, crossings: Map[Int, Int] = Map.empty, hideDiskBoundary: Boolean = false) {
-    pdfMultiple(pdfPath, Seq(g), Seq(crossings), hideDiskBoundary)
+  def pdf(pdfPath: String, g: PlanarGraph, crossings: Map[Int, Int] = Map.empty) {
+    pdfMultiple(pdfPath, Seq(g), Seq(crossings))
   }
 
-  def pdfMultiple(pdfPath: String, Gs: Seq[PlanarGraph], crossings: Seq[Map[Int, Int]] = Seq.empty, hideDiskBoundary: Boolean = false): Unit = {
+  def pdfMultiple(pdfPath: String, Gs: Seq[PlanarGraph], crossings: Seq[Map[Int, Int]] = Seq.empty): Unit = {
     // Writes TikZ to tex file and runs pdflatex
     val processedCrossings = if (crossings.isEmpty) for (i <- 0 until Gs.length) yield Map[Int, Int]() else crossings // Hacky! :\
-    val outputStr = (Gs zip processedCrossings).map((t: (PlanarGraph, Map[Int, Int])) => DrawPlanarGraph(t._1, t._2, hideDiskBoundary)).mkString(
+    val outputStr = (Gs zip processedCrossings).map((t: (PlanarGraph, Map[Int, Int])) => DrawPlanarGraph(t._1, t._2)).mkString(
       "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
       "\\bigskip\\bigskip\n\n",
       "\n\\end{document}")
@@ -337,6 +341,7 @@ object DrawPlanarGraph extends DrawPlanarGraph {
   override val boundaryWeight: Double = 1.0
   override val imageScale: Double = 1.5
   override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}"
+  override val drawBoundary = true
 }
 
-case class CustomizedDrawPlanarGraph(val boundaryWeight: Double, val imageScale: Double, val globalStyle: String) extends DrawPlanarGraph
+case class CustomizedDrawPlanarGraph(val boundaryWeight: Double, val imageScale: Double, val globalStyle: String, val drawBoundary: Boolean) extends DrawPlanarGraph
