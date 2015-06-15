@@ -10,6 +10,7 @@ import scala.annotation._
 import scala.util.Try
 import org.apache.commons.io.FilenameUtils
 import java.nio.file.Path
+import net.tqft.toolkit.SHA1
 
 trait DrawPlanarGraph {
   // boundaryWeight controls how much to weight the boundary points when calculating the positions of the internal vertices.
@@ -26,7 +27,10 @@ trait DrawPlanarGraph {
   def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, outputPath)
   def showBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, true, outputPath)
   def hideBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, false, outputPath)
-  def withOutputPath(outputPath: Path): DrawPlanarGraph = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, outputPath)
+  def withOutputPath(outputPath: Path): DrawPlanarGraph = {
+    Files.createDirectories(outputPath)
+    CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, outputPath)
+  }
   def withOutputPath(outputPath: String): DrawPlanarGraph = withOutputPath(Paths.get(outputPath))
 
   private def round(x: Double, n: Int): Double = rint(x * pow(10, n)) / pow(10, n) // Rounds x to n decimal places, used to round coordinate values
@@ -281,13 +285,16 @@ trait DrawPlanarGraph {
     return tikzString
   }
 
-  def writePDF(g: PlanarGraph, crossings: Map[Int, Int] = Map.empty)(filename: String = g.toString + ".pdf") = {
-    pdfMultiple(outputPath.resolve(filename), Seq(g), Seq(crossings))
-    filename
+  private def filenameForGraph(g: PlanarGraph) = "urn:sha1:" + SHA1(g.toString) + ".pdf"
+  
+  def writePDF(g: PlanarGraph, crossings: Map[Int, Int] = Map.empty)(filename: String = filenameForGraph(g)): Path = {
+    val path = outputPath.resolve(outputPath.resolve(filename))
+    pdfMultiple(path, Seq(g), Seq(crossings))
+    path
   }
 
   def createPDF(g: PlanarGraph, crossings: Map[Int, Int] = Map.empty) = {
-    val path = outputPath.resolve(g.toString + ".pdf")
+    val path = outputPath.resolve(filenameForGraph(g))
     if (Files.exists(path)) {
       path
     } else {
