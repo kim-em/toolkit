@@ -206,6 +206,19 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
         Seq(pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index).tally.values.toSeq.sorted,
           pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index + 1).tally.values.toSeq.sorted).sorted
       }
+      /*
+       * Narjess points out in an email 2015-06-02 that she does something different,
+       * which is likely much more efficient:
+       * 
+       * 1. This is what I do: 
+       * I call nauty to calculate the canonical labeling of all the vertices. 
+       * Then I consider all the vertices on the dual graph (caution, later) 
+       * at the the working depth with the largest degree (among all vertices 
+       * at the  working depth on the dual graph) and then choose the vertex 
+       * with the largest canonical label amongst these vertices. Then I accept 
+       * 'P' only if this vertex is in the same orbit as v.
+       * 
+      */
     }) .refineByPartialFunction({
         case DeleteSelfDualVertex(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index))))
         case DeleteDualPairAtEvenDepth(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index), pair.graphLabel(graph, pair(graph).bigraph.depth, index + 1))))
