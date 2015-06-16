@@ -20,16 +20,18 @@ trait DrawPlanarGraph {
   def imageScale: Double
   def globalStyle: String
   def drawBoundary: Boolean
+  def drawAsCrossings: (Option[Int], Option[Int], Option[Int])
   def outputPath: Path
-
-  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, outputPath)
-  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, outputPath)
-  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, outputPath)
-  def showBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, true, outputPath)
-  def hideBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, false, outputPath)
+  
+  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings,outputPath)
+  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings,outputPath)
+  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings,outputPath)
+  def showBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, true, drawAsCrossings,outputPath)
+  def hideBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, false, drawAsCrossings,outputPath)
+  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, (unoriented, positive, negative),outputPath)
   def withOutputPath(outputPath: Path): DrawPlanarGraph = {
     Files.createDirectories(outputPath)
-    CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, outputPath)
+    CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings,outputPath)
   }
   def withOutputPath(outputPath: String): DrawPlanarGraph = withOutputPath(Paths.get(outputPath))
 
@@ -51,11 +53,19 @@ trait DrawPlanarGraph {
   var gsPath = getProgramPath("gs", List("/usr/bin", "/usr/local/bin"))
   var pdfcropPath = getProgramPath("pdfcrop", List("/usr/texbin"))
 
-  def apply(G: PlanarGraph, crossings: Map[Int, Int] = Map.empty): String = {
+  def apply(G: PlanarGraph): String = {
     // Draws regular, closed and knotted PlanarGraphs by doing some preprocessing and then calling draw.
-    // Draws over and undercrossings with or without orientations labeled, according to the parameter crossings: Map[vertex: Int, sign: Int].
-    // sign > 0, < 0, = 0 means positive, negative, unoriented crossing resp.
-
+    // Draws over and undercrossings with or without orientation.
+    
+    val crossings: Map[Int, Int] = {
+      G.vertexFlags.tail.map(_.size).zip(G.labels).zipWithIndex.collect({
+        case ((4, (2, l)), i) if drawAsCrossings._1.nonEmpty && l == drawAsCrossings._1.get => i -> 0
+        case ((4, (4, l)), i) if drawAsCrossings._2.nonEmpty && l == drawAsCrossings._2.get => i -> 1
+        case ((4, (4, l)), i) if drawAsCrossings._3.nonEmpty && l == drawAsCrossings._3.get => i -> -1
+      }).toMap
+    }
+    
+    
     var modifiedVertexFlags = G.vertexFlags
     var decoratedEdges = Map[Int, String]()
     var decoratedVertices = Map[Int, String]()
@@ -287,25 +297,24 @@ trait DrawPlanarGraph {
 
   private def filenameForGraph(g: PlanarGraph) = "urn:sha1:" + SHA1(g.toString) + ".pdf"
   
-  def writePDF(g: PlanarGraph, crossings: Map[Int, Int] = Map.empty)(filename: String = filenameForGraph(g)): Path = {
+  def writePDF(g: PlanarGraph)(filename: String = filenameForGraph(g)): Path = {
     val path = outputPath.resolve(outputPath.resolve(filename))
-    pdfMultiple(path, Seq(g), Seq(crossings))
+    pdfMultiple(path, Seq(g))
     path
   }
 
-  def createPDF(g: PlanarGraph, crossings: Map[Int, Int] = Map.empty) = {
+  def createPDF(g: PlanarGraph) = {
     val path = outputPath.resolve(filenameForGraph(g))
     if (Files.exists(path)) {
       path
     } else {
-      writePDF(g, crossings)()
+      writePDF(g)()
     }
   }
 
-  def pdfMultiple(pdfPath: Path, Gs: Seq[PlanarGraph], crossings: Seq[Map[Int, Int]] = Seq.empty): Unit = {
+  def pdfMultiple(pdfPath: Path, Gs: Seq[PlanarGraph]): Unit = {
     // Writes TikZ to tex file and runs pdflatex
-    val processedCrossings = if (crossings.isEmpty) for (i <- 0 until Gs.length) yield Map[Int, Int]() else crossings // Hacky! :\
-    val outputStr = (Gs zip processedCrossings).map((t: (PlanarGraph, Map[Int, Int])) => DrawPlanarGraph(t._1, t._2)).mkString(
+    val outputStr = Gs.map(DrawPlanarGraph.apply).mkString(
       "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
       "\\bigskip\\bigskip\n\n",
       "\n\\end{document}")
@@ -321,26 +330,6 @@ trait DrawPlanarGraph {
     catch {
       case e: java.lang.Exception => { println(s"Error: Problem running '$pdflatexCommand'! Maybe check the filename and that the path exists?"); throw e }
     }
-    // TODO ideally, we should also crop to the bounding box, because I'll want to embed these pdfs elsewhere.
-    // here's a snippet of mathematica code that shows how, using pdfcrop:
-    /*
-       gs = FileNames[{"/usr/bin/gs", "/usr/local/bin/gs"}][[1]];
-       Run[
-       "
-         cat top-template > document.tex;
-         cat snippet >> document.tex;
-         cat bottom-template >> document.tex;
-         /usr/texbin/pdflatex document.tex;
-         /usr/texbin/pdfcrop document.pdf --gscmd " <> gs <> 
-         " --pdftexcmd /usr/texbin/pdftex --verbose --debug;
-         " <> gs <> 
-         " -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=finished.pdf \
-      document-crop.pdf;
-         rm tmp-pdfcrop-*;
-         rm document.*;
-         rm snippet;
-       "]
-    */
     try pdfcropCommand.!!
     catch {
       case e: java.lang.Exception => { println(s"Error: Problem running '$pdfcropCommand'! Do you have pdfcrop installed?"); throw e }
@@ -361,6 +350,7 @@ object DrawPlanarGraph extends DrawPlanarGraph {
   override val imageScale: Double = 1.5
   override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}"
   override val drawBoundary = true
+  override val drawAsCrossings = (Some(0), None, None)
   override val outputPath = Files.createTempDirectory("planar-graphs")
 }
 
@@ -369,4 +359,5 @@ case class CustomizedDrawPlanarGraph(
   val imageScale: Double,
   val globalStyle: String,
   val drawBoundary: Boolean,
+  val drawAsCrossings: (Option[Int], Option[Int], Option[Int]),
   val outputPath: Path) extends DrawPlanarGraph
