@@ -22,16 +22,16 @@ trait DrawPlanarGraph {
   def drawBoundary: Boolean
   def drawAsCrossings: (Option[Int], Option[Int], Option[Int])
   def outputPath: Path
-  
-  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings,outputPath)
-  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings,outputPath)
-  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings,outputPath)
-  def showBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, true, drawAsCrossings,outputPath)
-  def hideBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, false, drawAsCrossings,outputPath)
-  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, (unoriented, positive, negative),outputPath)
+
+  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def showBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, true, drawAsCrossings, outputPath)
+  def hideBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, false, drawAsCrossings, outputPath)
+  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, (unoriented, positive, negative), outputPath)
   def withOutputPath(outputPath: Path): DrawPlanarGraph = {
     Files.createDirectories(outputPath)
-    CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings,outputPath)
+    CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
   }
   def withOutputPath(outputPath: String): DrawPlanarGraph = withOutputPath(Paths.get(outputPath))
 
@@ -56,16 +56,16 @@ trait DrawPlanarGraph {
   def apply(G: PlanarGraph): String = {
     // Draws regular, closed and knotted PlanarGraphs by doing some preprocessing and then calling draw.
     // Draws over and undercrossings with or without orientation.
-    
+
     val crossings: Map[Int, Int] = {
       G.vertexFlags.tail.map(_.size).zip(G.labels).zipWithIndex.collect({
-        case ((4, (2, l)), i) if drawAsCrossings._1.nonEmpty && l == drawAsCrossings._1.get => i -> 0
-        case ((4, (4, l)), i) if drawAsCrossings._2.nonEmpty && l == drawAsCrossings._2.get => i -> 1
-        case ((4, (4, l)), i) if drawAsCrossings._3.nonEmpty && l == drawAsCrossings._3.get => i -> -1
+        case ((4, (2, l)), i) if drawAsCrossings._1.nonEmpty && l == drawAsCrossings._1.get => (i + 1) -> 0
+        case ((4, (4, l)), i) if drawAsCrossings._2.nonEmpty && l == drawAsCrossings._2.get => (i + 1) -> 1
+        case ((4, (4, l)), i) if drawAsCrossings._3.nonEmpty && l == drawAsCrossings._3.get => (i + 1) -> -1
       }).toMap
     }
-    
-    
+    println(s"crossings: $crossings")
+
     var modifiedVertexFlags = G.vertexFlags
     var decoratedEdges = Map[Int, String]()
     var decoratedVertices = Map[Int, String]()
@@ -296,7 +296,7 @@ trait DrawPlanarGraph {
   }
 
   private def filenameForGraph(g: PlanarGraph) = "urn:sha1:" + SHA1(g.toString) + ".pdf"
-  
+
   def writePDF(g: PlanarGraph)(filename: String = filenameForGraph(g)): Path = {
     val path = outputPath.resolve(outputPath.resolve(filename))
     pdfMultiple(path, Seq(g))
@@ -325,7 +325,7 @@ trait DrawPlanarGraph {
     val pdflatexCommand = s"$pdflatexPath ${if (fullPath == "") "" else s"-output-directory=$fullPath"} $fullPath$baseName.tex"
     val pdfcropCommand = s"$pdfcropPath $fullPath$baseName.pdf --gscmd $gsPath --pdftexcmd $pdftexPath"
     val gsCommand = s"$gsPath -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=$fullPath$baseName.pdf $fullPath$baseName-crop.pdf"
-    
+
     try pdflatexCommand.!!
     catch {
       case e: java.lang.Exception => { println(s"Error: Problem running '$pdflatexCommand'! Maybe check the filename and that the path exists?"); throw e }
