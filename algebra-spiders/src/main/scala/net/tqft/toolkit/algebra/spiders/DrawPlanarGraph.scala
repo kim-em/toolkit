@@ -4,12 +4,11 @@ import net.tqft.toolkit.algebra.spiders._
 import scala.math._
 import breeze.linalg._
 import java.nio.charset.StandardCharsets
-import java.nio.file.{ Paths, Files }
+import java.nio.file.{ Path, Paths, Files }
 import scala.sys.process._
 import scala.annotation._
 import scala.util.Try
 import org.apache.commons.io.FilenameUtils
-import java.nio.file.Path
 import net.tqft.toolkit.SHA1
 
 trait DrawPlanarGraph {
@@ -211,7 +210,8 @@ trait DrawPlanarGraph {
       yield (round(cos(Pi / 2 + 2 * Pi * k / G.numberOfBoundaryPoints), 6),
       round(sin(Pi / 2 + 2 * Pi * k / G.numberOfBoundaryPoints), 6))
     val internalVertexCoords =
-      if (G.numberOfInternalVertices != 0) {
+      if (G.numberOfInternalVertices == 1) IndexedSeq((0.0, 0.0))
+      else if (G.numberOfInternalVertices > 1) {
         val M = DenseMatrix.zeros[Double](G.numberOfInternalVertices, G.numberOfInternalVertices + G.numberOfBoundaryPoints)
         for (v <- 1 until vertexAdjs.length) {
           M(v - 1, v - 1) = -vertexAdjs(v).distinct.length // M(v-1,v-1) = -#neighbours of vertex v (we don't need the coords of the zeroth vertex) 
