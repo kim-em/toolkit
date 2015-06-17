@@ -17,10 +17,10 @@ trait DrawPlanarGraph {
   def boundaryWeight: Double
   def imageScale: Double
   def globalStyle: String
-
-  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
-  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
-  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
+  
+  def withBoundaryWeight(boundaryWeight: Double) = new CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
+  def withImageScale(imageScale: Double) = new CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
+  def withGlobalStyle(globalStyle: String) = new CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
 
   private def round(x: Double, n: Int): Double = rint(x * pow(10, n)) / pow(10, n) // Rounds x to n decimal places, used to round coordinate values
   private def sortTuple(t: Tuple2[Int, Int]) = if (t._1 <= t._2) t else (t._2, t._1)
@@ -148,7 +148,7 @@ trait DrawPlanarGraph {
     draw(new PlanarGraph(G.outerFace, modifiedVertexFlags, G.labels, G.loops), decoratedEdges, decoratedVertices, hideBoundaryEdges, hideDiskBoundary)
   }
 
-  private def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundaryEdges: Boolean, hideDiskBoundary: Boolean): String = {
+  def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundaryEdges: Boolean, hideDiskBoundary: Boolean): String = {
     // Draws planar graphs, outputs LaTeX TikZ code.
     // Allows fine control of edge and internal vertex styles via decoratedEdges and decoratedVertices.
     // hideBoundary hides all vertices and edges connected to the boundary. Used mainly to draw closed graphs.
@@ -189,6 +189,8 @@ trait DrawPlanarGraph {
     }
     // Append all other edges
     edgeEndpts = edgeEndpts ++ (for (edge <- G.internalEdges) yield (edge, G.edgeVertexIncidences(edge)))
+    // Distinct neighbours of vertices
+    val distinctVertexAdjs = for (v <- 0 until vertexAdjs.length) yield vertexAdjs(v).distinct diff Seq(v)
 
     // NODES
     // Fix coords of boundary points and calculate coords of internal vertices as the weighted barycenters of their neighbours.
@@ -200,7 +202,7 @@ trait DrawPlanarGraph {
       else if (G.numberOfInternalVertices > 1) {
         val M = DenseMatrix.zeros[Double](G.numberOfInternalVertices, G.numberOfInternalVertices + G.numberOfBoundaryPoints)
         for (v <- 1 until vertexAdjs.length) {
-          M(v - 1, v - 1) = -vertexAdjs(v).distinct.length // M(v-1,v-1) = -#neighbours of vertex v (we don't need the coords of the zeroth vertex) 
+          M(v - 1, v - 1) = -distinctVertexAdjs(v).length // M(v-1,v-1) = -# distinct neighbours of vertex v (we don't draw the external, zeroth vertex) 
           for (w <- vertexAdjs(v)) { // M(v,w) = 1 for all neighbours w of v, modulo appropriate indexing
             M(v - 1, w - 1) = if (w > G.numberOfInternalVertices) boundaryWeight else 1.0 // Weight boundary points more heavily to pull graph closer to boundary 
           }
@@ -288,7 +290,7 @@ trait DrawPlanarGraph {
   def pdfMultiple(pdfPath: String, Gs: Seq[PlanarGraph], crossings: Seq[Map[Int, Int]] = Seq.empty, hideDiskBoundary: Boolean = false): Unit = {
     // Writes TikZ to tex file and runs pdflatex
     val processedCrossings = if (crossings.isEmpty) for (i <- 0 until Gs.length) yield Map[Int, Int]() else crossings // Hacky! :\
-    val outputStr = (Gs zip processedCrossings).map((t: (PlanarGraph, Map[Int, Int])) => DrawPlanarGraph(t._1, t._2, hideDiskBoundary)).mkString(
+    val outputStr = (Gs zip processedCrossings).map((t: (PlanarGraph, Map[Int, Int])) => apply(t._1, t._2, hideDiskBoundary)).mkString(
       "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
       "\\bigskip\\bigskip\n\n",
       "\n\\end{document}")
@@ -340,4 +342,4 @@ object DrawPlanarGraph extends DrawPlanarGraph {
   override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}"
 }
 
-case class CustomizedDrawPlanarGraph(val boundaryWeight: Double, val imageScale: Double, val globalStyle: String) extends DrawPlanarGraph
+case class CustomizedDrawPlanarGraph(override val boundaryWeight: Double, override val imageScale: Double, override val globalStyle: String) extends DrawPlanarGraph
