@@ -4,12 +4,11 @@ import net.tqft.toolkit.algebra.spiders._
 import scala.math._
 import breeze.linalg._
 import java.nio.charset.StandardCharsets
-import java.nio.file.{ Paths, Files }
+import java.nio.file.{ Path, Paths, Files }
 import scala.sys.process._
 import scala.annotation._
 import scala.util.Try
 import org.apache.commons.io.FilenameUtils
-import java.nio.file.Path
 import net.tqft.toolkit.SHA1
 
 trait DrawPlanarGraph {
