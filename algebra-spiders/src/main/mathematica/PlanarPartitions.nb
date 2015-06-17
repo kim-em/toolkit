@@ -1,0 +1,244 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      8021,        235]
+NotebookOptionsPosition[      7507,        212]
+NotebookOutlinePosition[      7864,        228]
+CellTagsIndexPosition[      7821,        225]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"Clear", "[", "PlanarPartitions", "]"}]], "Input",
+ CellChangeTimes->{{3.6420668042765083`*^9, 3.642066807302369*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"PlanarPartitions", "[", 
+   RowBox[{"size_Integer", ",", 
+    RowBox[{"allowSingletons", ":", 
+     RowBox[{"(", 
+      RowBox[{"True", "|", "False"}], ")"}], ":", "False"}]}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"PlanarPartitions", "[", 
+    RowBox[{"size", ",", "allowSingletons"}], "]"}], "=", 
+   RowBox[{"PlanarPartitionsInternal", "[", 
+    RowBox[{
+     RowBox[{"Range", "[", "size", "]"}], ",", "allowSingletons"}], 
+    "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"PlanarPartitions", "[", 
+    RowBox[{"set_", ",", 
+     RowBox[{"allowSingletons", ":", 
+      RowBox[{"(", 
+       RowBox[{"True", "|", "False"}], ")"}], ":", "False"}]}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"PlanarPartitions", "[", 
+     RowBox[{
+      RowBox[{"Length", "[", "set", "]"}], ",", "allowSingletons"}], "]"}], "/.", 
+    RowBox[{"i_Integer", "\[RuleDelayed]", 
+     RowBox[{
+     "set", "\[LeftDoubleBracket]", "i", "\[RightDoubleBracket]"}]}]}]}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"PlanarPartitionsInternal", "[", 
+   RowBox[{"set_", ",", "allowSingletons_"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "min", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"min", "=", 
+      RowBox[{"If", "[", 
+       RowBox[{"allowSingletons", ",", "1", ",", "2"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"Flatten", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Function", "[", 
+         RowBox[{
+          RowBox[{"{", "nextPart", "}"}], ",", 
+          RowBox[{"PlanarPartitionsInternal", "[", 
+           RowBox[{"set", ",", 
+            RowBox[{
+             RowBox[{"Take", "[", 
+              RowBox[{"set", ",", "1"}], "]"}], "~", "Join", "~", 
+             "nextPart"}], ",", "allowSingletons"}], "]"}]}], "]"}], "/@", 
+        RowBox[{"Subsets", "[", 
+         RowBox[{
+          RowBox[{"Rest", "[", "set", "]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"min", "-", "1"}], ",", 
+            RowBox[{"Length", "[", "set", "]"}]}], "}"}]}], "]"}]}], ",", 
+       "1"}], "]"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"PlanarPartitionsInternal", "[", 
+   RowBox[{
+    RowBox[{"{", "}"}], ",", "allowSingletons_"}], "]"}], ":=", 
+  RowBox[{"{", 
+   RowBox[{"{", "}"}], "}"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"PlanarPartitionsInternal", "[", 
+   RowBox[{"set_", ",", "nextPart_", ",", "allowSingletons_"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"chunks", ",", "S"}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"chunks", "=", 
+      RowBox[{"DeleteCases", "[", 
+       RowBox[{
+        RowBox[{"SplitBy", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"RotateLeft", "[", 
+            RowBox[{"set", ",", 
+             RowBox[{
+              RowBox[{"Position", "[", 
+               RowBox[{"set", ",", 
+                RowBox[{
+                "nextPart", "\[LeftDoubleBracket]", "1", 
+                 "\[RightDoubleBracket]"}], ",", "1", ",", "1"}], "]"}], 
+              "\[LeftDoubleBracket]", 
+              RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}]}], "]"}], "/.", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"#", "\[Rule]", "S"}], "&"}], "/@", "nextPart"}], 
+            ")"}]}], ",", 
+          RowBox[{
+           RowBox[{"#", "===", "S"}], "&"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"S", ".."}], "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Length", "[", "chunks", "]"}], "\[Equal]", "0"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{"{", "nextPart", "}"}], "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Prepend", "[", 
+          RowBox[{"#", ",", "nextPart"}], "]"}], "&"}], "/@", 
+        RowBox[{"Flatten", "[", 
+         RowBox[{
+          RowBox[{"Outer", "[", 
+           RowBox[{"List", ",", 
+            RowBox[{"Sequence", "@@", 
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"PlanarPartitions", "[", 
+                 RowBox[{"#", ",", "allowSingletons"}], "]"}], "&"}], "/@", 
+               "chunks"}], ")"}]}], ",", "1"}], "]"}], ",", 
+          RowBox[{
+           RowBox[{"Length", "[", "chunks", "]"}], "-", "1"}]}], "]"}]}]}], 
+      "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}]}], "Input",
+ CellChangeTimes->{{3.642062889371831*^9, 3.642063012579582*^9}, {
+   3.642063059149744*^9, 3.642063213378667*^9}, {3.642063249536931*^9, 
+   3.64206346830932*^9}, {3.642063510163216*^9, 3.6420635238022947`*^9}, {
+   3.642063565968606*^9, 3.642063567785694*^9}, {3.642063635890691*^9, 
+   3.642063657563753*^9}, {3.642063903146886*^9, 3.642063961448489*^9}, {
+   3.642063998128573*^9, 3.642064042147942*^9}, {3.642066706706484*^9, 
+   3.6420668211942244`*^9}, 3.642066855597293*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PlanarPartitions", "[", "4", "]"}]], "Input",
+ CellChangeTimes->{{3.6420668110058203`*^9, 3.6420668137896013`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"{", 
+       RowBox[{"3", ",", "4"}], "}"}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "4"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"{", 
+       RowBox[{"2", ",", "3"}], "}"}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}], "}"}]}], 
+  "}"}]], "Output",
+ CellChangeTimes->{{3.642066814232749*^9, 3.642066825144681*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"PlanarPartitions", "[", "16", "]"}], "//", "Length"}], "//", 
+  "AbsoluteTiming"}]], "Input",
+ CellChangeTimes->{{3.6420633440653152`*^9, 3.6420633736647787`*^9}, {
+  3.642064046550867*^9, 3.642064087295024*^9}, {3.642064149741705*^9, 
+  3.6420641744850903`*^9}, {3.642066836215356*^9, 3.642066848517433*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "11.58460799999999935039340925868600606918`7.084481255996278", ",", 
+   "227475"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.6420633743988733`*^9, 3.642063434689528*^9, 3.64206347169145*^9, 
+   3.642063525640134*^9, 3.642063569454749*^9, 3.642063659909513*^9, {
+   3.642063909786724*^9, 3.642063962700225*^9}, {3.642064016019739*^9, 
+   3.642064085374832*^9}, {3.6420641470821342`*^9, 3.642064185842122*^9}, {
+   3.642066831128317*^9, 3.642066860650482*^9}}]
+}, Open  ]]
+},
+WindowSize->{1011, 775},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 141, 2, 28, "Input"],
+Cell[702, 24, 5112, 132, 354, "Input"],
+Cell[CellGroupData[{
+Cell[5839, 160, 139, 2, 28, "Input"],
+Cell[5981, 164, 613, 21, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6631, 190, 356, 7, 28, "Input"],
+Cell[6990, 199, 501, 10, 28, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
