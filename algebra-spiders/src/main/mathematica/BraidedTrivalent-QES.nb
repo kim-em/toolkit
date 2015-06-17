@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    319373,       6065]
-NotebookOptionsPosition[    317612,       6002]
-NotebookOutlinePosition[    317971,       6018]
-CellTagsIndexPosition[    317928,       6015]
+NotebookDataLength[    339244,       6533]
+NotebookOptionsPosition[    337247,       6462]
+NotebookOutlinePosition[    337605,       6478]
+CellTagsIndexPosition[    337562,       6475]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -3045,7 +3045,8 @@ Cell[BoxData[
              StyleBox[
               DynamicBox[ToBoxes[
                 FEPrivate`FrontEndResource["FEStrings", "sizeShowLess"], 
-                StandardForm]],
+                StandardForm],
+               ImageSizeCache->{51., {0., 8.}}],
               StripOnInput->False,
               DynamicUpdating->True], "SuggestionsBarControlActive",
              StripOnInput->False]}, Dynamic[
@@ -3075,7 +3076,8 @@ Cell[BoxData[
              StyleBox[
               DynamicBox[ToBoxes[
                 FEPrivate`FrontEndResource["FEStrings", "sizeShowMore"], 
-                StandardForm]],
+                StandardForm],
+               ImageSizeCache->{56., {0., 8.}}],
               StripOnInput->False,
               DynamicUpdating->True], "SuggestionsBarControlActive",
              StripOnInput->False]}, Dynamic[
@@ -3192,6 +3194,460 @@ Cell[BoxData[
 Cell[CellGroupData[{
 
 Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"There", "'"}], "s", " ", "no", " ", "good", " ", "reason", " ", 
+     "for", " ", "this"}], ";", " ", 
+    RowBox[{"just", " ", "stuff", " ", "goes", " ", "weirdly", " ", 
+     RowBox[{"wrong", " ", ":", 
+      RowBox[{"-", 
+       RowBox[{"(", " ", "otherwise", " "}]}]}]}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"QES4", "=", 
+   RowBox[{
+    RowBox[{"DeclarePolynomialNonZero", "[", 
+     RowBox[{
+      SuperscriptBox["z", "2"], "+", "1"}], "]"}], "[", "QES4", 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6435209688006563`*^9, 3.64352099775909*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{z^2+1\\\\right\\\\}\\) \
+and then require that each is nonzero.\"\>"], "Print",
+ CellChangeTimes->{3.6435210039299393`*^9}],
+
+Cell[BoxData["\<\"We find the factors \\(\\\\left\\\\{z^2+1\\\\right\\\\}\\) \
+and then require that each is nonzero.\"\>"], "Print",
+ CellChangeTimes->{3.643521004108348*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[
+  TagBox[
+   FrameBox[GridBox[{
+      {
+       ItemBox[
+        TagBox[
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+            RowBox[{
+             InterpretationBox[
+              RowBox[{"\[LeftGuillemet]", 
+               RowBox[{"JavaObject", "[", 
+                RowBox[{
+                "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                 "spiders", ".", "examples", ".", "QuotientSpider"}], "]"}], 
+               "\[RightGuillemet]"}],
+              JLink`Objects`vm1`JavaObject2980779831328769], ",", 
+             RowBox[{"Manifold", "[", 
+              TemplateBox[{"1"},
+               "OutputSizeLimit`Skeleton",
+               DisplayFunction->(FrameBox[
+                 
+                 RowBox[{
+                  "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                 Background -> GrayLevel[0.75], 
+                 BaseStyle -> {
+                  "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                   ShowStringCharacters -> False}, BaselinePosition -> 
+                 Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                 FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )], 
+              "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{"1", ",", "1"}], "}"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"0", ",", "0"}], "}"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"1", ",", "1"}], "}"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"1", ",", "1"}], "}"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"5", ",", "5"}], "}"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"16", ",", "16"}], "}"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"0", ",", "80"}], "}"}]}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{
+               InterpretationBox[
+                RowBox[{"\[LeftGuillemet]", 
+                 RowBox[{"JavaObject", "[", 
+                  RowBox[{
+                  "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                   "spiders", ".", "PlanarGraph"}], "]"}], 
+                 "\[RightGuillemet]"}],
+                JLink`Objects`vm1`JavaObject13962315472830465], ",", 
+               TemplateBox[{"6"},
+                "OutputSizeLimit`Skeleton",
+                DisplayFunction->(FrameBox[
+                  
+                  RowBox[{
+                   "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                  Background -> GrayLevel[0.75], 
+                  BaseStyle -> {
+                   "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                    ShowStringCharacters -> False}, BaselinePosition -> 
+                  Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                  FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )], 
+               ",", 
+               InterpretationBox[
+                RowBox[{"\[LeftGuillemet]", 
+                 RowBox[{"JavaObject", "[", 
+                  RowBox[{
+                  "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                   "spiders", ".", "PlanarGraph"}], "]"}], 
+                 "\[RightGuillemet]"}],
+                JLink`Objects`vm1`JavaObject25441781839560705]}], "}"}], ",", 
+             
+             RowBox[{"{", 
+              RowBox[{
+               InterpretationBox[
+                RowBox[{"\[LeftGuillemet]", 
+                 RowBox[{"JavaObject", "[", 
+                  RowBox[{
+                  "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                   "spiders", ".", "PlanarGraph"}], "]"}], 
+                 "\[RightGuillemet]"}],
+                JLink`Objects`vm1`JavaObject9579416757731329], ",", 
+               TemplateBox[{"1"},
+                "OutputSizeLimit`Skeleton",
+                DisplayFunction->(FrameBox[
+                  
+                  RowBox[{
+                   "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                  Background -> GrayLevel[0.75], 
+                  BaseStyle -> {
+                   "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                    ShowStringCharacters -> False}, BaselinePosition -> 
+                  Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                  FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )], 
+               ",", 
+               InterpretationBox[
+                RowBox[{"\[LeftGuillemet]", 
+                 RowBox[{"JavaObject", "[", 
+                  TemplateBox[{"44"},
+                   "OutputSizeLimit`Skeleton",
+                   DisplayFunction->(FrameBox[
+                    
+                    RowBox[{
+                    "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                    Background -> GrayLevel[0.75], 
+                    BaseStyle -> {
+                    "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                    ShowStringCharacters -> False}, BaselinePosition -> 
+                    Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                    FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )], 
+                  "]"}], "\[RightGuillemet]"}],
+                JLink`Objects`vm1`JavaObject30372447765135361]}], "}"}], ",", 
+             
+             RowBox[{"{", "}"}], ",", 
+             TemplateBox[{"1"},
+              "OutputSizeLimit`Skeleton",
+              DisplayFunction->(FrameBox[
+                
+                RowBox[{
+                 "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                Background -> GrayLevel[0.75], 
+                BaseStyle -> {
+                 "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                  ShowStringCharacters -> False}, BaselinePosition -> 
+                Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )], ",", 
+             
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 InterpretationBox[
+                  RowBox[{"\[LeftGuillemet]", 
+                   RowBox[{"JavaObject", "[", 
+                    RowBox[{
+                    "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                    "spiders", ".", "examples", ".", "QuotientSpider"}], 
+                    "]"}], "\[RightGuillemet]"}],
+                  JLink`Objects`vm1`JavaObject25315878849478657], ",", 
+                 RowBox[{"{", 
+                  RowBox[{"{", 
+                   RowBox[{"1", ",", 
+                    InterpretationBox[
+                    RowBox[{"\[LeftGuillemet]", 
+                    RowBox[{"JavaObject", "[", 
+                    TemplateBox[{"44"},
+                    "OutputSizeLimit`Skeleton",
+                    DisplayFunction->(FrameBox[
+                    
+                    RowBox[{
+                    "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                    Background -> GrayLevel[0.75], 
+                    BaseStyle -> {
+                    "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                    ShowStringCharacters -> False}, BaselinePosition -> 
+                    Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                    FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )], 
+                    "]"}], "\[RightGuillemet]"}],
+                    JLink`Objects`vm1`JavaObject9579416757731329]}], "}"}], 
+                  "}"}]}], "}"}], ",", 
+               TemplateBox[{"10"},
+                "OutputSizeLimit`Skeleton",
+                DisplayFunction->(FrameBox[
+                  
+                  RowBox[{
+                   "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                  Background -> GrayLevel[0.75], 
+                  BaseStyle -> {
+                   "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                    ShowStringCharacters -> False}, BaselinePosition -> 
+                  Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                  FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )], 
+               ",", 
+               RowBox[{"{", 
+                RowBox[{
+                 InterpretationBox[
+                  RowBox[{"\[LeftGuillemet]", 
+                   TemplateBox[{"1"},
+                    "OutputSizeLimit`Skeleton",
+                    DisplayFunction->(FrameBox[
+                    
+                    RowBox[{
+                    "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                    Background -> GrayLevel[0.75], 
+                    BaseStyle -> {
+                    "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                    ShowStringCharacters -> False}, BaselinePosition -> 
+                    Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                    FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )], 
+                   "\[RightGuillemet]"}],
+                  JLink`Objects`vm1`JavaObject6170738545393665], ",", 
+                 TemplateBox[{"1"},
+                  "OutputSizeLimit`Skeleton",
+                  DisplayFunction->(FrameBox[
+                    
+                    RowBox[{
+                    "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                    Background -> GrayLevel[0.75], 
+                    BaseStyle -> {
+                    "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                    ShowStringCharacters -> False}, BaselinePosition -> 
+                    Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                    FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )]}],
+                 "}"}]}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"{", 
+               TemplateBox[{"1"},
+                "OutputSizeLimit`Skeleton",
+                DisplayFunction->(FrameBox[
+                  
+                  RowBox[{
+                   "\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}], 
+                  Background -> GrayLevel[0.75], 
+                  BaseStyle -> {
+                   "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                    ShowStringCharacters -> False}, BaselinePosition -> 
+                  Baseline, ContentPadding -> False, FrameMargins -> 1, 
+                  FrameStyle -> GrayLevel[0.75], RoundingRadius -> 7]& )], 
+               "}"}], "}"}]}], "]"}], ",", 
+           TemplateBox[{"1"},
+            "OutputSizeLimit`Skeleton",
+            DisplayFunction->(FrameBox[
+              RowBox[{"\" \[CenterEllipsis]\"", #, "\"\[CenterEllipsis] \""}],
+               Background -> GrayLevel[0.75], 
+              BaseStyle -> {
+               "Deploy", FontColor -> GrayLevel[1], FontSize -> Smaller, 
+                ShowStringCharacters -> False}, BaselinePosition -> Baseline, 
+              ContentPadding -> False, FrameMargins -> 1, FrameStyle -> 
+              GrayLevel[0.75], RoundingRadius -> 7]& )]}], "}"}],
+         Short[#, 5]& ],
+        BaseStyle->{Deployed -> False},
+        StripOnInput->False]},
+      {GridBox[{
+         {
+          TagBox[
+           TooltipBox[
+            StyleBox[
+             StyleBox[
+              DynamicBox[ToBoxes[
+                FEPrivate`FrontEndResource[
+                "FEStrings", "sizeBriefExplanation"], StandardForm],
+               ImageSizeCache->{58., {2., 8.}}],
+              StripOnInput->False,
+              DynamicUpdating->True], "SuggestionsBarCategory",
+             StripOnInput->False],
+            StyleBox[
+             DynamicBox[
+              ToBoxes[
+               FEPrivate`FrontEndResource["FEStrings", "sizeExplanation"], 
+               StandardForm]], DynamicUpdating -> True, StripOnInput -> 
+             False]],
+           Annotation[#, 
+            Style[
+             Dynamic[
+              FEPrivate`FrontEndResource["FEStrings", "sizeExplanation"]], 
+             DynamicUpdating -> True], "Tooltip"]& ], 
+          ButtonBox[
+           PaneSelectorBox[{False->
+            StyleBox[
+             StyleBox[
+              DynamicBox[ToBoxes[
+                FEPrivate`FrontEndResource["FEStrings", "sizeShowLess"], 
+                StandardForm],
+               ImageSizeCache->{51., {0., 8.}}],
+              StripOnInput->False,
+              DynamicUpdating->True], "SuggestionsBarControl",
+             StripOnInput->False], True->
+            StyleBox[
+             StyleBox[
+              DynamicBox[ToBoxes[
+                FEPrivate`FrontEndResource["FEStrings", "sizeShowLess"], 
+                StandardForm]],
+              StripOnInput->False,
+              DynamicUpdating->True], "SuggestionsBarControlActive",
+             StripOnInput->False]}, Dynamic[
+             CurrentValue["MouseOver"]],
+            Alignment->Center,
+            FrameMargins->0,
+            ImageSize->{Automatic, 25}],
+           Appearance->None,
+           
+           ButtonFunction:>OutputSizeLimit`ButtonFunction[
+            Identity, 304, 30403398850958588815, 5/2],
+           Enabled->True,
+           Evaluator->Automatic,
+           Method->"Queued"], 
+          ButtonBox[
+           PaneSelectorBox[{False->
+            StyleBox[
+             StyleBox[
+              DynamicBox[ToBoxes[
+                FEPrivate`FrontEndResource["FEStrings", "sizeShowMore"], 
+                StandardForm],
+               ImageSizeCache->{56., {0., 8.}}],
+              StripOnInput->False,
+              DynamicUpdating->True], "SuggestionsBarControl",
+             StripOnInput->False], True->
+            StyleBox[
+             StyleBox[
+              DynamicBox[ToBoxes[
+                FEPrivate`FrontEndResource["FEStrings", "sizeShowMore"], 
+                StandardForm]],
+              StripOnInput->False,
+              DynamicUpdating->True], "SuggestionsBarControlActive",
+             StripOnInput->False]}, Dynamic[
+             CurrentValue["MouseOver"]],
+            Alignment->Center,
+            FrameMargins->0,
+            ImageSize->{Automatic, 25}],
+           Appearance->None,
+           
+           ButtonFunction:>OutputSizeLimit`ButtonFunction[
+            Identity, 304, 30403398850958588815, 5 2],
+           Enabled->True,
+           Evaluator->Automatic,
+           Method->"Queued"], 
+          ButtonBox[
+           PaneSelectorBox[{False->
+            StyleBox[
+             StyleBox[
+              DynamicBox[ToBoxes[
+                FEPrivate`FrontEndResource["FEStrings", "sizeShowAll"], 
+                StandardForm],
+               ImageSizeCache->{42., {0., 8.}}],
+              StripOnInput->False,
+              DynamicUpdating->True], "SuggestionsBarControl",
+             StripOnInput->False], True->
+            StyleBox[
+             StyleBox[
+              DynamicBox[ToBoxes[
+                FEPrivate`FrontEndResource["FEStrings", "sizeShowAll"], 
+                StandardForm]],
+              StripOnInput->False,
+              DynamicUpdating->True], "SuggestionsBarControlActive",
+             StripOnInput->False]}, Dynamic[
+             CurrentValue["MouseOver"]],
+            Alignment->Center,
+            FrameMargins->0,
+            ImageSize->{Automatic, 25}],
+           Appearance->None,
+           ButtonFunction:>OutputSizeLimit`ButtonFunction[
+            Identity, 304, 30403398850958588815, Infinity],
+           Enabled->True,
+           Evaluator->Automatic,
+           Method->"Queued"], 
+          ButtonBox[
+           PaneSelectorBox[{False->
+            StyleBox[
+             StyleBox[
+              DynamicBox[ToBoxes[
+                FEPrivate`FrontEndResource["FEStrings", "sizeChangeLimit"], 
+                StandardForm],
+               ImageSizeCache->{73., {0., 8.}}],
+              StripOnInput->False,
+              DynamicUpdating->True], "SuggestionsBarControl",
+             StripOnInput->False], True->
+            StyleBox[
+             StyleBox[
+              DynamicBox[ToBoxes[
+                FEPrivate`FrontEndResource["FEStrings", "sizeChangeLimit"], 
+                StandardForm]],
+              StripOnInput->False,
+              DynamicUpdating->True], "SuggestionsBarControlActive",
+             StripOnInput->False]}, Dynamic[
+             CurrentValue["MouseOver"]],
+            Alignment->Center,
+            FrameMargins->0,
+            ImageSize->{Automatic, 25}],
+           Appearance->None,
+           ButtonFunction:>FrontEndExecute[{
+              FrontEnd`SetOptions[
+              FrontEnd`$FrontEnd, 
+               FrontEnd`PreferencesSettings -> {"Page" -> "Evaluation"}], 
+              FrontEnd`FrontEndToken["PreferencesDialog"]}],
+           Evaluator->None,
+           Method->"Preemptive"]}
+        },
+        AutoDelete->False,
+        FrameStyle->GrayLevel[0.85],
+        GridBoxDividers->{"Columns" -> {False, {True}}},
+        GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+        GridBoxSpacings->{"Columns" -> {{2}}}]}
+     },
+     DefaultBaseStyle->"Column",
+     GridBoxAlignment->{
+      "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+       "RowsIndexed" -> {}},
+     GridBoxDividers->{
+      "Columns" -> {{False}}, "ColumnsIndexed" -> {}, "Rows" -> {{False}}, 
+       "RowsIndexed" -> {}},
+     GridBoxItemSize->{
+      "Columns" -> {{Automatic}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+       "RowsIndexed" -> {}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[0.5599999999999999]}, 
+         Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+         Offset[0.2], 
+         Offset[1.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}, "RowsIndexed" -> {}}],
+    Background->RGBColor[0.9657, 0.9753, 0.9802],
+    FrameMargins->{{12, 12}, {0, 15}},
+    FrameStyle->GrayLevel[0.85],
+    RoundingRadius->5,
+    StripOnInput->False],
+   Deploy,
+   DefaultBaseStyle->"Deploy"],
+  Out[304]]], "Output",
+ CellChangeTimes->{3.643521004448084*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
  RowBox[{"QES5", "=", 
   RowBox[{
    RowBox[{"ConsiderDiagram", "[", 
@@ -3209,12 +3665,16 @@ Cell[BoxData[
    RowBox[{"foo", "::", "bar"}], "MessageName"], 
   RowBox[{":", " "}], "\<\"-- Message text not found --\"\>"}]], "Message", \
 "MSG",
- CellChangeTimes->{3.643467226300091*^9, 3.643467859661459*^9, 
-  3.643468634586862*^9, 3.643514082691945*^9}],
+ CellChangeTimes->{3.64351905097892*^9, 3.6435193250869293`*^9, 
+  3.643519461891921*^9, 3.643519979032606*^9, 3.643520911257967*^9, 
+  3.643521059435801*^9}],
 
 Cell[BoxData["$Aborted"], "Output",
- CellChangeTimes->{3.6434672263075457`*^9, 3.643468270012286*^9, 
-  3.643468634617334*^9, 3.64351408270159*^9}]
+ CellChangeTimes->{3.643516699076454*^9, 3.643517535841395*^9, 
+  3.6435177625306787`*^9, 3.643517866389954*^9, 3.6435182512227373`*^9, 
+  3.643518934022394*^9, 3.643519276405119*^9, 3.6435193537642937`*^9, 
+  3.643519589282651*^9, 3.643520139118887*^9, 3.643520911261985*^9, 
+  3.643521059456565*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -6001,7 +6461,7 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{1342, 737},
-WindowMargins->{{Automatic, 46}, {56, Automatic}},
+WindowMargins->{{37, Automatic}, {Automatic, 3}},
 FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
 2014)",
 StyleDefinitions->"Default.nb"
@@ -6052,24 +6512,31 @@ Cell[127209, 2736, 293, 8, 28, "Input"],
 Cell[127505, 2746, 490, 14, 39, "Input"],
 Cell[CellGroupData[{
 Cell[128020, 2764, 96, 1, 39, "Input"],
-Cell[128119, 2767, 18329, 421, 187, "Output"]
+Cell[128119, 2767, 18425, 423, 187, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[146485, 3193, 444, 10, 28, "Input"],
-Cell[146932, 3205, 281, 7, 24, "Message"],
-Cell[147216, 3214, 147, 2, 28, "Output"]
+Cell[146581, 3195, 650, 18, 52, "Input"],
+Cell[CellGroupData[{
+Cell[147256, 3217, 177, 2, 22, "Print"],
+Cell[147436, 3221, 175, 2, 22, "Print"]
+}, Open  ]],
+Cell[147626, 3226, 18219, 418, 176, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[147400, 3221, 177, 3, 28, "Input"],
-Cell[147580, 3226, 92, 1, 28, "Output"]
+Cell[165882, 3649, 444, 10, 28, "Input"],
+Cell[166329, 3661, 329, 8, 24, "Message"],
+Cell[166661, 3671, 337, 5, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[147709, 3232, 1936, 50, 80, "Input"],
-Cell[149648, 3284, 167948, 2715, 215, "Output"]
+Cell[167035, 3681, 177, 3, 28, "Input"],
+Cell[167215, 3686, 92, 1, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[167344, 3692, 1936, 50, 80, "Input"],
+Cell[169283, 3744, 167948, 2715, 215, "Output"]
 }, Open  ]]
 }
 ]
 *)
 
 (* End of internal cache information *)
-
