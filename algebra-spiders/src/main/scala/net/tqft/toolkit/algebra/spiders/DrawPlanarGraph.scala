@@ -9,6 +9,8 @@ import scala.sys.process._
 import scala.annotation._
 import scala.util.Try
 import org.apache.commons.io.FilenameUtils
+import java.nio.file.Path
+import net.tqft.toolkit.SHA1
 
 trait DrawPlanarGraph {
   // boundaryWeight controls how much to weight the boundary points when calculating the positions of the internal vertices.
@@ -17,10 +19,21 @@ trait DrawPlanarGraph {
   def boundaryWeight: Double
   def imageScale: Double
   def globalStyle: String
+  def drawBoundary: Boolean
+  def drawAsCrossings: (Option[Int], Option[Int], Option[Int])
+  def outputPath: Path
 
-  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
-  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
-  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle)
+  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def showBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, true, drawAsCrossings, outputPath)
+  def hideBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, false, drawAsCrossings, outputPath)
+  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, (unoriented, positive, negative), outputPath)
+  def withOutputPath(outputPath: Path): DrawPlanarGraph = {
+    Files.createDirectories(outputPath)
+    CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  }
+  def withOutputPath(outputPath: String): DrawPlanarGraph = withOutputPath(Paths.get(outputPath))
 
   private def round(x: Double, n: Int): Double = rint(x * pow(10, n)) / pow(10, n) // Rounds x to n decimal places, used to round coordinate values
   private def sortTuple(t: Tuple2[Int, Int]) = if (t._1 <= t._2) t else (t._2, t._1)
@@ -36,12 +49,22 @@ trait DrawPlanarGraph {
     paths.headOption.orElse(Try(s"which $programName".!!).toOption).getOrElse(programName)
   }
   var pdflatexPath = getProgramPath("pdflatex", List("/usr/texbin"))
+  var pdftexPath = getProgramPath("pdftex", List("/usr/texbin"))
+  var gsPath = getProgramPath("gs", List("/usr/bin", "/usr/local/bin"))
   var pdfcropPath = getProgramPath("pdfcrop", List("/usr/texbin"))
 
-  def apply(G: PlanarGraph, crossings: Map[Int, Int] = Map.empty, hideDiskBoundary: Boolean = false): String = {
+  def apply(G: PlanarGraph): String = {
     // Draws regular, closed and knotted PlanarGraphs by doing some preprocessing and then calling draw.
-    // Draws over and undercrossings with or without orientations labeled, according to the parameter crossings: Map[vertex: Int, sign: Int].
-    // sign > 0, < 0, = 0 means positive, negative, unoriented crossing resp.
+    // Draws over and undercrossings with or without orientation.
+
+    val crossings: Map[Int, Int] = {
+      G.vertexFlags.tail.map(_.size).zip(G.labels).zipWithIndex.collect({
+        case ((4, (2, l)), i) if drawAsCrossings._1.nonEmpty && l == drawAsCrossings._1.get => (i + 1) -> 0
+        case ((4, (4, l)), i) if drawAsCrossings._2.nonEmpty && l == drawAsCrossings._2.get => (i + 1) -> 1
+        case ((4, (4, l)), i) if drawAsCrossings._3.nonEmpty && l == drawAsCrossings._3.get => (i + 1) -> -1
+      }).toMap
+    }
+    println(s"crossings: $crossings")
 
     var modifiedVertexFlags = G.vertexFlags
     var decoratedEdges = Map[Int, String]()
@@ -66,28 +89,28 @@ trait DrawPlanarGraph {
       modifiedVertexFlags = modifiedExternalVertexFlags +: modifiedInternalVertexFlags
       hideBoundaryEdges = true
     }
-    
+
     // Process knotted graphs
     if (crossings.nonEmpty) {
       def sign = crossings
       def start(edge: Int) = G.edgeVertexIncidences(edge)._1
       def end(edge: Int) = G.edgeVertexIncidences(edge)._2
-      
+
       crossings.keys.map((v) => assert(G.degree(v) == 4, s"Vertex $v doesn't appear to be a crossing..."))
       // Decorate vertices as crossings
       decoratedVertices = crossings.mapValues(_ => "minimum size=0pt")
       // Decorate crossing edges
       var undercrossings = Seq[(Int, Int, Int)]() // (edge, vertex, index) means "edge" undercrosses at the endpoint "vertex".
-        // "index" is used to distinguish between positive and negative loops.
+      // "index" is used to distinguish between positive and negative loops.
       var overcrossings = Seq[(Int, Int)]() // (edge, vertex). Index not needed.
-      
+
       for (vertex <- crossings.keys; i <- List(1, 3)) {
         undercrossings = (cyclicReverse(G.edgesAdjacentTo(vertex))(i), vertex, i) +: undercrossings
       }
-      for (vertex <- crossings.keys; i <- List(0,2)) {
+      for (vertex <- crossings.keys; i <- List(0, 2)) {
         overcrossings = (cyclicReverse(G.edgesAdjacentTo(vertex))(i), vertex) +: overcrossings
       } // 0th and 2th edges are overcrossings; 1th and 3th are undercrossings
-      
+
       def notAnUndercrossing(edge: Int): Boolean = {
         val undercrossingEdges = undercrossings.map(_._1)
         !undercrossingEdges.contains(edge)
@@ -102,8 +125,7 @@ trait DrawPlanarGraph {
               if (G.edgesAdjacentTo(endpoint).head == edge) { // Inward undercrossing of negative twist
                 assert(sign(endpoint) <= 0, s"The crossing at vertex $endpoint is either negative or nonoriented!")
                 "shorten >=2.5pt" + (if (sign(endpoint) < 0) ", ->-" else "")
-              }
-              else { // Outward undercrossing, positive twist
+              } else { // Outward undercrossing, positive twist
                 assert(sign(endpoint) >= 0, s"The crossing at vertex $endpoint is either positive or nonoriented!")
                 "shorten <=2.5pt" + (if (sign(endpoint) > 0) ", ->-" else "")
               }
@@ -111,8 +133,7 @@ trait DrawPlanarGraph {
               if (G.edgesAdjacentTo(endpoint).head == edge) { // Inward undercrossing, positive twist
                 assert(sign(endpoint) >= 0, s"The crossing at vertex $endpoint is either positive or nonoriented!")
                 "shorten >=2.5pt" + (if (sign(endpoint) > 0) ", ->-" else "")
-              }
-              else { // Outward undercrossing, negative twist
+              } else { // Outward undercrossing, negative twist
                 assert(sign(endpoint) <= 0, s"The crossing at vertex $endpoint is either negative or nonoriented!")
                 "shorten >=2.5pt" + (if (sign(endpoint) < 0) ", -<-" else "")
               }
@@ -120,35 +141,29 @@ trait DrawPlanarGraph {
           } else { // Edge is not a loop
             ( // Shorten at the correct end
               if (endpoint == start(edge)) "shorten <=2.5pt"
-              else "shorten >=2.5pt"
-            ) +
-            ( // Add arrows to indicate orientation, if needed
-              if (sign(endpoint) == 0) ""
-              else if (
-                (i == 1 && (sign(endpoint) > 0) && start(edge) == endpoint)
-                || (i == 1 && sign(endpoint) < 0 && start(edge) != endpoint)
-                || (i == 3 && sign(endpoint) > 0 && start(edge) != endpoint)
-                || (i == 3 && sign(endpoint) < 0 && start(edge) == endpoint)
-                ) ", ->-"
-              else ", -<-"
-            )
+              else "shorten >=2.5pt") +
+              ( // Add arrows to indicate orientation, if needed
+                if (sign(endpoint) == 0) ""
+                else if ((i == 1 && (sign(endpoint) > 0) && start(edge) == endpoint)
+                  || (i == 1 && sign(endpoint) < 0 && start(edge) != endpoint)
+                  || (i == 3 && sign(endpoint) > 0 && start(edge) != endpoint)
+                  || (i == 3 && sign(endpoint) < 0 && start(edge) == endpoint)) ", ->-"
+                else ", -<-")
           }
         decoratedEdges = decoratedEdges.updated(edge, if (decoratedEdges.isDefinedAt(edge)) decoratedEdges(edge) ++ s", $styleStr" else styleStr)
       }
       // Process overcrossings if crossings are oriented
       for ((edge, endpoint) <- overcrossings if sign(endpoint) != 0) {
-        val styleStr = if 
-          (  (G.vertexFlags(endpoint).head._1 == edge && start(edge) == endpoint)
-          || (G.vertexFlags(endpoint).head._1 != edge && G.edgeVertexIncidences(edge)._2 == endpoint)
-          ) "->-" else "-<-" 
+        val styleStr = if ((G.vertexFlags(endpoint).head._1 == edge && start(edge) == endpoint)
+          || (G.vertexFlags(endpoint).head._1 != edge && G.edgeVertexIncidences(edge)._2 == endpoint)) "->-" else "-<-"
         decoratedEdges = decoratedEdges.updated(edge, if (decoratedEdges.isDefinedAt(edge)) decoratedEdges(edge) ++ s", $styleStr" else styleStr)
       }
     }
 
-    draw(new PlanarGraph(G.outerFace, modifiedVertexFlags, G.labels, G.loops), decoratedEdges, decoratedVertices, hideBoundaryEdges, hideDiskBoundary)
+    draw(new PlanarGraph(G.outerFace, modifiedVertexFlags, G.labels, G.loops), decoratedEdges, decoratedVertices, hideBoundaryEdges)
   }
 
-  private def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundaryEdges: Boolean, hideDiskBoundary: Boolean): String = {
+  private def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundaryEdges: Boolean): String = {
     // Draws planar graphs, outputs LaTeX TikZ code.
     // Allows fine control of edge and internal vertex styles via decoratedEdges and decoratedVertices.
     // hideBoundary hides all vertices and edges connected to the boundary. Used mainly to draw closed graphs.
@@ -175,7 +190,7 @@ trait DrawPlanarGraph {
       val target = G.target(0, edge)
       if (target != 0) { // If target is an internal vertex
         edgeEndpts = (edge, if (G.edgeVertexIncidences(edge)._1 == 0) (boundaryPoint(k), target) else (target, boundaryPoint(k))) +: edgeEndpts
-          // Add edge, ensuring the new label for the boundary point replaces the original 0 label. 
+        // Add edge, ensuring the new label for the boundary point replaces the original 0 label. 
         // And update adjacency to the correct boundary point
         val index = G.vertexFlags(target).indexOf(G.vertexFlags(target).find(_._1 == edge).get)
         assert(index != -1, "Problem parsing boundary edges")
@@ -237,7 +252,7 @@ trait DrawPlanarGraph {
                         |[scale=$imageScale,${if (globalStyle != "") s"$globalStyle," else ""}
                         |->-/.style={decoration={markings, mark=at position .5 with{\\arrow{>}}}, postaction={decorate}},
                         |-<-/.style={decoration={markings, mark=at position .5 with{\\arrow{<}}}, postaction={decorate}}]
-                        |${if (!hideDiskBoundary) "\\draw[gray, dashed] (0,0) circle (1.0);\n" else ""} """.stripMargin
+                        |${if (drawBoundary) "\\draw[gray, dashed] (0,0) circle (1.0);\n" else ""} """.stripMargin
     // Place boundary points
     for (i <- 0 until G.numberOfBoundaryPoints) {
       tikzString = tikzString ++ s"\\node${if (hideBoundaryEdges) "[draw=none, minimum size=0pt]" else ""} (${boundaryPoint(i)}) at ${boundaryPointCoords(i)} {};\n"
@@ -281,55 +296,52 @@ trait DrawPlanarGraph {
     return tikzString
   }
 
-  def pdf(pdfPath: String, g: PlanarGraph, crossings: Map[Int, Int] = Map.empty, hideDiskBoundary: Boolean = false) {
-    pdfMultiple(pdfPath, Seq(g), Seq(crossings), hideDiskBoundary)
+  private def filenameForGraph(g: PlanarGraph) = "urn:sha1:" + SHA1(g.toString) + ".pdf"
+
+  def writePDF(g: PlanarGraph)(filename: String = filenameForGraph(g)): Path = {
+    val path = outputPath.resolve(outputPath.resolve(filename))
+    pdfMultiple(path, Seq(g))
+    path
   }
 
-  def pdfMultiple(pdfPath: String, Gs: Seq[PlanarGraph], crossings: Seq[Map[Int, Int]] = Seq.empty, hideDiskBoundary: Boolean = false): Unit = {
+  def createPDF(g: PlanarGraph) = {
+    val path = outputPath.resolve(filenameForGraph(g))
+    if (Files.exists(path)) {
+      path
+    } else {
+      writePDF(g)()
+    }
+  }
+
+  def pdfMultiple(pdfPath: Path, Gs: Seq[PlanarGraph]): Unit = {
     // Writes TikZ to tex file and runs pdflatex
-    val processedCrossings = if (crossings.isEmpty) for (i <- 0 until Gs.length) yield Map[Int, Int]() else crossings // Hacky! :\
-    val outputStr = (Gs zip processedCrossings).map((t: (PlanarGraph, Map[Int, Int])) => DrawPlanarGraph(t._1, t._2, hideDiskBoundary)).mkString(
+    val outputStr = Gs.map(DrawPlanarGraph.apply).mkString(
       "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
       "\\bigskip\\bigskip\n\n",
       "\n\\end{document}")
-    
-    val baseName = FilenameUtils.getBaseName(pdfPath)
-    val fullPath = FilenameUtils.getFullPath(pdfPath)
+
+    val baseName = FilenameUtils.getBaseName(pdfPath.toString)
+    val fullPath = FilenameUtils.getFullPath(pdfPath.toString)
     Files.write(Paths.get(s"$fullPath$baseName.tex"), (outputStr).getBytes(StandardCharsets.UTF_8))
     val pdflatexCommand = s"$pdflatexPath ${if (fullPath == "") "" else s"-output-directory=$fullPath"} $fullPath$baseName.tex"
-    val pdfcropCommand = s"$pdfcropPath $fullPath$baseName.pdf $fullPath$baseName.pdf"
+    val pdfcropCommand = s"$pdfcropPath $fullPath$baseName.pdf --gscmd $gsPath --pdftexcmd $pdftexPath"
+    val gsCommand = s"$gsPath -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=$fullPath$baseName.pdf $fullPath$baseName-crop.pdf"
 
     try pdflatexCommand.!!
     catch {
       case e: java.lang.Exception => { println(s"Error: Problem running '$pdflatexCommand'! Maybe check the filename and that the path exists?"); throw e }
     }
-    // TODO ideally, we should also crop to the bounding box, because I'll want to embed these pdfs elsewhere.
-    // here's a snippet of mathematica code that shows how, using pdfcrop:
-    /*
-       gs = FileNames[{"/usr/bin/gs", "/usr/local/bin/gs"}][[1]];
-       Run[
-       "
-         cat top-template > document.tex;
-         cat snippet >> document.tex;
-         cat bottom-template >> document.tex;
-         /usr/texbin/pdflatex document.tex;
-         /usr/texbin/pdfcrop document.pdf --gscmd " <> gs <> 
-         " --pdftexcmd /usr/texbin/pdftex --verbose --debug;
-         " <> gs <> 
-         " -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=finished.pdf \
-      document-crop.pdf;
-         rm tmp-pdfcrop-*;
-         rm document.*;
-         rm snippet;
-       "]
-    */
     try pdfcropCommand.!!
     catch {
       case e: java.lang.Exception => { println(s"Error: Problem running '$pdfcropCommand'! Do you have pdfcrop installed?"); throw e }
     }
+    try gsCommand.!!
+    catch {
+      case e: java.lang.Exception => { println(s"Error: Problem running '$gsCommand'!"); throw e }
+    }
     // Clean up
-    for (ext <- List("aux", "log")) {
-      s"rm $fullPath$baseName.$ext".!
+    for (ext <- List(".aux", ".log", "-crop.pdf")) {
+      Files.deleteIfExists(outputPath.resolve(s"$baseName$ext"))
     }
   }
 }
@@ -338,6 +350,15 @@ object DrawPlanarGraph extends DrawPlanarGraph {
   override val boundaryWeight: Double = 1.0
   override val imageScale: Double = 1.5
   override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}"
+  override val drawBoundary = true
+  override val drawAsCrossings = (Some(0), None, None)
+  override val outputPath = Files.createTempDirectory("planar-graphs")
 }
 
-case class CustomizedDrawPlanarGraph(val boundaryWeight: Double, val imageScale: Double, val globalStyle: String) extends DrawPlanarGraph
+case class CustomizedDrawPlanarGraph(
+  val boundaryWeight: Double,
+  val imageScale: Double,
+  val globalStyle: String,
+  val drawBoundary: Boolean,
+  val drawAsCrossings: (Option[Int], Option[Int], Option[Int]),
+  val outputPath: Path) extends DrawPlanarGraph

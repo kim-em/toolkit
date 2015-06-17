@@ -3,7 +3,7 @@ syntax: glob
 
 .DS_Store
 
-.cache
+.cache*
 .classpath
 .settings/org.scala-ide.sdt.core.prefs
 .project
@@ -20,6 +20,7 @@ fusion-rings/
 fusion-rings2/
 
 algebra-spiders/src/main/mathematica/groebnerCalculations.m
+algebra-spiders/src/main/mathematica/graphs/
 
 *.out
 */.tmpBin
