@@ -314,7 +314,7 @@ trait DrawPlanarGraph {
 
   def pdfMultiple(pdfPath: Path, Gs: Seq[PlanarGraph]): Unit = {
     // Writes TikZ to tex file and runs pdflatex
-    val outputStr = Gs.map(DrawPlanarGraph.apply).mkString(
+    val outputStr = Gs.map(apply).mkString(
       "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
       "\\bigskip\\bigskip\n\n",
       "\n\\end{document}")
