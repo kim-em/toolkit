@@ -346,7 +346,7 @@ trait DrawPlanarGraph {
 }
 
 object DrawPlanarGraph extends DrawPlanarGraph {
-  override val boundaryWeight: Double = 1.0
+  override val boundaryWeight: Double = 1.4
   override val imageScale: Double = 1.5
   override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}"
   override val drawBoundary = true
