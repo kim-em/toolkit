@@ -1,0 +1,55 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      1245,         46]
+NotebookOptionsPosition[       971,         31]
+NotebookOutlinePosition[      1350,         48]
+CellTagsIndexPosition[      1307,         45]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"UnpickleSpiderAnalysis", "[", 
+  RowBox[{"Get", "[", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<saved-states\>\"", 
+      ",", "\"\<QES-flat.m\>\""}], "}"}], "]"}], "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.6436043700228243`*^9, 3.643604387303281*^9}, {
+  3.643604420040986*^9, 3.643604425632489*^9}}]
+},
+Evaluator->"edulis",
+WindowSize->{808, 751},
+WindowMargins->{{94, Automatic}, {Automatic, 44}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 409, 9, 57, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
