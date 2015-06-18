@@ -19,69 +19,73 @@
 
 
 
-DeclarePackage["Spiders`Trivalent`",{"TrivalentSpider"}];
+DeclarePackage["Spiders`Trivalent`",{"Trivalent","SO3Categories","dMinusOne","SO3","CubicTrivalentCategories","CubicTrivalentCategory","G2Categories","ABACategories","d","t"}];
+DeclarePackage["Spiders`BraidedTrivalent`",{"BraidedTrivalent","SymmetricTrivalent","BraidedSO3Categories","CubicBraidedTrivalentCategories","CubicBraidedTrivalent","BraidedG2Categories","h","z"}];
 
 
 Print[
-"Loading Spiders` version 2015-06-18 ...",
+"Loading Spiders` version 2015-06-18 ..."
 ]
 
 
 BeginPackage["Spiders`",{"JLink`"}]
 
 
-ScalaSingleton,ScalaCaseClass,FromScalaObject,AsScalaObject
+ScalaSingleton;ScalaCaseClass;FromScalaObject;AsScalaObject
 
 
-Diagram,NamedPolyhedron,PlanarGraphs,polygon,Name,DrawPlanarGraph
+Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph
 
 
-unionDiagrams,complementDiagrams,memberQDiagrams
+unionDiagrams;complementDiagrams;memberQDiagrams
 
 
-SaveGroebnerCalculations,LoadGroebnerCalculations
+SaveGroebnerCalculations;LoadGroebnerCalculations
 
 
 IntroduceNewVariable
 
 
-DeclarePolynomialZero,DeclarePolynomialsZero,DeclareAtLeastOnePolynomialZero,DeclarePolynomialNonZero,DeclarePolynomialsNonZero,DeclarePolynomialEitherZeroOrNonZero
+Manifold;DeclarePolynomialZero;DeclarePolynomialsZero;DeclareAtLeastOnePolynomialZero;DeclarePolynomialNonZero;DeclarePolynomialsNonZero;DeclarePolynomialEitherZeroOrNonZero
 
 
-DeclareDimensionBounds,DimensionBounds,DimensionLowerBound,DimensionUpperBound
+DeclareDimensionBounds;DimensionBounds;DimensionLowerBound;DimensionUpperBound
 
 
-IndependentDiagrams,DependentDiagrams,SpanningSets,ReducingRelations,NonReducingRelations,AppendIndependentDiagram,AppendDependentDiagram,AppendClosedDiagram,ReducedDiagrams
+p;tt
 
 
-buildSpiderAnalysis,FreeSpider,emptySpiderAnalysis
+IndependentDiagrams;DependentDiagrams;SpanningSets;ReducingRelations;NonReducingRelations;AppendIndependentDiagram;AppendDependentDiagram;AppendClosedDiagram;ReducedDiagrams
 
 
-internalValences,diagramWeight
+buildSpiderAnalysis;FreeSpider;emptySpiderAnalysis
 
 
-EvaluateDiagram,EvaluateClosedDiagram
+internalValences;diagramWeight
 
 
-ClosedDiagrams,ConsiderClosedDiagram,ConsiderClosedDiagrams,ReconsiderClosedDiagrams
+EvaluateDiagram;EvaluateClosedDiagram
 
 
-ConsiderPotentialSpanningSet,DeclareSpanningSet,DeclareBasis,ConsiderDiagrams,ConsiderDiagram,ConsiderIndependentDiagram,ConsiderDependentDiagram,IntroduceRelation
+ClosedDiagrams;ConsiderClosedDiagram;ConsiderClosedDiagrams;ReconsiderClosedDiagrams
 
 
-PairRelationsWith,ReducePolynomials,ReducePolynomialsFurther
+ConsiderPotentialSpanningSet;DeclareSpanningSet;DeclareBasis;ConsiderDiagrams;ConsiderDiagram;ConsiderIndependentDiagram;ConsiderDependentDiagram;IntroduceRelation
 
 
-PickleSpiderAnalysis,UnpickleSpiderAnalysis
+PairRelationsWith;ReducePolynomials;ReducePolynomialsFurther
+
+
+PickleSpiderAnalysis;UnpickleSpiderAnalysis
 
 
 Begin["`Private`"];
 
 
-<<JLink`
+SpidersMathematicaDirectory=Cases[$Path~Join~(Quiet[{NotebookDirectory[]}]/.$Failed->{}),s_/;StringMatchQ[s,__~~"toolkit/algebra-spiders/src/main/mathematica"~~___]][[1]]
 
 
-SpidersDirectory=FileNameJoin[{NotebookDirectory[],"..","..",".."}];
+SpidersDirectory=FileNameJoin[{SpidersMathematicaDirectory,"..","..",".."}];
 
 
 ScalaMajorVersion="2.11";
@@ -219,7 +223,7 @@ polygon[n_Integer]:=polygon[n]=PlanarGraphs@polygon[]@apply[AsScalaObject[n,"Obj
 Name[d0:Diagram]:=FromScalaObject[ScalaSingleton["net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider"]@evaluate[AsScalaObject[{d0->Ring@one[]}]]]
 
 
-DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGraph"]@withOutputPath[FileNameJoin[{NotebookDirectory[],"graphs"}]]@withBoundaryWeight[1.5];
+DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGraph"]@withOutputPath[FileNameJoin[{SpidersMathematicaDirectory,"graphs"}]]@withBoundaryWeight[1.5];
 
 
 DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Import[DrawPlanarGraph$@createPDF[g]@toString[]][[1]]
@@ -253,8 +257,8 @@ cachedPolynomialReduce[Numerator[t],basis,variables][[2]]/cachedPolynomialReduce
 
 
 SaveGroebnerCalculations[]:=(LoadGroebnerCalculations[];
-DownValues[cachedGroebnerBasis]=Cases[DownValues[cachedGroebnerBasis],r_/;FreeQ[r,_t]];Put[{DownValues[cachedGroebnerBasis],DownValues[cachedPolynomialReduce]},FileNameJoin[{NotebookDirectory[],"groebnerCalculations.m"}]])
-LoadGroebnerCalculations[]:=Module[{file=FileNameJoin[{NotebookDirectory[],"groebnerCalculations.m"}],data},
+DownValues[cachedGroebnerBasis]=Cases[DownValues[cachedGroebnerBasis],r_/;FreeQ[r,_t]];Put[{DownValues[cachedGroebnerBasis],DownValues[cachedPolynomialReduce]},FileNameJoin[{SpidersMathematicaDirectory,"groebnerCalculations.m"}]])
+LoadGroebnerCalculations[]:=Module[{file=FileNameJoin[{SpidersMathematicaDirectory,"groebnerCalculations.m"}],data},
 If[FileExistsQ[file],
 data=Get[file];
 DownValues[cachedGroebnerBasis]=DownValues[cachedGroebnerBasis]~Join~data[[1]];
