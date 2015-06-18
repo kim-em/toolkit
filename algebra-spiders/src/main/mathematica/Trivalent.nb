@@ -3,10 +3,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[         0,          0]
-NotebookDataLength[     17734,        460]
-NotebookOptionsPosition[     17076,        433]
-NotebookOutlinePosition[     17432,        449]
-CellTagsIndexPosition[     17389,        446]
+NotebookDataLength[     17840,        462]
+NotebookOptionsPosition[     17180,        435]
+NotebookOutlinePosition[     17538,        451]
+CellTagsIndexPosition[     17495,        448]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -302,7 +302,7 @@ Cell[BoxData[
        RowBox[{
         RowBox[{
          RowBox[{"Length", "[", "CubicTrivalentCategories", "]"}], 
-         "\[NotEqual]", "8"}], ",", 
+         "\[NotEqual]", "11"}], ",", 
         RowBox[{
          RowBox[{
          "Print", "[", 
@@ -316,7 +316,9 @@ categories!\>\"", "]"}], ";",
    3.641505614440804*^9, 3.641505614720086*^9}, {3.6415149256276283`*^9, 
    3.6415149309010887`*^9}, {3.641514980668971*^9, 3.64151499431006*^9}, {
    3.641515159536223*^9, 3.641515213182044*^9}, {3.642061312107821*^9, 
-   3.6420613273633623`*^9}, {3.64337013852522*^9, 3.6433701601908417`*^9}}],
+   3.6420613273633623`*^9}, {3.64337013852522*^9, 3.6433701601908417`*^9}, {
+   3.6435577288624887`*^9, 3.64355773202096*^9}, {3.643558420776223*^9, 
+   3.6435584270492983`*^9}}],
 
 Cell[BoxData[
  RowBox[{"CubicTrivalentCategory", ":=", 
@@ -432,7 +434,7 @@ Cell[BoxData[{
   3.6415162151472*^9}, {3.641516247697321*^9, 3.641516249472855*^9}}]
 },
 WindowSize->{824, 851},
-WindowMargins->{{4, Automatic}, {Automatic, 0}},
+WindowMargins->{{Automatic, 199}, {Automatic, 0}},
 FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
 2014)",
 StyleDefinitions->"Default.nb"
@@ -451,10 +453,10 @@ Notebook[{
 Cell[400, 13, 3276, 86, 301, "Input"],
 Cell[3679, 101, 457, 10, 31, "Input"],
 Cell[4139, 113, 4715, 119, 419, "Input"],
-Cell[8857, 234, 3558, 84, 333, "Input"],
-Cell[12418, 320, 592, 15, 69, "Input"],
-Cell[13013, 337, 2176, 51, 231, "Input"],
-Cell[15192, 390, 1880, 41, 182, "Input"]
+Cell[8857, 234, 3662, 86, 333, "Input"],
+Cell[12522, 322, 592, 15, 69, "Input"],
+Cell[13117, 339, 2176, 51, 231, "Input"],
+Cell[15296, 392, 1880, 41, 182, "Input"]
 }
 ]
 *)

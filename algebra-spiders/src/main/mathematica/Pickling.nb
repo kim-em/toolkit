@@ -1,0 +1,545 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     20209,        536]
+NotebookOptionsPosition[     19707,        513]
+NotebookOutlinePosition[     20088,        530]
+CellTagsIndexPosition[     20045,        527]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData["Trivalent"], "Input",
+ CellChangeTimes->{{3.643598680188057*^9, 3.64359868178961*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PickleSpiderAnalysis", "[", "Trivalent", "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"PickledSpiderAnalysis", "[", 
+   RowBox[{
+    RowBox[{"PickledQuotientSpider", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{"3", ",", "0", ",", "1", ",", "1"}], "}"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"\<\"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), \
+Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), \
+Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)\"\>", ",", 
+          RowBox[{"{", 
+           RowBox[{"{", 
+            
+            RowBox[{"\<\"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), \
+List((4,5), (3,7), (2,6))),Vector((1,0)),0)\"\>", ",", 
+             RowBox[{"-", 
+              RowBox[{"tt", "[", "2", "]"}]}]}], "}"}], "}"}]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"\<\"PlanarGraph(7,Vector(Vector((3,7), (4,8)), \
+Vector((5,9), (3,8), (6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), \
+(1,0)),0)\"\>", ",", 
+          RowBox[{"{", 
+           RowBox[{"{", 
+            
+            RowBox[{"\<\"PlanarGraph(0,Vector(Vector((0,0), \
+(0,1))),Vector(),0)\"\>", ",", 
+             RowBox[{"-", 
+              RowBox[{"tt", "[", "1", "]"}]}]}], "}"}], "}"}]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"\<\"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), \
+(2,4), (3,4))),Vector((1,0)),0)\"\>", ",", 
+          RowBox[{"{", "}"}]}], "}"}]}], "}"}]}], "]"}], ",", 
+    RowBox[{"Manifold", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         SubscriptBox["p", "1"], "\[Rule]", "0"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "2"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "3"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "4"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "5"], "\[Rule]", 
+         RowBox[{"d", " ", "t"}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "6"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["t", "2"]}]}], ",", 
+        RowBox[{
+         RowBox[{"tt", "[", "1", "]"}], "\[Rule]", 
+         RowBox[{"-", "1"}]}], ",", 
+        RowBox[{
+         RowBox[{"tt", "[", "2", "]"}], "\[Rule]", 
+         RowBox[{"-", "t"}]}]}], "}"}], ",", 
+      RowBox[{"{", "}"}], ",", 
+      RowBox[{"{", "}"}], ",", 
+      RowBox[{"{", "d", "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"d", ",", "t"}], "}"}]}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"1", ",", "1"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "1"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"\<\"PlanarGraph(1,Vector(Vector()),Vector(),0)\"\>", 
+      ",", "\<\"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)\"\>", 
+      ",", "\<\"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), \
+(3,7), (2,6))),Vector((1,0)),0)\"\>"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"\<\"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+(3,4))),Vector((1,0)),0)\"\>", 
+      ",", "\<\"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), \
+(3,8), (6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)\"\>", 
+      ",", "\<\"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), \
+Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), \
+Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)\"\>"}], "}"}], 
+    ",", 
+    RowBox[{"{", "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "{", "\<\"PlanarGraph(1,Vector(Vector()),Vector(),0)\"\>", "}"}], 
+       "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+       "{", "\<\"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+(3,4))),Vector((1,0)),0)\"\>", "}"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{"\<\"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)\"\
+\>", ",", "\<\"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), \
+(3,8), (6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)\"\>"}], 
+        "}"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{"\<\"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), \
+List((4,5), (3,7), (2,6))),Vector((1,0)),0)\"\>", 
+         ",", "\<\"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), \
+Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), \
+Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)\"\>"}], "}"}], 
+       "}"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"PickledQuotientSpider", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"{", 
+            RowBox[{"3", ",", "0", ",", "1", ",", "1"}], "}"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             
+             RowBox[{"\<\"PlanarGraph(10,Vector(Vector((4,10), (5,11), \
+(6,12)), Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), \
+Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)\"\>", ",", 
+              RowBox[{"{", 
+               RowBox[{"{", 
+                
+                RowBox[{"\<\"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), \
+List((4,5), (3,7), (2,6))),Vector((1,0)),0)\"\>", ",", 
+                 RowBox[{"-", 
+                  RowBox[{"tt", "[", "2", "]"}]}]}], "}"}], "}"}]}], "}"}], 
+            ",", 
+            RowBox[{"{", 
+             
+             RowBox[{"\<\"PlanarGraph(7,Vector(Vector((3,7), (4,8)), \
+Vector((5,9), (3,8), (6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), \
+(1,0)),0)\"\>", ",", 
+              RowBox[{"{", 
+               RowBox[{"{", 
+                
+                RowBox[{"\<\"PlanarGraph(0,Vector(Vector((0,0), \
+(0,1))),Vector(),0)\"\>", ",", 
+                 RowBox[{"-", 
+                  RowBox[{"tt", "[", "1", "]"}]}]}], "}"}], "}"}]}], "}"}], 
+            ",", 
+            RowBox[{"{", 
+             
+             RowBox[{"\<\"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), \
+(2,4), (3,4))),Vector((1,0)),0)\"\>", ",", 
+              RowBox[{"{", "}"}]}], "}"}]}], "}"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"{", 
+          RowBox[{
+          "1", ",", "\<\"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), \
+(2,4), (3,4))),Vector((1,0)),0)\"\>"}], "}"}], "}"}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"PickledQuotientSpider", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"{", 
+            RowBox[{"3", ",", "0", ",", "1", ",", "1"}], "}"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             
+             RowBox[{"\<\"PlanarGraph(10,Vector(Vector((4,10), (5,11), \
+(6,12)), Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), \
+Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)\"\>", ",", 
+              RowBox[{"{", 
+               RowBox[{"{", 
+                
+                RowBox[{"\<\"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), \
+List((4,5), (3,7), (2,6))),Vector((1,0)),0)\"\>", ",", 
+                 RowBox[{"-", 
+                  RowBox[{"tt", "[", "2", "]"}]}]}], "}"}], "}"}]}], "}"}], 
+            ",", 
+            RowBox[{"{", 
+             
+             RowBox[{"\<\"PlanarGraph(7,Vector(Vector((3,7), (4,8)), \
+Vector((5,9), (3,8), (6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), \
+(1,0)),0)\"\>", ",", 
+              RowBox[{"{", 
+               RowBox[{"{", 
+                
+                RowBox[{"\<\"PlanarGraph(0,Vector(Vector((0,0), \
+(0,1))),Vector(),0)\"\>", ",", 
+                 RowBox[{"-", 
+                  RowBox[{"tt", "[", "1", "]"}]}]}], "}"}], "}"}]}], "}"}], 
+            ",", 
+            RowBox[{"{", 
+             
+             RowBox[{"\<\"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), \
+(2,4), (3,4))),Vector((1,0)),0)\"\>", ",", 
+              RowBox[{"{", "}"}]}], "}"}]}], "}"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox[
+              SubscriptBox["p", "3"], "d"]}], 
+            ",", "\<\"PlanarGraph(0,Vector(Vector((0,0), \
+(0,1))),Vector(),0)\"\>"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+           "1", ",", "\<\"PlanarGraph(7,Vector(Vector((3,7), (4,8)), \
+Vector((5,9), (3,8), (6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), \
+(1,0)),0)\"\>"}], "}"}]}], "}"}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"PickledQuotientSpider", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"{", 
+            RowBox[{"3", ",", "0", ",", "1", ",", "1"}], "}"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             
+             RowBox[{"\<\"PlanarGraph(10,Vector(Vector((4,10), (5,11), \
+(6,12)), Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), \
+Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)\"\>", ",", 
+              RowBox[{"{", 
+               RowBox[{"{", 
+                
+                RowBox[{"\<\"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), \
+List((4,5), (3,7), (2,6))),Vector((1,0)),0)\"\>", ",", 
+                 RowBox[{"-", 
+                  RowBox[{"tt", "[", "2", "]"}]}]}], "}"}], "}"}]}], "}"}], 
+            ",", 
+            RowBox[{"{", 
+             
+             RowBox[{"\<\"PlanarGraph(7,Vector(Vector((3,7), (4,8)), \
+Vector((5,9), (3,8), (6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), \
+(1,0)),0)\"\>", ",", 
+              RowBox[{"{", 
+               RowBox[{"{", 
+                
+                RowBox[{"\<\"PlanarGraph(0,Vector(Vector((0,0), \
+(0,1))),Vector(),0)\"\>", ",", 
+                 RowBox[{"-", 
+                  RowBox[{"tt", "[", "1", "]"}]}]}], "}"}], "}"}]}], "}"}], 
+            ",", 
+            RowBox[{"{", 
+             
+             RowBox[{"\<\"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), \
+(2,4), (3,4))),Vector((1,0)),0)\"\>", ",", 
+              RowBox[{"{", "}"}]}], "}"}]}], "}"}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox[
+              SubscriptBox["p", "5"], "d"]}], 
+            ",", "\<\"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), \
+List((4,5), (3,7), (2,6))),Vector((1,0)),0)\"\>"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+           "1", ",", "\<\"PlanarGraph(10,Vector(Vector((4,10), (5,11), \
+(6,12)), Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), \
+Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)\"\>"}], 
+           "}"}]}], "}"}]}], "}"}]}], "}"}], ",", 
+    RowBox[{"{", "}"}]}], "]"}], "}"}]], "Output",
+ CellChangeTimes->{3.643598975497835*^9, 3.643600235670094*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"UnpickleSpiderAnalysis", "[", 
+  RowBox[{"PickleSpiderAnalysis", "[", "Trivalent", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.643598782382942*^9, 3.64359879128209*^9}, {
+  3.64359890529288*^9, 3.6435989495908613`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+   RowBox[{
+    InterpretationBox[
+     RowBox[{"\[LeftGuillemet]", 
+      RowBox[{"JavaObject", "[", 
+       RowBox[{
+       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+        ".", "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
+     JLink`Objects`vm1`JavaObject23002502777536515], ",", 
+    RowBox[{"Manifold", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         SubscriptBox["p", "1"], "\[Rule]", "0"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "2"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "3"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "4"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "5"], "\[Rule]", 
+         RowBox[{"d", " ", "t"}]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "6"], "\[Rule]", 
+         RowBox[{"d", " ", 
+          SuperscriptBox["t", "2"]}]}], ",", 
+        RowBox[{
+         RowBox[{"tt", "[", "1", "]"}], "\[Rule]", 
+         RowBox[{"-", "1"}]}], ",", 
+        RowBox[{
+         RowBox[{"tt", "[", "2", "]"}], "\[Rule]", 
+         RowBox[{"-", "t"}]}]}], "}"}], ",", 
+      RowBox[{"{", "}"}], ",", 
+      RowBox[{"{", "}"}], ",", 
+      RowBox[{"{", "d", "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"d", ",", "t"}], "}"}]}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"1", ",", "1"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "1"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}], "}"}], ",", 
+    TagBox[
+     RowBox[{"{", 
+      RowBox[{
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject13962315472830475], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+         "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject6558186421092372], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject34409394179407892]}], "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", 
+      RowBox[{
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject9579416757731348], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+         "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject21345252333846548], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject29364749888126996]}], "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", "}"}],
+     Short], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"{", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject13962315472830476], "}"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        InterpretationBox[
+         RowBox[{"\[LeftGuillemet]", 
+          RowBox[{"JavaObject", "[", 
+           RowBox[{
+           "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders",
+             ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+         JLink`Objects`vm1`JavaObject9579416757731349], "}"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject6558186421092373], ",", 
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject21345252333846549]}], "}"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject34409394179407893], ",", 
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject29364749888126997]}], "}"}], "}"}]}], 
+     "}"}], ",", 
+    TagBox[
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "examples", ".", "QuotientSpider"}], "]"}], 
+           "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject23002502777536516], ",", 
+         RowBox[{"{", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", 
+            InterpretationBox[
+             RowBox[{"\[LeftGuillemet]", 
+              RowBox[{"JavaObject", "[", 
+               RowBox[{
+               "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+                "spiders", ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+             
+             JLink`Objects`vm1`JavaObject9579416757731351]}], "}"}], "}"}]}], 
+        "}"}], ",", 
+       RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+           "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject23002502777536518], ",", 
+         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}]}], "}"}]}], 
+      "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", "}"}],
+     Short]}], "]"}], "}"}]], "Output",
+ CellChangeTimes->{{3.643598791600601*^9, 3.6435988080775213`*^9}, 
+   3.64359885620819*^9, {3.64359891934991*^9, 3.643598950410489*^9}, 
+   3.643600248824718*^9}]
+}, Open  ]]
+},
+Evaluator->"Local (2)",
+WindowSize->{1335, 769},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 100, 1, 28, "Input"],
+Cell[CellGroupData[{
+Cell[683, 25, 81, 1, 28, "Input"],
+Cell[767, 28, 10976, 273, 866, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11780, 306, 245, 4, 28, "Input"],
+Cell[12028, 312, 7663, 198, 181, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
