@@ -19,8 +19,8 @@
 
 
 
-DeclarePackage["Spiders`Trivalent`",{"Trivalent","SO3Categories","dMinusOne","SO3","CubicTrivalentCategories","CubicTrivalentCategory","G2Categories","ABACategories","d","t"}];
-DeclarePackage["Spiders`BraidedTrivalent`",{"BraidedTrivalent","SymmetricTrivalent","BraidedSO3Categories","CubicBraidedTrivalentCategories","CubicBraidedTrivalent","BraidedG2Categories","h","z"}];
+DeclarePackage["Spiders`Trivalent`",{"Trivalent","SO3Categories","dMinusOne","SO3","CubicTrivalentCategories","CubicTrivalentCategory","G2Categories","ABACategories"}];
+DeclarePackage["Spiders`BraidedTrivalent`",{"BraidedTrivalent","SymmetricTrivalent","BraidedSO3Categories","CubicBraidedTrivalentCategories","CubicBraidedTrivalent","BraidedG2Categories"}];
 
 
 Print[
@@ -28,61 +28,64 @@ Print[
 ]
 
 
-BeginPackage["Spiders`",{"JLink`"}]
+BeginPackage["Spiders`",{"JLink`"}];
 
 
-ScalaSingleton;ScalaCaseClass;FromScalaObject;AsScalaObject
+h;t;d;z;
 
 
-Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph
+ScalaSingleton;ScalaCaseClass;FromScalaObject;AsScalaObject;
 
 
-unionDiagrams;complementDiagrams;memberQDiagrams
+Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph;
 
 
-SaveGroebnerCalculations;LoadGroebnerCalculations
+unionDiagrams;complementDiagrams;memberQDiagrams;
 
 
-IntroduceNewVariable
+SaveGroebnerCalculations;LoadGroebnerCalculations;
 
 
-Manifold;DeclarePolynomialZero;DeclarePolynomialsZero;DeclareAtLeastOnePolynomialZero;DeclarePolynomialNonZero;DeclarePolynomialsNonZero;DeclarePolynomialEitherZeroOrNonZero
+IntroduceNewVariable;
 
 
-DeclareDimensionBounds;DimensionBounds;DimensionLowerBound;DimensionUpperBound
+Manifold;DeclarePolynomialZero;DeclarePolynomialsZero;DeclareAtLeastOnePolynomialZero;DeclarePolynomialNonZero;DeclarePolynomialsNonZero;DeclarePolynomialEitherZeroOrNonZero;
 
 
-p;tt
+DeclareDimensionBounds;DimensionBounds;DimensionLowerBound;DimensionUpperBound;
 
 
-IndependentDiagrams;DependentDiagrams;SpanningSets;ReducingRelations;NonReducingRelations;AppendIndependentDiagram;AppendDependentDiagram;AppendClosedDiagram;ReducedDiagrams
+p;tt;
 
 
-buildSpiderAnalysis;FreeSpider;emptySpiderAnalysis
+IndependentDiagrams;DependentDiagrams;SpanningSets;ReducingRelations;NonReducingRelations;AppendIndependentDiagram;AppendDependentDiagram;AppendClosedDiagram;ReducedDiagrams;
 
 
-internalValences;diagramWeight
+SpiderAnalysis;buildSpiderAnalysis;FreeSpider;emptySpiderAnalysis;
 
 
-EvaluateDiagram;EvaluateClosedDiagram
+internalValences;diagramWeight;
 
 
-ClosedDiagrams;ConsiderClosedDiagram;ConsiderClosedDiagrams;ReconsiderClosedDiagrams
+EvaluateDiagram;EvaluateClosedDiagram;
 
 
-ConsiderPotentialSpanningSet;DeclareSpanningSet;DeclareBasis;ConsiderDiagrams;ConsiderDiagram;ConsiderIndependentDiagram;ConsiderDependentDiagram;IntroduceRelation
+ClosedDiagrams;ConsiderClosedDiagram;ConsiderClosedDiagrams;ReconsiderClosedDiagrams;
 
 
-PairRelationsWith;ReducePolynomials;ReducePolynomialsFurther
+ConsiderPotentialSpanningSet;DeclareSpanningSet;DeclareBasis;ConsiderDiagrams;ConsiderDiagram;ConsiderIndependentDiagram;ConsiderDependentDiagram;IntroduceRelation;
 
 
-PickleSpiderAnalysis;UnpickleSpiderAnalysis
+PairRelationsWith;ReducePolynomials;ReducePolynomialsFurther;
+
+
+PickleSpiderAnalysis;UnpickleSpiderAnalysis;PickledSpiderAnalysis;PickledQuotientSpider;
 
 
 Begin["`Private`"];
 
 
-SpidersMathematicaDirectory=Cases[$Path~Join~(Quiet[{NotebookDirectory[]}]/.$Failed->{}),s_/;StringMatchQ[s,__~~"toolkit/algebra-spiders/src/main/mathematica"~~___]][[1]]
+SpidersMathematicaDirectory=Cases[$Path~Join~(Quiet[{NotebookDirectory[]}]/.$Failed->{}),s_/;StringMatchQ[s,__~~"toolkit/algebra-spiders/src/main/mathematica"~~___]][[1]];
 
 
 SpidersDirectory=FileNameJoin[{SpidersMathematicaDirectory,"..","..",".."}];
@@ -227,6 +230,9 @@ DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGrap
 
 
 DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Import[DrawPlanarGraph$@createPDF[g]@toString[]][[1]]
+
+
+DrawPlanarGraph[Subscript[p, k_Integer]]:=DrawPlanarGraph[NamedPolyhedron[Subscript[p, k]]]
 
 
 unionDiagrams[diagrams_]:=Union[{#@toString[],#}&/@(#@canonicalFormWithDefect[]@U1[]&/@diagrams),SameTest->(First[#1]===First[#2]&)][[All,2]]
@@ -598,12 +604,7 @@ diagramWeight[diagram_]:=Count[internalValences[diagram],3]+4Count[internalValen
 EvaluateDiagram[s_SpiderAnalysis][d0:Diagram]:=DrawPlanarGraph[#@U1[]]->ReducePolynomials[s][FromScalaObject[#@U2[]]]&/@FromScalaObject[s[[1]]@canonicalForm[AsScalaMap[{d0->AsScalaObject[1,"MultivariableRationalFunction"]}]],1]
 
 
-EvaluateClosedDiagram[s_SpiderAnalysis][d0:Diagram]:=Module[{map},
-map=FromScalaObject[s[[1]]@canonicalForm[AsScalaMap[{d0->AsScalaObject[1,"MultivariableRationalFunction"]}]],1];
-If[Length[map]==0,0,
-ReducePolynomials[s][FromScalaObject[map[[1]]@U2[]]]
-]
-]
+EvaluateClosedDiagram[s_SpiderAnalysis][d0:Diagram]:=ReducePolynomials[s][FromScalaObject[s[[1]]@evaluate[s[[1]]@canonicalForm[AsScalaMap[{d0->AsScalaObject[1,"MultivariableRationalFunction"]}]]]]]
 
 
 ClosedDiagrams[s_SpiderAnalysis]:=s[[6]]
@@ -949,20 +950,28 @@ If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s
 Print["considering the dependent diagram ",d0@toString[]];
 Print["manifold: ",s[[2]]];
 i=IndependentDiagrams[k][s];
-innerProducts=ReducePolynomials[s][FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[i~Join~{d0}],AsScalaList[i~Join~{d0}]]]];
+innerProducts=FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[i~Join~{d0}],AsScalaList[i~Join~{d0}]]];
+Print["computed inner products."];
+innerProducts=ReducePolynomials[s][innerProducts];
+Print["reduced inner products."];
 det0[{}]=1;
 det0[M_]:=Det[M];
-If[ReducePolynomials[s][Factor[det0[Most[Most/@innerProducts]]]]===0,
+(*If[ReducePolynomials[s][Factor[det0[Most[Most/@innerProducts]]]]===0,
 Print["Something has gone wrong; the upper left minor should have nonzero determinant!"];
-Print[s[[2]]];
+Print[s\[LeftDoubleBracket]2\[RightDoubleBracket]];
 Print[innerProducts];
 Print[Factor[Det[Most[Most/@innerProducts]]]];
 Print[ReducePolynomials[s][Factor[det0[Most[Most/@innerProducts]]]]];
 Message[foo::bar];
 Abort[]
 ];
-det=ReducePolynomials[s][det0[innerProducts]];
+*)
+det=det0[innerProducts];
+Print["computed determinant"];
+det=ReducePolynomials[s][det];
+Print["reduced determinant"];
 s0=DeclarePolynomialsZero[{det}][s];
+Print["declared determinant zero"];
 If[Length[s0]==0,
 Print[d0," can't be dependent; the determinant of inner products isn't allowed to vanish"];
 {},
@@ -970,6 +979,7 @@ nullSpace=If[Length[i]==0,
 {{1}},
 Factor[NullSpace[Most[innerProducts],"Method"->"OneStepRowReduction"]]
 ];
+Print["computed null space"];
 If[Length[nullSpace]=!=1,Print["Found a null space that wasn't 1-dimensional: ",nullSpace];Abort[]];
 newRelation=Factor[nullSpace[[1]]];
 If[newRelation[[-1]]===0,
@@ -1100,11 +1110,15 @@ ReplacePart[s,2->#](*/.(d:Diagram\[Rule]z_)\[RuleDelayed](d\[Rule]cachedPolynomi
 automaticFlatMap[DeclarePolynomialNonZero]
 
 
-PickleSpiderAnalysis[s_SpiderAnalysis]:=PickledSpiderAnalysis@@(s/.{d0:Diagram:>d0@toString[],q_?JavaObjectQ/;InstanceOf[q,"net.tqft.toolkit.algebra.spiders.examples.QuotientSpider"]:>PickleQuotientSpider[q]})
+PickleSpiderAnalysis[s_SpiderAnalysis]:=Append[PickledSpiderAnalysis@@(s/.{d0:Diagram:>d0@toString[],q_?JavaObjectQ/;InstanceOf[q,"net.tqft.toolkit.algebra.spiders.examples.QuotientSpider"]:>PickleQuotientSpider[q]}),
+{#,NamedPolyhedron[#]@toString[]}&/@Union[Cases[s,Subscript[p, _],\[Infinity]]]
+]
 PickleSpiderAnalysis[S_List]:=PickleSpiderAnalysis/@S
 
 
-UnpickleSpiderAnalysis[s_PickledSpiderAnalysis]:=SpiderAnalysis@@(s/.{d0_String/;StringTake[d0,12]==="PlanarGraph(":>PlanarGraphs@fromString[d0],q_PickledQuotientSpider:>UnpickleQuotientSpider[q]})
+UnpickleSpiderAnalysis[s_PickledSpiderAnalysis]:=Module[{renamer},
+renamer[Subscript[p, k_]]:=renamer[Subscript[p, k]]=Cases[s[[-1]],{Subscript[p, k],r_}:>Name[PlanarGraphs@fromString[r]],1,1][[1]];SpiderAnalysis@@(Most[s]/.{Subscript[p, k_]:>renamer[Subscript[p, k]]}/.{d0_String/;StringTake[d0,12]==="PlanarGraph(":>PlanarGraphs@fromString[d0],q_PickledQuotientSpider:>UnpickleQuotientSpider[q]})
+]
 UnpickleSpiderAnalysis[S_List]:=UnpickleSpiderAnalysis/@S
 
 

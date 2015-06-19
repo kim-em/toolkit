@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    583484,      11140]
-NotebookOptionsPosition[    580473,      11040]
-NotebookOutlinePosition[    580832,      11056]
-CellTagsIndexPosition[    580789,      11053]
+NotebookDataLength[    583617,      11141]
+NotebookOptionsPosition[    580680,      11044]
+NotebookOutlinePosition[    581039,      11060]
+CellTagsIndexPosition[    580996,      11057]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -10999,26 +10999,34 @@ Cell[BoxData[
    3.6435957868235292`*^9}]
 }, Open  ]],
 
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"CreateDirectory", "[", 
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{
-      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<saved-states\>\""}], 
-     "}"}], "]"}], "]"}], ";"}], "\[IndentingNewLine]", 
- RowBox[{"Put", "[", 
+Cell[BoxData[
+ RowBox[{"Module", "[", 
   RowBox[{
-   RowBox[{"PickleSpiderAnalysis", "[", "QES8", "]"}], ",", 
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
+   RowBox[{"{", 
+    RowBox[{"directory", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"NotebookDirectory", "[", "]"}], ",", 
+        "\"\<saved-states\>\""}], "}"}], "]"}]}], "}"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"If", "[", 
      RowBox[{
-      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<saved-states\>\"", 
-      ",", "\"\<QES-flat.m\>\""}], "}"}], "]"}]}], "]"}]}], "Input",
+      RowBox[{"!", 
+       RowBox[{"FileExistsQ", "[", "directory", "]"}]}], ",", 
+      RowBox[{"CreateDirectory", "[", "directory", "]"}]}], "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Put", "[", 
+     RowBox[{
+      RowBox[{"PickleSpiderAnalysis", "[", "QES8", "]"}], ",", 
+      RowBox[{"FileNameJoin", "[", 
+       RowBox[{"{", 
+        RowBox[{"directory", ",", "\"\<QES-flat.m\>\""}], "}"}], "]"}]}], 
+     "]"}]}]}], "\[IndentingNewLine]", "]"}]], "Input",
  CellChangeTimes->{{3.643600373871686*^9, 3.643600378818404*^9}, {
-  3.643600413688361*^9, 3.643600458201297*^9}}],
-
-Cell[CellGroupData[{
+  3.643600413688361*^9, 3.643600458201297*^9}, {3.643627232264192*^9, 
+  3.64362726329006*^9}}],
 
 Cell[BoxData[
  RowBox[{"QES9", "=", 
@@ -11032,11 +11040,7 @@ Cell[BoxData[
      "\[RightDoubleBracket]"}], "]"}], "[", "QES8", "]"}]}]], "Input",
  CellChangeTimes->{{3.643552776061899*^9, 3.643552785742628*^9}, {
   3.643589204125182*^9, 3.643589215263028*^9}, {3.643595653553771*^9, 
-  3.64359565941433*^9}}],
-
-Cell[BoxData["$Aborted"], "Output",
- CellChangeTimes->{3.643600367703882*^9}]
-}, Open  ]]
+  3.64359565941433*^9}}]
 },
 WindowSize->{1342, 737},
 WindowMargins->{{Automatic, 23}, {Automatic, 30}},
@@ -11137,11 +11141,8 @@ Cell[CellGroupData[{
 Cell[486680, 9519, 390, 8, 28, "Input"],
 Cell[487073, 9529, 92045, 1469, 105, "Output"]
 }, Open  ]],
-Cell[579133, 11001, 680, 17, 46, "Input"],
-Cell[CellGroupData[{
-Cell[579838, 11022, 539, 12, 28, "Input"],
-Cell[580380, 11036, 77, 1, 28, "Output"]
-}, Open  ]]
+Cell[579133, 11001, 1001, 27, 80, "Input"],
+Cell[580137, 11030, 539, 12, 28, "Input"]
 }
 ]
 *)

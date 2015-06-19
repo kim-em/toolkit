@@ -1,102 +1,74 @@
 {PickledSpiderAnalysis[PickledQuotientSpider[{{4, 0, 2, 1}, {3, 0, 1, 1}}, 
    {{"PlanarGraph(6,Vector(List((2,6), (5,8), (4,9), (3,7)), List((5,9), \
-(2,8), (3,6), (4,7))),ArrayBuffer((2,0)),0)", {"(PlanarGraph(3,Vector(Vector(\
-(1,3), (2,5), (2,4), \
-(1,5))),ArrayBuffer(),0),Fraction(MultivariablePolynomial(Map(Map(t17 -> 1) \
--> Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, \
-1)))))", "(PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), \
-List((4,8), (6,10), (7,9)), List((3,11), (7,8), (5,9))),ArrayBuffer((1,0), \
-(1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t18 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))", "(PlanarGraph\
-(8,Vector(List((6,8), (4,9), (3,11), (5,10)), List((3,10), (4,11), (7,9)), \
-List((5,8), (7,10), (6,9))),ArrayBuffer((1,0), \
-(1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t19 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))", "(PlanarGraph\
-(3,Vector(Vector((1,3), (1,5), (2,3), \
-(2,4))),ArrayBuffer(),0),Fraction(MultivariablePolynomial(Map(Map(t16 -> 1) \
--> Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, \
-1)))))", "(PlanarGraph(13,Vector(List((5,13), (8,16), (7,17), (6,15)), \
-List((6,13), (10,15), (9,14)), List((5,16), (9,13), (12,14)), List((7,15), \
-(11,17), (10,14)), List((8,17), (12,16), (11,14))),ArrayBuffer((1,0), (1,0), \
-(1,0), (1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t20 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(18,Vector(List((7,18), (9,23), (10,21), (8,22)), \
+(2,8), (3,6), (4,7))),ArrayBuffer((2,0)),0)", 
+     {{"PlanarGraph(3,Vector(Vector((1,3), (2,5), (2,4), \
+(1,5))),ArrayBuffer(),0)", -tt[17]}, {"PlanarGraph(8,Vector(List((3,8), \
+(5,11), (6,9), (4,10)), List((4,8), (6,10), (7,9)), List((3,11), (7,8), \
+(5,9))),ArrayBuffer((1,0), (1,0)),0)", -tt[18]}, {"PlanarGraph(8,Vector(List(\
+(6,8), (4,9), (3,11), (5,10)), List((3,10), (4,11), (7,9)), List((5,8), \
+(7,10), (6,9))),ArrayBuffer((1,0), (1,0)),0)", -tt[19]}, 
+      {"PlanarGraph(3,Vector(Vector((1,3), (1,5), (2,3), \
+(2,4))),ArrayBuffer(),0)", -tt[16]}, {"PlanarGraph(13,Vector(List((5,13), \
+(8,16), (7,17), (6,15)), List((6,13), (10,15), (9,14)), List((5,16), (9,13), \
+(12,14)), List((7,15), (11,17), (10,14)), List((8,17), (12,16), \
+(11,14))),ArrayBuffer((1,0), (1,0), (1,0), (1,0)),0)", -tt[20]}}}, 
+    {"PlanarGraph(18,Vector(List((7,18), (9,23), (10,21), (8,22)), \
 List((14,20), (16,22), (17,19)), List((13,23), (17,20), (15,19)), \
 List((9,21), (15,23), (12,19)), List((10,22), (12,21), (16,19)), List((8,18), \
 (14,22), (11,20)), List((7,23), (11,18), (13,20))),ArrayBuffer((1,0), (1,0), \
-(1,0), (1,0), (1,0), (1,0)),0)", {"(PlanarGraph(3,Vector(Vector((1,3), (2,5), \
-(2,4), (1,5))),ArrayBuffer(),0),Fraction(MultivariablePolynomial(Map(Map(t12 \
--> 1) -> Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, \
-1)))))", "(PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), \
-List((4,8), (6,10), (7,9)), List((3,11), (7,8), (5,9))),ArrayBuffer((1,0), \
-(1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t13 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))", "(PlanarGraph\
-(8,Vector(List((6,8), (4,9), (3,11), (5,10)), List((3,10), (4,11), (7,9)), \
-List((5,8), (7,10), (6,9))),ArrayBuffer((1,0), \
-(1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t14 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))", "(PlanarGraph\
-(3,Vector(Vector((1,3), (1,5), (2,3), \
-(2,4))),ArrayBuffer(),0),Fraction(MultivariablePolynomial(Map(Map(t11 -> 1) \
--> Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, \
-1)))))", "(PlanarGraph(13,Vector(List((5,13), (8,16), (7,17), (6,15)), \
-List((6,13), (10,15), (9,14)), List((5,16), (9,13), (12,14)), List((7,15), \
-(11,17), (10,14)), List((8,17), (12,16), (11,14))),ArrayBuffer((1,0), (1,0), \
-(1,0), (1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t15 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((13,6), (9,17), (10,18), (4,8), (5,9)), \
+(1,0), (1,0), (1,0), (1,0)),0)", 
+     {{"PlanarGraph(3,Vector(Vector((1,3), (2,5), (2,4), \
+(1,5))),ArrayBuffer(),0)", -tt[12]}, {"PlanarGraph(8,Vector(List((3,8), \
+(5,11), (6,9), (4,10)), List((4,8), (6,10), (7,9)), List((3,11), (7,8), \
+(5,9))),ArrayBuffer((1,0), (1,0)),0)", -tt[13]}, {"PlanarGraph(8,Vector(List(\
+(6,8), (4,9), (3,11), (5,10)), List((3,10), (4,11), (7,9)), List((5,8), \
+(7,10), (6,9))),ArrayBuffer((1,0), (1,0)),0)", -tt[14]}, 
+      {"PlanarGraph(3,Vector(Vector((1,3), (1,5), (2,3), \
+(2,4))),ArrayBuffer(),0)", -tt[11]}, {"PlanarGraph(13,Vector(List((5,13), \
+(8,16), (7,17), (6,15)), List((6,13), (10,15), (9,14)), List((5,16), (9,13), \
+(12,14)), List((7,15), (11,17), (10,14)), List((8,17), (12,16), \
+(11,14))),ArrayBuffer((1,0), (1,0), (1,0), (1,0)),0)", -tt[15]}}}, 
+    {"PlanarGraph(6,Vector(List((13,6), (9,17), (10,18), (4,8), (5,9)), \
 List((5,6), (4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), (8,17)), \
 List((2,6), (8,7), (13,17))),Vector((2,0), (2,0), (1,0)),0)", 
-     {"(PlanarGraph(16,Vector(List((9,16), (10,17), (3,6), (4,7), (8,5)), \
+     {{"PlanarGraph(16,Vector(List((9,16), (10,17), (3,6), (4,7), (8,5)), \
 List((4,5), (3,7), (2,6)), List((10,6), (9,17), (8,16), (2,5))),Vector((1,0), \
-(2,0)),0),Fraction(MultivariablePolynomial(Map(Map(t10 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}, 
-    {"PlanarGraph(9,Vector(List((14,9), (10,18), (11,19), (3,7), (4,8)), \
-List((5,6), (4,9), (3,8), (2,7)), List((11,7), (10,19), (9,18), (2,6)), \
-List((5,9), (9,6), (14,18))),Vector((2,0), (2,0), (1,0)),0)", 
-     {"(PlanarGraph(15,Vector(List((8,15), (9,16), (3,6), (4,7), (7,5)), \
+(2,0)),0)", -tt[10]}}}, {"PlanarGraph(9,Vector(List((14,9), (10,18), (11,19), \
+(3,7), (4,8)), List((5,6), (4,9), (3,8), (2,7)), List((11,7), (10,19), \
+(9,18), (2,6)), List((5,9), (9,6), (14,18))),Vector((2,0), (2,0), (1,0)),0)", 
+     {{"PlanarGraph(15,Vector(List((8,15), (9,16), (3,6), (4,7), (7,5)), \
 List((4,5), (3,7), (2,6)), List((2,5), (9,6), (8,16), (7,15))),Vector((1,0), \
-(2,0)),0),Fraction(MultivariablePolynomial(Map(Map(t9 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}, 
-    {"PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), (5,9)), List((5,6), \
-(4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), (2,6))),Vector((2,0), \
-(2,0)),0)", {"(PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
-(1,0))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t8 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (4,8), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (8,8))),Vector((2,0), (1,0)),0)", 
-     {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t7 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), (3,8), \
-(2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
-     {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t6 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
+(2,0)),0)", -tt[9]}}}, {"PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), \
+(2,6))),Vector((2,0), (2,0)),0)", 
+     {
+      {
+       "PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), (1,0))),Vector(),0)"\
+, -tt[8]}}}, {"PlanarGraph(6,Vector(List((8,6), (4,8), (5,9)), List((5,6), \
+(4,9), (3,8), (2,7)), List((2,6), (3,7), (8,8))),Vector((2,0), (1,0)),0)", 
+     {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[7]}}}, {"PlanarGraph(7,Vector(List((8,7), \
+(5,9), (2,6)), List((5,6), (4,9), (3,8), (2,7)), List((3,7), (4,8), \
+(8,9))),Vector((2,0), (1,0)),0)", {{"PlanarGraph(5,Vector(List((2,5), (3,6), \
+(4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)", -tt[6]}}}, 
+    {"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
 (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), Vector((9,13), (6,10), \
-(8,12))),Vector((1,0), (1,0), (1,0)),0)", {"(PlanarGraph(5,Vector(List((2,5), \
-(3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t5 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (4,8), (8,9))),Vector((2,0), (2,0)),0)", 
-     {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t4 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
+(8,12))),Vector((1,0), (1,0), (1,0)),0)", 
+     {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[5]}}}, {"PlanarGraph(6,Vector(List((8,6), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), (4,8), \
+(8,9))),Vector((2,0), (2,0)),0)", 
+     {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[4]}}}, 
+    {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
 Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-     {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+     {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+    {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+     {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+    {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+     {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+    {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], 
   Manifold[{cube -> (d*(-1 + 3*t^2 - 2*t^3 - 3*t^4 + 2*t^5 - 2*z - 2*t*z + 
         8*t^2*z - 2*d*t^2*z - 2*t^3*z + 2*d*t^3*z - 2*t^4*z - 2*d*t^4*z - 
@@ -4236,24 +4208,19 @@ Vector((3,5), (2,4), (3,4))),Vector((1,0)),0)", {}}}],
 (2,7))),Vector((2,0)),0)"}}}, {PickledQuotientSpider[
      {{4, 0, 2, 1}, {3, 0, 1, 1}}, {{"PlanarGraph(6,Vector(List((2,6), \
 (3,7)), List((4,6), (4,9), (3,6), (2,7))),Vector((2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], {{-(Subscript[p, 5]/d), 
       "PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)"}, 
      {1, "PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
 (2,7))),Vector((2,0)),0)"}}}, {PickledQuotientSpider[
      {{4, 0, 2, 1}, {3, 0, 1, 1}}, {{"PlanarGraph(7,Vector(List((3,7), \
 (4,8)), List((2,6), (4,7), (3,8), (2,7))),Vector((2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], 
     {{-1, "PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)"}, 
      {1, "PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
@@ -4261,18 +4228,14 @@ Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
    {PickledQuotientSpider[{{4, 0, 2, 1}, {3, 0, 1, 1}}, 
      {{"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
 (6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+      {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], {{-(Subscript[p, 16]/d), 
       "PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)"}, 
      {1, "PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
@@ -4280,23 +4243,17 @@ Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
    {PickledQuotientSpider[{{4, 0, 2, 1}, {3, 0, 1, 1}}, 
      {{"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
 (2,7)), List((2,6), (3,7), (4,8), (8,9))),Vector((2,0), (2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t4 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
-Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[4]}}}, 
+      {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
+(6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+      {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], {{-t, "PlanarGraph(5,Vector(List((2,5), \
 (3,6), (4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)"}, 
      {1, "PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), \
@@ -4305,29 +4262,21 @@ Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)"}}},
    {PickledQuotientSpider[{{4, 0, 2, 1}, {3, 0, 1, 1}}, 
      {{"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
 (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), Vector((9,13), (6,10), \
-(8,12))),Vector((1,0), (1,0), (1,0)),0)", {"(PlanarGraph(5,Vector(List((2,5), \
-(3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t5 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
+(8,12))),Vector((1,0), (1,0), (1,0)),0)", {{"PlanarGraph(5,Vector(List((2,5), \
+(3,6), (4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)", -tt[5]}}}, 
+      {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
 (2,7)), List((2,6), (3,7), (4,8), (8,9))),Vector((2,0), (2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t4 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
-Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[4]}}}, 
+      {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
+(6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+      {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], {{-(Subscript[p, 22]/d), "PlanarGraph(5,Vec\
 tor(List((2,5), (3,6), (4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)"}, 
      {1, "PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), \
@@ -4335,34 +4284,25 @@ tor(List((2,5), (3,6), (4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)"},
    {PickledQuotientSpider[{{4, 0, 2, 1}, {3, 0, 1, 1}}, 
      {{"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), \
 (3,8), (2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t6 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
-(4,11), (9,10)), Vector((8,13), (5,12), (7,11)), Vector((9,13), (6,10), \
-(8,12))),Vector((1,0), (1,0), (1,0)),0)", {"(PlanarGraph(5,Vector(List((2,5), \
-(3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t5 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (4,8), (8,9))),Vector((2,0), (2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t4 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
-Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[6]}}}, {"PlanarGraph(10,Vector(Vector((4,10), \
+(5,11), (6,12)), Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), \
+(7,11)), Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)", 
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[5]}}}, {"PlanarGraph(6,Vector(List((8,6), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), (4,8), \
+(8,9))),Vector((2,0), (2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[4]}}}, 
+      {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
+(6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+      {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], {{-z, "PlanarGraph(5,Vector(List((2,5), \
 (3,6), (4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)"}, 
      {1, "PlanarGraph(6,Vector(List((8,6), (4,8), (5,9)), List((5,6), (4,9), \
@@ -4370,39 +4310,28 @@ Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
    {PickledQuotientSpider[{{4, 0, 2, 1}, {3, 0, 1, 1}}, 
      {{"PlanarGraph(6,Vector(List((8,6), (4,8), (5,9)), List((5,6), (4,9), \
 (3,8), (2,7)), List((2,6), (3,7), (8,8))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t7 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), (3,8), \
-(2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t6 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[7]}}}, {"PlanarGraph(7,Vector(List((8,7), \
+(5,9), (2,6)), List((5,6), (4,9), (3,8), (2,7)), List((3,7), (4,8), \
+(8,9))),Vector((2,0), (1,0)),0)", {{"PlanarGraph(5,Vector(List((2,5), (3,6), \
+(4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)", -tt[6]}}}, 
+      {"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
 (4,11), (9,10)), Vector((8,13), (5,12), (7,11)), Vector((9,13), (6,10), \
-(8,12))),Vector((1,0), (1,0), (1,0)),0)", {"(PlanarGraph(5,Vector(List((2,5), \
-(3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t5 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
+(8,12))),Vector((1,0), (1,0), (1,0)),0)", {{"PlanarGraph(5,Vector(List((2,5), \
+(3,6), (4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)", -tt[5]}}}, 
+      {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
 (2,7)), List((2,6), (3,7), (4,8), (8,9))),Vector((2,0), (2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t4 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
-Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[4]}}}, 
+      {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
+(6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+      {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], 
     {{-1, 
       "PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), (1,0))),Vector(),0)"}\
@@ -4411,44 +4340,34 @@ Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
 (2,0)),0)"}}}, {PickledQuotientSpider[{{4, 0, 2, 1}, {3, 0, 1, 1}}, 
      {{"PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), (5,9)), List((5,6), \
 (4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), (2,6))),Vector((2,0), \
-(2,0)),0)", {"(PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
-(1,0))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t8 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (4,8), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (8,8))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t7 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), (3,8), \
-(2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t6 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
-(4,11), (9,10)), Vector((8,13), (5,12), (7,11)), Vector((9,13), (6,10), \
-(8,12))),Vector((1,0), (1,0), (1,0)),0)", {"(PlanarGraph(5,Vector(List((2,5), \
-(3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t5 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (4,8), (8,9))),Vector((2,0), (2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t4 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
-Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+(2,0)),0)", 
+       {
+        {"PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
+(1,0))),Vector(),0)", -tt[8]}}}, {"PlanarGraph(6,Vector(List((8,6), (4,8), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), \
+(8,8))),Vector((2,0), (1,0)),0)", {{"PlanarGraph(5,Vector(List((2,5), (3,6), \
+(4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)", -tt[7]}}}, 
+      {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), \
+(3,8), (2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[6]}}}, {"PlanarGraph(10,Vector(Vector((4,10), \
+(5,11), (6,12)), Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), \
+(7,11)), Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)", 
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[5]}}}, {"PlanarGraph(6,Vector(List((8,6), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), (4,8), \
+(8,9))),Vector((2,0), (2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[4]}}}, 
+      {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
+(6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+      {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], {{-1, "PlanarGraph(15,Vector(List((8,15), \
 (9,16), (3,6), (4,7), (7,5)), List((4,5), (3,7), (2,6)), List((2,5), (9,6), \
 (8,16), (7,15))),Vector((1,0), (2,0)),0)"}, {1, "PlanarGraph(9,Vector(List((1\
@@ -4459,50 +4378,38 @@ List((11,7), (10,19), (9,18), (2,6)), List((5,9), (9,6), \
      {{"PlanarGraph(9,Vector(List((14,9), (10,18), (11,19), (3,7), (4,8)), \
 List((5,6), (4,9), (3,8), (2,7)), List((11,7), (10,19), (9,18), (2,6)), \
 List((5,9), (9,6), (14,18))),Vector((2,0), (2,0), (1,0)),0)", 
-       {"(PlanarGraph(15,Vector(List((8,15), (9,16), (3,6), (4,7), (7,5)), \
+       {{"PlanarGraph(15,Vector(List((8,15), (9,16), (3,6), (4,7), (7,5)), \
 List((4,5), (3,7), (2,6)), List((2,5), (9,6), (8,16), (7,15))),Vector((1,0), \
-(2,0)),0),Fraction(MultivariablePolynomial(Map(Map(t9 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}, 
-      {"PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), (5,9)), List((5,6), \
-(4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), (2,6))),Vector((2,0), \
-(2,0)),0)", {"(PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
-(1,0))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t8 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (4,8), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (8,8))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t7 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), (3,8), \
-(2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t6 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
-(4,11), (9,10)), Vector((8,13), (5,12), (7,11)), Vector((9,13), (6,10), \
-(8,12))),Vector((1,0), (1,0), (1,0)),0)", {"(PlanarGraph(5,Vector(List((2,5), \
-(3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t5 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (4,8), (8,9))),Vector((2,0), (2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t4 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
-Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+(2,0)),0)", -tt[9]}}}, {"PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), \
+(2,6))),Vector((2,0), (2,0)),0)", 
+       {
+        {"PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
+(1,0))),Vector(),0)", -tt[8]}}}, {"PlanarGraph(6,Vector(List((8,6), (4,8), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), \
+(8,8))),Vector((2,0), (1,0)),0)", {{"PlanarGraph(5,Vector(List((2,5), (3,6), \
+(4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)", -tt[7]}}}, 
+      {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), \
+(3,8), (2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[6]}}}, {"PlanarGraph(10,Vector(Vector((4,10), \
+(5,11), (6,12)), Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), \
+(7,11)), Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)", 
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[5]}}}, {"PlanarGraph(6,Vector(List((8,6), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), (4,8), \
+(8,9))),Vector((2,0), (2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[4]}}}, 
+      {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
+(6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+      {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], {{-1, "PlanarGraph(16,Vector(List((9,16), \
 (10,17), (3,6), (4,7), (8,5)), List((4,5), (3,7), (2,6)), List((10,6), \
 (9,17), (8,16), (2,5))),Vector((1,0), (2,0)),0)"}, {1, "PlanarGraph(6,Vector(\
@@ -4513,57 +4420,43 @@ List((13,6), (9,17), (10,18), (4,8), (5,9)), List((5,6), (4,9), (3,8), \
      {{"PlanarGraph(6,Vector(List((13,6), (9,17), (10,18), (4,8), (5,9)), \
 List((5,6), (4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), (8,17)), \
 List((2,6), (8,7), (13,17))),Vector((2,0), (2,0), (1,0)),0)", 
-       {"(PlanarGraph(16,Vector(List((9,16), (10,17), (3,6), (4,7), (8,5)), \
+       {{"PlanarGraph(16,Vector(List((9,16), (10,17), (3,6), (4,7), (8,5)), \
 List((4,5), (3,7), (2,6)), List((10,6), (9,17), (8,16), (2,5))),Vector((1,0), \
-(2,0)),0),Fraction(MultivariablePolynomial(Map(Map(t10 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}, 
-      {"PlanarGraph(9,Vector(List((14,9), (10,18), (11,19), (3,7), (4,8)), \
-List((5,6), (4,9), (3,8), (2,7)), List((11,7), (10,19), (9,18), (2,6)), \
-List((5,9), (9,6), (14,18))),Vector((2,0), (2,0), (1,0)),0)", 
-       {"(PlanarGraph(15,Vector(List((8,15), (9,16), (3,6), (4,7), (7,5)), \
+(2,0)),0)", -tt[10]}}}, {"PlanarGraph(9,Vector(List((14,9), (10,18), (11,19), \
+(3,7), (4,8)), List((5,6), (4,9), (3,8), (2,7)), List((11,7), (10,19), \
+(9,18), (2,6)), List((5,9), (9,6), (14,18))),Vector((2,0), (2,0), (1,0)),0)", 
+       {{"PlanarGraph(15,Vector(List((8,15), (9,16), (3,6), (4,7), (7,5)), \
 List((4,5), (3,7), (2,6)), List((2,5), (9,6), (8,16), (7,15))),Vector((1,0), \
-(2,0)),0),Fraction(MultivariablePolynomial(Map(Map(t9 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}, 
-      {"PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), (5,9)), List((5,6), \
-(4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), (2,6))),Vector((2,0), \
-(2,0)),0)", {"(PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
-(1,0))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t8 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (4,8), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (8,8))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t7 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), (3,8), \
-(2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t6 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
-(4,11), (9,10)), Vector((8,13), (5,12), (7,11)), Vector((9,13), (6,10), \
-(8,12))),Vector((1,0), (1,0), (1,0)),0)", {"(PlanarGraph(5,Vector(List((2,5), \
-(3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t5 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (4,8), (8,9))),Vector((2,0), (2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t4 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
-Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+(2,0)),0)", -tt[9]}}}, {"PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), \
+(2,6))),Vector((2,0), (2,0)),0)", 
+       {
+        {"PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
+(1,0))),Vector(),0)", -tt[8]}}}, {"PlanarGraph(6,Vector(List((8,6), (4,8), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), \
+(8,8))),Vector((2,0), (1,0)),0)", {{"PlanarGraph(5,Vector(List((2,5), (3,6), \
+(4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)", -tt[7]}}}, 
+      {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), \
+(3,8), (2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[6]}}}, {"PlanarGraph(10,Vector(Vector((4,10), \
+(5,11), (6,12)), Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), \
+(7,11)), Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)", 
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[5]}}}, {"PlanarGraph(6,Vector(List((8,6), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), (4,8), \
+(8,9))),Vector((2,0), (2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[4]}}}, 
+      {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
+(6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+      {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], 
     {{-((cube^2 - 2*cube*d + d^2 + 2*d*prism5 - d^2*prism5 - 2*cube*d*t + 
          cube^2*d*t + d*prism5*t - 4*d^2*t^2 + 2*cube*d^2*t^2 - 
@@ -4620,79 +4513,58 @@ List((9,21), (15,23), (12,19)), List((10,22), (12,21), (16,19)), List((8,18), \
 List((14,20), (16,22), (17,19)), List((13,23), (17,20), (15,19)), \
 List((9,21), (15,23), (12,19)), List((10,22), (12,21), (16,19)), List((8,18), \
 (14,22), (11,20)), List((7,23), (11,18), (13,20))),ArrayBuffer((1,0), (1,0), \
-(1,0), (1,0), (1,0), (1,0)),0)", {"(PlanarGraph(3,Vector(Vector((1,3), (2,5), \
-(2,4), (1,5))),ArrayBuffer(),0),Fraction(MultivariablePolynomial(Map(Map(t12 \
--> 1) -> Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, \
-1)))))", "(PlanarGraph(8,Vector(List((3,8), (5,11), (6,9), (4,10)), \
-List((4,8), (6,10), (7,9)), List((3,11), (7,8), (5,9))),ArrayBuffer((1,0), \
-(1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t13 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))", "(PlanarGraph\
-(8,Vector(List((6,8), (4,9), (3,11), (5,10)), List((3,10), (4,11), (7,9)), \
-List((5,8), (7,10), (6,9))),ArrayBuffer((1,0), \
-(1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t14 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))", "(PlanarGraph\
-(3,Vector(Vector((1,3), (1,5), (2,3), \
-(2,4))),ArrayBuffer(),0),Fraction(MultivariablePolynomial(Map(Map(t11 -> 1) \
--> Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, \
-1)))))", "(PlanarGraph(13,Vector(List((5,13), (8,16), (7,17), (6,15)), \
-List((6,13), (10,15), (9,14)), List((5,16), (9,13), (12,14)), List((7,15), \
-(11,17), (10,14)), List((8,17), (12,16), (11,14))),ArrayBuffer((1,0), (1,0), \
-(1,0), (1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t15 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((13,6), (9,17), (10,18), (4,8), (5,9)), \
+(1,0), (1,0), (1,0), (1,0)),0)", 
+       {{"PlanarGraph(3,Vector(Vector((1,3), (2,5), (2,4), \
+(1,5))),ArrayBuffer(),0)", -tt[12]}, {"PlanarGraph(8,Vector(List((3,8), \
+(5,11), (6,9), (4,10)), List((4,8), (6,10), (7,9)), List((3,11), (7,8), \
+(5,9))),ArrayBuffer((1,0), (1,0)),0)", -tt[13]}, {"PlanarGraph(8,Vector(List(\
+(6,8), (4,9), (3,11), (5,10)), List((3,10), (4,11), (7,9)), List((5,8), \
+(7,10), (6,9))),ArrayBuffer((1,0), (1,0)),0)", -tt[14]}, 
+        {"PlanarGraph(3,Vector(Vector((1,3), (1,5), (2,3), \
+(2,4))),ArrayBuffer(),0)", -tt[11]}, {"PlanarGraph(13,Vector(List((5,13), \
+(8,16), (7,17), (6,15)), List((6,13), (10,15), (9,14)), List((5,16), (9,13), \
+(12,14)), List((7,15), (11,17), (10,14)), List((8,17), (12,16), \
+(11,14))),ArrayBuffer((1,0), (1,0), (1,0), (1,0)),0)", -tt[15]}}}, 
+      {"PlanarGraph(6,Vector(List((13,6), (9,17), (10,18), (4,8), (5,9)), \
 List((5,6), (4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), (8,17)), \
 List((2,6), (8,7), (13,17))),Vector((2,0), (2,0), (1,0)),0)", 
-       {"(PlanarGraph(16,Vector(List((9,16), (10,17), (3,6), (4,7), (8,5)), \
+       {{"PlanarGraph(16,Vector(List((9,16), (10,17), (3,6), (4,7), (8,5)), \
 List((4,5), (3,7), (2,6)), List((10,6), (9,17), (8,16), (2,5))),Vector((1,0), \
-(2,0)),0),Fraction(MultivariablePolynomial(Map(Map(t10 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}, 
-      {"PlanarGraph(9,Vector(List((14,9), (10,18), (11,19), (3,7), (4,8)), \
-List((5,6), (4,9), (3,8), (2,7)), List((11,7), (10,19), (9,18), (2,6)), \
-List((5,9), (9,6), (14,18))),Vector((2,0), (2,0), (1,0)),0)", 
-       {"(PlanarGraph(15,Vector(List((8,15), (9,16), (3,6), (4,7), (7,5)), \
+(2,0)),0)", -tt[10]}}}, {"PlanarGraph(9,Vector(List((14,9), (10,18), (11,19), \
+(3,7), (4,8)), List((5,6), (4,9), (3,8), (2,7)), List((11,7), (10,19), \
+(9,18), (2,6)), List((5,9), (9,6), (14,18))),Vector((2,0), (2,0), (1,0)),0)", 
+       {{"PlanarGraph(15,Vector(List((8,15), (9,16), (3,6), (4,7), (7,5)), \
 List((4,5), (3,7), (2,6)), List((2,5), (9,6), (8,16), (7,15))),Vector((1,0), \
-(2,0)),0),Fraction(MultivariablePolynomial(Map(Map(t9 -> 1) -> Fraction(-1, \
-1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}, 
-      {"PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), (5,9)), List((5,6), \
-(4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), (2,6))),Vector((2,0), \
-(2,0)),0)", {"(PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
-(1,0))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t8 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (4,8), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (8,8))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t7 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), (3,8), \
-(2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
-       {"(PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t6 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(10,Vector(Vector((4,10), (5,11), (6,12)), Vector((7,13), \
-(4,11), (9,10)), Vector((8,13), (5,12), (7,11)), Vector((9,13), (6,10), \
-(8,12))),Vector((1,0), (1,0), (1,0)),0)", {"(PlanarGraph(5,Vector(List((2,5), \
-(3,6), (4,7)), List((4,5), (3,7), \
-(2,6))),Vector((1,0)),0),Fraction(MultivariablePolynomial(Map(Map(t5 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((8,6), (5,9)), List((5,6), (4,9), (3,8), \
-(2,7)), List((2,6), (3,7), (4,8), (8,9))),Vector((2,0), (2,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t4 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), (6,7)), \
-Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
-       {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t3 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t2 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
-(2,7))),Vector((2,0)),0)", {"(PlanarGraph(0,Vector(Vector((0,0), \
-(0,1))),Vector(),0),Fraction(MultivariablePolynomial(Map(Map(t1 -> 1) -> \
-Fraction(-1, 1))), MultivariablePolynomial(Map(Map() -> Fraction(1, 1)))))"}}\
-, {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
+(2,0)),0)", -tt[9]}}}, {"PlanarGraph(6,Vector(List((9,6), (10,18), (4,8), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((3,7), (10,8), (9,18), \
+(2,6))),Vector((2,0), (2,0)),0)", 
+       {
+        {"PlanarGraph(3,Vector(Vector((1,3), (0,0), (0,1), \
+(1,0))),Vector(),0)", -tt[8]}}}, {"PlanarGraph(6,Vector(List((8,6), (4,8), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), \
+(8,8))),Vector((2,0), (1,0)),0)", {{"PlanarGraph(5,Vector(List((2,5), (3,6), \
+(4,7)), List((4,5), (3,7), (2,6))),Vector((1,0)),0)", -tt[7]}}}, 
+      {"PlanarGraph(7,Vector(List((8,7), (5,9), (2,6)), List((5,6), (4,9), \
+(3,8), (2,7)), List((3,7), (4,8), (8,9))),Vector((2,0), (1,0)),0)", 
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[6]}}}, {"PlanarGraph(10,Vector(Vector((4,10), \
+(5,11), (6,12)), Vector((7,13), (4,11), (9,10)), Vector((8,13), (5,12), \
+(7,11)), Vector((9,13), (6,10), (8,12))),Vector((1,0), (1,0), (1,0)),0)", 
+       {{"PlanarGraph(5,Vector(List((2,5), (3,6), (4,7)), List((4,5), (3,7), \
+(2,6))),Vector((1,0)),0)", -tt[5]}}}, {"PlanarGraph(6,Vector(List((8,6), \
+(5,9)), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (3,7), (4,8), \
+(8,9))),Vector((2,0), (2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[4]}}}, 
+      {"PlanarGraph(7,Vector(Vector((3,7), (4,8)), Vector((5,9), (3,8), \
+(6,7)), Vector((6,9), (4,7), (5,8))),Vector((1,0), (1,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[3]}}}, 
+      {"PlanarGraph(7,Vector(List((3,7), (4,8)), List((2,6), (4,7), (3,8), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[2]}}}, 
+      {"PlanarGraph(6,Vector(List((2,6), (3,7)), List((4,6), (4,9), (3,6), \
+(2,7))),Vector((2,0)),0)", 
+       {{"PlanarGraph(0,Vector(Vector((0,0), (0,1))),Vector(),0)", -tt[1]}}}, 
+      {"PlanarGraph(4,Vector(Vector((2,4)), Vector((3,5), (2,4), \
 (3,4))),Vector((1,0)),0)", {}}}], 
     {{(1 - 2*t^2 + t^3 + z + d*t*z + t^2*z - d*t^2*z - t^3*z - 2*t*z^2 + 
         d*t*z^2 + t^3*z^2 + 2*z^3 - 4*d*z^3 + d^2*z^3 - d*t*z^3 + t^2*z^3 + 
@@ -4744,4 +4616,302 @@ List((3,11), (7,8), (5,9))),ArrayBuffer((1,0), (1,0)),0)"},
 List((5,16), (9,13), (12,14)), List((7,15), (11,17), (10,14)), List((8,17), \
 (12,16), (11,14))),ArrayBuffer((1,0), (1,0), (1,0), (1,0)),0)"}, 
      {1, "PlanarGraph(6,Vector(List((2,6), (5,8), (4,9), (3,7)), List((5,9), \
-(2,8), (3,6), (4,7))),ArrayBuffer((2,0)),0)"}}}}, {}]}
+(2,8), (3,6), (4,7))),ArrayBuffer((2,0)),0)"}}}}, {}, 
+  {{Subscript[p, 1], "PlanarGraph(6,Vector(Vector(), Vector((3,6), (3,7), \
+(5,6)), Vector((4,6), (4,8), (5,6))),ArrayBuffer((1,0), (1,0)),0)"}, 
+   {Subscript[p, 2], "PlanarGraph(1,Vector(Vector()),ArrayBuffer(),1)"}, 
+   {Subscript[p, 3], "PlanarGraph(9,Vector(List(), List((4,10), (5,12), \
+(8,9)), List((5,9), (6,12), (7,11)), List((4,12), (8,10), (7,9), \
+(6,11))),ArrayBuffer((1,0), (1,0), (2,0)),0)"}, {Subscript[p, 4], "PlanarGrap\
+h(6,Vector(List(), List((3,7), (4,6), (5,8)), List((3,6), (5,7), \
+(4,8))),ArrayBuffer((1,0), (1,0)),0)"}, {Subscript[p, 5], "PlanarGraph(4,Vect\
+or(Vector(), List((2,4), (3,6), (3,5), (2,6))),ArrayBuffer((2,0)),0)"}, 
+   {Subscript[p, 6], "PlanarGraph(4,Vector(Vector(), List((2,4), (2,5), \
+(3,4), (3,6))),ArrayBuffer((2,0)),0)"}, {Subscript[p, 7], "PlanarGraph(7,Vect\
+or(List(), List((3,9), (6,10), (5,7), (3,10)), List((4,10), (4,8), (5,10), \
+(6,7))),ArrayBuffer((2,0), (2,0)),0)"}, {Subscript[p, 8], "PlanarGraph(7,Vect\
+or(List(), List((3,7), (3,10), (6,7), (5,8)), List((4,7), (4,9), (5,7), \
+(6,8))),ArrayBuffer((2,0), (2,0)),0)"}, {Subscript[p, 9], "PlanarGraph(9,Vect\
+or(List(), List((4,9), (4,10), (6,9), (5,12)), Vector((5,9), (7,12), (8,11)), \
+Vector((6,12), (8,9), (7,11))),ArrayBuffer((2,0), (1,0), (1,0)),0)"}, 
+   {Subscript[p, 10], "PlanarGraph(7,Vector(List(), List((3,9), (6,10), \
+(5,7), (3,10)), List((4,8), (5,10), (6,7), (4,10))),ArrayBuffer((2,0), \
+(2,0)),0)"}, {Subscript[p, 11], "PlanarGraph(7,Vector(List(), List((3,8), \
+(4,7), (5,9), (6,10)), List((4,9), (3,7), (6,8), (5,10))),ArrayBuffer((2,0), \
+(2,0)),0)"}, {Subscript[p, 12], "PlanarGraph(9,Vector(List(), List((4,9), \
+(6,10), (5,12), (4,10)), Vector((5,10), (7,12), (8,11)), Vector((6,12), \
+(8,10), (7,11))),ArrayBuffer((2,0), (1,0), (1,0)),0)"}, 
+   {Subscript[p, 13], "PlanarGraph(10,Vector(List(), List((4,10), (4,11), \
+(6,10), (5,14)), List((5,10), (7,14), (9,12), (8,13)), List((7,12), (6,14), \
+(8,10), (9,13))),ArrayBuffer((2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 14], "PlanarGraph(11,Vector(Vector(), Vector((5,14), (9,11), \
+(7,13)), Vector((6,14), (10,11), (8,12)), Vector((6,11), (7,14), (9,13)), \
+Vector((5,11), (8,14), (10,12))),ArrayBuffer((1,0), (1,0), (1,0), (1,0)),0)"}\
+, {Subscript[p, 15], "PlanarGraph(10,Vector(List(), List((4,10), (6,11), \
+(5,14), (4,11)), List((5,11), (7,14), (9,12), (8,13)), List((7,12), (6,14), \
+(8,11), (9,13))),ArrayBuffer((2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 16], "PlanarGraph(12,Vector(List(), Vector((5,12), (7,15), \
+(6,16)), Vector((5,15), (6,12), (8,16)), List((10,13), (7,16), (9,15), \
+(11,14)), List((8,15), (10,16), (11,13), (9,14))),ArrayBuffer((1,0), (1,0), \
+(2,0), (2,0)),0)"}, {Subscript[p, 17], "PlanarGraph(13,Vector(List(), \
+List((5,18), (9,13), (11,14), (7,17)), List((6,18), (10,13), (12,15), \
+(8,16)), List((9,14), (6,13), (7,18), (11,17)), List((10,15), (5,13), (8,18), \
+(12,16))),ArrayBuffer((2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 18], "PlanarGraph(7,Vector(List(), List((4,7), (4,8), (6,7), \
+(5,10)), List((3,10), (3,9), (6,10), (5,7))),ArrayBuffer((2,0), (2,0)),0)"}, 
+   {Subscript[p, 19], "PlanarGraph(7,Vector(List(), List((4,8), (6,9), \
+(5,10), (4,9)), List((3,7), (6,10), (5,9), (3,10))),ArrayBuffer((2,0), \
+(2,0)),0)"}, {Subscript[p, 20], "PlanarGraph(13,Vector(List(), List((5,18), \
+(9,13), (11,14), (7,17)), List((8,16), (6,18), (10,13), (12,15)), \
+List((9,14), (6,13), (7,18), (11,17)), List((5,13), (8,18), (12,16), \
+(10,15))),ArrayBuffer((2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 21], "PlanarGraph(11,Vector(Vector(), List((5,11), (8,12), \
+(6,14)), Vector((5,12), (7,11), (10,13)), Vector((6,11), (9,14), (7,13)), \
+Vector((8,14), (10,12), (9,13))),ArrayBuffer((1,0), (1,0), (1,0), (1,0)),0)"}\
+, {Subscript[p, 22], "PlanarGraph(9,Vector(List(), List((4,10), (5,12), \
+(8,9)), List((5,9), (6,12), (7,11)), List((6,11), (4,12), (8,10), \
+(7,9))),ArrayBuffer((1,0), (1,0), (2,0)),0)"}, {Subscript[p, 23], "PlanarGrap\
+h(14,Vector(Vector(), List((6,18), (7,14), (13,17)), Vector((9,17), (10,15), \
+(11,16)), Vector((8,15), (12,18), (10,16)), Vector((11,17), (12,16), \
+(13,18)), List((7,17), (6,14), (8,18), (9,15))),ArrayBuffer((1,0), (1,0), \
+(1,0), (1,0), (2,0)),0)"}, {Subscript[p, 24], "PlanarGraph(14,Vector(Vector()\
+, List((6,18), (7,14), (13,17)), Vector((9,17), (10,15), (11,16)), \
+Vector((8,15), (12,18), (10,16)), Vector((11,17), (12,16), (13,18)), \
+List((6,14), (8,18), (9,15), (7,17))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), \
+(2,0)),0)"}, {Subscript[p, 25], "PlanarGraph(16,Vector(Vector(), \
+Vector((10,18), (12,17), (14,19)), Vector((11,17), (15,20), (12,19)), \
+Vector((10,17), (13,18), (11,20)), Vector((7,18), (8,16), (13,20)), \
+Vector((8,20), (9,16), (15,19)), Vector((7,16), (14,18), \
+(9,19))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (1,0), (1,0)),0)"}, 
+   {Subscript[p, 26], "PlanarGraph(12,Vector(List(), List((5,12), (6,16), \
+(9,13)), List((7,15), (8,16), (10,14)), List((6,13), (7,16), (11,15), \
+(9,12)), List((5,16), (11,12), (10,15), (8,14))),ArrayBuffer((1,0), (1,0), \
+(2,0), (2,0)),0)"}, {Subscript[p, 27], "PlanarGraph(12,Vector(List(), \
+List((5,12), (6,16), (9,13)), List((7,15), (8,16), (10,14)), List((6,13), \
+(7,16), (11,15), (9,12)), List((8,14), (5,16), (11,12), \
+(10,15))),ArrayBuffer((1,0), (1,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 28], "PlanarGraph(12,Vector(List(), List((5,12), (6,16), \
+(9,13)), List((7,15), (8,16), (10,14)), List((9,12), (6,13), (7,16), \
+(11,15)), List((5,16), (11,12), (10,15), (8,14))),ArrayBuffer((1,0), (1,0), \
+(2,0), (2,0)),0)"}, {Subscript[p, 29], "PlanarGraph(12,Vector(List(), \
+List((5,15), (7,16), (9,13)), List((5,16), (6,15), (8,12)), List((7,13), \
+(11,16), (10,14), (9,15)), List((6,12), (10,15), (11,14), \
+(8,16))),ArrayBuffer((1,0), (1,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 30], "PlanarGraph(12,Vector(List(), List((6,12), (9,15), \
+(7,14)), List((5,12), (10,16), (8,13)), List((5,16), (7,12), (9,14), \
+(11,15)), List((6,15), (8,12), (10,13), (11,16))),ArrayBuffer((1,0), (1,0), \
+(2,0), (2,0)),0)"}, {Subscript[p, 31], "PlanarGraph(12,Vector(List(), \
+List((5,15), (7,16), (9,13)), List((5,16), (6,15), (8,12)), List((9,15), \
+(7,13), (11,16), (10,14)), List((8,16), (6,12), (10,15), \
+(11,14))),ArrayBuffer((1,0), (1,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 32], "PlanarGraph(12,Vector(List(), List((6,12), (9,15), \
+(7,14)), List((5,12), (10,16), (8,13)), List((11,15), (5,16), (7,12), \
+(9,14)), List((11,16), (6,15), (8,12), (10,13))),ArrayBuffer((1,0), (1,0), \
+(2,0), (2,0)),0)"}, {Subscript[p, 33], "PlanarGraph(7,Vector(Vector(), \
+List((3,8), (4,7), (5,9), (6,10)), List((3,7), (6,8), (5,10), \
+(4,9))),ArrayBuffer((2,0), (2,0)),0)"}, {Subscript[p, 34], "PlanarGraph(13,Ve\
+ctor(List(), List((7,14), (9,15), (11,18), (8,16)), List((7,15), (8,14), \
+(10,16), (12,17)), List((6,18), (5,13), (10,17), (11,16)), List((12,15), \
+(5,17), (6,13), (9,18))),ArrayBuffer((2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 35], "PlanarGraph(13,Vector(List(), List((7,14), (9,15), \
+(11,18), (8,16)), List((7,15), (8,14), (10,16), (12,17)), List((5,13), \
+(10,17), (11,16), (6,18)), List((5,17), (6,13), (9,18), \
+(12,15))),ArrayBuffer((2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 36], "PlanarGraph(13,Vector(List(), List((5,14), (6,18), \
+(9,15), (10,13)), List((6,15), (7,18), (11,16), (9,13)), List((11,13), \
+(7,16), (8,18), (12,17)), List((5,18), (10,14), (12,13), \
+(8,17))),ArrayBuffer((2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 37], "PlanarGraph(13,Vector(List(), List((5,14), (6,18), \
+(9,15), (10,13)), List((9,13), (6,15), (7,18), (11,16)), List((7,16), (8,18), \
+(12,17), (11,13)), List((5,18), (10,14), (12,13), (8,17))),ArrayBuffer((2,0), \
+(2,0), (2,0), (2,0)),0)"}, {Subscript[p, 38], "PlanarGraph(12,Vector(List(), \
+List((5,14), (6,15), (7,16)), List((5,15), (9,14), (8,12)), List((7,14), \
+(10,16), (11,13), (9,12)), List((6,16), (8,15), (11,12), \
+(10,13))),ArrayBuffer((1,0), (1,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 39], "PlanarGraph(12,Vector(List(), List((5,14), (6,15), \
+(7,16)), List((5,15), (9,14), (8,12)), List((7,14), (10,16), (11,13), \
+(9,12)), List((10,13), (6,16), (8,15), (11,12))),ArrayBuffer((1,0), (1,0), \
+(2,0), (2,0)),0)"}, {Subscript[p, 40], "PlanarGraph(18,Vector(List(), \
+List((7,24), (14,23), (9,22)), List((8,21), (10,24), (16,18)), List((11,19), \
+(12,20), (16,21), (17,18)), List((11,20), (13,19), (14,22), (15,23)), \
+List((7,23), (8,24), (12,21), (15,20)), List((10,18), (9,24), (13,22), \
+(17,19))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 41], "PlanarGraph(15,Vector(List(), List((6,19), (7,20), \
+(12,15)), List((6,20), (11,19), (8,18)), List((10,17), (11,18), (12,19), \
+(13,15)), List((7,15), (9,20), (14,16), (13,17)), List((8,20), (10,18), \
+(14,17), (9,16))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 42], "PlanarGraph(18,Vector(List(), List((12,18), (17,21), \
+(13,23)), List((14,24), (15,20), (16,22)), List((15,22), (7,20), (13,18), \
+(9,23)), List((12,21), (7,18), (14,20), (8,24)), List((17,23), (8,21), \
+(10,24), (11,19)), List((16,24), (9,22), (11,23), \
+(10,19))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 43], "PlanarGraph(15,Vector(List(), List((12,17), (13,18), \
+(14,16)), List((9,19), (10,15), (11,20)), List((14,17), (6,16), (9,15), \
+(8,19)), List((10,20), (6,15), (13,16), (7,18)), List((11,19), (7,20), \
+(12,18), (8,17))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 44], "PlanarGraph(18,Vector(List(), List((12,18), (13,23), \
+(14,22)), List((7,24), (11,21), (8,20)), List((11,20), (16,21), (14,18), \
+(17,22)), List((8,24), (17,20), (13,22), (9,23)), List((10,19), (9,24), \
+(12,23), (15,18)), List((7,21), (10,24), (15,19), \
+(16,18))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 45], "PlanarGraph(12,Vector(List(), List((5,14), (6,15), \
+(7,16)), List((5,15), (9,14), (8,12)), List((9,12), (7,14), (10,16), \
+(11,13)), List((6,16), (8,15), (11,12), (10,13))),ArrayBuffer((1,0), (1,0), \
+(2,0), (2,0)),0)"}, {Subscript[p, 46], "PlanarGraph(18,Vector(List(), \
+List((7,24), (14,23), (9,22)), List((8,21), (10,24), (16,18)), List((11,19), \
+(12,20), (16,21), (17,18)), List((11,20), (13,19), (14,22), (15,23)), \
+List((15,20), (7,23), (8,24), (12,21)), List((9,24), (13,22), (17,19), \
+(10,18))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 47], "PlanarGraph(18,Vector(List(), List((7,24), (14,23), \
+(9,22)), List((8,21), (10,24), (16,18)), List((17,18), (11,19), (12,20), \
+(16,21)), List((15,23), (11,20), (13,19), (14,22)), List((15,20), (7,23), \
+(8,24), (12,21)), List((9,24), (13,22), (17,19), (10,18))),ArrayBuffer((1,0), \
+(1,0), (2,0), (2,0), (2,0), (2,0)),0)"}, {Subscript[p, 48], "PlanarGraph(15,V\
+ector(List(), List((6,19), (7,20), (12,15)), List((6,20), (11,19), (8,18)), \
+List((13,15), (10,17), (11,18), (12,19)), List((13,17), (7,15), (9,20), \
+(14,16)), List((9,16), (8,20), (10,18), (14,17))),ArrayBuffer((1,0), (1,0), \
+(2,0), (2,0), (2,0)),0)"}, {Subscript[p, 49], "PlanarGraph(18,Vector(List(), \
+List((12,18), (17,21), (13,23)), List((14,24), (15,20), (16,22)), \
+List((7,20), (13,18), (9,23), (15,22)), List((7,18), (14,20), (8,24), \
+(12,21)), List((8,21), (10,24), (11,19), (17,23)), List((9,22), (11,23), \
+(10,19), (16,24))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0), (2,0)),0)"}\
+, {Subscript[p, 50], "PlanarGraph(15,Vector(List(), List((12,17), (13,18), \
+(14,16)), List((9,19), (10,15), (11,20)), List((6,16), (9,15), (8,19), \
+(14,17)), List((6,15), (13,16), (7,18), (10,20)), List((7,20), (12,18), \
+(8,17), (11,19))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 51], "PlanarGraph(18,Vector(List(), List((12,18), (13,23), \
+(14,22)), List((7,24), (11,21), (8,20)), List((17,22), (11,20), (16,21), \
+(14,18)), List((9,23), (8,24), (17,20), (13,22)), List((9,24), (12,23), \
+(15,18), (10,19)), List((16,18), (7,21), (10,24), \
+(15,19))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 52], "PlanarGraph(18,Vector(List(), List((7,24), (14,23), \
+(9,22)), List((8,21), (10,24), (16,18)), List((17,18), (11,19), (12,20), \
+(16,21)), List((15,23), (11,20), (13,19), (14,22)), List((7,23), (8,24), \
+(12,21), (15,20)), List((10,18), (9,24), (13,22), \
+(17,19))),ArrayBuffer((1,0), (1,0), (2,0), (2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 53], "PlanarGraph(21,Vector(Vector(), Vector((13,22), \
+(17,23), (14,24)), Vector((13,23), (15,22), (18,25)), Vector((14,22), \
+(20,24), (16,26)), Vector((15,25), (16,22), (19,26)), Vector((9,23), (10,21), \
+(17,24)), Vector((9,21), (18,23), (11,25)), Vector((10,24), (12,21), \
+(20,26)), Vector((11,21), (19,25), (12,26))),ArrayBuffer((1,0), (1,0), (1,0), \
+(1,0), (1,0), (1,0), (1,0), (1,0)),0)"}, {Subscript[p, 54], "PlanarGraph(26,V\
+ector(Vector(), Vector((16,26), (21,27), (17,28)), Vector((16,27), (18,26), \
+(22,29)), Vector((17,26), (23,28), (19,30)), Vector((18,29), (20,26), \
+(24,31)), Vector((19,26), (25,30), (20,31)), Vector((11,27), (12,32), \
+(21,28)), Vector((11,32), (22,27), (13,29)), Vector((12,28), (14,32), \
+(23,30)), Vector((13,32), (24,29), (15,31)), Vector((14,30), (15,32), \
+(25,31))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0), \
+(1,0), (1,0)),0)"}, {Subscript[p, 55], "PlanarGraph(14,Vector(List(), \
+List((6,14), (7,18), (10,15)), List((6,18), (11,14), (8,16)), List((7,15), \
+(9,18), (13,17)), List((8,18), (12,16), (9,17)), List((10,14), (13,15), \
+(12,17), (11,16))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (2,0)),0)"}, 
+   {Subscript[p, 56], "PlanarGraph(17,Vector(List(), List((7,21), (11,22), \
+(8,20)), List((7,22), (9,21), (12,19)), List((9,19), (10,21), (14,17)), \
+List((8,21), (13,20), (10,17)), List((12,22), (14,19), (16,17), (15,18)), \
+List((11,20), (15,22), (16,18), (13,17))),ArrayBuffer((1,0), (1,0), (1,0), \
+(1,0), (2,0), (2,0)),0)"}, {Subscript[p, 57], "PlanarGraph(22,Vector(List(), \
+List((11,25), (12,22), (15,24)), List((13,26), (15,25), (14,24)), \
+List((10,27), (12,24), (17,22)), List((9,25), (16,28), (11,22)), \
+List((10,24), (19,27), (14,26)), List((9,28), (13,25), (18,26)), \
+List((16,22), (20,28), (21,23), (17,27)), List((18,28), (19,26), (21,27), \
+(20,23))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (2,0), \
+(2,0)),0)"}, {Subscript[p, 58], "PlanarGraph(31,Vector(List(), List((18,32), \
+(22,38), (19,33)), List((17,32), (21,37), (20,34)), List((18,38), (20,32), \
+(24,34)), List((17,37), (19,32), (23,33)), List((22,33), (28,38), (25,35)), \
+List((21,34), (27,37), (26,36)), List((24,38), (26,34), (30,36)), \
+List((23,37), (25,33), (29,35)), List((14,38), (16,31), (28,35)), \
+List((13,37), (15,31), (27,36)), List((14,31), (30,38), (15,36)), \
+List((13,31), (29,37), (16,35))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), \
+(1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0)),0)"}, 
+   {Subscript[p, 59], "PlanarGraph(31,Vector(List(), List((22,32), (24,37), \
+(25,36)), List((21,38), (25,32), (23,36)), List((18,35), (21,32), (26,38)), \
+List((19,36), (27,33), (23,38)), List((19,33), (20,36), (28,34)), \
+List((20,34), (24,36), (30,37)), List((18,32), (29,35), (22,37)), \
+List((13,31), (27,38), (14,33)), List((14,31), (28,33), (15,34)), \
+List((15,31), (30,34), (17,37)), List((16,35), (17,31), (29,37)), \
+List((13,38), (16,31), (26,35))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), \
+(1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0)),0)"}, 
+   {Subscript[p, 60], "PlanarGraph(10,Vector(List(), List((4,11), (5,14), \
+(8,12), (7,10)), List((8,10), (5,12), (6,14), (9,13)), List((4,14), (7,11), \
+(9,10), (6,13))),ArrayBuffer((2,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 61], "PlanarGraph(19,Vector(List(), List((13,19), (17,22), \
+(15,23)), List((13,22), (14,19), (18,24)), List((11,23), (12,20), (15,19)), \
+List((10,20), (14,24), (12,19)), List((9,21), (17,23), (16,22)), List((8,24), \
+(16,21), (18,22)), List((8,21), (10,24), (11,20), (9,23))),ArrayBuffer((1,0), \
+(1,0), (1,0), (1,0), (1,0), (1,0), (2,0)),0)"}, {Subscript[p, 62], "PlanarGra\
+ph(17,Vector(List(), List((7,22), (11,20), (9,21)), List((8,21), (13,17), \
+(9,22)), List((7,20), (14,22), (10,19)), List((8,17), (15,21), (12,18)), \
+List((10,20), (16,19), (15,18), (11,21)), List((12,17), (16,18), (14,19), \
+(13,22))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 63], "PlanarGraph(17,Vector(List(), List((7,22), (11,20), \
+(9,21)), List((8,21), (13,17), (9,22)), List((7,20), (14,22), (10,19)), \
+List((8,17), (15,21), (12,18)), List((11,21), (10,20), (16,19), (15,18)), \
+List((13,22), (12,17), (16,18), (14,19))),ArrayBuffer((1,0), (1,0), (1,0), \
+(1,0), (2,0), (2,0)),0)"}, {Subscript[p, 64], "PlanarGraph(17,Vector(List(), \
+List((7,20), (9,22), (11,21)), List((7,22), (10,20), (13,18)), List((8,17), \
+(9,21), (14,22)), List((8,21), (12,17), (15,19)), List((10,18), (11,20), \
+(15,21), (16,19)), List((12,19), (14,17), (13,22), \
+(16,18))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (2,0), (2,0)),0)"}, 
+   {Subscript[p, 65], "PlanarGraph(17,Vector(List(), List((7,20), (9,22), \
+(11,21)), List((7,22), (10,20), (13,18)), List((8,17), (9,21), (14,22)), \
+List((8,21), (12,17), (15,19)), List((16,19), (10,18), (11,20), (15,21)), \
+List((16,18), (12,19), (14,17), (13,22))),ArrayBuffer((1,0), (1,0), (1,0), \
+(1,0), (2,0), (2,0)),0)"}, {Subscript[p, 66], "PlanarGraph(22,Vector(List(), \
+List((10,22), (17,24), (15,23)), List((10,24), (11,22), (19,27)), \
+List((9,28), (16,22), (13,25)), List((9,22), (14,28), (11,27)), List((12,28), \
+(20,26), (14,27)), List((12,26), (13,28), (18,25)), List((17,23), (19,24), \
+(20,27), (21,26)), List((15,22), (21,23), (18,26), \
+(16,25))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (2,0), \
+(2,0)),0)"}, {Subscript[p, 67], "PlanarGraph(22,Vector(List(), List((10,22), \
+(17,24), (15,23)), List((10,24), (11,22), (19,27)), List((9,28), (16,22), \
+(13,25)), List((9,22), (14,28), (11,27)), List((12,28), (20,26), (14,27)), \
+List((12,26), (13,28), (18,25)), List((21,26), (17,23), (19,24), (20,27)), \
+List((16,25), (15,22), (21,23), (18,26))),ArrayBuffer((1,0), (1,0), (1,0), \
+(1,0), (1,0), (1,0), (2,0), (2,0)),0)"}, {Subscript[p, 68], "PlanarGraph(22,V\
+ector(List(), List((9,28), (11,22), (14,27)), List((14,28), (16,27), \
+(15,23)), List((9,22), (17,28), (12,24)), List((12,22), (20,24), (13,26)), \
+List((10,25), (13,22), (18,26)), List((10,22), (19,25), (11,27)), \
+List((15,28), (21,23), (20,26), (17,24)), List((16,23), (19,27), (18,25), \
+(21,26))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (2,0), \
+(2,0)),0)"}, {Subscript[p, 69], "PlanarGraph(22,Vector(List(), List((9,28), \
+(11,22), (14,27)), List((14,28), (16,27), (15,23)), List((9,22), (17,28), \
+(12,24)), List((12,22), (20,24), (13,26)), List((10,25), (13,22), (18,26)), \
+List((10,22), (19,25), (11,27)), List((17,24), (15,28), (21,23), (20,26)), \
+List((21,26), (16,23), (19,27), (18,25))),ArrayBuffer((1,0), (1,0), (1,0), \
+(1,0), (1,0), (1,0), (2,0), (2,0)),0)"}, {Subscript[p, 70], "PlanarGraph(22,V\
+ector(List(), List((9,22), (20,25), (16,23)), List((11,28), (19,26), \
+(18,24)), List((10,27), (15,22), (14,26)), List((9,25), (10,22), (12,27)), \
+List((12,25), (13,27), (17,28)), List((11,26), (13,28), (14,27)), \
+List((19,24), (15,26), (16,22), (21,23)), List((20,23), (17,25), (18,28), \
+(21,24))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (2,0), \
+(2,0)),0)"}, {Subscript[p, 71], "PlanarGraph(36,Vector(List(), List((19,37), \
+(25,39), (29,42)), List((20,38), (24,40), (28,41)), List((22,40), (30,37), \
+(26,43)), List((21,39), (31,38), (27,44)), List((20,40), (21,38), (23,39)), \
+List((19,39), (22,37), (23,40)), List((25,42), (27,39), (33,44)), \
+List((24,41), (26,40), (32,43)), List((29,37), (35,42), (30,43)), \
+List((28,38), (34,41), (31,44)), List((16,36), (33,42), (17,44)), \
+List((15,36), (32,41), (18,43)), List((16,42), (18,36), (35,43)), \
+List((15,41), (17,36), (34,44))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), \
+(1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (1,0)),0)"}, 
+   {Subscript[p, 72], "PlanarGraph(22,Vector(List(), List((9,22), (20,25), \
+(16,23)), List((11,28), (19,26), (18,24)), List((10,27), (15,22), (14,26)), \
+List((9,25), (10,22), (12,27)), List((12,25), (13,27), (17,28)), \
+List((11,26), (13,28), (14,27)), List((15,26), (16,22), (21,23), (19,24)), \
+List((17,25), (18,28), (21,24), (20,23))),ArrayBuffer((1,0), (1,0), (1,0), \
+(1,0), (1,0), (1,0), (2,0), (2,0)),0)"}, {Subscript[p, 73], "PlanarGraph(19,V\
+ector(List(), List((13,19), (17,22), (15,23)), List((13,22), (14,19), \
+(18,24)), List((11,23), (12,20), (15,19)), List((10,20), (14,24), (12,19)), \
+List((9,21), (17,23), (16,22)), List((8,24), (16,21), (18,22)), List((9,23), \
+(8,21), (10,24), (11,20))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (1,0), \
+(1,0), (2,0)),0)"}, {Subscript[p, 74], "PlanarGraph(22,Vector(List(), \
+List((12,28), (19,27), (13,26)), List((11,22), (14,28), (16,24)), \
+List((13,28), (20,26), (14,24)), List((9,25), (15,22), (17,23)), List((9,22), \
+(18,25), (10,27)), List((10,22), (12,27), (11,28)), List((15,23), (16,22), \
+(20,24), (21,26)), List((17,25), (21,23), (19,26), \
+(18,27))),ArrayBuffer((1,0), (1,0), (1,0), (1,0), (1,0), (1,0), (2,0), \
+(2,0)),0)"}, {Subscript[p, 75], "PlanarGraph(22,Vector(List(), List((12,28), \
+(19,27), (13,26)), List((11,22), (14,28), (16,24)), List((13,28), (20,26), \
+(14,24)), List((9,25), (15,22), (17,23)), List((9,22), (18,25), (10,27)), \
+List((10,22), (12,27), (11,28)), List((21,26), (15,23), (16,22), (20,24)), \
+List((18,27), (17,25), (21,23), (19,26))),ArrayBuffer((1,0), (1,0), (1,0), \
+(1,0), (1,0), (1,0), (2,0), (2,0)),0)"}}]}
