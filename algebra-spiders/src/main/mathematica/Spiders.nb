@@ -3,10 +3,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[         0,          0]
-NotebookDataLength[    304480,       7509]
-NotebookOptionsPosition[    291155,       7094]
-NotebookOutlinePosition[    291570,       7112]
-CellTagsIndexPosition[    291527,       7109]
+NotebookDataLength[    362340,       8830]
+NotebookOptionsPosition[    345160,       8301]
+NotebookOutlinePosition[    345551,       8318]
+CellTagsIndexPosition[    345508,       8315]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -49,8 +49,7 @@ Cell[BoxData[{
       "\"\<dMinusOne\>\"", ",", "\"\<SO3\>\"", ",", 
       "\"\<CubicTrivalentCategories\>\"", ",", 
       "\"\<CubicTrivalentCategory\>\"", ",", "\"\<G2Categories\>\"", ",", 
-      "\"\<ABACategories\>\"", ",", "\"\<d\>\"", ",", "\"\<t\>\""}], "}"}]}], 
-   "]"}], ";"}], "\[IndentingNewLine]", 
+      "\"\<ABACategories\>\""}], "}"}]}], "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"DeclarePackage", "[", 
    RowBox[{"\"\<Spiders`BraidedTrivalent`\>\"", ",", 
@@ -59,8 +58,8 @@ Cell[BoxData[{
      "\"\<BraidedTrivalent\>\"", ",", "\"\<SymmetricTrivalent\>\"", ",", 
       "\"\<BraidedSO3Categories\>\"", ",", 
       "\"\<CubicBraidedTrivalentCategories\>\"", ",", 
-      "\"\<CubicBraidedTrivalent\>\"", ",", "\"\<BraidedG2Categories\>\"", 
-      ",", "\"\<h\>\"", ",", "\"\<z\>\""}], "}"}]}], "]"}], ";"}]}], "Input",
+      "\"\<CubicBraidedTrivalent\>\"", ",", "\"\<BraidedG2Categories\>\""}], 
+     "}"}]}], "]"}], ";"}]}], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.420291117603371*^9, 3.420291118895229*^9}, {
    3.4202913849377794`*^9, 3.420291388132373*^9}, {3.4202920292742896`*^9, 
@@ -85,7 +84,8 @@ Cell[BoxData[{
    3.469391731593257*^9, 3.469391736056587*^9}, {3.5076580159586897`*^9, 
    3.5076580178103113`*^9}, {3.594943240217538*^9, 3.594943241490148*^9}, {
    3.6436046571271544`*^9, 3.643604670893689*^9}, {3.643606614988442*^9, 
-   3.643606615821991*^9}, {3.64360688925073*^9, 3.643606981980482*^9}}]
+   3.643606615821991*^9}, {3.64360688925073*^9, 3.643606981980482*^9}, {
+   3.6436268397653313`*^9, 3.643626843078961*^9}}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -94,13 +94,19 @@ Cell["Print loading statement", "Subsubsection",
  InitializationCell->True,
  CellChangeTimes->{{3.4202910743011055`*^9, 3.4202910795386367`*^9}}],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  RowBox[{"Print", "[", "\[IndentingNewLine]", 
   "\"\<Loading Spiders` version 2015-06-18 ...\>\"", "\[IndentingNewLine]", 
   "]"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.420291094860669*^9, 3.4202911096118803`*^9}, {
-   3.64360467451751*^9, 3.6436046897552757`*^9}, 3.6436062248938*^9}]
+   3.64360467451751*^9, 3.6436046897552757`*^9}, 3.6436062248938*^9}],
+
+Cell[BoxData["\<\"Loading Spiders` version 2015-06-18 ...\"\>"], "Print",
+ CellChangeTimes->{3.6436833160111303`*^9}]
+}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -112,127 +118,1223 @@ Cell["The core package", "Section",
   3.420291409573203*^9}}],
 
 Cell[BoxData[
- RowBox[{"BeginPackage", "[", 
-  RowBox[{"\"\<Spiders`\>\"", ",", 
-   RowBox[{"{", "\"\<JLink`\>\"", "}"}]}], "]"}]], "Input",
+ RowBox[{
+  RowBox[{"BeginPackage", "[", 
+   RowBox[{"\"\<Spiders`\>\"", ",", 
+    RowBox[{"{", "\"\<JLink`\>\"", "}"}]}], "]"}], ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.4202911560186095`*^9, 3.4202911587124834`*^9}, {
-  3.420295014256483*^9, 3.4202950158788157`*^9}, {3.4202954024747133`*^9, 
-  3.42029543357944*^9}, {3.4202954793853054`*^9, 3.4202955565763006`*^9}, {
-  3.4202956106340322`*^9, 3.420295640847477*^9}, {3.643604693829954*^9, 
-  3.643604730663877*^9}}],
+   3.420295014256483*^9, 3.4202950158788157`*^9}, {3.4202954024747133`*^9, 
+   3.42029543357944*^9}, {3.4202954793853054`*^9, 3.4202955565763006`*^9}, {
+   3.4202956106340322`*^9, 3.420295640847477*^9}, {3.643604693829954*^9, 
+   3.643604730663877*^9}, 3.64362889065841*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"h", ";", "t", ";", "d", ";", "z", ";"}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.643606688185375*^9, 3.643606688374896*^9}, {
+   3.6436068101715517`*^9, 3.6436068159287157`*^9}, 3.6436289251594143`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"h", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"h\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`h::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683316180213*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"t", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"t\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`t::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683316264348*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"d", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"d\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`d::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833163852453`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"z", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"z\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`z::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683316531034*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"ScalaSingleton", ";", "ScalaCaseClass", ";", "FromScalaObject", ";",
-   "AsScalaObject"}]], "Input",
+   "AsScalaObject", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.6436049067415133`*^9, 3.643604923415689*^9}, {
-  3.643605806006961*^9, 3.643605823528779*^9}}],
+   3.643605806006961*^9, 3.643605823528779*^9}, 3.643628926266213*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ScalaSingleton", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ScalaSingleton\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`ScalaSingleton::shdw\\\"]\\)\"\>"}]], "Message", \
+"MSG",
+ CellChangeTimes->{3.643683316656681*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ScalaCaseClass", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ScalaCaseClass\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`ScalaCaseClass::shdw\\\"]\\)\"\>"}]], "Message", \
+"MSG",
+ CellChangeTimes->{3.643683316774269*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"FromScalaObject", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"FromScalaObject\\\"\\)\[NoBreak] appears in multiple \
+contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\[NoBreak]; \
+definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may \
+shadow or be shadowed by other definitions. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`FromScalaObject::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683316820448*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"AsScalaObject", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"AsScalaObject\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`AsScalaObject::shdw\\\"]\\)\"\>"}]], "Message", \
+"MSG",
+ CellChangeTimes->{3.6436833169031067`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"Diagram", ";", "NamedPolyhedron", ";", "PlanarGraphs", ";", 
-  "polygon", ";", "Name", ";", "DrawPlanarGraph"}]], "Input",
+  "polygon", ";", "Name", ";", "DrawPlanarGraph", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643604955267066*^9, 3.643604968239443*^9}, {
-  3.643605823960834*^9, 3.643605825467445*^9}}],
+   3.643605823960834*^9, 3.643605825467445*^9}, 3.643628927415464*^9}],
 
 Cell[BoxData[
- RowBox[{"unionDiagrams", ";", "complementDiagrams", ";", 
-  "memberQDiagrams"}]], "Input",
+ RowBox[{
+  StyleBox[
+   RowBox[{"Diagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"Diagram\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`Diagram::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683317019908*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"NamedPolyhedron", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"NamedPolyhedron\\\"\\)\[NoBreak] appears in multiple \
+contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\[NoBreak]; \
+definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may \
+shadow or be shadowed by other definitions. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`NamedPolyhedron::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683317146058*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"PlanarGraphs", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"PlanarGraphs\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`PlanarGraphs::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683317227928*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"polygon", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"polygon\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`polygon::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683317324329*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Name", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"Name\\\"\\)\[NoBreak] appears \
+in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`Name::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833173746433`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DrawPlanarGraph", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"DrawPlanarGraph\\\"\\)\[NoBreak] appears in multiple \
+contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\[NoBreak]; \
+definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may \
+shadow or be shadowed by other definitions. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DrawPlanarGraph::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.64368331747287*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"unionDiagrams", ";", "complementDiagrams", ";", "memberQDiagrams", 
+  ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643604975941514*^9, 3.643604980846593*^9}, {
-  3.643605825861874*^9, 3.6436058262076178`*^9}}],
+   3.643605825861874*^9, 3.6436058262076178`*^9}, 3.643628928285295*^9}],
 
 Cell[BoxData[
- RowBox[{"SaveGroebnerCalculations", ";", 
-  "LoadGroebnerCalculations"}]], "Input",
+ RowBox[{
+  StyleBox[
+   RowBox[{"unionDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"unionDiagrams\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`unionDiagrams::shdw\\\"]\\)\"\>"}]], "Message", \
+"MSG",
+ CellChangeTimes->{3.643683317909211*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"complementDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"complementDiagrams\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`complementDiagrams::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683317992496*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"memberQDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"memberQDiagrams\\\"\\)\[NoBreak] appears in multiple \
+contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\[NoBreak]; \
+definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may \
+shadow or be shadowed by other definitions. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`memberQDiagrams::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833180776863`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"SaveGroebnerCalculations", ";", "LoadGroebnerCalculations", 
+  ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.639792491945012*^9, 3.6397924965109262`*^9}, {
-   3.643604997613728*^9, 3.64360500506649*^9}, 3.643605826566387*^9}],
+   3.643604997613728*^9, 3.64360500506649*^9}, 3.643605826566387*^9, 
+   3.643628929201954*^9}],
 
-Cell[BoxData["IntroduceNewVariable"], "Input",
- InitializationCell->True],
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"SaveGroebnerCalculations", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"SaveGroebnerCalculations\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`SaveGroebnerCalculations::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683318162595*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LoadGroebnerCalculations", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"LoadGroebnerCalculations\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`LoadGroebnerCalculations::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683318246461*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"IntroduceNewVariable", ";"}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{3.643628930215086*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"IntroduceNewVariable", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"IntroduceNewVariable\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`IntroduceNewVariable::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833183273087`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"Manifold", ";", "DeclarePolynomialZero", ";", 
   "DeclarePolynomialsZero", ";", "DeclareAtLeastOnePolynomialZero", ";", 
   "DeclarePolynomialNonZero", ";", "DeclarePolynomialsNonZero", ";", 
-  "DeclarePolynomialEitherZeroOrNonZero"}]], "Input",
+  "DeclarePolynomialEitherZeroOrNonZero", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643604868875517*^9, 3.643604883613524*^9}, {
-  3.643605033989997*^9, 3.643605034169765*^9}, {3.643605827064665*^9, 
-  3.6436058289212303`*^9}, {3.643606654950947*^9, 3.6436066570193377`*^9}}],
+   3.643605033989997*^9, 3.643605034169765*^9}, {3.643605827064665*^9, 
+   3.6436058289212303`*^9}, {3.643606654950947*^9, 3.6436066570193377`*^9}, 
+   3.643628931374511*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Manifold", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"Manifold\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`Manifold::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683318416086*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DeclarePolynomialZero", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DeclarePolynomialZero\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DeclarePolynomialZero::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683318499319*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DeclarePolynomialsZero", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DeclarePolynomialsZero\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DeclarePolynomialsZero::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833186391*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DeclareAtLeastOnePolynomialZero", "::", "shdw"}], "MessageName"], 
+  
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DeclareAtLeastOnePolynomialZero\
+\\\"\\)\[NoBreak] appears in multiple contexts \
+\[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\[NoBreak]; definitions \
+in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be \
+shadowed by other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DeclareAtLeastOnePolynomialZero::shdw\\\"]\\)\"\>"}]], "Message", \
+"MSG",
+ CellChangeTimes->{3.643683318745195*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DeclarePolynomialNonZero", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DeclarePolynomialNonZero\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DeclarePolynomialNonZero::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833187922697`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DeclarePolynomialsNonZero", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"DeclarePolynomialsNonZero\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`DeclarePolynomialsNonZero::shdw\\\"]\\)\"\>"}]], \
+"Message", "MSG",
+ CellChangeTimes->{3.643683318874363*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DeclarePolynomialEitherZeroOrNonZero", "::", "shdw"}], 
+   "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"DeclarePolynomialEitherZeroOrNonZero\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \
+\\\"Spiders`DeclarePolynomialEitherZeroOrNonZero::shdw\\\"]\\)\"\>"}]], \
+"Message", "MSG",
+ CellChangeTimes->{3.643683318952593*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"DeclareDimensionBounds", ";", "DimensionBounds", ";", 
-  "DimensionLowerBound", ";", "DimensionUpperBound"}]], "Input",
+  "DimensionLowerBound", ";", "DimensionUpperBound", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643605095771995*^9, 3.6436051737751837`*^9}, {
-  3.643605829618196*^9, 3.643605830643652*^9}}],
+   3.643605829618196*^9, 3.643605830643652*^9}, 3.643628932482808*^9}],
 
 Cell[BoxData[
- RowBox[{"p", ";", "tt"}]], "Input",
+ RowBox[{
+  StyleBox[
+   RowBox[{"DeclareDimensionBounds", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DeclareDimensionBounds\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DeclareDimensionBounds::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683319224819*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DimensionBounds", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"DimensionBounds\\\"\\)\[NoBreak] appears in multiple \
+contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\[NoBreak]; \
+definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may \
+shadow or be shadowed by other definitions. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DimensionBounds::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833193123913`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DimensionLowerBound", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DimensionLowerBound\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DimensionLowerBound::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683319381516*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DimensionUpperBound", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DimensionUpperBound\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DimensionUpperBound::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683319461334*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"p", ";", "tt", ";"}]], "Input",
  InitializationCell->True,
- CellChangeTimes->{{3.643606670580126*^9, 3.643606671731707*^9}}],
+ CellChangeTimes->{{3.643606670580126*^9, 3.643606671731707*^9}, 
+   3.6436289336290627`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"p", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"p\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`p::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683319550013*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"tt", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"tt\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`tt::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683319664032*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"IndependentDiagrams", ";", "DependentDiagrams", ";", "SpanningSets",
    ";", "ReducingRelations", ";", "NonReducingRelations", ";", 
   "AppendIndependentDiagram", ";", "AppendDependentDiagram", ";", 
-  "AppendClosedDiagram", ";", "ReducedDiagrams"}]], "Input",
+  "AppendClosedDiagram", ";", "ReducedDiagrams", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643605095771995*^9, 3.6436051737751837`*^9}, {
-  3.643605831112342*^9, 3.643605834891511*^9}}],
+   3.643605831112342*^9, 3.643605834891511*^9}, 3.6436289350248203`*^9}],
 
 Cell[BoxData[
- RowBox[{"buildSpiderAnalysis", ";", "FreeSpider", ";", 
-  "emptySpiderAnalysis"}]], "Input",
+ RowBox[{
+  StyleBox[
+   RowBox[{"IndependentDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"IndependentDiagrams\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`IndependentDiagrams::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833197584743`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DependentDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DependentDiagrams\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DependentDiagrams::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683319841584*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"SpanningSets", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"SpanningSets\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`SpanningSets::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683319929294*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ReducingRelations", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ReducingRelations\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ReducingRelations::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683320030398*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"NonReducingRelations", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"NonReducingRelations\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`NonReducingRelations::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683320144289*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"AppendIndependentDiagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"AppendIndependentDiagram\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`AppendIndependentDiagram::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683320303913*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"AppendDependentDiagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"AppendDependentDiagram\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`AppendDependentDiagram::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683320424534*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"AppendClosedDiagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"AppendClosedDiagram\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`AppendClosedDiagram::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.64368332050609*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ReducedDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"ReducedDiagrams\\\"\\)\[NoBreak] appears in multiple \
+contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\[NoBreak]; \
+definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may \
+shadow or be shadowed by other definitions. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ReducedDiagrams::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833205855827`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"SpiderAnalysis", ";", "buildSpiderAnalysis", ";", "FreeSpider", ";",
+   "emptySpiderAnalysis", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643605149795582*^9, 3.643605175989421*^9}, {
-  3.643605835799965*^9, 3.64360583638234*^9}}],
+   3.643605835799965*^9, 3.64360583638234*^9}, {3.6436288826968393`*^9, 
+   3.6436288829434967`*^9}, 3.643628935908761*^9}],
 
 Cell[BoxData[
- RowBox[{"internalValences", ";", "diagramWeight"}]], "Input",
+ RowBox[{
+  StyleBox[
+   RowBox[{"SpiderAnalysis", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"SpiderAnalysis\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`SpiderAnalysis::shdw\\\"]\\)\"\>"}]], "Message", \
+"MSG",
+ CellChangeTimes->{3.643683320881248*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"buildSpiderAnalysis", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"buildSpiderAnalysis\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`buildSpiderAnalysis::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683320969254*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"FreeSpider", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"FreeSpider\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`FreeSpider::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833210645647`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"emptySpiderAnalysis", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"emptySpiderAnalysis\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`emptySpiderAnalysis::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683321157825*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"internalValences", ";", "diagramWeight", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.6436052266018*^9, 3.643605226802528*^9}, 
-   3.643605836921831*^9}],
+   3.643605836921831*^9, 3.643628937728969*^9}],
 
 Cell[BoxData[
- RowBox[{"EvaluateDiagram", ";", "EvaluateClosedDiagram"}]], "Input",
+ RowBox[{
+  StyleBox[
+   RowBox[{"internalValences", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"internalValences\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`internalValences::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833212441273`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"diagramWeight", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"diagramWeight\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`diagramWeight::shdw\\\"]\\)\"\>"}]], "Message", \
+"MSG",
+ CellChangeTimes->{3.6436833213207083`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"EvaluateDiagram", ";", "EvaluateClosedDiagram", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643605231684935*^9, 3.643605231949671*^9}, 
-   3.643605837400096*^9}],
+   3.643605837400096*^9, 3.64362893904733*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"EvaluateDiagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"EvaluateDiagram\\\"\\)\[NoBreak] appears in multiple \
+contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\[NoBreak]; \
+definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may \
+shadow or be shadowed by other definitions. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`EvaluateDiagram::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833214071417`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"EvaluateClosedDiagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"EvaluateClosedDiagram\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`EvaluateClosedDiagram::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683321487751*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"ClosedDiagrams", ";", "ConsiderClosedDiagram", ";", 
-  "ConsiderClosedDiagrams", ";", "ReconsiderClosedDiagrams"}]], "Input",
+  "ConsiderClosedDiagrams", ";", "ReconsiderClosedDiagrams", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643605239353279*^9, 3.643605246388352*^9}, {
-  3.643605294490994*^9, 3.643605294661327*^9}, {3.643605837962327*^9, 
-  3.643605839060789*^9}}],
+   3.643605294490994*^9, 3.643605294661327*^9}, {3.643605837962327*^9, 
+   3.643605839060789*^9}, 3.643628940446905*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ClosedDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ClosedDiagrams\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`ClosedDiagrams::shdw\\\"]\\)\"\>"}]], "Message", \
+"MSG",
+ CellChangeTimes->{3.643683321576144*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ConsiderClosedDiagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ConsiderClosedDiagram\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ConsiderClosedDiagram::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683321679764*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ConsiderClosedDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ConsiderClosedDiagrams\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ConsiderClosedDiagrams::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683321797665*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ReconsiderClosedDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ReconsiderClosedDiagrams\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ReconsiderClosedDiagrams::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833219053802`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"ConsiderPotentialSpanningSet", ";", "DeclareSpanningSet", ";", 
   "DeclareBasis", ";", "ConsiderDiagrams", ";", "ConsiderDiagram", ";", 
   "ConsiderIndependentDiagram", ";", "ConsiderDependentDiagram", ";", 
-  "IntroduceRelation"}]], "Input",
+  "IntroduceRelation", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.6436052649025793`*^9, 3.643605292993987*^9}, {
-  3.64360541872784*^9, 3.6436054222998343`*^9}, {3.643605470266749*^9, 
-  3.643605470480298*^9}, {3.6436058396182337`*^9, 3.643605843266551*^9}}],
+   3.64360541872784*^9, 3.6436054222998343`*^9}, {3.643605470266749*^9, 
+   3.643605470480298*^9}, {3.6436058396182337`*^9, 3.643605843266551*^9}, 
+   3.643628941823153*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ConsiderPotentialSpanningSet", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"ConsiderPotentialSpanningSet\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`ConsiderPotentialSpanningSet::shdw\\\"]\\)\"\>"}]], \
+"Message", "MSG",
+ CellChangeTimes->{3.64368332217037*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DeclareSpanningSet", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DeclareSpanningSet\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`DeclareSpanningSet::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683322250267*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"DeclareBasis", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"DeclareBasis\\\"\\)\[NoBreak] \
+appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\
+\"}\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`DeclareBasis::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683322325335*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ConsiderDiagrams", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ConsiderDiagrams\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ConsiderDiagrams::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683322395527*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ConsiderDiagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"ConsiderDiagram\\\"\\)\[NoBreak] appears in multiple \
+contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\[NoBreak]; \
+definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may \
+shadow or be shadowed by other definitions. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ConsiderDiagram::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683322472088*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ConsiderIndependentDiagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\\"ConsiderIndependentDiagram\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`ConsiderIndependentDiagram::shdw\\\"]\\)\"\>"}]], \
+"Message", "MSG",
+ CellChangeTimes->{3.643683322552971*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ConsiderDependentDiagram", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ConsiderDependentDiagram\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ConsiderDependentDiagram::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833226412067`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"IntroduceRelation", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"IntroduceRelation\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`IntroduceRelation::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833227286654`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"PairRelationsWith", ";", "ReducePolynomials", ";", 
-  "ReducePolynomialsFurther"}]], "Input",
+  "ReducePolynomialsFurther", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643605319159449*^9, 3.64360532098769*^9}, {
-  3.6436058441005793`*^9, 3.643605844636722*^9}}],
+   3.6436058441005793`*^9, 3.643605844636722*^9}, 3.6436289430506268`*^9}],
 
 Cell[BoxData[
- RowBox[{"PickleSpiderAnalysis", ";", "UnpickleSpiderAnalysis"}]], "Input",
+ RowBox[{
+  StyleBox[
+   RowBox[{"PairRelationsWith", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"PairRelationsWith\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`PairRelationsWith::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683322835628*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ReducePolynomials", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ReducePolynomials\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ReducePolynomials::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683322944292*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ReducePolynomialsFurther", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"ReducePolynomialsFurther\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`ReducePolynomialsFurther::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.64368332303193*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PickleSpiderAnalysis", ";", "UnpickleSpiderAnalysis", ";", 
+  "PickledSpiderAnalysis", ";", "PickledQuotientSpider", ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643604853468566*^9, 3.643604855109346*^9}, 
-   3.643605845352047*^9}],
+   3.643605845352047*^9, {3.643626800627792*^9, 3.643626806180974*^9}, 
+   3.64362894410878*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"PickleSpiderAnalysis", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"PickleSpiderAnalysis\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`PickleSpiderAnalysis::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683323279257*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"UnpickleSpiderAnalysis", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"UnpickleSpiderAnalysis\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`UnpickleSpiderAnalysis::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683323356956*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"PickledSpiderAnalysis", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"PickledSpiderAnalysis\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`PickledSpiderAnalysis::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683323434525*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"PickledQuotientSpider", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"PickledQuotientSpider\\\"\\)\
+\[NoBreak] appears in multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\
+\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`PickledQuotientSpider::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833235228767`*^9}]
+}, Open  ]],
 
 Cell[BoxData[
  RowBox[{
@@ -246,29 +1348,31 @@ Cell["Scala interface", "Subsection",
  CellChangeTimes->{{3.639695149466408*^9, 3.639695154413146*^9}}],
 
 Cell[BoxData[
- RowBox[{"SpidersMathematicaDirectory", "=", 
-  RowBox[{
-   RowBox[{"Cases", "[", 
-    RowBox[{
-     RowBox[{"$Path", "~", "Join", "~", 
-      RowBox[{"(", 
-       RowBox[{
-        RowBox[{"Quiet", "[", 
-         RowBox[{"{", 
-          RowBox[{"NotebookDirectory", "[", "]"}], "}"}], "]"}], "/.", 
-        RowBox[{"$Failed", "\[Rule]", 
-         RowBox[{"{", "}"}]}]}], ")"}]}], ",", 
-     RowBox[{"s_", "/;", 
-      RowBox[{"StringMatchQ", "[", 
-       RowBox[{"s", ",", 
+ RowBox[{
+  RowBox[{"SpidersMathematicaDirectory", "=", 
+   RowBox[{
+    RowBox[{"Cases", "[", 
+     RowBox[{
+      RowBox[{"$Path", "~", "Join", "~", 
+       RowBox[{"(", 
         RowBox[{
-        "__", "~~", "\"\<toolkit/algebra-spiders/src/main/mathematica\>\"", "~~",
-          "___"}]}], "]"}]}]}], "]"}], "\[LeftDoubleBracket]", "1", 
-   "\[RightDoubleBracket]"}]}]], "Input",
+         RowBox[{"Quiet", "[", 
+          RowBox[{"{", 
+           RowBox[{"NotebookDirectory", "[", "]"}], "}"}], "]"}], "/.", 
+         RowBox[{"$Failed", "\[Rule]", 
+          RowBox[{"{", "}"}]}]}], ")"}]}], ",", 
+      RowBox[{"s_", "/;", 
+       RowBox[{"StringMatchQ", "[", 
+        RowBox[{"s", ",", 
+         RowBox[{
+         "__", "~~", "\"\<toolkit/algebra-spiders/src/main/mathematica\>\"", "~~",
+           "___"}]}], "]"}]}]}], "]"}], "\[LeftDoubleBracket]", "1", 
+    "\[RightDoubleBracket]"}]}], ";"}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643605924226864*^9, 3.643605974312735*^9}, {
-  3.643606007518786*^9, 3.643606011714487*^9}, {3.643606042604014*^9, 
-  3.6436060848739433`*^9}, {3.6436061611756*^9, 3.64360616205532*^9}}],
+   3.643606007518786*^9, 3.643606011714487*^9}, {3.643606042604014*^9, 
+   3.6436060848739433`*^9}, {3.6436061611756*^9, 3.64360616205532*^9}, 
+   3.643628949121943*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -1113,8 +2217,6 @@ Cell["Drawing planar graphs", "Subsubsection",
  InitializationCell->True,
  CellChangeTimes->{{3.643353372330868*^9, 3.6433533765660152`*^9}}],
 
-Cell[CellGroupData[{
-
 Cell[BoxData[
  RowBox[{
   RowBox[{"DrawPlanarGraph$", "=", 
@@ -1135,18 +2237,6 @@ Cell[BoxData[
 
 Cell[BoxData[
  RowBox[{
-  StyleBox[
-   RowBox[{"Java", "::", "nometh"}], "MessageName"], ":", 
-  " ", "\<\"No method named \[NoBreak]\\!\\(\\\"withOutputPath\\\"\\)\
-\[NoBreak] defined in class \
-\[NoBreak]\\!\\(\\\"net.tqft.toolkit.algebra.spiders.DrawPlanarGraph$\\\"\\)\
-\[NoBreak].\"\>"}]], "Message", "MSG",
- InitializationCell->True,
- CellChangeTimes->{3.6436041689764013`*^9}]
-}, Open  ]],
-
-Cell[BoxData[
- RowBox[{
   RowBox[{
    RowBox[{"DrawPlanarGraph", "[", "g_", "]"}], "/;", 
    RowBox[{"InstanceOf", "[", 
@@ -1163,7 +2253,17 @@ Cell[BoxData[
  InitializationCell->True,
  CellChangeTimes->{{3.643353122550913*^9, 3.6433531680081177`*^9}, {
   3.6433532180404167`*^9, 3.6433532220877037`*^9}, {3.6434319968663197`*^9, 
-  3.643431997199682*^9}}]
+  3.643431997199682*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"DrawPlanarGraph", "[", 
+   SubscriptBox["p", "k_Integer"], "]"}], ":=", 
+  RowBox[{"DrawPlanarGraph", "[", 
+   RowBox[{"NamedPolyhedron", "[", 
+    SubscriptBox["p", "k"], "]"}], "]"}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.6436295230029507`*^9, 3.643629541454623*^9}}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1280,6 +2380,8 @@ Cell["Caching calculations", "Subsubsection",
  InitializationCell->True,
  CellChangeTimes->{{3.642061862662367*^9, 3.6420618707553463`*^9}}],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[{
  RowBox[{
   RowBox[{"cachedGroebnerBasis", "[", 
@@ -1360,6 +2462,21 @@ Cell[BoxData[{
   3.641198653728924*^9}, {3.641243715892174*^9, 3.6412437249284897`*^9}, {
   3.643535054806356*^9, 3.643535137650576*^9}, {3.643535369467766*^9, 
   3.643535374305543*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"t$", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"t$\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`t$::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6436833247169523`*^9}]
+}, Open  ]],
 
 Cell[BoxData[{
  RowBox[{
@@ -3256,6 +4373,8 @@ Cell[BoxData[{
   3.6420733791757*^9, 3.642073380518743*^9}, {3.6433646518694267`*^9, 
   3.643364651953484*^9}}],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[{
  RowBox[{
   RowBox[{
@@ -3339,6 +4458,21 @@ Cell[BoxData[{
   3.641266747381023*^9}, {3.641273156614704*^9, 3.641273156664398*^9}, {
   3.6412761806693087`*^9, 3.6412761807396297`*^9}, {3.641439509627509*^9, 
   3.6414395122234364`*^9}, {3.6414406709126167`*^9, 3.64144071347766*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"d$", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"d$\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`d$::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683414218828*^9}]
+}, Open  ]],
 
 Cell[BoxData[
  RowBox[{
@@ -3647,41 +4781,29 @@ Cell[BoxData[
   RowBox[{
    RowBox[{"EvaluateClosedDiagram", "[", "s_SpiderAnalysis", "]"}], "[", 
    RowBox[{"d0", ":", "Diagram"}], "]"}], ":=", 
-  RowBox[{"Module", "[", 
-   RowBox[{
-    RowBox[{"{", "map", "}"}], ",", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
+   RowBox[{"FromScalaObject", "[", 
     RowBox[{
-     RowBox[{"map", "=", 
-      RowBox[{"FromScalaObject", "[", 
-       RowBox[{
-        RowBox[{
-         RowBox[{"s", "[", 
-          RowBox[{"[", "1", "]"}], "]"}], "@", 
-         RowBox[{"canonicalForm", "[", 
-          RowBox[{"AsScalaMap", "[", 
-           RowBox[{"{", 
-            RowBox[{"d0", "\[Rule]", 
-             RowBox[{"AsScalaObject", "[", 
-              RowBox[{"1", ",", "\"\<MultivariableRationalFunction\>\""}], 
-              "]"}]}], "}"}], "]"}], "]"}]}], ",", "1"}], "]"}]}], ";", 
-     "\[IndentingNewLine]", 
-     RowBox[{"If", "[", 
+     RowBox[{"s", "[", 
+      RowBox[{"[", "1", "]"}], "]"}], "@", 
+     RowBox[{"evaluate", "[", 
       RowBox[{
-       RowBox[{
-        RowBox[{"Length", "[", "map", "]"}], "\[Equal]", "0"}], ",", "0", ",",
-        "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-        RowBox[{"FromScalaObject", "[", 
-         RowBox[{
-          RowBox[{
-          "map", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "@", 
-          
-          RowBox[{"U2", "[", "]"}]}], "]"}], "]"}]}], "\[IndentingNewLine]", 
-      "]"}]}]}], "\[IndentingNewLine]", "]"}]}]], "Input",
+       RowBox[{"s", "[", 
+        RowBox[{"[", "1", "]"}], "]"}], "@", 
+       RowBox[{"canonicalForm", "[", 
+        RowBox[{"AsScalaMap", "[", 
+         RowBox[{"{", 
+          RowBox[{"d0", "\[Rule]", 
+           RowBox[{"AsScalaObject", "[", 
+            RowBox[{"1", ",", "\"\<MultivariableRationalFunction\>\""}], 
+            "]"}]}], "}"}], "]"}], "]"}]}], "]"}]}], "]"}], "]"}]}]], "Input",\
+
  InitializationCell->True,
  CellChangeTimes->{{3.643553114249529*^9, 3.6435531874992933`*^9}, {
-  3.643554931025827*^9, 3.643554959046357*^9}}],
+   3.643554931025827*^9, 3.643554959046357*^9}, {3.643628491318242*^9, 
+   3.6436285199908123`*^9}, 3.643628714091057*^9, {3.643629461347314*^9, 
+   3.643629474695519*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -5172,6 +6294,8 @@ Cell[BoxData[
   3.641281986179225*^9, 3.641282006163959*^9}, {3.641293208795864*^9, 
   3.6412932173638697`*^9}, {3.6413458378024397`*^9, 3.641345844965626*^9}}],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  RowBox[{
   RowBox[{
@@ -5248,6 +6372,21 @@ Cell[BoxData[
    3.641273357594612*^9, 3.641273373798027*^9}, {3.641279649286227*^9, 
    3.641279659334798*^9}, {3.6412936320890627`*^9, 3.641293632705522*^9}, 
    3.641978322305093*^9, {3.643458883418253*^9, 3.643458889581188*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"z$", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"z$\\\"\\)\[NoBreak] appears in \
+multiple contexts \[NoBreak]\\!\\({\\\"Spiders`\\\", \\\"Global`\\\"}\\)\
+\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\\"Spiders`\\\"\\)\
+\[NoBreak] may shadow or be shadowed by other definitions. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"Spiders`z$::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.643683415715794*^9}]
+}, Open  ]],
 
 Cell[BoxData[
  RowBox[{
@@ -5865,77 +7004,92 @@ Cell[BoxData[
           RowBox[{"IndependentDiagrams", "[", "k", "]"}], "[", "s", "]"}]}], 
         ";", "\[IndentingNewLine]", 
         RowBox[{"innerProducts", "=", 
-         RowBox[{
-          RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-          RowBox[{"FromScalaObject", "[", 
+         RowBox[{"FromScalaObject", "[", 
+          RowBox[{
            RowBox[{
+           "s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "@", 
+           RowBox[{"innerProductMatrix", "[", 
             RowBox[{
-            "s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "@", 
-            
-            RowBox[{"innerProductMatrix", "[", 
-             RowBox[{
-              RowBox[{"AsScalaList", "[", 
-               RowBox[{"i", "~", "Join", "~", 
-                RowBox[{"{", "d0", "}"}]}], "]"}], ",", 
-              RowBox[{"AsScalaList", "[", 
-               RowBox[{"i", "~", "Join", "~", 
-                RowBox[{"{", "d0", "}"}]}], "]"}]}], "]"}]}], "]"}], "]"}]}], 
-        ";", "\[IndentingNewLine]", 
+             RowBox[{"AsScalaList", "[", 
+              RowBox[{"i", "~", "Join", "~", 
+               RowBox[{"{", "d0", "}"}]}], "]"}], ",", 
+             RowBox[{"AsScalaList", "[", 
+              RowBox[{"i", "~", "Join", "~", 
+               RowBox[{"{", "d0", "}"}]}], "]"}]}], "]"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", "\"\<computed inner products.\>\"", "]"}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"innerProducts", "=", 
+         RowBox[{
+          RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", "innerProducts", 
+          "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", "\"\<reduced inner products.\>\"", "]"}], ";", 
+        "\[IndentingNewLine]", 
         RowBox[{
          RowBox[{"det0", "[", 
           RowBox[{"{", "}"}], "]"}], "=", "1"}], ";", "\[IndentingNewLine]", 
         RowBox[{
          RowBox[{"det0", "[", "M_", "]"}], ":=", 
          RowBox[{"Det", "[", "M", "]"}]}], ";", "\[IndentingNewLine]", 
-        RowBox[{"If", "[", 
+        RowBox[{"(*", 
          RowBox[{
-          RowBox[{
+          RowBox[{"If", "[", 
            RowBox[{
-            RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-            RowBox[{"Factor", "[", 
-             RowBox[{"det0", "[", 
-              RowBox[{"Most", "[", 
-               RowBox[{"Most", "/@", "innerProducts"}], "]"}], "]"}], "]"}], 
-            "]"}], "===", "0"}], ",", "\[IndentingNewLine]", 
-          RowBox[{
-           RowBox[{
-           "Print", "[", 
-            "\"\<Something has gone wrong; the upper left minor should have \
+            RowBox[{
+             RowBox[{
+              RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
+              RowBox[{"Factor", "[", 
+               RowBox[{"det0", "[", 
+                RowBox[{"Most", "[", 
+                 RowBox[{"Most", "/@", "innerProducts"}], "]"}], "]"}], "]"}],
+               "]"}], "===", "0"}], ",", "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{
+             "Print", "[", 
+              "\"\<Something has gone wrong; the upper left minor should have \
 nonzero determinant!\>\"", "]"}], ";", "\[IndentingNewLine]", 
-           RowBox[{"Print", "[", 
-            RowBox[{
-            "s", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], 
-            "]"}], ";", "\[IndentingNewLine]", 
-           RowBox[{"Print", "[", "innerProducts", "]"}], ";", 
-           "\[IndentingNewLine]", 
-           RowBox[{"Print", "[", 
-            RowBox[{"Factor", "[", 
-             RowBox[{"Det", "[", 
-              RowBox[{"Most", "[", 
-               RowBox[{"Most", "/@", "innerProducts"}], "]"}], "]"}], "]"}], 
-            "]"}], ";", "\[IndentingNewLine]", 
-           RowBox[{"Print", "[", 
-            RowBox[{
-             RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-             RowBox[{"Factor", "[", 
-              RowBox[{"det0", "[", 
-               RowBox[{"Most", "[", 
-                RowBox[{"Most", "/@", "innerProducts"}], "]"}], "]"}], "]"}], 
-             "]"}], "]"}], ";", "\[IndentingNewLine]", 
-           RowBox[{"Message", "[", 
-            RowBox[{"foo", "::", "bar"}], "]"}], ";", "\[IndentingNewLine]", 
-           RowBox[{"Abort", "[", "]"}]}]}], "\[IndentingNewLine]", "]"}], ";",
-         "\[IndentingNewLine]", 
+             RowBox[{"Print", "[", 
+              RowBox[{
+              "s", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], 
+              "]"}], ";", "\[IndentingNewLine]", 
+             RowBox[{"Print", "[", "innerProducts", "]"}], ";", 
+             "\[IndentingNewLine]", 
+             RowBox[{"Print", "[", 
+              RowBox[{"Factor", "[", 
+               RowBox[{"Det", "[", 
+                RowBox[{"Most", "[", 
+                 RowBox[{"Most", "/@", "innerProducts"}], "]"}], "]"}], "]"}],
+               "]"}], ";", "\[IndentingNewLine]", 
+             RowBox[{"Print", "[", 
+              RowBox[{
+               RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
+               RowBox[{"Factor", "[", 
+                RowBox[{"det0", "[", 
+                 RowBox[{"Most", "[", 
+                  RowBox[{"Most", "/@", "innerProducts"}], "]"}], "]"}], 
+                "]"}], "]"}], "]"}], ";", "\[IndentingNewLine]", 
+             RowBox[{"Message", "[", 
+              RowBox[{"foo", "::", "bar"}], "]"}], ";", "\[IndentingNewLine]", 
+             RowBox[{"Abort", "[", "]"}]}]}], "\[IndentingNewLine]", "]"}], 
+          ";"}], "\[IndentingNewLine]", "*)"}], "\[IndentingNewLine]", 
+        RowBox[{"det", "=", 
+         RowBox[{"det0", "[", "innerProducts", "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", "\"\<computed determinant\>\"", "]"}], ";", 
+        "\[IndentingNewLine]", 
         RowBox[{"det", "=", 
          RowBox[{
-          RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-          RowBox[{"det0", "[", "innerProducts", "]"}], "]"}]}], ";", 
+          RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", "det", "]"}]}], 
+        ";", "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", "\"\<reduced determinant\>\"", "]"}], ";", 
         "\[IndentingNewLine]", 
         RowBox[{"s0", "=", 
          RowBox[{
           RowBox[{"DeclarePolynomialsZero", "[", 
            RowBox[{"{", "det", "}"}], "]"}], "[", "s", "]"}]}], ";", 
         "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", "\"\<declared determinant zero\>\"", "]"}], ";",
+         "\[IndentingNewLine]", 
         RowBox[{"If", "[", 
          RowBox[{
           RowBox[{
@@ -5965,6 +7119,8 @@ isn't allowed to vanish\>\""}], "]"}], ";", "\[IndentingNewLine]",
                  "\"\<Method\>\"", "\[Rule]", 
                   "\"\<OneStepRowReduction\>\""}]}], "]"}], "]"}]}], 
              "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"Print", "[", "\"\<computed null space\>\"", "]"}], ";", 
+           "\[IndentingNewLine]", 
            RowBox[{"If", "[", 
             RowBox[{
              RowBox[{
@@ -5992,8 +7148,9 @@ isn't allowed to vanish\>\""}], "]"}], ";", "\[IndentingNewLine]",
               RowBox[{"Print", "[", 
                RowBox[{
                "\"\<The only possible relation is \>\"", ",", "newRelation", 
-                ",", "\"\<, but that only involves diagrams which we've \
-already declared independent.\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+                ",", 
+                "\"\<, but that only involves diagrams which we've already \
+declared independent.\>\""}], "]"}], ";", "\[IndentingNewLine]", 
               RowBox[{"Print", "[", 
                RowBox[{"\"\<innerProducts: \>\"", ",", "innerProducts"}], 
                "]"}], ";", "\[IndentingNewLine]", 
@@ -6165,7 +7322,8 @@ of these vanishes.\>\""}], "]"}], ";", "\[IndentingNewLine]",
    3.641981239151909*^9, 3.641981250615131*^9}, {3.642000212322529*^9, 
    3.642000225499826*^9}, {3.642000339677908*^9, 3.6420003482962217`*^9}, {
    3.642000697633638*^9, 3.642000702759986*^9}, {3.6420735034247417`*^9, 
-   3.642073530221575*^9}, {3.6433698029839687`*^9, 3.643369813663452*^9}}],
+   3.642073530221575*^9}, {3.6433698029839687`*^9, 3.643369813663452*^9}, {
+   3.643683226944916*^9, 3.643683304820528*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -6907,58 +8065,107 @@ Cell["Pickling", "Subsubsection",
 Cell[BoxData[{
  RowBox[{
   RowBox[{"PickleSpiderAnalysis", "[", "s_SpiderAnalysis", "]"}], ":=", 
-  RowBox[{"PickledSpiderAnalysis", "@@", 
-   RowBox[{"(", 
-    RowBox[{"s", "/.", 
-     RowBox[{"{", 
-      RowBox[{
-       RowBox[{
-        RowBox[{"d0", ":", "Diagram"}], "\[RuleDelayed]", 
-        RowBox[{"d0", "@", 
-         RowBox[{"toString", "[", "]"}]}]}], ",", 
-       RowBox[{
+  RowBox[{"Append", "[", 
+   RowBox[{
+    RowBox[{"PickledSpiderAnalysis", "@@", 
+     RowBox[{"(", 
+      RowBox[{"s", "/.", 
+       RowBox[{"{", 
         RowBox[{
-         RowBox[{"q_", "?", "JavaObjectQ"}], "/;", 
-         RowBox[{"InstanceOf", "[", 
+         RowBox[{
+          RowBox[{"d0", ":", "Diagram"}], "\[RuleDelayed]", 
+          RowBox[{"d0", "@", 
+           RowBox[{"toString", "[", "]"}]}]}], ",", 
+         RowBox[{
           RowBox[{
-          "q", ",", 
-           "\"\<net.tqft.toolkit.algebra.spiders.examples.QuotientSpider\>\""}\
-], "]"}]}], "\[RuleDelayed]", 
-        RowBox[{"PickleQuotientSpider", "[", "q", "]"}]}]}], "}"}]}], 
-    ")"}]}]}], "\[IndentingNewLine]", 
+           RowBox[{"q_", "?", "JavaObjectQ"}], "/;", 
+           RowBox[{"InstanceOf", "[", 
+            RowBox[{
+            "q", ",", 
+             "\"\<net.tqft.toolkit.algebra.spiders.examples.QuotientSpider\>\"\
+"}], "]"}]}], "\[RuleDelayed]", 
+          RowBox[{"PickleQuotientSpider", "[", "q", "]"}]}]}], "}"}]}], 
+      ")"}]}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"#", ",", 
+        RowBox[{
+         RowBox[{"NamedPolyhedron", "[", "#", "]"}], "@", 
+         RowBox[{"toString", "[", "]"}]}]}], "}"}], "&"}], "/@", 
+     RowBox[{"Union", "[", 
+      RowBox[{"Cases", "[", 
+       RowBox[{"s", ",", 
+        SubscriptBox["p", "_"], ",", "\[Infinity]"}], "]"}], "]"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"PickleSpiderAnalysis", "[", "S_List", "]"}], ":=", 
   RowBox[{"PickleSpiderAnalysis", "/@", "S"}]}]}], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643598715645447*^9, 3.643598806867407*^9}, {
   3.643598844367263*^9, 3.6435988517661877`*^9}, {3.643600175881687*^9, 
-  3.643600194319602*^9}}],
+  3.643600194319602*^9}, {3.643630186307571*^9, 3.6436302233697453`*^9}, {
+  3.643630538453689*^9, 3.643630538618145*^9}}],
 
 Cell[BoxData[{
  RowBox[{
   RowBox[{"UnpickleSpiderAnalysis", "[", "s_PickledSpiderAnalysis", "]"}], ":=", 
-  RowBox[{"SpiderAnalysis", "@@", 
-   RowBox[{"(", 
-    RowBox[{"s", "/.", 
-     RowBox[{"{", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "renamer", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"renamer", "[", 
+       SubscriptBox["p", "k_"], "]"}], ":=", 
       RowBox[{
+       RowBox[{"renamer", "[", 
+        SubscriptBox["p", "k"], "]"}], "=", 
        RowBox[{
-        RowBox[{"d0_String", "/;", 
+        RowBox[{"Cases", "[", 
          RowBox[{
-          RowBox[{"StringTake", "[", 
-           RowBox[{"d0", ",", "12"}], "]"}], "===", 
-          "\"\<PlanarGraph(\>\""}]}], "\[RuleDelayed]", 
-        RowBox[{"PlanarGraphs", "@", 
-         RowBox[{"fromString", "[", "d0", "]"}]}]}], ",", 
-       RowBox[{"q_PickledQuotientSpider", "\[RuleDelayed]", 
-        RowBox[{"UnpickleQuotientSpider", "[", "q", "]"}]}]}], "}"}]}], 
-    ")"}]}]}], "\[IndentingNewLine]", 
+          RowBox[{"s", "\[LeftDoubleBracket]", 
+           RowBox[{"-", "1"}], "\[RightDoubleBracket]"}], ",", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             SubscriptBox["p", "k"], ",", "r_"}], "}"}], "\[RuleDelayed]", 
+           RowBox[{"Name", "[", 
+            RowBox[{"PlanarGraphs", "@", 
+             RowBox[{"fromString", "[", "r", "]"}]}], "]"}]}], ",", "1", ",", 
+          "1"}], "]"}], "\[LeftDoubleBracket]", "1", 
+        "\[RightDoubleBracket]"}]}]}], ";", 
+     RowBox[{"SpiderAnalysis", "@@", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Most", "[", "s", "]"}], "/.", 
+         RowBox[{"{", 
+          RowBox[{
+           SubscriptBox["p", "k_"], "\[RuleDelayed]", 
+           RowBox[{"renamer", "[", 
+            SubscriptBox["p", "k"], "]"}]}], "}"}]}], "/.", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"d0_String", "/;", 
+            RowBox[{
+             RowBox[{"StringTake", "[", 
+              RowBox[{"d0", ",", "12"}], "]"}], "===", 
+             "\"\<PlanarGraph(\>\""}]}], "\[RuleDelayed]", 
+           RowBox[{"PlanarGraphs", "@", 
+            RowBox[{"fromString", "[", "d0", "]"}]}]}], ",", 
+          RowBox[{"q_PickledQuotientSpider", "\[RuleDelayed]", 
+           RowBox[{"UnpickleQuotientSpider", "[", "q", "]"}]}]}], "}"}]}], 
+       ")"}]}]}]}], "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"UnpickleSpiderAnalysis", "[", "S_List", "]"}], ":=", 
   RowBox[{"UnpickleSpiderAnalysis", "/@", "S"}]}]}], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.643598825721304*^9, 3.643598913811945*^9}, {
-  3.6436002021623297`*^9, 3.643600218945519*^9}}],
+   3.6436002021623297`*^9, 3.643600218945519*^9}, {3.643630232057972*^9, 
+   3.6436302447074423`*^9}, {3.643630288265876*^9, 3.643630410341858*^9}, 
+   3.643630443244113*^9, {3.643630505145281*^9, 3.643630517230509*^9}, {
+   3.643630792297721*^9, 3.643630795236498*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -7093,7 +8300,6 @@ Cell[BoxData[
 }, Open  ]]
 },
 AutoGeneratedPackage->Automatic,
-Evaluator->"Local (3)",
 WindowSize->{891, 842},
 WindowMargins->{{-11, Automatic}, {Automatic, 3}},
 FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
@@ -7120,387 +8326,502 @@ Cell[760, 26, 249, 6, 28, "Input"],
 Cell[CellGroupData[{
 Cell[1034, 36, 192, 3, 35, "Subsubsection",
  InitializationCell->True],
-Cell[1229, 41, 2733, 46, 114, "Input",
+Cell[1229, 41, 2708, 46, 114, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3999, 92, 145, 2, 35, "Subsubsection",
+Cell[3974, 92, 145, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[4147, 96, 322, 6, 63, "Input",
+Cell[CellGroupData[{
+Cell[4144, 98, 322, 6, 63, "Input",
+ InitializationCell->True],
+Cell[4469, 106, 117, 1, 22, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4635, 113, 225, 4, 64, "Section",
+ InitializationCell->True],
+Cell[4863, 119, 533, 10, 28, "Input",
+ InitializationCell->True],
+Cell[CellGroupData[{
+Cell[5421, 133, 245, 4, 28, "Input",
+ InitializationCell->True],
+Cell[5669, 139, 639, 12, 41, "Message"],
+Cell[6311, 153, 639, 12, 41, "Message"],
+Cell[6953, 167, 641, 12, 41, "Message"],
+Cell[7597, 181, 639, 12, 41, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8273, 198, 296, 5, 28, "Input",
+ InitializationCell->True],
+Cell[8572, 205, 680, 13, 42, "Message"],
+Cell[9255, 220, 680, 13, 42, "Message"],
+Cell[9938, 235, 683, 13, 42, "Message"],
+Cell[10624, 250, 679, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11340, 268, 316, 5, 28, "Input",
+ InitializationCell->True],
+Cell[11659, 275, 657, 12, 42, "Message"],
+Cell[12319, 289, 683, 13, 42, "Message"],
+Cell[13005, 304, 672, 12, 42, "Message"],
+Cell[13680, 318, 657, 12, 42, "Message"],
+Cell[14340, 332, 650, 12, 42, "Message"],
+Cell[14993, 346, 682, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15712, 364, 277, 5, 28, "Input",
+ InitializationCell->True],
+Cell[15992, 371, 677, 13, 42, "Message"],
+Cell[16672, 386, 692, 13, 42, "Message"],
+Cell[17367, 401, 685, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18089, 419, 295, 6, 28, "Input",
+ InitializationCell->True],
+Cell[18387, 427, 710, 13, 42, "Message"],
+Cell[19100, 442, 710, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19847, 460, 132, 3, 28, "Input",
+ InitializationCell->True],
+Cell[19982, 465, 700, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20719, 483, 542, 9, 63, "Input",
+ InitializationCell->True],
+Cell[21264, 494, 660, 12, 42, "Message"],
+Cell[21927, 508, 701, 13, 42, "Message"],
+Cell[22631, 523, 702, 13, 42, "Message"],
+Cell[23336, 538, 736, 15, 60, "Message"],
+Cell[24075, 555, 712, 13, 42, "Message"],
+Cell[24790, 570, 715, 14, 42, "Message"],
+Cell[25508, 586, 754, 16, 60, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26299, 607, 315, 5, 28, "Input",
+ InitializationCell->True],
+Cell[26617, 614, 704, 13, 42, "Message"],
+Cell[27324, 629, 685, 13, 42, "Message"],
+Cell[28012, 644, 695, 13, 42, "Message"],
+Cell[28710, 659, 695, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[29442, 677, 176, 4, 28, "Input",
+ InitializationCell->True],
+Cell[29621, 683, 639, 12, 42, "Message"],
+Cell[30263, 697, 642, 12, 41, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[30942, 714, 458, 7, 63, "Input",
+ InitializationCell->True],
+Cell[31403, 723, 697, 13, 42, "Message"],
+Cell[32103, 738, 689, 13, 42, "Message"],
+Cell[32795, 753, 672, 12, 42, "Message"],
+Cell[33470, 767, 689, 13, 42, "Message"],
+Cell[34162, 782, 698, 13, 42, "Message"],
+Cell[34863, 797, 710, 13, 42, "Message"],
+Cell[35576, 812, 704, 13, 42, "Message"],
+Cell[36283, 827, 694, 13, 42, "Message"],
+Cell[36980, 842, 685, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[37702, 860, 353, 6, 28, "Input",
+ InitializationCell->True],
+Cell[38058, 868, 680, 13, 42, "Message"],
+Cell[38741, 883, 695, 13, 42, "Message"],
+Cell[39439, 898, 668, 12, 42, "Message"],
+Cell[40110, 912, 695, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40842, 930, 220, 4, 28, "Input",
+ InitializationCell->True],
+Cell[41065, 936, 688, 13, 42, "Message"],
+Cell[41756, 951, 679, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[42472, 969, 228, 4, 28, "Input",
+ InitializationCell->True],
+Cell[42703, 975, 685, 13, 42, "Message"],
+Cell[43391, 990, 701, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[44129, 1008, 369, 6, 46, "Input",
+ InitializationCell->True],
+Cell[44501, 1016, 680, 13, 42, "Message"],
+Cell[45184, 1031, 701, 13, 42, "Message"],
+Cell[45888, 1046, 704, 13, 42, "Message"],
+Cell[46595, 1061, 712, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[47344, 1079, 541, 9, 63, "Input",
+ InitializationCell->True],
+Cell[47888, 1090, 723, 14, 60, "Message"],
+Cell[48614, 1106, 692, 13, 42, "Message"],
+Cell[49309, 1121, 672, 12, 42, "Message"],
+Cell[49984, 1135, 686, 13, 42, "Message"],
+Cell[50673, 1150, 683, 13, 42, "Message"],
+Cell[51359, 1165, 718, 14, 60, "Message"],
+Cell[52080, 1181, 712, 13, 42, "Message"],
+Cell[52795, 1196, 691, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[53523, 1214, 290, 5, 28, "Input",
+ InitializationCell->True],
+Cell[53816, 1221, 689, 13, 42, "Message"],
+Cell[54508, 1236, 689, 13, 42, "Message"],
+Cell[55200, 1251, 709, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55946, 1269, 347, 6, 46, "Input",
+ InitializationCell->True],
+Cell[56296, 1277, 698, 13, 42, "Message"],
+Cell[56997, 1292, 704, 13, 42, "Message"],
+Cell[57704, 1307, 701, 13, 42, "Message"],
+Cell[58408, 1322, 703, 13, 42, "Message"]
+}, Open  ]],
+Cell[59126, 1338, 119, 3, 28, "Input",
+ InitializationCell->True],
+Cell[CellGroupData[{
+Cell[59270, 1345, 130, 2, 44, "Subsection",
+ InitializationCell->True],
+Cell[59403, 1349, 997, 25, 63, "Input",
+ InitializationCell->True],
+Cell[60403, 1376, 426, 10, 28, "Input",
+ InitializationCell->True],
+Cell[60832, 1388, 217, 5, 28, "Input",
+ InitializationCell->True],
+Cell[61052, 1395, 2108, 55, 216, "Input",
+ InitializationCell->True],
+Cell[63163, 1452, 740, 19, 80, "Input",
+ InitializationCell->True],
+Cell[63906, 1473, 2842, 70, 199, "Input",
+ InitializationCell->True],
+Cell[66751, 1545, 1506, 37, 131, "Input",
+ InitializationCell->True],
+Cell[68260, 1584, 164, 3, 28, "Input",
+ InitializationCell->True],
+Cell[68427, 1589, 210, 5, 28, "Input",
+ InitializationCell->True],
+Cell[68640, 1596, 482, 13, 28, "Input",
+ InitializationCell->True],
+Cell[69125, 1611, 2264, 61, 114, "Input",
+ InitializationCell->True],
+Cell[71392, 1674, 959, 25, 63, "Input",
+ InitializationCell->True],
+Cell[72354, 1701, 2482, 58, 185, "Input",
+ InitializationCell->True],
+Cell[74839, 1761, 526, 12, 28, "Input",
+ InitializationCell->True],
+Cell[75368, 1775, 545, 14, 97, "Input",
+ InitializationCell->True],
+Cell[75916, 1791, 579, 15, 80, "Input",
+ InitializationCell->True],
+Cell[76498, 1808, 487, 12, 63, "Input",
+ InitializationCell->True],
+Cell[76988, 1822, 165, 3, 28, "Input",
+ InitializationCell->True],
+Cell[77156, 1827, 1977, 47, 182, "Input",
+ InitializationCell->True],
+Cell[79136, 1876, 263, 6, 28, "Input",
+ InitializationCell->True],
+Cell[79402, 1884, 824, 18, 63, "Input",
+ InitializationCell->True],
+Cell[80229, 1904, 297, 8, 28, "Input",
+ InitializationCell->True],
+Cell[80529, 1914, 1584, 40, 98, "Input",
+ InitializationCell->True],
+Cell[82116, 1956, 286, 8, 28, "Input",
+ InitializationCell->True],
+Cell[82405, 1966, 346, 10, 46, "Input",
+ InitializationCell->True],
+Cell[82754, 1978, 5897, 147, 407, "Input",
+ InitializationCell->True],
+Cell[CellGroupData[{
+Cell[88676, 2129, 153, 2, 35, "Subsubsection",
+ InitializationCell->True],
+Cell[88832, 2133, 551, 15, 28, "Input",
+ InitializationCell->True],
+Cell[89386, 2150, 498, 14, 52, "Input",
+ InitializationCell->True],
+Cell[89887, 2166, 276, 8, 28, "Input",
+ InitializationCell->True],
+Cell[90166, 2176, 480, 13, 28, "Input",
+ InitializationCell->True],
+Cell[90649, 2191, 659, 19, 80, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[4506, 107, 225, 4, 64, "Section",
+Cell[91345, 2215, 141, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[4734, 113, 488, 9, 28, "Input",
+Cell[91489, 2219, 648, 16, 63, "Input",
  InitializationCell->True],
-Cell[5225, 124, 268, 5, 28, "Input",
+Cell[92140, 2237, 686, 18, 46, "Input",
  InitializationCell->True],
-Cell[5496, 131, 288, 5, 28, "Input",
- InitializationCell->True],
-Cell[5787, 138, 249, 5, 28, "Input",
- InitializationCell->True],
-Cell[6039, 145, 264, 5, 28, "Input",
- InitializationCell->True],
-Cell[6306, 152, 73, 1, 28, "Input",
- InitializationCell->True],
-Cell[6382, 155, 509, 8, 63, "Input",
- InitializationCell->True],
-Cell[6894, 165, 287, 5, 28, "Input",
- InitializationCell->True],
-Cell[7184, 172, 143, 3, 28, "Input",
- InitializationCell->True],
-Cell[7330, 177, 428, 7, 63, "Input",
- InitializationCell->True],
-Cell[7761, 186, 248, 5, 28, "Input",
- InitializationCell->True],
-Cell[8012, 193, 193, 4, 28, "Input",
- InitializationCell->True],
-Cell[8208, 199, 202, 4, 28, "Input",
- InitializationCell->True],
-Cell[8413, 205, 340, 6, 46, "Input",
- InitializationCell->True],
-Cell[8756, 213, 508, 8, 63, "Input",
- InitializationCell->True],
-Cell[9267, 223, 260, 5, 28, "Input",
- InitializationCell->True],
-Cell[9530, 230, 208, 4, 28, "Input",
- InitializationCell->True],
-Cell[9741, 236, 119, 3, 28, "Input",
- InitializationCell->True],
-Cell[CellGroupData[{
-Cell[9885, 243, 130, 2, 44, "Subsection",
- InitializationCell->True],
-Cell[10018, 247, 933, 23, 63, "Input",
- InitializationCell->True],
-Cell[10954, 272, 426, 10, 28, "Input",
- InitializationCell->True],
-Cell[11383, 284, 217, 5, 28, "Input",
- InitializationCell->True],
-Cell[11603, 291, 2108, 55, 216, "Input",
- InitializationCell->True],
-Cell[13714, 348, 740, 19, 80, "Input",
- InitializationCell->True],
-Cell[14457, 369, 2842, 70, 199, "Input",
- InitializationCell->True],
-Cell[17302, 441, 1506, 37, 131, "Input",
- InitializationCell->True],
-Cell[18811, 480, 164, 3, 28, "Input",
- InitializationCell->True],
-Cell[18978, 485, 210, 5, 28, "Input",
- InitializationCell->True],
-Cell[19191, 492, 482, 13, 28, "Input",
- InitializationCell->True],
-Cell[19676, 507, 2264, 61, 114, "Input",
- InitializationCell->True],
-Cell[21943, 570, 959, 25, 63, "Input",
- InitializationCell->True],
-Cell[22905, 597, 2482, 58, 185, "Input",
- InitializationCell->True],
-Cell[25390, 657, 526, 12, 28, "Input",
- InitializationCell->True],
-Cell[25919, 671, 545, 14, 97, "Input",
- InitializationCell->True],
-Cell[26467, 687, 579, 15, 80, "Input",
- InitializationCell->True],
-Cell[27049, 704, 487, 12, 63, "Input",
- InitializationCell->True],
-Cell[27539, 718, 165, 3, 28, "Input",
- InitializationCell->True],
-Cell[27707, 723, 1977, 47, 182, "Input",
- InitializationCell->True],
-Cell[29687, 772, 263, 6, 28, "Input",
- InitializationCell->True],
-Cell[29953, 780, 824, 18, 63, "Input",
- InitializationCell->True],
-Cell[30780, 800, 297, 8, 28, "Input",
- InitializationCell->True],
-Cell[31080, 810, 1584, 40, 98, "Input",
- InitializationCell->True],
-Cell[32667, 852, 286, 8, 28, "Input",
- InitializationCell->True],
-Cell[32956, 862, 346, 10, 46, "Input",
- InitializationCell->True],
-Cell[33305, 874, 5897, 147, 407, "Input",
- InitializationCell->True],
-Cell[CellGroupData[{
-Cell[39227, 1025, 153, 2, 35, "Subsubsection",
- InitializationCell->True],
-Cell[39383, 1029, 551, 15, 28, "Input",
- InitializationCell->True],
-Cell[39937, 1046, 498, 14, 52, "Input",
- InitializationCell->True],
-Cell[40438, 1062, 276, 8, 28, "Input",
- InitializationCell->True],
-Cell[40717, 1072, 480, 13, 28, "Input",
- InitializationCell->True],
-Cell[41200, 1087, 659, 19, 80, "Input",
+Cell[92829, 2257, 327, 8, 35, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[41896, 1111, 141, 2, 35, "Subsubsection",
+Cell[93193, 2270, 144, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[CellGroupData[{
-Cell[42062, 1117, 648, 16, 63, "Input",
+Cell[93340, 2274, 1018, 30, 63, "Input",
  InitializationCell->True],
-Cell[42713, 1135, 383, 9, 24, "Message",
- InitializationCell->True]
-}, Open  ]],
-Cell[43111, 1147, 686, 18, 46, "Input",
- InitializationCell->True]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[43834, 1170, 144, 2, 35, "Subsubsection",
+Cell[94361, 2306, 1432, 44, 80, "Input",
  InitializationCell->True],
-Cell[43981, 1174, 1018, 30, 63, "Input",
- InitializationCell->True],
-Cell[45002, 1206, 1432, 44, 80, "Input",
- InitializationCell->True],
-Cell[46437, 1252, 738, 21, 63, "Input",
+Cell[95796, 2352, 738, 21, 63, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[47212, 1278, 140, 2, 35, "Subsubsection",
+Cell[96571, 2378, 140, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[47355, 1282, 3133, 79, 318, "Input",
+Cell[CellGroupData[{
+Cell[96736, 2384, 3133, 79, 318, "Input",
  InitializationCell->True],
-Cell[50491, 1363, 2531, 67, 216, "Input",
+Cell[99872, 2465, 644, 12, 41, "Message"]
+}, Open  ]],
+Cell[100531, 2480, 2531, 67, 216, "Input",
  InitializationCell->True],
-Cell[53025, 1432, 167, 3, 28, "Input",
+Cell[103065, 2549, 167, 3, 28, "Input",
  InitializationCell->True],
-Cell[53195, 1437, 165, 3, 28, "Input",
+Cell[103235, 2554, 165, 3, 28, "Input",
  InitializationCell->True]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[53409, 1446, 190, 3, 44, "Subsection",
+Cell[103449, 2563, 190, 3, 44, "Subsection",
  InitializationCell->True],
-Cell[53602, 1451, 329, 8, 46, "Input",
+Cell[103642, 2568, 329, 8, 46, "Input",
  InitializationCell->True],
-Cell[53934, 1461, 455, 13, 53, "Input",
+Cell[103974, 2578, 455, 13, 53, "Input",
  InitializationCell->True],
-Cell[54392, 1476, 154, 3, 28, "Input",
+Cell[104432, 2593, 154, 3, 28, "Input",
  InitializationCell->True],
-Cell[54549, 1481, 1147, 26, 114, "Input",
+Cell[104589, 2598, 1147, 26, 114, "Input",
  InitializationCell->True],
-Cell[55699, 1509, 590, 15, 28, "Input",
+Cell[105739, 2626, 590, 15, 28, "Input",
  InitializationCell->True],
-Cell[56292, 1526, 808, 15, 63, "Input",
+Cell[106332, 2643, 808, 15, 63, "Input",
  InitializationCell->True],
-Cell[57103, 1543, 573, 15, 28, "Input",
+Cell[107143, 2660, 573, 15, 28, "Input",
  InitializationCell->True],
-Cell[57679, 1560, 574, 16, 46, "Input",
+Cell[107719, 2677, 574, 16, 46, "Input",
  InitializationCell->True],
-Cell[58256, 1578, 2273, 57, 179, "Input",
+Cell[108296, 2695, 2273, 57, 179, "Input",
  InitializationCell->True],
-Cell[60532, 1637, 517, 14, 46, "Input",
+Cell[110572, 2754, 517, 14, 46, "Input",
  InitializationCell->True],
-Cell[61052, 1653, 5402, 118, 336, "Input",
+Cell[111092, 2770, 5402, 118, 336, "Input",
  InitializationCell->True],
-Cell[66457, 1773, 181, 3, 28, "Input",
+Cell[116497, 2890, 181, 3, 28, "Input",
  InitializationCell->True],
-Cell[66641, 1778, 4302, 82, 283, "Input",
+Cell[116681, 2895, 4302, 82, 283, "Input",
  InitializationCell->True],
-Cell[70946, 1862, 12823, 263, 932, "Input",
+Cell[120986, 2979, 12823, 263, 932, "Input",
  InitializationCell->True],
-Cell[83772, 2127, 1932, 48, 182, "Input",
+Cell[133812, 3244, 1932, 48, 182, "Input",
  InitializationCell->True],
-Cell[85707, 2177, 270, 7, 28, "Input",
+Cell[135747, 3294, 270, 7, 28, "Input",
  InitializationCell->True],
-Cell[85980, 2186, 467, 12, 28, "Input",
+Cell[136020, 3303, 467, 12, 28, "Input",
  InitializationCell->True],
-Cell[86450, 2200, 2390, 56, 199, "Input",
+Cell[136490, 3317, 2390, 56, 199, "Input",
  InitializationCell->True],
-Cell[88843, 2258, 2371, 57, 245, "Input",
+Cell[138883, 3375, 2371, 57, 245, "Input",
  InitializationCell->True],
-Cell[91217, 2317, 2652, 61, 199, "Input",
+Cell[141257, 3434, 2652, 61, 199, "Input",
  InitializationCell->True],
-Cell[93872, 2380, 3067, 74, 301, "Input",
+Cell[143912, 3497, 3067, 74, 301, "Input",
  InitializationCell->True],
-Cell[96942, 2456, 1274, 30, 142, "Input",
+Cell[146982, 3573, 1274, 30, 131, "Input",
  InitializationCell->True],
-Cell[98219, 2488, 4431, 102, 307, "Input",
+Cell[148259, 3605, 4431, 102, 313, "Input",
  InitializationCell->True],
-Cell[102653, 2592, 3302, 82, 313, "Input",
+Cell[152693, 3709, 3302, 82, 302, "Input",
  InitializationCell->True],
-Cell[105958, 2676, 11294, 237, 959, "Input",
+Cell[155998, 3793, 11294, 237, 948, "Input",
  InitializationCell->True],
-Cell[117255, 2915, 520, 14, 39, "Input",
+Cell[167295, 4032, 520, 14, 28, "Input",
  InitializationCell->True],
-Cell[117778, 2931, 352, 9, 42, "Input",
+Cell[167818, 4048, 352, 9, 31, "Input",
  InitializationCell->True],
-Cell[118133, 2942, 3126, 71, 194, "Input",
+Cell[168173, 4059, 3126, 71, 183, "Input",
  InitializationCell->True],
-Cell[121262, 3015, 3764, 83, 274, "Input",
+Cell[171302, 4132, 3764, 83, 263, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[125063, 3103, 137, 2, 44, "Subsection",
+Cell[175103, 4220, 137, 2, 44, "Subsection",
  InitializationCell->True],
 Cell[CellGroupData[{
-Cell[125225, 3109, 170, 2, 35, "Subsubsection",
+Cell[175265, 4226, 170, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[125398, 3113, 2913, 70, 262, "Input",
+Cell[175438, 4230, 2913, 70, 251, "Input",
  InitializationCell->True],
-Cell[128314, 3185, 1120, 20, 108, "Input",
+Cell[178354, 4302, 1120, 20, 97, "Input",
  InitializationCell->True],
-Cell[129437, 3207, 1138, 29, 91, "Input",
+Cell[179477, 4324, 1138, 29, 80, "Input",
  InitializationCell->True],
-Cell[130578, 3238, 757, 18, 57, "Input",
+Cell[180618, 4355, 757, 18, 46, "Input",
  InitializationCell->True],
-Cell[131338, 3258, 3106, 82, 159, "Input",
+Cell[CellGroupData[{
+Cell[181400, 4377, 3106, 82, 165, "Input",
  InitializationCell->True],
-Cell[134447, 3342, 606, 15, 39, "Input",
+Cell[184509, 4461, 642, 12, 41, "Message"]
+}, Open  ]],
+Cell[185166, 4476, 606, 15, 28, "Input",
  InitializationCell->True],
-Cell[135056, 3359, 581, 15, 39, "Input",
+Cell[185775, 4493, 581, 15, 28, "Input",
  InitializationCell->True],
-Cell[135640, 3376, 639, 16, 39, "Input",
+Cell[186359, 4510, 639, 16, 28, "Input",
  InitializationCell->True],
-Cell[136282, 3394, 454, 10, 39, "Input",
+Cell[187001, 4528, 454, 10, 28, "Input",
  InitializationCell->True],
-Cell[136739, 3406, 1566, 38, 125, "Input",
+Cell[187458, 4540, 1566, 38, 114, "Input",
  InitializationCell->True],
-Cell[138308, 3446, 317, 7, 39, "Input",
+Cell[189027, 4580, 317, 7, 28, "Input",
  InitializationCell->True],
-Cell[138628, 3455, 1444, 42, 109, "Input",
+Cell[189347, 4589, 1444, 42, 98, "Input",
  InitializationCell->True],
-Cell[140075, 3499, 1419, 37, 125, "Input",
+Cell[190794, 4633, 1419, 37, 114, "Input",
  InitializationCell->True],
-Cell[141497, 3538, 1012, 29, 74, "Input",
+Cell[192216, 4672, 1012, 29, 63, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[142546, 3572, 134, 2, 35, "Subsubsection",
+Cell[193265, 4706, 134, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[142683, 3576, 389, 10, 39, "Input",
+Cell[193402, 4710, 389, 10, 28, "Input",
  InitializationCell->True],
-Cell[143075, 3588, 465, 14, 57, "Input",
+Cell[193794, 4722, 465, 14, 46, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[143577, 3607, 135, 2, 35, "Subsubsection",
+Cell[194296, 4741, 135, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[143715, 3611, 1154, 31, 91, "Input",
+Cell[194434, 4745, 1154, 31, 80, "Input",
  InitializationCell->True],
-Cell[144872, 3644, 1497, 39, 176, "Input",
+Cell[195591, 4778, 1057, 27, 131, "Input",
  InitializationCell->True],
-Cell[146372, 3685, 271, 6, 39, "Input",
+Cell[196651, 4807, 271, 6, 28, "Input",
  InitializationCell->True],
-Cell[146646, 3693, 4636, 103, 342, "Input",
+Cell[196925, 4815, 4636, 103, 331, "Input",
  InitializationCell->True],
-Cell[151285, 3798, 538, 16, 57, "Input",
+Cell[201564, 4920, 538, 16, 46, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[151860, 3819, 189, 3, 35, "Subsubsection",
+Cell[202139, 4941, 189, 3, 35, "Subsubsection",
  InitializationCell->True],
-Cell[152052, 3824, 8511, 191, 669, "Input",
+Cell[202331, 4946, 8511, 191, 658, "Input",
  InitializationCell->True],
-Cell[160566, 4017, 12973, 282, 839, "Input",
+Cell[210845, 5139, 12973, 282, 828, "Input",
  InitializationCell->True],
-Cell[173542, 4301, 2404, 66, 176, "Input",
+Cell[223821, 5423, 2404, 66, 165, "Input",
  InitializationCell->True],
-Cell[175949, 4369, 5189, 126, 431, "Input",
+Cell[226228, 5491, 5189, 126, 420, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[181175, 4500, 138, 2, 35, "Subsubsection",
+Cell[231454, 5622, 138, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[181316, 4504, 2412, 67, 195, "Input",
+Cell[231595, 5626, 2412, 67, 184, "Input",
  InitializationCell->True],
-Cell[183731, 4573, 1526, 43, 75, "Input",
+Cell[234010, 5695, 1526, 43, 64, "Input",
  InitializationCell->True],
-Cell[185260, 4618, 690, 16, 74, "Input",
+Cell[235539, 5740, 690, 16, 63, "Input",
  InitializationCell->True],
-Cell[185953, 4636, 14072, 298, 993, "Input",
+Cell[236232, 5758, 14072, 298, 982, "Input",
  InitializationCell->True],
-Cell[200028, 4936, 1366, 34, 176, "Input",
+Cell[250307, 6058, 1366, 34, 165, "Input",
  InitializationCell->True],
-Cell[201397, 4972, 452, 13, 57, "Input",
+Cell[251676, 6094, 452, 13, 46, "Input",
  InitializationCell->True],
-Cell[201852, 4987, 500, 11, 57, "Input",
+Cell[252131, 6109, 500, 11, 46, "Input",
  InitializationCell->True],
-Cell[202355, 5000, 169, 3, 39, "Input",
+Cell[252634, 6122, 169, 3, 28, "Input",
  InitializationCell->True],
-Cell[202527, 5005, 320, 7, 39, "Input",
+Cell[252806, 6127, 320, 7, 28, "Input",
  InitializationCell->True],
-Cell[202850, 5014, 503, 13, 39, "Input",
+Cell[253129, 6136, 503, 13, 28, "Input",
  InitializationCell->True],
-Cell[203356, 5029, 283, 7, 39, "Input",
+Cell[253635, 6151, 283, 7, 28, "Input",
  InitializationCell->True],
-Cell[203642, 5038, 2032, 53, 142, "Input",
+Cell[253921, 6160, 2032, 53, 131, "Input",
  InitializationCell->True],
-Cell[205677, 5093, 332, 7, 39, "Input",
+Cell[255956, 6215, 332, 7, 28, "Input",
  InitializationCell->True],
-Cell[206012, 5102, 375, 11, 39, "Input",
+Cell[256291, 6224, 375, 11, 28, "Input",
  InitializationCell->True],
-Cell[206390, 5115, 2131, 57, 142, "Input",
+Cell[256669, 6237, 2131, 57, 131, "Input",
  InitializationCell->True],
-Cell[208524, 5174, 3387, 75, 278, "Input",
+Cell[CellGroupData[{
+Cell[258825, 6298, 3387, 75, 267, "Input",
  InitializationCell->True],
-Cell[211914, 5251, 4802, 107, 346, "Input",
+Cell[262215, 6375, 642, 12, 41, "Message"]
+}, Open  ]],
+Cell[262872, 6390, 4802, 107, 335, "Input",
  InitializationCell->True],
-Cell[216719, 5360, 2554, 59, 176, "Input",
+Cell[267677, 6499, 2554, 59, 165, "Input",
  InitializationCell->True],
-Cell[219276, 5421, 16729, 338, 1060, "Input",
+Cell[270234, 6560, 16729, 338, 1049, "Input",
  InitializationCell->True],
-Cell[236008, 5761, 2222, 58, 159, "Input",
+Cell[286966, 6900, 2222, 58, 148, "Input",
  InitializationCell->True],
-Cell[238233, 5821, 16583, 346, 1129, "Input",
+Cell[289191, 6960, 17605, 365, 1288, "Input",
  InitializationCell->True],
-Cell[254819, 6169, 278, 7, 39, "Input",
+Cell[306799, 7327, 278, 7, 28, "Input",
  InitializationCell->True],
-Cell[255100, 6178, 615, 18, 57, "Input",
+Cell[307080, 7336, 615, 18, 46, "Input",
  InitializationCell->True],
-Cell[255718, 6198, 359, 9, 39, "Input",
+Cell[307698, 7356, 359, 9, 28, "Input",
  InitializationCell->True],
-Cell[256080, 6209, 502, 14, 39, "Input",
+Cell[308060, 7367, 502, 14, 28, "Input",
  InitializationCell->True],
-Cell[256585, 6225, 2249, 55, 193, "Input",
+Cell[308565, 7383, 2249, 55, 182, "Input",
  InitializationCell->True],
-Cell[258837, 6282, 11097, 242, 805, "Input",
+Cell[310817, 7440, 11097, 242, 794, "Input",
  InitializationCell->True],
-Cell[269937, 6526, 167, 4, 39, "Input",
+Cell[321917, 7684, 167, 4, 28, "Input",
  InitializationCell->True],
-Cell[270107, 6532, 5010, 121, 227, "Input",
+Cell[322087, 7690, 5010, 121, 216, "Input",
  InitializationCell->True],
-Cell[275120, 6655, 1084, 27, 91, "Input",
+Cell[327100, 7813, 1084, 27, 80, "Input",
  InitializationCell->True],
-Cell[276207, 6684, 313, 8, 39, "Input",
+Cell[328187, 7842, 313, 8, 28, "Input",
  InitializationCell->True],
-Cell[276523, 6694, 604, 16, 57, "Input",
+Cell[328503, 7852, 604, 16, 46, "Input",
  InitializationCell->True],
-Cell[277130, 6712, 363, 9, 39, "Input",
+Cell[329110, 7870, 363, 9, 28, "Input",
  InitializationCell->True],
-Cell[277496, 6723, 1652, 37, 108, "Input",
+Cell[329476, 7881, 1652, 37, 97, "Input",
  InitializationCell->True],
-Cell[279151, 6762, 1971, 50, 114, "Input",
+Cell[331131, 7920, 1971, 50, 114, "Input",
  InitializationCell->True],
-Cell[281125, 6814, 1569, 39, 97, "Input",
+Cell[333105, 7972, 1569, 39, 97, "Input",
  InitializationCell->True],
-Cell[282697, 6855, 1712, 42, 114, "Input",
+Cell[334677, 8013, 1712, 42, 114, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[284446, 6902, 126, 2, 35, "Subsubsection",
+Cell[336426, 8060, 126, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[284575, 6906, 1077, 28, 131, "Input",
+Cell[336555, 8064, 1681, 43, 177, "Input",
  InitializationCell->True],
-Cell[285655, 6936, 985, 24, 97, "Input",
+Cell[338239, 8109, 2406, 58, 169, "Input",
  InitializationCell->True],
-Cell[286643, 6962, 1964, 55, 131, "Input",
+Cell[340648, 8169, 1964, 55, 131, "Input",
  InitializationCell->True],
-Cell[288610, 7019, 2123, 52, 165, "Input",
+Cell[342615, 8226, 2123, 52, 165, "Input",
  InitializationCell->True]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[290794, 7078, 128, 2, 64, "Section",
+Cell[344799, 8285, 128, 2, 64, "Section",
  InitializationCell->True],
-Cell[290925, 7082, 96, 3, 28, "Input",
+Cell[344930, 8289, 96, 3, 28, "Input",
  InitializationCell->True],
-Cell[291024, 7087, 103, 3, 28, "Input",
+Cell[345029, 8294, 103, 3, 28, "Input",
  InitializationCell->True]
 }, Open  ]]
 }, Open  ]]

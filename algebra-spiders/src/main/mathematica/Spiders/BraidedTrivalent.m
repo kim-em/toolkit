@@ -28,9 +28,6 @@ BeginPackage["Spiders`BraidedTrivalent`",{"Spiders`"}]
 BraidedTrivalent;SymmetricTrivalent;BraidedSO3Categories;CubicBraidedTrivalentCategories;CubicBraidedTrivalent;BraidedG2Categories
 
 
-h;t;d;z
-
-
 Begin["`Private`"];
 
 

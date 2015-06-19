@@ -28,9 +28,6 @@ BeginPackage["Spiders`Trivalent`",{"Spiders`"}]
 Trivalent;SO3Categories;dMinusOne;SO3;CubicTrivalentCategories;CubicTrivalentCategory;G2Categories;ABACategories
 
 
-d;t
-
-
 Begin["`Private`"];
 
 
