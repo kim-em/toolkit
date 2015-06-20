@@ -966,6 +966,7 @@ Message[foo::bar];
 Abort[]
 ];
 *)
+innerProducts0=innerProducts;
 det=det0[innerProducts];
 Print["computed determinant"];
 det=ReducePolynomials[s][det];
