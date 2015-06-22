@@ -28,7 +28,7 @@ Print[
 ]
 
 
-BeginPackage["Spiders`",{"JLink`"}];
+BeginPackage["Spiders`",{"JLink`","GuessingPolynomials`"}];
 
 
 h;t;d;z;
@@ -649,7 +649,7 @@ Print["Declaring that ",#@toString[]&/@diagrams, " does not span, and hence that
 innerProducts=ReducePolynomials[s][FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[diagrams],AsScalaList[diagrams]]]];
 subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]}];
 det[{}]=1;
-det[m_]:=Det[m];
+det[m_]:=delegatingDeterminant[m];
 determinants =ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets;
 Print["determinants: ",determinants];
 DeclarePolynomialsZero[determinants][s],
@@ -670,7 +670,7 @@ If[Length[SpanningSets[k][s]]>0,
 Print["There's already a declared spanning set for ", k, " boundary points"];Abort[],
 innerProducts=ReducePolynomials[s][FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[diagrams],AsScalaList[diagrams]]]];
 det[{}]=1;
-det[m_]:=Factor[Det[m]];
+det[m_]:=Factor[delegatingDeterminant[m]];
 Flatten[{
 (* either it's a spanning set *)
 Print["Declaring that ",#@toString[]&/@diagrams, " is a spanning set"];
@@ -726,7 +726,7 @@ DeclareBasis[diagrams][DeclarePolynomialsZero[Numerator[Together[pairings]]][s]]
 If[DimensionLowerBound[s,k]<=Length[diagrams]<=DimensionUpperBound[s,k],
 innerProducts=ReducePolynomials[s][FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[diagrams],AsScalaList[diagrams]]]];
 det[{}]=1;
-det[m_]:=Factor[Det[m]];
+det[m_]:=Factor[delegatingDeterminant[m]];
 s0=ReplacePart[s,{3,k+1}->{Length[diagrams],Length[diagrams]}];
 s0=DeclareSpanningSet[k,diagrams][s0];
 s0=Fold[AppendIndependentDiagram[#2][#1]&,s0,diagrams];
@@ -881,13 +881,17 @@ DeleteCases[ReducePolynomialsFurther[s][Plus@@#&/@(relations/.{z_,c:Diagram}:>z 
 ]
 
 
+delegatingNullSpace[m_,options___]:=If[Length[m]>10\[And]Length[Variables[m]]>1,{SchwartzZippelNullSpace[m]},NullSpace[m,options]]
+delegatingDeterminant[m_]:=If[Length[m]>10\[And]Length[Variables[m]]>1,SchwartzZippelDeterminant[m],Det[m]]
+
+
 ConsiderIndependentDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{s0,s1,k,i,innerProducts,innerProducts2,det,nullSpace,spanningSet,reorderedSpanningSet,dot,j},
 k=d0@numberOfBoundaryPoints[];
 If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s},
 s0=AppendIndependentDiagram[d0][s];
 i=IndependentDiagrams[k][s0];
 innerProducts=ReducePolynomials[s0][FromScalaObject[s0[[1]]@innerProductMatrix[AsScalaList[i],AsScalaList[i]]]];
-det=ReducePolynomials[s0][Factor[Det[innerProducts]]];
+det=ReducePolynomials[s0][Factor[delegatingDeterminant[innerProducts]]];
 If[Length[i]==DimensionUpperBound[s0,k],
 s0=DeclarePolynomialNonZero[det][s0]
 ];
@@ -898,7 +902,7 @@ DeclarePolynomialNonZero[det][s0],
 s1=DeclarePolynomialZero[det][s0];
 Flatten[Function[{ss},
 Print["innerProducts: ",innerProducts];
-nullSpace=If[Length[i]==1,{{1}},Factor[NullSpace[Most[innerProducts],"Method"->"OneStepRowReduction"]]];
+nullSpace=If[Length[i]==1,{{1}},Factor[delegatingNullSpace[Most[innerProducts],"Method"->"OneStepRowReduction"]]];
 (* FIXME worry about denominators!? *)
 Print["nullSpace: ",nullSpace];
 If[Length[nullSpace]!=1,Print["null space wasn't 1-dimensional! help!"];Abort[]];
@@ -955,7 +959,7 @@ Print["computed inner products."];
 innerProducts=ReducePolynomials[s][innerProducts];
 Print["reduced inner products."];
 det0[{}]=1;
-det0[M_]:=Det[M];
+det0[M_]:=delegatingDeterminant[M];
 (*If[ReducePolynomials[s][Factor[det0[Most[Most/@innerProducts]]]]===0,
 Print["Something has gone wrong; the upper left minor should have nonzero determinant!"];
 Print[s\[LeftDoubleBracket]2\[RightDoubleBracket]];
@@ -978,7 +982,7 @@ Print[d0," can't be dependent; the determinant of inner products isn't allowed t
 {},
 nullSpace=If[Length[i]==0,
 {{1}},
-Factor[NullSpace[Most[innerProducts],"Method"->"OneStepRowReduction"]]
+Factor[delegatingNullSpace[Most[innerProducts],"Method"->"OneStepRowReduction"]]
 ];
 Print["computed null space"];
 If[Length[nullSpace]=!=1,Print["Found a null space that wasn't 1-dimensional: ",nullSpace];Abort[]];
@@ -1118,6 +1122,7 @@ PickleSpiderAnalysis[S_List]:=PickleSpiderAnalysis/@S
 
 
 UnpickleSpiderAnalysis[s_PickledSpiderAnalysis]:=Module[{renamer},
+tCounter=Max[tCounter,Union[Cases[s,tt[k_]:>k,\[Infinity]]]+1];
 renamer[Subscript[p, k_]]:=renamer[Subscript[p, k]]=Cases[s[[-1]],{Subscript[p, k],r_}:>Name[PlanarGraphs@fromString[r]],1,1][[1]];SpiderAnalysis@@(Most[s]/.{Subscript[p, k_]:>renamer[Subscript[p, k]]}/.{d0_String/;StringTake[d0,12]==="PlanarGraph(":>PlanarGraphs@fromString[d0],q_PickledQuotientSpider:>UnpickleQuotientSpider[q]})
 ]
 UnpickleSpiderAnalysis[S_List]:=UnpickleSpiderAnalysis/@S
