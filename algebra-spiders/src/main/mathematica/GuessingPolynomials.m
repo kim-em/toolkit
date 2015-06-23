@@ -166,6 +166,15 @@ FindVerifiedMultivariablePolynomial[degreeBound,probabilityBound][variables][(Pr
 
 
 
+SchwartzZippelInverse[matrix_,probabilityBound_:10^-50]:=Module[{variables,degreeBound,det,inverse},
+variables=Reverse[SortBy[Variables[matrix],Max[Exponent[matrix,#]]&]];
+degreeBound=2Total[Max/@Map[totalDegree,matrix,{2}]];
+inverse[v___]:=inverse[v]=(Print["calculating inverse at ",v];
+Inverse[matrix/.Thread[variables->{v}],Method->"OneStepRowReduction"]);
+Table[FindVerifiedMultivariablePolynomial[degreeBound,probabilityBound][variables][inverse[##][[i,j]]&],{i,1,Length[matrix]},{j,1,Length[matrix]}]
+]
+
+
 echo[x_]:=(Print[x];x)
 
 
