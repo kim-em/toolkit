@@ -56,6 +56,7 @@ object Rig extends RigLowPriorityImplicits {
     override def coefficients = implicitly[Rig[B]]
 
     override lazy val one = Seq(coefficients.one)
+   
     override def multiply(s1: Seq[B], s2: Seq[B]): Seq[B] = {
       val array = scala.collection.mutable.ArrayBuffer.fill(s1.size + s2.size - 1)(coefficients.zero)
       for ((x, i) <- s1.zipWithIndex; (y, j) <- s2.zipWithIndex) {
