@@ -12,30 +12,25 @@ import org.apache.commons.io.FilenameUtils
 import net.tqft.toolkit.SHA1
 
 trait DrawPlanarGraph {
-  // boundaryWeight controls how much to weight the boundary points when calculating the positions of the internal vertices.
-  // Weight > 1 (~1.4) is generally good for single component graphs with many internal edges, but may output poor results
-  // for graphs with multiple components.
-  def boundaryWeight: Double
-  def imageScale: Double
+  def scale: Double
   def globalStyle: String
   def drawBoundary: Boolean
   def drawAsCrossings: (Option[Int], Option[Int], Option[Int])
   def outputPath: Path
 
-  def withBoundaryWeight(boundaryWeight: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
-  def withImageScale(imageScale: Double) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
-  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
-  def showBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, true, drawAsCrossings, outputPath)
-  def hideBoundary = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, false, drawAsCrossings, outputPath)
-  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, (unoriented, positive, negative), outputPath)
+  def withScale(scale: Double) = CustomizedDrawPlanarGraph(scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def showBoundary = CustomizedDrawPlanarGraph(scale, globalStyle, true, drawAsCrossings, outputPath)
+  def hideBoundary = CustomizedDrawPlanarGraph(scale, globalStyle, false, drawAsCrossings, outputPath)
+  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(scale, globalStyle, drawBoundary, (unoriented, positive, negative), outputPath)
   def withOutputPath(outputPath: Path): DrawPlanarGraph = {
     Files.createDirectories(outputPath)
-    CustomizedDrawPlanarGraph(boundaryWeight, imageScale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+    CustomizedDrawPlanarGraph(scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
   }
   def withOutputPath(outputPath: String): DrawPlanarGraph = withOutputPath(Paths.get(outputPath))
 
   private def round(x: Double, n: Int): Double = rint(x * pow(10, n)) / pow(10, n) // Rounds x to n decimal places, used to round coordinate values
-  private def sortTuple(t: Tuple2[Int, Int]) = if (t._1 <= t._2) t else (t._2, t._1)
+  private def sortTuple(t: (Int, Int)) = if (t._1 <= t._2) t else (t._2, t._1)
   private def cyclicReverse[A](xs: Seq[A]) = xs.head +: xs.tail.reverse
 
   private def getProgramPath(programName: String, searchDirs: Seq[String]) = {
@@ -166,7 +161,7 @@ trait DrawPlanarGraph {
     // Draws planar graphs, outputs LaTeX TikZ code.
     // Allows fine control of edge and internal vertex styles via decoratedEdges and decoratedVertices.
     // hideBoundary hides all vertices and edges connected to the boundary. Used mainly to draw closed graphs.
-    // IMPORTANT: Doesn't draw free loops, and will not handle graphs with 1-valent internal vertices properly.
+    // IMPORTANT: Doesn't draw free loops, and will not properly handle graphs having internal vertices with only one neighbour.
     // Will also place every 0-valent vertex at the origin.
 
     if (G.loops > 0) println(s"Note: graph has ${G.loops} loops which are not shown")
@@ -209,23 +204,54 @@ trait DrawPlanarGraph {
     val boundaryPointCoords = for (k <- 0 until G.numberOfBoundaryPoints)
       yield (round(cos(Pi / 2 + 2 * Pi * k / G.numberOfBoundaryPoints), 6),
       round(sin(Pi / 2 + 2 * Pi * k / G.numberOfBoundaryPoints), 6))
+
     val internalVertexCoords =
       if (G.numberOfInternalVertices == 1) IndexedSeq((0.0, 0.0))
       else if (G.numberOfInternalVertices > 1) {
+        // Calculate coordinates of each internal vertex as the weighted barycenter of its neighbours,
+        // then optimize weightings until all edge lengths are roughly equal.
         val M = DenseMatrix.zeros[Double](G.numberOfInternalVertices, G.numberOfInternalVertices + G.numberOfBoundaryPoints)
-        for (v <- 1 until vertexAdjs.length) {
-          M(v - 1, v - 1) = -vertexAdjs(v).distinct.length // M(v-1,v-1) = -#neighbours of vertex v (we don't need the coords of the zeroth vertex) 
-          for (w <- vertexAdjs(v)) { // M(v,w) = 1 for all neighbours w of v, modulo appropriate indexing
-            M(v - 1, w - 1) = if (w > G.numberOfInternalVertices) boundaryWeight else 1.0 // Weight boundary points more heavily to pull graph closer to boundary 
-          }
-        }
         val bxs = DenseVector(boundaryPointCoords.map(_._1).toArray)
         val bys = DenseVector(boundaryPointCoords.map(_._2).toArray)
-        val A = M(::, 0 until G.numberOfInternalVertices)
-        val B = M(::, G.numberOfInternalVertices until G.numberOfInternalVertices + G.numberOfBoundaryPoints)
-        val intxs = A \ -(B * bxs)
-        val intys = A \ -(B * bys)
-        for (v <- 0 until G.numberOfInternalVertices) yield (round(intxs(v), 6), round(intys(v), 6))
+        var intxs = DenseVector.zeros[Double](G.numberOfInternalVertices)
+        var intys = DenseVector.zeros[Double](G.numberOfInternalVertices)
+        var vertexPairWeights: Map[(Int, Int), Double] = (for (v <- 1 until vertexAdjs.length) yield for (w <- vertexAdjs(v) if w > v) yield ((v, w), 1.0)).flatten.toMap
+        def dist(v: Int, w: Int): Double = if (w > G.numberOfInternalVertices)
+          hypot(intxs(v - 1) - bxs(w - G.numberOfInternalVertices - 1), intys(v - 1) - bys(w - G.numberOfInternalVertices - 1))
+          else hypot(intxs(v - 1) - intxs(w - 1), intys(v - 1) - intys(w - 1))
+
+        var updated = true
+        var it = 0
+        while (updated && it <= 1000) {
+          // Generate coordinates
+          for (v <- 1 until vertexAdjs.length) { // Not drawing the zeroth vertex
+            M(v - 1, v - 1) = -(for (w <- vertexAdjs(v) if w != v) yield vertexPairWeights(sortTuple((v, w)))).sum // M(v-1,v-1) = -sum of weights of neighbours of vertex v
+            for (w <- vertexAdjs(v) if w != v) {
+              M(v - 1, w - 1) = vertexPairWeights(sortTuple((v, w))) // M(v,w) = weight of neighbour w of v, modulo appropriate indexing
+            }
+          }
+          val A = M(::, 0 until G.numberOfInternalVertices)
+          val B = M(::, G.numberOfInternalVertices until G.numberOfInternalVertices + G.numberOfBoundaryPoints)
+          intxs = A \ -(B * bxs)
+          intys = A \ -(B * bys)
+
+          // Optimize if edge lengths have too much variance
+          updated = false
+          val meanEdgeLength: Double = (for ((v, w) <- vertexPairWeights.keys) yield dist(v, w)).sum / vertexPairWeights.size
+          //println(s"meanEdgeLength: $meanEdgeLength")
+          for ((v, w) <- vertexPairWeights.keys if hideBoundaryEdges && !(G.neighboursOf(0).contains(v) && G.neighboursOf(0).contains(w))) {
+            // If graph is closed, we don't force edges in the external cycle to be the average length
+            val relativeEdgeLengthDiff = (dist(v, w) - meanEdgeLength) / meanEdgeLength
+            if (relativeEdgeLengthDiff < -0.1 || relativeEdgeLengthDiff > 0.1) {
+              vertexPairWeights = vertexPairWeights.updated(
+                sortTuple((v, w)),
+                (if (relativeEdgeLengthDiff < -0.1) 0.9 else 1.1) * vertexPairWeights(sortTuple((v, w))))
+              updated = true
+            }
+          }
+          it = it + 1
+        }
+        for (v <- 0 until G.numberOfInternalVertices) yield (round(intxs(v), 4), round(intys(v), 4))
       } else IndexedSeq.empty
 
     // Calculate vertex rotation that minimizes edge deviation
@@ -248,7 +274,7 @@ trait DrawPlanarGraph {
 
     // WRITE TikZ
     var tikzString = s"""\\begin{tikzpicture}
-                        |[scale=$imageScale,${if (globalStyle != "") s"$globalStyle," else ""}
+                        |[scale=$scale,${if (globalStyle != "") s"$globalStyle," else ""}
                         |->-/.style={decoration={markings, mark=at position .5 with{\\arrow{>}}}, postaction={decorate}},
                         |-<-/.style={decoration={markings, mark=at position .5 with{\\arrow{<}}}, postaction={decorate}}]
                         |${if (drawBoundary) "\\draw[gray, dashed] (0,0) circle (1.0);\n" else ""} """.stripMargin
@@ -346,8 +372,7 @@ trait DrawPlanarGraph {
 }
 
 object DrawPlanarGraph extends DrawPlanarGraph {
-  override val boundaryWeight: Double = 1.4
-  override val imageScale: Double = 1.5
+  override val scale: Double = 1.6
   override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}"
   override val drawBoundary = true
   override val drawAsCrossings = (Some(0), None, None)
@@ -355,8 +380,7 @@ object DrawPlanarGraph extends DrawPlanarGraph {
 }
 
 case class CustomizedDrawPlanarGraph(
-  val boundaryWeight: Double,
-  val imageScale: Double,
+  val scale: Double,
   val globalStyle: String,
   val drawBoundary: Boolean,
   val drawAsCrossings: (Option[Int], Option[Int], Option[Int]),
