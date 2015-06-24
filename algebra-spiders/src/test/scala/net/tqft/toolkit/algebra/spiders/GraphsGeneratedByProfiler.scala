@@ -1,7 +1,6 @@
 package net.tqft.toolkit.algebra.spiders
 
 import net.tqft.toolkit.Profiler
-import net.tqft.toolkit.algebra.spiders.examples.CubicSpider
 
 object GraphsGeneratedByProfiler extends App {
   import Profiler._

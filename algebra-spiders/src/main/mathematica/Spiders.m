@@ -226,7 +226,7 @@ polygon[n_Integer]:=polygon[n]=PlanarGraphs@polygon[]@apply[AsScalaObject[n,"Obj
 Name[d0:Diagram]:=FromScalaObject[ScalaSingleton["net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider"]@evaluate[AsScalaObject[{d0->Ring@one[]}]]]
 
 
-DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGraph"]@withOutputPath[FileNameJoin[{SpidersMathematicaDirectory,"graphs"}]]@withBoundaryWeight[1.5];
+DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGraph"]@withOutputPath[FileNameJoin[{SpidersMathematicaDirectory,"graphs"}]];
 
 
 DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Import[DrawPlanarGraph$@createPDF[g]@toString[]][[1]]

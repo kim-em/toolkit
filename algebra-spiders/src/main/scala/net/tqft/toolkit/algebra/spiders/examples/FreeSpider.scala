@@ -1,13 +1,13 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
 import net.tqft.toolkit.algebra.spiders._
-import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
+import net.tqft.toolkit.algebra.polynomials.{ RationalExpression => MultivariableRationalFunction }
 import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 
-abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
+abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with RationalExpressionPolyhedronNamer[Fraction[BigInt]] {
   def generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])]
   override lazy val vertexTypes = generators.map(_._1)
   override def eigenvalue(label: Int): MultivariableRationalFunction[Fraction[BigInt], String] = {

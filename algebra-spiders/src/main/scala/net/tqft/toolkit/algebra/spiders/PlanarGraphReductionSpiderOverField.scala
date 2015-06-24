@@ -4,7 +4,7 @@ import scala.language.reflectiveCalls
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.matrices.Matrix
-import net.tqft.toolkit.algebra.polynomials._
+import net.tqft.toolkit.algebra.polynomials.{ RationalExpression => MultivariableRationalFunction }
 import net.tqft.toolkit.algebra.matrices.Matrices
 
 abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraphReductionSpider[R] { spider =>
@@ -24,15 +24,15 @@ abstract class PlanarGraphReductionSpiderOverField[R: Field] extends PlanarGraph
 //  }
 
   trait LinearlyIndependentDiagrams extends CollectionOfDiagrams {
-    lazy val inverseInnerProducts = {
-    	import net.tqft.toolkit.algebra.mathematica.Inverse.ofMultivariableRationalFunctionMatrix._
-    	innerProducts.asInstanceOf[Seq[Seq[MultivariableRationalFunction[Fraction[BigInt],String]]]].inverse.asInstanceOf[Seq[Seq[R]]]
-    }
-    lazy val actionOfRotation: Seq[Seq[R]] = {
-      val m1 = Matrix(diagrams.size, innerProductMatrix(diagrams, diagrams.map(x => diagramSpider.rotate(x, 1))))
-      val matrices = Matrices.matricesOver(diagrams.size)(ring)
-      matrices.multiply(m1, Matrix(diagrams.size, inverseInnerProducts)).entries.seq
-    }
+//    lazy val inverseInnerProducts = {
+//    	import net.tqft.toolkit.algebra.mathematica.Inverse.ofMultivariableRationalFunctionMatrix._
+//    	innerProducts.asInstanceOf[Seq[Seq[MultivariableRationalFunction[Fraction[BigInt],String]]]].inverse.asInstanceOf[Seq[Seq[R]]]
+//    }
+//    lazy val actionOfRotation: Seq[Seq[R]] = {
+//      val m1 = Matrix(diagrams.size, innerProductMatrix(diagrams, diagrams.map(x => diagramSpider.rotate(x, 1))))
+//      val matrices = Matrices.matricesOver(diagrams.size)(ring)
+//      matrices.multiply(m1, Matrix(diagrams.size, inverseInnerProducts)).entries.seq
+//    }
 
     def verifyActionOfRotation = {
       // TODO check that the 2\pi rotation is the identity
@@ -91,13 +91,13 @@ trait FunctionSpider[A, F] extends PlanarGraphReductionSpider[F] {
   implicit def coefficientRing: Ring[A]
 }
 
-trait MultivariablePolynomialSpider[A] extends FunctionSpider[A, MultivariablePolynomial[A, String]] {
-  override final lazy val ring = implicitly[Ring[MultivariablePolynomial[A, String]]]
-}
-
-trait BigIntMultivariablePolynomialSpider extends MultivariablePolynomialSpider[Fraction[BigInt]] {
-  override final lazy val coefficientRing = implicitly[Field[Fraction[BigInt]]]
-}
+//trait MultivariablePolynomialSpider[A] extends FunctionSpider[A, MultivariablePolynomial[A, String]] {
+//  override final lazy val ring = implicitly[Ring[MultivariablePolynomial[A, String]]]
+//}
+//
+//trait BigIntMultivariablePolynomialSpider extends MultivariablePolynomialSpider[Fraction[BigInt]] {
+//  override final lazy val coefficientRing = implicitly[Field[Fraction[BigInt]]]
+//}
 trait MultivariableRationalFunctionSpider[A] extends PlanarGraphReductionSpiderOverField[MultivariableRationalFunction[A, String]] with FunctionSpider[A, MultivariableRationalFunction[A, String]]  {
   override implicit def coefficientRing: Field[A]
   override final lazy val ring = implicitly[Field[MultivariableRationalFunction[A, String]]]
