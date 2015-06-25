@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.spiders.examples
 
 import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm._
+import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 
 object DebuggingBraidedTrivalentSpider extends App {
   val bts = BraidedTrivalentSpider
