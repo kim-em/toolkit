@@ -11,9 +11,6 @@ sealed trait RationalExpression[A, V] {
   def variables: Set[V]
   def simplify(implicit field: Field[A]): RationalExpression[A, V] = this
 
-  def depth: Int = 0
-
-  //  if(depth >= 10) throw new UnsupportedOperationException
 }
 
 object RationalExpression {
@@ -87,7 +84,7 @@ object RationalExpression {
         }
       }
     }
-    override def depth = r.depth + 1
+    override lazy val hashCode = (r, k).hashCode
   }
   case class sum[A: Ordering, V: Ordering](terms: RationalExpression[A, V]*) extends RationalExpression[A, V] {
     override def variables = terms.flatMap(_.variables).toSet
@@ -113,7 +110,7 @@ object RationalExpression {
         sum(newTerms.sorted: _*)
       }
     }
-    override def depth = terms.map(_.depth).max + 1
+    override lazy val hashCode = (1, terms).hashCode
   }
   case class product[A: Ordering, V: Ordering](factors: RationalExpression[A, V]*) extends RationalExpression[A, V] {
     override def variables = factors.flatMap(_.variables).toSet
@@ -139,7 +136,7 @@ object RationalExpression {
         product(newFactors.sorted: _*)
       }
     }
-    override def depth = factors.map(_.depth).max + 1
+    override lazy val hashCode = (1, factors).hashCode
   }
 
   implicit def liftConstant[A, V](a: A): RationalExpression[A, V] = constant(a)

@@ -85,6 +85,9 @@ PickleSpiderAnalysis;UnpickleSpiderAnalysis;PickledSpiderAnalysis;PickledQuotien
 Begin["`Private`"];
 
 
+SpidersMathematicaDirectory=Cases[$Path~Join~(Quiet[{NotebookDirectory[]}]/.$Failed->{}),s_/;StringMatchQ[s,__~~"toolkit/algebra-spiders/src/main/mathematica"~~___]][[1]];
+
+
 SpidersDirectory=FileNameJoin[{SpidersMathematicaDirectory,"..","..",".."}];
 
 
@@ -201,9 +204,8 @@ AsScalaObject[x_Integer,"MultivariableRationalFunction"]:=Ring@fromBigInteger[As
 AsScalaObject[x_Rational,"MultivariableRationalFunction"]:=Ring@quotient[AsScalaObject[Numerator[x],"MultivariableRationalFunction"],AsScalaObject[Denominator[x],"MultivariableRationalFunction"]]
 AsScalaObject[Subscript[p, k_Integer],"MultivariableRationalFunction"]:=AsScalaObject["p"<>ToString[k],"MultivariableRationalFunction"]
 AsScalaObject[tt[k_Integer],"MultivariableRationalFunction"]:=AsScalaObject["t"<>ToString[k],"MultivariableRationalFunction"]
-AsScalaObject[x_,"MultivariableRationalFunction"]:=AsScalaObject[x,"MultivariableRationalFunction"]=Module[{},
-Print["Introducing ",x," as a variable."];
-ScalaCaseClass["net.tqft.toolkit.algebra.polynomials.RationalExpression$variable",MakeJavaObject[ToString[x]]]
+AsScalaObject[x_,"MultivariableRationalFunction"]:=AsScalaObject[x,"MultivariableRationalFunction"]=
+ScalaCaseClass["net.tqft.toolkit.algebra.polynomials.RationalExpression$variable",MakeJavaObject[ToString[x]]
 ]
 
 
