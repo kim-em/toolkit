@@ -3,6 +3,9 @@ package net.tqft.toolkit.algebra.polynomials
 import net.tqft.toolkit.algebra.Field
 import net.tqft.toolkit.algebra.IntegerModel
 import net.tqft.toolkit.algebra.Integers
+import scala.language.implicitConversions
+import net.tqft.toolkit.algebra.Fraction
+import net.tqft.toolkit.algebra.GCDRing
 
 sealed trait RationalExpression[A, V] {
   def variables: Set[V]
@@ -82,6 +85,11 @@ object RationalExpression {
 
   }
 
+  implicit def liftConstant[A, V](a: A): RationalExpression[A, V] = constant(a)
+  implicit def liftVariable[A, V](v: V): RationalExpression[A, V] = variable(v)
+  implicit def liftFraction[A:GCDRing, V](a: A): RationalExpression[Fraction[A], V] = constant(a)
+  implicit def liftInt[A:GCDRing, V](i: Int): RationalExpression[Fraction[A], V] = constant(implicitly[GCDRing[A]].fromInt(i))
+  
   implicit def fieldOfRationalExpressions[A: Field, V]: Field[RationalExpression[A, V]] = new Field[RationalExpression[A, V]] {
     private def field = implicitly[Field[A]]
     override val zero = RationalExpression.constant[A, V](field.zero)

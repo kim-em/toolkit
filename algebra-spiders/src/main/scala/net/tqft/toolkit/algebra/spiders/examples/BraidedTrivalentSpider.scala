@@ -4,7 +4,7 @@ import scala.language.reflectiveCalls
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.matrices._
-import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
+import net.tqft.toolkit.algebra.polynomials.{ RationalExpression => MultivariableRationalFunction }
 
 abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverField[R] {
   override lazy val vertexTypes = Seq(VertexType(3, 0, 1), VertexType(4, 0, 2))
@@ -50,14 +50,14 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
 
 }
 
-object BraidedTrivalentSpider extends BraidedTrivalentSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
+object BraidedTrivalentSpider extends BraidedTrivalentSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with RationalExpressionPolyhedronNamer[Fraction[BigInt]] {
   override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
   override def ring = implicitly[Field[MultivariableRationalFunction[Fraction[BigInt], String]]]
 
   override val omega = ring.one
 
-  override val d: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("d" -> 1) -> 1)
-  override val b: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("b" -> 1) -> 1)
-  override val t: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("t" -> 1) -> 1)
-  override val z: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("z" -> 1) -> 1)
+  override val d: MultivariableRationalFunction[Fraction[BigInt], String] = "d"
+  override val b: MultivariableRationalFunction[Fraction[BigInt], String] = "b"
+  override val t: MultivariableRationalFunction[Fraction[BigInt], String] = "t"
+  override val z: MultivariableRationalFunction[Fraction[BigInt], String] = "z"
 }

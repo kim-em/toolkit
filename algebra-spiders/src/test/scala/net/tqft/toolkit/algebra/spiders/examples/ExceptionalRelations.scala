@@ -1,7 +1,7 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm
-import net.tqft.toolkit.algebra.polynomials._
+import net.tqft.toolkit.algebra.polynomials.{ RationalExpression => MultivariableRationalFunction }
 import net.tqft.toolkit.algebra.spiders.VertexType
 import net.tqft.toolkit.algebra.Fraction
 

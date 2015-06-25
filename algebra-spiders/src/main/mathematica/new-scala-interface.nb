@@ -1,0 +1,821 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     30359,        811]
+NotebookOptionsPosition[     29108,        772]
+NotebookOutlinePosition[     29466,        788]
+CellTagsIndexPosition[     29423,        785]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"SpidersMathematicaDirectory", "=", 
+   RowBox[{
+    RowBox[{"Cases", "[", 
+     RowBox[{
+      RowBox[{"$Path", "~", "Join", "~", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"Quiet", "[", 
+          RowBox[{"{", 
+           RowBox[{"NotebookDirectory", "[", "]"}], "}"}], "]"}], "/.", 
+         RowBox[{"$Failed", "\[Rule]", 
+          RowBox[{"{", "}"}]}]}], ")"}]}], ",", 
+      RowBox[{"s_", "/;", 
+       RowBox[{"StringMatchQ", "[", 
+        RowBox[{"s", ",", 
+         RowBox[{
+         "__", "~~", "\"\<toolkit/algebra-spiders/src/main/mathematica\>\"", "~~",
+           "___"}]}], "]"}]}]}], "]"}], "\[LeftDoubleBracket]", "1", 
+    "\[RightDoubleBracket]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.643605924226864*^9, 3.643605974312735*^9}, {
+   3.643606007518786*^9, 3.643606011714487*^9}, {3.643606042604014*^9, 
+   3.6436060848739433`*^9}, {3.6436061611756*^9, 3.64360616205532*^9}, 
+   3.643628949121943*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"SpidersDirectory", "=", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "SpidersMathematicaDirectory", ",", "\"\<..\>\"", ",", "\"\<..\>\"", 
+      ",", "\"\<..\>\""}], "}"}], "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.620615134091938*^9, 3.6206151457129593`*^9}, 
+   3.620615239685563*^9, 3.6436060971667223`*^9, 3.643606165717702*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ScalaMajorVersion", "=", "\"\<2.11\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.6206151682519627`*^9, 3.6206151702992373`*^9}, 
+   3.620615238961542*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"SpidersDirectory", ",", "\"\<target\>\"", ",", 
+        RowBox[{"\"\<scala-\>\"", "<>", "ScalaMajorVersion"}], ",", 
+        "\"\<classes\>\""}], "}"}], ",", "\"\<log4j.xml\>\""}], "]"}], "]"}], 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"SpidersDirectory", ",", "\"\<..\>\""}], "}"}], ",", 
+      RowBox[{
+      "\"\<*/target/scala-\>\"", "<>", "ScalaMajorVersion", "<>", 
+       "\"\</*.jar\>\""}]}], "]"}], "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "SpidersDirectory", ",", "\"\<..\>\"", ",", "\"\<lib_managed\>\"", 
+        ",", "\"\<jars\>\""}], "}"}], ",", "\"\<*/*/*.jar\>\""}], "]"}], 
+    "]"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "SpidersDirectory", ",", "\"\<..\>\"", ",", "\"\<lib_managed\>\"", 
+        ",", "\"\<bundles\>\""}], "}"}], ",", "\"\<*/*/*.jar\>\""}], "]"}], 
+    "]"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AddToClassPath", "[", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"{", 
+     RowBox[{"ToFileName", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"SpidersDirectory", ",", "\"\<target\>\"", ",", 
+         RowBox[{"\"\<scala-\>\"", "<>", "ScalaMajorVersion"}]}], "}"}], ",", 
+       "\"\<*.jar\>\""}], "]"}], "}"}], "]"}], "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.62061515077351*^9, 3.62061515663029*^9}, {
+  3.6206152019928713`*^9, 3.620615232387548*^9}, {3.620615357968029*^9, 
+  3.62061536473571*^9}, {3.620615432590061*^9, 3.6206154814738703`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ScalaSingleton", "[", "className_String", "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"LoadJavaClass", "[", 
+      RowBox[{"className", "<>", "\"\<$\>\""}], "]"}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"Symbol", "[", 
+      RowBox[{
+       RowBox[{"StringReplace", "[", 
+        RowBox[{"className", ",", 
+         RowBox[{"\"\<.\>\"", "\[Rule]", "\"\<`\>\""}]}], "]"}], "<>", 
+       "\"\<$`MODULE$\>\""}], "]"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.620615680466634*^9, 3.620615719606987*^9}, {
+  3.620615752979535*^9, 3.6206157658834877`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ScalaCaseClass", "[", 
+   RowBox[{"className_String", ",", "arguments___"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"o", ",", "applyTypes", ",", "a"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"LoadJavaClass", "[", 
+      RowBox[{"className", "<>", "\"\<$\>\""}], "]"}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"o", "=", 
+      RowBox[{"Symbol", "[", 
+       RowBox[{
+        RowBox[{"StringReplace", "[", 
+         RowBox[{"className", ",", 
+          RowBox[{"\"\<.\>\"", "\[Rule]", "\"\<`\>\""}]}], "]"}], "<>", 
+        "\"\<$`MODULE$\>\""}], "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"applyTypes", "=", 
+      RowBox[{"Flatten", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"StringCases", "[", 
+           RowBox[{"#", ",", 
+            RowBox[{
+             RowBox[{
+             "className", "~~", "\"\< apply(\>\"", "~~", "types__", "~~", 
+              "\"\<)\>\""}], "\[RuleDelayed]", " ", 
+             RowBox[{"StringSplit", "[", 
+              RowBox[{"types", ",", "\"\<, \>\""}], "]"}]}]}], "]"}], "&"}], "/@", 
+         RowBox[{"StringSplit", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"o", "//", "Methods"}], "//", "ToString"}], ",", 
+           "\"\<\\n\>\""}], "]"}]}], ",", "1"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"a", "=", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Length", "[", "applyTypes", "]"}], "\[Equal]", "1"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"AsScalaObject", "@@", "#"}], "&"}], "/@", 
+         RowBox[{"Transpose", "[", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", "arguments", "}"}], ",", 
+            RowBox[{
+            "applyTypes", "\[LeftDoubleBracket]", "1", 
+             "\[RightDoubleBracket]"}]}], "}"}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"AsScalaObject", "/@", "arguments"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"o", "@", 
+      RowBox[{"apply", "[", 
+       RowBox[{"Sequence", "@@", "a"}], "]"}]}]}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.620616049511447*^9, 3.62061612779088*^9}, {
+  3.620616199220964*^9, 3.62061620208167*^9}, {3.620616284445912*^9, 
+  3.6206163705023518`*^9}, {3.620616466135068*^9, 3.620616466446186*^9}, {
+  3.620616515026765*^9, 3.620616520866987*^9}, {3.620616611028926*^9, 
+  3.620616678441863*^9}, {3.620616914384459*^9, 3.62061695311658*^9}, {
+  3.620617379356743*^9, 3.62061739933346*^9}, {3.620617613578689*^9, 
+  3.6206177347186937`*^9}, {3.6206178319915333`*^9, 3.620617832351356*^9}, {
+  3.6210665333680696`*^9, 3.621066533634903*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.collection.immutable.List$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.collection.immutable.Set$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.collection.immutable.Map$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.Some$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.None$\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<java.util.Arrays\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LoadJavaClass", "[", 
+   RowBox[{"\"\<scala.collection.JavaConversions\>\"", ",", 
+    RowBox[{"\"\<AllowShortContext\>\"", "\[Rule]", "False"}]}], "]"}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.6206171377083406`*^9, 3.620617142109476*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Clear", "[", "FromScalaObject", "]"}]], "Input",
+ CellChangeTimes->{{3.62107136398026*^9, 3.621071366766077*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FromScalaObject", "[", 
+   RowBox[{"o_", ",", "0"}], "]"}], ":=", "o"}]], "Input",
+ CellChangeTimes->{{3.621071356363893*^9, 3.621071362525692*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FromScalaObject", "[", 
+   RowBox[{
+    RowBox[{"o_", "/;", 
+     RowBox[{"!", 
+      RowBox[{"JavaObjectQ", "[", "o", "]"}]}]}], ",", 
+    RowBox[{"depth", ":", 
+     RowBox[{"_", "?", "Positive"}], ":", "\[Infinity]"}]}], "]"}], ":=", 
+  "o"}]], "Input",
+ CellChangeTimes->{{3.620685973953511*^9, 3.62068599009939*^9}, {
+  3.621071296578188*^9, 3.6210713076520987`*^9}, {3.62107152227485*^9, 
+  3.621071523432488*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"FromScalaObject", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"o_", "?", "JavaObjectQ"}], "/;", 
+     RowBox[{"InstanceOf", "[", 
+      RowBox[{"o", ",", "\"\<scala.collection.Traversable\>\""}], "]"}]}], 
+    ",", 
+    RowBox[{"depth", ":", 
+     RowBox[{"_", "?", "Positive"}], ":", "\[Infinity]"}]}], "]"}], ":=", 
+  RowBox[{"FromScalaObject", "[", 
+   RowBox[{
+    RowBox[{"JavaConversions`seqAsJavaList", "[", 
+     RowBox[{"o", "@", 
+      RowBox[{"toList", "[", "]"}]}], "]"}], ",", "depth"}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"FromScalaObject", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"o_", "?", "JavaObjectQ"}], "/;", 
+     RowBox[{"InstanceOf", "[", 
+      RowBox[{"o", ",", "\"\<java.util.List\>\""}], "]"}]}], ",", 
+    RowBox[{"depth", ":", 
+     RowBox[{"_", "?", "Positive"}], ":", "\[Infinity]"}]}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"FromScalaObject", "[", 
+     RowBox[{"#", ",", 
+      RowBox[{"depth", "-", "1"}]}], "]"}], "&"}], "/@", 
+   RowBox[{"(", 
+    RowBox[{"o", "@", 
+     RowBox[{"toArray", "[", "]"}]}], ")"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"FromScalaObject", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"o_", "?", "JavaObjectQ"}], "/;", 
+     RowBox[{"InstanceOf", "[", 
+      RowBox[{"o", ",", "\"\<scala.Tuple2\>\""}], "]"}]}], ",", 
+    RowBox[{"depth", ":", 
+     RowBox[{"_", "?", "Positive"}], ":", "\[Infinity]"}]}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"FromScalaObject", "[", 
+     RowBox[{"#", ",", 
+      RowBox[{"depth", "-", "1"}]}], "]"}], "&"}], "/@", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"o", "@", 
+      RowBox[{"U1", "[", "]"}]}], ",", 
+     RowBox[{"o", "@", 
+      RowBox[{"U2", "[", "]"}]}]}], "}"}]}]}]}], "Input",
+ CellChangeTimes->{{3.620685905677429*^9, 3.620685971489717*^9}, {
+  3.620686018063477*^9, 3.620686018358594*^9}, {3.620686051026619*^9, 
+  3.620686085436668*^9}, {3.6210713163013563`*^9, 3.6210713280749826`*^9}, {
+  3.621071407598166*^9, 3.621071440205065*^9}, {3.62107148187836*^9, 
+  3.62107148459435*^9}, {3.621071530358083*^9, 3.621071532320162*^9}, {
+  3.62107158933505*^9, 3.621071593123454*^9}, {3.643599627599841*^9, 
+  3.643599653941758*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FromScalaObject", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"o_", "?", "JavaObjectQ"}], "/;", 
+     RowBox[{"InstanceOf", "[", 
+      RowBox[{"o", ",", "\"\<net.tqft.toolkit.algebra.Fraction\>\""}], 
+      "]"}]}], ",", 
+    RowBox[{"depth", ":", 
+     RowBox[{"_", "?", "Positive"}], ":", "\[Infinity]"}]}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{
+     RowBox[{"o", "@", 
+      RowBox[{"numerator", "[", "]"}]}], ",", 
+     RowBox[{"depth", "-", "1"}]}], "]"}], "/", 
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{
+     RowBox[{"o", "@", 
+      RowBox[{"denominator", "[", "]"}]}], ",", 
+     RowBox[{"depth", "-", "1"}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.620686099032484*^9, 3.620686143802018*^9}, {
+   3.621071330747308*^9, 3.621071343592873*^9}, 3.6210714430352383`*^9, {
+   3.6210714870670033`*^9, 3.621071487421856*^9}, 3.621071538806362*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FromScalaObject", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"o_", "?", "JavaObjectQ"}], "/;", 
+     RowBox[{"InstanceOf", "[", 
+      RowBox[{
+      "o", ",", 
+       "\"\<net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial\>\""}\
+], "]"}]}], ",", 
+    RowBox[{"depth", ":", 
+     RowBox[{"_", "?", "Positive"}], ":", "\[Infinity]"}]}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"ToExpression", "[", 
+      RowBox[{"multivariablePolynomialMathematicaForm", "@", 
+       RowBox[{"toMathematicaInputString", "[", "o", "]"}]}], "]"}], "/.", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"q_Symbol", "/;", 
+         RowBox[{"StringMatchQ", "[", 
+          RowBox[{
+           RowBox[{"SymbolName", "[", "q", "]"}], ",", 
+           RowBox[{"\"\<p\>\"", "~~", 
+            RowBox[{"DigitCharacter", ".."}]}]}], "]"}]}], "\[RuleDelayed]", 
+        SubscriptBox["p", 
+         RowBox[{"ToExpression", "[", 
+          RowBox[{"StringDrop", "[", 
+           RowBox[{
+            RowBox[{"SymbolName", "[", "q", "]"}], ",", "1"}], "]"}], 
+          "]"}]]}], ",", 
+       RowBox[{
+        RowBox[{"t0_Symbol", "/;", 
+         RowBox[{"StringMatchQ", "[", 
+          RowBox[{
+           RowBox[{"SymbolName", "[", "t0", "]"}], ",", 
+           RowBox[{"\"\<t\>\"", "~~", 
+            RowBox[{"DigitCharacter", ".."}]}]}], "]"}]}], "\[RuleDelayed]", 
+        RowBox[{"tt", "[", 
+         RowBox[{"ToExpression", "[", 
+          RowBox[{"StringDrop", "[", 
+           RowBox[{
+            RowBox[{"SymbolName", "[", "t0", "]"}], ",", "1"}], "]"}], "]"}], 
+         "]"}]}]}], "}"}]}]}], "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellChangeTimes->{{3.6206861496678267`*^9, 3.620686158667761*^9}, 
+   3.620686215481686*^9, {3.620686535145565*^9, 3.620686553200324*^9}, {
+   3.620686594021265*^9, 3.6206865964043913`*^9}, {3.621071334167357*^9, 
+   3.621071334459256*^9}, 3.621071448046927*^9, {3.621071490004142*^9, 
+   3.621071490365494*^9}, 3.6210715412296553`*^9, {3.621212792813389*^9, 
+   3.621212945787644*^9}, {3.639788259228426*^9, 3.6397882911945963`*^9}, {
+   3.6399498219204187`*^9, 3.639949833779598*^9}, {3.641027071298697*^9, 
+   3.641027109906953*^9}, {3.641157482162086*^9, 3.641157497932026*^9}, {
+   3.641157551938105*^9, 3.641157558659319*^9}, {3.641159200652711*^9, 
+   3.641159200958167*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FromScalaObject", "[", 
+   RowBox[{
+    RowBox[{"o_", "?", "JavaObjectQ"}], ",", 
+    RowBox[{"depth", ":", 
+     RowBox[{"_", "?", "Positive"}], ":", "\[Infinity]"}]}], "]"}], ":=", 
+  RowBox[{"o", "@", 
+   RowBox[{"toString", "[", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.621070650555408*^9, 3.6210706549814587`*^9}, {
+   3.621071376162065*^9, 3.621071376330752*^9}, 3.62107145214402*^9, {
+   3.621071493912489*^9, 3.621071494338603*^9}, 3.621071543160831*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"bigIntMathematicaForm", "=", 
+   RowBox[{
+   "ScalaSingleton", "[", 
+    "\"\<net.tqft.toolkit.algebra.mathematica.MathematicaForm$\
+BigIntMathematicaForm\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"bareStringMathematicaForm", "=", 
+   RowBox[{
+   "ScalaSingleton", "[", 
+    "\"\<net.tqft.toolkit.algebra.mathematica.MathematicaForm$\
+BareStringMathematicaForm\>\"", "]"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.620686307242064*^9, 3.62068634724087*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"bigRationalMathematicaForm", "=", 
+   RowBox[{
+    RowBox[{
+    "ScalaSingleton", "[", 
+     "\"\<net.tqft.toolkit.algebra.mathematica.MathematicaForm\>\"", "]"}], 
+    "@", 
+    RowBox[{"fractionMathematicaForm", "[", 
+     RowBox[{"bigIntMathematicaForm", ",", 
+      RowBox[{
+      "ScalaSingleton", "[", "\"\<net.tqft.toolkit.algebra.BigIntegers\>\"", 
+       "]"}]}], "]"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.6206863593348207`*^9, 3.620686373113858*^9}, {
+  3.620686464160671*^9, 3.620686479529668*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"multivariablePolynomialMathematicaForm", "=", 
+   RowBox[{
+    RowBox[{
+    "ScalaSingleton", "[", 
+     "\"\<net.tqft.toolkit.algebra.mathematica.MathematicaForm\>\"", "]"}], 
+    "@", 
+    RowBox[{"multivariablePolynomialMathematicaForm", "[", 
+     RowBox[{"bigRationalMathematicaForm", ",", "bareStringMathematicaForm"}],
+      "]"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.620686482491015*^9, 3.620686522030469*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Clear", "[", "AsScalaObject", "]"}]], "Input",
+ CellChangeTimes->{{3.620617808659605*^9, 3.6206178129491177`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"list", ":", 
+    RowBox[{"{", "__Integer", "}"}]}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"scala`collection`JavaConversions`asScalaBuffer", "[", 
+    RowBox[{"java`util`Arrays`asList", "[", 
+     RowBox[{"MakeJavaObject", "/@", "list"}], "]"}], "]"}], "@", 
+   RowBox[{"toList", "[", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"list", ":", 
+    RowBox[{"{", "__Real", "}"}]}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"scala`collection`JavaConversions`asScalaBuffer", "[", 
+    RowBox[{"java`util`Arrays`asList", "[", 
+     RowBox[{"MakeJavaObject", "/@", "list"}], "]"}], "]"}], "@", 
+   RowBox[{"toList", "[", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"list", ":", 
+    RowBox[{"{", "__List", "}"}]}], "]"}], ":=", 
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"AsScalaList", "/@", "list"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", "list_List", "]"}], ":=", 
+  RowBox[{"Fold", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"#1", "@", 
+      RowBox[{"$colon$colon", "[", "#2", "]"}]}], "&"}], ",", 
+    RowBox[{
+    "ScalaSingleton", "[", "\"\<scala.collection.immutable.Nil\>\"", "]"}], 
+    ",", 
+    RowBox[{"Reverse", "[", "list", "]"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaList", "[", 
+   RowBox[{"{", "}"}], "]"}], ":=", 
+  RowBox[{"scala`collection`immutable`List$`MODULE$", "@", 
+   RowBox[{"empty", "[", "]"}]}]}]}], "Input",
+ CellChangeTimes->{{3.567720614334144*^9, 3.567720621410693*^9}, {
+  3.567720654523664*^9, 3.567720676011091*^9}, {3.567720731822373*^9, 
+  3.5677207326500893`*^9}, {3.5677247654667683`*^9, 3.567724771552896*^9}, {
+  3.5677269994289722`*^9, 3.567727075733775*^9}, {3.567804777400037*^9, 
+  3.5678048076200457`*^9}, {3.622232210703191*^9, 3.622232276044817*^9}, {
+  3.622232369014154*^9, 3.62223236933265*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", "x_", "]"}], ":=", 
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"x", ",", "\"\<Object\>\""}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.6206177943869257`*^9, 3.620617806425729*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"i_Integer", ",", "\"\<Object\>\""}], "]"}], ":=", 
+  RowBox[{"MakeJavaObject", "[", "i", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"i_Integer", ",", "\"\<int\>\""}], "]"}], ":=", 
+  "i"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"i_Integer", ",", "\"\<java.math.BigInteger\>\""}], "]"}], ":=", 
+  RowBox[{"JavaNew", "[", 
+   RowBox[{"\"\<java.math.BigInteger\>\"", ",", 
+    RowBox[{"ToString", "[", "i", "]"}]}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.620616137795076*^9, 3.620616171698071*^9}, {
+  3.620617760222375*^9, 3.6206177928254547`*^9}, {3.641163892990485*^9, 
+  3.641163915792355*^9}, {3.64116397347353*^9, 3.641163976075478*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    RowBox[{"o_", "?", "JavaObjectQ"}], ",", "_"}], "]"}], ":=", 
+  "o"}]], "Input",
+ CellChangeTimes->{{3.620617184745891*^9, 3.6206171924730053`*^9}, {
+  3.620617771063404*^9, 3.620617771503463*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    RowBox[{"rules", ":", 
+     RowBox[{"{", "__Rule", "}"}]}], ",", 
+    RowBox[{
+    "\"\<Object\>\"", "|", "\"\<scala.collection.immutable.Map\>\""}]}], 
+   "]"}], ":=", 
+  RowBox[{"AsScalaMap", "[", "rules", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    RowBox[{"rules", ":", 
+     RowBox[{"{", "___Rule", "}"}]}], ",", 
+    "\"\<scala.collection.immutable.Map\>\""}], "]"}], ":=", 
+  RowBox[{"AsScalaMap", "[", "rules", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaMap", "[", 
+   RowBox[{"rules", ":", 
+    RowBox[{"{", "___Rule", "}"}]}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"ScalaCaseClass", "[", 
+    RowBox[{"\"\<scala.collection.immutable.Map\>\"", ",", 
+     RowBox[{"AsScalaList", "[", 
+      RowBox[{"{", "}"}], "]"}]}], "]"}], "@", 
+   RowBox[{"$plus$plus", "[", 
+    RowBox[{"AsScalaList", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"ScalaCaseClass", "[", 
+        RowBox[{"\"\<scala.Tuple2\>\"", ",", 
+         RowBox[{"Sequence", "@@", "#"}]}], "]"}], "&"}], "/@", "rules"}], 
+     "]"}], "]"}]}]}]}], "Input",
+ CellChangeTimes->{{3.62061696816663*^9, 3.620617029772686*^9}, {
+   3.620617062733923*^9, 3.620617064885275*^9}, {3.620617095409789*^9, 
+   3.6206170967028437`*^9}, 3.620617130508194*^9, {3.620617266650272*^9, 
+   3.620617268825653*^9}, {3.6206177802090197`*^9, 3.620617783193287*^9}, {
+   3.6397012108943043`*^9, 3.639701211125737*^9}, {3.641351873929637*^9, 
+   3.6413519137339363`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Fraction", "=", 
+   RowBox[{
+   "ScalaSingleton", "[", "\"\<net.tqft.toolkit.algebra.Fraction\>\"", 
+    "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.622189671692155*^9, 3.6221896935508823`*^9}, 
+   3.622189771460307*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Ring", "=", 
+   RowBox[{
+    RowBox[{
+    "ScalaSingleton", "[", 
+     "\"\<net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries\>\
+\"", "]"}], "@", 
+    RowBox[{"ring", "[", "]"}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.6409984824459047`*^9, 3.640998486491748*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"x_Plus", ",", "\"\<MultivariableRationalFunction\>\""}], "]"}], ":=", 
+  RowBox[{"Ring", "@", 
+   RowBox[{"sum", "[", 
+    RowBox[{"AsScalaList", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"AsScalaObject", "[", 
+        RowBox[{"#", ",", "\"\<MultivariableRationalFunction\>\""}], "]"}], 
+       "&"}], "/@", 
+      RowBox[{"(", 
+       RowBox[{"List", "@@", "x"}], ")"}]}], "]"}], 
+    "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"x_Times", ",", "\"\<MultivariableRationalFunction\>\""}], "]"}], ":=", 
+  RowBox[{"Ring", "@", 
+   RowBox[{"product", "[", 
+    RowBox[{"AsScalaList", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"AsScalaObject", "[", 
+        RowBox[{"#", ",", "\"\<MultivariableRationalFunction\>\""}], "]"}], 
+       "&"}], "/@", 
+      RowBox[{"(", 
+       RowBox[{"List", "@@", "x"}], ")"}]}], "]"}], 
+    "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    RowBox[{"Power", "[", 
+     RowBox[{"x_", ",", "k_Integer"}], "]"}], ",", 
+    "\"\<MultivariableRationalFunction\>\""}], "]"}], ":=", 
+  RowBox[{"Ring", "@", 
+   RowBox[{"power", "[", 
+    RowBox[{
+     RowBox[{"AsScalaObject", "[", 
+      RowBox[{"x", ",", "\"\<MultivariableRationalFunction\>\""}], "]"}], ",",
+      "k"}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"x_Integer", ",", "\"\<MultivariableRationalFunction\>\""}], "]"}],
+   ":=", 
+  RowBox[{"Fraction", "@", 
+   RowBox[{"whole", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Ring", "@", 
+      RowBox[{
+       RowBox[{"ring", "[", "]"}], "@", 
+       RowBox[{"fromBigInteger", "[", 
+        RowBox[{"AsScalaObject", "[", 
+         RowBox[{"x", ",", "\"\<java.math.BigInteger\>\""}], "]"}], "]"}]}]}],
+      ",", 
+     RowBox[{"Ring", "@", 
+      RowBox[{"ring", "[", "]"}]}]}], "\[IndentingNewLine]", 
+    "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"x_Rational", ",", "\"\<MultivariableRationalFunction\>\""}], 
+   "]"}], ":=", 
+  RowBox[{"Fraction", "@", 
+   RowBox[{"apply", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Ring", "@", 
+      RowBox[{
+       RowBox[{"ring", "[", "]"}], "@", 
+       RowBox[{"fromBigInteger", "[", 
+        RowBox[{"AsScalaObject", "[", 
+         RowBox[{
+          RowBox[{"Numerator", "[", "x", "]"}], ",", 
+          "\"\<java.math.BigInteger\>\""}], "]"}], "]"}]}]}], ",", 
+     RowBox[{"Ring", "@", 
+      RowBox[{
+       RowBox[{"ring", "[", "]"}], "@", 
+       RowBox[{"fromBigInteger", "[", 
+        RowBox[{"AsScalaObject", "[", 
+         RowBox[{
+          RowBox[{"Denominator", "[", "x", "]"}], ",", 
+          "\"\<java.math.BigInteger\>\""}], "]"}], "]"}]}]}], ",", 
+     RowBox[{"Ring", "@", 
+      RowBox[{"ring", "[", "]"}]}]}], "\[IndentingNewLine]", 
+    "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    SubscriptBox["p", "k_Integer"], ",", 
+    "\"\<MultivariableRationalFunction\>\""}], "]"}], ":=", 
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    RowBox[{"\"\<p\>\"", "<>", 
+     RowBox[{"ToString", "[", "k", "]"}]}], ",", 
+    "\"\<MultivariableRationalFunction\>\""}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    RowBox[{"tt", "[", "k_Integer", "]"}], ",", 
+    "\"\<MultivariableRationalFunction\>\""}], "]"}], ":=", 
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{
+    RowBox[{"\"\<t\>\"", "<>", 
+     RowBox[{"ToString", "[", "k", "]"}]}], ",", 
+    "\"\<MultivariableRationalFunction\>\""}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AsScalaObject", "[", 
+   RowBox[{"x_", ",", "\"\<MultivariableRationalFunction\>\""}], "]"}], ":=", 
+  
+  RowBox[{
+   RowBox[{"AsScalaObject", "[", 
+    RowBox[{"x", ",", "\"\<MultivariableRationalFunction\>\""}], "]"}], "=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Print", "[", 
+       RowBox[{
+       "\"\<Introducing \>\"", ",", "x", ",", "\"\< as a variable.\>\""}], 
+       "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Fraction", "@", 
+       RowBox[{"whole", "[", 
+        RowBox[{
+         RowBox[{"Ring", "@", 
+          RowBox[{
+           RowBox[{"ring", "[", "]"}], "@", 
+           RowBox[{"monomial", "[", 
+            RowBox[{"MakeJavaObject", "[", 
+             RowBox[{"ToString", "[", "x", "]"}], "]"}], "]"}]}]}], ",", 
+         RowBox[{"Ring", "@", 
+          RowBox[{"ring", "[", "]"}]}]}], "]"}]}]}]}], "\[IndentingNewLine]", 
+    "]"}]}]}]}], "Input",
+ CellChangeTimes->{{3.622188762687854*^9, 3.622188795384698*^9}, {
+   3.6221888489999123`*^9, 3.622189006628018*^9}, {3.622189232407415*^9, 
+   3.622189233377647*^9}, {3.622189312931966*^9, 3.622189341378357*^9}, {
+   3.622189372592013*^9, 3.622189397515503*^9}, {3.622189486946396*^9, 
+   3.622189492574689*^9}, {3.622189562653119*^9, 3.62218958961937*^9}, {
+   3.622189696640812*^9, 3.622189759715749*^9}, {3.6221900765629587`*^9, 
+   3.6221900801376333`*^9}, {3.6221905840693808`*^9, 3.622190607516776*^9}, {
+   3.6222317371583138`*^9, 3.622231763047621*^9}, {3.639788229347769*^9, 
+   3.6397882423733883`*^9}, {3.640998491668171*^9, 3.640998519042638*^9}, 
+   3.641027130870366*^9, {3.6411577127336693`*^9, 3.6411577156113977`*^9}, {
+   3.641158838948984*^9, 3.6411588612470493`*^9}, {3.641158923083767*^9, 
+   3.6411589550414677`*^9}, {3.641159095513474*^9, 3.64115910341044*^9}, {
+   3.6411630957953167`*^9, 3.641163100833849*^9}, {3.641163162592236*^9, 
+   3.64116316617551*^9}, {3.641163765875554*^9, 3.641163766233603*^9}, {
+   3.641163796634838*^9, 3.641163812168847*^9}, {3.6411639931670218`*^9, 
+   3.641163997661765*^9}, {3.6411642859065332`*^9, 3.64116429042577*^9}}]
+},
+WindowSize->{808, 751},
+WindowMargins->{{12, Automatic}, {Automatic, 24}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 970, 24, 63, "Input"],
+Cell[1531, 46, 399, 9, 28, "Input"],
+Cell[1933, 57, 190, 4, 28, "Input"],
+Cell[2126, 63, 2081, 54, 233, "Input"],
+Cell[4210, 119, 713, 18, 80, "Input"],
+Cell[4926, 139, 2815, 69, 216, "Input"],
+Cell[7744, 210, 1479, 36, 131, "Input"],
+Cell[9226, 248, 137, 2, 28, "Input"],
+Cell[9366, 252, 183, 4, 28, "Input"],
+Cell[9552, 258, 455, 12, 28, "Input"],
+Cell[10010, 272, 2237, 60, 131, "Input"],
+Cell[12250, 334, 932, 24, 63, "Input"],
+Cell[13185, 360, 2455, 57, 202, "Input"],
+Cell[15643, 419, 499, 11, 28, "Input"],
+Cell[16145, 432, 518, 13, 114, "Input"],
+Cell[16666, 447, 552, 14, 80, "Input"],
+Cell[17221, 463, 460, 11, 80, "Input"],
+Cell[17684, 476, 138, 2, 28, "Input"],
+Cell[17825, 480, 1950, 46, 199, "Input"],
+Cell[19778, 528, 236, 5, 28, "Input"],
+Cell[20017, 535, 797, 17, 80, "Input"],
+Cell[20817, 554, 270, 7, 28, "Input"],
+Cell[21090, 563, 1557, 39, 115, "Input"],
+Cell[22650, 604, 259, 7, 28, "Input"],
+Cell[22912, 613, 319, 9, 63, "Input"],
+Cell[23234, 624, 5870, 146, 424, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
