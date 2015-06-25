@@ -32,8 +32,8 @@ object BigIntegers extends NumericTypes.IntegralEuclideanRing(scala.math.Numeric
     result //.ensuring(_ == super.gcd(x, y))
   }
 
-  override def zero_?(i: BigInt) = i == java.math.BigInteger.ZERO
-  override def one_?(i: BigInt) = i == java.math.BigInteger.ONE
+  override def zero_?(i: BigInt) = i == BigInt(0)
+  override def one_?(i: BigInt) = i == BigInt(1)
 
   override def toString = "BigIntegers"
 }

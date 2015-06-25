@@ -1,17 +1,17 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.algebra.polynomials._
+import net.tqft.toolkit.algebra.polynomials.{ RationalExpression => MultivariableRationalFunction }
 import net.tqft.toolkit.algebra.spiders._
 
-object QuantumExceptionalSeries extends BraidedTrivalentSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
+object QuantumExceptionalSeries extends BraidedTrivalentSpider[MultivariableRationalFunction[Fraction[BigInt], String]] with RationalExpressionPolyhedronNamer[Fraction[BigInt]] {
   override def coefficientRing = implicitly[Field[Fraction[BigInt]]]
   override def ring = implicitly[Field[MultivariableRationalFunction[Fraction[BigInt], String]]]
 
   override val omega = ring.one
 
-  val v: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("v" -> 1) -> 1)
-  val w: MultivariableRationalFunction[Fraction[BigInt], String] = Map(Map("w" -> 1) -> 1)
+  val v: MultivariableRationalFunction[Fraction[BigInt], String] = MultivariableRationalFunction.variable("v")
+  val w: MultivariableRationalFunction[Fraction[BigInt], String] = MultivariableRationalFunction.variable("w")
 
   import AlgebraicNotation._
 
