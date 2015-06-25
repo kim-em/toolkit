@@ -38,9 +38,9 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
   }
 
   "a rotated crossing" should "not be rotationally equivalent to a crossing" in {
-    val s1 = star(4,2)
+    val s1 = star(4, 0, 2)
     val s2 = spider.rotate(s1, 1)
-    
+
     println(s1)
     println(s1.relabelEdgesAndFaces)
     println(s1.relabelEdgesAndFaces.nautyGraph)
@@ -56,8 +56,8 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
     println(Dreadnaut.canonicalLabelling(s2.relabelEdgesAndFaces.nautyGraph))
     println(spider.canonicalFormWithDefect(s2))
     println(spider.canonicalFormWithDefect(s2)._1.nautyGraph)
-    
-    spider.rotate(star(4, 2), 1) shouldNot be_rotationally_equivalent_to(star(4, 2))
+
+    spider.rotate(star(4, 0, 2), 1) shouldNot be_rotationally_equivalent_to(star(4, 0, 2))
   }
 
   "a strand times a strand" should "be a strand" in {
@@ -95,8 +95,8 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
   }
 
   "two identical diagrams" should "be isomorphic" in {
-    val d1 = PlanarGraph(9, IndexedSeq(List((6, 9), (8, 12), (4, 10), (5, 9), (7, 13), (3, 11)), List((3, 9), (7, 11), (5, 13)), List((4, 9), (8, 10), (6, 12))),IndexedSeq((1,0),(1,0)), 0)
-    val d2 = PlanarGraph(9, IndexedSeq(List((5, 9), (7, 13), (3, 11), (6, 9), (8, 12), (4, 10)), List((3, 9), (7, 11), (5, 13)), List((4, 9), (8, 10), (6, 12))),IndexedSeq((1,0),(1,0)), 0)
+    val d1 = PlanarGraph(9, IndexedSeq(List((6, 9), (8, 12), (4, 10), (5, 9), (7, 13), (3, 11)), List((3, 9), (7, 11), (5, 13)), List((4, 9), (8, 10), (6, 12))), IndexedSeq((1, 0), (1, 0)), 0)
+    val d2 = PlanarGraph(9, IndexedSeq(List((5, 9), (7, 13), (3, 11), (6, 9), (8, 12), (4, 10)), List((3, 9), (7, 11), (5, 13)), List((4, 9), (8, 10), (6, 12))), IndexedSeq((1, 0), (1, 0)), 0)
     d1 should be_isomorphic_to(d2)
   }
 
@@ -107,11 +107,11 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
   }
 
   "stitch" should "not blow up" in {
-    spider.stitch(PlanarGraph(9, IndexedSeq(List((4, 9), (3, 8), (11, 6), (11, 17), (8, 6), (2, 6)), List((2, 9), (3, 6), (4, 8)), List((8, 6), (5, 6), (5, 7))),IndexedSeq((1,0),(1,0)), 0)) should equal(PlanarGraph(9, IndexedSeq(List((4, 9), (3, 8), (11, 9), (11, 17)), List((2, 9), (3, 9), (4, 8)), List((2, 9), (5, 9), (5, 7))),IndexedSeq((1,0),(1,0)), 0))
+    spider.stitch(PlanarGraph(9, IndexedSeq(List((4, 9), (3, 8), (11, 6), (11, 17), (8, 6), (2, 6)), List((2, 9), (3, 6), (4, 8)), List((8, 6), (5, 6), (5, 7))), IndexedSeq((1, 0), (1, 0)), 0)) should equal(PlanarGraph(9, IndexedSeq(List((4, 9), (3, 8), (11, 9), (11, 17)), List((2, 9), (3, 9), (4, 8)), List((2, 9), (5, 9), (5, 7))), IndexedSeq((1, 0), (1, 0)), 0))
   }
 
   "excisions" should "not blow up" in {
-    val q = PlanarGraph(7, IndexedSeq(List((18, 7), (17, 10)), List((2, 8), (3, 7), (4, 9)), List((3, 9), (16, 7), (15, 7)), List((2, 7), (4, 8), (15, 9)), List((18, 10), (16, 7), (17, 7))),IndexedSeq((1,0),(1,0),(1,0),(1,0)), 0)
+    val q = PlanarGraph(7, IndexedSeq(List((18, 7), (17, 10)), List((2, 8), (3, 7), (4, 9)), List((3, 9), (16, 7), (15, 7)), List((2, 7), (4, 8), (15, 9)), List((18, 10), (16, 7), (17, 7))), IndexedSeq((1, 0), (1, 0), (1, 0), (1, 0)), 0)
     q.Subgraphs(polygon(2)).excisions.size should equal(2)
   }
 }
