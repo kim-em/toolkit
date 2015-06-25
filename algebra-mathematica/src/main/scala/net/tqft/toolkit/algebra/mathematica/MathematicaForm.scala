@@ -97,7 +97,8 @@ object MathematicaForm {
     }
   }
   
-  implicit def rationalExpressionMathematicaForm[A: MathematicaForm, V: MathematicaForm]: MathematicaForm[RationalExpression[A, V]] = new MathematicaForm[RationalExpression[A, V]] {
+  implicit def rationalExpressionMathematicaForm1[A: MathematicaForm]: MathematicaForm[RationalExpression[A, String]] = rationalExpressionMathematicaForm2(implicitly[MathematicaForm[A]], BareStringMathematicaForm)
+  implicit def rationalExpressionMathematicaForm2[A: MathematicaForm, V: MathematicaForm]: MathematicaForm[RationalExpression[A, V]] = new MathematicaForm[RationalExpression[A, V]] {
     override def toMathematicaInputString(p: RationalExpression[A, V]) = {    
       p match {
         case RationalExpression.constant(a) => a.toMathematicaInputString

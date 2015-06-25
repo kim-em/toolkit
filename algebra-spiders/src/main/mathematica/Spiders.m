@@ -85,9 +85,6 @@ PickleSpiderAnalysis;UnpickleSpiderAnalysis;PickledSpiderAnalysis;PickledQuotien
 Begin["`Private`"];
 
 
-SpidersMathematicaDirectory=Cases[$Path~Join~(Quiet[{NotebookDirectory[]}]/.$Failed->{}),s_/;StringMatchQ[s,__~~"toolkit/algebra-spiders/src/main/mathematica"~~___]][[1]];
-
-
 SpidersDirectory=FileNameJoin[{SpidersMathematicaDirectory,"..","..",".."}];
 
 
@@ -144,8 +141,8 @@ FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"scala.Tuple2"],depth:_?Positive:\[
 FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.Fraction"],depth:_?Positive:\[Infinity]]:=FromScalaObject[o@numerator[],depth-1]/FromScalaObject[o@denominator[],depth-1]
 
 
-FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial"],depth:_?Positive:\[Infinity]]:=Module[{},
-ToExpression[multivariablePolynomialMathematicaForm@toMathematicaInputString[o]]/.{q_Symbol/;StringMatchQ[SymbolName[q],"p"~~DigitCharacter..]:>Subscript[p, ToExpression[StringDrop[SymbolName[q],1]]],t0_Symbol/;StringMatchQ[SymbolName[t0],"t"~~DigitCharacter..]:>tt[ToExpression[StringDrop[SymbolName[t0],1]]]}
+FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.polynomials.RationalExpression"],depth:_?Positive:\[Infinity]]:=Module[{},
+ToExpression[rationalExpressionMathematicaForm@toMathematicaInputString[o]]/.{q_Symbol/;StringMatchQ[SymbolName[q],"p"~~DigitCharacter..]:>Subscript[p, ToExpression[StringDrop[SymbolName[q],1]]],t0_Symbol/;StringMatchQ[SymbolName[t0],"t"~~DigitCharacter..]:>tt[ToExpression[StringDrop[SymbolName[t0],1]]]}
 ]
 
 
@@ -159,7 +156,7 @@ bareStringMathematicaForm=ScalaSingleton["net.tqft.toolkit.algebra.mathematica.M
 bigRationalMathematicaForm=ScalaSingleton["net.tqft.toolkit.algebra.mathematica.MathematicaForm"]@fractionMathematicaForm[bigIntMathematicaForm,ScalaSingleton["net.tqft.toolkit.algebra.BigIntegers"]];
 
 
-multivariablePolynomialMathematicaForm=ScalaSingleton["net.tqft.toolkit.algebra.mathematica.MathematicaForm"]@multivariablePolynomialMathematicaForm[bigRationalMathematicaForm,bareStringMathematicaForm];
+rationalExpressionMathematicaForm=ScalaSingleton["net.tqft.toolkit.algebra.mathematica.MathematicaForm"]@rationalExpressionMathematicaForm2[bigRationalMathematicaForm,bareStringMathematicaForm];
 
 
 Clear[AsScalaObject]
@@ -194,20 +191,19 @@ Fraction=ScalaSingleton["net.tqft.toolkit.algebra.Fraction"];
 Ring=ScalaSingleton["net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries"]@ring[];
 
 
+BigIntegers=ScalaSingleton["net.tqft.toolkit.algebra.BigIntegers"];
+
+
 AsScalaObject[x_Plus,"MultivariableRationalFunction"]:=Ring@sum[AsScalaList[AsScalaObject[#,"MultivariableRationalFunction"]&/@(List@@x)]]
 AsScalaObject[x_Times,"MultivariableRationalFunction"]:=Ring@product[AsScalaList[AsScalaObject[#,"MultivariableRationalFunction"]&/@(List@@x)]]
 AsScalaObject[Power[x_,k_Integer],"MultivariableRationalFunction"]:=Ring@power[AsScalaObject[x,"MultivariableRationalFunction"],k]
-AsScalaObject[x_Integer,"MultivariableRationalFunction"]:=Fraction@whole[
-Ring@ring[]@fromBigInteger[AsScalaObject[x,"java.math.BigInteger"]],Ring@ring[]
-]
-AsScalaObject[x_Rational,"MultivariableRationalFunction"]:=Fraction@apply[
-Ring@ring[]@fromBigInteger[AsScalaObject[Numerator[x],"java.math.BigInteger"]],Ring@ring[]@fromBigInteger[AsScalaObject[Denominator[x],"java.math.BigInteger"]],Ring@ring[]
-]
+AsScalaObject[x_Integer,"MultivariableRationalFunction"]:=Ring@fromBigInteger[AsScalaObject[x,"java.math.BigInteger"]]
+AsScalaObject[x_Rational,"MultivariableRationalFunction"]:=Ring@quotient[AsScalaObject[Numerator[x],"MultivariableRationalFunction"],AsScalaObject[Denominator[x],"MultivariableRationalFunction"]]
 AsScalaObject[Subscript[p, k_Integer],"MultivariableRationalFunction"]:=AsScalaObject["p"<>ToString[k],"MultivariableRationalFunction"]
 AsScalaObject[tt[k_Integer],"MultivariableRationalFunction"]:=AsScalaObject["t"<>ToString[k],"MultivariableRationalFunction"]
 AsScalaObject[x_,"MultivariableRationalFunction"]:=AsScalaObject[x,"MultivariableRationalFunction"]=Module[{},
 Print["Introducing ",x," as a variable."];
-Fraction@whole[Ring@ring[]@monomial[MakeJavaObject[ToString[x]]],Ring@ring[]]
+ScalaCaseClass["net.tqft.toolkit.algebra.polynomials.RationalExpression$variable",MakeJavaObject[ToString[x]]]
 ]
 
 

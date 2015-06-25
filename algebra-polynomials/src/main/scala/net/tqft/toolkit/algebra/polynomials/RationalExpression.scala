@@ -10,9 +10,60 @@ import net.tqft.toolkit.algebra.GCDRing
 sealed trait RationalExpression[A, V] {
   def variables: Set[V]
   def simplify(implicit field: Field[A]): RationalExpression[A, V] = this
+
+  def depth: Int = 0
+
+  //  if(depth >= 10) throw new UnsupportedOperationException
 }
 
 object RationalExpression {
+  implicit def ordering[A: Ordering, V: Ordering]: Ordering[RationalExpression[A, V]] = new Ordering[RationalExpression[A, V]] {
+    override def compare(x: RationalExpression[A, V], y: RationalExpression[A, V]) = {
+      import Ordering.Implicits._
+
+      x match {
+        case constant(xa) => {
+          y match {
+            case constant(ya) => implicitly[Ordering[A]].compare(xa, ya)
+            case _ => -1
+          }
+        }
+        case variable(xv) => {
+          y match {
+            case constant(_) => 1
+            case variable(yv) => implicitly[Ordering[V]].compare(xv, yv)
+            case _ => -1
+          }
+        }
+        case power(xr, xk) => {
+          y match {
+            case constant(_) | variable(_) => 1
+            case power(yr, yk) => {
+              compare(xr, yr) match {
+                case 0 => xk - yk
+                case d => d
+              }
+            }
+            case _ => -1
+          }
+        }
+        case sum(xterms @ _*) => {
+          y match {
+            case constant(_) | variable(_) | power(_, _) => 1
+            case sum(yterms @ _*) => implicitly[Ordering[Seq[RationalExpression[A, V]]]].compare(xterms, yterms)
+            case _ => -1
+          }
+        }
+        case product(xfactors @ _*) => {
+          y match {
+            case product(yfactors @ _*) => implicitly[Ordering[Seq[RationalExpression[A, V]]]].compare(xfactors, yfactors)
+            case _ => 1
+          }
+        }
+      }
+    }
+  }
+
   case class constant[A, V](a: A) extends RationalExpression[A, V] {
     override def variables = Set.empty
   }
@@ -36,8 +87,9 @@ object RationalExpression {
         }
       }
     }
+    override def depth = r.depth + 1
   }
-  case class sum[A, V](terms: RationalExpression[A, V]*) extends RationalExpression[A, V] {
+  case class sum[A: Ordering, V: Ordering](terms: RationalExpression[A, V]*) extends RationalExpression[A, V] {
     override def variables = terms.flatMap(_.variables).toSet
     override def simplify(implicit field: Field[A]) = {
       val flatten = terms.flatMap({
@@ -55,16 +107,19 @@ object RationalExpression {
       val newTerms = newConstantTerms ++ newNonConstantTerms
       if (newTerms.isEmpty) {
         constant[A, V](field.zero)
+      } else if (newTerms.size == 1) {
+        newTerms.head
       } else {
-        sum(newTerms: _*)
+        sum(newTerms.sorted: _*)
       }
     }
+    override def depth = terms.map(_.depth).max + 1
   }
-  case class product[A, V](factors: RationalExpression[A, V]*) extends RationalExpression[A, V] {
+  case class product[A: Ordering, V: Ordering](factors: RationalExpression[A, V]*) extends RationalExpression[A, V] {
     override def variables = factors.flatMap(_.variables).toSet
     override def simplify(implicit field: Field[A]) = {
       val flatten = factors.flatMap({
-        case sum(subfactors @ _*) => subfactors
+        case product(subfactors @ _*) => subfactors
         case e => Seq(e)
       })
       val (constants, nonconstants) = flatten.partition(_.isInstanceOf[constant[A, V]])
@@ -78,23 +133,28 @@ object RationalExpression {
       val newFactors = newConstantFactors ++ newNonConstantFactors
       if (newFactors.isEmpty) {
         constant[A, V](field.one)
+      } else if (newFactors.size == 1) {
+        newFactors.head
       } else {
-        product(newFactors: _*)
+        product(newFactors.sorted: _*)
       }
     }
-
+    override def depth = factors.map(_.depth).max + 1
   }
 
   implicit def liftConstant[A, V](a: A): RationalExpression[A, V] = constant(a)
   implicit def liftVariable[A, V](v: V): RationalExpression[A, V] = variable(v)
-  implicit def liftFraction[A:GCDRing, V](a: A): RationalExpression[Fraction[A], V] = constant(a)
-  implicit def liftInt[A:GCDRing, V](i: Int): RationalExpression[Fraction[A], V] = constant(implicitly[GCDRing[A]].fromInt(i))
-  
-  implicit def fieldOfRationalExpressions[A: Field, V]: Field[RationalExpression[A, V]] = new Field[RationalExpression[A, V]] {
+  implicit def liftFraction[A: GCDRing, V](a: A): RationalExpression[Fraction[A], V] = constant(a)
+  implicit def liftInt[A: GCDRing, V](i: Int): RationalExpression[Fraction[A], V] = constant(implicitly[GCDRing[A]].fromInt(i))
+
+  implicit def fieldOfRationalExpressions[A: Field: Ordering, V: Ordering]: Field[RationalExpression[A, V]] = new Field[RationalExpression[A, V]] {
     private def field = implicitly[Field[A]]
     override val zero = RationalExpression.constant[A, V](field.zero)
     override val one = RationalExpression.constant[A, V](field.one)
     override val negativeOne = RationalExpression.constant[A, V](field.negativeOne)
+    override def fromInt(i: Int) = RationalExpression.constant[A, V](field.fromInt(i))
+    override def fromBigInt(i: BigInt) = RationalExpression.constant[A, V](field.fromBigInt(i))
+    override def fromBigInteger(i: java.math.BigInteger) = RationalExpression.constant[A, V](field.fromBigInteger(i))
     override def negate(x: RationalExpression[A, V]) = RationalExpression.product(RationalExpression.constant[A, V](field.negativeOne), x).simplify
     override def inverse(x: RationalExpression[A, V]) = power[Int](x, -1).simplify
     override def add(x: RationalExpression[A, V], y: RationalExpression[A, V]) = RationalExpression.sum(x, y).simplify
