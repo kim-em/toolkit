@@ -7,38 +7,69 @@ case class Reduction[A, R](big: A, small: Map[A, R])
 trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
   def eigenvalue(valence: Int): R
 
-  def allReplacements(reduction: Reduction[A, R])(diagram: A): Iterator[Map[A, R]]
-  def replace(reduction: Reduction[A, R])(element: Map[A, R]): Map[A, R] = {
+  def allDiagramReplacements(reduction: Reduction[A, R])(diagram: A): Iterator[Map[A, R]]
+  def allDiagramReplacements(reductions: Seq[Reduction[A, R]])(diagram: A): Iterator[Map[A, R]] = {
+    reductions.iterator.flatMap(r => allDiagramReplacements(r)(diagram))
+  }
+  def replace(reduction: Reduction[A, R])(element: Map[A, R]): Option[Map[A, R]] = {
     val newMap = scala.collection.mutable.Map[A, R]()
+    var touched = false
     for ((a, r) <- element) {
       import net.tqft.toolkit.collections.Iterators._
-      val m: Map[A, R] = allReplacements(reduction)(a).headOption match {
+      allDiagramReplacements(reduction)(a).headOption match {
         case Some(replacement) => {
-//          pw.println("Found a replacement:")
-//          pw.println("reduction = " + reduction)
-//          pw.println("a = " + a)
-//          pw.flush
-          replacement
+          touched = true
+          for ((b, t) <- replacement) {
+            val p = ring.multiply(r, t)
+            newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)
+          }
         }
-        case None => Map(a -> ring.one)
-      }
-      for ((b, t) <- m) {
-        val p = ring.multiply(r, t)
-        newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)
+        case None => {
+          newMap(a) = newMap.get(a).map(v => ring.add(v, r)).getOrElse(r)
+        }
       }
     }
-    Map() ++ newMap.filter(x => !ring.zero_?(x._2))
+    if (touched) {
+      Some(Map() ++ newMap.filter(x => !ring.zero_?(x._2)))
+    } else {
+      None
+    }
   }
 
-  def replace(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Map[A, R] = {
-    reductions.iterator.map(r => replace(r)(element)).find(_ != element).getOrElse(element)
+  def replace(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Option[Map[A, R]] = {
+    reductions.iterator.map(r => replace(r)(element)).find(_.nonEmpty).map(_.get)
   }
-  def replaceRepeatedly(reductions: Seq[Reduction[A, R]])(element: Map[A, R]) = {
-    import net.tqft.toolkit.functions.FixedPoint._
-    (replace(reductions) _).fixedPoint(element)
+  def replaceRepeatedly(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Map[A, R] = {
+    val stack = scala.collection.mutable.Stack[(A, R)]()
+    var touched = false
+    stack.pushAll(element)
+    val done = scala.collection.mutable.Map[A, R]()
+    while (stack.nonEmpty) {
+      val (a, r) = stack.pop
+      import net.tqft.toolkit.collections.Iterators._
+      allDiagramReplacements(reductions)(a).headOption match {
+        case None => done(a) = done.get(a).map(v => ring.add(v, r)).getOrElse(r)
+        case Some(map) => {
+          touched = true
+          stack.pushAll(map)
+        }
+      }
+    }
+    if(touched) {
+      Map() ++ done.filter(x => !ring.zero_?(x._2))
+    } else {
+      element
+    }
+
+//    var cur = element
+//    var next: Option[Map[A, R]] = null
+//    while ({ next = replace(reductions)(cur); next.nonEmpty }) {
+//      cur = next.get
+//    }
+//    cur
   }
   def allReplacements(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Iterator[Map[A, R]] = {
-    reductions.iterator.map(r => replace(r)(element)).filter(_ != element)
+    reductions.iterator.map(r => replace(r)(element)).collect({ case Some(result) => result })
   }
   def allReplacementsRepeated(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Iterator[Map[A, R]] = {
     Iterator(element) ++ allReplacements(reductions)(element).flatMap(allReplacementsRepeated(reductions))
@@ -50,9 +81,9 @@ object SubstitutionSpider {
     def vertexTypes: Seq[VertexType]
     val graphs = GraphsGeneratedBy(vertexTypes)
 
-    override def allReplacements(reduction: Reduction[PlanarGraph, R])(diagram: PlanarGraph) = {
+    override def allDiagramReplacements(reduction: Reduction[PlanarGraph, R])(diagram: PlanarGraph) = {
       for (
-        excision <- diagram.Subgraphs(reduction.big).excisions
+        excision <- diagram.subgraphs(reduction.big).cachedExcisions.iterator
       ) yield {
         val eigenvalueFactor1 = eigenvalue(excision.rotations)
         val newMap = scala.collection.mutable.Map[PlanarGraph, R]()
