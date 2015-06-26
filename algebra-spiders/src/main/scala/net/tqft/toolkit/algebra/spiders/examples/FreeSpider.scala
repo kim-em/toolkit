@@ -45,7 +45,7 @@ case class QuotientSpider(
   }
 
   def reducibleDiagram_?(p: PlanarGraph): Boolean = {
-    reductions.exists(r => p.Subgraphs(r.big).excisions.nonEmpty)
+    reductions.exists(r => p.subgraphs(r.big).cachedExcisions.nonEmpty)
   }
 
   override def toString = {

@@ -46,12 +46,18 @@ abstract class PlanarGraphReductionSpider[R: Ring] extends SubstitutionSpider.Pl
         //        println("computing inner products: y = " + y)
         //        println("Reductions: ")
         //        for (r <- reductions) println("  " + r)
-        evaluatedInnerProduct(Map(x -> ring.one), Map(y -> ring.one))
+//        evaluatedInnerProduct(Map(x -> ring.one), Map(y -> ring.one))
+        evaluatedInnerProduct(x, y)
       })
     })
     println("")
     result.seq
   }
+  
+  def evaluatedInnerProduct(x: PlanarGraph, y: PlanarGraph) = {
+    evaluate(replaceRepeatedly(reductions)(Map(diagramSpider.innerProduct(x, y)-> ring.one)))
+  }
+  
   def innerProductMatrix(diagrams: Seq[PlanarGraph]): Seq[Seq[R]] = innerProductMatrix(diagrams, diagrams)
 
   def reducedDiagrams(numberOfBoundaryPoints: Int, numberOfVertices: Int): Seq[PlanarGraph] = {

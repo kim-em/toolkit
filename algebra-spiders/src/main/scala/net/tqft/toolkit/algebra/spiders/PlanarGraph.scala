@@ -507,7 +507,12 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       }
     }
   }
-
+  
+  val subgraphs = {
+    import net.tqft.toolkit.functions.Memo
+    Memo(Subgraphs.apply _)
+  }
+  
   case class Subgraphs(shape: PlanarGraph) {
     // require that every edge of shape attaches to an internal vertex
     // this is an unfortunate implementation restriction!
@@ -538,6 +543,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       def replace(other: PlanarGraph): PlanarGraph = spider.stitchesAt(spider.rotate(spider.multiply(other, cut, spider.circumference(shape)), depth), depth, depth)
     }
 
+    lazy val cachedExcisions = excisions.toStream
     def excisions: Iterator[Excision] = {
 
       case class PartialMap(map: Array[Int], vertexRotations: Array[Int]) {
