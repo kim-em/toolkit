@@ -41,7 +41,7 @@ case class QuotientSpider(
   override def reductions = extraReductions ++ super.reductions
 
   def addReduction(reduction: Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]) = {
-    copy(extraReductions = reduction +: extraReductions)
+    copy(extraReductions = extraReductions :+ reduction)
   }
 
   def reducibleDiagram_?(p: PlanarGraph): Boolean = {

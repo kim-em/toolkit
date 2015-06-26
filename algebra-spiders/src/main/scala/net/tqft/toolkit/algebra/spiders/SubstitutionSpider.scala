@@ -11,12 +11,23 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
   def allDiagramReplacements(reductions: Seq[Reduction[A, R]])(diagram: A): Iterator[Map[A, R]] = {
     reductions.iterator.flatMap(r => allDiagramReplacements(r)(diagram))
   }
-  def replace(reduction: Reduction[A, R])(element: Map[A, R]): Option[Map[A, R]] = {
+
+  lazy val cachedDiagramReplacementOption = {
+    import net.tqft.toolkit.functions.Memo
+    Memo({ reductions: Seq[Reduction[A, R]] =>
+      Memo.softly({ diagram: A =>
+        import net.tqft.toolkit.collections.Iterators._
+        allDiagramReplacements(reductions)(diagram).headOption
+      })
+    })
+  }
+
+  def replace(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Option[Map[A, R]] = {
     val newMap = scala.collection.mutable.Map[A, R]()
     var touched = false
     for ((a, r) <- element) {
       import net.tqft.toolkit.collections.Iterators._
-      allDiagramReplacements(reduction)(a).headOption match {
+      allDiagramReplacements(reductions)(a).headOption match {
         case Some(replacement) => {
           touched = true
           for ((b, t) <- replacement) {
@@ -36,9 +47,6 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
     }
   }
 
-  def replace(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Option[Map[A, R]] = {
-    reductions.iterator.map(r => replace(r)(element)).find(_.nonEmpty).map(_.get)
-  }
   def replaceRepeatedly(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Map[A, R] = {
     val stack = scala.collection.mutable.Stack[(A, R)]()
     var touched = false
@@ -47,33 +55,28 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
     while (stack.nonEmpty) {
       val (a, r) = stack.pop
       import net.tqft.toolkit.collections.Iterators._
-      allDiagramReplacements(reductions)(a).headOption match {
+      cachedDiagramReplacementOption(reductions)(a) match {
         case None => done(a) = done.get(a).map(v => ring.add(v, r)).getOrElse(r)
         case Some(map) => {
           touched = true
-          stack.pushAll(map)
+          stack.pushAll(map.mapValues(v => ring.multiply(v, r)))
         }
       }
     }
-    if(touched) {
+    if (touched) {
       Map() ++ done.filter(x => !ring.zero_?(x._2))
     } else {
       element
     }
-
-//    var cur = element
-//    var next: Option[Map[A, R]] = null
-//    while ({ next = replace(reductions)(cur); next.nonEmpty }) {
-//      cur = next.get
-//    }
-//    cur
   }
-  def allReplacements(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Iterator[Map[A, R]] = {
-    reductions.iterator.map(r => replace(r)(element)).collect({ case Some(result) => result })
-  }
-  def allReplacementsRepeated(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Iterator[Map[A, R]] = {
-    Iterator(element) ++ allReplacements(reductions)(element).flatMap(allReplacementsRepeated(reductions))
-  }
+  
+  
+//  def allReplacements(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Iterator[Map[A, R]] = {
+//    reductions.iterator.map(r => replace(r)(element)).collect({ case Some(result) => result })
+//  }
+//  def allReplacementsRepeated(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Iterator[Map[A, R]] = {
+//    Iterator(element) ++ allReplacements(reductions)(element).flatMap(allReplacementsRepeated(reductions))
+//  }
 }
 
 object SubstitutionSpider {
