@@ -49,17 +49,27 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
 
   def replaceRepeatedly(reductions: Seq[Reduction[A, R]])(element: Map[A, R]): Map[A, R] = {
     val stack = scala.collection.mutable.Stack[(A, R)]()
+    
+    def putSeveralOnStack(pairs: Traversable[(A, R)]) {
+      for((a,r) <- pairs) putOnStack(a, r)
+    }
+    def putOnStack(a: A, r: R) {
+      stack.indexWhere(_._1 == a) match {
+        case -1 => stack.push((a, r))
+        case k => stack.updated(k, (a, ring.add(stack.apply(k)._2, r)))
+      }
+    }
+    
     var touched = false
     stack.pushAll(element)
     val done = scala.collection.mutable.Map[A, R]()
     while (stack.nonEmpty) {
       val (a, r) = stack.pop
-      import net.tqft.toolkit.collections.Iterators._
       cachedDiagramReplacementOption(reductions)(a) match {
         case None => done(a) = done.get(a).map(v => ring.add(v, r)).getOrElse(r)
         case Some(map) => {
           touched = true
-          stack.pushAll(map.mapValues(v => ring.multiply(v, r)))
+          putSeveralOnStack(map.mapValues(v => ring.multiply(v, r)))
         }
       }
     }
