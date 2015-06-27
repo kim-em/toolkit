@@ -1134,7 +1134,7 @@ Flatten[{ToExpression["{"<>StringTake[#@U1[]@toString[],{12,-2}]<>"}"],FromScala
 
 UnpickleQuotientSpider[PickledQuotientSpider[generators_,reductions_]]:=Module[{scalaReductions},
 scalaReductions=ScalaCaseClass["net.tqft.toolkit.algebra.spiders.Reduction",PlanarGraphs@fromString[#[[1]]],AsScalaMap[Function[{term},PlanarGraphs@fromString[term[[1]]]->AsScalaObject[term[[2]],"MultivariableRationalFunction"]]/@#[[2]]]]&/@reductions;
-Fold[#1@addReduction[#2]&,FreeSpider[generators],Reverse[scalaReductions]]
+Fold[#1@addReduction[#2]&,FreeSpider[generators],scalaReductions]
 ]
 
 
