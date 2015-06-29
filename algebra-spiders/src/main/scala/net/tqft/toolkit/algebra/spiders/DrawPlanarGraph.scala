@@ -240,7 +240,7 @@ trait DrawPlanarGraph {
           val meanEdgeLength: Double = (for ((v, w) <- vertexPairWeights.keys) yield dist(v, w)).sum / vertexPairWeights.size
           //println(s"meanEdgeLength: $meanEdgeLength")
           for ((v, w) <- vertexPairWeights.keys if hideBoundaryEdges && !(G.neighboursOf(0).contains(v) && G.neighboursOf(0).contains(w))) {
-            // If graph is closed, we don't force edges in the external cycle to be the average length
+            // If graph is closed, we don't force edges in the external cycle to be close to the average length
             val relativeEdgeLengthDiff = (dist(v, w) - meanEdgeLength) / meanEdgeLength
             if (relativeEdgeLengthDiff < -0.1 || relativeEdgeLengthDiff > 0.1) {
               vertexPairWeights = vertexPairWeights.updated(
