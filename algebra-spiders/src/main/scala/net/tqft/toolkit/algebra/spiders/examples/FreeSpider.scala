@@ -1,13 +1,13 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
 import net.tqft.toolkit.algebra.spiders._
-import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
+import net.tqft.toolkit.algebra.polynomials.{ RationalExpression => MultivariableRationalFunction }
 import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 
-abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
+abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with RationalExpressionPolyhedronNamer[Fraction[BigInt]] {
   def generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])]
   override lazy val vertexTypes = generators.map(_._1)
   override def eigenvalue(label: Int): MultivariableRationalFunction[Fraction[BigInt], String] = {
@@ -41,11 +41,11 @@ case class QuotientSpider(
   override def reductions = extraReductions ++ super.reductions
 
   def addReduction(reduction: Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]) = {
-    copy(extraReductions = reduction +: extraReductions)
+    copy(extraReductions = extraReductions :+ reduction)
   }
 
   def reducibleDiagram_?(p: PlanarGraph): Boolean = {
-    reductions.exists(r => p.Subgraphs(r.big).excisions.nonEmpty)
+    reductions.exists(r => p.subgraphs(r.big).cachedExcisions.nonEmpty)
   }
 
   override def toString = {

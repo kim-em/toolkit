@@ -89,3 +89,6 @@ trait PolynomialPolyhedronNamer[A] extends PolyhedronNamer[A, MultivariablePolyn
 trait RationalFunctionPolyhedronNamer[A] extends PolyhedronNamer[A, MultivariableRationalFunction[A, String]] {
   override def variableToPolynomial(v: String) = MultivariablePolynomial(Map(Map(v -> 1) -> coefficientRing.one))
 }
+trait RationalExpressionPolyhedronNamer[A] extends PolyhedronNamer[A, RationalExpression[A, String]] {
+  override def variableToPolynomial(v: String) = RationalExpression.variable(v)
+}

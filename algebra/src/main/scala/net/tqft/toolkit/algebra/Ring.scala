@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra
 
 trait Ring[@specialized(Int, Long, Float, Double) A] extends Rig[A] with AdditiveGroup[A] {
   def negativeOne = negate(one)
+  override def one_?(a: A) = zero_?(add(a, negativeOne))
 }
 
 trait CommutativeRing[@specialized(Int, Long, Float, Double) A] extends CommutativeRig[A] with Ring[A]

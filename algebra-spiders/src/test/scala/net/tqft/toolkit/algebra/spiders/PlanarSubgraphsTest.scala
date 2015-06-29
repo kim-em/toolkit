@@ -47,6 +47,10 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
   "a theta" should "contain ..." in {
     theta.Subgraphs(star(3)).excisions.size should equal(6)
     theta.Subgraphs(I).excisions.size should equal(6)
+    
+    println(theta.internalFaceSizes)
+    println(polygon(2).internalFaceSizes)
+    
     theta.Subgraphs(polygon(2)).excisions.size should equal(4)
   }
   "a tetrahedron" should "contain ..." in {
