@@ -513,6 +513,8 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     Memo(Subgraphs.apply _)
   }
   
+  def containsSubgraph(shape: PlanarGraph) = Subgraphs(shape).excisions.hasNext
+  
   case class Subgraphs(shape: PlanarGraph) {
     // require that every edge of shape attaches to an internal vertex
     // this is an unfortunate implementation restriction!
