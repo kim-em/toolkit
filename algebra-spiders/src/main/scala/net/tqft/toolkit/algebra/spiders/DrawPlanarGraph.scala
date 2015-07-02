@@ -48,7 +48,7 @@ trait DrawPlanarGraph {
   var pdfcropPath = getProgramPath("pdfcrop", List("/usr/texbin"))
 
   def apply(G: PlanarGraph): String = {
-    // Draws regular, closed and knotted PlanarGraphs by doing some preprocessing and then calling draw.
+    // Draws regular, closed and knotted PlanarGraphs by doing some preprocessing and then calling the draw function.
     // Draws over and undercrossings with or without orientation.
 
     val crossings: Map[Int, Int] = {
@@ -158,11 +158,10 @@ trait DrawPlanarGraph {
   }
 
   private def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundaryEdges: Boolean): String = {
-    // Draws planar graphs, outputs LaTeX TikZ code.
+    // Draws closed and boundary-connected planar graphs, outputs LaTeX TikZ code.
     // Allows fine control of edge and internal vertex styles via decoratedEdges and decoratedVertices.
     // hideBoundary hides all vertices and edges connected to the boundary. Used mainly to draw closed graphs.
-    // IMPORTANT: Doesn't draw free loops, and will not properly handle graphs having internal vertices with only one neighbour.
-    // Will also place every 0-valent vertex at the origin.
+    // IMPORTANT: Doesn't draw free loops, multiple disconnected components, or lollipops (with the exception of the single lollipop).
 
     if (G.loops > 0) println(s"Note: graph has ${G.loops} loops which are not shown")
 
@@ -206,8 +205,9 @@ trait DrawPlanarGraph {
       round(sin(Pi / 2 + 2 * Pi * k / G.numberOfBoundaryPoints), 6))
 
     val internalVertexCoords =
-      if (G.numberOfInternalVertices == 1) IndexedSeq((0.0, 0.0))
-      else if (G.numberOfInternalVertices > 1) {
+      if (G.numberOfInternalVertices == 1 && ((vertexAdjs(1).distinct diff List(1)).length <= 1)) // Lone internal vertex is disconnected from the boundary, or part of a lollipop.
+        IndexedSeq((0.0, 0.0))
+      else if (G.numberOfInternalVertices > 0) {
         // Calculate coordinates of each internal vertex as the weighted barycenter of its neighbours,
         // then optimize weightings until all edge lengths are roughly equal.
         val M = DenseMatrix.zeros[Double](G.numberOfInternalVertices, G.numberOfInternalVertices + G.numberOfBoundaryPoints)
