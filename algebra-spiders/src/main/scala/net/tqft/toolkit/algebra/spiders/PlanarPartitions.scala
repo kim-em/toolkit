@@ -29,7 +29,7 @@ object PlanarPartitions {
   }
 
   private def impl2(set: List[Int], allowSingletons: Boolean): Stream[Seq[Seq[Int]]] = {
-    println("finding planar partitions of " + set)
+    //println("finding planar partitions of " + set)
     import net.tqft.toolkit.collections.Split._
     import net.tqft.toolkit.collections.CartesianProduct._
     set match {
