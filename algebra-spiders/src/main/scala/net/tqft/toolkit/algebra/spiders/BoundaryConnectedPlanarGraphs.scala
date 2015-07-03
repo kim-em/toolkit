@@ -3,7 +3,13 @@ package net.tqft.toolkit.algebra.spiders
 import net.tqft.toolkit.functions.Memo
 
 object BoundaryConnectedPlanarGraphs {
-  def apply(n: Int, k: Int, connectedGraphGenerator: (Int, Int) => Seq[PlanarGraph]) /*Seq[PlanarGraph]*/ = {
+  private val spider = DiagramSpider.graphSpider
+
+  private val pentagonNextToSquare = spider.multiply(PlanarGraph.polygon(4), spider.rotate(spider.multiply(PlanarGraph.trivalentVertex, PlanarGraph.H, 1), -1), 2)
+  private val IPendant = spider.multiply(spider.multiply(PlanarGraph.trivalentVertex, spider.rotate(PlanarGraph.twoSquares, -1), 2), PlanarGraph.trivalentVertex, 2)
+
+  def apply(n: Int, k: Int, connectedGraphGenerator: (Int, Int) => Seq[PlanarGraph]): Seq[PlanarGraph] = {
+    // connectedGraphGenerator(r, s) gives a Seq of PlanarGraphs with r boundary points and s internal faces
     def product(xx: Seq[Seq[PlanarGraph]]): Seq[Seq[PlanarGraph]] =
       xx match {
         case aa +: Nil =>
@@ -29,6 +35,7 @@ object BoundaryConnectedPlanarGraphs {
 
     PlanarPartitions(n).flatMap((partition: Seq[Seq[Int]]) => {
       //println(s"partition: $partition")
+
       compositions(k, partition.length).flatMap((internalFaceNumbers: Seq[Int]) => {
         assert(internalFaceNumbers.length == partition.length, "Lengths of partition and composition do not match!")
         val components = for (i <- 0 until partition.length) yield cachedConnectedGraphGenerator(partition(i).length, internalFaceNumbers(i))
@@ -40,7 +47,7 @@ object BoundaryConnectedPlanarGraphs {
 
         product(components).map((ds: Seq[PlanarGraph]) => { DiagramSpider.graphSpider.assembleAlongPlanarPartition(partition, ds) })
       })
-    }).distinct
+    })
 
   }
 
@@ -48,8 +55,10 @@ object BoundaryConnectedPlanarGraphs {
     def generator(r: Int, s: Int) = if (r > 2)
       ConnectedTrivalentPlanarGraphs(r, s).filterNot(_.hasTinyFace).flatMap(
         (G: PlanarGraph) => Seq.tabulate(r)((rotation: Int) => DiagramSpider.graphSpider.rotate(G, rotation).canonicalFormWithDefect._1)).distinct
-    else Seq(PlanarGraph.strand)
+    else if (r == 2 && s == 0) Seq(PlanarGraph.strand)
+    else if (r == 2 && s == 4) Seq(IPendant)
+    else Seq()
 
-    apply(n, k, generator(_, _))
+    apply(n, k, generator(_, _)).filterNot(_.containsSubgraph(pentagonNextToSquare))
   }
 }
