@@ -58,6 +58,7 @@ FindNonPowerPolynomial[v,primes][values]
 ]
 FindPolynomial[v_,primes_][values:{___Rational}]/;MatchQ[Union[Numerator/@values],{1}|{-1}]:=FindPolynomial[v,primes][values^-1]^-1
 FindPolynomial[v_,primes_][values:{___Rational}]:=FindPolynomial[v,primes][Numerator[values]]/FindPolynomial[v,primes][Denominator[values]]
+FindPolynomial[v_,primes_][values_]:=(Message[FindPolynomial::badvalues];Abort[])
 
 
 FindNonPowerPolynomial[v_,primes_][{0...}]:=0
@@ -80,6 +81,7 @@ $Failed
 ]
 ]
 ]
+(*FindNonPowerPolynomial[v_,primes_][values:{___Integer}]:=InterpolatingPolynomial[Transpose[{primes,values}],v]*)
 
 
 FindMultivariablePolynomial[{v_}][f_]:=(*FindPolynomial[v][f]*)f[v]
@@ -133,9 +135,10 @@ guess
 
 FindMultivariablePolynomial[v_,{}][{}]:=$Failed
 FindMultivariablePolynomial[v_,primes_][values:{___Integer}]:=FindPolynomial[v,primes][values]
-FindMultivariablePolynomial[v_,primes_][values:{___Times}]:=Module[{c},
+FindMultivariablePolynomial[v_,primes_][values:{___Times}]:=Module[{factors},
 If[Length[Union[Length/@values]]==1,
-Product[FindMultivariablePolynomial[v,primes][values[[All,i]]],{i,1,Length[values[[1]]]}],
+factors=Table[FindMultivariablePolynomial[v,primes][values[[All,i]]],{i,1,Length[values[[1]]]}];
+If[FreeQ[factors,$Failed],Times@@factors,FindMultivariablePolynomialDirect[v,primes][Numerator/@values]/FindMultivariablePolynomialDirect[v,primes][Denominator/@values]],
 FindMultivariablePolynomial[v,Rest[primes]][Rest[values]]
 ]
 ]
@@ -145,7 +148,8 @@ FindMultivariablePolynomial[v,primes][values[[All,1]]]^values[[1,2]],
 FindMultivariablePolynomial[v,Rest[primes]][Rest[values]]
 ]
 ]
-FindMultivariablePolynomial[v_,primes_][values_]:=Module[{variables,exponents,coefficients},
+FindMultivariablePolynomial[v_,primes_][values_]:=FindMultivariablePolynomialDirect[v,primes][values]
+FindMultivariablePolynomialDirect[v_,primes_][values_]:=Module[{variables,exponents,coefficients},
 variables=Variables[values];
 (*Print["primes: ",primes];
 Print["values: ",values];
