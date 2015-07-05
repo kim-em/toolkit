@@ -34,15 +34,21 @@ Begin["`Private`"];
 FindPolynomialStep=1000;
 
 
-FindPolynomial[v_][f_]:=Module[{n=0,p,result={$Failed},primes={},values={},attempts},
+FindPolynomial[v_][f_]:=Module[{n=0,p,result={$Failed},primes={},values={},k,attempts},
 p[n_]:=p[n]=Prime[1+n FindPolynomialStep]+Mod[n,2];
 While[!FreeQ[{result},$Failed]\[Or](result/.v->p[n+1])=!=f[p[n+1]],
 n++;
 AppendTo[primes,p[n]];
 AppendTo[values,f[p[n]]];
-attempts=Table[FindPolynomial[v,Drop[primes,k]][Drop[values,k]],{k,0,Length[primes]-1}];
-attempts=Cases[attempts,a_/;FreeQ[a,$Failed]]~Join~attempts;
-result=attempts[[1]];
+attempts={};
+k=0;
+While[Length[attempts]<Length[values]\[And]Length[Cases[attempts,a_/;FreeQ[a,$Failed]]]==0,
+AppendTo[attempts,FindPolynomial[v,Drop[primes,k]][Drop[values,k]]];
+k++];
+result=If[k==Length[values],
+attempts[[1]],
+attempts[[-1]]
+];
 ];
 result
 ]
@@ -63,7 +69,7 @@ FindPolynomial[v_,primes_][values_]:=(Message[FindPolynomial::badvalues];Abort[]
 
 FindNonPowerPolynomial[v_,primes_][{0...}]:=0
 FindNonPowerPolynomial[v_,primes_][values:{___Integer}]:=Module[{residues,crt,next},
-(* Print[values]; *)
+ (*Print[values];*) 
 residues=Mod[#[[1]],#[[2]],-#[[2]]/2]&/@Transpose[{values,primes}];
 crt=ChineseRemainder[residues,primes];
 If[MatchQ[crt,_ChineseRemainder],
@@ -85,8 +91,8 @@ $Failed
 
 
 FindMultivariablePolynomial[{v_}][f_]:=(*FindPolynomial[v][f]*)f[v]
-FindMultivariablePolynomial[variables_][f_]:=Module[{v=First[variables],ev,p,n=0,result=$Failed,primes={},values={},attempts},
-(*Print["FindMultivariablePolynomial[",variables,",",k,"][",f,"]"];*)
+FindMultivariablePolynomial[variables_][f_]:=Module[{v=First[variables],ev,p,n=0,result=$Failed,primes={},values={},k,attempts},
+Print["FindMultivariablePolynomial[",variables,"][...]"];
 p[n_]:=p[n]=Prime[1+n  FindPolynomialStep]+Mod[n,2];
 ev[n_]:=ev[n]=Factor[FindMultivariablePolynomial[Rest[variables]][f[p[n],##]&]];
 While[!FreeQ[{result},$Failed]\[Or]Together[(result/.v->p[n+1])-ev[n+1]]=!=0,
@@ -97,11 +103,48 @@ AppendTo[values,ev[n]];
 (*Print[n];
 Print[primes];
 Print[values];*)
-attempts=Table[FindMultivariablePolynomial[v,Drop[primes,k]][Drop[values,k]],{k,0,Length[primes]-1}];
-attempts=Cases[attempts,a_/;FreeQ[a,$Failed]]~Join~attempts;
-result=attempts[[1]];
+
+attempts={};
+k=0;
+While[Length[attempts]<Length[values]\[And]Length[Cases[attempts,a_/;FreeQ[a,$Failed]]]==0,
+AppendTo[attempts,FindMultivariablePolynomial[v,Drop[primes,k]][Drop[values,k]]];
+k++];
+result=If[k==Length[values],
+attempts[[1]],
+attempts[[-1]]
+];
 ];
 result
+]
+
+
+FindMultivariablePolynomial[v_,{}][{}]:=$Failed
+FindMultivariablePolynomial[v_,primes_][values:{___Integer}]:=FindPolynomial[v,primes][values]
+FindMultivariablePolynomial[v_,primes_][values:{___Times}]:=Module[{factors},
+If[Length[Union[Length/@values]]==1,
+factors=Table[FindMultivariablePolynomial[v,primes][values[[All,i]]],{i,1,Length[values[[1]]]}];
+If[FreeQ[factors,$Failed],Times@@factors,FindMultivariablePolynomialDirect[v,primes][Numerator/@values]/FindMultivariablePolynomialDirect[v,primes][Denominator/@values]],
+FindMultivariablePolynomial[v,Rest[primes]][Rest[values]]
+]
+]
+FindMultivariablePolynomial[v_,primes_][values:{___Power}]:=Module[{},
+If[Length[Union[values[[All,2]]]]==1,
+FindMultivariablePolynomial[v,primes][values[[All,1]]]^values[[1,2]],
+FindMultivariablePolynomial[v,Rest[primes]][Rest[values]]
+]
+]
+FindMultivariablePolynomial[v_,primes_][values_]:=FindMultivariablePolynomialDirect[v,primes][values]
+FindMultivariablePolynomialDirect[v_,primes_][values_]:=Module[{variables,exponents,coefficients},
+variables=Variables[values];
+(*Print["primes: ",primes];
+Print["values: ",values];
+Print["v: ",v];
+Print["variables: ",variables];
+*)coefficients=CoefficientRules[values,variables];
+exponents=Union[Flatten[coefficients[[All,All,1]],1]];
+(*Print["coefficients: ",coefficients];
+Print["exponents: ",exponents];*)
+Factor[Sum[FindPolynomial[v,primes][(e/.coefficients)](Times@@(variables^e)),{e,exponents}]]
 ]
 
 
@@ -130,36 +173,6 @@ probabilityBound=1
 ];
 FindPolynomialStep=FindPolynomialStep0;
 guess
-]
-
-
-FindMultivariablePolynomial[v_,{}][{}]:=$Failed
-FindMultivariablePolynomial[v_,primes_][values:{___Integer}]:=FindPolynomial[v,primes][values]
-FindMultivariablePolynomial[v_,primes_][values:{___Times}]:=Module[{factors},
-If[Length[Union[Length/@values]]==1,
-factors=Table[FindMultivariablePolynomial[v,primes][values[[All,i]]],{i,1,Length[values[[1]]]}];
-If[FreeQ[factors,$Failed],Times@@factors,FindMultivariablePolynomialDirect[v,primes][Numerator/@values]/FindMultivariablePolynomialDirect[v,primes][Denominator/@values]],
-FindMultivariablePolynomial[v,Rest[primes]][Rest[values]]
-]
-]
-FindMultivariablePolynomial[v_,primes_][values:{___Power}]:=Module[{},
-If[Length[Union[values[[All,2]]]]==1,
-FindMultivariablePolynomial[v,primes][values[[All,1]]]^values[[1,2]],
-FindMultivariablePolynomial[v,Rest[primes]][Rest[values]]
-]
-]
-FindMultivariablePolynomial[v_,primes_][values_]:=FindMultivariablePolynomialDirect[v,primes][values]
-FindMultivariablePolynomialDirect[v_,primes_][values_]:=Module[{variables,exponents,coefficients},
-variables=Variables[values];
-(*Print["primes: ",primes];
-Print["values: ",values];
-Print["v: ",v];
-Print["variables: ",variables];*)
-coefficients=CoefficientRules[values,variables];
-exponents=Union[Flatten[coefficients[[All,All,1]],1]];
-(*Print["coefficients: ",coefficients];
-Print["exponents: ",exponents];*)
-Factor[Sum[FindPolynomial[v,primes][(e/.coefficients)](Times@@(variables^e)),{e,exponents}]]
 ]
 
 
