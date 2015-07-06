@@ -156,7 +156,7 @@ trait Plantri {
 
 object ConnectedTrivalentPlanarGraphs extends Plantri {
   def apply(n: Int, k: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
-    // Returns a sequence of connected trivalent planar graphs with n boundary points and k internal faces.
+    // Returns connected trivalent planar graphs with n boundary points and k internal faces. (No rotations.)
     require(n > 2, "Number of boundary points must be > 2.")
     val totalVertices = n + k
     val (bytes, log) = runWithByteOutput(totalVertices + " -P" + n + " -Edho -c2m2", verbose)

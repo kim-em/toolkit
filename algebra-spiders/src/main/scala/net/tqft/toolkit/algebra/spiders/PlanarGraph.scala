@@ -35,7 +35,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     require(labels.size == numberOfVertices - 1)
 
     require(vertexFlags(0).headOption match {
-      case None => true
+      case None         => true
       case Some((_, f)) => f == outerFace
     })
 
@@ -142,7 +142,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   lazy val boundaryEdges = vertexFlags(0).map(_._1)
   lazy val boundaryFaces = vertexFlags(0) match {
-    case Nil => Seq(outerFace)
+    case Nil   => Seq(outerFace)
     case other => other.map(_._2)
   }
 
@@ -165,7 +165,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   def edgeBetweenFaces(face1: Int, face2: Int) = {
     edgesBetweenFaces(face1: Int, face2: Int).toList match {
       case List(e) => e
-      case _ => require(false); ??? // this shouldn't happen
+      case _       => require(false); ??? // this shouldn't happen
     }
   }
 
@@ -507,14 +507,15 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       }
     }
   }
-  
+
   val subgraphs = {
     import net.tqft.toolkit.functions.Memo
     Memo(Subgraphs.apply _)
   }
-  
-  def containsSubgraph(shape: PlanarGraph) = Subgraphs(shape).excisions.hasNext
-  
+
+  def containsSubgraph(shape: PlanarGraph): Boolean = Subgraphs(shape).excisions.hasNext
+  def containsOneOf(shapes: Seq[PlanarGraph]): Boolean = shapes.map(this.containsSubgraph).fold(false)((a: Boolean, b: Boolean) => a || b)
+
   case class Subgraphs(shape: PlanarGraph) {
     // require that every edge of shape attaches to an internal vertex
     // this is an unfortunate implementation restriction!
