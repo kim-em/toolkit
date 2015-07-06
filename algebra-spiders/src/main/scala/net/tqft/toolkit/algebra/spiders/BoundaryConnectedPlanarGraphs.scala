@@ -9,7 +9,7 @@ object BoundaryConnectedPlanarGraphs {
   // private val IPendant = spider.multiply(spider.multiply(PlanarGraph.trivalentVertex, spider.rotate(PlanarGraph.twoSquares, -1), 2), PlanarGraph.trivalentVertex, 2)
 
   def trivalent(n: Int, k: Int) = {
-    // Enumerate boundary-connected trivalent graphs. Avoid graphs containing bigons, triangles, two adjacent squares, and a pentagon next to a square. 
+    // Enumerate boundary-connected trivalent graphs with exactly n boundary points and k internal faces. Avoid graphs containing bigons, triangles, two adjacent squares, and a pentagon next to a square. 
     def connectedGraphs(r: Int, s: Int) = if (r > 2)
       ConnectedTrivalentPlanarGraphs(r, s).filterNot(_.hasTinyFace).flatMap(
         (G: PlanarGraph) => Seq.tabulate(r)((rotation: Int) => DiagramSpider.graphSpider.rotate(G, rotation).canonicalFormWithDefect._1)).distinct
