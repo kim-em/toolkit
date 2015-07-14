@@ -10,8 +10,7 @@ object BoundaryConnectedPlanarGraphs {
 
   private def connectedGraphsImpl(r: Int, s: Int) = {
     if (r > 2) {
-      ConnectedTrivalentPlanarGraphs(r, s).filterNot(_.hasTinyFace).flatMap(
-        (G: PlanarGraph) => Seq.tabulate(r)((rotation: Int) => DiagramSpider.graphSpider.rotate(G, rotation).canonicalFormWithDefect._1)).distinct
+      ConnectedTrivalentPlanarGraphs(r, s).filterNot(_.hasTinyFace)
     } else if (r == 2 && s == 0) {
       Seq(PlanarGraph.strand)
     } else {
@@ -19,7 +18,7 @@ object BoundaryConnectedPlanarGraphs {
     }
   }
 
-  val connectedGraphs = {
+  private val connectedGraphs = {
     // "softly" keeps as much as it can, memory permitting.
     Memo.softly(connectedGraphsImpl _)
   }
@@ -32,7 +31,18 @@ object BoundaryConnectedPlanarGraphs {
 
   private val filteredConnectedGraphs = {
     def filtered(forbiddenSubgraphs: Seq[PlanarGraph]) = {
-      Memo((r: Int, s: Int) => connectedGraphs(r, s).filterNot(_.containsOneOf(forbiddenSubgraphs)))
+      def graphs(r: Int, s: Int) = {
+        if (r > 2) {
+          connectedGraphs(r, s).par.filterNot(_.containsOneOf(forbiddenSubgraphs)).flatMap(
+            (G: PlanarGraph) => Seq.tabulate(r)((rotation: Int) => DiagramSpider.graphSpider.rotate(G, rotation).canonicalFormWithDefect._1)).distinct.seq
+        } else if (r == 2 && s == 0) {
+          Seq(PlanarGraph.strand)
+        } else {
+          Seq.empty
+        }
+      }
+
+      Memo.softly(graphs _)
     }
     Memo(filtered _)
   }
