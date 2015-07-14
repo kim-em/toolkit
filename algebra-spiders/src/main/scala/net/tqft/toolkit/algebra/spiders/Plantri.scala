@@ -22,30 +22,45 @@ trait Plantri {
     // The vth element of an IndexedSeq G is the CW sequence of edges coming
     // out of vertex v in G.
 
-    @tailrec def splitGraphSections(pre: IndexedSeq[Int], post: Seq[IndexedSeq[Int]]): Seq[IndexedSeq[Int]] = {
-      // Splits input into IndexedSeq sections per graph      
-      if (pre.isEmpty) post
-      else {
-        // The following values depend on the header type of the section; see plantri-guide.txt for details 
-        val bodyLength = if (pre.head != 0) pre.head else java.nio.ByteBuffer.wrap(Array(0, 0, pre(2), pre(3)).map(_.toByte)).getInt
-        val sectionStartIndex = if (pre.head != 0) 1 else 4
+    // TODO remove?
+//    @tailrec def splitGraphSections(pre: scala.collection.mutable.IndexedSeq[Byte], post: List[IndexedSeq[Byte]]): List[IndexedSeq[Byte]] = {
+//      // Splits input into IndexedSeq sections per graph      
+//      if (pre.isEmpty) post
+//      else {
+//        // The following values depend on the header type of the section; see plantri-guide.txt for details 
+//        val bodyLength = if (pre.head != 0) pre.head else java.nio.ByteBuffer.wrap(Array[Byte](0, 0, pre(2), pre(3))).getInt
+//        val sectionStartIndex = if (pre.head != 0) 1 else 4
+//
+//        splitGraphSections(pre.slice(bodyLength + 1, pre.length + 1), pre.slice(sectionStartIndex, sectionStartIndex + bodyLength) +: post)
+//      }
+//    }
 
-        splitGraphSections(pre.slice(bodyLength + 1, pre.length + 1), pre.slice(sectionStartIndex, sectionStartIndex + bodyLength) +: post)
+    def graphSections(raw: Array[Byte]): List[IndexedSeq[Byte]] = {
+      var p = 0
+      val b = scala.collection.mutable.ListBuffer[IndexedSeq[Byte]]()
+      while(p < raw.length) {
+        val bodyLength = if (raw(p) != 0) raw(p) else java.nio.ByteBuffer.wrap(Array[Byte](0, 0, raw(p+2), raw(p+3))).getInt
+        val sectionStartIndex = if (raw(p) != 0) 1 else 4
+        b += raw.view(p + sectionStartIndex, p + sectionStartIndex + bodyLength)
+        p = p + bodyLength + 1
       }
+      b.toList
     }
-
-    def parseGraph(raw: IndexedSeq[Int]): IndexedSeq[IndexedSeq[Int]] = {
+    
+    def parseGraph(raw: IndexedSeq[Byte]): IndexedSeq[IndexedSeq[Int]] = {
       // Convert each graph code section from plantri output format to the input format of edgeAdjListToPlanarGraph
-      val iter = raw.toIterator
-      return (Iterator continually { iter takeWhile (_ != -1) }
+      val iter = raw.toIterator.map(_.toInt)
+      (Iterator continually { iter takeWhile (_ != -1) }
         takeWhile { !_.isEmpty }
         map { _.toIndexedSeq }).toIndexedSeq
     }
 
-    return splitGraphSections(rawData.map(_.toInt), Seq()).map(parseGraph(_))
+    graphSections(rawData).map(parseGraph(_))
   }
   // Overload to directly read an output file written by plantri
-  def parseEdgeCodeBytes(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = parseEdgeCodeBytes(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
+  def parseEdgeCodeBytes(file: String): Seq[IndexedSeq[IndexedSeq[Int]]] = {
+    parseEdgeCodeBytes(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(file)))
+  }
 
   def edgeAdjListToPlanarGraph(eAdjs: IndexedSeq[IndexedSeq[Int]]): PlanarGraph = {
     // Constructs a PlanarGraph instance for a graph from its edge adjacency list.
