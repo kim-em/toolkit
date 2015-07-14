@@ -146,6 +146,7 @@ object Toolkit extends Build {
     settings = buildSettings ++ 
       proguardSettings ++ 
       Seq(
+        retrieveManaged := true,
         javaOptions in (Proguard, ProguardKeys.proguard) := Seq("-Xmx2G"), 
         ProguardKeys.options in Proguard ++= Seq("-dontnote", "-dontwarn", "-ignorewarnings"),
         ProguardKeys.options in Proguard += ProguardOptions.keepMain("net.tqft.toolkit.wiki.Wiki$")

@@ -86,15 +86,15 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
     }
   }
 
-  private var driverFactory: Driver = HtmlUnitDriver
-  
+  private var driverFactory: Driver = FirefoxDriver
+
   def useHtmlUnit {
     driverFactory = HtmlUnitDriver
   }
   def useFirefox {
     driverFactory = FirefoxDriver
   }
-  
+
   private def driver = driverFactory.driverInstance
   private def actionURL(title: String, action: String) = {
     wikiScriptURL + "?title=" + java.net.URLEncoder.encode(title, "UTF-8") + "&action=" + action
@@ -106,27 +106,26 @@ trait WikiMap extends scala.collection.mutable.Map[String, String] {
       try {
         val db = Database.forURL(_jdbc, driver = "com.mysql.jdbc.Driver")
         val query = for (
-            p <- Pages;
-            if p.page_title === key.replaceAll(" ", "_").stripPrefix("Data:");
-            r <- Revisions;
-            if r.rev_id === p.page_latest;
-            t <- Texts;
-            if t.old_id === r.rev_text_id
-          ) yield t.old_text
-          
+          p <- Pages;
+          if p.page_title === key.replaceAll(" ", "_").stripPrefix("Data:");
+          r <- Revisions;
+          if r.rev_id === p.page_latest;
+          t <- Texts;
+          if t.old_id === r.rev_text_id
+        ) yield t.old_text
+
         Await.result(db.run(query.result), Duration.Inf).headOption
-        
-        
-//        Database.forURL(_jdbc, driver = "com.mysql.jdbc.Driver") withSession { implicit session =>
-//          (for (
-//            p <- Pages;
-//            if p.page_title === key.replaceAll(" ", "_").stripPrefix("Data:");
-//            r <- Revisions;
-//            if r.rev_id === p.page_latest;
-//            t <- Texts;
-//            if t.old_id === r.rev_text_id
-//          ) yield t.old_text)
-//        }
+
+        //        Database.forURL(_jdbc, driver = "com.mysql.jdbc.Driver") withSession { implicit session =>
+        //          (for (
+        //            p <- Pages;
+        //            if p.page_title === key.replaceAll(" ", "_").stripPrefix("Data:");
+        //            r <- Revisions;
+        //            if r.rev_id === p.page_latest;
+        //            t <- Texts;
+        //            if t.old_id === r.rev_text_id
+        //          ) yield t.old_text)
+        //        }
       } catch {
         case e: Exception =>
           Logging.error("Exception while reading from SQL: ", e)
@@ -211,7 +210,11 @@ trait Driver {
 }
 
 object HtmlUnitDriver extends Driver {
-  override def createDriver = new org.openqa.selenium.htmlunit.HtmlUnitDriver()
+  override def createDriver = {
+    val driver = new org.openqa.selenium.htmlunit.HtmlUnitDriver()
+    driver.setJavascriptEnabled(true)
+    driver
+  }
 }
 
 object FirefoxDriver extends Driver {
