@@ -28,6 +28,8 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     }
   }
 
+  private def listify = PlanarGraph(outerFace, vertexFlags.toVector.map(_.toList), labels.toList, loops)
+  
   def verify = {
     // There are many things we might check here!
     require(loops >= 0)
@@ -300,7 +302,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
     val fixedResult = PlanarGraph(newOuterFace, resultFlags.head +: fixedFlags, labelling.take(packed.numberOfVertices).permute((-1, -1) +: packed.labels).tail, graph.loops)
 
-    val finalResult = DiagramSpider.graphSpider.rotate(fixedResult, -boundaryRotation)
+    val finalResult = DiagramSpider.graphSpider.rotate(fixedResult, -boundaryRotation).listify
     val rotation = Rotation(Map() ++ vertexRotations)
 
     (finalResult, rotation)

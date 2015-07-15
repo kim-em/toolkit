@@ -56,7 +56,7 @@ trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
     def putOnStack(a: A, r: R) {
       stack.indexWhere(_._1 == a) match {
         case -1 => stack.push((a, r))
-        case k => stack.updated(k, (a, ring.add(stack.apply(k)._2, r)))
+        case k => stack.update(k, (a, ring.add(stack.apply(k)._2, r)))
       }
     }
     

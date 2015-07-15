@@ -144,8 +144,13 @@ FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"scala.Tuple2"],depth:_?Positive:\[
 FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.Fraction"],depth:_?Positive:\[Infinity]]:=FromScalaObject[o@numerator[],depth-1]/FromScalaObject[o@denominator[],depth-1]
 
 
-FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.polynomials.RationalExpression"],depth:_?Positive:\[Infinity]]:=Module[{},
-ToExpression[rationalExpressionMathematicaForm@toMathematicaInputString[o]]/.{q_Symbol/;StringMatchQ[SymbolName[q],"p"~~DigitCharacter..]:>Subscript[p, ToExpression[StringDrop[SymbolName[q],1]]],t0_Symbol/;StringMatchQ[SymbolName[t0],"t"~~DigitCharacter..]:>tt[ToExpression[StringDrop[SymbolName[t0],1]]]}
+latch[f_]:=(latch[f]=False;True)
+
+
+FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.polynomials.RationalExpression"],depth:_?Positive:\[Infinity]]:=Module[{result},
+result=ToExpression[rationalExpressionMathematicaForm@toMathematicaInputString[o]]/.{q_Symbol/;StringMatchQ[SymbolName[q],"p"~~DigitCharacter..]:>Subscript[p, ToExpression[StringDrop[SymbolName[q],1]]],t0_Symbol/;StringMatchQ[SymbolName[t0],"t"~~DigitCharacter..]:>tt[ToExpression[StringDrop[SymbolName[t0],1]]]};
+(*If[latch[o@toString[]],Print["interpreting ",o@toString[], " with mathematica form ",rationalExpressionMathematicaForm@toMathematicaInputString[o], " as ",result]];*)
+result
 ]
 
 
@@ -239,7 +244,7 @@ DrawPlanarGraph[Subscript[p, k_Integer]]:=DrawPlanarGraph[NamedPolyhedron[Subscr
 unionDiagrams[diagrams_]:=Union[{#@toString[],#}&/@(#@canonicalFormWithDefect[]@U1[]&/@diagrams),SameTest->(First[#1]===First[#2]&)][[All,2]]
 
 
-complementDiagrams[diagrams1_,diagrams2_]:=Complement[{#@toString[],#}&/@(#@canonicalFormWithDefect[]@U1[]&/@diagrams1),{#@toString[],#}&/@(#@canonicalFormWithDefect[]@U1[]&/@diagrams2),SameTest->(First[#1]===First[#2]&)][[All,2]]
+complementDiagrams[diagrams1_,diagrams2_]:=PlanarGraphs@fromString[#]&/@DeleteCases[#@canonicalFormWithDefect[]@U1[]@toString[]&/@diagrams1,Alternatives@@(#@canonicalFormWithDefect[]@U1[]@toString[]&/@diagrams2)]
 
 
 memberQDiagrams[diagrams_,diagram_]:=MemberQ[#@canonicalFormWithDefect[]@U1[]@toString[]&/@diagrams,diagram@canonicalFormWithDefect[]@U1[]@toString[]]
@@ -651,7 +656,7 @@ innerProducts=ReducePolynomials[s][FromScalaObject[s[[1]]@innerProductMatrix[AsS
 subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]}];
 det[{}]=1;
 det[m_]:=delegatingDeterminant[m];
-determinants =ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets;
+determinants =Union[ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets];
 Print["determinants: ",determinants];
 DeclarePolynomialsZero[determinants][s],
 Print["Be careful: you've proposed a spanning set that isn't as big as the dimension bound you're interested in!"];Abort[];
@@ -695,7 +700,7 @@ DeclarePolynomialsZero[determinants][DeclarePolynomialNonZero[gcd][s0]]
 (* determinants must vanish! *)
 Print["Declaring that ",#@toString[]&/@diagrams, " does not span, and hence that some determinants of inner products must vanish."];
 subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]}];
-determinants =ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets;
+determinants =Union[ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets];
 Print["determinants: ",determinants];
 s0=Flatten[{
 DeclarePolynomialZero[det[innerProducts]][s],
@@ -805,7 +810,8 @@ ConsiderDependentDiagram[d0][s]
 
 PairRelationsWith[d0:Diagram][s_SpiderAnalysis]:=Module[{pairings},
 pairings=ComputePairingsWithReducingRelations[d0][s]~Join~ComputePairingsWithNonReducingRelations[d0][s];
-Print["pairings: ",pairings];
+(*Print["d0: ",DrawPlanarGraph[d0]];
+Print["pairings: ",pairings];*)
 If[Length[pairings]>0,
 DeclarePolynomialsZero[Numerator[Together[pairings]]][s],
 {s}
@@ -880,7 +886,11 @@ DeleteCases[ReducePolynomialsFurther[s][innerProducts],0]
 ComputePairingsWithNonReducingRelations[d0:Diagram][s_SpiderAnalysis]:=Module[{relations},
 relations=NonReducingRelations[d0@numberOfBoundaryPoints[]][s];
 (*Print["non-reducing relations: ",relations];*)
-DeleteCases[ReducePolynomialsFurther[s][Plus@@#&/@(relations/.{z_,c:Diagram}:>z (FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[{c}],AsScalaList[{d0}]]][[1,1]]))],0]
+DeleteCases[ReducePolynomialsFurther[s][Plus@@#&/@(relations/.{z_,c:Diagram}:>Module[{r},
+r=FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[{c}],AsScalaList[{d0}]]][[1,1]];
+(*Print["inner product of ",DrawPlanarGraph[c], " and ", DrawPlanarGraph[d0], " is ",r, " which evaluates to ",ReducePolynomialsFurther[s][r]];*)
+r z]
+)],0]
 ]
 
 
@@ -913,11 +923,13 @@ spanningSet=SpanningSets[k][ss][[1]];
 reorderedSpanningSet=i~Join~complementDiagrams[spanningSet,i];
 If[Length[reorderedSpanningSet]=!=Length[spanningSet],
 Print["something is wrong with complementDiagrams"];
-Print[IndependentDiagrams[k][s]];
-Print[complementDiagrams[spanningSet,i]];
+Print["spanning set: ",DrawPlanarGraph/@spanningSet];
+Global`i=i;
+Print["independent diagrams: ",DrawPlanarGraph/@i];
+Print["reordering spanning set: ",DrawPlanarGraph/@complementDiagrams[spanningSet,i]];
 Abort[]
 ];
-Print["reorderedSpanningSet: ",#@toString[]&/@reorderedSpanningSet];
+Print["reorderedSpanningSet: ",DrawPlanarGraph/@reorderedSpanningSet];
 innerProducts2=ReducePolynomials[ss][FromScalaObject[ss[[1]]@innerProductMatrix[AsScalaList[reorderedSpanningSet],AsScalaList[i]]]];
 dot=ReducePolynomials[ss][innerProducts2.nullSpace[[1]]];
 If[Take[dot,Length[i]]=!=Table[0,{Length[i]}],
@@ -1072,7 +1084,7 @@ IntroduceReducingRelation[size_,relation:{initialTerms___,{1,diagram_}}][s_Spide
 text["We now add this relation to the set of reducing relations."];
 newSubstitutions=(tt[tCounter++]->#)&/@{initialTerms}[[All,1]];
 reduction=ScalaCaseClass["net.tqft.toolkit.algebra.spiders.Reduction",diagram,AsScalaMap[#[[2]]->AsScalaObject[-#[[1]],"MultivariableRationalFunction"]&/@({initialTerms}/.(Reverse/@newSubstitutions))]];
-PairRelationsWith[IndependentDiagrams[size][s]~Join~DependentDiagrams[size][s]][ReconsiderClosedDiagrams[DeclarePolynomialsZero[Numerator[Together[#[[1]]-#[[2]]]]&/@newSubstitutions][ReplacePart[s,{1->s[[1]]@addReduction[reduction],-2->s[[-2]]~Join~{{s[[1]],relation}}}]]]]
+PairRelationsWith[IndependentDiagrams[size][s]~Join~DependentDiagrams[size][s]][Global`stash=ReconsiderClosedDiagrams[DeclarePolynomialsZero[Numerator[Together[#[[1]]-#[[2]]]]&/@newSubstitutions][ReplacePart[s,{1->s[[1]]@addReduction[reduction],-2->s[[-2]]~Join~{{s[[1]],relation}}}]]]]
 ]
 
 
