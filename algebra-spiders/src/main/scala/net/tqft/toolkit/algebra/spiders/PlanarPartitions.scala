@@ -8,7 +8,7 @@ object PlanarPartitions {
 
   private val cached = {
     import net.tqft.toolkit.functions.Memo
-    Memo(impl1 _)
+    Memo.softly(impl1 _)
   }
 
   def apply(size: Integer, allowSingletons: Boolean = false): Stream[Seq[Seq[Int]]] = cached(size, allowSingletons)

@@ -53,7 +53,7 @@ object BoundaryConnectedPlanarGraphs {
       (a, _) => a.flatMap(c => Stream.range(0, n - c.sum + 1).map(_ +: c))
     }.map(c => (n - c.sum) +: c)
 
-    Memo(compositions_ _)
+    Memo.softly(compositions_ _)
   }
 
   def apply(n: Int, k: Int, forbiddenSubgraphs: Seq[PlanarGraph] = Seq()): Seq[PlanarGraph] = {

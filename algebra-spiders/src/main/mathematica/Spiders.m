@@ -230,6 +230,9 @@ DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGrap
 DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Import[DrawPlanarGraph$@createPDF[g]@toString[]][[1]]
 
 
+DrawPlanarGraph[S_String]:=DrawPlanarGraph[PlanarGraphs@fromString[S]]
+
+
 DrawPlanarGraph[Subscript[p, k_Integer]]:=DrawPlanarGraph[NamedPolyhedron[Subscript[p, k]]]
 
 
@@ -774,6 +777,8 @@ If[!secondPass,
 Print["We now consider the diagram ",DrawPlanarGraph[d0],If[insistIndependent,", insisting that it is independent.",If[insistDependent,", insisting that it is dependent.","."]]],
 Print["We return to considering the diagram ",d0,"."]
 ];
+(*Put[PickleSpiderAnalysis[s],"/Users/scott/projects/toolkit/algebra-spiders/src/main/mathematica/saved-states/last.m"];
+Global`lastDiagram=d0;*)
 pairings=If[
 memberQDiagrams[Flatten[SpanningSets[k][s]],d0],
 {},

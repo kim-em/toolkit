@@ -6,7 +6,7 @@ import net.tqft.toolkit.Profiler
  * @author scott
  */
 object BoundaryConnectedPlanarGraphsProfiling extends App {
-  for (k <- 0 until 10) {
-    println(Profiler.timing(BoundaryConnectedPlanarGraphs.trivalent(8, k).size))
+  for (k <- 0 until 20) {
+    println(Profiler.timing(BoundaryConnectedPlanarGraphs.trivalent(4, k).size))
   }
 }

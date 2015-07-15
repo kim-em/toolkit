@@ -39,10 +39,10 @@ trait Dreadnaut extends Logging {
 
     in.println(cmd)
     in.println("\"done... \"z")
-//    if (version <= 2.5) {
-//      warn("Please update your dreadnaut version to 2.6, so that we don't have to deal with buffered output.")
-//      for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
-//    }
+    //    if (version <= 2.5) {
+    //      warn("Please update your dreadnaut version to 2.6, so that we don't have to deal with buffered output.")
+    //      for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
+    //    }
     in.flush()
     val result = out.takeWhile(!_.startsWith("done... [")).toList
     result
@@ -105,10 +105,26 @@ trait Dreadnaut extends Logging {
   }
 
   def canonicalLabelling(g: Graph): IndexedSeq[Int] = {
-    val output = invokeDreadnaut(g.toDreadnautString + "cxb\n")
-    val result = output.dropWhile(!_.startsWith("canupdates")).tail.takeWhile(!_.startsWith("  0 :")).mkString("").split(' ').filter(_.nonEmpty).map(_.toInt)
-    require(result.length == g.numberOfVertices)
-    result
+    def impl = {
+      val output = invokeDreadnaut(g.toDreadnautString + "cxb\n")
+      val result = output.dropWhile(!_.startsWith("canupdates")).tail.takeWhile(!_.startsWith("  0 :")).mkString("").split(' ').filter(_.nonEmpty).map(_.toInt)
+      require(result.length == g.numberOfVertices)
+      result
+    }
+
+    try {
+      impl
+    } catch {
+      case e: Exception => {
+        try {
+          impl
+        } catch {
+          case e: Exception => {
+            throw new Exception("Something went wrong while finding the canonical labelling of " + g.toString() + ", dreadnaut command: " + g.toDreadnautString + "cxb", e)
+          }
+        }
+      }
+    }
   }
   def canonicalize(g: Graph): Graph = {
     g.relabel(canonicalLabelling(g))
