@@ -22,19 +22,6 @@ trait Plantri {
     // The vth element of an IndexedSeq G is the CW sequence of edges coming
     // out of vertex v in G.
 
-    // TODO remove?
-//    @tailrec def splitGraphSections(pre: scala.collection.mutable.IndexedSeq[Byte], post: List[IndexedSeq[Byte]]): List[IndexedSeq[Byte]] = {
-//      // Splits input into IndexedSeq sections per graph      
-//      if (pre.isEmpty) post
-//      else {
-//        // The following values depend on the header type of the section; see plantri-guide.txt for details 
-//        val bodyLength = if (pre.head != 0) pre.head else java.nio.ByteBuffer.wrap(Array[Byte](0, 0, pre(2), pre(3))).getInt
-//        val sectionStartIndex = if (pre.head != 0) 1 else 4
-//
-//        splitGraphSections(pre.slice(bodyLength + 1, pre.length + 1), pre.slice(sectionStartIndex, sectionStartIndex + bodyLength) +: post)
-//      }
-//    }
-
     def graphSections(raw: Array[Byte]): List[IndexedSeq[Byte]] = {
       var p = 0
       val b = scala.collection.mutable.ListBuffer[IndexedSeq[Byte]]()
@@ -42,7 +29,7 @@ trait Plantri {
         val bodyLength = if (raw(p) != 0) raw(p) else java.nio.ByteBuffer.wrap(Array[Byte](0, 0, raw(p+2), raw(p+3))).getInt
         val sectionStartIndex = if (raw(p) != 0) 1 else 4
         b += raw.view(p + sectionStartIndex, p + sectionStartIndex + bodyLength)
-        p = p + bodyLength + 1
+        p = p + bodyLength + sectionStartIndex
       }
       b.toList
     }
