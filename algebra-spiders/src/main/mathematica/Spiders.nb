@@ -3,10 +3,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[         0,          0]
-NotebookDataLength[    314456,       7714]
-NotebookOptionsPosition[    300788,       7289]
-NotebookOutlinePosition[    301179,       7306]
-CellTagsIndexPosition[    301136,       7303]
+NotebookDataLength[    315890,       7752]
+NotebookOptionsPosition[    302014,       7321]
+NotebookOutlinePosition[    302405,       7338]
+CellTagsIndexPosition[    302362,       7335]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -3844,6 +3844,207 @@ Cell["Spanning sets and bases", "Subsubsection",
  CellChangeTimes->{{3.64206170803734*^9, 3.642061712135041*^9}, {
   3.643604826645846*^9, 3.643604827871109*^9}}],
 
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"cachedInnerProduct", "[", 
+   RowBox[{"spiderHash_", ",", "x_String", ",", "y_String"}], "]"}], ":=", 
+  "$Failed"}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.64608916379377*^9, 3.646089182196916*^9}, 
+   3.646089524941811*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"cachingInnerProduct", "[", 
+   RowBox[{"spider_SpiderAnalysis", ",", 
+    RowBox[{"x", ":", "Diagram"}], ",", 
+    RowBox[{"y", ":", "Diagram"}]}], "]"}], ":=", 
+  RowBox[{"cachingInnerProduct", "[", 
+   RowBox[{"spider", ",", 
+    RowBox[{"x", "@", 
+     RowBox[{"toString", "[", "]"}]}], ",", 
+    RowBox[{"y", "@", 
+     RowBox[{"toString", "[", "]"}]}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"cachingInnerProduct", "[", 
+   RowBox[{"s_SpiderAnalysis", ",", "x_String", ",", "y_String"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+     "xs", ",", "ys", ",", "outerHash", ",", "innerHash", ",", "result"}], 
+     "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"outerHash", "=", 
+      RowBox[{"Hash", "[", "s", "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"innerHash", "=", 
+      RowBox[{
+       RowBox[{"s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+       "@", 
+       RowBox[{"hashCode", "[", "]"}]}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"result", "=", 
+      RowBox[{"cachedInnerProduct", "[", 
+       RowBox[{"outerHash", ",", "x", ",", "y"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"result", "===", "$Failed"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"result", "=", 
+         RowBox[{"cachedInnerProduct", "[", 
+          RowBox[{"innerHash", ",", "x", ",", "y"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"result", "===", "$Failed"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"result", "=", 
+           RowBox[{
+            RowBox[{"cachedInnerProduct", "[", 
+             RowBox[{"innerHash", ",", "x", ",", "y"}], "]"}], "=", 
+            "\[IndentingNewLine]", 
+            RowBox[{"cachingEvaluation", "[", 
+             RowBox[{
+              RowBox[{
+              "s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+              ",", 
+              RowBox[{"PlanarGraphs", "@", 
+               RowBox[{
+                RowBox[{"spider", "[", "]"}], "@", 
+                RowBox[{
+                 RowBox[{"innerProduct", "[", 
+                  RowBox[{
+                   RowBox[{"PlanarGraphs", "@", 
+                    RowBox[{"fromString", "[", "x", "]"}]}], ",", 
+                   RowBox[{"PlanarGraphs", "@", 
+                    RowBox[{"fromString", "[", "y", "]"}]}]}], "]"}], "@", 
+                 RowBox[{
+                  RowBox[{"canonicalFormWithDefect", "[", "]"}], "@", 
+                  RowBox[{"U1", "[", "]"}]}]}]}]}]}], "]"}]}]}]}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"FromScalaObject", "[", 
+             RowBox[{
+              RowBox[{
+              "spider", "\[LeftDoubleBracket]", "1", 
+               "\[RightDoubleBracket]"}], "@", 
+              RowBox[{"innerProductMatrix", "[", 
+               RowBox[{
+                RowBox[{"Spiders`Private`AsScalaList", "[", 
+                 RowBox[{"{", 
+                  RowBox[{"PlanarGraphs", "@", 
+                   RowBox[{"fromString", "[", "x", "]"}]}], "}"}], "]"}], ",", 
+                RowBox[{"Spiders`Private`AsScalaList", "[", 
+                 RowBox[{"{", 
+                  RowBox[{"PlanarGraphs", "@", 
+                   RowBox[{"fromString", "[", "y", "]"}]}], "}"}], "]"}]}], 
+               "]"}]}], "]"}], "\[LeftDoubleBracket]", 
+            RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], ";"}], "*)"}],
+          "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+        RowBox[{"result", "=", 
+         RowBox[{
+          RowBox[{"cachedInnerProduct", "[", 
+           RowBox[{"outerHash", ",", "x", ",", "y"}], "]"}], "=", 
+          RowBox[{
+           RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", "result", 
+           "]"}]}]}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+     "\[IndentingNewLine]", "result"}]}], "\[IndentingNewLine]", 
+   "]"}]}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.646089126903282*^9, 3.646089316180543*^9}, {
+   3.646089376378997*^9, 3.6460894770418158`*^9}, {3.646089660568536*^9, 
+   3.6460897218269367`*^9}, {3.646089845040655*^9, 3.646089866092558*^9}, {
+   3.646089900597015*^9, 3.6460899016214657`*^9}, {3.6460899410507593`*^9, 
+   3.6460899474975967`*^9}, {3.6460902787350397`*^9, 3.64609028418943*^9}, {
+   3.646091448197567*^9, 3.646091593040936*^9}, {3.646091640361519*^9, 
+   3.64609165620229*^9}, {3.64609174530019*^9, 3.646091760003356*^9}, 
+   3.64609180280296*^9, {3.6460920619461393`*^9, 3.646092089125104*^9}, 
+   3.64609217535069*^9, {3.6460922134188433`*^9, 3.64609237763675*^9}, {
+   3.646092454460243*^9, 3.646092522840252*^9}, {3.646092696117239*^9, 
+   3.6460927064846773`*^9}, {3.646092741556252*^9, 3.64609274799371*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"cachedEvaluation", "[", 
+   RowBox[{"hash_", ",", "xs_String"}], "]"}], ":=", 
+  "$Failed"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"cachingEvaluation", "[", 
+   RowBox[{
+    RowBox[{"spider_", "?", "JavaObjectQ"}], ",", 
+    RowBox[{"x", ":", "Diagram"}]}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"hash", ",", "result", ",", "xs"}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"xs", "=", 
+      RowBox[{"x", "@", 
+       RowBox[{"toString", "[", "]"}]}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"hash", "=", 
+      RowBox[{"spider", "@", 
+       RowBox[{"hashCode", "[", "]"}]}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"result", "=", 
+      RowBox[{"cachedEvaluation", "[", 
+       RowBox[{"hash", ",", "xs"}], "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"result", "===", "$Failed"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"result", "=", 
+         RowBox[{
+          RowBox[{"cachedEvaluation", "[", 
+           RowBox[{"hash", ",", "xs"}], "]"}], "=", 
+          RowBox[{"FromScalaObject", "[", 
+           RowBox[{"spider", "@", 
+            RowBox[{"evaluate", "[", 
+             RowBox[{"spider", "@", 
+              RowBox[{"replaceRepeatedly", "[", 
+               RowBox[{
+                RowBox[{"spider", "@", 
+                 RowBox[{"reductions", "[", "]"}]}], ",", 
+                RowBox[{"AsScalaMap", "[", 
+                 RowBox[{"{", 
+                  RowBox[{"x", "\[Rule]", 
+                   RowBox[{"AsScalaObject", "[", 
+                    RowBox[{
+                    "1", ",", "\"\<MultivariableRationalFunction\>\""}], 
+                    "]"}]}], "}"}], "]"}]}], "]"}]}], "]"}]}], "]"}]}]}], 
+        ";"}]}], "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+     "result"}]}], "\[IndentingNewLine]", "]"}]}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.646089126903282*^9, 3.646089316180543*^9}, {
+   3.646089376378997*^9, 3.6460894770418158`*^9}, {3.646089660568536*^9, 
+   3.6460897218269367`*^9}, {3.646089845040655*^9, 3.646089866092558*^9}, {
+   3.646089900597015*^9, 3.6460899016214657`*^9}, {3.6460899410507593`*^9, 
+   3.6460899474975967`*^9}, {3.6460902787350397`*^9, 3.64609028418943*^9}, {
+   3.646091448197567*^9, 3.646091593040936*^9}, {3.646091640361519*^9, 
+   3.64609165620229*^9}, {3.64609174530019*^9, 3.646091760003356*^9}, 
+   3.64609180280296*^9, {3.6460920619461393`*^9, 3.646092089125104*^9}, 
+   3.64609217535069*^9, {3.6460922134188433`*^9, 3.64609242245864*^9}, {
+   3.646092568877092*^9, 3.646092569556158*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"cachingInnerProduct", "[", 
+   RowBox[{"spider_SpiderAnalysis", ",", "xs_List"}], "]"}], ":=", 
+  RowBox[{"cachingInnerProduct", "[", 
+   RowBox[{"spider", ",", "xs", ",", "xs"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"cachingInnerProduct", "[", 
+   RowBox[{"spider_SpiderAnalysis", ",", "xs_List", ",", "ys_List"}], "]"}], ":=", 
+  RowBox[{"Outer", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"cachingInnerProduct", "[", 
+      RowBox[{"spider", ",", "##"}], "]"}], "&"}], ",", "xs", ",", "ys"}], 
+   "]"}]}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.64608998122433*^9, 3.6460900168708487`*^9}, {
+  3.646090515164958*^9, 3.6460905307637663`*^9}}],
+
 Cell[BoxData[{
  RowBox[{"Clear", "[", "ConsiderPotentialSpanningSet", 
   "]"}], "\[IndentingNewLine]", 
@@ -3966,18 +4167,9 @@ Cell[BoxData[{
                  "\"\< does not span, and hence that its matrix of inner \
 products must vanish.\>\""}], "]"}], ";", "\[IndentingNewLine]", 
                RowBox[{"innerProducts", "=", 
-                RowBox[{
-                 RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-                 RowBox[{"FromScalaObject", "[", 
-                  RowBox[{
-                   RowBox[{
-                   "s", "\[LeftDoubleBracket]", "1", 
-                    "\[RightDoubleBracket]"}], "@", 
-                   RowBox[{"innerProductMatrix", "[", 
-                    RowBox[{
-                    RowBox[{"AsScalaList", "[", "diagrams", "]"}], ",", 
-                    RowBox[{"AsScalaList", "[", "diagrams", "]"}]}], "]"}]}], 
-                  "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+                RowBox[{"cachingInnerProduct", "[", 
+                 RowBox[{"s", ",", "diagrams"}], "]"}]}], ";", 
+               "\[IndentingNewLine]", 
                RowBox[{"subsets", "=", 
                 RowBox[{"Subsets", "[", 
                  RowBox[{
@@ -4037,7 +4229,7 @@ big as the dimension bound you're interested in!\>\"", "]"}], ";",
    3.641458037448512*^9}, {3.6414582762490683`*^9, 3.6414583194227943`*^9}, {
    3.641498183436859*^9, 3.641498183787787*^9}, {3.6420608671107187`*^9, 
    3.64206087800935*^9}, 3.643888989907235*^9, {3.6459549234476423`*^9, 
-   3.645954929375243*^9}}],
+   3.645954929375243*^9}, {3.646090542570326*^9, 3.646090554543665*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -4093,17 +4285,9 @@ Cell[BoxData[
          RowBox[{"Abort", "[", "]"}]}], ",", "\[IndentingNewLine]", 
         RowBox[{
          RowBox[{"innerProducts", "=", 
-          RowBox[{
-           RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-           RowBox[{"FromScalaObject", "[", 
-            RowBox[{
-             RowBox[{
-             "s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "@", 
-             RowBox[{"innerProductMatrix", "[", 
-              RowBox[{
-               RowBox[{"AsScalaList", "[", "diagrams", "]"}], ",", 
-               RowBox[{"AsScalaList", "[", "diagrams", "]"}]}], "]"}]}], 
-            "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"cachingInnerProduct", "[", 
+           RowBox[{"s", ",", "diagrams"}], "]"}]}], ";", 
+         "\[IndentingNewLine]", 
          RowBox[{
           RowBox[{"det", "[", 
            RowBox[{"{", "}"}], "]"}], "=", "1"}], ";", "\[IndentingNewLine]", 
@@ -4323,7 +4507,7 @@ inner products must vanish.\>\""}], "]"}], ";", "\[IndentingNewLine]",
    3.6420733172161913`*^9, 3.642073319553043*^9}, 3.642073681049961*^9, {
    3.643438784695303*^9, 3.643438867256172*^9}, {3.643439949781865*^9, 
    3.643439991007118*^9}, 3.643888991671843*^9, {3.645956046497212*^9, 
-   3.64595604931356*^9}}],
+   3.64595604931356*^9}, 3.6460905643780403`*^9}],
 
 Cell[BoxData[{
  RowBox[{
@@ -4460,18 +4644,9 @@ Cell[BoxData[{
            RowBox[{"s", ",", "k"}], "]"}]}], ",", "\[IndentingNewLine]", 
          RowBox[{
           RowBox[{"innerProducts", "=", 
-           RowBox[{
-            RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-            RowBox[{"FromScalaObject", "[", 
-             RowBox[{
-              RowBox[{
-              "s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-              "@", 
-              RowBox[{"innerProductMatrix", "[", 
-               RowBox[{
-                RowBox[{"AsScalaList", "[", "diagrams", "]"}], ",", 
-                RowBox[{"AsScalaList", "[", "diagrams", "]"}]}], "]"}]}], 
-             "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"cachingInnerProduct", "[", 
+            RowBox[{"s", ",", "diagrams"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
           RowBox[{
            RowBox[{"det", "[", 
             RowBox[{"{", "}"}], "]"}], "=", "1"}], ";", "\[IndentingNewLine]", 
@@ -4519,7 +4694,8 @@ Cell[BoxData[{
    3.6434396734147663`*^9}, {3.643439705458637*^9, 3.643439723208334*^9}, {
    3.6434404111314*^9, 3.643440414122342*^9}, {3.643440596685795*^9, 
    3.643440598582921*^9}, {3.6435523154062967`*^9, 3.643552406974833*^9}, {
-   3.643555793490093*^9, 3.643555797442172*^9}, 3.64388899377896*^9}]
+   3.643555793490093*^9, 3.643555797442172*^9}, 3.64388899377896*^9, 
+   3.6460905701504374`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -5240,83 +5416,6 @@ Cell[BoxData[
         RowBox[{"\"\<reducing relations: \>\"", ",", "relations"}], "]"}], 
        ";"}], "*)"}], "\[IndentingNewLine]", 
      RowBox[{"innerProducts", "=", 
-      RowBox[{
-       RowBox[{"Function", "[", 
-        RowBox[{
-         RowBox[{"{", "pair", "}"}], ",", "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{
-           RowBox[{"{", 
-            RowBox[{"oldSpider", ",", "relation"}], "}"}], "=", "pair"}], ";",
-           "\[IndentingNewLine]", 
-          RowBox[{
-           RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-           RowBox[{"Plus", "@@", 
-            RowBox[{"(", 
-             RowBox[{"relation", "/.", 
-              RowBox[{
-               RowBox[{"{", 
-                RowBox[{"z_", ",", 
-                 RowBox[{"c", ":", "Diagram"}]}], "}"}], "\[RuleDelayed]", 
-               RowBox[{"z", " ", 
-                RowBox[{"(", 
-                 RowBox[{
-                  RowBox[{"FromScalaObject", "[", 
-                   RowBox[{"oldSpider", "@", 
-                    RowBox[{"innerProductMatrix", "[", 
-                    RowBox[{
-                    RowBox[{"AsScalaList", "[", 
-                    RowBox[{"{", "c", "}"}], "]"}], ",", 
-                    RowBox[{"AsScalaList", "[", 
-                    RowBox[{"{", "d0", "}"}], "]"}]}], "]"}]}], "]"}], 
-                  "\[LeftDoubleBracket]", 
-                  RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
-                 ")"}]}]}]}], ")"}]}], "]"}]}]}], "\[IndentingNewLine]", 
-        "]"}], "/@", "relations"}]}], ";", "\[IndentingNewLine]", 
-     RowBox[{"Print", "[", "innerProducts", "]"}], ";", "\[IndentingNewLine]", 
-     RowBox[{"DeleteCases", "[", 
-      RowBox[{
-       RowBox[{
-        RowBox[{"ReducePolynomialsFurther", "[", "s", "]"}], "[", 
-        "innerProducts", "]"}], ",", "0"}], "]"}]}]}], "\[IndentingNewLine]", 
-   "]"}]}]], "Input",
- InitializationCell->True,
- CellChangeTimes->{{3.62121027345573*^9, 3.6212103157002163`*^9}, {
-   3.621210708455922*^9, 3.6212108605189333`*^9}, 3.621210941864338*^9, {
-   3.6221846667547207`*^9, 3.622184681345024*^9}, {3.622186594198947*^9, 
-   3.6221866011186438`*^9}, {3.641069961254953*^9, 3.64106997427106*^9}, {
-   3.641070094642329*^9, 3.641070197458233*^9}, {3.6410702308245363`*^9, 
-   3.641070233878368*^9}, {3.641266674617758*^9, 3.641266677350889*^9}, {
-   3.641266836874666*^9, 3.641266844600062*^9}, {3.641266952264662*^9, 
-   3.641266978937439*^9}, {3.641273178873184*^9, 3.641273271370761*^9}, {
-   3.641273357594612*^9, 3.641273373798027*^9}, {3.641279649286227*^9, 
-   3.641279659334798*^9}, {3.6412936320890627`*^9, 3.641293632705522*^9}, 
-   3.641978322305093*^9, {3.643458883418253*^9, 3.643458889581188*^9}}],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{
-   RowBox[{"ComputePairingsWithReducingRelations", "[", 
-    RowBox[{"d0", ":", "Diagram"}], "]"}], "[", "s_SpiderAnalysis", "]"}], ":=", 
-  RowBox[{"Module", "[", 
-   RowBox[{
-    RowBox[{"{", 
-     RowBox[{
-     "relations", ",", "innerProducts", ",", "oldSpider", ",", "relation"}], 
-     "}"}], ",", "\[IndentingNewLine]", 
-    RowBox[{
-     RowBox[{"relations", "=", 
-      RowBox[{
-       RowBox[{"ReducingRelations", "[", 
-        RowBox[{"d0", "@", 
-         RowBox[{"numberOfBoundaryPoints", "[", "]"}]}], "]"}], "[", "s", 
-       "]"}]}], ";", "\[IndentingNewLine]", 
-     RowBox[{"(*", 
-      RowBox[{
-       RowBox[{"Print", "[", 
-        RowBox[{"\"\<reducing relations: \>\"", ",", "relations"}], "]"}], 
-       ";"}], "*)"}], "\[IndentingNewLine]", 
-     RowBox[{"innerProducts", "=", 
       RowBox[{"Flatten", "[", 
        RowBox[{
         RowBox[{"Function", "[", 
@@ -5341,18 +5440,12 @@ Cell[BoxData[
                   
                   RowBox[{"z", " ", 
                    RowBox[{"(", 
+                    RowBox[{"cachingInnerProduct", "[", 
                     RowBox[{
-                    RowBox[{"FromScalaObject", "[", 
-                    RowBox[{"oldSpider", "@", 
-                    RowBox[{"innerProductMatrix", "[", 
-                    RowBox[{
-                    RowBox[{"AsScalaList", "[", 
-                    RowBox[{"{", "c", "}"}], "]"}], ",", 
-                    RowBox[{"AsScalaList", "[", 
-                    RowBox[{"{", "d0", "}"}], "]"}]}], "]"}]}], "]"}], 
-                    "\[LeftDoubleBracket]", 
-                    RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
-                    ")"}]}]}]}], ")"}]}], ",", 
+                    RowBox[{"ReplacePart", "[", 
+                    RowBox[{"s", ",", 
+                    RowBox[{"1", "\[Rule]", "oldSpider"}]}], "]"}], ",", "c", 
+                    ",", "d0"}], "]"}], ")"}]}]}]}], ")"}]}], ",", 
               RowBox[{"Plus", "@@", 
                RowBox[{"(", 
                 RowBox[{"relation", "/.", 
@@ -5363,23 +5456,10 @@ Cell[BoxData[
                   
                   RowBox[{"z", " ", 
                    RowBox[{"(", 
-                    RowBox[{
-                    RowBox[{"FromScalaObject", "[", 
-                    RowBox[{
-                    RowBox[{
-                    "s", "\[LeftDoubleBracket]", "1", 
-                    "\[RightDoubleBracket]"}], "@", 
-                    RowBox[{"innerProductMatrix", "[", 
-                    RowBox[{
-                    RowBox[{"AsScalaList", "[", 
-                    RowBox[{"{", "c", "}"}], "]"}], ",", 
-                    RowBox[{"AsScalaList", "[", 
-                    RowBox[{"{", "d0", "}"}], "]"}]}], "]"}]}], "]"}], 
-                    "\[LeftDoubleBracket]", 
-                    RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}], 
-                    ")"}]}]}]}], ")"}]}]}], "}"}], "]"}]}]}], 
-         "\[IndentingNewLine]", "]"}], "/@", "relations"}], "]"}]}], ";", 
-     "\[IndentingNewLine]", 
+                    RowBox[{"cachingInnerProduct", "[", 
+                    RowBox[{"s", ",", "c", ",", "d0"}], "]"}], ")"}]}]}]}], 
+                ")"}]}]}], "}"}], "]"}]}]}], "\[IndentingNewLine]", "]"}], "/@",
+         "relations"}], "]"}]}], ";", "\[IndentingNewLine]", 
      RowBox[{"Print", "[", "innerProducts", "]"}], ";", "\[IndentingNewLine]", 
      RowBox[{"DeleteCases", "[", 
       RowBox[{
@@ -5400,7 +5480,8 @@ Cell[BoxData[
    3.641279659334798*^9}, {3.6412936320890627`*^9, 3.641293632705522*^9}, 
    3.641978322305093*^9, {3.643458883418253*^9, 3.643458889581188*^9}, {
    3.643555273395*^9, 3.64355527767481*^9}, {3.643555307881812*^9, 
-   3.643555346092746*^9}, {3.643555967226975*^9, 3.643555995281601*^9}}],
+   3.643555346092746*^9}, {3.643555967226975*^9, 3.643555995281601*^9}, {
+   3.646090834983323*^9, 3.6460908693507338`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -5440,20 +5521,8 @@ Cell[BoxData[
               RowBox[{"{", "r", "}"}], ",", "\[IndentingNewLine]", 
               RowBox[{
                RowBox[{"r", "=", 
-                RowBox[{
-                 RowBox[{"FromScalaObject", "[", 
-                  RowBox[{
-                   RowBox[{
-                   "s", "\[LeftDoubleBracket]", "1", 
-                    "\[RightDoubleBracket]"}], "@", 
-                   RowBox[{"innerProductMatrix", "[", 
-                    RowBox[{
-                    RowBox[{"AsScalaList", "[", 
-                    RowBox[{"{", "c", "}"}], "]"}], ",", 
-                    RowBox[{"AsScalaList", "[", 
-                    RowBox[{"{", "d0", "}"}], "]"}]}], "]"}]}], "]"}], 
-                 "\[LeftDoubleBracket]", 
-                 RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}]}], ";", 
+                RowBox[{"cachingInnerProduct", "[", 
+                 RowBox[{"s", ",", "c", ",", "d0"}], "]"}]}], ";", 
                "\[IndentingNewLine]", 
                RowBox[{"(*", 
                 RowBox[{
@@ -5480,7 +5549,7 @@ Cell[BoxData[
    3.641293637469192*^9, 3.641293638077162*^9}, 3.641978325098764*^9, {
    3.643458895923986*^9, 3.643458901494917*^9}, {3.645952380962261*^9, 
    3.645952455200068*^9}, {3.6459525327671423`*^9, 3.645952545615383*^9}, 
-   3.6459539927910767`*^9}],
+   3.6459539927910767`*^9, {3.6460906861468143`*^9, 3.646090699521216*^9}}],
 
 Cell[BoxData[{
  RowBox[{
@@ -5555,17 +5624,8 @@ Cell[BoxData[
           RowBox[{"IndependentDiagrams", "[", "k", "]"}], "[", "s0", "]"}]}], 
         ";", "\[IndentingNewLine]", 
         RowBox[{"innerProducts", "=", 
-         RowBox[{
-          RowBox[{"ReducePolynomials", "[", "s0", "]"}], "[", 
-          RowBox[{"FromScalaObject", "[", 
-           RowBox[{
-            RowBox[{
-            "s0", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "@", 
-            RowBox[{"innerProductMatrix", "[", 
-             RowBox[{
-              RowBox[{"AsScalaList", "[", "i", "]"}], ",", 
-              RowBox[{"AsScalaList", "[", "i", "]"}]}], "]"}]}], "]"}], 
-          "]"}]}], ";", "\[IndentingNewLine]", 
+         RowBox[{"cachingInnerProduct", "[", 
+          RowBox[{"s0", ",", "i"}], "]"}]}], ";", "\[IndentingNewLine]", 
         RowBox[{"det", "=", 
          RowBox[{
           RowBox[{"ReducePolynomials", "[", "s0", "]"}], "[", 
@@ -5705,24 +5765,16 @@ Cell[BoxData[
                     "\[IndentingNewLine]", 
                     RowBox[{"Abort", "[", "]"}]}]}], "\[IndentingNewLine]", 
                     "]"}], ";", "\[IndentingNewLine]", 
-                   RowBox[{"Print", "[", 
+                   RowBox[{"(*", 
+                    RowBox[{
+                    RowBox[{"Print", "[", 
                     RowBox[{"\"\<reorderedSpanningSet: \>\"", ",", 
                     RowBox[{
                     "DrawPlanarGraph", "/@", "reorderedSpanningSet"}]}], 
-                    "]"}], ";", "\[IndentingNewLine]", 
+                    "]"}], ";"}], "*)"}], "\[IndentingNewLine]", 
                    RowBox[{"innerProducts2", "=", 
-                    RowBox[{
-                    RowBox[{"ReducePolynomials", "[", "ss", "]"}], "[", 
-                    RowBox[{"FromScalaObject", "[", 
-                    RowBox[{
-                    RowBox[{
-                    "ss", "\[LeftDoubleBracket]", "1", 
-                    "\[RightDoubleBracket]"}], "@", 
-                    RowBox[{"innerProductMatrix", "[", 
-                    RowBox[{
-                    RowBox[{"AsScalaList", "[", "reorderedSpanningSet", "]"}],
-                     ",", 
-                    RowBox[{"AsScalaList", "[", "i", "]"}]}], "]"}]}], "]"}], 
+                    RowBox[{"cachingInnerProduct", "[", 
+                    RowBox[{"ss", ",", "reorderedSpanningSet", ",", "i"}], 
                     "]"}]}], ";", "\[IndentingNewLine]", 
                    RowBox[{"dot", "=", 
                     RowBox[{
@@ -5861,7 +5913,8 @@ relation!\>\"", "]"}], ";", "\[IndentingNewLine]",
    3.643458906762446*^9, 3.64345891375456*^9}, 3.643888944863263*^9, 
    3.643888999981937*^9, {3.6459516551719418`*^9, 3.645951711619307*^9}, {
    3.645954740204794*^9, 3.645954780021658*^9}, {3.645955343329143*^9, 
-   3.645955346137765*^9}}],
+   3.645955346137765*^9}, 3.646001672314866*^9, {3.646090713765629*^9, 
+   3.646090739254346*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -5969,27 +6022,13 @@ Cell[BoxData[
           RowBox[{"IndependentDiagrams", "[", "k", "]"}], "[", "s", "]"}]}], 
         ";", "\[IndentingNewLine]", 
         RowBox[{"innerProducts", "=", 
-         RowBox[{"FromScalaObject", "[", 
-          RowBox[{
-           RowBox[{
-           "s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "@", 
-           RowBox[{"innerProductMatrix", "[", 
-            RowBox[{
-             RowBox[{"AsScalaList", "[", 
-              RowBox[{"i", "~", "Join", "~", 
-               RowBox[{"{", "d0", "}"}]}], "]"}], ",", 
-             RowBox[{"AsScalaList", "[", 
-              RowBox[{"i", "~", "Join", "~", 
-               RowBox[{"{", "d0", "}"}]}], "]"}]}], "]"}]}], "]"}]}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"Print", "[", "\"\<computed inner products.\>\"", "]"}], ";", 
-        "\[IndentingNewLine]", 
-        RowBox[{"innerProducts", "=", 
-         RowBox[{
-          RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", "innerProducts", 
-          "]"}]}], ";", "\[IndentingNewLine]", 
-        RowBox[{"Print", "[", "\"\<reduced inner products.\>\"", "]"}], ";", 
-        "\[IndentingNewLine]", 
+         RowBox[{"cachingInnerProduct", "[", 
+          RowBox[{"s", ",", 
+           RowBox[{"i", "~", "Join", "~", 
+            RowBox[{"{", "d0", "}"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{
+        "Print", "[", "\"\<computed and reduced inner products.\>\"", "]"}], 
+        ";", "\[IndentingNewLine]", 
         RowBox[{
          RowBox[{"det0", "[", 
           RowBox[{"{", "}"}], "]"}], "=", "1"}], ";", "\[IndentingNewLine]", 
@@ -6293,7 +6332,7 @@ of these vanishes.\>\""}], "]"}], ";", "\[IndentingNewLine]",
    3.643683226944916*^9, 3.643683304820528*^9}, {3.643716118225916*^9, 
    3.643716121373466*^9}, {3.6437161709691563`*^9, 3.643716177375374*^9}, {
    3.643718444055553*^9, 3.643718446882926*^9}, {3.6438889719122963`*^9, 
-   3.6438889847655354`*^9}}],
+   3.6438889847655354`*^9}, {3.64609074898652*^9, 3.646090788090053*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -6481,17 +6520,9 @@ Cell[BoxData[
      RowBox[{"Print", "[", "\"\<starting innerProductMatrix\>\"", "]"}], ";", 
      "\[IndentingNewLine]", 
      RowBox[{"innerProducts", "=", 
-      RowBox[{
-       RowBox[{"ReducePolynomials", "[", "s", "]"}], "[", 
-       RowBox[{"FromScalaObject", "[", 
-        RowBox[{
-         RowBox[{"s", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
-         "@", 
-         RowBox[{"innerProductMatrix", "[", 
-          RowBox[{
-           RowBox[{"AsScalaList", "[", "diagrams", "]"}], ",", 
-           RowBox[{"AsScalaList", "[", "moreDiagrams", "]"}]}], "]"}]}], 
-        "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"cachingInnerProduct", "[", 
+       RowBox[{"s", ",", "diagrams", ",", "moreDiagrams"}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
      RowBox[{"nonzeroInnerProducts", "=", 
       RowBox[{"Numerator", "[", 
        RowBox[{"DeleteCases", "[", 
@@ -6650,7 +6681,8 @@ proceeding.\>\"", "]"}], ";", "\[IndentingNewLine]",
    3.641266436517638*^9, 3.6412664420350227`*^9}, {3.641266508073154*^9, 
    3.641266520907324*^9}, {3.641293164488228*^9, 3.641293169370178*^9}, 
    3.641366037788632*^9, {3.641514212003461*^9, 3.6415142125185213`*^9}, 
-   3.641514256613977*^9, {3.643466115055757*^9, 3.6434661196937847`*^9}}],
+   3.641514256613977*^9, {3.643466115055757*^9, 3.6434661196937847`*^9}, {
+   3.64609079605009*^9, 3.646090810735322*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -7289,7 +7321,7 @@ Cell[BoxData[
 },
 AutoGeneratedPackage->Automatic,
 WindowSize->{1067, 842},
-WindowMargins->{{15, Automatic}, {Automatic, 3}},
+WindowMargins->{{Automatic, 37}, {Automatic, 0}},
 FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
 2014)",
 StyleDefinitions->"Default.nb"
@@ -7597,115 +7629,121 @@ Cell[152702, 3820, 538, 16, 28, "Input",
 Cell[CellGroupData[{
 Cell[153277, 3841, 189, 3, 35, "Subsubsection",
  InitializationCell->True],
-Cell[153469, 3846, 8655, 193, 624, "Input",
+Cell[153469, 3846, 280, 7, 28, "Input",
  InitializationCell->True],
-Cell[162127, 4041, 13114, 284, 811, "Input",
+Cell[153752, 3855, 4930, 109, 352, "Input",
  InitializationCell->True],
-Cell[175244, 4327, 2404, 66, 148, "Input",
+Cell[158685, 3966, 2688, 60, 233, "Input",
  InitializationCell->True],
-Cell[177651, 4395, 5234, 126, 386, "Input",
+Cell[161376, 4028, 717, 17, 46, "Input",
+ InitializationCell->True],
+Cell[162096, 4047, 8252, 184, 607, "Input",
+ InitializationCell->True],
+Cell[170351, 4233, 12756, 276, 794, "Input",
+ InitializationCell->True],
+Cell[183110, 4511, 2404, 66, 148, "Input",
+ InitializationCell->True],
+Cell[185517, 4579, 4857, 118, 369, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[182922, 4526, 138, 2, 35, "Subsubsection",
+Cell[190411, 4702, 138, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[183063, 4530, 2412, 67, 167, "Input",
+Cell[190552, 4706, 2412, 67, 167, "Input",
  InitializationCell->True],
-Cell[185478, 4599, 1526, 43, 64, "Input",
+Cell[192967, 4775, 1526, 43, 64, "Input",
  InitializationCell->True],
-Cell[187007, 4644, 690, 16, 46, "Input",
+Cell[194496, 4820, 690, 16, 46, "Input",
  InitializationCell->True],
-Cell[187700, 4662, 14650, 309, 965, "Input",
+Cell[195189, 4838, 14650, 309, 965, "Input",
  InitializationCell->True],
-Cell[202353, 4973, 1655, 41, 165, "Input",
+Cell[209842, 5149, 1655, 41, 165, "Input",
  InitializationCell->True],
-Cell[204011, 5016, 452, 13, 28, "Input",
+Cell[211500, 5192, 452, 13, 28, "Input",
  InitializationCell->True],
-Cell[204466, 5031, 500, 11, 46, "Input",
+Cell[211955, 5207, 500, 11, 46, "Input",
  InitializationCell->True],
-Cell[204969, 5044, 169, 3, 28, "Input",
+Cell[212458, 5220, 169, 3, 28, "Input",
  InitializationCell->True],
-Cell[205141, 5049, 320, 7, 28, "Input",
+Cell[212630, 5225, 320, 7, 28, "Input",
  InitializationCell->True],
-Cell[205464, 5058, 503, 13, 28, "Input",
+Cell[212953, 5234, 503, 13, 28, "Input",
  InitializationCell->True],
-Cell[205970, 5073, 283, 7, 28, "Input",
+Cell[213459, 5249, 283, 7, 28, "Input",
  InitializationCell->True],
-Cell[206256, 5082, 2032, 53, 131, "Input",
+Cell[213745, 5258, 2032, 53, 131, "Input",
  InitializationCell->True],
-Cell[208291, 5137, 332, 7, 28, "Input",
+Cell[215780, 5313, 332, 7, 28, "Input",
  InitializationCell->True],
-Cell[208626, 5146, 375, 11, 28, "Input",
+Cell[216115, 5322, 375, 11, 28, "Input",
  InitializationCell->True],
-Cell[209004, 5159, 2131, 57, 131, "Input",
+Cell[216493, 5335, 2131, 57, 131, "Input",
  InitializationCell->True],
-Cell[211138, 5218, 3387, 75, 250, "Input",
+Cell[218627, 5394, 3998, 89, 233, "Input",
  InitializationCell->True],
-Cell[214528, 5295, 4802, 107, 301, "Input",
+Cell[222628, 5485, 3089, 66, 182, "Input",
  InitializationCell->True],
-Cell[219333, 5404, 3588, 78, 182, "Input",
+Cell[225720, 5553, 1179, 31, 63, "Input",
  InitializationCell->True],
-Cell[222924, 5484, 1179, 31, 63, "Input",
+Cell[226902, 5586, 16636, 330, 981, "Input",
  InitializationCell->True],
-Cell[224106, 5517, 17325, 346, 998, "Input",
+Cell[243541, 5918, 2222, 58, 148, "Input",
  InitializationCell->True],
-Cell[241434, 5865, 2222, 58, 148, "Input",
+Cell[245766, 5978, 17326, 356, 1186, "Input",
  InitializationCell->True],
-Cell[243659, 5925, 17923, 370, 1220, "Input",
+Cell[263095, 6336, 278, 7, 28, "Input",
  InitializationCell->True],
-Cell[261585, 6297, 278, 7, 28, "Input",
+Cell[263376, 6345, 615, 18, 28, "Input",
  InitializationCell->True],
-Cell[261866, 6306, 615, 18, 28, "Input",
+Cell[263994, 6365, 359, 9, 28, "Input",
  InitializationCell->True],
-Cell[262484, 6326, 359, 9, 28, "Input",
+Cell[264356, 6376, 502, 14, 28, "Input",
  InitializationCell->True],
-Cell[262846, 6337, 502, 14, 28, "Input",
+Cell[264861, 6392, 2249, 55, 114, "Input",
  InitializationCell->True],
-Cell[263351, 6353, 2249, 55, 114, "Input",
+Cell[267113, 6449, 10813, 235, 658, "Input",
  InitializationCell->True],
-Cell[265603, 6410, 11097, 242, 675, "Input",
+Cell[277929, 6686, 167, 4, 28, "Input",
  InitializationCell->True],
-Cell[276703, 6654, 167, 4, 28, "Input",
+Cell[278099, 6692, 5136, 123, 199, "Input",
  InitializationCell->True],
-Cell[276873, 6660, 5136, 123, 199, "Input",
+Cell[283238, 6817, 1084, 27, 80, "Input",
  InitializationCell->True],
-Cell[282012, 6785, 1084, 27, 80, "Input",
+Cell[284325, 6846, 313, 8, 28, "Input",
  InitializationCell->True],
-Cell[283099, 6814, 313, 8, 28, "Input",
+Cell[284641, 6856, 604, 16, 46, "Input",
  InitializationCell->True],
-Cell[283415, 6824, 604, 16, 46, "Input",
+Cell[285248, 6874, 363, 9, 28, "Input",
  InitializationCell->True],
-Cell[284022, 6842, 363, 9, 28, "Input",
+Cell[285614, 6885, 1652, 37, 97, "Input",
  InitializationCell->True],
-Cell[284388, 6853, 1652, 37, 97, "Input",
+Cell[287269, 6924, 1971, 50, 97, "Input",
  InitializationCell->True],
-Cell[286043, 6892, 1971, 50, 97, "Input",
+Cell[289243, 6976, 1569, 39, 80, "Input",
  InitializationCell->True],
-Cell[288017, 6944, 1569, 39, 80, "Input",
- InitializationCell->True],
-Cell[289589, 6985, 1712, 42, 97, "Input",
+Cell[290815, 7017, 1712, 42, 97, "Input",
  InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[291338, 7032, 126, 2, 35, "Subsubsection",
+Cell[292564, 7064, 126, 2, 35, "Subsubsection",
  InitializationCell->True],
-Cell[291467, 7036, 1810, 45, 177, "Input",
+Cell[292693, 7068, 1810, 45, 177, "Input",
  InitializationCell->True],
-Cell[293280, 7083, 2931, 71, 170, "Input",
+Cell[294506, 7115, 2931, 71, 170, "Input",
  InitializationCell->True],
-Cell[296214, 7156, 1964, 55, 114, "Input",
+Cell[297440, 7188, 1964, 55, 114, "Input",
  InitializationCell->True],
-Cell[298181, 7213, 2185, 53, 148, "Input",
+Cell[299407, 7245, 2185, 53, 148, "Input",
  InitializationCell->True]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[300427, 7273, 128, 2, 64, "Section",
+Cell[301653, 7305, 128, 2, 64, "Section",
  InitializationCell->True],
-Cell[300558, 7277, 96, 3, 28, "Input",
+Cell[301784, 7309, 96, 3, 28, "Input",
  InitializationCell->True],
-Cell[300657, 7282, 103, 3, 28, "Input",
+Cell[301883, 7314, 103, 3, 28, "Input",
  InitializationCell->True]
 }, Open  ]]
 }, Open  ]]

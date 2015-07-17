@@ -48,6 +48,15 @@ case class QuotientSpider(
     reductions.exists(r => p.subgraphs(r.big).cachedExcisions.nonEmpty)
   }
 
+  val cachedEvaluatedInnerProduct = {
+    import net.tqft.toolkit.functions.Memo
+    Memo(super.evaluatedInnerProduct _)
+  }
+  
+  override def evaluatedInnerProduct(x: PlanarGraph, y: PlanarGraph) = {
+    cachedEvaluatedInnerProduct(x, y)
+  }
+  
   override def toString = {
     import MathematicaForm._
     val extraReductionsString = extraReductions.map({
