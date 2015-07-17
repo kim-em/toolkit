@@ -637,6 +637,43 @@ AppendClosedDiagram[d0][s]]
 ConsiderClosedDiagrams[diagrams:{Diagram...}][s_SpiderAnalysis]:=Fold[ConsiderClosedDiagram[#2][#1]&,{s},diagrams]
 
 
+cachedInnerProduct[spiderHash_,x_String,y_String]:=$Failed
+
+
+cachingInnerProduct[spider_SpiderAnalysis,x:Diagram,y:Diagram]:=cachingInnerProduct[spider,x@toString[],y@toString[]]
+cachingInnerProduct[s_SpiderAnalysis,x_String,y_String]:=Module[{xs,ys,outerHash,innerHash,result},
+outerHash=Hash[s];
+innerHash=s[[1]]@hashCode[];
+result=cachedInnerProduct[outerHash,x,y];
+If[result===$Failed,
+result=cachedInnerProduct[innerHash,x,y];
+If[result===$Failed,
+result=cachedInnerProduct[innerHash,x,y]=
+cachingEvaluation[s[[1]],PlanarGraphs@spider[]@innerProduct[PlanarGraphs@fromString[x],PlanarGraphs@fromString[y]]@canonicalFormWithDefect[]@U1[]]
+(*FromScalaObject[spider\[LeftDoubleBracket]1\[RightDoubleBracket]@innerProductMatrix[Spiders`Private`AsScalaList[{PlanarGraphs@fromString[x]}],Spiders`Private`AsScalaList[{PlanarGraphs@fromString[y]}]]]\[LeftDoubleBracket]1,1\[RightDoubleBracket];*)
+];
+result=cachedInnerProduct[outerHash,x,y]=ReducePolynomials[s][result];
+];
+result
+]
+
+
+cachedEvaluation[hash_,xs_String]:=$Failed
+cachingEvaluation[spider_?JavaObjectQ,x:Diagram]:=Module[{hash,result,xs},
+xs=x@toString[];
+hash=spider@hashCode[];
+result=cachedEvaluation[hash,xs];
+If[result===$Failed,
+result=cachedEvaluation[hash,xs]=FromScalaObject[spider@evaluate[spider@replaceRepeatedly[spider@reductions[],AsScalaMap[{x->AsScalaObject[1,"MultivariableRationalFunction"]}]]]];
+];
+result
+]
+
+
+cachingInnerProduct[spider_SpiderAnalysis,xs_List]:=cachingInnerProduct[spider,xs,xs]
+cachingInnerProduct[spider_SpiderAnalysis,xs_List,ys_List]:=Outer[cachingInnerProduct[spider,##]&,xs,ys]
+
+
 Clear[ConsiderPotentialSpanningSet]
 ConsiderPotentialSpanningSet[diagrams:{Diagram...}]:=ConsiderPotentialSpanningSet[diagrams[[1]]@numberOfBoundaryPoints[],diagrams]
 ConsiderPotentialSpanningSet[k_Integer,diagrams:{Diagram...}][s_SpiderAnalysis]:=Module[{zzz,innerProducts,subsets,det,determinants},
@@ -652,7 +689,7 @@ Print["Declaring that ",#@toString[]&/@diagrams, " is a spanning set"];
 If[Length[diagrams]>=DimensionUpperBound[s,k],
 (* the determinant must vanish! *)
 Print["Declaring that ",#@toString[]&/@diagrams, " does not span, and hence that its matrix of inner products must vanish."];
-innerProducts=ReducePolynomials[s][FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[diagrams],AsScalaList[diagrams]]]];
+innerProducts=cachingInnerProduct[s,diagrams];
 subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]}];
 det[{}]=1;
 det[m_]:=delegatingDeterminant[m];
@@ -674,7 +711,7 @@ If[Length[s[[7]]]<k+1,
 ConsiderPotentialSpanningSet[k,diagrams][ReplacePart[s,7->(PadRight[s[[7]],k+1,zzz]/.zzz->{})]],
 If[Length[SpanningSets[k][s]]>0,
 Print["There's already a declared spanning set for ", k, " boundary points"];Abort[],
-innerProducts=ReducePolynomials[s][FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[diagrams],AsScalaList[diagrams]]]];
+innerProducts=cachingInnerProduct[s,diagrams];
 det[{}]=1;
 det[m_]:=Factor[delegatingDeterminant[m]];
 Flatten[{
@@ -730,7 +767,7 @@ DeleteCases[Flatten[Table[ComputePairingsWithReducingRelations[d0][s]~Join~Compu
 If[Length[pairings]>0,
 DeclareBasis[diagrams][DeclarePolynomialsZero[Numerator[Together[pairings]]][s]],
 If[DimensionLowerBound[s,k]<=Length[diagrams]<=DimensionUpperBound[s,k],
-innerProducts=ReducePolynomials[s][FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[diagrams],AsScalaList[diagrams]]]];
+innerProducts=cachingInnerProduct[s,diagrams];
 det[{}]=1;
 det[m_]:=Factor[delegatingDeterminant[m]];
 s0=ReplacePart[s,{3,k+1}->{Length[diagrams],Length[diagrams]}];
@@ -862,21 +899,9 @@ Times@@(f/@X0)
 ComputePairingsWithReducingRelations[d0:Diagram][s_SpiderAnalysis]:=Module[{relations,innerProducts,oldSpider,relation},
 relations=ReducingRelations[d0@numberOfBoundaryPoints[]][s];
 (*Print["reducing relations: ",relations];*)
-innerProducts=Function[{pair},
-{oldSpider,relation}=pair;
-ReducePolynomials[s][Plus@@(relation/.{z_,c:Diagram}:>z (FromScalaObject[oldSpider@innerProductMatrix[AsScalaList[{c}],AsScalaList[{d0}]]][[1,1]]))]
-]/@relations;
-Print[innerProducts];
-DeleteCases[ReducePolynomialsFurther[s][innerProducts],0]
-]
-
-
-ComputePairingsWithReducingRelations[d0:Diagram][s_SpiderAnalysis]:=Module[{relations,innerProducts,oldSpider,relation},
-relations=ReducingRelations[d0@numberOfBoundaryPoints[]][s];
-(*Print["reducing relations: ",relations];*)
 innerProducts=Flatten[Function[{pair},
 {oldSpider,relation}=pair;
-ReducePolynomials[s][{Plus@@(relation/.{z_,c:Diagram}:>z (FromScalaObject[oldSpider@innerProductMatrix[AsScalaList[{c}],AsScalaList[{d0}]]][[1,1]])),Plus@@(relation/.{z_,c:Diagram}:>z (FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[{c}],AsScalaList[{d0}]]][[1,1]]))}]
+ReducePolynomials[s][{Plus@@(relation/.{z_,c:Diagram}:>z (cachingInnerProduct[ReplacePart[s,1->oldSpider],c,d0])),Plus@@(relation/.{z_,c:Diagram}:>z (cachingInnerProduct[s,c,d0]))}]
 ]/@relations];
 Print[innerProducts];
 DeleteCases[ReducePolynomialsFurther[s][innerProducts],0]
@@ -887,7 +912,7 @@ ComputePairingsWithNonReducingRelations[d0:Diagram][s_SpiderAnalysis]:=Module[{r
 relations=NonReducingRelations[d0@numberOfBoundaryPoints[]][s];
 (*Print["non-reducing relations: ",relations];*)
 DeleteCases[ReducePolynomialsFurther[s][Plus@@#&/@(relations/.{z_,c:Diagram}:>Module[{r},
-r=FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[{c}],AsScalaList[{d0}]]][[1,1]];
+r=cachingInnerProduct[s,c,d0];
 (*Print["inner product of ",DrawPlanarGraph[c], " and ", DrawPlanarGraph[d0], " is ",r, " which evaluates to ",ReducePolynomialsFurther[s][r]];*)
 r z]
 )],0]
@@ -903,7 +928,7 @@ k=d0@numberOfBoundaryPoints[];
 If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s},
 s0=AppendIndependentDiagram[d0][s];
 i=IndependentDiagrams[k][s0];
-innerProducts=ReducePolynomials[s0][FromScalaObject[s0[[1]]@innerProductMatrix[AsScalaList[i],AsScalaList[i]]]];
+innerProducts=cachingInnerProduct[s0,i];
 det=ReducePolynomials[s0][Factor[delegatingDeterminant[innerProducts]]];
 If[Length[i]==DimensionUpperBound[s0,k],
 s0=DeclarePolynomialNonZero[det][s0]
@@ -929,8 +954,8 @@ Print["independent diagrams: ",DrawPlanarGraph/@i];
 Print["reordering spanning set: ",DrawPlanarGraph/@complementDiagrams[spanningSet,i]];
 Abort[]
 ];
-Print["reorderedSpanningSet: ",DrawPlanarGraph/@reorderedSpanningSet];
-innerProducts2=ReducePolynomials[ss][FromScalaObject[ss[[1]]@innerProductMatrix[AsScalaList[reorderedSpanningSet],AsScalaList[i]]]];
+(*Print["reorderedSpanningSet: ",DrawPlanarGraph/@reorderedSpanningSet];*)
+innerProducts2=cachingInnerProduct[ss,reorderedSpanningSet,i];
 dot=ReducePolynomials[ss][innerProducts2.nullSpace[[1]]];
 If[Take[dot,Length[i]]=!=Table[0,{Length[i]}],
 Print["something is messed up!"];
@@ -969,10 +994,8 @@ If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s
 Print["considering the dependent diagram ",d0@toString[]];
 Print["manifold: ",s[[2]]];
 i=IndependentDiagrams[k][s];
-innerProducts=FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[i~Join~{d0}],AsScalaList[i~Join~{d0}]]];
-Print["computed inner products."];
-innerProducts=ReducePolynomials[s][innerProducts];
-Print["reduced inner products."];
+innerProducts=cachingInnerProduct[s,i~Join~{d0}];
+Print["computed and reduced inner products."];
 det0[{}]=1;
 det0[M_]:=delegatingDeterminant[M];
 (*If[ReducePolynomials[s][Factor[det0[Most[Most/@innerProducts]]]]===0,
@@ -1050,7 +1073,7 @@ IntroduceRelation[size_Integer,relation:{initialTerms___,{1,diagram_}}][s_Spider
 diagrams=relation[[All,2]];
 moreDiagrams=unionDiagrams[Flatten[Table[s[[1]]@diagramSpider[]@rotate[d0,k],{d0,unionDiagrams[diagrams~Join~DependentDiagrams[s[[1]]@diagramSpider[]@circumference[diagram]][s]~Join~IndependentDiagrams[s[[1]]@diagramSpider[]@circumference[diagram]][s]]},{k,0,s[[1]]@diagramSpider[]@circumference[d0]-1}]]];
 Print["starting innerProductMatrix"];
-innerProducts=ReducePolynomials[s][FromScalaObject[s[[1]]@innerProductMatrix[AsScalaList[diagrams],AsScalaList[moreDiagrams]]]];
+innerProducts=cachingInnerProduct[s,diagrams,moreDiagrams];
 nonzeroInnerProducts=Numerator[DeleteCases[ReducePolynomialsFurther[s][relation[[All,1]].innerProducts],0]];
 
 (*
