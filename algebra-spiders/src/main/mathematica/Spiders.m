@@ -232,7 +232,7 @@ Name[d0:Diagram]:=FromScalaObject[ScalaSingleton["net.tqft.toolkit.algebra.spide
 DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGraph"]@withOutputPath[FileNameJoin[{SpidersMathematicaDirectory,"graphs"}]];
 
 
-DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Import[DrawPlanarGraph$@createPDF[g]@toString[]][[1]]
+DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Import[DrawPlanarGraph$@createPDF[g]@toString[]]/.{$Failed->g@toString[],{picture_}:>picture}
 
 
 DrawPlanarGraph[S_String]:=DrawPlanarGraph[PlanarGraphs@fromString[S]]
@@ -332,7 +332,7 @@ If[factors==={0},{m},
 factors=DeleteCases[factors,_Integer|_Rational];
 If[Length[factors]==0,{},
 If[Length[Complement[factors,groebnerBasis~Join~(-groebnerBasis)]]==0,{m},
-Print["We find the factors " ,factors," and then require that at least one is zero. ",nonzeroPolynomials];
+Print["We find the factors " ,factors," and then require that at least one is zero. "];
 Flatten[DeclareIrreduciblePolynomialZero[#][m]&/@factors,1]
 ]
 ]
@@ -616,11 +616,11 @@ EvaluateClosedDiagram[s_SpiderAnalysis][d0:Diagram]:=ReducePolynomials[s][FromSc
 ClosedDiagrams[s_SpiderAnalysis]:=s[[6]]
 
 
+ConsiderClosedDiagram[d0:Subscript[p, _]]:=ConsiderClosedDiagram[NamedPolyhedron[d0]]
 ConsiderClosedDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{evaluations},
 If[MemberQ[#@hashCode[]&/@ClosedDiagrams[s],d0@hashCode[]],
 {s},
-Print["Considering a new closed diagram: ",d0@toString[]];
-Print[s[[2]]];
+Print["Considering a new closed diagram: ",DrawPlanarGraph[d0]];
 Print[s[[1]]@evaluate[AsScalaObject[{d0->Ring@one[]}]]@toString[]];
 evaluations=FromScalaObject[s[[1]]@allOneStepEvaluations[d0]@toSeq[]];
 Print["evaluations, before reducing: ",evaluations];
@@ -634,7 +634,7 @@ AppendClosedDiagram[d0][s]]
 ]
 
 
-ConsiderClosedDiagrams[diagrams:{Diagram...}][s_SpiderAnalysis]:=Fold[ConsiderClosedDiagram[#2][#1]&,{s},diagrams]
+ConsiderClosedDiagrams[diagrams_List][s_SpiderAnalysis]:=Fold[ConsiderClosedDiagram[#2][#1]&,{s},diagrams]
 
 
 cachedInnerProduct[spiderHash_,x_String,y_String]:=$Failed
