@@ -61,7 +61,7 @@ CubicTrivalentCategories:=CubicTrivalentCategories=Module[{CubicTrivalentCategor
 CubicTrivalentCategories=DeclarePolynomialsNonZero[{2-d-t+d t}][DeclareDimensionBounds[{{1,1},{0,0},{1,1},{1,1},{4,4}}][Trivalent]];
 CubicTrivalentCategories=DeclarePolynomialEitherZeroOrNonZero[-d^2+d+1][CubicTrivalentCategories];diagrams=ReducedDiagrams[CubicTrivalentCategories[[1]],4,0]~Join~ReducedDiagrams[CubicTrivalentCategories[[1]],4,2]~Join~{polygon[4],PlanarGraphs@twoSquares[]};CubicTrivalentCategories=ConsiderDiagrams[diagrams][CubicTrivalentCategories];
 
-If[Length[CubicTrivalentCategories]!=11,Print["Something went wrong while building the cubic trivalent categories!"];Abort[]];
+If[Length[CubicTrivalentCategories]!=4,Print["Something went wrong while building the cubic trivalent categories!"];Abort[]];
 
 CubicTrivalentCategories
 ]

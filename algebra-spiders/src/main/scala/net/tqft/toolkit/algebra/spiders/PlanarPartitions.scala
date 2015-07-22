@@ -8,7 +8,7 @@ object PlanarPartitions {
 
   private val cached = {
     import net.tqft.toolkit.functions.Memo
-    Memo(impl1 _)
+    Memo.softly(impl1 _)
   }
 
   def apply(size: Integer, allowSingletons: Boolean = false): Stream[Seq[Seq[Int]]] = cached(size, allowSingletons)
@@ -29,7 +29,7 @@ object PlanarPartitions {
   }
 
   private def impl2(set: List[Int], allowSingletons: Boolean): Stream[Seq[Seq[Int]]] = {
-    println("finding planar partitions of " + set)
+    //println("finding planar partitions of " + set)
     import net.tqft.toolkit.collections.Split._
     import net.tqft.toolkit.collections.CartesianProduct._
     set match {
