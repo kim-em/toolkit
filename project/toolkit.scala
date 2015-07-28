@@ -169,7 +169,14 @@ object BuildSettings {
     version := buildVersion,
     scalaVersion := buildScalaVersion,
     scalacOptions += "-target:jvm-1.7",
-    publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
+    publishTo := {
+        val key = new java.io.File("~/.ssh/id_rsa")
+        if(key.exists) {
+          Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", key))
+        } else {
+          None
+        }
+    },
     resolvers := sonatypeResolvers ++ tqftResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.4" % "test",
     //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
