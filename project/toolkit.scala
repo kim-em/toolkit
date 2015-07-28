@@ -168,6 +168,7 @@ object BuildSettings {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
+    scalacOptions += "-target:jvm-1.7",
     publishTo := Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
     resolvers := sonatypeResolvers ++ tqftResolvers /* ++ SonatypeSettings.publishing */,
     libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.4" % "test",
