@@ -170,7 +170,7 @@ object BuildSettings {
     scalaVersion := buildScalaVersion,
     scalacOptions += "-target:jvm-1.7",
     publishTo := {
-        val key = new java.io.File("~/.ssh/id_rsa")
+        val key = new java.io.File(Path.userHome.absolutePath + "/.ssh/id_rsa")
         if(key.exists) {
           Some(Resolver.sftp("toolkit.tqft.net Maven repository", "tqft.net", "tqft.net/releases") as ("scottmorrison", key))
         } else {
