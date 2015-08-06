@@ -205,7 +205,7 @@ product[v___]:=product[v]=evaluation[v].inverse[v];
 productpart[i_,j_][v___]:=productpart[i,j][v]=Together[product[v][[i,j]]];
 Do[product[Prime[1+1000n]+Mod[n,2],variables[[2]]],{n,1,4}];
 Table[Print[DateString[]<> " computing matrix1.Inverse[matrix2][[",i,",",j,"]]"];result=TimeConstrained[FindMultivariablePolynomial[variables][((productpart[i,j][##]))&],30];
-Print["obtained ",result];result,{i,1,Length[matrix1]},{j,1,Length[matrix1]}]
+Print["obtained ",result];result,{i,1,Length[matrix1]},{j,1,Length[matrix2]}]
 ]
 
 
