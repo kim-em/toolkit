@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    330098,       8658]
-NotebookOptionsPosition[    326051,       8523]
-NotebookOutlinePosition[    326466,       8541]
-CellTagsIndexPosition[    326423,       8538]
+NotebookDataLength[    331079,       8692]
+NotebookOptionsPosition[    326946,       8555]
+NotebookOutlinePosition[    327361,       8573]
+CellTagsIndexPosition[    327318,       8570]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -6841,22 +6841,97 @@ Cell[BoxData[
   3.647857092330068*^9, 3.6478571045173197`*^9}, {3.647857712024282*^9, 
   3.6478577214946947`*^9}}],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  RowBox[{"Do", "[", 
   RowBox[{
    RowBox[{"Put", "[", 
     RowBox[{
-     RowBox[{"rotationMatrix", "[", "n", "]"}], ",", 
+     RowBox[{"HMatrix", "[", "n", "]"}], ",", 
      RowBox[{"FileNameJoin", "[", 
       RowBox[{"{", 
        RowBox[{
         RowBox[{"NotebookDirectory", "[", "]"}], ",", 
         RowBox[{
          RowBox[{"ToString", "[", "n", "]"}], "<>", 
-         "\"\<-box-rotation-matrix.m\>\""}]}], "}"}], "]"}]}], "]"}], ",", 
+         "\"\<-box-H-matrix.m\>\""}]}], "}"}], "]"}]}], "]"}], ",", 
    RowBox[{"{", 
     RowBox[{"n", ",", "2", ",", "5"}], "}"}]}], "]"}]], "Input",
- CellChangeTimes->{{3.647843758182375*^9, 3.647843763118833*^9}}],
+ CellChangeTimes->{{3.647843758182375*^9, 3.647843763118833*^9}, {
+  3.64788781970225*^9, 3.647887821567049*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Fri 7 Aug 2015 08:10:24 calculating inverse at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"7928", ",", "d"}], "}"}]}],
+  SequenceForm[
+  "Fri 7 Aug 2015 08:10:24 calculating inverse at ", {7928, $CellContext`d}],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.64788782489015*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Fri 7 Aug 2015 08:10:24 calculating inverse at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"17393", ",", "d"}], "}"}]}],
+  SequenceForm[
+  "Fri 7 Aug 2015 08:10:24 calculating inverse at ", {17393, $CellContext`d}],
+  
+  Editable->False]], "Print",
+ CellChangeTimes->{3.647887824944394*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Fri 7 Aug 2015 08:10:24 calculating inverse at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"27458", ",", "d"}], "}"}]}],
+  SequenceForm[
+  "Fri 7 Aug 2015 08:10:24 calculating inverse at ", {27458, $CellContext`d}],
+  
+  Editable->False]], "Print",
+ CellChangeTimes->{3.647887824995438*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Fri 7 Aug 2015 08:10:25 calculating inverse at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"37831", ",", "d"}], "}"}]}],
+  SequenceForm[
+  "Fri 7 Aug 2015 08:10:25 calculating inverse at ", {37831, $CellContext`d}],
+  
+  Editable->False]], "Print",
+ CellChangeTimes->{3.647887825038672*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Fri 7 Aug 2015 08:10:25 calculating inverse at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"48620", ",", "d"}], "}"}]}],
+  SequenceForm[
+  "Fri 7 Aug 2015 08:10:25 calculating inverse at ", {48620, $CellContext`d}],
+  
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6478878250712967`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Fri 7 Aug 2015 08:10:25\"\>", 
+   "\[InvisibleSpace]", "\<\" row reducing at row \"\>", "\[InvisibleSpace]", 
+   "1"}],
+  SequenceForm["Fri 7 Aug 2015 08:10:25", " row reducing at row ", 1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.647887825109191*^9}]
+}, Open  ]]
+}, Open  ]],
 
 Cell[BoxData[
  RowBox[{"HMatrix", "[", "6", "]"}]], "Input",
@@ -8111,7 +8186,8 @@ Cell[BoxData[
              StyleBox[
               DynamicBox[ToBoxes[
                 FEPrivate`FrontEndResource["FEStrings", "sizeShowMore"], 
-                StandardForm]],
+                StandardForm],
+               ImageSizeCache->{56., {0., 8.}}],
               StripOnInput->False,
               DynamicUpdating->True], "SuggestionsBarControlActive",
              StripOnInput->False]}, Dynamic[
@@ -8321,8 +8397,6 @@ Cell[BoxData[
   3.645596969228594*^9}, {3.647843265261176*^9, 3.647843279987751*^9}, {
   3.6478576608719387`*^9, 3.647857678719056*^9}}],
 
-Cell[CellGroupData[{
-
 Cell[BoxData[
  RowBox[{"Do", "[", 
   RowBox[{
@@ -8341,49 +8415,7 @@ Cell[BoxData[
  CellChangeTimes->{{3.647843758182375*^9, 3.647843763118833*^9}, {
    3.647851352392762*^9, 3.647851356979418*^9}, 3.647855227669759*^9, {
    3.6478560337939796`*^9, 3.647856060168789*^9}, {3.64785609086371*^9, 
-   3.647856092817727*^9}}],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\<\"Thu 6 Aug 2015 23:20:39 calculating inverse at \"\>", 
-   "\[InvisibleSpace]", 
-   RowBox[{"{", 
-    RowBox[{"7928", ",", "d"}], "}"}]}],
-  SequenceForm[
-  "Thu 6 Aug 2015 23:20:39 calculating inverse at ", {7928, $CellContext`d}],
-  Editable->False]], "Print",
- CellChangeTimes->{3.647856039642851*^9}],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\<\"Thu 6 Aug 2015 23:20:40\"\>", 
-   "\[InvisibleSpace]", "\<\" row reducing at row \"\>", "\[InvisibleSpace]", 
-   "1"}],
-  SequenceForm["Thu 6 Aug 2015 23:20:40", " row reducing at row ", 1],
-  Editable->False]], "Print",
- CellChangeTimes->{3.647856040783455*^9}],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\<\"Thu 6 Aug 2015 23:20:42\"\>", 
-   "\[InvisibleSpace]", "\<\" row reducing at row \"\>", "\[InvisibleSpace]", 
-   "2"}],
-  SequenceForm["Thu 6 Aug 2015 23:20:42", " row reducing at row ", 2],
-  Editable->False]], "Print",
- CellChangeTimes->{3.647856042321218*^9}],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{"\<\"Thu 6 Aug 2015 23:20:44\"\>", 
-   "\[InvisibleSpace]", "\<\" row reducing at row \"\>", "\[InvisibleSpace]", 
-   "3"}],
-  SequenceForm["Thu 6 Aug 2015 23:20:44", " row reducing at row ", 3],
-  Editable->False]], "Print",
- CellChangeTimes->{3.647856044131706*^9}]
-}, Open  ]]
-}, Open  ]]
+   3.647856092817727*^9}}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -8591,74 +8623,76 @@ Cell[264429, 6799, 556, 15, 28, "Input"]
 Cell[CellGroupData[{
 Cell[265022, 6819, 136, 2, 44, "Subsection"],
 Cell[265161, 6823, 710, 18, 28, "Input"],
-Cell[265874, 6843, 556, 15, 28, "Input"],
-Cell[266433, 6860, 126, 2, 28, "Input"]
-}, Open  ]],
 Cell[CellGroupData[{
-Cell[266596, 6867, 159, 2, 44, "Subsection"],
-Cell[266758, 6871, 625, 15, 28, "Input"],
-Cell[267386, 6888, 459, 12, 28, "Input"],
+Cell[265896, 6845, 590, 16, 28, "Input"],
 Cell[CellGroupData[{
-Cell[267870, 6904, 130, 2, 28, "Input"],
-Cell[268003, 6908, 269, 6, 28, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[268309, 6919, 129, 2, 28, "Input"],
-Cell[268441, 6923, 1224, 29, 46, "Output"]
-}, Open  ]],
-Cell[269680, 6955, 131, 2, 28, "Input"],
-Cell[269814, 6959, 674, 17, 28, "Input"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[270525, 6981, 159, 2, 44, "Subsection"],
-Cell[270687, 6985, 676, 16, 28, "Input"],
-Cell[271366, 7003, 557, 14, 28, "Input"],
-Cell[CellGroupData[{
-Cell[271948, 7021, 156, 3, 28, "Input"],
-Cell[272107, 7026, 238, 5, 28, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[272382, 7036, 155, 3, 28, "Input"],
-Cell[272540, 7041, 943, 30, 55, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[273520, 7076, 131, 2, 28, "Input"],
-Cell[273654, 7080, 22945, 674, 561, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[296636, 7759, 129, 2, 28, "Input"],
-Cell[296768, 7763, 19338, 461, 188, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[316143, 8229, 129, 3, 28, "Input"],
-Cell[316275, 8234, 1085, 35, 28, "Output"]
-}, Open  ]],
-Cell[317375, 8272, 800, 20, 28, "Input"],
-Cell[318178, 8294, 1161, 27, 28, "Input"],
-Cell[CellGroupData[{
-Cell[319364, 8325, 721, 18, 28, "Input"],
-Cell[CellGroupData[{
-Cell[320110, 8347, 352, 9, 22, "Print"],
-Cell[320465, 8358, 311, 7, 22, "Print"],
-Cell[320779, 8367, 311, 7, 22, "Print"],
-Cell[321093, 8376, 311, 7, 22, "Print"]
-}, Open  ]]
+Cell[266511, 6865, 351, 9, 22, "Print"],
+Cell[266865, 6876, 357, 10, 22, "Print"],
+Cell[267225, 6888, 357, 10, 22, "Print"],
+Cell[267585, 6900, 357, 10, 22, "Print"],
+Cell[267945, 6912, 359, 10, 22, "Print"],
+Cell[268307, 6924, 311, 7, 22, "Print"]
 }, Open  ]]
 }, Open  ]],
-Cell[CellGroupData[{
-Cell[321465, 8390, 147, 1, 44, "Subsection"],
-Cell[321615, 8393, 586, 14, 28, "Input"],
-Cell[322204, 8409, 742, 18, 28, "Input"],
-Cell[CellGroupData[{
-Cell[322971, 8431, 221, 5, 28, "Input"],
-Cell[323195, 8438, 831, 25, 28, "Output"]
+Cell[268645, 6935, 126, 2, 28, "Input"]
 }, Open  ]],
-Cell[324041, 8466, 1171, 26, 63, "Input"],
 Cell[CellGroupData[{
-Cell[325237, 8496, 224, 5, 28, "Input"],
-Cell[325464, 8503, 87, 2, 28, "Output"]
+Cell[268808, 6942, 159, 2, 44, "Subsection"],
+Cell[268970, 6946, 625, 15, 28, "Input"],
+Cell[269598, 6963, 459, 12, 28, "Input"],
+Cell[CellGroupData[{
+Cell[270082, 6979, 130, 2, 28, "Input"],
+Cell[270215, 6983, 269, 6, 28, "Output"]
 }, Open  ]],
-Cell[325566, 8508, 469, 12, 28, "Input"]
+Cell[CellGroupData[{
+Cell[270521, 6994, 129, 2, 28, "Input"],
+Cell[270653, 6998, 1224, 29, 46, "Output"]
+}, Open  ]],
+Cell[271892, 7030, 131, 2, 28, "Input"],
+Cell[272026, 7034, 674, 17, 28, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[272737, 7056, 159, 2, 44, "Subsection"],
+Cell[272899, 7060, 676, 16, 28, "Input"],
+Cell[273578, 7078, 557, 14, 28, "Input"],
+Cell[CellGroupData[{
+Cell[274160, 7096, 156, 3, 28, "Input"],
+Cell[274319, 7101, 238, 5, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[274594, 7111, 155, 3, 28, "Input"],
+Cell[274752, 7116, 943, 30, 55, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[275732, 7151, 131, 2, 28, "Input"],
+Cell[275866, 7155, 22945, 674, 561, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[298848, 7834, 129, 2, 28, "Input"],
+Cell[298980, 7838, 19386, 462, 188, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[318403, 8305, 129, 3, 28, "Input"],
+Cell[318535, 8310, 1085, 35, 28, "Output"]
+}, Open  ]],
+Cell[319635, 8348, 800, 20, 28, "Input"],
+Cell[320438, 8370, 1161, 27, 28, "Input"],
+Cell[321602, 8399, 721, 18, 28, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[322360, 8422, 147, 1, 44, "Subsection"],
+Cell[322510, 8425, 586, 14, 28, "Input"],
+Cell[323099, 8441, 742, 18, 28, "Input"],
+Cell[CellGroupData[{
+Cell[323866, 8463, 221, 5, 28, "Input"],
+Cell[324090, 8470, 831, 25, 28, "Output"]
+}, Open  ]],
+Cell[324936, 8498, 1171, 26, 63, "Input"],
+Cell[CellGroupData[{
+Cell[326132, 8528, 224, 5, 28, "Input"],
+Cell[326359, 8535, 87, 2, 28, "Output"]
+}, Open  ]],
+Cell[326461, 8540, 469, 12, 28, "Input"]
 }, Open  ]]
 }
 ]
