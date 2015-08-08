@@ -294,9 +294,9 @@ case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: E
     case 1 => g1
   }
 
-  override def associativeAtPenultimateDepth_? = {
-    defectsZero_?(associativityDefects.value)
-  }
+//  override def associativeAtPenultimateDepth_? = {
+//    defectsZero_?(associativityDefects.value)
+//  }
 
   override lazy val truncate = OddDepthPairOfBigraphsWithDuals(g0.truncate, g1.truncate)
   override def increaseDepth = {
@@ -329,6 +329,7 @@ case class EvenDepthPairOfBigraphsWithDuals(g0: EvenDepthBigraphWithDuals, g1: E
 
   private def checkDefect(graph: Int, defect: Seq[Seq[Int]]) = {
     (graph == 0 || defect.forall(_.forall(_ >= 0)))
+//    true
     // TODO if a defect is large, we still need to attach lots of edges, which might be enough to push the eigenvalue up too high.
     // TODO actually, this should be part of the odometer limit function
   }
