@@ -1,0 +1,399 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     13084,        390]
+NotebookOptionsPosition[     11648,        339]
+NotebookOutlinePosition[     12064,        357]
+CellTagsIndexPosition[     12021,        354]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AppendTo", "[", 
+   RowBox[{
+   "$Path", ",", 
+    "\"\</Users/scott/projects/toolkit/algebra-spiders/src/main/mathematica/\>\
+\""}], "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.643605772356073*^9, 3.643605797102408*^9}}],
+
+Cell[BoxData[
+ RowBox[{"<<", "JLink`"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ReinstallJava", "[", 
+   RowBox[{
+    RowBox[{"CommandLine", "\[Rule]", "\"\<java\>\""}], ",", 
+    RowBox[{"JVMArguments", "\[Rule]", "\"\<-Xmx4000m\>\""}]}], "]"}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.645873861281712*^9, 3.645873879593287*^9}, {
+  3.6461091402358437`*^9, 3.646109143432973*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"<<", "Spiders`"}]], "Input",
+ CellChangeTimes->{{3.6436057462255383`*^9, 3.643605747574408*^9}}],
+
+Cell[BoxData["\<\"Loading Spiders` version 2015-06-18 ...\"\>"], "Print",
+ CellChangeTimes->{
+  3.643879684344894*^9, 3.643879957806995*^9, 3.643882397523869*^9, 
+   3.643889094544232*^9, 3.643949436026607*^9, 3.6443851810880327`*^9, 
+   3.645852115578273*^9, 3.6458521596507*^9, 3.6458528105954103`*^9, 
+   3.645865775221272*^9, 3.645866860500558*^9, 3.6458675777228727`*^9, 
+   3.645868429437745*^9, 3.645869045259945*^9, {3.6458692695110207`*^9, 
+   3.6458692796190434`*^9}, 3.645871190419634*^9, {3.6458726201981983`*^9, 
+   3.6458726414149227`*^9}, 3.645873800509636*^9, 3.6458738739751167`*^9, 
+   3.645875010180641*^9, 3.6459570617152243`*^9, 3.646000009429394*^9, 
+   3.6460932816881933`*^9, 3.6461092910660677`*^9, 3.6461093326910887`*^9, 
+   3.646117283077416*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"diagramWeight", "[", "diagram_", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"Count", "[", 
+    RowBox[{
+     RowBox[{"internalValences", "[", "diagram", "]"}], ",", "3"}], "]"}], 
+   "+", 
+   RowBox[{"4.001", " ", 
+    RowBox[{"Count", "[", 
+     RowBox[{
+      RowBox[{"internalValences", "[", "diagram", "]"}], ",", "4"}], 
+     "]"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.641976416033867*^9, 3.641976417924699*^9}, {
+  3.643551579575145*^9, 3.643551580270986*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"BoundaryConnectedPlanarGraphs", "=", 
+   RowBox[{
+   "ScalaSingleton", "[", 
+    "\"\<net.tqft.toolkit.algebra.spiders.BoundaryConnectedPlanarGraphs\>\"", 
+    "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.645844179949304*^9, 3.6458441944921207`*^9}, {
+  3.6458443184145737`*^9, 3.645844328947143*^9}, {3.64584438157978*^9, 
+  3.645844383199815*^9}}],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "trivalent", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"trivalent", "[", 
+   RowBox[{"n_Integer", ",", "k_Integer"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"trivalent", "[", 
+    RowBox[{"n", ",", "k"}], "]"}], "=", 
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{"BoundaryConnectedPlanarGraphs", "@", 
+     RowBox[{
+      RowBox[{"trivalent", "[", 
+       RowBox[{"n", ",", "k"}], "]"}], "@", 
+      RowBox[{"toList", "[", "]"}]}]}], "]"}]}]}]}], "Input",
+ CellChangeTimes->{{3.6458443893028812`*^9, 3.645844407872788*^9}, {
+  3.645844469695478*^9, 3.6458444761786957`*^9}, {3.6460932999229107`*^9, 
+  3.646093302319606*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"sixBoxSpanningSet", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"PlanarGraphs", "@", 
+      RowBox[{"fromString", "[", "#", "]"}]}], "&"}], "/@", 
+    RowBox[{
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "0"}], "]"}], "~", "Join", "~", 
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "1"}], "]"}], "~", "Join", "~", 
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "2"}], "]"}], "~", "Join", "~", 
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "3"}], "]"}], "~", "Join", "~", 
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "4"}], "]"}]}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.645852471223257*^9, 3.6458524999210978`*^9}, {
+  3.645853029006215*^9, 3.645853029075468*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"QES", "=", 
+   RowBox[{"UnpickleSpiderAnalysis", "[", 
+    RowBox[{"Get", "[", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<saved-states\>\"", 
+        ",", "\"\<QES-flat-3.m\>\""}], "}"}], "]"}], "]"}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.6436043700228243`*^9, 3.643604387303281*^9}, {
+   3.643604420040986*^9, 3.643604425632489*^9}, {3.64362746680794*^9, 
+   3.643627467431046*^9}, {3.6436307260783253`*^9, 3.6436307382419558`*^9}, {
+   3.643630808385825*^9, 3.643630809988764*^9}, {3.643630881169632*^9, 
+   3.643630882402862*^9}, {3.643715014905755*^9, 3.6437150216161947`*^9}, {
+   3.6438824263050756`*^9, 3.643882444339737*^9}, {3.644385187416811*^9, 
+   3.6443851874480963`*^9}, {3.645852108281652*^9, 3.645852108375017*^9}, {
+   3.645852172035816*^9, 3.6458521820607233`*^9}, 3.6458522258666143`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"QES", "=", 
+   RowBox[{
+    RowBox[{"DeclarePolynomialsZero", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"d", "-", "52"}], ",", 
+       RowBox[{"v", "-", "1"}]}], "}"}], "]"}], "[", "QES", "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.645852226884502*^9, 3.645852245880562*^9}, {
+  3.645852289494565*^9, 3.6458523188410997`*^9}, {3.645852352693296*^9, 
+  3.6458523543890867`*^9}, {3.646117268838523*^9, 3.6461172711904507`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"trivalent", "[", 
+   RowBox[{"n_Integer", ",", "k_Integer"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"trivalent", "[", 
+    RowBox[{"n", ",", "k"}], "]"}], "=", 
+   RowBox[{"FromScalaObject", "[", 
+    RowBox[{"BoundaryConnectedPlanarGraphs", "@", 
+     RowBox[{
+      RowBox[{"trivalent", "[", 
+       RowBox[{"n", ",", "k"}], "]"}], "@", 
+      RowBox[{"toList", "[", "]"}]}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6458443893028812`*^9, 3.645844407872788*^9}, {
+  3.645844469695478*^9, 3.6458444761786957`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"sixBoxSpanningSet", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"PlanarGraphs", "@", 
+      RowBox[{"fromString", "[", "#", "]"}]}], "&"}], "/@", 
+    RowBox[{
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "0"}], "]"}], "~", "Join", "~", 
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "1"}], "]"}], "~", "Join", "~", 
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "2"}], "]"}], "~", "Join", "~", 
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "3"}], "]"}], "~", "Join", "~", 
+     RowBox[{"trivalent", "[", 
+      RowBox[{"6", ",", "4"}], "]"}]}]}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.645852471223257*^9, 3.6458524999210978`*^9}, {
+  3.645853029006215*^9, 3.645853029075468*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"QES", "=", 
+   RowBox[{
+    RowBox[{"DeclareSpanningSet", "[", "sixBoxSpanningSet", "]"}], "[", "QES",
+     "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.6458523793317823`*^9, 3.645852425349248*^9}, 
+   3.6458524677924147`*^9, {3.645852503747086*^9, 3.645852513896844*^9}, {
+   3.645852796435405*^9, 3.645852808663272*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"QES1", "=", 
+   RowBox[{
+    RowBox[{"ConsiderDiagrams", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"PlanarGraphs", "@", 
+        RowBox[{"fromString", "[", "#", "]"}]}], "&"}], "/@", 
+      RowBox[{
+       RowBox[{"trivalent", "[", 
+        RowBox[{"6", ",", "0"}], "]"}], "~", "Join", "~", 
+       RowBox[{"trivalent", "[", 
+        RowBox[{"6", ",", "1"}], "]"}]}]}], "]"}], "[", "QES", "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.6458659431965857`*^9, 3.6458659452494392`*^9}, {
+  3.645866028603483*^9, 3.645866042836295*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Length", "[", "QES1", "]"}]], "Input",
+ CellChangeTimes->{{3.645866196188045*^9, 3.6458661980650263`*^9}}],
+
+Cell[BoxData["1"], "Output",
+ CellChangeTimes->{3.645866688139295*^9, 3.6458702340517607`*^9, 
+  3.645872227597557*^9, 3.645873447523939*^9, 3.645875690275407*^9, 
+  3.645957705325623*^9, 3.6460006591605673`*^9, 3.646118002557004*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Length", "[", 
+  RowBox[{
+   RowBox[{"IndependentDiagrams", "[", "6", "]"}], "[", 
+   RowBox[{"QES1", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+   "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.6458702372189007`*^9, 3.645870255912097*^9}}],
+
+Cell[BoxData["68"], "Output",
+ CellChangeTimes->{{3.645870238394924*^9, 3.645870256220459*^9}, 
+   3.645872227750246*^9, 3.645873450627771*^9, 3.645875691631845*^9, 
+   3.645957705357646*^9, 3.646000659206442*^9, 3.646118002594701*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"QES2", "=", 
+   RowBox[{
+    RowBox[{"ConsiderDiagrams", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"PlanarGraphs", "@", 
+        RowBox[{"fromString", "[", "#", "]"}]}], "&"}], "/@", 
+      RowBox[{"trivalent", "[", 
+       RowBox[{"6", ",", "2"}], "]"}]}], "]"}], "[", "QES1", "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.6458659431965857`*^9, 3.6458659452494392`*^9}, {
+  3.645866028603483*^9, 3.645866067748725*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"Length", "[", 
+    RowBox[{
+     RowBox[{"IndependentDiagrams", "[", "6", "]"}], "[", "#", "]"}], "]"}], 
+   "&"}], "/@", "QES2"}]], "Input",
+ CellChangeTimes->{
+  3.645865963974101*^9, {3.645876421006249*^9, 3.645876421119606*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", "78", "}"}]], "Output",
+ CellChangeTimes->{3.646002173426684*^9, 3.646124281584034*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"QES3", "[", "0", "]"}], "=", "QES2"}], ";"}]], "Input",
+ CellChangeTimes->{{3.646093361625495*^9, 3.646093366024783*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Do", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"QES3", "[", "k", "]"}], "=", 
+    RowBox[{
+     RowBox[{"ConsiderDiagram", "[", 
+      RowBox[{"PlanarGraphs", "@", 
+       RowBox[{"fromString", "[", 
+        RowBox[{
+         RowBox[{"trivalent", "[", 
+          RowBox[{"6", ",", "3"}], "]"}], "\[LeftDoubleBracket]", "k", 
+         "\[RightDoubleBracket]"}], "]"}]}], "]"}], "[", 
+     RowBox[{"QES3", "[", 
+      RowBox[{"k", "-", "1"}], "]"}], "]"}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{"k", ",", "1", ",", 
+     RowBox[{"Length", "[", 
+      RowBox[{"trivalent", "[", 
+       RowBox[{"6", ",", "3"}], "]"}], "]"}]}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.6460933514389257`*^9, 3.646093405910441*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Table", "[", 
+  RowBox[{
+   RowBox[{"Length", "[", 
+    RowBox[{"QES3", "[", "k", "]"}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"k", ",", "1", ",", 
+     RowBox[{"Length", "[", 
+      RowBox[{"trivalent", "[", 
+       RowBox[{"6", ",", "3"}], "]"}], "]"}]}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.646116735087687*^9, 3.646116749507115*^9}, 
+   3.6461172158573217`*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "1", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellChangeTimes->{{3.64611674330015*^9, 3.646116750027701*^9}, 
+   3.646124585111014*^9}]
+}, Open  ]]
+},
+AutoGeneratedPackage->Automatic,
+Evaluator->"Local (3)",
+WindowSize->{808, 751},
+WindowMargins->{{Automatic, 179}, {Automatic, 16}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 258, 7, 28, "Input"],
+Cell[819, 29, 50, 1, 28, "Input"],
+Cell[872, 32, 338, 8, 28, "Input"],
+Cell[CellGroupData[{
+Cell[1235, 44, 120, 2, 28, "Input"],
+Cell[1358, 48, 774, 11, 22, "Print"]
+}, Open  ]],
+Cell[2147, 62, 496, 14, 46, "Input"],
+Cell[2646, 78, 387, 9, 46, "Input"],
+Cell[3036, 89, 672, 16, 63, "Input"],
+Cell[3711, 107, 760, 19, 63, "Input"],
+Cell[4474, 128, 944, 18, 46, "Input"],
+Cell[5421, 148, 480, 12, 28, "Input"],
+Cell[5904, 162, 552, 14, 46, "Input"],
+Cell[6459, 178, 760, 19, 63, "Input"],
+Cell[7222, 199, 360, 8, 28, "Input"],
+Cell[7585, 209, 579, 16, 63, "Input"],
+Cell[CellGroupData[{
+Cell[8189, 229, 130, 2, 28, "Input"],
+Cell[8322, 233, 234, 3, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8593, 241, 277, 6, 28, "Input"],
+Cell[8873, 249, 235, 3, 28, "Output"]
+}, Open  ]],
+Cell[9123, 255, 468, 13, 28, "Input"],
+Cell[CellGroupData[{
+Cell[9616, 272, 279, 8, 28, "Input"],
+Cell[9898, 282, 115, 2, 28, "Output"]
+}, Open  ]],
+Cell[10028, 287, 168, 4, 28, "Input"],
+Cell[10199, 293, 739, 20, 46, "Input"],
+Cell[CellGroupData[{
+Cell[10963, 317, 405, 11, 28, "Input"],
+Cell[11371, 330, 261, 6, 28, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
