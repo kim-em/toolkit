@@ -25,8 +25,8 @@ object Matrix {
     }
     override def compose(x: Matrix[O, M], y: Matrix[O, M]) = ???
   }
-  implicit def matricesOverTensorCategory[O, M](implicit c: TensorCategory[O, M]): TensorCategory[Seq[O], Matrix[O, M]] = new MatricesOverTensorCategory[O, M](c)
-  class MatricesOverTensorCategory[O, M](c: TensorCategory[O, M]) extends MatricesOverCategory[O, M](c) with TensorCategory[Seq[O], Matrix[O, M]] {
+  implicit def matricesOverTensorCategory[O, M](implicit c: AdditiveTensorCategory[O, M]): AdditiveTensorCategory[Seq[O], Matrix[O, M]] = new MatricesOverTensorCategory[O, M](c)
+  class MatricesOverTensorCategory[O, M](c: AdditiveTensorCategory[O, M]) extends MatricesOverCategory[O, M](c) with AdditiveTensorCategory[Seq[O], Matrix[O, M]] {
     override def tensorObjects(x: Seq[O], y: Seq[O]) = ???
     override def tensorMorphisms(x: Matrix[O, M], y: Matrix[O, M]) = ???
   }
