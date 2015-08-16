@@ -17,8 +17,8 @@ object ChainMap {
     override def add(x: ChainMap[O, M], y: ChainMap[O, M]) = ???
   }
 
-  implicit def complexesOverTensorCategory[O, M](implicit c: TensorCategory[O, M]) = new ComplexesOverTensorCategory(c)
-  implicit class ComplexesOverTensorCategory[O, M](c: TensorCategory[O, M]) extends ComplexesOverAdditiveCategory[O, M](c) with TensorCategory[Complex[O, M], ChainMap[O, M]] {
+  implicit def complexesOverTensorCategory[O, M](implicit c: AdditiveTensorCategory[O, M]): AdditiveTensorCategory[Complex[O, M], ChainMap[O, M]] = new ComplexesOverTensorCategory(c)
+  implicit class ComplexesOverTensorCategory[O, M](c: AdditiveTensorCategory[O, M]) extends ComplexesOverAdditiveCategory[O, M](c) with AdditiveTensorCategory[Complex[O, M], ChainMap[O, M]] {
     override def tensorObjects(x: Complex[O, M], y: Complex[O, M]) = ???
     override def tensorMorphisms(x: ChainMap[O, M], y: ChainMap[O, M]) = ???
   }
