@@ -23,7 +23,11 @@ object Matrix {
       val newEntries = (x.nonzeroEntries.toSeq ++ y.nonzeroEntries).groupBy(t => (t._1, t._2)).mapValues(v => c.sum(v.map(_._3))).toSeq.map(p => (p._1._1, p._1._2, p._2))
       SparseMatrix(x.source, x.target, newEntries)
     }
-    override def compose(x: Matrix[O, M], y: Matrix[O, M]) = ???
+    override def compose(x: Matrix[O, M], y: Matrix[O, M]) = {
+      // maybe just add an 'entry(i, j)' method on Matrix, for ease of implementation,
+      // and worry about doing this efficiently for actually sparse matrices some other time
+      ???
+    }
   }
   implicit def matricesOverTensorCategory[O, M](implicit c: AdditiveTensorCategory[O, M]): AdditiveTensorCategory[Seq[O], Matrix[O, M]] = new MatricesOverTensorCategory[O, M](c)
   class MatricesOverTensorCategory[O, M](c: AdditiveTensorCategory[O, M]) extends MatricesOverCategory[O, M](c) with AdditiveTensorCategory[Seq[O], Matrix[O, M]] {
