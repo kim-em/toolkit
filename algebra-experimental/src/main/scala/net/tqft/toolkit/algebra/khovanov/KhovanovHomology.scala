@@ -32,7 +32,7 @@ object KhovanovHomology extends Functor[Tangle, Cobordism, Complexes[GradedSmoot
 
   override def applyToMorphism(c: Cobordism) = {
     val most = c.frames.foldLeft(complexes.identity(empty))({
-      case (mapSoFar, frame) => simplification.simplifyMorphism(complexes.compose(mapSoFar, applyToElementaryCobordism(frame)))
+      case (mapSoFar, frame) => simplification.simplifySource(complexes.compose(mapSoFar, applyToElementaryCobordism(frame)))
     })
     // FIXME: identify any arcs that are not touched by any frame, and tensor on their identities
     most
