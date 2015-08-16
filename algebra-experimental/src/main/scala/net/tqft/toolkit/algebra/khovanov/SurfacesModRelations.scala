@@ -15,7 +15,7 @@ object SurfacesModRelations
   override def source(m: LinearComboCan) = m.source
   override def target(m: LinearComboCan) = m.target
   override def zero(x: GradedSmoothing, y: GradedSmoothing) = LinearComboCan(x, y, Map.empty)
-  override def identity(x: GradedSmoothing) = MonomialCan(???, 0, 0)
+  override def identity(x: GradedSmoothing) = MonomialCan(???, Map.empty)
   override def add(x: LinearComboCan, y: LinearComboCan) = {
     require(x.source == y.source)
     require(x.target == y.target)
