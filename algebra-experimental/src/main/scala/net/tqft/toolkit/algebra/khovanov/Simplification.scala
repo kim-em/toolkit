@@ -8,9 +8,15 @@ trait Simplification[O, M] {
   def simplify(o: O): Seq[(M, M)] // for each pair (f, g), f and g are inverses, with source(f) = o
 
   def simplifyMorphism(m: M)(implicit category: Category[O, M]): M = {
+    simplifyTarget(simplifySource(m))
+  }
+  def simplifySource(m: M)(implicit category: Category[O, M]): M = {
     val (_, f) = fullSimplify(category.source(m))
+    category.compose(f, m)
+  }
+  def simplifyTarget(m: M)(implicit category: Category[O, M]): M = {
     val (g, _) = fullSimplify(category.target(m))
-    category.compose(category.compose(f, m), g)
+    category.compose(m, g)
   }
   
   def fullSimplify(o: O)(implicit category: Category[O, M]): (M, M) = {
