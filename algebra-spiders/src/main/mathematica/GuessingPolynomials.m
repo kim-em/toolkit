@@ -220,15 +220,18 @@ Factor[v/v[[-1]]]
 ]
 
 
-onDiskParallelNullSpace[matrix_,f_]/;Length[matrix]==Length[matrix[[1]]]-1:=Module[{almost,result,hash,cacheFile},
+onDiskParallelNullSpace[matrix_,f_]:=Module[{almost,result,hash,cacheFile,s},
 hash=IntegerString[Hash[matrix,"SHA1"],16,16];
 cacheFile=FileNameJoin[{NotebookDirectory[],"matrices","nullspace-"<>hash<>".m"}];
 If[FileExistsQ[cacheFile],
 Get[cacheFile],
-s=Reverse[Range[Length[matrix]]]~Join~{Length[matrix]+1};
+s=Reverse[Range[Length[matrix]]];
 almost=Reverse[onDiskParallelRowReduce[matrix,f]][[All,s]];
 almost=Reverse[onDiskParallelRowReduce[almost,f]][[All,s]];
-result=Table[Together[-almost[[k,-1]]/almost[[k,k]]],{k,1,Length[matrix]}]~Join~{1};
+result=NullSpace[almost];
+If[Length[result]==1,
+result=result[[1]],
+Print["NullSpace not one-dimensional"];Abort[]];
 If[Together[matrix.result]===Table[0,{Length[matrix]}],
 Put[result,cacheFile];
 result,
@@ -246,7 +249,7 @@ onDiskParallelNullSpace[matrix/.Thread[variables->{v}],"nullspace"]);
 resultpart[i_][v___]:=resultpart[i][v]=Together[nullspace[v][[i]]];
 Do[nullspace[Prime[1+1000n]+Mod[n,2],variables[[2]]],{n,1,5}];
 Table[Print[DateString[]<> " computing NullSpace[matrix][[",i,"]]"];result=TimeConstrained[FindMultivariablePolynomial[variables][((resultpart[i][##]))&],30];
-Print["obtained ",result];result,{i,1,Length[matrix]+1}]
+Print["obtained ",result];result,{i,1,Length[matrix]}]
 ]
 
 
