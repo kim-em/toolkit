@@ -48,15 +48,17 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
   }
 
   override def elements: Set[A]
-  
+
   trait Action[B] { action =>
     def act(a: A, b: B): B
     def orbits(elements: Set[B]): Set[Orbit] = bruteForceOrbits(finiteGroup.elements, elements)
-    
-    type Orbit =  net.tqft.toolkit.algebra.grouptheory.Orbit[A, B]
-    
+
+    type Orbit = net.tqft.toolkit.algebra.grouptheory.Orbit[A, B]
+
     protected def bruteForceOrbits(generators: Set[A], elements: Set[B]) = {
       class O(val representative: B) extends Orbit {
+        override def toString = s"[$representative;${(elements - representative).mkString(",")}]"
+        
         override def stabilizer = ???
         override lazy val elements = extendElements(Seq.empty, Seq(representative)).toSet
 
@@ -102,10 +104,10 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
   protected class ConjugationAction extends Action[A] {
     override def act(a: A, b: A) = multiply(inverse(a), b, a)
   }
-  
+
   def conjugationAction = new ConjugationAction
-  
-  private trait Subgroup extends FiniteGroup[A] {
+
+  trait Subgroup extends FiniteGroup[A] {
     override def one = finiteGroup.one
     override def inverse(a: A) = finiteGroup.inverse(a)
     override def multiply(a: A, b: A) = finiteGroup.multiply(a, b)
@@ -119,16 +121,16 @@ trait FiniteGroup[A] extends Group[A] with Finite[A] { finiteGroup =>
     }
   }
 
-  private class FinitelyGeneratedSubgroup(val generators: Seq[A]) extends Subgroup with FinitelyGeneratedFiniteGroup[A] {
-  }
+  class FinitelyGeneratedSubgroup(val generators: Seq[A]) extends Subgroup with FinitelyGeneratedFiniteGroup[A]
 
-  def subgroup(elements: Set[A]): FiniteGroup[A] = {
+  def subgroup(elements: Set[A]): Subgroup = {
     val _elements = elements
     new Subgroup {
       override val elements = _elements
     }
   }
-  def subgroupGeneratedBy(generators: Seq[A]): FinitelyGeneratedFiniteGroup[A] = new FinitelyGeneratedSubgroup(generators)
+  def stabilizer[B](rho: Action[B], b: B) = subgroup(elements.filter(g => rho.act(g, b) == b))
+  def subgroupGeneratedBy(generators: Seq[A]): FinitelyGeneratedSubgroup = new FinitelyGeneratedSubgroup(generators)
 
   def subgroups: Set[FiniteGroup[A]] = {
     def build(G: FinitelyGeneratedSubgroup, elts: List[A]): Set[FinitelyGeneratedSubgroup] = {
