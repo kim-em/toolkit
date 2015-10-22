@@ -1,0 +1,29 @@
+# use glob syntax.
+syntax: glob
+
+.DS_Store
+
+.cache*
+.classpath
+.settings/org.scala-ide.sdt.core.prefs
+.project
+
+.target
+target
+.target
+lib_managed
+project/boot
+bin
+
+jobscript*
+fusion-rings/
+fusion-rings2/
+
+algebra-spiders/src/main/mathematica/groebnerCalculations.m
+algebra-spiders/src/main/mathematica/graphs/
+algebra-spiders/src/main/mathematica/matrices/
+
+*.out
+*/.tmpBin
+
+.worksheet
