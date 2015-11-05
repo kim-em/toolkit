@@ -28,10 +28,7 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
 
   def descendantsFiltered(supertransitivityBound: Int = -1, depthBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = descendantsTreeFiltered(supertransitivityBound, depthBound, rankBound, avoiding, stopWhenPersistentlyCylindrical).map(_._1)
   def descendantsTreeFiltered(supertransitivityBound: Int = -1, depthBound: Int = -1, rankBound: Int = -1, avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty, stopWhenPersistentlyCylindrical: Boolean = true) = {
-    val canonicalAvoiding = {
-      avoiding.map(_.invariant) ++
-        avoiding.map(_.switch.invariant)
-    }
+    val canonicalAvoiding = SubfactorWeed.canonicalAvoiding(avoiding)
     descendantsTree(w => {
       //            println(s"beginning filtering for $w")
       if (!stopWhenPersistentlyCylindrical || !w.pair.persistentlyCylindrical_?) {
@@ -55,6 +52,23 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
         0
       }
     })
+  }
+
+  def depthOneDescendants(avoiding: Seq[PairOfBigraphsWithDuals] = Seq.empty) = {
+    require(pair(0).bigraph.rankAtMaximalDepth == 0 && pair(1).bigraph.rankAtMaximalDepth == 0)
+   
+    val canonicalAvoiding = SubfactorWeed.canonicalAvoiding(avoiding)
+
+    descendantsTree(w =>
+      if (canonicalAvoiding.contains((w.depth, w.pair.nautyGraph)) || canonicalAvoiding.contains(w.pair.invariant)) {
+        -1
+      } else {
+        if (w.depth == depth) {
+          1
+        } else {
+          -w.pair(0).bigraph.rankAtMaximalDepth - w.pair(1).bigraph.rankAtMaximalDepth
+        }
+      }).toSeq.tail.map(_._1).partition({ w => w.depth == depth })
   }
 
   override def findIsomorphismTo(other: SubfactorWeed) = {
@@ -143,6 +157,14 @@ object SubfactorWeed {
     }
   }
 
+  val canonicalAvoiding = {
+    def canonicalAvoiding(avoiding: Seq[PairOfBigraphsWithDuals]) = {
+      (avoiding.map(_.invariant) ++
+        avoiding.map(_.switch.invariant)).toSet
+    }
+    net.tqft.toolkit.functions.Memo(canonicalAvoiding _)
+  }
+
   var experimental = false
 }
 
@@ -193,14 +215,14 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
     }).refineByPartialFunction({
       case DeleteSelfDualVertex(graph, index) => pair(graph).bigraph.inclusions.last(index).sum
     }).refineByPartialFunction({
-      case DeleteDualPairAtEvenDepth(graph, index) => 
-         Seq(pair(graph).bigraph.inclusions.last(index).sum, pair(graph).bigraph.inclusions.last(index + 1).sum).sorted
+      case DeleteDualPairAtEvenDepth(graph, index) =>
+        Seq(pair(graph).bigraph.inclusions.last(index).sum, pair(graph).bigraph.inclusions.last(index + 1).sum).sorted
     }).refineByPartialFunction({
       case DeleteSelfDualVertex(graph, index) => {
         import net.tqft.toolkit.collections.Tally._
         pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index).tally.values.toSeq.sorted
       }
-    }) .refineByPartialFunction({
+    }).refineByPartialFunction({
       case DeleteDualPairAtEvenDepth(graph, index) => {
         import net.tqft.toolkit.collections.Tally._
         Seq(pair(graph).bigraph.downUpNeighbours(pair(graph).bigraph.depth, index).tally.values.toSeq.sorted,
@@ -219,10 +241,10 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
        * 'P' only if this vertex is in the same orbit as v.
        * 
       */
-    }) .refineByPartialFunction({
-        case DeleteSelfDualVertex(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index))))
-        case DeleteDualPairAtEvenDepth(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index), pair.graphLabel(graph, pair(graph).bigraph.depth, index + 1))))
-      })
+    }).refineByPartialFunction({
+      case DeleteSelfDualVertex(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index))))
+      case DeleteDualPairAtEvenDepth(graph, index) => Dreadnaut.canonicalize(pair.nautyGraph.additionalMarking(Seq(pair.graphLabel(graph, pair(graph).bigraph.depth, index), pair.graphLabel(graph, pair(graph).bigraph.depth, index + 1))))
+    })
     Ordering.by({ o: lowerObjects.Orbit => o.representative })
   }
 
@@ -257,7 +279,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
 
               val limit = { row: List[Int] =>
                 // FIXME we're only doing the simply laced case for now
-                val result = /* row.forall(_ <= 1) && */(pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
+                val result = /* row.forall(_ <= 1) && */ (pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !pair(graph).bigraph.inclusions.last.contains(row))) &&
                   pair(graph).bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
                 //                if (result) {
                 //                  Logging.info(s"  considering new row (on graph $graph): " + row.mkString("x"))
@@ -276,7 +298,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
           def uppersAddingDualPairVerticesToGraph(graph: Int): Iterator[Upper] = {
             def limit(bigraph: Bigraph) = { row: List[Int] =>
               // FIXME we're only doing the simply laced case for now
-              /* row.forall(_ <= 1) && */(pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !bigraph.inclusions.last.contains(row))) &&
+              /* row.forall(_ <= 1) && */ (pair.depth <= 1 || !pair.truncate.cylindrical_? || (row.sum <= 1 && !bigraph.inclusions.last.contains(row))) &&
                 bigraph.isEigenvalueWithRowBelow_?(indexLimit)(row)
             }
             val firstLimit = { row0: List[Int] =>
@@ -348,7 +370,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
   case class AddSelfDualVertex(graph: Int, row: Seq[Int]) extends AddVertexUpper {
     override lazy val pairOption = pair.addSelfDualVertex(graph, row)
     override def inverse = result.DeleteSelfDualVertex(graph, pair(graph).bigraph.rankAtMaximalDepth)
-  }  
+  }
   case class AddDualPairAtEvenDepth(graph: Int, row0: Seq[Int], row1: Seq[Int]) extends AddVertexUpper {
     override lazy val pairOption = pair.addDualPairAtEvenDepth(graph, row0, row1)
     override def inverse = result.DeleteDualPairAtEvenDepth(graph, pair(graph).bigraph.rankAtMaximalDepth)

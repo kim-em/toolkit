@@ -63,31 +63,31 @@ case class R3() extends ElementaryCobordism {
   override def target = ???
 }
 
-object MovieMoves {
-  // for now, let's just pick a representative of each one, and not worry about all the variants
-  def all = MM1 #:: MM2 #:: MM3 #:: MM4 #:: MM5 #:: MM6 #:: MM7 #:: MM8 #:: MM9 #:: MM10 #:: MM11 #:: MM12 #:: MM13 #:: MM14 #:: MM15 #:: Stream.empty[(Cobordism, Cobordism)]
-  lazy val MM1 = {
-    val source = Tangle(Seq.empty, Seq(Arc(1, 2)))
-    val target = source
-    val left = Cobordism(source, target, Seq(Twist(1, 3, 2), Untwist(1, 3, 2)))
-    val right = Cobordism(source, target, Seq.empty)
-    (left, right)
-  }
-  lazy val MM2 = (???, ???)
-  lazy val MM3 = (???, ???)
-  lazy val MM4 = (???, ???)
-  lazy val MM5 = (???, ???)
-  lazy val MM6 = (???, ???)
-  lazy val MM7 = (???, ???)
-  lazy val MM8 = (???, ???)
-  lazy val MM9 = (???, ???)
-  lazy val MM10 = (???, ???)
-  lazy val MM11 = (???, ???)
-  lazy val MM12 = (???, ???)
-  lazy val MM13 = (???, ???)
-  lazy val MM14 = (???, ???)
-  lazy val MM15 = (???, ???)
-}
+//object MovieMoves {
+//  // for now, let's just pick a representative of each one, and not worry about all the variants
+//  def all = MM1 #:: MM2 #:: MM3 #:: MM4 #:: MM5 #:: MM6 #:: MM7 #:: MM8 #:: MM9 #:: MM10 #:: MM11 #:: MM12 #:: MM13 #:: MM14 #:: MM15 #:: Stream.empty[(Cobordism, Cobordism)]
+//  lazy val MM1 = {
+//    val source = Tangle(Seq.empty, Seq(Arc(1, 2)))
+//    val target = source
+//    val left = Cobordism(source, target, Seq(Twist(1, 3, 2), Untwist(1, 3, 2)))
+//    val right = Cobordism(source, target, Seq.empty)
+//    (left, right)
+//  }
+//  lazy val MM2 = (???, ???)
+//  lazy val MM3 = (???, ???)
+//  lazy val MM4 = (???, ???)
+//  lazy val MM5 = (???, ???)
+//  lazy val MM6 = (???, ???)
+//  lazy val MM7 = (???, ???)
+//  lazy val MM8 = (???, ???)
+//  lazy val MM9 = (???, ???)
+//  lazy val MM10 = (???, ???)
+//  lazy val MM11 = (???, ???)
+//  lazy val MM12 = (???, ???)
+//  lazy val MM13 = (???, ???)
+//  lazy val MM14 = (???, ???)
+//  lazy val MM15 = (???, ???)
+//}
 
 object Cobordism {
   implicit def apply(e: ElementaryCobordism): Cobordism = Cobordism(e.source, e.target, Seq(e))
