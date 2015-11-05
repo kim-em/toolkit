@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.grouptheory
 
 import net.tqft.toolkit.permutations.Permutations._
 import net.tqft.toolkit.algebra.enumeration.CanonicalGeneration
+import net.tqft.toolkit.algebra.enumeration.CanonicalGenerationWithIsomorphism
 
 /**
  * @author scott
@@ -10,7 +11,7 @@ case class IndependentSets(n: Int) {
 
   val S = FiniteGroups.symmetricGroup(n)
 
-  case class IndependentSet(elements: Set[Permutation]) extends CanonicalGeneration[IndependentSet, Permutation] { is =>
+  case class IndependentSet(elements: Set[Permutation]) extends CanonicalGenerationWithIsomorphism[IndependentSet, Permutation] { is =>
 
     lazy val subgroup = S.subgroupGeneratedBy(elements.toSeq)
     
@@ -19,8 +20,13 @@ case class IndependentSets(n: Int) {
       S.subgroupGeneratedBy(S.elements.toSeq.filter(p => elements.map(q => S.multiply(p, q, S.inverse(p))) == elements))
     }
 
+    override def isomorphs = S.elements.map(p => IndependentSet(elements.map(q => S.multiply(p, q, S.inverse(p))))).iterator
+    override def findIsomorphismTo(other: IndependentSet) = {
+      S.elements.find(p => elements.map(q => S.multiply(p, q, S.inverse(p))) == other.elements)
+    }
+    
     case class Lower(toDelete: Permutation) {
-      def result = IndependentSet(elements - toDelete)
+      lazy val result = IndependentSet(elements - toDelete)
     }
 
     override lazy val lowerObjects = new automorphisms.ActionOnFiniteSet[Lower] {
@@ -40,7 +46,7 @@ case class IndependentSets(n: Int) {
     
     case class Upper(toAdd: Permutation) {
       lazy val result = IndependentSet(elements + toAdd)
-      def inverse = result.Lower(toAdd)
+      lazy val inverse = result.Lower(toAdd)
     }
 
     override lazy val upperObjects = new automorphisms.ActionOnFiniteSet[Upper] {

@@ -36,29 +36,29 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
 
   // now the actual algorithm
   def children = {
-//            info("computing children of " + this)
-//            info(" automorphism group: " + automorphisms.generators)
+    //            info("computing children of " + this)
+    //            info(" automorphism group: " + automorphisms.generators)
     val orbits = upperObjects.allOrbits.toSeq
-//            info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+    //            info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
     val result = orbits.flatMap({ orbit =>
       val candidateUpperObject = orbit.representative;
-//                  info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements)
-//                  info("   with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
+      //                  info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements)
+      //                  info("   with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
       val lowerOrbits = candidateUpperObject.result.lowerObjects.allOrbits
-//                  info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
-//                  info("   which sort as " + lowerOrbits.toSeq.sorted(candidateUpperObject.result.ordering).map(_.elements))
+      //                  info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+      //                  info("   which sort as " + lowerOrbits.toSeq.sorted(candidateUpperObject.result.ordering).map(_.elements))
       val canonicalReductionOrbit = lowerOrbits.min(candidateUpperObject.result.ordering)
-//                  info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
-//                  info("  with result " + canonicalReductionOrbit.representative.result)
+      //                  info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
+      //                  info("  with result " + canonicalReductionOrbit.representative.result)
       if (canonicalReductionOrbit.contains(candidateUpperObject.inverse)) {
-//                        info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
+        //                        info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
         Some(candidateUpperObject.result)
       } else {
-//                        info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
+        //                        info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
         None
       }
     })
-//            info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
+    //            info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
     result
   }
 
@@ -78,7 +78,10 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
 
   def verifyInverses = {
-    val badPairOption = upperObjects.elements.map(u => (u, u.result.lowerObjects.elements.find(_.result != this))).find(_._2.nonEmpty).map(p => (p._1, p._2.get))
+    val badPairOption = upperObjects.elements.map({ u =>
+      (u, u.result.lowerObjects.elements.find(_.result != this))
+    }).find(_._2.nonEmpty)
+      .map(p => (p._1, p._2.get))
     badPairOption.map({
       case (u, l) => println(s"Upper object $u for $this has bad inverse $l")
     })
@@ -147,11 +150,11 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
             if (c.isEmpty) {
               Seq.empty
             } else {
-//              println(s"Selecting children from $children.")
-//              println(s"res = $res, exponent = $exponent")
+              //              println(s"Selecting children from $children.")
+              //              println(s"res = $res, exponent = $exponent")
               val log = 32 - Integer.numberOfLeadingZeros(c.size - 1) // rounding up
               val min = Math.min(log, exponent)
-//              println(s"c.size = ${c.size}, log = $log, min = $min")
+              //              println(s"c.size = ${c.size}, log = $log, min = $min")
               val result = Integers.power(2, min) match {
                 case n if n > c.size => {
                   val rn = res % n
@@ -173,8 +176,8 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
                   for (z <- res until c.size by n) yield (c(z), 0, 1)
                 }
               }
-//              for (x <- result) { println(x) }
-//              println(".")
+              //              for (x <- result) { println(x) }
+              //              println(".")
               result
             }
           }
