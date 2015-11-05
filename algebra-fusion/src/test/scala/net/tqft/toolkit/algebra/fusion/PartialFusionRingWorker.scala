@@ -42,9 +42,9 @@ object PartialFusionRingWorker extends App {
     opt[Unit]('m', "measure") action { (_, c) =>
       c.copy(measure = true)
     } text ("display progress through the targets (requires an extra parse of the saved state)")
-    opt[Unit]('r', "randomize") action { (_, c) =>
+    opt[Unit]('z', "randomize") action { (_, c) =>
       c.copy(measure = true, randomize = false)
-    } text ("disable keyboard interrupt")
+    } text ("shuffle tasks before starting")
     opt[Seq[Int]]('r', "resmod") valueName ("<res>,<mod>") action {
       case (Seq(r, m), c) =>
         c.copy(res = r, mod = m)
