@@ -14,7 +14,7 @@ object PolyhedronNamer {
   }
 
   def byName(name: String) = names.find(_._2 == name).map(_._1)
-  
+
   private var count = 0
   private def nextName = {
     count = count + 1
@@ -26,7 +26,7 @@ object PolyhedronNamer {
 trait PolyhedronNamer[A, F] extends FunctionSpider[A, F] {
 
   protected def variableToPolynomial(v: String): F
-  
+
   def polyhedronReductions = PolyhedronNamer.names.toSeq.flatMap({ p =>
     sphericalEquivalents(p._1).map({ q =>
       Reduction[PlanarGraph, F](q, Map(PlanarGraph.empty -> variableToPolynomial(p._2)))
@@ -64,16 +64,20 @@ trait PolyhedronNamer[A, F] extends FunctionSpider[A, F] {
       if (diagramSpider.canonicalFormWithDefect(k)._1 == diagramSpider.empty) {
         v
       } else {
+//        val k0 = if (k.loops == 0) { k } else { k.copy(loops = 0) }
         val ck = sphericalCanonicalForm(k)
-        if (!PolyhedronNamer.names.keys.exists(p => p == ck)) {
-          require(ck.loops == 1 && ck.numberOfInternalVertices == 0 || ck.loops == 0)
-          val newName = PolyhedronNamer.nextName
-          println("Naming new polyhedron:")
-          println(ck)
-          println(newName)
-          PolyhedronNamer.names += (ck -> newName)
+        val name = PolyhedronNamer.names.get(ck) match {
+          case Some(name) => name
+          case None => {
+            val newName = PolyhedronNamer.nextName
+            println("Naming new polyhedron:")
+            println(ck)
+            println(newName)
+            PolyhedronNamer.names += (ck -> newName)
+            newName
+          }
         }
-        replace(polyhedronReductions)(Map(k -> v))(PlanarGraph.empty)
+        ring.multiply(v, variableToPolynomial(name))
       }
     })
   }
@@ -84,4 +88,7 @@ trait PolynomialPolyhedronNamer[A] extends PolyhedronNamer[A, MultivariablePolyn
 }
 trait RationalFunctionPolyhedronNamer[A] extends PolyhedronNamer[A, MultivariableRationalFunction[A, String]] {
   override def variableToPolynomial(v: String) = MultivariablePolynomial(Map(Map(v -> 1) -> coefficientRing.one))
+}
+trait RationalExpressionPolyhedronNamer[A] extends PolyhedronNamer[A, RationalExpression[A, String]] {
+  override def variableToPolynomial(v: String) = RationalExpression.variable(v)
 }

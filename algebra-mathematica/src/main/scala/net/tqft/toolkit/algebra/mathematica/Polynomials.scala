@@ -19,7 +19,6 @@ import net.tqft.toolkit.algebra.Field
 
 object Polynomials {
   implicit def multivariablePolynomialToExpression[A: MathematicaForm, V: MathematicaForm](p: MultivariablePolynomial[A, V]): Expression = {
-    // TODO why isn't this available implicitly?
     def mf = MathematicaForm.multivariablePolynomialMathematicaForm[A, V]
     Expression.expression.fromInputForm(mf.toMathematicaInputString(p))
   }

@@ -1,12 +1,12 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
 import net.tqft.toolkit.algebra._
-import net.tqft.toolkit.algebra.polynomials._
+import net.tqft.toolkit.algebra.polynomials.{ RationalExpression => MultivariableRationalFunction }
 import net.tqft.toolkit.algebra.spiders._
 import net.tqft.toolkit.algebra.numberfields.NumberField
 
 abstract class TrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverField[R] {
-  override lazy val vertexTypes = Seq(VertexType(3, 1))
+  override lazy val vertexTypes = Seq(VertexType(3, 0, 1))
 
   def d: R
   def b: R
@@ -37,23 +37,23 @@ abstract class TrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverF
   }
 }
 
-trait MultivariableRationalFunctionTrivalentSpider[A] extends TrivalentSpider[MultivariableRationalFunction[A, String]] with MultivariableRationalFunctionSpider[A] {
-  override def d = Map(Map("d" -> 1) -> coefficientRing.one)
-  override def b = Map(Map("b" -> 1) -> coefficientRing.one)
-  override def t = Map(Map("t" -> 1) -> coefficientRing.one)
-}
-
-trait IntegerMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[Fraction[BigInt]] {
-  override def omega = 1
-  override final lazy val coefficientRing = implicitly[Field[Fraction[BigInt]]]
-}
-trait TwistedMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[Polynomial[Fraction[BigInt]]] {
-  override def t = ring.zero
-  // TODO improve implicits here?:
-  override def omega = MultivariablePolynomial.constant[Polynomial[Fraction[BigInt]], String](Polynomial[Fraction[BigInt]](Map(1 -> Fraction.whole[BigInt](1))))
-  override final lazy val coefficientRing: Field[Polynomial[Fraction[BigInt]]] = NumberField.cyclotomic[BigInt](3)
-}
-
-object TrivalentSpider extends IntegerMultivariableRationalFunctionTrivalentSpider
-
-object TwistedTrivalentSpider extends TwistedMultivariableRationalFunctionTrivalentSpider
+//trait MultivariableRationalFunctionTrivalentSpider[A] extends TrivalentSpider[MultivariableRationalFunction[A, String]] with MultivariableRationalFunctionSpider[A] {
+//  override def d = Map(Map("d" -> 1) -> coefficientRing.one)
+//  override def b = Map(Map("b" -> 1) -> coefficientRing.one)
+//  override def t = Map(Map("t" -> 1) -> coefficientRing.one)
+//}
+//
+//trait IntegerMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[Fraction[BigInt]] {
+//  override def omega = 1
+//  override final lazy val coefficientRing = implicitly[Field[Fraction[BigInt]]]
+//}
+//trait TwistedMultivariableRationalFunctionTrivalentSpider extends MultivariableRationalFunctionTrivalentSpider[Polynomial[Fraction[BigInt]]] {
+//  override def t = ring.zero
+//  // TODO improve implicits here?:
+//  override def omega = MultivariablePolynomial.constant[Polynomial[Fraction[BigInt]], String](Polynomial[Fraction[BigInt]](Map(1 -> Fraction.whole[BigInt](1))))
+//  override final lazy val coefficientRing: Field[Polynomial[Fraction[BigInt]]] = NumberField.cyclotomic[BigInt](3)
+//}
+//
+//object TrivalentSpider extends IntegerMultivariableRationalFunctionTrivalentSpider
+//
+//object TwistedTrivalentSpider extends TwistedMultivariableRationalFunctionTrivalentSpider

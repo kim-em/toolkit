@@ -7,6 +7,7 @@ import net.tqft.toolkit.algebra.IntegerModel
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.mathematica.Expression
+import net.tqft.toolkit.algebra.polynomials.RationalExpression
 
 trait MathematicaForm[A] {
   def toMathematicaInputString(a: A): String
@@ -95,6 +96,19 @@ object MathematicaForm {
       }
     }
   }
+  
+  implicit def rationalExpressionMathematicaForm1[A: MathematicaForm]: MathematicaForm[RationalExpression[A, String]] = rationalExpressionMathematicaForm2(implicitly[MathematicaForm[A]], BareStringMathematicaForm)
+  implicit def rationalExpressionMathematicaForm2[A: MathematicaForm, V: MathematicaForm]: MathematicaForm[RationalExpression[A, V]] = new MathematicaForm[RationalExpression[A, V]] {
+    override def toMathematicaInputString(p: RationalExpression[A, V]) = {    
+      p match {
+        case RationalExpression.constant(a) => a.toMathematicaInputString
+        case RationalExpression.variable(v) => v.toMathematicaInputString
+        case RationalExpression.power(r, k) => "(" + r.toMathematicaInputString + ")^(" + k.toString + ")"
+        case RationalExpression.sum(terms @ _*) => terms.map(_.toMathematicaInputString).mkString("(" , " + ", ")")
+        case RationalExpression.product(factors @ _*) => factors.map(_.toMathematicaInputString).mkString("(" , " * ", ")")
+      }
+    }
+  } 
   
   implicit class MathematicaFormOperations[A: MathematicaForm](a: A) {
     def toMathematicaInputString = implicitly[MathematicaForm[A]].toMathematicaInputString(a)

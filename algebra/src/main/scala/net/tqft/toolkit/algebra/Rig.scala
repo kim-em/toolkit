@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra
 
+import java.math.BigInteger
+
 trait Rig[@specialized(Int, Long, Float, Double) A] extends Monoid[A] with AdditiveMonoid[A] {
   def multiplyByInt(x: A, y: Int): A = multiply(x, fromInt(y))
   def fromInt(x: Int): A = {
@@ -11,6 +13,7 @@ trait Rig[@specialized(Int, Long, Float, Double) A] extends Monoid[A] with Addit
     }
   }
   def fromBigInt(x: BigInt): A = fromInt(x.toInt)
+  def fromBigInteger(x: BigInteger): A = fromBigInt(BigInt(x))
 }
 
 trait RigLowPriorityImplicits {
@@ -53,6 +56,7 @@ object Rig extends RigLowPriorityImplicits {
     override def coefficients = implicitly[Rig[B]]
 
     override lazy val one = Seq(coefficients.one)
+   
     override def multiply(s1: Seq[B], s2: Seq[B]): Seq[B] = {
       val array = scala.collection.mutable.ArrayBuffer.fill(s1.size + s2.size - 1)(coefficients.zero)
       for ((x, i) <- s1.zipWithIndex; (y, j) <- s2.zipWithIndex) {

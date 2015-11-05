@@ -23,7 +23,9 @@ case class TreePrinter[A](stringify: A => String, level: A => Int, accept: A => 
   def to(filename: String): TreePrinter[A] = to(new File(filename))
   def to(file: File): TreePrinter[A] = to(new PrintStream(new FileOutputStream(file)))
   def to(directory: String, a: A): TreePrinter[A] = to(new File(directory), a)
-  def to(directory: File, a: A): TreePrinter[A] = to(directory.toPath.resolve(stringify(a) + ".tree").toFile)
+  def to(directory: String, filename: String): TreePrinter[A] = to(new File(directory), filename)
+  def to(directory: File, a: A): TreePrinter[A] = to(directory, stringify(a))
+  def to(directory: File, filename: String): TreePrinter[A] = to(directory.toPath.resolve(filename + ".tree").toFile)
 
   def print(iterator: Iterator[A]) {
     val stack = scala.collection.mutable.Stack[(A, Double)]()
