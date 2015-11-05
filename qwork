@@ -14,7 +14,7 @@ cat <<EOT > jobscript
 module load dot
 module load java
 EOT
-echo /home/251/ssm251/projects/toolkit/work -h 11.0 -r $i,$mod -q -c 12 $* >> jobscript
+echo /home/251/ssm251/projects/toolkit/work -h 11.0 -r $i,$mod -c 12 $* >> jobscript
 echo "Submitting job:"
 cat jobscript
 qsub jobscript
