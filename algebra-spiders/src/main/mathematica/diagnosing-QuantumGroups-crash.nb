@@ -1,0 +1,214 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      6283,        204]
+NotebookOptionsPosition[      5340,        165]
+NotebookOutlinePosition[      5698,        181]
+CellTagsIndexPosition[      5655,        178]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AppendTo", "[", 
+   RowBox[{"$Path", ",", "\"\<~/projects/KnotTheory/trunk/\>\""}], "]"}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.6279467223218184`*^9, 3.627946817228487*^9}, {
+   3.627946848258802*^9, 3.627946879119302*^9}, 3.6279469146657696`*^9, {
+   3.629506489600542*^9, 3.6295064933038363`*^9}, {3.648644123157957*^9, 
+   3.648644145415345*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"<<", "KnotTheory`"}]], "Input",
+ CellChangeTimes->{{3.648663526960649*^9, 3.648663529217381*^9}}],
+
+Cell[BoxData["\<\"Loading KnotTheory` version of February 5, 2013, \
+3:48:46.4762.\\nRead more at http://katlas.org/wiki/KnotTheory.\"\>"], "Print",\
+
+ CellChangeTimes->{3.6486635296372766`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Knot", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(\\\"Knot\\\"\\)\[NoBreak] appears \
+in multiple contexts \[NoBreak]\\!\\({\\\"KnotTheory`\\\", \
+\\\"Global`\\\"}\\)\[NoBreak]; definitions in context \
+\[NoBreak]\\!\\(\\\"KnotTheory`\\\"\\)\[NoBreak] may shadow or be shadowed by \
+other definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"KnotTheory`Knot::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.648663529746911*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Quiet", "[", 
+  RowBox[{"<<", "QuantumGroups`"}], "]"}]], "Input",
+ CellChangeTimes->{{3.645911408941265*^9, 3.645911411342743*^9}, {
+  3.648657319624736*^9, 3.648657323273363*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Loading QuantumGroups` version 2.0\\n\"\>", 
+   "\[InvisibleSpace]", "\<\"Read more at \
+http://katlas.math.toronto.edu/wiki/QuantumGroups\"\>"}],
+  SequenceForm[
+  "Loading QuantumGroups` version 2.0\n", 
+   "Read more at http://katlas.math.toronto.edu/wiki/QuantumGroups"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.648663531168511*^9}],
+
+Cell[BoxData["\<\"Remember to set QuantumGroupsDataDirectory[] to the \
+appropriate path, if you've downloaded precomputed data.\"\>"], "Print",
+ CellChangeTimes->{3.6486635311920757`*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AppendTo", "[", 
+   RowBox[{"$Path", ",", "\"\<~/projects/QuantumGroups/trunk/package\>\""}], 
+   "]"}], ";"}]], "Input",
+ CellChangeTimes->{{3.648663537095183*^9, 3.6486635786726637`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"<<", "QuantumGroups`"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Loading QuantumGroups` version 2.0\\n\"\>", 
+   "\[InvisibleSpace]", "\<\"Read more at \
+http://katlas.math.toronto.edu/wiki/QuantumGroups\"\>"}],
+  SequenceForm[
+  "Loading QuantumGroups` version 2.0\n", 
+   "Read more at http://katlas.math.toronto.edu/wiki/QuantumGroups"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.648663580313236*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Found precomputed data in \"\>", 
+   "\[InvisibleSpace]", "\<\"/Users/scott/projects/QuantumGroups/trunk/data\"\
+\>"}],
+  SequenceForm[
+  "Found precomputed data in ", 
+   "/Users/scott/projects/QuantumGroups/trunk/data"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.648663580318712*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"SetDelayed", "::", "write"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Tag \[NoBreak]\\!\\(SquareMatrixQ\\)\[NoBreak] in \
+\[NoBreak]\\!\\(SquareMatrixQ[m_]\\)\[NoBreak] is Protected. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/write\\\", \
+ButtonNote -> \\\"SetDelayed::write\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{{3.6486635593333263`*^9, 3.6486635803624973`*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"QuantumKnotInvariant", "[", 
+    RowBox[{"G2", ",", 
+     RowBox[{
+      RowBox[{"Irrep", "[", "G2", "]"}], "[", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}], "]"}]}], "]"}], "[", 
+   RowBox[{"Knot", "[", 
+    RowBox[{"3", ",", "1"}], "]"}], "]"}], "[", "q", "]"}]], "Input",
+ CellChangeTimes->{{3.6486603335351553`*^9, 3.648660380147797*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"QuantumKnotInvariant", "[", 
+    RowBox[{
+     SubscriptBox["G", "2"], ",", 
+     RowBox[{
+      RowBox[{"Irrep", "[", 
+       SubscriptBox["G", "2"], "]"}], "[", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}], "]"}]}], "]"}], "[", 
+   RowBox[{"Knot", "[", 
+    RowBox[{"3", ",", "1"}], "]"}], "]"}], "[", "q", "]"}]], "Output",
+ CellChangeTimes->{3.648663583332458*^9}]
+}, Open  ]]
+},
+WindowSize->{808, 751},
+WindowMargins->{{12, Automatic}, {Automatic, 24}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 389, 8, 28, "Input"],
+Cell[CellGroupData[{
+Cell[972, 32, 121, 2, 28, "Input"],
+Cell[1096, 36, 194, 3, 38, "Print"],
+Cell[1293, 41, 659, 13, 42, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1989, 59, 205, 4, 28, "Input"],
+Cell[CellGroupData[{
+Cell[2219, 67, 396, 9, 38, "Print"],
+Cell[2618, 78, 188, 2, 38, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[2833, 84, 224, 5, 28, "Input"],
+Cell[CellGroupData[{
+Cell[3082, 93, 58, 1, 28, "Input"],
+Cell[CellGroupData[{
+Cell[3165, 98, 396, 9, 38, "Print"],
+Cell[3564, 109, 343, 9, 22, "Print"]
+}, Open  ]],
+Cell[3922, 121, 529, 10, 24, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4488, 136, 404, 11, 28, "Input"],
+Cell[4895, 149, 429, 13, 28, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
