@@ -4,3 +4,6 @@ cat rings.out | sort | uniq > rings.out.tmp
 mv rings.out.tmp rings.out
 cat rings.out
 
+echo
+echo ---
+echo These rings can be analyzed with fusionatlas/articles/rings/ProcessingFusionRings.nb
