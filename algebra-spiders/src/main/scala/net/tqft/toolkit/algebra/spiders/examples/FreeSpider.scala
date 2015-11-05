@@ -1,12 +1,13 @@
 package net.tqft.toolkit.algebra.spiders.examples
 
 import net.tqft.toolkit.algebra.spiders._
-import net.tqft.toolkit.algebra.polynomials.MultivariableRationalFunction
+import net.tqft.toolkit.algebra.polynomials.{ RationalExpression => MultivariableRationalFunction }
 import net.tqft.toolkit.algebra.Fraction
 import net.tqft.toolkit.algebra.mathematica.MathematicaForm
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
+import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 
-abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with RationalFunctionPolyhedronNamer[Fraction[BigInt]] {
+abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with RationalExpressionPolyhedronNamer[Fraction[BigInt]] {
   def generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])]
   override lazy val vertexTypes = generators.map(_._1)
   override def eigenvalue(label: Int): MultivariableRationalFunction[Fraction[BigInt], String] = {
@@ -35,17 +36,27 @@ object QuotientSpider {
 
 case class QuotientSpider(
   generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])],
-  extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty) extends FreeSpider {
-  override def reductions = super.reductions ++ extraReductions
+  extraReductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = Seq.empty
+) extends FreeSpider {  
+  override def reductions = extraReductions ++ super.reductions
 
   def addReduction(reduction: Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]) = {
     copy(extraReductions = extraReductions :+ reduction)
   }
 
   def reducibleDiagram_?(p: PlanarGraph): Boolean = {
-    reductions.exists(r => p.Subgraphs(r.big).excisions.nonEmpty)
+    reductions.exists(r => p.subgraphs(r.big).cachedExcisions.nonEmpty)
   }
 
+  val cachedEvaluatedInnerProduct = {
+    import net.tqft.toolkit.functions.Memo
+    Memo(super.evaluatedInnerProduct _)
+  }
+  
+  override def evaluatedInnerProduct(x: PlanarGraph, y: PlanarGraph) = {
+    cachedEvaluatedInnerProduct(x, y)
+  }
+  
   override def toString = {
     import MathematicaForm._
     val extraReductionsString = extraReductions.map({

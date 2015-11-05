@@ -113,7 +113,48 @@ case class PartialFusionRingWithInvertiblesEnumeration(orbitStructure: OrbitStru
       }
     }
 
-    val result = (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions).toMap
+    import net.tqft.toolkit.UnionTypes._
+
+    // a Map[Set[SmallFusionObject], (Option[Seq[SmallFusionObject]], Option[Double])]
+    val constrainedProducts: Map[Set[SmallFusionObject], (Option[Seq[SmallFusionObject]], Option[Double])] = {
+      val maxN = 5
+
+      ((for (n <- 3 to maxN; m <- n + 1 to maxN) yield {
+        Seq(AnObject(n), AnObject(m)) -> (None, Some(AnObject(n).dimension * AnObject(m).dimension))
+      }).toMap ++
+        (for (n <- 3 to maxN) yield {
+          Seq(AnObject(n), Dimension2Object) -> (Some(Seq(AnObject(n))), None)
+        }).toMap ++
+        Map(
+          Seq(Dimension2Object, Dimension2Object) -> (Some(Seq(TrivialObject, NonTrivialObject, Dimension2Object)), Some(3.0)),
+          Seq(AnObject(3), AnObject(3)) -> (Some(Seq(TrivialObject, NonTrivialObject, Dimension2Object)), None),
+          Seq(AnObject(4), AnObject(4)) -> (Some(Seq(TrivialObject, NonTrivialObject, AnObject(4))), None),
+          Seq(AnObject(5), AnObject(5)) -> (Some(Seq(TrivialObject, NonTrivialObject, Dimension2Object)), Some(3.0)))).map(p => (p._1.toSet[SmallFusionObject], p._2))
+    }
+
+    def constrainedProductsSubstitutions: Seq[((Int, Int, Int), Int)] = {
+      for (
+        (obji, i) <- orbitStructure.objectTypes.zipWithIndex;
+        (objj, j) <- orbitStructure.objectTypes.zipWithIndex;
+        if constrainedProducts.contains(Set(obji, objj));
+        (allowedSummands, dimensionBound) = constrainedProducts(Set(obji, objj));
+        (objk, k) <- orbitStructure.objectTypes.zipWithIndex;
+        if !(allowedSummands.nonEmpty && allowedSummands.get.contains(objk)) &&
+          !(dimensionBound.nonEmpty && OrbitStructures.genericObjectTypes.contains(objk) && objk.dimension < dimensionBound.get + 0.1)
+      ) yield {
+        multiplicityNamer(i, j, k) -> 0
+      }
+    }
+
+    // the only A4 objects just form a tensor product category
+    val A4Substitutions: Seq[((Int, Int, Int), Int)] = {
+      val A4positions = orbitStructure.objectTypes.zipWithIndex.collect({ case (AnObject(4), i) => i })
+      for ((xi, i) <- A4positions.zipWithIndex; (xj, j) <- A4positions.zipWithIndex; (xk, k) <- A4positions.zipWithIndex) yield {
+        multiplicityNamer(xi, xj, xk) -> (if (orbitStructure.groupMultiplication(i, j) == k) 1 else 0)
+      }
+    }
+
+    val result = (dualitySubstitutions ++ groupStructureSubstitutions ++ groupActionSubstitutions ++ XXdualSubstitutions ++ constrainedProductsSubstitutions ++ A4Substitutions).toMap
     //    println(enumeration)
     //    println(result)
     result

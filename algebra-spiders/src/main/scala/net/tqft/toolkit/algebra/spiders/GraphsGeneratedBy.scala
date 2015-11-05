@@ -10,10 +10,10 @@ import java.io.ObjectOutputStream
 import java.io.ByteArrayInputStream
 import java.io.ObjectInputStream
 
-case class VertexType(perimeter: Int, allowedRotationStep: Int)
+case class VertexType(perimeter: Int, label: Int, allowedRotationStep: Int)
 
 object VertexType {
-  implicit def lift(p: (Int, Int)) = VertexType(p._1, p._2)
+  implicit def lift(p: (Int, Int, Int)) = VertexType(p._1, p._2, p._3)
 }
 
 case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
@@ -25,9 +25,9 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
 
     def byNumberOfFaces(numberOfBoundaryPoints: Int, numberOfFaces: Int): Stream[PlanarGraph] = {
       // let f denote the number of internal faces, n the number of boundary points
-      // then 2 f <= \sum_v (degree(v) - 2) <= n - 2 + 2f
-      val limit = { k: List[Int] => k.zip(vertexTypes.map(_.perimeter - 2)).map(p => p._1 * p._2).sum <= numberOfBoundaryPoints - 2 + 2 * numberOfFaces }
-      Odometer(limit)(List.fill(vertexTypes.size)(0)).toStream.flatMap(k => byNumberOfVertices(numberOfBoundaryPoints, vertexTypes.zip(k).toMap).filter(_.numberOfInternalFaces == numberOfFaces))
+      // then 2 f <= \sum_v (degree(v) - 2) <= n + 2 + 2f
+      val limit = { k: List[Int] => k.zip(vertexTypes.map(_.perimeter - 2)).map(p => p._1 * p._2).sum <= numberOfBoundaryPoints + 2 + 2 * numberOfFaces }
+      Odometer(limit)(List.fill(vertexTypes.size)(0)).toStream.flatMap(k => { println(k); byNumberOfVertices(numberOfBoundaryPoints, vertexTypes.zip(k).toMap).filter(_.numberOfInternalFaces == numberOfFaces) })
     }
 
     def withAtMostNumberOfFaces(numberOfBoundaryPoints: Int, numberOfFaces: Int): Stream[PlanarGraph] = {
@@ -72,7 +72,7 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
             c = spider.rotate(
               spider.multiply(
                 spider.rotate(graph, Seq(graph.numberOfBoundaryPoints - 1, j).max),
-                spider.rotate(PlanarGraph.star(v.perimeter, v.allowedRotationStep), k),
+                spider.rotate(PlanarGraph.star(v.perimeter, v.label, v.allowedRotationStep), k),
                 connectivity),
               -j);
             if c.dangle == v.perimeter - connectivity;
@@ -151,29 +151,35 @@ case class GraphsGeneratedBy(vertexTypes: Seq[VertexType]) {
       //        }
       //      }
 
-      val s3cache = {
+      val s3cache: scala.collection.mutable.Map[(Int, Map[VertexType, Int]), Seq[PlanarGraph]] = {
         import scala.util.parsing.combinator._
         import scala.util.matching.Regex
 
         def pickleGraphSeq(graphs: Seq[PlanarGraph]): String = {
           val result = graphs.map(pickleGraph).mkString("Seq(\n  ", ",\n  ", "\n)")
-//          require(PlanarGraph.graphSeqFromString(result) == graphs, "pickling failed on:\n" + graphs + "\nresults:\n" + PlanarGraph.graphSeqFromString(result))
+          //          require(PlanarGraph.graphSeqFromString(result) == graphs, "pickling failed on:\n" + graphs + "\nresults:\n" + PlanarGraph.graphSeqFromString(result))
           result
         }
         def pickleGraph(graph: PlanarGraph): String = {
           graph.toString
         }
 
-//        require({
-//          val graphs = Seq(PlanarGraph.dodecahedron)
-//          PlanarGraph.graphSeqFromString(pickleGraphSeq(graphs)) == graphs
-//        })
+        //        require({
+        //          val graphs = Seq(PlanarGraph.dodecahedron)
+        //          PlanarGraph.graphSeqFromString(pickleGraphSeq(graphs)) == graphs
+        //        })
 
-        import net.tqft.toolkit.collections.MapTransformer._
-        S3("planar-graphs")
-          .transformKeys({ t: (Int, Map[VertexType, Int]) => (vertexTypes, faces, t).hashCode.toString })
-          .transformValues(PlanarGraph.graphSeqFromString, pickleGraphSeq)
-
+        try {
+          import net.tqft.toolkit.collections.MapTransformer._
+          S3("planar-graphs")
+            .transformKeys({ t: (Int, Map[VertexType, Int]) => (vertexTypes, faces, t).hashCode.toString })
+            .transformValues(PlanarGraph.graphSeqFromString, pickleGraphSeq)
+        } catch {
+          case e: Exception => {
+            // oh well, we're probably just running offline; provide a dummy cache
+            scala.collection.mutable.Map.empty
+          }
+        }
       }
 
       import net.tqft.toolkit.functions.Memo

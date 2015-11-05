@@ -7,11 +7,14 @@ import java.util.concurrent.{ BlockingQueue, Executors, LinkedBlockingQueue }
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import net.tqft.toolkit.Logging
+import scala.collection.GenTraversableOnce
+import scala.collection.generic.CanBuildFrom
 
 object ParIterator { pi =>
 
   trait ParIteratorOperations[A] {
     def map[B](f: A => B): Iterator[B]
+    def flatMap[B, That](f: (A) ⇒ GenTraversableOnce[B]): Iterator[B]
     def foreach[B](f: A => B)
   }
 
@@ -19,10 +22,11 @@ object ParIterator { pi =>
     def par = parWithNumberOfThreads(4 * _ + 1)
     def parWithNumberOfThreads(threadsFromCPUs: Int => Int): ParIteratorOperations[A] = parWithNumberOfThreads(threadsFromCPUs(Runtime.getRuntime().availableProcessors()))
     def parWithNumberOfThreads(threads: Int): ParIteratorOperations[A] = new ParIteratorOperations[A] {
-      //      import scala.concurrent.ExecutionContext.Implicits.global
-
       implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(threads))
       def map[B](f: A => B): Iterator[B] = pi.map(i)(f)
+      def flatMap[B, That](f: (A) ⇒ GenTraversableOnce[B]): Iterator[B] = {
+        pi.map(i)(f).flatMap(x => x)
+      }
       def foreach[B](f: A => B) {
         val queue: BlockingQueue[Option[A]] = new LinkedBlockingQueue(threads)
 
@@ -32,11 +36,11 @@ object ParIterator { pi =>
           while (i.hasNext) {
             queue.put(Some(i.next))
           }
-          
+
           for (i <- 0 until 2 * threads) {
             queue.put(None)
           }
-//                    Logging.info("iterator exhausted...")
+          //                    Logging.info("iterator exhausted...")
         })(ExecutionContext.fromExecutor(Executors.newSingleThreadExecutor()))
 
         def work: Future[Unit] = {
@@ -96,4 +100,5 @@ object ParIterator { pi =>
 
     }
   }
+
 }

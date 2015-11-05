@@ -19,7 +19,7 @@ object LoadSmallGroups {
       val actionsData = actionsText.map(_.map(_.split(",").toIndexedSeq.map(_.toInt)))
       val group = FiniteGroups.symmetricGroup(generators.head.size).subgroupGeneratedBy(generators)
       val actions = actionsData.map(actionData => new group.ActionOnFiniteSet[Int] { 
-        override def elements = 0 until actionData.head.size
+        override def elements = (0 until actionData.head.size).toSet
         override def act(g: Permutation, x: Int) = {
           group.elementsAsWordsInGenerators(g).foldRight(x)({ case (i, y) => actionData(i)(y) })
         }

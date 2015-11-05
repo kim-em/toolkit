@@ -43,7 +43,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
           }
         }
       }
-      for (s <- independentSubsetsOf((0 until numberOfVertices).toList).toStream) yield Upper(s)
+      (for (s <- independentSubsetsOf((0 until numberOfVertices).toList).toStream) yield Upper(s)).toSet
     }
     override def act(g: IndexedSeq[Int], upper: Upper) = {
       val h = g.inverse
@@ -51,7 +51,7 @@ case class TriangleFreeGraph(numberOfVertices: Int, adjacencies: IndexedSeq[Seq[
     }
   }
   override lazy val lowerObjects = new automorphisms.ActionOnFiniteSet[Lower] {
-    override val elements = for (k <- (0 until numberOfVertices)) yield Lower(k)
+    override val elements = (for (k <- (0 until numberOfVertices)) yield Lower(k)).toSet
     override def act(g: IndexedSeq[Int], lower: Lower) = {
       val h = g.inverse
       Lower(h(lower.k))

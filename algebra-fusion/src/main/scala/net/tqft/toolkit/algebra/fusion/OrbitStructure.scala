@@ -69,8 +69,8 @@ case class OrbitStructure(groupOrder: Int, groupIndex: Int, actionObjectPairs: S
           val symmetricMatrix = completeToSymmetricMatrix(lowerTriangularMatrix)
           import Ordering.Implicits._
           val ordering = implicitly[Ordering[Seq[Int]]]
-          (for(i <- 0 until symmetricMatrix.size; j <- i + 1 until symmetricMatrix.size) yield ordering.lteq(symmetricMatrix(i), symmetricMatrix(j))).forall(x => x) &&
-          symmetricMatrix.map(_.sum).zip(orbitSizesOfThisType).forall(p => p._1 <= p._2)
+          (for (i <- 0 until symmetricMatrix.size; j <- i + 1 until symmetricMatrix.size) yield ordering.lteq(symmetricMatrix(i), symmetricMatrix(j))).forall(x => x) &&
+            symmetricMatrix.map(_.sum).zip(orbitSizesOfThisType).forall(p => p._1 <= p._2)
         }
         Odometer(limit)(zeroes).filter(m => diagonal(m).forall(_ % 2 == 0)).map(completeToSymmetricMatrix).toStream
       }
@@ -204,9 +204,12 @@ case object GenericFusionObject extends SmallFusionObject {
 object OrbitStructures {
   val groupsDatabase = LoadSmallGroups()
 
+  val allObjectTypes = Seq(AnObject(3), AnObject(4), AnObject(5), Dimension2Object, Generic2SupertransitiveFusionObject, GenericDepth2FusionObject, GenericFusionObject)
+  val genericObjectTypes = allObjectTypes.filterNot(_.isInstanceOf[SmallFusionObjectWithDefiniteDimension])
+  
   def apply(globalDimension: Double): Iterator[OrbitStructure] = {
     // FIXME decide which object types are allowed
-    apply(globalDimension, Seq(AnObject(3), AnObject(4), Generic2SupertransitiveFusionObject, GenericDepth2FusionObject, GenericFusionObject))
+    apply(globalDimension, allObjectTypes)
   }
 
   def apply(globalDimension: Double, allowedObjects: Seq[SmallFusionObject]): Iterator[OrbitStructure] = {
@@ -217,27 +220,29 @@ object OrbitStructures {
     val maximumNumberOfOrbits = (globalDimension / groupOrder).toInt
     val (group, actions) = groupsDatabase(groupOrder)(groupIndex - 1)
 
-    def actionObjectPairCompatible_?(action: FinitelyGeneratedFiniteGroup[net.tqft.toolkit.permutations.Permutations.Permutation]#ActionOnFiniteSet[Int], obj: SmallFusionObject): Boolean = {
-      obj match {
+    def actionObjectPairCompatible_?(actionIndex: Int, obj: SmallFusionObject): Boolean = {
+      (obj match {
         case obj: SmallFusionObjectWithDefiniteDimension => {
           // See the lemma below
-          group.size <= action.elements.size * obj.dimension * obj.dimension
+          group.size <= actions(actionIndex).elements.size * obj.dimension * obj.dimension
         }
         case _ => true
-      }
+      }) &&
+      (obj != AnObject(4) || actionIndex == 0)
     }
 
     val actionObjectPairs = for (
       (action, actionIndex) <- actions.zipWithIndex;
       obj <- allowedObjects;
-      if actionObjectPairCompatible_?(action, obj)
+      if actionObjectPairCompatible_?(actionIndex, obj)
     ) yield {
       // This needs to be a lemma somewhere: if the orbit is G/H, and X = eH, then XX^* contains H, so dim(x) >= sqrt(#H).
       (actionIndex, obj, math.max(action.elements.size * obj.dimension * obj.dimension, group.size.toDouble))
     }
 
     def limit(r: List[Int]) = {
-      r.zip(actionObjectPairs).map({ case (multiplicity, (_, _, orbitDimension)) => multiplicity * orbitDimension }).sum <= globalDimension - group.size
+      r.zip(actionObjectPairs).collect({ case (n, (_, AnObject(4), _)) => n }).sum <= 1 &&
+        r.zip(actionObjectPairs).map({ case (multiplicity, (_, _, orbitDimension)) => multiplicity * orbitDimension }).sum <= globalDimension - group.size
     }
 
     val possibilities = Odometer(limit _)(List.fill(actionObjectPairs.size)(0))

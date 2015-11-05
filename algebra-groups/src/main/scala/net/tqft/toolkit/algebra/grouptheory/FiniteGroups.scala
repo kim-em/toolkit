@@ -264,3 +264,10 @@ trait FiniteGroupHomomorphism[A, B] extends Homomorphism[FiniteGroup, A, B] { ho
   def kernel = source.subgroup(source.elements.par.filter(homomorphism(_) == target.one).seq)
 }
 
+trait FinitelyGeneratedFiniteGroupHomomorphism[A, B] extends Homomorphism[FinitelyGeneratedFiniteGroup, A, B] {
+  override def apply(p: A) = {
+    target.product(source.elementsAsWordsInGenerators(p).map(applyToGenerator))
+  }
+  def applyToGenerator(x: Int): B
+}
+

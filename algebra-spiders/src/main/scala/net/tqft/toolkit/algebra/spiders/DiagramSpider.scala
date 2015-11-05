@@ -98,6 +98,7 @@ object DiagramSpider {
     }
   }
 
+
   implicit class DiskDiagramSpider[A](spider: DiagramSpider[A]) extends Spider.DiskSpider[A](spider) with DiagramSpider[Disk[A]] {
     override def canonicalFormWithDefect(disk: Disk[A]) = {
       val (result, defect) = spider.canonicalFormWithDefect(disk.contents)
