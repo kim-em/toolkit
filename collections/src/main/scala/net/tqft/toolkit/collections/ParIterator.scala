@@ -22,6 +22,7 @@ object ParIterator { pi =>
     def par = parWithNumberOfThreads(4 * _ + 1)
     def parWithNumberOfThreads(threadsFromCPUs: Int => Int): ParIteratorOperations[A] = parWithNumberOfThreads(threadsFromCPUs(Runtime.getRuntime().availableProcessors()))
     def parWithNumberOfThreads(threads: Int): ParIteratorOperations[A] = new ParIteratorOperations[A] {
+
       implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(threads))
       def map[B](f: A => B): Iterator[B] = pi.map(i)(f)
       def flatMap[B, That](f: (A) ⇒ GenTraversableOnce[B]): Iterator[B] = {
@@ -29,19 +30,6 @@ object ParIterator { pi =>
       }
       def foreach[B](f: A => B) {
         val queue: BlockingQueue[Option[A]] = new LinkedBlockingQueue(threads)
-
-        // Since synchronizing access to iterators is hard, we set up a future reading the iterator
-        //  into a blocking queue.
-        Future({
-          while (i.hasNext) {
-            queue.put(Some(i.next))
-          }
-
-          for (i <- 0 until 2 * threads) {
-            queue.put(None)
-          }
-          //                    Logging.info("iterator exhausted...")
-        })(ExecutionContext.fromExecutor(Executors.newSingleThreadExecutor()))
 
         def work: Future[Unit] = {
           val g = Future {
@@ -52,13 +40,23 @@ object ParIterator { pi =>
           }
           g.flatMap({
             case None => {
-              //             Logging.info("closing this thread...") 
+              //              Logging.info("closing this thread...") 
               Future.successful(())
             }
             case Some(a) => a
           })
         }
-        Await.result(Future.sequence(for (i <- 0 until threads) yield work).map(_ => ()), Duration.Inf)
+
+        val together = Future.sequence(for (i <- 0 until threads) yield work).map(_ => ())
+
+        i.foreach(x => queue.put(Some(x)))
+        
+        //          Logging.info("iterator exhausted")
+        for (i <- 0 until 2 * threads) {
+          queue.put(None)
+        }
+
+        Await.result(together, Duration.Inf)
         //        Logging.info("finished foreach")
       }
     }

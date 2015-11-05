@@ -116,7 +116,7 @@ object PartialFusionRingWorker extends App {
 
     def now = new java.util.Date().toString
     val start = System.currentTimeMillis
-    def estimatedCompletion = (System.currentTimeMillis - start) * (total / counter) + System.currentTimeMillis()
+    def estimatedCompletion = (System.currentTimeMillis - start) * (total / (counter+1)) + System.currentTimeMillis()
     var lastEstimate = 0L
     var lastEstimateReported = System.currentTimeMillis
 
@@ -139,6 +139,7 @@ object PartialFusionRingWorker extends App {
         pleaseFinishNow = true
       }
     }
+
 
     import net.tqft.toolkit.collections.ParIterator._
 
