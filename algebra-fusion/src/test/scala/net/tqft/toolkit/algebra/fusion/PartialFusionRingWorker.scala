@@ -17,7 +17,7 @@ import scala.util.Random
 
 object PartialFusionRingWorker extends App {
 
-  case class Config(selfDualObjects: Int = 5, dualPairs: Int = 0, res: Int = 0, mod: Int = 1, globalDimensionBound: Option[Double] = None, levelBound: Option[Int] = None, stepsBound: Option[Int] = None, finishBy: Option[Long] = None, cpus: Option[Int] = None, batch: Boolean = false, measure: Boolean = true, randomize: Boolean = false, verbose: Boolean = false)
+  case class Config(selfDualObjects: Int = 5, dualPairs: Int = 0, res: Int = 0, mod: Int = 1, globalDimensionBound: Option[Double] = None, levelBound: Option[Int] = None, stepsBound: Option[Int] = None, finishBy: Option[Long] = None, cpus: Option[Int] = None, batch: Boolean = false, measure: Boolean = false, randomize: Boolean = false, verbose: Boolean = false)
 
   val parser = new scopt.OptionParser[Config]("PartialFusionRingWorker") {
     head("PartialFusionRingWorker", "1.0")
@@ -43,8 +43,8 @@ object PartialFusionRingWorker extends App {
       c.copy(measure = true)
     } text ("display progress through the targets (requires an extra parse of the saved state)")
     opt[Unit]('z', "randomize") action { (_, c) =>
-      c.copy(measure = true, randomize = false)
-    } text ("shuffle tasks before starting")
+      c.copy(measure = true, randomize = true)
+    } text ("shuffle tasks before starting (implies -m)")
     opt[Seq[Int]]('r', "resmod") valueName ("<res>,<mod>") action {
       case (Seq(r, m), c) =>
         c.copy(res = r, mod = m)
@@ -91,20 +91,20 @@ object PartialFusionRingWorker extends App {
     }
 
     import net.tqft.toolkit.collections.Iterators._
-    def targets = { 
-        val targets = TreeReader
-          .readLeaves(new File("fusion-rings"), initialString)
-      .filter(l => !pleaseFinishNow)
-      .map(l => (l, l.split(" ")))
-      .filter(_._2.size == 4)
-      .filter(config.levelBound.isEmpty || _._2(1).toInt <= config.levelBound.get)
-      .filter(config.globalDimensionBound.isEmpty || _._2(3).toDouble <= config.globalDimensionBound.get)
-      .map(_._1)
-      .map(enumeration.PartialFusionRing.apply)
-      .filter(r => accept(r) > 0)
-      .filter(r => config.mod == 1 || r.hashCode.abs % config.mod == config.res)
-      
-      if(config.randomize) {
+    def targets = {
+      val targets = TreeReader
+        .readLeaves(new File("fusion-rings"), initialString)
+        .filter(l => !pleaseFinishNow)
+        .map(l => (l, l.split(" ")))
+        .filter(_._2.size == 4)
+        .filter(config.levelBound.isEmpty || _._2(1).toInt <= config.levelBound.get)
+        .filter(config.globalDimensionBound.isEmpty || _._2(3).toDouble <= config.globalDimensionBound.get)
+        .map(_._1)
+        .map(enumeration.PartialFusionRing.apply)
+        .filter(r => accept(r) > 0)
+        .filter(r => config.mod == 1 || r.hashCode.abs % config.mod == config.res)
+
+      if (config.randomize) {
         Random.shuffle(targets.toSeq).iterator.filter(l => !pleaseFinishNow)
       } else {
         targets
@@ -116,19 +116,23 @@ object PartialFusionRingWorker extends App {
 
     def now = new java.util.Date().toString
     val start = System.currentTimeMillis
-    def estimatedCompletion = (System.currentTimeMillis - start) * (total / (counter+1)) + System.currentTimeMillis()
+    def estimatedCompletion = (System.currentTimeMillis - start) * (total / (counter + 1)) + System.currentTimeMillis()
     var lastEstimate = 0L
     var lastEstimateReported = System.currentTimeMillis
 
-    def verboseTargets = targets.map({ x =>
-      println(now + " Found target " + (if (config.measure) { counter = counter + 1; s"($counter/$total) " } else "") + x.toShortString)
-      if (System.currentTimeMillis - lastEstimateReported >= 60000 || math.abs(estimatedCompletion - lastEstimate) >= 60000) {
-        lastEstimateReported = System.currentTimeMillis
-        lastEstimate = estimatedCompletion
-        println(now + " Estimated completion at " + new java.util.Date(lastEstimate))
-      }
-      x
-    })
+    def verboseTargets = if (config.measure) {
+      targets.map({ x =>
+        println(now + " Found target " + (if (config.measure) { counter = counter + 1; s"($counter/$total) " } else "") + x.toShortString)
+        if (System.currentTimeMillis - lastEstimateReported >= 60000 || math.abs(estimatedCompletion - lastEstimate) >= 60000) {
+          lastEstimateReported = System.currentTimeMillis
+          lastEstimate = estimatedCompletion
+          println(now + " Estimated completion at " + new java.util.Date(lastEstimate))
+        }
+        x
+      })
+    } else {
+      targets
+    }
 
     if (!config.batch) {
       import scala.concurrent.ExecutionContext.Implicits.global
@@ -139,7 +143,6 @@ object PartialFusionRingWorker extends App {
         pleaseFinishNow = true
       }
     }
-
 
     import net.tqft.toolkit.collections.ParIterator._
 
