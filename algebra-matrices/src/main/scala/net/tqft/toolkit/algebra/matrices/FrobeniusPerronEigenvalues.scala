@@ -9,7 +9,7 @@ object FrobeniusPerronEigenvalues {
 
   def estimate(m: Array[Array[Int]]): Double = estimateWithEigenvector(m)._1
   
-  def estimateWithEigenvector(m: Array[Array[Int]]): (Double, Seq[Double]) = {
+  def estimateWithEigenvector(m: Array[Array[Int]], tolerance: Double = 0.0001, target: Double = Double.MaxValue): (Double, Seq[Double]) = {
     val rank = m.length
 
     var iv0 = m.map(_.sum + 1.0)
@@ -21,7 +21,7 @@ object FrobeniusPerronEigenvalues {
     var est0 = 0.0
     var k = 0
 
-    while (scala.math.abs(est1 - est0) > 0.0001) {
+    while (est0 == 0.0 || est1 < target && scala.math.abs(est1 - est0) > tolerance) {
       est0 = est1
       est1 = 0.0
       k = 0
