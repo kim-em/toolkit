@@ -9,10 +9,10 @@ object FrobeniusPerronEigenvalues {
 
   def estimate(m: Array[Array[Int]]): Double = estimateWithEigenvector(m)._1
   
-  def estimateWithEigenvector(m: Array[Array[Int]], tolerance: Double = 0.0001, target: Double = Double.MaxValue): (Double, Seq[Double]) = {
+  def estimateWithEigenvector(m: Array[Array[Int]], tolerance: Double = 0.0001, target: Double = Double.MaxValue, hint: Option[Array[Double]] = None): (Double, Array[Double]) = {
     val rank = m.length
 
-    var iv0 = m.map(_.sum + 1.0)
+    var iv0 = hint.map(_.clone).getOrElse(m.map(_.sum + 1.0))
     var est1 = scala.math.sqrt(iv0.map(x => x * x).sum)
     for (i <- 0 until rank) {
       iv0(i) = iv0(i) / est1
