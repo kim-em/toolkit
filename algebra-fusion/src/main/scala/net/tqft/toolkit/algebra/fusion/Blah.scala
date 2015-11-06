@@ -70,7 +70,9 @@ object Blah extends App {
       } else {
         s.toCharArray().map(_.toInt)
       }
-      n.foldLeft(root)({ (p, m) => p.next(m).get })
+      // nope
+      //      n.foldLeft(root)({ (p, m) => p.next(m).get })
+      ???
     }
   }
 
@@ -78,6 +80,11 @@ object Blah extends App {
     override def toString = {
       val sep = if (x.max > 9) "," else ""
       x.take(step + 1).mkString(sep)
+    }
+
+    def toShortString = {
+      val sep = if (x.max > 9) "," else ""
+      rank.toString + ",0 " + x.max + " " + (for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank) yield N(x)(i, j, k)).mkString(sep)
     }
 
     def next(m: Int): Option[Partial] = {
@@ -224,22 +231,22 @@ object Blah extends App {
 
   //  println(associativitiesByVariable.map(_.size))
 
-  val globalDimensionBound = 60.0
+  val globalDimensionBound = 40.0
 
-//  while (true) {
-    //    println(Profiler.timing(Partial.root.descendants.size))
-    println(Profiler.timing({
-      val (future, interrupt) = Partial.root.interruptibleDescendants(println)
+  //  while (true) {
+  //    println(Profiler.timing(Partial.root.descendants.size))
+  println(Profiler.timing({
+    val (future, interrupt) = Partial.root.interruptibleDescendants(r => println(r.toShortString))
 
-      import scala.concurrent.ExecutionContext.Implicits.global
+    import scala.concurrent.ExecutionContext.Implicits.global
 
-      Future {
-        StdIn.readLine
-        interrupt()
-      }
-      val result = Await.result(future, Duration.Inf)
-      (result._1.size, result._2.size)
-    }))
-//  }
+    Future {
+      StdIn.readLine
+      interrupt()
+    }
+    val result = Await.result(future, Duration.Inf)
+    (result._1.size, result._2.size)
+  }))
+  //  }
 
 }
