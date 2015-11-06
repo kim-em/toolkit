@@ -36,29 +36,29 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
 
   // now the actual algorithm
   def children = {
-    //            info("computing children of " + this)
-    //            info(" automorphism group: " + automorphisms.generators)
+                info("computing children of " + this)
+                info(" automorphism group: " + automorphisms.generators)
     val orbits = upperObjects.allOrbits.toSeq
-    //            info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+                info(" found " + orbits.size + " orbits, with sizes " + orbits.toSeq.map(_.size).mkString("(", ", ", ")"))
     val result = orbits.flatMap({ orbit =>
       val candidateUpperObject = orbit.representative;
-      //                  info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements)
-      //                  info("   with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
+                        info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements)
+                        info("   with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
       val lowerOrbits = candidateUpperObject.result.lowerObjects.allOrbits
-      //                  info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
-      //                  info("   which sort as " + lowerOrbits.toSeq.sorted(candidateUpperObject.result.ordering).map(_.elements))
+                        info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
+                        info("   which sort as " + lowerOrbits.toSeq.sorted(candidateUpperObject.result.ordering).map(_.elements))
       val canonicalReductionOrbit = lowerOrbits.min(candidateUpperObject.result.ordering)
-      //                  info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
-      //                  info("  with result " + canonicalReductionOrbit.representative.result)
+                        info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
+                        info("  with result " + canonicalReductionOrbit.representative.result)
       if (canonicalReductionOrbit.contains(candidateUpperObject.inverse)) {
-        //                        info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
+                                info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
         Some(candidateUpperObject.result)
       } else {
-        //                        info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
+                                info("  which did not contain the inverse reduction, so we're rejecting " + candidateUpperObject.result)
         None
       }
     })
-    //            info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
+                info("finished computing children of " + this + ", found: " + result.mkString("(", ", ", ")"))
     result
   }
 
@@ -78,14 +78,18 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
   }
 
   def verifyInverses = {
-    val badPairOption = upperObjects.elements.map({ u =>
-      (u, u.result.lowerObjects.elements.find(_.result != this))
-    }).find(_._2.nonEmpty)
-      .map(p => (p._1, p._2.get))
-    badPairOption.map({
-      case (u, l) => println(s"Upper object $u for $this has bad inverse $l")
-    })
-    badPairOption.isEmpty
+    upperObjects.elements.find(u => u.inverse.result != this).isEmpty
+    //    
+    //    TODO: delete this stuff, which was nonsense.
+    //    
+    //    val badPairOption = upperObjects.elements.map({ u =>
+    //      (u, u.result.lowerObjects.elements.find(_.result != this))
+    //    }).find(_._2.nonEmpty)
+    //      .map(p => (p._1, p._2.get))
+    //    badPairOption.map({
+    //      case (u, l) => println(s"Upper object $u for $this has bad inverse $l")
+    //    })
+    //    badPairOption.isEmpty
   }
 
   // and, for convenience, something to recursively find all children, filtering on a predicate
@@ -304,17 +308,36 @@ trait CanonicalGenerationWithIsomorphism[A <: CanonicalGenerationWithIsomorphism
   def verifyParent = {
     parent.map(_.children.exists(isomorphicTo_?)).getOrElse(true)
   }
-  def verifyAncestry = ancestry.forall(_.verifyParent)
-
-  def verifyAncestryForSomeIsomorph = isomorphs.exists(_.verifyAncestry)
-
-  def verifyUpperOrbits = {
-    (for (o <- upperObjects.allOrbits.iterator; s <- o.elements.subsets(2); Seq(a, b) = s.toSeq) yield {
-      a.result.isomorphicTo_?(b.result)
-    }) ++
-      (for (s <- upperObjects.allOrbits.subsets(2); Seq(o1, o2) = s.toSeq; u1 = o1.representative; u2 = o2.representative) yield {
-        !u1.result.isomorphicTo_?(u2.result)
-      })
+  def verifyStrictParent = {
+    parent.map(_.children.contains(this)).getOrElse(true)
   }
+  def verifyAncestry = ancestry.forall(_.verifyParent)
+  def verifyStrictAncestry = ancestry.forall(_.verifyStrictParent)
+
+  def verifyStrictAncestryForSomeIsomorph = isomorphs.exists(_.verifyStrictAncestry)
+
+  def verifyUpperOrbits = verifyUpperOrbitsContainIsomorphicObjects // && verifyDistinctUpperOrbitsAreNonIsomorphic
+  def verifyUpperOrbitsContainIsomorphicObjects = {
+    (for (o <- upperObjects.allOrbits.iterator; s <- o.elements.subsets(2); Seq(a, b) = s.toSeq) yield {
+      if(a.result.isomorphicTo_?(b.result)) {
+        true
+      } else {
+        println(s"In orbit $o, the upper objects $a and $b were not isomorphic") 
+      }
+    }).forall(_ == true)
+  }
+  // TODO this is just not a reasonable thing to check!
+//  def verifyDistinctUpperOrbitsAreNonIsomorphic = {
+//    (for (s <- upperObjects.allOrbits.subsets(2); Seq(o1, o2) = s.toSeq; u1 = o1.representative; u2 = o2.representative) yield {
+//      if(!u1.result.isomorphicTo_?(u2.result) ) {
+//        true
+//      } else {
+//        println(s"Orbits $o1 and $o2 have isomorphic representatives.")
+//        println(s"automorphisms = ${automorphisms.elements}")
+//        println(s"o1 = ${o1.elements}")
+//        println(s"o2 = ${o2.elements}")
+//      }
+//    }).forall(_ == true)
+//  }
 
 }

@@ -363,7 +363,7 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
             }
 
             targets.filter(t => variablesInSmallEquations.contains(t.m))
-            //            targets
+//                        targets
           })
         }
         override def act(g: IndexedSeq[Int], u: Upper): Upper = {
@@ -393,7 +393,11 @@ case class PartialFusionRingEnumeration(numberOfSelfDualObjects: Int, numberOfDu
           associativity.closedVariablesByNumberOfVariables(v)
         }
       }).refineByPartialFunction({
-        case DeleteEntry((i, j, k)) => Dreadnaut.canonicalizeColouredGraph(graphPresentation.additionalMarking(Seq(3 * rank + i * rank * rank + j * rank + k)))
+        case DeleteEntry((i, j, k)) => {
+//          val marks = for((i0,j0,k0) <- synonymousMultiplicities((i,j,k))) yield 3 * rank + i0 * rank * rank + j0 * rank + k0
+//          Dreadnaut.canonicalizeColouredGraph(graphPresentation.additionalMarking(marks))
+          Dreadnaut.canonicalizeColouredGraph(graphPresentation.additionalMarking(Seq(3 * rank + i * rank * rank + j * rank + k)))
+        }
       })
 
       Ordering.by({ o: lowerObjects.Orbit =>

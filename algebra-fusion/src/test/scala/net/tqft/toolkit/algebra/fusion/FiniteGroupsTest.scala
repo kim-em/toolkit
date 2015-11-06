@@ -19,6 +19,6 @@ class FiniteGroupsTest extends FlatSpec with Matchers {
   "fromFiniteGroup" should "construct from Z/2 x Z/2 a PartialFusionRing with valid ancestry" in {
     val pfr = PartialFusionRingEnumeration.fromFiniteGroup(FiniteGroups.power(FiniteGroups.cyclicGroup(2), 2))
     println(pfr)
-    pfr.verifyAncestryForSomeIsomorph should be (true)
+    pfr.verifyStrictAncestryForSomeIsomorph should be (true)
   }
 }
