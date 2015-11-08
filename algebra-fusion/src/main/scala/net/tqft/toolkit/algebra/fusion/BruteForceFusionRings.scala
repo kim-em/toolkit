@@ -72,6 +72,8 @@ object BruteForceFusionRings extends App {
     val (time, (toResume, numberFound)) = (Profiler.timing({
       val targets: Seq[enumeration.Partial] = if (config.resumable && inFile.exists) {
         Source.fromFile(inFile).getLines.map(enumeration.Partial.apply).toSeq
+      } else if(config.resumable && outFile.exists) {
+        Seq.empty
       } else {
         Seq(enumeration.root)
       }
