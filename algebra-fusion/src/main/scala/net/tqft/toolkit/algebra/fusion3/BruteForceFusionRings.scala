@@ -49,7 +49,8 @@ object BruteForceFusionRings extends App {
 
     val notify: enumeration.Complete => Unit = {
       if (config.resumable) {
-        val pw = new PrintWriter(new BufferedWriter(new FileWriter(outFile, true)));
+        // lazy, to avoid creating the file until it's needed
+        lazy val pw = new PrintWriter(new BufferedWriter(new FileWriter(outFile, true)));
         { c =>
           println(c)
           pw.println(c)
