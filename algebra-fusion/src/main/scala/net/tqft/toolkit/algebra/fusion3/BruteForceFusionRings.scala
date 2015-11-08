@@ -20,7 +20,8 @@ object BruteForceFusionRings extends App {
     globalDimensionBound: Double = 60.0,
     resumable: Boolean = false,
     finishBy: Option[Long] = None,
-    batch: Boolean = false)
+    batch: Boolean = false,
+    force: Boolean = false)
 
   val parser = new scopt.OptionParser[Config]("BruteForceFusionRings") {
     head("BruteForceFusionRings", "1.0")
@@ -33,6 +34,9 @@ object BruteForceFusionRings extends App {
     opt[Unit]('q', "batch") action { (_, c) =>
       c.copy(batch = true)
     } text ("disable keyboard interrupt")
+    opt[Unit]('f', "force") action { (_, c) =>
+      c.copy(force=true)
+      } text("overwrite existing data files")
     help("help") text ("prints this usage text")
     arg[Int]("<number-of-self-dual-objects>") hidden () action { (x, c) => c.copy(selfDualObjects = x) }
     arg[Int]("<number-of-dual-pairs>") hidden () action { (x, c) => c.copy(dualPairs = x) }
@@ -44,13 +48,33 @@ object BruteForceFusionRings extends App {
 
     new File("fusion-rings3/").mkdir
     val prefix = "fusion-rings3/" + config.selfDualObjects + "," + config.dualPairs + "," + config.globalDimensionBound
-    val inFile = new File(prefix + ".in")
-    val outFile = new File(prefix + ".out")
+    
+    val inFile = new File(prefix + ".resume")
+    val partialFile = new File(prefix + ".partial")
+    val completeFile = new File(prefix + ".classification")
 
+    if(config.resumable) {
+      if(config.force) {
+            inFile.delete
+            partialFile.delete
+            completeFile.delete        
+      }
+      
+      if((inFile.exists == partialFile.exists)  && !completeFile.exists ||
+          !inFile.exists && !partialFile.exists && completeFile.exists) {
+            // looks good
+          } else {
+            println("--- resume files look wrong, cleaning up!")
+            inFile.delete
+            partialFile.delete
+            completeFile.delete
+          }
+    }
+    
     val notify: enumeration.Complete => Unit = {
       if (config.resumable) {
         // lazy, to avoid creating the file until it's needed
-        lazy val pw = new PrintWriter(new BufferedWriter(new FileWriter(outFile, true)));
+        lazy val pw = new PrintWriter(new BufferedWriter(new FileWriter(partialFile, true)));
         { c =>
           println(c)
           pw.println(c)
@@ -61,11 +85,12 @@ object BruteForceFusionRings extends App {
       }
     }
 
+    if(config.resumable && completeFile.exists) {
+      println("--- nothing to do...")
+    } else {
     val (time, (toResume, numberFound)) = (Profiler.timing({
       val targets: Seq[enumeration.Partial] = if (config.resumable && inFile.exists) {
         Source.fromFile(inFile).getLines.map(enumeration.Partial.apply).toSeq
-      } else if(config.resumable && outFile.exists) {
-        Seq.empty
       } else {
         Seq(enumeration.root)
       }
@@ -131,9 +156,11 @@ object BruteForceFusionRings extends App {
     } else {
       if (config.resumable) {
         inFile.delete
+        partialFile.renameTo(completeFile)
       }
     }
 
+    }
   }
 }
 
