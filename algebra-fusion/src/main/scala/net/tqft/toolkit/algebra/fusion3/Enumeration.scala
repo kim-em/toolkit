@@ -8,18 +8,27 @@ import scala.collection.mutable.ListBuffer
 import java.util.concurrent.ConcurrentHashMap
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
+import net.tqft.toolkit.permutations.Permutations
 
 case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBound: Double) {
   val rank = selfDualObjects + 2 * dualPairs
-  require(dualPairs == 0)
+
+  private val dualData = ((0 until selfDualObjects) ++ (for (i <- 0 until dualPairs; n <- Seq(selfDualObjects + 2 * i + 1, selfDualObjects + 2 * i)) yield n)).toIndexedSeq
 
   private val multiplicities = for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank) yield Seq(i, j, k)
+
+    def minReciprocal(v: Seq[Int]) = {
+    import Ordering.Implicits._
+      v match {
+        case Seq(i, j, k) => Seq(Seq(i, j, k), Seq(dualData(i), k, j), Seq(j, dualData(k), dualData(i)), Seq(dualData(j), dualData(i), dualData(k)), Seq(dualData(k), i, dualData(j)), Seq(k, dualData(j), i)).min
+      }
+    }
   private val representativeMultiplicities = {
-    multiplicities.filter(m => m == m.sorted)
+    multiplicities.filter(m => m == minReciprocal(m))
   }
   private val numberOfVariables = representativeMultiplicities.size
   private val lookup = {
-    val l0 = for (m <- multiplicities) yield representativeMultiplicities.indexOf(m.sorted)
+    val l0 = for (m <- multiplicities) yield representativeMultiplicities.indexOf(minReciprocal(m))
     def lookup(i: Int, j: Int, k: Int): Either[Int, Int] = {
       if (i == 0) {
         if (j == k) Left(1) else Left(0)
@@ -28,7 +37,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
           if (i == k) Left(1) else Left(0)
         } else {
           if (k == 0) {
-            if (i == j) Left(1) else Left(0)
+            if (i == dualData(j)) Left(1) else Left(0)
           } else {
             Right(l0((i - 1) * (rank - 1) * (rank - 1) + (j - 1) * (rank - 1) + (k - 1)))
           }
@@ -53,7 +62,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       Array.tabulate(rank, rank)({ (i, j) =>
         var t = 0
         for ((k, l) <- Rterms(0)(i)(j)) {
-          t = t + N(zeroes)(k, j, l) * N(zeroes)(k, l, i)
+          t = t + N(zeroes)(k, j, l) * N(zeroes)(dualData(k), l, i)
         }
         t
       })
@@ -74,6 +83,20 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       }
     }
 
+    def permute(p: IndexedSeq[Int]): Complete = {
+      require(p(0) == 0)
+      Complete(
+        IndexedSeq.tabulate(rank, rank, rank)({ (i, j, k) => m(p(i))(p(j))(p(k)) }),
+        IndexedSeq.tabulate(rank, rank)({ (i, j) => r(p(i))(p(j)) }),
+        globalDimensionEstimate)
+    }
+
+    lazy val canonicalize: Complete = {
+      import Ordering.Implicits._
+      implicit val ordering = Ordering.by({ c: Complete => c.m })
+
+      (for (p <- Permutations.of((1 to (rank - 1)).toList); q = (0 +: p).toIndexedSeq) yield permute(q)).min
+    }
   }
 
   object Partial {
@@ -103,8 +126,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     }
 
     def next(m: Int): Option[Partial] = {
-      require(m < 25)
-
+      require(m < 100)
       val nextX = x.clone()
       nextX(step + 1) = m
 
@@ -117,7 +139,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
           val nextR = Array.tabulate(rank, rank)({ (i, j) =>
             var t = r(i)(j)
             for ((k, l) <- Rterms(step + 2)(i)(j)) {
-              t = t + N(nextX)(k, j, l) * N(nextX)(k, l, i)
+              t = t + N(nextX)(k, j, l) * N(nextX)(dualData(k), l, i)
             }
             t
           })
@@ -142,14 +164,6 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
         None
       }
     }
-
-    //    def associativeAt_?(a: Int, b: Int, c: Int, d: Int): Boolean = {
-    //      var t = 0
-    //      for (e <- (0 until rank)) {
-    //        t = t + N(x)(a, b, e) * N(x)(e, c, d) - N(x)(a, e, d) * N(x)(b, c, e)
-    //      }
-    //      t == 0
-    //    }
 
     def children = {
       Iterator.from(0).map(next).takeWhile(_.nonEmpty).map(_.get).flatMap(_.associative_?).toSeq
@@ -197,20 +211,29 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
 
   }
 
-  def inequalities(step: Int, x: Array[Int]): Boolean = {
+  private def inequalities(step: Int, x: Array[Int]): Boolean = {
+    // all we worry about is that the diagonal entries are descending (or as descending as we can make them, given that we have the dual pairs together, at the end)
+
     val v = representativeMultiplicities(step)
     if (v(0) > 1 && v(0) == v(1) && v(1) == v(2)) {
-      x(step) <= x(lookup(v(0) - 1)(v(0) - 1)(v(0) - 1).right.get)
+      if (v(0) < selfDualObjects || (v(0) - selfDualObjects) % 2 == 1) {
+        x(step) <= x(lookup(v(0) - 1)(v(0) - 1)(v(0) - 1).right.get)
+      } else if (v(0) > selfDualObjects && (v(0) - selfDualObjects) % 2 == 0) {
+        x(step) <= x(lookup(v(0) - 2)(v(0) - 2)(v(0) - 2).right.get)
+      } else {
+        require(v(0) == selfDualObjects)
+        true
+      }
     } else {
       true
     }
   }
 
-  val Rterms = {
+  private val Rterms = {
     import net.tqft.toolkit.arithmetic.MinMax._
 
     val terms = for (i <- 0 until rank; j <- 0 until rank; k <- 0 until rank; l <- 0 until rank) yield {
-      (i, j, (k, l), Seq(lookup(k)(j)(l), lookup(k)(l)(i)).collect({ case Right(z) => z }).maxOption.getOrElse(-1))
+      (i, j, (k, l), Seq(lookup(k)(j)(l), lookup(dualData(k))(l)(i)).collect({ case Right(z) => z }).maxOption.getOrElse(-1))
     }
 
     val map = terms.groupBy(_._4).mapValues(_.groupBy(_._1).mapValues(_.groupBy(_._2)))
@@ -225,41 +248,6 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       }
     })
   }
-
-  //  def associativitiesByVariableWithZeroes(zeroes: Set[Int]) = {
-  //    println("computing associativites for " + zeroes)
-  //    val equations = (for (x <- 1 until rank; y <- x until rank; z <- x until rank; b <- x until rank) yield {
-  //      import net.tqft.toolkit.arithmetic.MinMax._
-  //
-  //      val p = (for (a <- 1 until rank) yield {
-  //        val i0 = lookup(x, y, a).right.get
-  //        val i1 = lookup(a, z, b).right.get
-  //        val i2 = lookup(x, a, b).right.get
-  //        val i3 = lookup(y, z, a).right.get
-  //
-  //        (if (zeroes.contains(i0) || zeroes.contains(i1)) {
-  //          Seq.empty
-  //        } else {
-  //          Seq(i0, i1)
-  //        }) ++ (if (zeroes.contains(i2) || zeroes.contains(i3)) {
-  //          Seq.empty
-  //        } else {
-  //          Seq(i2, i3)
-  //        })
-  //      }).flatten.maxOption.getOrElse(-1)
-  //      ((x, y, z, b), p)
-  //    })
-  //    val map = equations.groupBy(_._2).mapValues(_.map(_._1)).withDefaultValue(IndexedSeq.empty)
-  //    map
-  //  }
-  //
-  //  val associativitiesByVariable = {
-  //    //    val n = Seq(5, numberOfVariables).min
-  //    //    import net.tqft.toolkit.collections.Subsets._
-  //    //    import net.tqft.toolkit.collections.KSubsets._
-  //    //    val sets = ((0 until n).subsets.map(_.toSet) ++ (0 until numberOfVariables).kSubsets(3).map(_.toSet)).toSet
-  //    Memo(associativitiesByVariableWithZeroes _)
-  //  }
 
   object AssociativityEquation {
     def apply(a: Int, b: Int, c: Int, d: Int): Option[AssociativityEquation] = {
@@ -318,16 +306,16 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   case class AssociativityEquation(lhs: Quadratic, rhs: Quadratic) {
     override def equals(other: Any) = {
       other match {
-        case AssociativityEquation(olhs, orhs) => (lhs==olhs && rhs == orhs) || (lhs==orhs&&rhs==olhs)
+        case AssociativityEquation(olhs, orhs) => (lhs == olhs && rhs == orhs) || (lhs == orhs && rhs == olhs)
         case _ => false
       }
     }
     override def hashCode = {
       val lh = lhs.hashCode
       val rh = rhs.hashCode
-      lh+rh
+      lh + rh
     }
-    
+
     val variables = lhs.variables ++ rhs.variables
     val lastVariable = {
       import net.tqft.toolkit.arithmetic.MinMax._
@@ -419,7 +407,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       }).toMap
       val newObstructions = ListBuffer[Quadratic]()
       newObstructions ++= obstructions
-      for (j <- i until numberOfVariables; equation <- equations.getOrElse(j,Nil)) {
+      for (j <- i until numberOfVariables; equation <- equations.getOrElse(j, Nil)) {
         equation.declareZero(i) match {
           case Some(newEquation) => {
             if (newEquation.lastVariable <= i) {

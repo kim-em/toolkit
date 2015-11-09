@@ -11,6 +11,7 @@ import java.io.PrintWriter
 import java.io.FileOutputStream
 import java.io.FileWriter
 import java.io.BufferedWriter
+import scala.util.Random
 
 object BruteForceFusionRings extends App {
 
@@ -35,8 +36,8 @@ object BruteForceFusionRings extends App {
       c.copy(batch = true)
     } text ("disable keyboard interrupt")
     opt[Unit]('f', "force") action { (_, c) =>
-      c.copy(force=true)
-      } text("overwrite existing data files")
+      c.copy(force = true)
+    } text ("overwrite existing data files")
     help("help") text ("prints this usage text")
     arg[Int]("<number-of-self-dual-objects>") hidden () action { (x, c) => c.copy(selfDualObjects = x) }
     arg[Int]("<number-of-dual-pairs>") hidden () action { (x, c) => c.copy(dualPairs = x) }
@@ -48,117 +49,124 @@ object BruteForceFusionRings extends App {
 
     new File("fusion-rings3/").mkdir
     val prefix = "fusion-rings3/" + config.selfDualObjects + "," + config.dualPairs + "," + config.globalDimensionBound
-    
+
     val inFile = new File(prefix + ".resume")
     val partialFile = new File(prefix + ".partial")
     val completeFile = new File(prefix + ".classification")
 
-    if(config.resumable) {
-      if(config.force) {
-            inFile.delete
-            partialFile.delete
-            completeFile.delete        
+    if (config.resumable) {
+      if (config.force) {
+        inFile.delete
+        partialFile.delete
+        completeFile.delete
       }
-      
-      if((inFile.exists == partialFile.exists)  && !completeFile.exists ||
-          !inFile.exists && !partialFile.exists && completeFile.exists) {
-            // looks good
-          } else {
-            println("--- resume files look wrong, cleaning up!")
-            inFile.delete
-            partialFile.delete
-            completeFile.delete
-          }
+
+      if ((inFile.exists == partialFile.exists) && !completeFile.exists ||
+        !inFile.exists && !partialFile.exists && completeFile.exists) {
+        // looks good
+      } else {
+        println("--- resume files look wrong, cleaning up!")
+        inFile.delete
+        partialFile.delete
+        completeFile.delete
+      }
     }
-    
+
     val notify: enumeration.Complete => Unit = {
+      val seen = scala.collection.mutable.Set[String]()
+
       if (config.resumable) {
         // lazy, to avoid creating the file until it's needed
         lazy val pw = new PrintWriter(new BufferedWriter(new FileWriter(partialFile, true)));
         { c =>
-          println(c)
-          pw.println(c)
-          pw.flush
+          val s = c.canonicalize.toString
+          if (!seen.contains(s)) {
+            seen += s
+            if (seen.size > 10000) seen.retain({ t => Random.nextInt % 4 > 0 })
+            println(s)
+            pw.println(s)
+            pw.flush
+          }
         }
       } else {
         println _
       }
     }
 
-    if(config.resumable && completeFile.exists) {
+    if (config.resumable && completeFile.exists) {
       println("--- nothing to do...")
     } else {
-    val (time, (toResume, numberFound)) = (Profiler.timing({
-      val targets: Seq[enumeration.Partial] = if (config.resumable && inFile.exists) {
-        Source.fromFile(inFile).getLines.map(enumeration.Partial.apply).toSeq
-      } else {
-        Seq(enumeration.root)
-      }
-
-      println("--- starting enumeration, from the following targets:")
-      for (t <- targets) println(t)
-      println("---")
-
-      val (futures, interrupts) = {
-        val s = targets.map(_.interruptibleDescendants(notify))
-        (s.map(_._1), s.map(_._2))
-      }
-
-      val interrupt = { () => for (i <- interrupts) i() }
-      
-      val future = {        
-        import scala.concurrent.ExecutionContext.Implicits.global
-        Future {
-          val results = futures.map(f => Await.result(f, Duration.Inf))
-          (results.flatMap(_._1), results.flatMap(_._2))
+      val (time, (toResume, numberFound)) = (Profiler.timing({
+        val targets: Seq[enumeration.Partial] = if (config.resumable && inFile.exists) {
+          Source.fromFile(inFile).getLines.map(enumeration.Partial.apply).toSeq
+        } else {
+          Seq(enumeration.root)
         }
-      }
-      
-      if (!config.batch) {
-        import scala.concurrent.ExecutionContext.Implicits.global
-        Future {
-          if (StdIn.readLine != null) {
-            println("--- requesting early termination (keyboard interrupt)")
-            interrupt()
-          } else {
-            println("--- running without a stdin; please use batch mode")
+
+        println("--- starting enumeration, from the following targets:")
+        for (t <- targets) println(t)
+        println("---")
+
+        val (futures, interrupts) = {
+          val s = targets.map(_.interruptibleDescendants(notify))
+          (s.map(_._1), s.map(_._2))
+        }
+
+        val interrupt = { () => for (i <- interrupts) i() }
+
+        val future = {
+          import scala.concurrent.ExecutionContext.Implicits.global
+          Future {
+            val results = futures.map(f => Await.result(f, Duration.Inf))
+            (results.flatMap(_._1), results.flatMap(_._2))
           }
         }
-      }
 
-      config.finishBy.map({ time =>
-        import scala.concurrent.ExecutionContext.Implicits.global
-        Future {
-          Thread.sleep(time - System.currentTimeMillis())
-          println("--- request early termination (time limit)")
-          interrupt()
+        if (!config.batch) {
+          import scala.concurrent.ExecutionContext.Implicits.global
+          Future {
+            if (StdIn.readLine != null) {
+              println("--- requesting early termination (keyboard interrupt)")
+              interrupt()
+            } else {
+              println("--- running without a stdin; please use batch mode")
+            }
+          }
         }
-      })
 
-      val result = Await.result(future, Duration.Inf)
-      (result._1, result._2.size)
-    }))
+        config.finishBy.map({ time =>
+          import scala.concurrent.ExecutionContext.Implicits.global
+          Future {
+            Thread.sleep(time - System.currentTimeMillis())
+            println("--- request early termination (time limit)")
+            interrupt()
+          }
+        })
 
-    println(s"--- In ${time}ms, found $numberFound based rings.")
-    if (toResume.nonEmpty) {
-      println(s"--- This enumeration was interrupted, so is not exhaustive. The following cases are incomplete: ")
-      for (p <- toResume) {
-        println(p)
-      }
-      if (config.resumable) {
-        inFile.delete
-        val io = new PrintWriter(new FileOutputStream(inFile))
+        val result = Await.result(future, Duration.Inf)
+        (result._1, result._2.size)
+      }))
+
+      println(s"--- In ${time}ms, found $numberFound based rings.")
+      if (toResume.nonEmpty) {
+        println(s"--- This enumeration was interrupted, so is not exhaustive. The following cases are incomplete: ")
         for (p <- toResume) {
-          io.println(p)
+          println(p)
         }
-        io.close
+        if (config.resumable) {
+          inFile.delete
+          val io = new PrintWriter(new FileOutputStream(inFile))
+          for (p <- toResume) {
+            io.println(p)
+          }
+          io.close
+        }
+      } else {
+        if (config.resumable) {
+          inFile.delete
+          partialFile.renameTo(completeFile)
+        }
       }
-    } else {
-      if (config.resumable) {
-        inFile.delete
-        partialFile.renameTo(completeFile)
-      }
-    }
 
     }
   }

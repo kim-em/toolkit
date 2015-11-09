@@ -18,6 +18,8 @@ bin
 jobscript*
 fusion-rings/
 fusion-rings2/
+fusion-rings3/*.partial
+fusion-rings3/*.resume
 
 algebra-spiders/src/main/mathematica/groebnerCalculations.m
 algebra-spiders/src/main/mathematica/graphs/

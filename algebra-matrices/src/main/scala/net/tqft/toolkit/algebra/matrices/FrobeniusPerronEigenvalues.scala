@@ -17,7 +17,8 @@ object FrobeniusPerronEigenvalues {
   def estimateWithEigenvector(m: Array[Array[Int]], tolerance: Double = 0.0001, target: Double = Double.MaxValue, hint: Option[Array[Double]] = None): (Double, Array[Double]) = {
     val rank = m.length
 
-    //    for(i <- 0 until rank; j <- 0 until rank) require(m(i)(j) == m(j)(i))
+//        for(i <- 0 until rank; j <- 0 until rank) require(m(i)(j) == m(j)(i))
+        
     val max = m.map(_.max).max
 
     var iv0 = hint.map(_.clone).getOrElse(m.map(_.sum + 1.0))
