@@ -17,14 +17,28 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
 
   private val multiplicities = for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank) yield Seq(i, j, k)
 
-    def minReciprocal(v: Seq[Int]) = {
-    import Ordering.Implicits._
-      v match {
-        case Seq(i, j, k) => Seq(Seq(i, j, k), Seq(dualData(i), k, j), Seq(j, dualData(k), dualData(i)), Seq(dualData(j), dualData(i), dualData(k)), Seq(dualData(k), i, dualData(j)), Seq(k, dualData(j), i)).min
-      }
+  private val ordering: Ordering[Seq[Int]]  = {
+        import Ordering.Implicits._
+    import net.tqft.toolkit.orderings.Orderings._
+
+    val lexicographic: Ordering[Seq[Int]] = implicitly    
+    
+    // Some time comparisons on 5 0 60
+    // 26s
+    implicitly
+  // 60s
+//    Ordering.by({ x: Seq[Int] => x.max }).refineAlong(lexicographic)
+    // 28s
+//    Ordering.by({ x: Seq[Int] => scala.math.abs(x(0)-x(1)) +scala.math.abs(x(1)-x(2)) +scala.math.abs(x(0)-x(2)) }).refineAlong(lexicographic)
+  }
+  
+  private def minReciprocal(v: Seq[Int]) = {
+    v match {
+      case Seq(i, j, k) => Seq(Seq(i, j, k), Seq(dualData(i), k, j), Seq(j, dualData(k), dualData(i)), Seq(dualData(j), dualData(i), dualData(k)), Seq(dualData(k), i, dualData(j)), Seq(k, dualData(j), i)).min(ordering)
     }
+  }
   private val representativeMultiplicities = {
-    multiplicities.filter(m => m == minReciprocal(m))
+    multiplicities.filter(m => m == minReciprocal(m)).sorted(ordering)
   }
   private val numberOfVariables = representativeMultiplicities.size
   private val lookup = {
