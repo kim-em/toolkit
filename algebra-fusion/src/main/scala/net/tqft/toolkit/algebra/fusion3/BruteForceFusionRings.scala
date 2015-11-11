@@ -12,6 +12,8 @@ import java.io.FileOutputStream
 import java.io.FileWriter
 import java.io.BufferedWriter
 import scala.util.Random
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.ConcurrentHashMap
 
 object BruteForceFusionRings extends App {
 
@@ -72,24 +74,28 @@ object BruteForceFusionRings extends App {
       }
     }
 
-    val notify: enumeration.Complete => Unit = {
-      val seen = scala.collection.mutable.Set[String]()
+    val counter = new AtomicInteger(0)
 
-      if (config.resumable) {
-        // lazy, to avoid creating the file until it's needed
-        lazy val pw = new PrintWriter(new BufferedWriter(new FileWriter(partialFile, true)));
-        { c =>
-          val s = c.canonicalize.toString
-          if (!seen.contains(s)) {
-            seen += s
+    val notify: enumeration.Complete => Unit = {
+      val seen = {
+        import scala.collection.JavaConverters._
+        java.util.Collections.newSetFromMap(new ConcurrentHashMap[String, java.lang.Boolean]()).asScala
+      }
+
+      // lazy, to avoid creating the file until it's needed
+      lazy val pw = new PrintWriter(new BufferedWriter(new FileWriter(partialFile, true)));
+      { c =>
+        val s = c.canonicalize.toString
+        if (!seen.contains(s)) {
+          seen += s
+          counter.incrementAndGet
+          println(s)
+          if (config.resumable) {
             if (seen.size > 10000) seen.retain({ t => Random.nextInt % 4 > 0 })
-            println(s)
             pw.println(s)
             pw.flush
           }
         }
-      } else {
-        println _
       }
     }
 
@@ -147,7 +153,7 @@ object BruteForceFusionRings extends App {
         (result._1, result._2.size)
       }))
 
-      println(s"--- In ${time}ms, found $numberFound based rings.")
+      println(s"--- In ${time}ms, found ${counter.get} based rings.")
       if (toResume.nonEmpty) {
         println(s"--- This enumeration was interrupted, so is not exhaustive. The following cases are incomplete: ")
         for (p <- toResume) {
