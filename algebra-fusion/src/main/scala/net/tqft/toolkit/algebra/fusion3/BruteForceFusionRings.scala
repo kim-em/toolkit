@@ -20,6 +20,7 @@ object BruteForceFusionRings extends App {
     selfDualObjects: Int = 5,
     dualPairs: Int = 0,
     globalDimensionBound: Double = 60.0,
+    umtc: Boolean = false,
     resumable: Boolean = false,
     finishBy: Option[Long] = None,
     batch: Boolean = false,
@@ -27,6 +28,9 @@ object BruteForceFusionRings extends App {
 
   val parser = new scopt.OptionParser[Config]("BruteForceFusionRings") {
     head("BruteForceFusionRings", "1.0")
+    opt[Unit]('u', "umtc") action { (_, c) =>
+      c.copy(umtc = true)
+    } text ("only search for rings which could be the fusion ring of a unitary modular tensor category")
     opt[Unit]('r', "resumable") action { (_, c) =>
       c.copy(resumable = true)
     } text ("resume existing work, if available, or checkpoint resumable data on <enter>")
@@ -46,10 +50,11 @@ object BruteForceFusionRings extends App {
   }
 
   parser.parse(args, Config()) map { config =>
-    val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound)
+    val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound, config.umtc)
 
-    new File("fusion-rings3/").mkdir
-    val prefix = "fusion-rings3/" + config.selfDualObjects + "," + config.dualPairs + "," + config.globalDimensionBound
+    val dir = "fusion-rings3" + (if(config.umtc) "u" else "") +"/"
+    new File(dir).mkdir
+    val prefix = dir + config.selfDualObjects + "," + config.dualPairs + "," + config.globalDimensionBound
 
     val inFile = new File(prefix + ".resume")
     val partialFile = new File(prefix + ".partial")
