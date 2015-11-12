@@ -9,6 +9,11 @@ import java.util.concurrent.ConcurrentHashMap
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import net.tqft.toolkit.permutations.Permutations
+import net.tqft.toolkit.algebra.graphs.Graph
+import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
+import net.tqft.toolkit.algebra.graphs.Dreadnaut
+import org.jblas.Eigen
+import org.jblas.DoubleMatrix
 
 case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBound: Double) {
   val rank = selfDualObjects + 2 * dualPairs
@@ -17,21 +22,16 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
 
   private val multiplicities = for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank) yield Seq(i, j, k)
 
-  private val ordering: Ordering[Seq[Int]]  = {
-        import Ordering.Implicits._
+  private val ordering: Ordering[Seq[Int]] = {
+    import Ordering.Implicits._
     import net.tqft.toolkit.orderings.Orderings._
 
-    val lexicographic: Ordering[Seq[Int]] = implicitly    
-    
-    // Some time comparisons on 5 0 60
-    // 26s
-    implicitly
-  // 60s
-//    Ordering.by({ x: Seq[Int] => x.max }).refineAlong(lexicographic)
-    // 28s
-//    Ordering.by({ x: Seq[Int] => scala.math.abs(x(0)-x(1)) +scala.math.abs(x(1)-x(2)) +scala.math.abs(x(0)-x(2)) }).refineAlong(lexicographic)
+    val lexicographic: Ordering[Seq[Int]] = implicitly
+
+    Ordering.by({ x: Seq[Int] => x.min }).refineAlong(lexicographic)
+
   }
-  
+
   private def minReciprocal(v: Seq[Int]) = {
     v match {
       case Seq(i, j, k) => Seq(Seq(i, j, k), Seq(dualData(i), k, j), Seq(j, dualData(k), dualData(i)), Seq(dualData(j), dualData(i), dualData(k)), Seq(dualData(k), i, dualData(j)), Seq(k, dualData(j), i)).min(ordering)
@@ -40,6 +40,8 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   private val representativeMultiplicities = {
     multiplicities.filter(m => m == minReciprocal(m)).sorted(ordering)
   }
+  println(representativeMultiplicities)
+
   private val numberOfVariables = representativeMultiplicities.size
   private val lookup = {
     val l0 = for (m <- multiplicities) yield representativeMultiplicities.indexOf(minReciprocal(m))
@@ -60,8 +62,6 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     }
     Array.tabulate(rank, rank, rank)(lookup)
   }
-
-  private val lookupDiagonals = (for (i <- 1 until rank) yield representativeMultiplicities.indexOf(Seq(i, i, i))).sorted
 
   def N(x: Array[Int])(i: Int, j: Int, k: Int) = {
     lookup(i)(j)(k) match {
@@ -84,7 +84,38 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     Partial(-1, zeroes, Nil, r)
   }
 
-  case class Complete(m: Seq[Seq[Seq[Int]]], r: Seq[Seq[Int]], globalDimensionEstimate: Double) {
+  private val unlabelledGraphs = {
+    IndexedSeq.tabulate(rank + 1)({ r =>
+      val adjacencies = {
+        // note here we decorate with dual data
+        IndexedSeq.tabulate(r)(i => Seq(i + r, dualData(i))) ++
+          IndexedSeq.tabulate(r)(i => Seq(i + 2 * r)) ++
+          IndexedSeq.tabulate(r)(i => Seq(i)) ++
+          IndexedSeq.tabulate(r, r, r)({
+            case (i, j, k) => Seq(i, j + r, k + 2 * r)
+          }).map(_.flatten).flatten
+      }
+      val numberOfVertices = 3 * r + r * r * r
+      Graph(numberOfVertices, adjacencies)
+        .colour(IndexedSeq(0).take(r).padTo(numberOfVertices, 1)) // color the identity
+        .combineColours((IndexedSeq.fill(r)(-3) ++ IndexedSeq.fill(r)(-2) ++ IndexedSeq.fill(r)(-1)).padTo(numberOfVertices, 0)) // color the triangles
+    })
+  }
+
+  case class Complete(rank: Int, m: Seq[Seq[Seq[Int]]], r: Seq[Seq[Int]], globalDimensionEstimate: Double) {
+    val S = {
+      val Seq(eigenvectors, diagonal) = Eigen.symmetricEigenvectors(new DoubleMatrix(r.map(_.map(_.toDouble).toArray).toArray)).toSeq
+      val eigenvalues = {
+        val d = diagonal.toArray2
+        for(i <-0 until rank) yield d(i)(i)
+      }
+      println((eigenvalues, r.map(_.mkString("{",",","}")).mkString("{",",","}"), eigenvectors))
+      eigenvectors
+    }
+    val umtcCompatible_? = {
+      
+    }
+    
     override def toString = {
       val max = m.map(_.map(_.max)).map(_.max).max
       val sep = if (max > 9) "," else ""
@@ -99,17 +130,23 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
 
     def permute(p: IndexedSeq[Int]): Complete = {
       require(p(0) == 0)
-      Complete(
+      Complete(rank,
         IndexedSeq.tabulate(rank, rank, rank)({ (i, j, k) => m(p(i))(p(j))(p(k)) }),
         IndexedSeq.tabulate(rank, rank)({ (i, j) => r(p(i))(p(j)) }),
         globalDimensionEstimate)
     }
 
-    lazy val canonicalize: Complete = {
-      import Ordering.Implicits._
-      implicit val ordering = Ordering.by({ c: Complete => c.m })
+    lazy val graphPresentation = {
+      val colours = IndexedSeq.fill(3 * rank)(-1) ++ m.map(_.flatten).flatten
+      unlabelledGraphs(rank).combineColours(colours)
+    }
+    lazy val automorphisms: net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup[IndexedSeq[Int]] = {
+      FiniteGroups.symmetricGroup(rank).subgroupGeneratedBy(graphPresentation.automorphismGroup.generators.map(_.take(rank)))
+    }
 
-      (for (p <- Permutations.of((1 to (rank - 1)).toList); q = (0 +: p).toIndexedSeq) yield permute(q)).min
+    lazy val canonicalize: Complete = {
+      val result = permute(Dreadnaut.canonicalLabelling(graphPresentation).take(rank))
+      result
     }
   }
 
@@ -125,6 +162,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   }
 
   case class Partial(step: Int, x: Array[Int], zeroes: List[Int], r: Array[Array[Int]], hint: Array[Double] = Array.fill(rank)(1.0)) {
+
     override def toString = {
       val sep = if (x.max > 9) "," else ""
       x.take(step + 1).mkString(sep)
@@ -133,7 +171,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     def complete: Option[Complete] = {
       if (done_?) {
         val m = Seq.tabulate(rank, rank, rank)({ (i, j, k) => N(x)(i, j, k) })
-        Some(Complete(m, r.map(_.toSeq).toSeq, FrobeniusPerronEigenvalues.estimate(r)))
+        Some(Complete(rank, m, r.map(_.toSeq).toSeq, FrobeniusPerronEigenvalues.estimate(r)))
       } else {
         None
       }
@@ -225,15 +263,36 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
 
   }
 
+//  private def canonicalPermutation(x: Array[Int], rank: Int, fixing: Int) = {
+//    Dreadnaut.canonicalLabelling(unlabelledGraphs(rank).combineColours(IndexedSeq.tabulate(fixing)({ i => i - fixing - 1 }) ++ IndexedSeq.fill(3 * rank - fixing)(-1) ++ Seq.tabulate(rank, rank, rank)({ (i, j, k) => N(x)(i, j, k) }).map(_.flatten).flatten)).take(rank)
+//  }
+
   private def inequalities(step: Int, x: Array[Int]): Boolean = {
+//    true
+
     // all we worry about is that the diagonal entries are descending (or as descending as we can make them, given that we have the dual pairs together, at the end)
 
     val v = representativeMultiplicities(step)
     if (v(0) > 1 && v(0) == v(1) && v(1) == v(2)) {
       if (v(0) < selfDualObjects || (v(0) - selfDualObjects) % 2 == 1) {
-        x(step) <= x(lookup(v(0) - 1)(v(0) - 1)(v(0) - 1).right.get)
+        val pstep = lookup(v(0) - 1)(v(0) - 1)(v(0) - 1).right.get
+        require(pstep < step)
+        //        println((step, pstep, v(0), v(0)-1, lookup(v(0) - 1)(v(0) - 1)(v(0) - 1)))
+        x(step) == x(pstep) || {
+          x(step) < x(pstep) && {
+            true
+            // try require canonical form! --- very slow??
+//            val f = (for (i <- 1 to v(0) - 1; if (x(lookup(i)(i)(i).right.get)) == x(pstep)) yield i).head
+//            v(0) <= f + 1 || {
+//              val p = canonicalPermutation(x, v(0) - 1, f - 1)
+//              p == p.sorted
+//            }
+          }
+        }
       } else if (v(0) > selfDualObjects && (v(0) - selfDualObjects) % 2 == 0) {
-        x(step) <= x(lookup(v(0) - 2)(v(0) - 2)(v(0) - 2).right.get)
+        val pstep = lookup(v(0) - 2)(v(0) - 2)(v(0) - 2).right.get
+        require(pstep < step)
+        x(step) <= x(pstep)
       } else {
         require(v(0) == selfDualObjects)
         true

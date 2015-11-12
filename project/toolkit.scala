@@ -115,7 +115,7 @@ object Toolkit extends Build {
 
   lazy val `algebra-fusion` = Project(id = "toolkit-algebra-fusion",
       base = file("algebra-fusion"),
-      settings = buildSettings ++ Seq(libraryDependencies ++= Seq(scopt))) dependsOn (functions, collections, algebra, `algebra-graphs`, `algebra-enumeration`, `algebra-magma`)
+      settings = buildSettings ++ Seq(libraryDependencies ++= Seq(scopt, jblas))) dependsOn (functions, collections, algebra, `algebra-graphs`, `algebra-enumeration`, `algebra-magma`)
 
   lazy val `algebra-bugs` = Project(id = "toolkit-algebra-bugs",
     base = file("algebra-bugs"),
@@ -269,6 +269,7 @@ object Dependencies {
 	val slick = "com.typesafe.slick" %% "slick" % "3.0.0"
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.2"
 	val spire = "org.spire-math" %% "spire" % "0.7.1"
+  val jblas = "org.jblas" % "jblas" % "1.2.4"
 	object omath {
 		val parser = "org.omath" %% "omath-parser" % "0.0.1"
 	}
