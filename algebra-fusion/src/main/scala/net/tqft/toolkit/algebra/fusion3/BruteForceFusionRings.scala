@@ -1,6 +1,5 @@
 package net.tqft.toolkit.algebra.fusion3
 
-import net.tqft.toolkit.Profiler
 import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -85,15 +84,18 @@ object BruteForceFusionRings extends App {
       // lazy, to avoid creating the file until it's needed
       lazy val pw = new PrintWriter(new BufferedWriter(new FileWriter(partialFile, true)));
       { c =>
-        val s = c.canonicalize.toString
-        if (!seen.contains(s)) {
-          seen += s
-          counter.incrementAndGet
-          println(s)
-          if (config.resumable) {
-            if (seen.size > 10000) seen.retain({ t => Random.nextInt % 4 > 0 })
-            pw.println(s)
-            pw.flush
+        val s0 = c.canonicalize.toString
+        val s1 = s0.split(" ").init.mkString(" ") // throw out the global dimension estimate
+        synchronized {
+          if (!seen.contains(s1)) {
+            seen += s1
+            counter.incrementAndGet
+            println(s0)
+            if (config.resumable) {
+              if (seen.size > 10000) seen.retain({ t => Random.nextInt % 4 > 0 })
+              pw.println(s0)
+              pw.flush
+            }
           }
         }
       }
@@ -102,7 +104,7 @@ object BruteForceFusionRings extends App {
     if (config.resumable && completeFile.exists) {
       println("--- nothing to do...")
     } else {
-      val (time, (toResume, numberFound)) = (Profiler.timing({
+      val (time, (toResume, numberFound)) = (net.tqft.toolkit.Profiler.timing({
         val targets: Seq[enumeration.Partial] = if (config.resumable && inFile.exists) {
           Source.fromFile(inFile).getLines.map(enumeration.Partial.apply).toSeq
         } else {

@@ -158,6 +158,7 @@ object ColouredGraph {
     val _numberOfVertices = numberOfVertices
     val _adjacencies = adjacencies
     val _vertices = vertices
+    require(vertices.size == numberOfVertices)
     new ColouredGraph[V] {
       override def numberOfVertices = _numberOfVertices
       override def adjacencies = _adjacencies
