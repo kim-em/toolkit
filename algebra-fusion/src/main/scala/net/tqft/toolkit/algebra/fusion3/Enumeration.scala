@@ -15,6 +15,13 @@ import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import org.jblas.Eigen
 import org.jblas.DoubleMatrix
 
+// ideas:
+// * replace quadratics so we keep a list of nonzero terms, not a long list of 1/0/-1
+// * can we sometimes solve ahead a bit? it doesn't matter for zeros, but propagrating nonzero values forward helps with
+//   eigenvalue estimates
+// * minimum dimension for each object?
+// * can we do other problems? find fusion ring of centre, given the base ring and the induction matrix?
+
 case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBound: Double, umtc: Boolean) {
   val rank = selfDualObjects + 2 * dualPairs
 
@@ -36,8 +43,8 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     v match {
       case Seq(i, j, k) => {
         val reciprocals0 = Seq(Seq(i, j, k), Seq(dualData(i), k, j), Seq(j, dualData(k), dualData(i)), Seq(dualData(j), dualData(i), dualData(k)), Seq(dualData(k), i, dualData(j)), Seq(k, dualData(j), i))
-        val reciprocals = if(umtc) {
-          reciprocals0 ++ reciprocals0.map({ case Seq(i,j,k) => Seq(j,i,k) })
+        val reciprocals = if (umtc) {
+          reciprocals0 ++ reciprocals0.map({ case Seq(i, j, k) => Seq(j, i, k) })
         } else {
           reciprocals0
         }
@@ -94,7 +101,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
         t
       })
     }
-    Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None)
+    Partial(-1, zeroes, Nil, r, Some(AssociativityData.root), Array.fill(rank)(1.0), None)
   }
 
   private val unlabelledGraphs = {
@@ -187,7 +194,14 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     (eigenvalues, eigenvectors.toArray2)
   }
 
-  case class Partial(step: Int, x: Array[Int], zeroes: List[Int], r: Array[Array[Int]], hint: Array[Double], umtcHint: Option[Array[Array[Double]]]) {
+  case class Partial(
+      step: Int,
+      x: Array[Int],
+      zeroes: List[Int],
+      r: Array[Array[Int]],
+      associativity: Option[AssociativityData],
+      eigenvectorHint: Array[Double],
+      umtcHint: Option[Array[Array[Double]]]) {
 
     override def toString = {
       val sep = if (x.max > 9) "," else ""
@@ -211,7 +225,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
           }
           case Some(i0) => {
             val m = {
-              if(i0 == 1) {
+              if (i0 == 1) {
                 Array.tabulate(rank, rank)({ (j, k) => N(x)(1, j, k).toDouble })
               } else {
                 val hint = umtcHint.get
@@ -220,14 +234,14 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
             }
             val (eigenvalues, s) = eigensystem(m)
             if (numericallyDistinct(eigenvalues)) {
-//              println("wow, distinct eigenvalues at step " + step)
+              //              println("wow, distinct eigenvalues at step " + step)
               val NN = Array.tabulate(rank, rank, rank)({ (i, j, k) =>
                 val x = (for (l <- 0 until rank) yield s(j)(l) * s(i)(l) * s(k)(l) / s(0)(l)).sum
                 if (x - scala.math.round(x) < 0.01 && scala.math.round(x) >= 0) Some(scala.math.round(x).toInt) else None
               })
               if (NN.forall(_.forall(_.forall(_.nonEmpty)))) {
                 val nextSteps = for (Seq(i, j, k) <- representativeMultiplicities.drop(step + 1)) yield NN(i)(j)(k).get
-                nextSteps.foldLeft[Option[Partial]](Some(this))({ case (o, m) => o.flatMap(_.next(m)).flatMap(_.associative_?) }).ensuring(_.forall(_.done_?))
+                nextSteps.foldLeft[Option[Partial]](Some(this))({ case (o, m) => o.flatMap(_.next(m)).filter(_.associativity.nonEmpty) }).ensuring(_.forall(_.done_?))
               } else {
                 None
               }
@@ -246,8 +260,10 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       nextX(step + 1) = m
 
       if (inequalities(step + 1, nextX)) {
+        val nextAssociativity = associativity.flatMap(_.evaluateNextVariable(m))
+
         if (m == 0) {
-          Some(Partial(step + 1, x, (step + 1) :: zeroes, r, hint, umtcHint))
+          Some(Partial(step + 1, x, (step + 1) :: zeroes, r, nextAssociativity, eigenvectorHint, umtcHint))
         } else {
 
           val nextR = Array.tabulate(rank, rank)({ (i, j) =>
@@ -258,10 +274,10 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
             t
           })
 
-          val (eigenvalue, nextHint) = FrobeniusPerronEigenvalues.estimateWithEigenvector(nextR, 0.001, globalDimensionBound + 1, Some(hint))
+          val (eigenvalue, nextEigenvectorHint) = FrobeniusPerronEigenvalues.estimateWithEigenvector(nextR, 0.001, globalDimensionBound + 1, Some(eigenvectorHint))
 
           if (eigenvalue <= globalDimensionBound) {
-            Some(Partial(step + 1, nextX, zeroes, nextR, nextHint, umtcHint))
+            Some(Partial(step + 1, nextX, zeroes, nextR, nextAssociativity, nextEigenvectorHint, umtcHint))
           } else {
             None
           }
@@ -271,16 +287,8 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       }
     }
 
-    def associative_? : Option[Partial] = {
-      if (AssociativityData(zeroes).check(step, x)) {
-        Some(this)
-      } else {
-        None
-      }
-    }
-
     def children = {
-      Iterator.from(0).map(next).takeWhile(_.nonEmpty).map(_.get).flatMap(_.associative_?).flatMap(_.umtcFastForward).toSeq
+      Iterator.from(0).map(next).takeWhile(_.nonEmpty).map(_.get).filter(_.associativity.nonEmpty).flatMap(_.umtcFastForward).toSeq
     }
 
     def done_? = step == numberOfVariables - 1
@@ -324,10 +332,6 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     }
 
   }
-
-  //  private def canonicalPermutation(x: Array[Int], rank: Int, fixing: Int) = {
-  //    Dreadnaut.canonicalLabelling(unlabelledGraphs(rank).combineColours(IndexedSeq.tabulate(fixing)({ i => i - fixing - 1 }) ++ IndexedSeq.fill(3 * rank - fixing)(-1) ++ Seq.tabulate(rank, rank, rank)({ (i, j, k) => N(x)(i, j, k) }).map(_.flatten).flatten)).take(rank)
-  //  }
 
   private def inequalities(step: Int, x: Array[Int]): Boolean = {
     //    true
@@ -384,185 +388,196 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     })
   }
 
-  object AssociativityEquation {
-    def apply(a: Int, b: Int, c: Int, d: Int): Option[AssociativityEquation] = {
-      var lhsConstant = 0
-      var lhsLinear = ListBuffer[Int]()
-      var lhsQuadratic = ListBuffer[(Int, Int)]()
-      var rhsConstant = 0
-      var rhsLinear = ListBuffer[Int]()
-      var rhsQuadratic = ListBuffer[(Int, Int)]()
+  object AssociativityData {
+    val root: AssociativityData = {
+      val polynomials = (for (a <- 1 until rank; b <- a until rank; c <- a until rank; d <- a until rank; p <- apply(a, b, c, d)) yield p).distinct
+      println("AssociativityData.root:")
+      for (p <- polynomials) println("   " + p)
+      AssociativityData(polynomials)
+    }
+
+    def apply(a: Int, b: Int, c: Int, d: Int): Option[PolynomialPair] = {
+      var constant = 0
+      var linear = Array.fill(numberOfVariables)(0)
+      var quadratic = Array.fill(numberOfVariables, numberOfVariables)(0)
 
       for (e <- (0 until rank)) {
         (lookup(a)(b)(e), lookup(e)(c)(d)) match {
-          case (Left(1), Left(1)) => lhsConstant = lhsConstant + 1
+          case (Left(1), Left(1)) => constant = constant + 1
           case (Left(0), _) =>
           case (_, Left(0)) =>
-          case (Left(1), Right(i)) => lhsLinear += i
-          case (Right(i), Left(1)) => lhsLinear += i
-          case (Right(i), Right(j)) if i < j => lhsQuadratic += ((i, j))
-          case (Right(i), Right(j)) if i >= j => lhsQuadratic += ((j, i))
+          case (Left(1), Right(i)) => linear(i) = linear(i) + 1
+          case (Right(i), Left(1)) => linear(i) = linear(i) + 1
+          case (Right(i), Right(j)) if i < j => quadratic(j)(i) = quadratic(j)(i) + 1
+          case (Right(i), Right(j)) if i >= j => quadratic(i)(j) = quadratic(i)(j) + 1
         }
         (lookup(a)(e)(d), lookup(b)(c)(e)) match {
-          case (Left(1), Left(1)) => rhsConstant = rhsConstant + 1
+          case (Left(1), Left(1)) => constant = constant - 1
           case (Left(0), _) =>
           case (_, Left(0)) =>
-          case (Left(1), Right(i)) => rhsLinear += i
-          case (Right(i), Left(1)) => rhsLinear += i
-          case (Right(i), Right(j)) if i < j => rhsQuadratic += ((i, j))
-          case (Right(i), Right(j)) if i >= j => rhsQuadratic += ((j, i))
+          case (Left(1), Right(i)) => linear(i) = linear(i) - 1
+          case (Right(i), Left(1)) => linear(i) = linear(i) - 1
+          case (Right(i), Right(j)) if i < j => quadratic(j)(i) = quadratic(j)(i) - 1
+          case (Right(i), Right(j)) if i >= j => quadratic(i)(j) = quadratic(i)(j) - 1
         }
       }
-
-      if (lhsConstant > rhsConstant) {
-        lhsConstant = lhsConstant - rhsConstant
-        rhsConstant = 0
-      } else {
-        rhsConstant = rhsConstant - lhsConstant
-        lhsConstant = 0
-      }
-
-      val swapLinear = lhsLinear -- rhsLinear
-      rhsLinear --= lhsLinear
-      lhsLinear = swapLinear
-
-      val swapQuadratic = lhsQuadratic -- rhsQuadratic
-      rhsQuadratic --= lhsQuadratic
-      lhsQuadratic = swapQuadratic
-
-      if (lhsConstant != 0 || rhsConstant != 0 || lhsLinear.nonEmpty || rhsLinear.nonEmpty || lhsQuadratic.nonEmpty || rhsQuadratic.nonEmpty) {
-        Some(AssociativityEquation(Quadratic(lhsConstant, lhsLinear.sorted, lhsQuadratic.sorted), Quadratic(rhsConstant, rhsLinear.sorted, rhsQuadratic.sorted)))
-      } else {
+      println(constant)
+      println(linear.toList)
+      println(quadratic.toList.map(_.toList))
+      val pair = PolynomialPair(constant, linear, quadratic)
+      println(pair)
+      if (pair.identicallyZero_?) {
         None
+      } else {
+        Some(pair)
       }
     }
   }
 
-  case class AssociativityEquation(lhs: Quadratic, rhs: Quadratic) {
-    override def equals(other: Any) = {
-      other match {
-        case AssociativityEquation(olhs, orhs) => (lhs == olhs && rhs == orhs) || (lhs == orhs && rhs == olhs)
-        case _ => false
-      }
-    }
-    override def hashCode = {
-      val lh = lhs.hashCode
-      val rh = rhs.hashCode
-      lh + rh
-    }
-
-    val variables = lhs.variables ++ rhs.variables
-    val lastVariable = {
-      import net.tqft.toolkit.arithmetic.MinMax._
-      variables.maxOption.getOrElse(-1)
-    }
-    def declareZero(i: Int): Option[AssociativityEquation] = {
-      if (variables.contains(i)) {
-        Some(AssociativityEquation(lhs.declareZero(i), rhs.declareZero(i)))
-      } else {
-        None
-      }
-    }
-    def check(x: Array[Int]): Boolean = {
-      lhs.evaluate(x) == rhs.evaluate(x)
-    }
-    lazy val oneSided_? : Option[Quadratic] = {
-      if (lhs.zero_?) {
-        Some(rhs)
-      } else if (rhs.zero_?) {
-        Some(lhs)
-      } else {
-        None
-      }
+  case class AssociativityData(equations: Seq[PolynomialPair]) {
+    def evaluateNextVariable(a: Int): Option[AssociativityData] = {
+      Some(AssociativityData(for (e <- equations) yield {
+        e.evaluateNextVariable(a) match {
+          case None => return None
+          case Some(f) => f
+        }
+      }))
     }
   }
 
-  case class Quadratic(constant: Int, linear: Seq[Int], quadratic: Seq[(Int, Int)]) {
-    val variables = (linear ++ quadratic.map(_._1) ++ quadratic.map(_._2)).toSet
-    val zero_? = constant == 0 && variables.isEmpty
-    def evaluate(x: Array[Int]): Int = {
-      var t = constant
-      for (i <- linear) t = t + x(i)
-      for ((i, j) <- quadratic) t = t + x(i) * x(j)
-      t
-    }
-    def positive_?(step: Int, x: Array[Int]): Boolean = {
-      constant > 0 ||
-        linear.exists(i => i <= step && x(i) > 0) ||
-        quadratic.exists(p => p._1 <= step && p._2 <= step && x(p._1) * x(p._2) > 0)
-    }
-    def declareZero(i: Int): Quadratic = {
-      if (variables.contains(i)) {
-        Quadratic(constant, linear.filterNot(_ == i), quadratic.filterNot(p => p._1 == i || p._2 == i))
-      } else {
-        this
-      }
-    }
-  }
-
-  object AssociativityData {
-    val root: AssociativityData = {
-      val equations = (for (a <- 1 until rank; b <- a until rank; c <- a until rank; d <- a until rank; eq <- AssociativityEquation(a, b, c, d)) yield eq).distinct
-      AssociativityData(Nil, equations.groupBy(_.lastVariable), Nil)
-    }
-
-    private val cache = {
-      val size = 1000000000 / root.toString.size
-
-      CacheBuilder.newBuilder.maximumSize(size).build(new CacheLoader[List[Int], AssociativityData] {
-        override def load(z: List[Int]): AssociativityData = {
-          z match {
-            case Nil => root
-            case head :: tail => apply(tail).declareZero(head)
+  object PolynomialPair {
+    /* quadratic should be lower triangular */
+    def apply(constant: Int, linear: Array[Int], quadratic: Array[Array[Int]]): PolynomialPair = {
+      val lhsLinearTerms = linear.toList.map({ x => if (x >= 0) x else 0 })
+      val rhsLinearTerms = linear.toList.map({ x => if (x < 0) x else 0 })
+      val columns = for ((column, i) <- quadratic.transpose.toList.zipWithIndex) yield column.drop(i)
+      val quadraticTerms = for (column <- columns) yield {
+        (column.head, column.tail.toList.zipWithIndex.collect[Either[Int, Int], List[Either[Int, Int]]]({
+          case (x, i) if x > 0 => {
+            require(x == 1)
+            Left(i)
           }
+          case (x, i) if x < 0 => {
+            require(x == -1)
+            Right(i)
+          }
+        }))
+      }
+      val numberOfLhsQuadraticTerms = quadraticTerms.lastIndexWhere({ p =>
+        p._1 > 0 || p._2.exists(_.isLeft)
+      }) + 1
+      val numberOfRhsQuadraticTerms = quadraticTerms.lastIndexWhere({ p =>
+        p._1 < 0 || p._2.exists(_.isRight)
+      }) + 1
+      if (numberOfLhsQuadraticTerms >= numberOfRhsQuadraticTerms) {
+        if (numberOfLhsQuadraticTerms == 0) {
+          LinearPair(constant, lhsLinearTerms, rhsLinearTerms)
+        } else {
+          QuadraticPair(LinearPair(constant, lhsLinearTerms, rhsLinearTerms), quadraticTerms.take(numberOfLhsQuadraticTerms), numberOfLhsQuadraticTerms, numberOfRhsQuadraticTerms)
         }
-      })
+      } else {
+        val swappedQuadraticTerms: List[(Int, List[Either[Int, Int]])] = for ((d, e) <- quadraticTerms) yield {
+          (-d, e.map(_.swap))
+        }
+        QuadraticPair(LinearPair(-constant, rhsLinearTerms, lhsLinearTerms), swappedQuadraticTerms.take(numberOfRhsQuadraticTerms), numberOfRhsQuadraticTerms, numberOfLhsQuadraticTerms)
+      }
     }
-
-    def apply(z: List[Int]): AssociativityData = cache.get(z)
-
   }
-  case class AssociativityData(zeroes: List[Int], equations: Map[Int, Seq[AssociativityEquation]], obstructions: Seq[Quadratic]) {
-    def check(step: Int, x: Array[Int]): Boolean = {
-      for (equation <- equations.get(step).getOrElse(Nil)) {
-        if (!equation.check(x)) return false
+
+  sealed trait PolynomialPair {
+    def evaluateNextVariable(a: Int): Option[PolynomialPair]
+    def identicallyZero_? : Boolean
+  }
+
+  case class LinearPair(constant: Int, lhsLinearTerms: List[Int], rhsLinearTerms: List[Int]) extends PolynomialPair {
+    def definitelyPositive_? = constant > 0 && rhsLinearTerms.isEmpty
+    override def identicallyZero_? = constant == 0 && lhsLinearTerms.forall(_ == 0) && rhsLinearTerms.forall(_ == 0)
+
+    override def evaluateNextVariable(a: Int): Option[LinearPair] = {
+      val newConstant = constant + (lhsLinearTerms.head - rhsLinearTerms.head) * a
+      if ((newConstant > 0 && (rhsLinearTerms.isEmpty || rhsLinearTerms.tail.isEmpty)) || (newConstant < 0 && (lhsLinearTerms.isEmpty || lhsLinearTerms.tail.isEmpty))) {
+        None
+      } else {
+        Some(LinearPair(newConstant, lhsLinearTerms.drop(1), rhsLinearTerms.drop(1)))
       }
-      for (obstruction <- obstructions) {
-        if (obstruction.positive_?(step, x)) return false
-      }
-      true
     }
+  }
+  /* quadraticTerms contains -1 if the term appears on the lhs, 0 if it doesn't appear at all, -1 if it appears on the rhs */
+  /*
+   *  Each entry of quadraticTerms is an (Int, List[Int]).
+   *   The first Int is either 1, 0, or -1, depending on whether there is an x_i^2 on the left side, neither side, or the right side.
+   *   The List[Int] then contains Left(j-i-1) if there is an x_i x_j term on the left side, or Right(j-i-1) if there is on the right side. 
+   */
+  case class QuadraticPair(linearPair: LinearPair, quadraticTerms: List[(Int, List[Either[Int, Int]])], numberOfLhsQuadraticTerms: Int, numberOfRhsQuadraticTerms: Int) extends PolynomialPair {
+    require(numberOfLhsQuadraticTerms >= 1)
+    require(numberOfRhsQuadraticTerms <= numberOfLhsQuadraticTerms)
+    require(quadraticTerms.size == numberOfLhsQuadraticTerms)
 
-    def declareZero(i: Int): AssociativityData = {
-      //      println("preparing associativity data for " + (i :: zeroes))
-      require(zeroes.isEmpty || i > zeroes.head)
+    override def identicallyZero_? = linearPair.identicallyZero_? && quadraticTerms.forall({ p => p._1 == 0 && p._2.isEmpty })
 
-      val map = (for (j <- i until numberOfVariables) yield {
-        j -> ListBuffer[AssociativityEquation]()
-      }).toMap
-      val newObstructions = ListBuffer[Quadratic]()
-      newObstructions ++= obstructions
-      for (j <- i until numberOfVariables; equation <- equations.getOrElse(j, Nil)) {
-        equation.declareZero(i) match {
-          case Some(newEquation) => {
-            if (newEquation.lastVariable <= i) {
-              map(i) += newEquation
-            } else {
-              map(newEquation.lastVariable) += newEquation
-            }
-            newEquation.oneSided_? match {
-              case Some(q) => newObstructions += q
-              case None =>
+    override def evaluateNextVariable(a: Int): Option[PolynomialPair] = {
+      if (a == 0) {
+        val newLinearPair = LinearPair(linearPair.constant, linearPair.lhsLinearTerms.tail, linearPair.rhsLinearTerms.tail)
+        if (numberOfLhsQuadraticTerms == 1) {
+          Some(newLinearPair)
+        } else {
+          Some(QuadraticPair(newLinearPair, quadraticTerms.tail, numberOfLhsQuadraticTerms - 1, numberOfRhsQuadraticTerms - 1))
+        }
+      } else {
+        val newConstant = linearPair.constant + ((linearPair.lhsLinearTerms.head - linearPair.rhsLinearTerms.head) + quadraticTerms.head._1 * a) * a
+
+        val newLinearPair = {
+          val lhs = linearPair.lhsLinearTerms.tail.toArray
+          val rhs = linearPair.rhsLinearTerms.tail.toArray
+
+          for (x <- quadraticTerms.head._2) {
+            x match {
+              case Left(i) => {
+                if (lhs(i) == 0) {
+                  if (rhs(i) < a) {
+                    lhs(i) = a - rhs(i)
+                    rhs(i) = 0
+                  } else {
+                    rhs(i) = rhs(i) - a
+                  }
+                } else {
+                  lhs(i) = lhs(i) + a
+                }
+              }
+              case Right(i) => {
+                if (rhs(i) == 0) {
+                  if (lhs(i) < a) {
+                    rhs(i) = a - lhs(i)
+                    lhs(i) = 0
+                  } else {
+                    lhs(i) = lhs(i) - a
+                  }
+                } else {
+                  rhs(i) = rhs(i) + a
+                }
+              }
             }
           }
-          case None => {
-            map(j) += equation
+          // TODO is switching back and forth between Arrays and Lists too expensive here? We can probably stick with Arrays.
+          LinearPair(newConstant, lhs.toList, rhs.toList)
+        }
+
+        if (numberOfLhsQuadraticTerms > 1) {
+          if (numberOfRhsQuadraticTerms > 1 || !newLinearPair.definitelyPositive_?) {
+            Some(QuadraticPair(newLinearPair, quadraticTerms.tail, numberOfLhsQuadraticTerms - 1, numberOfRhsQuadraticTerms - 1))
+          } else {
+            None
+          }
+        } else {
+          if (newLinearPair.definitelyPositive_?) {
+            None
+          } else {
+            Some(newLinearPair)
           }
         }
       }
-
-      AssociativityData(i :: zeroes, map.mapValues(_.toList), newObstructions.distinct)
     }
   }
+
 }
   
