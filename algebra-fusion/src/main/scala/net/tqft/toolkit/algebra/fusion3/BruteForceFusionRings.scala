@@ -22,6 +22,7 @@ object BruteForceFusionRings extends App {
     globalDimensionBound: Double = 60.0,
     umtc: Boolean = false,
     minimumDimension: Option[Double] = None,
+    withFunctor: Option[(Array[Array[Int]], Array[Array[Array[Int]]])] = None,
     resumable: Boolean = false,
     finishBy: Option[Long] = None,
     batch: Boolean = false,
@@ -35,9 +36,18 @@ object BruteForceFusionRings extends App {
     opt[Double]('m', "minimum") valueName ("<minimum-squared-dimension>") action { (x, c) =>
       c.copy(minimumDimension = Some(x))
     } text ("all non-trivial objects must have a minimum squared dimension")
+    opt[String]('z', "functor") valueName ("<induction-matrix>:<target-ring>") action { (x, c) =>
+      val Seq(inductionString, ringString) = x.split(":").toSeq
+      val inductionEntries = if (inductionString.contains(",")) inductionString.split(",").map(_.toInt) else inductionString.toCharArray.map(_.toString.toInt)
+      val ringEntries = if (ringString.contains(",")) ringString.split(",").map(_.toInt) else ringString.toCharArray.map(_.toString.toInt)
+      val targetRank = scala.math.round(scala.math.pow(ringEntries.length, 1.0 / 3)).toInt
+      val induction = inductionEntries.grouped(inductionEntries.length / targetRank).toArray
+      val ring = ringEntries.grouped(targetRank * targetRank).map(_.grouped(targetRank).toArray).toArray
+      c.copy(withFunctor = Some((induction, ring)))
+    } text ("all non-trivial objects must have a minimum squared dimension")
     opt[Unit]('r', "resumable") action { (_, c) =>
       c.copy(resumable = true)
-    } text ("resume existing work, if available, or checkpoint resumable data on <enter>")
+    } text ("resume existing work, if available, and checkpoint resumable data on <enter>")
     opt[Double]('h', "hours") valueName ("<hours>") action { (x, c) =>
       c.copy(finishBy = Some(System.currentTimeMillis() + (x * 60 * 60 * 1000).toLong))
     } text ("run for at most <hours> hours")
@@ -54,9 +64,11 @@ object BruteForceFusionRings extends App {
   }
 
   parser.parse(args, Config()) map { config =>
-    val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound, config.umtc, config.minimumDimension)
+    require(!config.resumable || config.withFunctor.isEmpty)
+    
+    val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound, config.umtc, config.minimumDimension, config.withFunctor)
 
-    val dir = "fusion-rings3" + (if(config.umtc) "u" else "") +"/"
+    val dir = "fusion-rings3" + (if (config.umtc) "u" else "") + "/"
     new File(dir).mkdir
     val prefix = dir + config.selfDualObjects + "," + config.dualPairs + "," + config.globalDimensionBound
 
@@ -184,7 +196,7 @@ object BruteForceFusionRings extends App {
           partialFile.renameTo(completeFile)
         }
       }
-
+//      System.exit(0)
     }
   }
 }
