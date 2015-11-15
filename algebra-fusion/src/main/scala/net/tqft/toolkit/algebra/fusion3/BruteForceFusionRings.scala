@@ -40,7 +40,7 @@ object BruteForceFusionRings extends App {
       val Seq(inductionString, ringString) = x.split(":").toSeq
       val inductionEntries = if (inductionString.contains(",")) inductionString.split(",").map(_.toInt) else inductionString.toCharArray.map(_.toString.toInt)
       val ringEntries = if (ringString.contains(",")) ringString.split(",").map(_.toInt) else ringString.toCharArray.map(_.toString.toInt)
-      val targetRank = scala.math.pow(ringEntries.length, 1.0 / 3).toInt
+      val targetRank = scala.math.round(scala.math.pow(ringEntries.length, 1.0 / 3)).toInt
       val induction = inductionEntries.grouped(inductionEntries.length / targetRank).toArray
       val ring = ringEntries.grouped(targetRank * targetRank).map(_.grouped(targetRank).toArray).toArray
       c.copy(withFunctor = Some((induction, ring)))
