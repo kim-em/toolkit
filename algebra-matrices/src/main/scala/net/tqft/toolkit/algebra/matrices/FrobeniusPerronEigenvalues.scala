@@ -65,4 +65,14 @@ object FrobeniusPerronEigenvalues {
       }
     }
   }
+  
+  def upperBound(m: Array[Array[Int]], approximateEigenvector: Array[Double]): Double = {
+    val vector = approximateEigenvector.clone.map({  x => if(x < 0.0001) 0.0001 else x })
+    val ratios = Array.tabulate(m.length)({ i => 
+      Array.tabulate(vector.length)({ j => 
+        m(i)(j) * vector(j)  
+      }).sum / vector(i)
+    })
+    ratios.max
+  }
 }
