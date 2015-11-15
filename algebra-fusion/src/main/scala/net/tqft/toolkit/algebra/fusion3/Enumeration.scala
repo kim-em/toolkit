@@ -20,7 +20,7 @@ import org.jblas.DoubleMatrix
 // * minimum dimension for each object?
 // * can we do other problems? find fusion ring of centre, given the base ring and the induction matrix?
 
-case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBound: Double, umtc: Boolean, minimumDimension: Option[Double]) {
+case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBound: Double, umtc: Boolean, minimumDimension: Option[Double], withFunctor: Option[(Array[Array[Int]], Array[Array[Array[Int]]])]) {
   val rank = selfDualObjects + 2 * dualPairs
 
   private val dualData = ((0 until selfDualObjects) ++ (for (i <- 0 until dualPairs; n <- Seq(selfDualObjects + 2 * i + 1, selfDualObjects + 2 * i)) yield n)).toIndexedSeq
@@ -79,7 +79,6 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   private val objectFinishedAtStep = {
     (for (i <- 1 until rank) yield (multiplicities.filter(_.min == i).map({ case Seq(i, j, k) => lookup(i)(j)(k).right.get }).max) -> i).toMap
   }
-  //  println(lastStepForObject)
 
   private def N(x: Array[Int])(i: Int, j: Int, k: Int) = {
     lookup(i)(j)(k) match {
@@ -106,7 +105,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     IndexedSeq.tabulate(rank + 1)({ r =>
       val adjacencies = {
         // note here we decorate with dual data
-        IndexedSeq.tabulate(r)(i => Seq(i + r, dualData(i))) ++
+        IndexedSeq.tabulate(r)(i => Seq(i + r) ++ (if (dualData(i) != i) Seq(dualData(i)) else Nil)) ++
           IndexedSeq.tabulate(r)(i => Seq(i + 2 * r)) ++
           IndexedSeq.tabulate(r)(i => Seq(i)) ++
           IndexedSeq.tabulate(r, r, r)({
@@ -177,6 +176,26 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       for (i <- 0 until rank) yield d(i)(i)
     }
     (eigenvalues, eigenvectors.toArray2)
+  }
+
+  private val maximumAtStep: Array[Int] = {
+    if (withFunctor.nonEmpty) {
+      val functor = withFunctor.get._1
+      val targetRing = withFunctor.get._2
+      val targetRank = targetRing.length
+
+      Array.tabulate(numberOfVariables)({ step =>
+        val Seq(i, j, k) = representativeMultiplicities(step)
+        val m = (for (c <- 0 until targetRank; if functor(c)(k) > 0) yield {
+          ((for (d <- 0 until targetRank; e <- 0 until targetRank) yield {
+            functor(d)(i) * functor(e)(j) * targetRing(d)(e)(c)
+          }).sum.toDouble / functor(c)(k) + 0.01).floor.toInt
+        }).min
+        Seq(m, ((scala.math.sqrt(globalDimensionBound) + 0.01).floor.toInt)).min
+      })
+    } else {
+      Array.fill(numberOfVariables)((scala.math.sqrt(globalDimensionBound) + 0.01).floor.toInt)
+    }
   }
 
   case class Partial(step: Int, x: Array[Int], zeroes: List[Int], r: Array[Array[Int]], hint: Array[Double], umtcHint: Option[Array[Array[Double]]], finishedDimensions: Double) {
@@ -266,9 +285,9 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     def XdX(i: Int): Array[Array[Int]] = {
       require(objectFinishedAtStep.get(step) == Some(i))
 
-//      X_i* X_i X_j = N_ijk X_i* X_k = N_i*kl N_ijk X_l
-      
-      Array.tabulate(rank, rank)({ (l, j) => Sum(rank)({ k => N(x)(dualData(i), k, l)*N(x)(i,j,k) }) })
+      //      X_i* X_i X_j = N_ijk X_i* X_k = N_i*kl N_ijk X_l
+
+      Array.tabulate(rank, rank)({ (l, j) => Sum(rank)({ k => N(x)(dualData(i), k, l) * N(x)(i, j, k) }) })
     }
     def objectDimensionAllowed_? : Option[Partial] = {
       minimumDimension match {
@@ -306,6 +325,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     def children = {
       Iterator
         .from(0)
+        .take(maximumAtStep(step + 1) + 1)
         .map(next)
         .takeWhile(_.nonEmpty)
         .map(_.get)
@@ -356,14 +376,35 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
 
   }
 
-  private def inequalities(step: Int, x: Array[Int]): Boolean = {
-    //    true
+  private val withFunctorSymmetryBreaker1 = {
+    withFunctor match {
+      case None => IndexedSeq.fill(rank)(true)
+      case Some((restriction, _)) => {
+        val t = restriction.toSeq.map(_.toSeq).transpose
+        IndexedSeq.tabulate(rank)({ i =>
+          i == 0 || t(i) == t(i - 1)
+        })
+      }
+    }
+  }
+  private val withFunctorSymmetryBreaker2 = {
+    withFunctor match {
+      case None => IndexedSeq.fill(rank)(true)
+      case Some((restriction, _)) => {
+        val t = restriction.toSeq.map(_.toSeq).transpose
+        IndexedSeq.tabulate(rank)({ i =>
+          i <= 1 || t(i) == t(i - 2)
+        })
+      }
+    }
+  }
 
+  private def inequalities(step: Int, x: Array[Int]): Boolean = {
     // all we worry about is that the diagonal entries are descending (or as descending as we can make them, given that we have the dual pairs together, at the end)
 
     val v = representativeMultiplicities(step)
     if (v(0) > 1 && v(0) == v(1) && v(1) == v(2)) {
-      if (v(0) < selfDualObjects || (v(0) - selfDualObjects) % 2 == 1) {
+      if ((v(0) < selfDualObjects || (v(0) - selfDualObjects) % 2 == 1) && withFunctorSymmetryBreaker1(v(0))) {
         val pstep = lookup(v(0) - 1)(v(0) - 1)(v(0) - 1).right.get
         require(pstep < step)
         //        println((step, pstep, v(0), v(0)-1, lookup(v(0) - 1)(v(0) - 1)(v(0) - 1)))
@@ -378,12 +419,12 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
             //            }
           }
         }
-      } else if (v(0) > selfDualObjects && (v(0) - selfDualObjects) % 2 == 0) {
+      } else if (v(0) > selfDualObjects && (v(0) - selfDualObjects) % 2 == 0 && withFunctorSymmetryBreaker2(v(0))) {
         val pstep = lookup(v(0) - 2)(v(0) - 2)(v(0) - 2).right.get
         require(pstep < step)
         x(step) <= x(pstep)
       } else {
-        require(v(0) == selfDualObjects)
+        require(v(0) == selfDualObjects || withFunctor.nonEmpty)
         true
       }
     } else {
@@ -528,8 +569,39 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   }
 
   object AssociativityData {
+    lazy val restrictionEquations = {
+      val functor = withFunctor.get._1
+      val targetRing = withFunctor.get._2
+
+      println(functor.toList.map(_.toList))
+      println(targetRing.toList.map(_.map(_.toList).toList))
+
+      val targetRank = targetRing.length
+      for (a <- 1 until rank; b <- a until rank; c <- 0 until targetRank) yield {
+        // forget, then multiply
+        var constant = {
+          (for (d <- 0 until targetRank; e <- 0 until targetRank) yield {
+            functor(d)(a) * functor(e)(b) * targetRing(d)(e)(c)
+          }).sum
+        }
+        // multiply, then forget
+        val linear = ListBuffer[Int]()
+        for (x <- 0 until rank) {
+          for (_ <- 0 until functor(c)(x)) {
+            lookup(a)(b)(x) match {
+              case Right(i) => linear += i
+              case Left(i) => constant = constant - i
+            }
+          }
+        }
+        //        println((a,b,c,constant, linear.sorted.map(representativeMultiplicities)))
+        AssociativityEquation(Quadratic(constant, Nil, Nil), Quadratic(0, linear.sorted, Nil))
+      }
+    }
+
     val root: AssociativityData = {
-      val equations = (for (a <- 1 until rank; b <- a until rank; c <- a until rank; d <- a until rank; eq <- AssociativityEquation(a, b, c, d)) yield eq).distinct
+      val associativityEquations = (for (a <- 1 until rank; b <- a until rank; c <- a until rank; d <- a until rank; eq <- AssociativityEquation(a, b, c, d)) yield eq)
+      val equations = (associativityEquations ++ (if (withFunctor.nonEmpty) restrictionEquations else Nil)).distinct
       AssociativityData(Nil, equations.groupBy(_.lastVariable), Nil)
     }
 
