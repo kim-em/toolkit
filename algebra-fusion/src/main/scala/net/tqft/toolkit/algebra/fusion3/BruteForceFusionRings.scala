@@ -21,6 +21,7 @@ object BruteForceFusionRings extends App {
     dualPairs: Int = 0,
     globalDimensionBound: Double = 60.0,
     umtc: Boolean = false,
+    minimumDimension: Option[Double] = None,
     resumable: Boolean = false,
     finishBy: Option[Long] = None,
     batch: Boolean = false,
@@ -31,6 +32,9 @@ object BruteForceFusionRings extends App {
     opt[Unit]('u', "umtc") action { (_, c) =>
       c.copy(umtc = true)
     } text ("only search for rings which could be the fusion ring of a unitary modular tensor category")
+    opt[Double]('m', "minimum") valueName ("<minimum-squared-dimension>") action { (x, c) =>
+      c.copy(minimumDimension = Some(x))
+    } text ("all non-trivial objects must have a minimum squared dimension")
     opt[Unit]('r', "resumable") action { (_, c) =>
       c.copy(resumable = true)
     } text ("resume existing work, if available, or checkpoint resumable data on <enter>")
@@ -50,7 +54,7 @@ object BruteForceFusionRings extends App {
   }
 
   parser.parse(args, Config()) map { config =>
-    val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound, config.umtc)
+    val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound, config.umtc, config.minimumDimension)
 
     val dir = "fusion-rings3" + (if(config.umtc) "u" else "") +"/"
     new File(dir).mkdir

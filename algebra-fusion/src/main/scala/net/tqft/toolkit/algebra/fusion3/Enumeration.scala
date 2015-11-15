@@ -1,6 +1,7 @@
 package net.tqft.toolkit.algebra.fusion3
 
 import net.tqft.toolkit.algebra.matrices.FrobeniusPerronEigenvalues
+import net.tqft.toolkit.arithmetic.Sum
 import scala.concurrent.Future
 import java.util.concurrent.atomic.AtomicInteger
 import net.tqft.toolkit.functions.Memo
@@ -15,7 +16,11 @@ import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import org.jblas.Eigen
 import org.jblas.DoubleMatrix
 
-case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBound: Double, umtc: Boolean) {
+// ideas:
+// * minimum dimension for each object?
+// * can we do other problems? find fusion ring of centre, given the base ring and the induction matrix?
+
+case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBound: Double, umtc: Boolean, minimumDimension: Option[Double]) {
   val rank = selfDualObjects + 2 * dualPairs
 
   private val dualData = ((0 until selfDualObjects) ++ (for (i <- 0 until dualPairs; n <- Seq(selfDualObjects + 2 * i + 1, selfDualObjects + 2 * i)) yield n)).toIndexedSeq
@@ -36,8 +41,8 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     v match {
       case Seq(i, j, k) => {
         val reciprocals0 = Seq(Seq(i, j, k), Seq(dualData(i), k, j), Seq(j, dualData(k), dualData(i)), Seq(dualData(j), dualData(i), dualData(k)), Seq(dualData(k), i, dualData(j)), Seq(k, dualData(j), i))
-        val reciprocals = if(umtc) {
-          reciprocals0 ++ reciprocals0.map({ case Seq(i,j,k) => Seq(j,i,k) })
+        val reciprocals = if (umtc) {
+          reciprocals0 ++ reciprocals0.map({ case Seq(i, j, k) => Seq(j, i, k) })
         } else {
           reciprocals0
         }
@@ -94,7 +99,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
         t
       })
     }
-    Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None)
+    Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None, 0.0)
   }
 
   private val unlabelledGraphs = {
@@ -116,19 +121,6 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   }
 
   case class Complete(rank: Int, m: Seq[Seq[Seq[Int]]], r: Seq[Seq[Int]], globalDimensionEstimate: Double) {
-    val S = {
-      val Seq(eigenvectors, diagonal) = Eigen.symmetricEigenvectors(new DoubleMatrix(r.map(_.map(_.toDouble).toArray).toArray)).toSeq
-      val eigenvalues = {
-        val d = diagonal.toArray2
-        for (i <- 0 until rank) yield d(i)(i)
-      }
-      //      println((eigenvalues, r.map(_.mkString("{", ",", "}")).mkString("{", ",", "}"), eigenvectors.mmul(eigenvectors.transpose)))
-      eigenvectors
-    }
-    val umtcCompatible_? = {
-
-    }
-
     override def toString = {
       val max = m.map(_.map(_.max)).map(_.max).max
       val sep = if (max > 9) "," else ""
@@ -175,10 +167,10 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   }
 
   private def numericallyDistinct(z: Seq[Double]) = {
-    z.sliding(2).forall({ p => scala.math.abs(p(0) - p(1)) > 0.001 })
+    z.sorted.sliding(2).forall({ p => p(1) - p(0) > 0.001 })
   }
 
-  def eigensystem(m: Array[Array[Double]]) = {
+  private def eigensystem(m: Array[Array[Double]]) = {
     val Seq(eigenvectors, diagonal) = Eigen.symmetricEigenvectors(new DoubleMatrix(m.map(_.toArray).toArray)).toSeq
     val eigenvalues = {
       val d = diagonal.toArray2
@@ -187,7 +179,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     (eigenvalues, eigenvectors.toArray2)
   }
 
-  case class Partial(step: Int, x: Array[Int], zeroes: List[Int], r: Array[Array[Int]], hint: Array[Double], umtcHint: Option[Array[Array[Double]]]) {
+  case class Partial(step: Int, x: Array[Int], zeroes: List[Int], r: Array[Array[Int]], hint: Array[Double], umtcHint: Option[Array[Array[Double]]], finishedDimensions: Double) {
 
     override def toString = {
       val sep = if (x.max > 9) "," else ""
@@ -211,7 +203,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
           }
           case Some(i0) => {
             val m = {
-              if(i0 == 1) {
+              if (i0 == 1) {
                 Array.tabulate(rank, rank)({ (j, k) => N(x)(1, j, k).toDouble })
               } else {
                 val hint = umtcHint.get
@@ -220,7 +212,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
             }
             val (eigenvalues, s) = eigensystem(m)
             if (numericallyDistinct(eigenvalues)) {
-//              println("wow, distinct eigenvalues at step " + step)
+              //              println("wow, distinct eigenvalues at step " + step)
               val NN = Array.tabulate(rank, rank, rank)({ (i, j, k) =>
                 val x = (for (l <- 0 until rank) yield s(j)(l) * s(i)(l) * s(k)(l) / s(0)(l)).sum
                 if (x - scala.math.round(x) < 0.01 && scala.math.round(x) >= 0) Some(scala.math.round(x).toInt) else None
@@ -247,7 +239,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
 
       if (inequalities(step + 1, nextX)) {
         if (m == 0) {
-          Some(Partial(step + 1, x, (step + 1) :: zeroes, r, hint, umtcHint))
+          Some(Partial(step + 1, x, (step + 1) :: zeroes, r, hint, umtcHint, finishedDimensions))
         } else {
 
           val nextR = Array.tabulate(rank, rank)({ (i, j) =>
@@ -261,13 +253,45 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
           val (eigenvalue, nextHint) = FrobeniusPerronEigenvalues.estimateWithEigenvector(nextR, 0.001, globalDimensionBound + 1, Some(hint))
 
           if (eigenvalue <= globalDimensionBound) {
-            Some(Partial(step + 1, nextX, zeroes, nextR, nextHint, umtcHint))
+            Some(Partial(step + 1, nextX, zeroes, nextR, nextHint, umtcHint, finishedDimensions))
           } else {
             None
           }
         }
       } else {
         None
+      }
+    }
+
+    def XdX(i: Int): Array[Array[Int]] = {
+      require(objectFinishedAtStep.get(step) == Some(i))
+
+//      X_i* X_i X_j = N_ijk X_i* X_k = N_i*kl N_ijk X_l
+      
+      Array.tabulate(rank, rank)({ (l, j) => Sum(rank)({ k => N(x)(dualData(i), k, l)*N(x)(i,j,k) }) })
+    }
+    def objectDimensionAllowed_? : Option[Partial] = {
+      minimumDimension match {
+        case Some(minimum) => {
+          objectFinishedAtStep.get(step) match {
+            case None => Some(this)
+            case Some(i) => {
+              val m = XdX(i)
+              val (lowerBound, eigenvectorEstimate) = FrobeniusPerronEigenvalues.estimateWithEigenvector(m)
+              if (lowerBound > globalDimensionBound - finishedDimensions - (rank - i - 1) * minimum) {
+                None
+              } else {
+                val upperBound = FrobeniusPerronEigenvalues.upperBound(m, eigenvectorEstimate)
+                if (upperBound < minimum) {
+                  None
+                } else {
+                  Some(copy(finishedDimensions = finishedDimensions + lowerBound))
+                }
+              }
+            }
+          }
+        }
+        case None => Some(this)
       }
     }
 
@@ -280,7 +304,14 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     }
 
     def children = {
-      Iterator.from(0).map(next).takeWhile(_.nonEmpty).map(_.get).flatMap(_.associative_?).flatMap(_.umtcFastForward).toSeq
+      Iterator
+        .from(0)
+        .map(next)
+        .takeWhile(_.nonEmpty)
+        .map(_.get)
+        .flatMap(_.associative_?)
+        .flatMap(_.objectDimensionAllowed_?)
+        .flatMap(_.umtcFastForward).toSeq
     }
 
     def done_? = step == numberOfVariables - 1
@@ -324,10 +355,6 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     }
 
   }
-
-  //  private def canonicalPermutation(x: Array[Int], rank: Int, fixing: Int) = {
-  //    Dreadnaut.canonicalLabelling(unlabelledGraphs(rank).combineColours(IndexedSeq.tabulate(fixing)({ i => i - fixing - 1 }) ++ IndexedSeq.fill(3 * rank - fixing)(-1) ++ Seq.tabulate(rank, rank, rank)({ (i, j, k) => N(x)(i, j, k) }).map(_.flatten).flatten)).take(rank)
-  //  }
 
   private def inequalities(step: Int, x: Array[Int]): Boolean = {
     //    true
