@@ -184,6 +184,12 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       val targetRing = withFunctor.get._2
       val targetRank = targetRing.length
 
+      require(functor.length == targetRank)
+      require(functor.forall(_.length == rank))
+      require(targetRing.length == targetRank)
+      require(targetRing.forall(_.length == targetRank))
+      require(targetRing.forall(_.forall(_.length == targetRank)))
+      
       Array.tabulate(numberOfVariables)({ step =>
         val Seq(i, j, k) = representativeMultiplicities(step)
         val m = (for (c <- 0 until targetRank; if functor(c)(k) > 0) yield {
