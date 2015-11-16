@@ -15,6 +15,7 @@ import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
 import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import org.jblas.Eigen
 import org.jblas.DoubleMatrix
+import org.jblas.ComplexDouble
 
 // ideas:
 // * minimum dimension for each object?
@@ -98,7 +99,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
         t
       })
     }
-    Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None, 0.0)
+    Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None, IndexedSeq.empty, 0.0)
   }
 
   private val unlabelledGraphs = {
@@ -165,12 +166,21 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     }
   }
 
-  private def numericallyDistinct(z: Seq[Double]) = {
-    z.sorted.sliding(2).forall({ p => p(1) - p(0) > 0.001 })
+  private def numericallyDistinctIndices(z: Seq[ComplexDouble]): Seq[Int] = {
+    z match {
+      case h +: t => {
+        if (t.exists(w => w.add(h.neg).abs < 0.001)) {
+          numericallyDistinctIndices(t).map(_ + 1)
+        } else {
+          0 +: numericallyDistinctIndices(t).map(_ + 1)
+        }
+      }
+      case _ => Seq.empty
+    }
   }
 
   private def eigensystem(m: Array[Array[Double]]) = {
-    val Seq(eigenvectors, diagonal) = Eigen.symmetricEigenvectors(new DoubleMatrix(m.map(_.toArray).toArray)).toSeq
+    val Seq(eigenvectors, diagonal) = Eigen.eigenvectors(new DoubleMatrix(m.map(_.toArray).toArray)).toSeq
     val eigenvalues = {
       val d = diagonal.toArray2
       for (i <- 0 until rank) yield d(i)(i)
@@ -189,7 +199,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       require(targetRing.length == targetRank)
       require(targetRing.forall(_.length == targetRank))
       require(targetRing.forall(_.forall(_.length == targetRank)))
-      
+
       Array.tabulate(numberOfVariables)({ step =>
         val Seq(i, j, k) = representativeMultiplicities(step)
         val m = (for (c <- 0 until targetRank; if functor(c)(k) > 0) yield {
@@ -204,7 +214,15 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     }
   }
 
-  case class Partial(step: Int, x: Array[Int], zeroes: List[Int], r: Array[Array[Int]], hint: Array[Double], umtcHint: Option[Array[Array[Double]]], finishedDimensions: Double) {
+  case class Partial(
+      step: Int,
+      x: Array[Int],
+      zeroes: List[Int],
+      r: Array[Array[Int]],
+      hint: Array[Double],
+      umtcHint: Option[Array[Array[Double]]],
+      finishedMatrices: IndexedSeq[Array[Array[Int]]],
+      finishedDimensions: Double) {
 
     override def toString = {
       val sep = if (x.max > 9) "," else ""
@@ -227,20 +245,22 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
             Some(this)
           }
           case Some(i0) => {
+            val n = Array.tabulate(rank, rank)({ (j, k) => N(x)(i0, j, k) })
             val m = {
               if (i0 == 1) {
-                Array.tabulate(rank, rank)({ (j, k) => N(x)(1, j, k).toDouble })
+                n.map(_.map(_.toDouble))
               } else {
                 val hint = umtcHint.get
-                Array.tabulate(rank, rank)({ (j, k) => hint(j)(k) * scala.math.Pi / 3 + N(x)(i0, j, k) })
+                Array.tabulate(rank, rank)({ (j, k) => hint(j)(k) * scala.math.Pi / 3 + n(j)(k) })
               }
             }
             val (eigenvalues, s) = eigensystem(m)
-            if (numericallyDistinct(eigenvalues)) {
+            val distinct = numericallyDistinctIndices(eigenvalues)
+            if (distinct.size == rank) {
               //              println("wow, distinct eigenvalues at step " + step)
               val NN = Array.tabulate(rank, rank, rank)({ (i, j, k) =>
-                val x = (for (l <- 0 until rank) yield s(j)(l) * s(i)(l) * s(k)(l) / s(0)(l)).sum
-                if (x - scala.math.round(x) < 0.01 && scala.math.round(x) >= 0) Some(scala.math.round(x).toInt) else None
+                val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(k)(l).conj).div(s(0)(l))).reduce(_.add(_))
+                if (x.imag.abs < 0.001 && x.real - x.real.round < 0.001 && x.real.round >= 0) Some(x.real.round.toInt) else None
               })
               if (NN.forall(_.forall(_.forall(_.nonEmpty)))) {
                 val nextSteps = for (Seq(i, j, k) <- representativeMultiplicities.drop(step + 1)) yield NN(i)(j)(k).get
@@ -249,7 +269,56 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
                 None
               }
             } else {
-              Some(this.copy(umtcHint = Some(m)))
+              // it ain't over yet!
+
+              val eigenvectors = distinct.map(s(_))
+
+              def dot(v: Array[ComplexDouble], w: Array[ComplexDouble]): ComplexDouble = {
+                var t = ComplexDouble.ZERO
+                for (i <- 0 until v.length) {
+                  t = t.add(v(i).mul(w(i).conj))
+                }
+                t
+              }
+              def dot2(v: Array[ComplexDouble], w: Array[Int]): ComplexDouble = {
+                var t = ComplexDouble.ZERO
+                for (i <- 0 until v.length) {
+                  t = t.add(v(i).mul(w(i)))
+                }
+                t
+              }
+              def orthogonal(vectors: Seq[Array[ComplexDouble]]): Boolean = {
+                for (i <- 0 until vectors.size; j <- i + 1 until vectors.size) yield {
+                  if (dot(vectors(i), vectors(j)).abs > 0.001) return false
+                }
+                true
+              }
+
+              if (orthogonal(eigenvectors)) {
+                val newFinishedMatrices = finishedMatrices :+ n
+
+                def d(l: Int, i: Int) = {
+                  // the eigenvalue of X_i on eigenvector(l)
+                  val X = newFinishedMatrices(i)
+                  dot2(eigenvectors(l), X(0)).div(eigenvectors(l)(0))
+                }
+                def check: Boolean = {
+                  for (l <- 0 until eigenvectors.length; i <- 0 until i0) {
+                    if (d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).neg).abs > 0.001) return false
+                  }
+                  true
+                }
+                // check that the ratios give the eigenvalues 
+//                if (check) {
+                  Some(this.copy(umtcHint = Some(m), finishedMatrices = newFinishedMatrices))
+//                } else {
+//                  println("bad S matrix")
+//                  None
+//                }
+              } else {
+                //                println("bad S matrix")
+                None
+              }
             }
           }
         }
@@ -264,7 +333,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
 
       if (inequalities(step + 1, nextX)) {
         if (m == 0) {
-          Some(Partial(step + 1, x, (step + 1) :: zeroes, r, hint, umtcHint, finishedDimensions))
+          Some(Partial(step + 1, x, (step + 1) :: zeroes, r, hint, umtcHint, finishedMatrices, finishedDimensions))
         } else {
 
           val nextR = Array.tabulate(rank, rank)({ (i, j) =>
@@ -278,7 +347,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
           val (eigenvalue, nextHint) = FrobeniusPerronEigenvalues.estimateWithEigenvector(nextR, 0.001, globalDimensionBound + 1, Some(hint))
 
           if (eigenvalue <= globalDimensionBound) {
-            Some(Partial(step + 1, nextX, zeroes, nextR, nextHint, umtcHint, finishedDimensions))
+            Some(Partial(step + 1, nextX, zeroes, nextR, nextHint, umtcHint, finishedMatrices, finishedDimensions))
           } else {
             None
           }
@@ -414,9 +483,14 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
         val pstep = lookup(v(0) - 1)(v(0) - 1)(v(0) - 1).right.get
         require(pstep < step)
         //        println((step, pstep, v(0), v(0)-1, lookup(v(0) - 1)(v(0) - 1)(v(0) - 1)))
-        x(step) == x(pstep) || {
-          x(step) < x(pstep) && {
-            true
+        x(step) < x(pstep) || {
+          x(step) == x(pstep) && {
+            val pstep1 = lookup(v(0) - 1)(v(0) - 1)(v(0)).right.get
+            val pstep2 = lookup(v(0))(v(0))(v(0) - 1).right.get
+            require(pstep1 < step)
+            require(pstep2 < step)
+            x(pstep2) <= x(pstep1)
+            //            true
             // try require canonical form! --- very slow??
             //            val f = (for (i <- 1 to v(0) - 1; if (x(lookup(i)(i)(i).right.get)) == x(pstep)) yield i).head
             //            v(0) <= f + 1 || {
@@ -428,7 +502,15 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       } else if (v(0) > selfDualObjects && (v(0) - selfDualObjects) % 2 == 0 && withFunctorSymmetryBreaker2(v(0))) {
         val pstep = lookup(v(0) - 2)(v(0) - 2)(v(0) - 2).right.get
         require(pstep < step)
-        x(step) <= x(pstep)
+        x(step) < x(pstep) || {
+          x(step) == x(pstep) && {
+            val pstep1 = lookup(v(0) - 2)(v(0) - 2)(v(0)).right.get
+            val pstep2 = lookup(v(0))(v(0))(v(0) - 2).right.get
+            require(pstep1 < step)
+            require(pstep2 < step)
+            x(pstep2) <= x(pstep1)
+          }
+        }
       } else {
         require(v(0) == selfDualObjects || withFunctor.nonEmpty)
         true
