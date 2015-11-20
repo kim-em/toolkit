@@ -17,10 +17,6 @@ import org.jblas.Eigen
 import org.jblas.DoubleMatrix
 import org.jblas.ComplexDouble
 
-// ideas:
-// * minimum dimension for each object?
-// * can we do other problems? find fusion ring of centre, given the base ring and the induction matrix?
-
 case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBound: Double, umtc: Boolean, minimumDimension: Option[Double], withFunctor: Option[(Array[Array[Int]], Array[Array[Array[Int]]])]) {
   val rank = selfDualObjects + 2 * dualPairs
 
@@ -260,7 +256,8 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
             if (distinct.size == rank) {
               //              println("wow, distinct eigenvalues at step " + step)
               val NN = Array.tabulate(rank, rank, rank)({ (i, j, k) =>
-                val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(k)(l).conj).div(s(0)(l))).reduce(_.add(_))
+//                val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(k)(l).conj).div(s(0)(l))).reduce(_.add(_))
+                val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(dualData(k))(l)).div(s(0)(l))).reduce(_.add(_))
                 if (x.imag.abs < 0.001 && x.real - x.real.round < 0.001 && x.real.round >= 0) Some(x.real.round.toInt) else None
               })
               if (NN.forall(_.forall(_.forall(_.nonEmpty)))) {
@@ -295,9 +292,12 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
                 true
               }
 
+              
+              // TODO: surely often we can avoid checking orthogonality
               if (eigenvectors.forall(X => X(0) != ComplexDouble.ZERO) && orthogonal(eigenvectors)) {
                 val newFinishedMatrices = finishedMatrices :+ n
 
+                // TODO: as written, this isn't checking anything!
                 def d(l: Int, i: Int) = {
                   // the eigenvalue of X_i on eigenvector(l)
                   val X = newFinishedMatrices(i)
