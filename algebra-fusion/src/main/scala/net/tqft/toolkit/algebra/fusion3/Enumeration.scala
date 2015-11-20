@@ -99,7 +99,9 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
         t
       })
     }
-    Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None, IndexedSeq.empty, 0.0)
+    // TODO remove this, no need to keep track of the identity
+    val id = Array.tabulate(rank, rank)({ (i,j) => if(i==j) 1 else 0})
+    Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None, IndexedSeq(id), 0.0)
   }
 
   private val unlabelledGraphs = {
@@ -167,16 +169,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   }
 
   private def numericallyDistinctIndices(z: Seq[ComplexDouble]): Seq[Int] = {
-    z match {
-      case h +: t => {
-        if (t.exists(w => w.add(h.neg).abs < 0.001)) {
-          numericallyDistinctIndices(t).map(_ + 1)
-        } else {
-          0 +: numericallyDistinctIndices(t).map(_ + 1)
-        }
-      }
-      case _ => Seq.empty
-    }
+    for((w,i) <- z.zipWithIndex; if z.count(y => y.add(w.neg).abs < 0.001) == 1) yield i
   }
 
   private def eigensystem(m: Array[Array[Double]]) = {
@@ -245,17 +238,25 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
             Some(this)
           }
           case Some(i0) => {
+            
+            // TODO: to think about --- do we need to separately check that the eigenvectors of our generic linear combo are eigenvectors of the latest matrix?
             val n = Array.tabulate(rank, rank)({ (j, k) => N(x)(i0, j, k) })
             val m = {
               if (i0 == 1) {
-                n.map(_.map(_.toDouble))
+                Array.tabulate(rank, rank)({ (j, k) => N(x)(i0, j, k).toDouble })
               } else {
                 val hint = umtcHint.get
                 Array.tabulate(rank, rank)({ (j, k) => hint(j)(k) * scala.math.Pi / 3 + n(j)(k) })
               }
             }
             val (eigenvalues, s) = eigensystem(m)
+//            println("i0: " + i0)
+//            println(m.toList.map(_.toList))
+//            println("eigenvalues: " + eigenvalues)
+//            println("s: " + s.toList.map(_.toList))
             val distinct = numericallyDistinctIndices(eigenvalues)
+//            println("distinct: " + distinct)
+//            println("eigenvectors: " + distinct.map(s(_).toList))
             if (distinct.size == rank) {
               //              println("wow, distinct eigenvalues at step " + step)
               val NN = Array.tabulate(rank, rank, rank)({ (i, j, k) =>
@@ -294,7 +295,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
                 true
               }
 
-              if (orthogonal(eigenvectors)) {
+              if (eigenvectors.forall(X => X(0) != ComplexDouble.ZERO) && orthogonal(eigenvectors)) {
                 val newFinishedMatrices = finishedMatrices :+ n
 
                 def d(l: Int, i: Int) = {
@@ -302,19 +303,22 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
                   val X = newFinishedMatrices(i)
                   dot2(eigenvectors(l), X(0)).div(eigenvectors(l)(0))
                 }
+//                println("eigenvectors: " + eigenvectors.map(_.toList))
                 def check: Boolean = {
-                  for (l <- 0 until eigenvectors.length; i <- 0 until i0) {
-                    if (d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).neg).abs > 0.001) return false
+                  for (l <- 0 until eigenvectors.length; i <- 1 until i0) {
+//                    println("newFinishedMatrices(i): " + newFinishedMatrices(i).toList.map(_.toList))
+//                    println((l,i, d(l,i), eigenvectors(l)(i).div(eigenvectors(l)(0)).conj), d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001)
+                    if (d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001) return false
                   }
                   true
                 }
                 // check that the ratios give the eigenvalues 
-//                if (check) {
+                if (check) {
                   Some(this.copy(umtcHint = Some(m), finishedMatrices = newFinishedMatrices))
-//                } else {
-//                  println("bad S matrix")
-//                  None
-//                }
+                } else {
+////                  println("bad S matrix")
+                  None
+                }
               } else {
                 //                println("bad S matrix")
                 None
