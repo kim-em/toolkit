@@ -1,0 +1,1 @@
+cat *.partial *.classification all incomplete | cut -d' ' -f1-3 | sort | uniq > all
