@@ -65,7 +65,7 @@ object BruteForceFusionRings extends App {
 
   parser.parse(args, Config()) map { config =>
     require(!config.resumable || config.withFunctor.isEmpty)
-    
+
     val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound, config.umtc, config.minimumDimension, config.withFunctor)
 
     val dir = "fusion-rings3" + (if (config.umtc) "u" else "") + "/"
@@ -96,35 +96,35 @@ object BruteForceFusionRings extends App {
 
     val counter = new AtomicInteger(0)
 
-    val notify: enumeration.Complete => Unit = {
-      val seen = {
-        import scala.collection.JavaConverters._
-        java.util.Collections.newSetFromMap(new ConcurrentHashMap[String, java.lang.Boolean]()).asScala
-      }
+    if (config.resumable && completeFile.exists) {
+      println("--- nothing to do...")
+    } else {
 
-      // lazy, to avoid creating the file until it's needed
-      lazy val pw = new PrintWriter(new BufferedWriter(new FileWriter(partialFile, true)));
-      { c =>
-        val s0 = c.canonicalize.toString
-        val s1 = s0.split(" ").init.mkString(" ") // throw out the global dimension estimate
-        synchronized {
-          if (!seen.contains(s1)) {
-            seen += s1
-            counter.incrementAndGet
-            println(s0)
-            if (config.resumable) {
-              if (seen.size > 10000) seen.retain({ t => Random.nextInt % 4 > 0 })
-              pw.println(s0)
-              pw.flush
+      val notify: enumeration.Complete => Unit = {
+        val seen = {
+          import scala.collection.JavaConverters._
+          java.util.Collections.newSetFromMap(new ConcurrentHashMap[String, java.lang.Boolean]()).asScala
+        }
+
+        val pw = new PrintWriter(new BufferedWriter(new FileWriter(partialFile, true)));
+        { c =>
+          val s0 = c.canonicalize.toString
+          val s1 = s0.split(" ").init.mkString(" ") // throw out the global dimension estimate
+          synchronized {
+            if (!seen.contains(s1)) {
+              seen += s1
+              counter.incrementAndGet
+              println(s0)
+              if (config.resumable) {
+                if (seen.size > 10000) seen.retain({ t => Random.nextInt % 4 > 0 })
+                pw.println(s0)
+                pw.flush
+              }
             }
           }
         }
       }
-    }
 
-    if (config.resumable && completeFile.exists) {
-      println("--- nothing to do...")
-    } else {
       val (time, (toResume, numberFound)) = (net.tqft.toolkit.Profiler.timing({
         val targets: Seq[enumeration.Partial] = if (config.resumable && inFile.exists) {
           Source.fromFile(inFile).getLines.map(enumeration.Partial.apply).toSeq
@@ -147,7 +147,7 @@ object BruteForceFusionRings extends App {
           import scala.concurrent.ExecutionContext.Implicits.global
           Future {
             val results = futures.map(f => Await.result(f, Duration.Inf))
-            (results.flatMap(_._1), results.flatMap(_._2))
+            (results.iterator.flatMap(_._1), results.flatMap(_._2))
           }
         }
 
@@ -179,16 +179,18 @@ object BruteForceFusionRings extends App {
       println(s"--- In ${time}ms, found ${counter.get} based rings.")
       if (toResume.nonEmpty) {
         println(s"--- This enumeration was interrupted, so is not exhaustive. The following cases are incomplete: ")
-        for (p <- toResume) {
-          println(p)
-        }
         if (config.resumable) {
           inFile.delete
           val io = new PrintWriter(new FileOutputStream(inFile))
           for (p <- toResume) {
+            println(p)
             io.println(p)
           }
           io.close
+        } else {
+          for (p <- toResume) {
+            println(p)
+          }
         }
       } else {
         if (config.resumable) {
@@ -196,7 +198,7 @@ object BruteForceFusionRings extends App {
           partialFile.renameTo(completeFile)
         }
       }
-//      System.exit(0)
+      //      System.exit(0)
     }
   }
 }
