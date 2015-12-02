@@ -1,1 +1,2 @@
-cat *.partial *.classification all incomplete | cut -d' ' -f1-3 | sort | uniq > all
+cat *.partial *.classification all incomplete | cut -d' ' -f1-3 | sort | uniq > all.tmp
+mv all.tmp all
