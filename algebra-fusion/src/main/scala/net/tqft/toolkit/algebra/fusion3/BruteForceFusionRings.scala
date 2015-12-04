@@ -68,7 +68,9 @@ object BruteForceFusionRings extends App {
 
     val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound, config.umtc, config.minimumDimension, config.withFunctor)
 
-    val dir = "fusion-rings3" + (if (config.umtc) "u" else "") + "/"
+    val suffix = (if(config.umtc) "u" else "") + (if(config.minimumDimension.nonEmpty) "m" + config.minimumDimension.get else "")
+    
+    val dir = "fusion-rings3" + suffix + "/"
     new File(dir).mkdir
     val prefix = dir + config.selfDualObjects + "," + config.dualPairs + "," + config.globalDimensionBound
 
