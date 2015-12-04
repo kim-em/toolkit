@@ -1,2 +1,2 @@
-cat *.partial *.classification all incomplete | cut -d' ' -f1-3 | sort | uniq > all.tmp
+cat ../fusion-rings3*/*.partial ../fusion-rings3*/*.classification all incomplete | cut -d' ' -f1-3 | sort | uniq > all.tmp
 mv all.tmp all
