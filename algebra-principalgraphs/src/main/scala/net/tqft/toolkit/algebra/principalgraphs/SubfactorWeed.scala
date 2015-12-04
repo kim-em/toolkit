@@ -59,7 +59,9 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
    
     val canonicalAvoiding = SubfactorWeed.canonicalAvoiding(avoiding)
 
-    descendantsTree(w =>
+    import net.tqft.toolkit.collections.LazyPartition._
+    
+    val iterator = descendantsTree(w =>
       if (canonicalAvoiding.contains((w.depth, w.pair.nautyGraph)) || canonicalAvoiding.contains(w.pair.invariant)) {
         -1
       } else {
@@ -68,7 +70,9 @@ sealed trait SubfactorWeed extends CanonicalGenerationWithIsomorphism[SubfactorW
         } else {
           -w.pair(0).bigraph.rankAtMaximalDepth - w.pair(1).bigraph.rankAtMaximalDepth
         }
-      }).toSeq.tail.map(_._1).partition({ w => w.depth == depth })
+      })
+      iterator.next
+      iterator.map(_._1).lazyPartition({ w => w.depth == depth })
   }
 
   override def findIsomorphismTo(other: SubfactorWeed) = {
@@ -248,7 +252,7 @@ case class EvenDepthSubfactorWeed(indexLimit: Double, pair: EvenDepthPairOfBigra
     Ordering.by({ o: lowerObjects.Orbit => o.representative })
   }
 
-  override def upperObjects = {
+  override def upperObjects: automorphisms.ActionOnFiniteSet[Upper] = {
     new automorphisms.ActionOnFiniteSet[Upper] {
       override val elements: Stream[Upper] = {
         val allUppers: Iterator[Upper] = {
