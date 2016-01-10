@@ -140,10 +140,15 @@ object Dreadnaut extends Dreadnaut {
     if (localDreadnaut.exists) {
       localDreadnaut.toPath.toString
     } else {
-      try {
-        "which dreadnaut".!!
-      } catch {
-        case e: Exception => System.getProperty("user.home") + "/bin/dreadnaut"
+      val binDreadnaut = new File("/usr/local/bin/dreadnaut")
+      if (binDreadnaut.exists) {
+        binDreadnaut.toPath.toString
+      } else {
+        try {
+          "which dreadnaut".!!
+        } catch {
+          case e: Exception => System.getProperty("user.home") + "/bin/dreadnaut"
+        }
       }
     }
   }
