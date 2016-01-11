@@ -42,10 +42,12 @@ trait DrawPlanarGraph {
 
     paths.headOption.orElse(Try(s"which $programName".!!).toOption).getOrElse(programName)
   }
-  var pdflatexPath = getProgramPath("pdflatex", List("/usr/texbin"))
-  var pdftexPath = getProgramPath("pdftex", List("/usr/texbin"))
+  
+  private val texSearchPaths = List("/usr/texbin", "/Library/TeX/texbin")
+  var pdflatexPath = getProgramPath("pdflatex", texSearchPaths)
+  var pdftexPath = getProgramPath("pdftex", texSearchPaths)
   var gsPath = getProgramPath("gs", List("/usr/bin", "/usr/local/bin"))
-  var pdfcropPath = getProgramPath("pdfcrop", List("/usr/texbin"))
+  var pdfcropPath = getProgramPath("pdfcrop", texSearchPaths)
 
   def apply(G: PlanarGraph): String = {
     // Draws regular, closed and knotted PlanarGraphs by doing some preprocessing and then calling the draw function.
