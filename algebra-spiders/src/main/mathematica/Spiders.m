@@ -85,7 +85,7 @@ PickleSpiderAnalysis;UnpickleSpiderAnalysis;PickledSpiderAnalysis;PickledQuotien
 Begin["`Private`"];
 
 
-SpidersMathematicaDirectory=Cases[$Path~Join~(Quiet[{NotebookDirectory[]}]/.$Failed->{}),s_/;StringMatchQ[s,__~~"toolkit/algebra-spiders/src/main/mathematica"~~___]][[1]];
+SpidersMathematicaDirectory=FileNames[Cases[$Path~Join~(Quiet[{NotebookDirectory[]}]/.$Failed->{}),s_/;StringMatchQ[s,__~~"toolkit/algebra-spiders/src/main/mathematica"~~___]]][[1]];
 
 
 SpidersDirectory=FileNameJoin[{SpidersMathematicaDirectory,"..","..",".."}];
