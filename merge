@@ -1,0 +1,1 @@
+./sbt "toolkit-algebra-fusion/test:run-main net.tqft.toolkit.algebra.fusion.PartialFusionRingMergeApp $*"
