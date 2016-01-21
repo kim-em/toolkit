@@ -96,7 +96,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       })
     }
     // TODO remove this, no need to keep track of the identity
-    val id = Array.tabulate(rank, rank)({ (i,j) => if(i==j) 1 else 0})
+    val id = Array.tabulate(rank, rank)({ (i, j) => if (i == j) 1 else 0 })
     Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None, IndexedSeq(id), 0.0)
   }
 
@@ -165,7 +165,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   }
 
   private def numericallyDistinctIndices(z: Seq[ComplexDouble]): Seq[Int] = {
-    for((w,i) <- z.zipWithIndex; if z.count(y => y.add(w.neg).abs < 0.001) == 1) yield i
+    for ((w, i) <- z.zipWithIndex; if z.count(y => y.add(w.neg).abs < 0.001) == 1) yield i
   }
 
   private def eigensystem(m: Array[Array[Double]]) = {
@@ -174,7 +174,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       val d = diagonal.toArray2
       for (i <- 0 until rank) yield d(i)(i)
     }
-    (eigenvalues, eigenvectors.toArray2)
+    (eigenvalues, eigenvectors.toArray2.transpose)
   }
 
   private val maximumAtStep: Array[Int] = {
@@ -227,6 +227,110 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
       }
     }
 
+    def checkMatrix(i0: Int): Option[Partial] = {
+      // TODO: to think about --- do we need to separately check that the eigenvectors of our generic linear combo are eigenvectors of the latest matrix?
+      val n = Array.tabulate(rank, rank)({ (j, k) => N(x)(i0, j, k) })
+
+      val m = {
+        if (i0 == 1) {
+          Array.tabulate(rank, rank)({ (j, k) => N(x)(i0, j, k).toDouble })
+        } else {
+          val hint = umtcHint.get
+          Array.tabulate(rank, rank)({ (j, k) => hint(j)(k) * scala.math.Pi / 3 + n(j)(k) })
+        }
+      }
+      val (eigenvalues, s) = eigensystem(m)
+      //            println("i0: " + i0)
+      //            println(m.toList.map(_.toList))
+      //            println("eigenvalues: " + eigenvalues)
+      //            println("s: " + s.toList.map(_.toList))
+      val distinct = numericallyDistinctIndices(eigenvalues)
+      //            println("distinct: " + distinct)
+      //            println("eigenvectors: " + distinct.map(s(_).toList))
+      if (distinct.size == rank) {
+        //              println("wow, distinct eigenvalues at step " + step)
+
+        // TODO we should double check this is correctly treating normalisation of the eigenvectors,
+        // and not just relying on the implementation of eigensystem
+        // TODO we should be careful about transposes here!
+        val NN = Array.tabulate(rank, rank, rank)({ (i, j, k) =>
+          //                val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(k)(l).conj).div(s(0)(l))).reduce(_.add(_))
+          val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(dualData(k))(l)).div(s(0)(l))).reduce(_.add(_))
+          if (x.imag.abs < 0.001 && x.real - x.real.round < 0.001 && x.real.round >= 0) Some(x.real.round.toInt) else None
+        })
+        if (NN.forall(_.forall(_.forall(_.nonEmpty)))) {
+          val nextSteps = for (Seq(i, j, k) <- representativeMultiplicities.drop(step + 1)) yield NN(i)(j)(k).get
+          nextSteps.foldLeft[Option[Partial]](Some(this))({ case (o, m) => o.flatMap(_.next(m)).flatMap(_.associative_?) }).ensuring(_.forall(_.done_?))
+        } else {
+          None
+        }
+      } else {
+        // it ain't over yet!
+
+        val eigenvectors = distinct.map(s(_))
+
+        def dot(v: Array[ComplexDouble], w: Array[ComplexDouble]): ComplexDouble = {
+          var t = ComplexDouble.ZERO
+          for (i <- 0 until v.length) {
+            t = t.add(v(i).mul(w(i).conj))
+          }
+          t
+        }
+        def dot2(v: Array[ComplexDouble], w: Array[Int]): ComplexDouble = {
+          var t = ComplexDouble.ZERO
+          for (i <- 0 until v.length) {
+            t = t.add(v(i).mul(w(i)))
+          }
+          t
+        }
+        def orthogonal(vectors: Seq[Array[ComplexDouble]]): Boolean = {
+          for (i <- 0 until vectors.size; j <- i + 1 until vectors.size) yield {
+            if (dot(vectors(i), vectors(j)).abs > 0.001) {
+              println((i,j))
+              println(dot(vectors(i), vectors(j)).abs)
+              for(v <- vectors) println(v.toList.mkString("{",",","}"))
+              for(m <- finishedMatrices :+ n) println(m.toList.map(_.toList.mkString("{",",","}")).mkString("{",",","}"))
+              require(false)
+              return false
+            }
+          }
+          true
+        }
+
+        // TODO: once things are working, remove the orthogonality check; it should always pass
+        if (eigenvectors.forall(X => X(0) != ComplexDouble.ZERO) && orthogonal(eigenvectors)) {
+          val newFinishedMatrices = finishedMatrices :+ n
+
+          // TODO: as written, this isn't checking anything!
+          def d(l: Int, i: Int) = {
+            // the eigenvalue of X_i on eigenvector(l)
+            val X = newFinishedMatrices(i)
+            dot2(eigenvectors(l), X(0)).div(eigenvectors(l)(0))
+          }
+          //                println("eigenvectors: " + eigenvectors.map(_.toList))
+          def check: Boolean = {
+            for (l <- 0 until eigenvectors.length; i <- 1 until i0) {
+              //                    println("newFinishedMatrices(i): " + newFinishedMatrices(i).toList.map(_.toList))
+              //                    println((l,i, d(l,i), eigenvectors(l)(i).div(eigenvectors(l)(0)).conj), d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001)
+              if (d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001) return false
+            }
+            true
+          }
+          // check that the ratios give the eigenvalues 
+          if (check) {
+            Some(this.copy(umtcHint = Some(m), finishedMatrices = newFinishedMatrices))
+          } else {
+                              println("bad S matrix")
+            None
+          }
+        } else {
+                          println("bad S matrix: eigenvector starts with a zero")
+          None
+        }
+      }
+
+    }
+
     def umtcFastForward: Option[Partial] = {
       if (umtc) {
         objectFinishedAtStep.get(step) match {
@@ -234,96 +338,9 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
             Some(this)
           }
           case Some(i0) => {
-            
-            // TODO: to think about --- do we need to separately check that the eigenvectors of our generic linear combo are eigenvectors of the latest matrix?
-            val n = Array.tabulate(rank, rank)({ (j, k) => N(x)(i0, j, k) })
-            val m = {
-              if (i0 == 1) {
-                Array.tabulate(rank, rank)({ (j, k) => N(x)(i0, j, k).toDouble })
-              } else {
-                val hint = umtcHint.get
-                Array.tabulate(rank, rank)({ (j, k) => hint(j)(k) * scala.math.Pi / 3 + n(j)(k) })
-              }
-            }
-            val (eigenvalues, s) = eigensystem(m)
-//            println("i0: " + i0)
-//            println(m.toList.map(_.toList))
-//            println("eigenvalues: " + eigenvalues)
-//            println("s: " + s.toList.map(_.toList))
-            val distinct = numericallyDistinctIndices(eigenvalues)
-//            println("distinct: " + distinct)
-//            println("eigenvectors: " + distinct.map(s(_).toList))
-            if (distinct.size == rank) {
-              //              println("wow, distinct eigenvalues at step " + step)
-              val NN = Array.tabulate(rank, rank, rank)({ (i, j, k) =>
-//                val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(k)(l).conj).div(s(0)(l))).reduce(_.add(_))
-                val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(dualData(k))(l)).div(s(0)(l))).reduce(_.add(_))
-                if (x.imag.abs < 0.001 && x.real - x.real.round < 0.001 && x.real.round >= 0) Some(x.real.round.toInt) else None
-              })
-              if (NN.forall(_.forall(_.forall(_.nonEmpty)))) {
-                val nextSteps = for (Seq(i, j, k) <- representativeMultiplicities.drop(step + 1)) yield NN(i)(j)(k).get
-                nextSteps.foldLeft[Option[Partial]](Some(this))({ case (o, m) => o.flatMap(_.next(m)).flatMap(_.associative_?) }).ensuring(_.forall(_.done_?))
-              } else {
-                None
-              }
-            } else {
-              // it ain't over yet!
-
-              val eigenvectors = distinct.map(s(_))
-
-              def dot(v: Array[ComplexDouble], w: Array[ComplexDouble]): ComplexDouble = {
-                var t = ComplexDouble.ZERO
-                for (i <- 0 until v.length) {
-                  t = t.add(v(i).mul(w(i).conj))
-                }
-                t
-              }
-              def dot2(v: Array[ComplexDouble], w: Array[Int]): ComplexDouble = {
-                var t = ComplexDouble.ZERO
-                for (i <- 0 until v.length) {
-                  t = t.add(v(i).mul(w(i)))
-                }
-                t
-              }
-              def orthogonal(vectors: Seq[Array[ComplexDouble]]): Boolean = {
-                for (i <- 0 until vectors.size; j <- i + 1 until vectors.size) yield {
-                  if (dot(vectors(i), vectors(j)).abs > 0.001) return false
-                }
-                true
-              }
-
-              
-              // TODO: surely often we can avoid checking orthogonality
-              if (eigenvectors.forall(X => X(0) != ComplexDouble.ZERO) && orthogonal(eigenvectors)) {
-                val newFinishedMatrices = finishedMatrices :+ n
-
-                // TODO: as written, this isn't checking anything!
-                def d(l: Int, i: Int) = {
-                  // the eigenvalue of X_i on eigenvector(l)
-                  val X = newFinishedMatrices(i)
-                  dot2(eigenvectors(l), X(0)).div(eigenvectors(l)(0))
-                }
-//                println("eigenvectors: " + eigenvectors.map(_.toList))
-                def check: Boolean = {
-                  for (l <- 0 until eigenvectors.length; i <- 1 until i0) {
-//                    println("newFinishedMatrices(i): " + newFinishedMatrices(i).toList.map(_.toList))
-//                    println((l,i, d(l,i), eigenvectors(l)(i).div(eigenvectors(l)(0)).conj), d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001)
-                    if (d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001) return false
-                  }
-                  true
-                }
-                // check that the ratios give the eigenvalues 
-                if (check) {
-                  Some(this.copy(umtcHint = Some(m), finishedMatrices = newFinishedMatrices))
-                } else {
-////                  println("bad S matrix")
-                  None
-                }
-              } else {
-                //                println("bad S matrix")
-                None
-              }
-            }
+            // because sometimes finishing one matrix implies finishing two, we might have to run multiple checks.
+            val im = finishedMatrices.size
+            (im to i0).foldLeft[Option[Partial]](Some(this))((o,i) => o.flatMap(_.checkMatrix(i)))
           }
         }
       } else {
@@ -443,7 +460,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
             (Seq.empty, Seq(c))
           }
           case None => {
-            val results = children.par.map(_.interruptibleDescendantsWorker(latch, notify)).seq
+            val results = children /*.par*/ .map(_.interruptibleDescendantsWorker(latch, notify)).seq
             (results.flatMap(_._1), results.flatMap(_._2))
           }
         }
