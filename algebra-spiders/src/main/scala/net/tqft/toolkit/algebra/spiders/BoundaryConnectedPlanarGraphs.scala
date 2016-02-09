@@ -5,12 +5,11 @@ import net.tqft.toolkit.functions.Memo
 object BoundaryConnectedPlanarGraphs {
   private val spider = DiagramSpider.graphSpider
 
-  private val pentagonNextToSquare = spider.multiply(PlanarGraph.polygon(4), spider.rotate(spider.multiply(PlanarGraph.trivalentVertex, PlanarGraph.H, 1), -1), 2)
   // private val IPendant = spider.multiply(spider.multiply(PlanarGraph.trivalentVertex, spider.rotate(PlanarGraph.twoSquares, -1), 2), PlanarGraph.trivalentVertex, 2)
 
   private def connectedGraphsImpl(r: Int, s: Int) = {
     if (r > 2) {
-      ConnectedTrivalentPlanarGraphs(r, s).filterNot(_.hasTinyFace)
+      ConnectedPlanarTrivalentGraphs(r, s).filterNot(_.hasTinyFace)
     } else if (r == 2 && s == 0) {
       Seq(PlanarGraph.strand)
     } else {
@@ -23,10 +22,10 @@ object BoundaryConnectedPlanarGraphs {
     Memo.softly(connectedGraphsImpl _)
   }
 
-  def trivalent(n: Int, k: Int) = {
+  def trivalent(boundaryPoints: Int, internalFaces: Int) = {
     // Enumerate boundary-connected trivalent graphs with exactly n boundary points and k internal faces. Avoid graphs containing bigons, triangles, two adjacent squares, and a pentagon next to a square. 
 
-    apply(n, k, Seq(PlanarGraph.twoSquares, pentagonNextToSquare))
+    apply(boundaryPoints, internalFaces, Seq(PlanarGraph.twoSquares, PlanarGraph.pentaSquare))
   }
 
   private val filteredConnectedGraphs = {
