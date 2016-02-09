@@ -29,7 +29,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   }
 
   private def listify = PlanarGraph(outerFace, vertexFlags.toVector.map(_.toList), labels.toList, loops)
-  
+
   def verify = {
     // There are many things we might check here!
     require(loops >= 0)
@@ -37,7 +37,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     require(labels.size == numberOfVertices - 1)
 
     require(vertexFlags(0).headOption match {
-      case None         => true
+      case None => true
       case Some((_, f)) => f == outerFace
     })
 
@@ -144,7 +144,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   lazy val boundaryEdges = vertexFlags(0).map(_._1)
   lazy val boundaryFaces = vertexFlags(0) match {
-    case Nil   => Seq(outerFace)
+    case Nil => Seq(outerFace)
     case other => other.map(_._2)
   }
 
@@ -167,7 +167,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   def edgeBetweenFaces(face1: Int, face2: Int) = {
     edgesBetweenFaces(face1: Int, face2: Int).toList match {
       case List(e) => e
-      case _       => require(false); ??? // this shouldn't happen
+      case _ => require(false); ??? // this shouldn't happen
     }
   }
 
@@ -834,6 +834,7 @@ object PlanarGraph {
   val cube = spider.multiply(polygon(4), polygon(4), 4)
 
   val twoSquares = spider.multiply(polygon(4), H, 2)
+  val pentaSquare = spider.multiply(PlanarGraph.polygon(4), spider.rotate(spider.multiply(PlanarGraph.trivalentVertex, PlanarGraph.H, 1), -1), 2)
 
   val tetravalentVertex = star(4)
   val bowtie = spider.stitch(spider.stitch(tetravalentVertex))
