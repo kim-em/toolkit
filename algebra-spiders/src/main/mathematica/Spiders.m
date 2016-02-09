@@ -58,7 +58,7 @@ DeclareDimensionBounds;DimensionBounds;DimensionLowerBound;DimensionUpperBound;
 p;tt;
 
 
-IndependentDiagrams;DependentDiagrams;SpanningSets;ReducingRelations;NonReducingRelations;AppendIndependentDiagram;AppendDependentDiagram;AppendClosedDiagram;ReducedDiagrams;
+IndependentDiagrams;DependentDiagrams;SpanningSets;ReducingRelations;NonReducingRelations;AppendIndependentDiagram;AppendDependentDiagram;AppendClosedDiagram;ReducedDiagrams;ReducibleDiagrams;
 
 
 SpiderAnalysis;buildSpiderAnalysis;FreeSpider;emptySpiderAnalysis;
@@ -569,6 +569,7 @@ IndependentDiagrams[k_Integer][s_SpiderAnalysis]:=Cases[s[[4]],d_/;d@numberOfBou
 DependentDiagrams[k_Integer][s_SpiderAnalysis]:=Cases[s[[5]],d_/;d@numberOfBoundaryPoints[]==k]
 SpanningSets[k_Integer][s_SpiderAnalysis]:=If[Length[s[[7]]]<k+1,{},s[[7,k+1]]]
 ReducingRelations[k_Integer][s_SpiderAnalysis]:=Cases[s[[8]],l_/;l[[2,1,2]]@numberOfBoundaryPoints[]==k]
+ReducibleDiagrams[s_SpiderAnalysis]:=s[[8,All,2,-1,2]]
 NonReducingRelations[k_Integer][s_SpiderAnalysis]:=Cases[s[[9]],l_/;l[[1,2]]@numberOfBoundaryPoints[]==k]
 
 
@@ -585,6 +586,21 @@ automaticFlatMap/@{AppendIndependentDiagram,AppendDependentDiagram,AppendClosedD
 
 
 ReducedDiagrams[s_SpiderAnalysis,circumference_Integer,numbersOfVertices___Integer]:=FromScalaObject[s[[1]]@reducedDiagrams[circumference,AsScalaObject[Rule@@#&/@Transpose[{#@U1[]&/@FromScalaObject[s[[1]]@generators[],1],{numbersOfVertices}}]]],1]
+
+
+TrivalentQ[s_SpiderAnalysis]:=s[[1]]@generators[]@size[]==1\[And]FromScalaObject[s[[1]]@generators[],1][[1]]@U1[]@perimeter[]==3\[And]FromScalaObject[s[[1]]@generators[],1][[1]]@U1[]@allowedRotationStep[]==1
+
+
+ReducedDiagrams[s_SpiderAnalysis,circumference_Integer,numberOfVertices_Integer]/;TrivalentQ[s]:=
+If[OddQ[numberOfVertices-circumference],{},
+Module[{withFaces,result={},f},
+withFaces[n_]:=withFaces[n]=
+Cases[FromScalaObject[ScalaSingleton["net.tqft.toolkit.algebra.spiders.BoundaryConnectedPlanarGraphs"]@apply[circumference,n,Spiders`Private`AsScalaList[ReducibleDiagrams[s]]]@toList[],1],d_/;d@numberOfInternalVertices[]==numberOfVertices];
+f=Max[1+(numberOfVertices-circumference)/2,0];
+While[Length[withFaces[f]]>0,result=result~Join~withFaces[f];f++];
+result
+]
+]
 
 
 (* TODO add support for declaring dimension bounds "after the fact"? *)
