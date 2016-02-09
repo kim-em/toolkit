@@ -20,6 +20,7 @@ fusion-rings/
 fusion-rings2/
 fusion-rings3*/*.partial
 fusion-rings3*/*.resume
+fusion-rings3*/paused
 
 algebra-spiders/src/main/mathematica/groebnerCalculations.m
 algebra-spiders/src/main/mathematica/graphs/

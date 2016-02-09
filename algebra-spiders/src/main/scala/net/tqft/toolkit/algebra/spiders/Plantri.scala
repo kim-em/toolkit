@@ -156,12 +156,12 @@ trait Plantri {
   }
 }
 
-object ConnectedTrivalentPlanarGraphs extends Plantri {
-  def apply(n: Int, k: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
+object ConnectedPlanarTrivalentGraphs extends Plantri {
+  def apply(boundaryPoints: Int, internalFaces: Int, verbose: Boolean = false): Seq[PlanarGraph] = {
     // Returns connected trivalent planar graphs with n boundary points and k internal faces. (No rotations.)
-    require(n > 2, "Number of boundary points must be > 2.")
-    val totalVertices = n + k
-    val (bytes, log) = runWithByteOutput(totalVertices + " -P" + n + " -Edho -c2m2", verbose)
+    require(boundaryPoints > 2, "Number of boundary points must be > 2.")
+    val totalVertices = boundaryPoints + internalFaces
+    val (bytes, log) = runWithByteOutput(totalVertices + " -P" + boundaryPoints + " -Edho -c2m2", verbose)
     val planarGraphs = parseEdgeCodeBytes(bytes).map(edgeAdjListToPlanarGraph(_))
 
     // Check that we parsed the binary correctly; should have the number of graphs reported by plantri
