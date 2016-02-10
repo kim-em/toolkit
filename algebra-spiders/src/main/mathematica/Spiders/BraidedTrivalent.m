@@ -47,6 +47,8 @@ BraidedTrivalent=DeclarePolynomialsZero[{h-Name[PlanarGraphs@hopfLink[]]}][Braid
 BraidedTrivalent=DeclarePolynomialEitherZeroOrNonZero[z][BraidedTrivalent];
 (* 5-boundary points *)
 BraidedTrivalent=IntroduceRelation[Transpose[{{-1,1},FromScalaObject[PlanarGraphs@Reidemeister4a[],1]}]][BraidedTrivalent];BraidedTrivalent=IntroduceRelation[Transpose[{{-1,1},FromScalaObject[PlanarGraphs@Reidemeister4b[],1]}]][BraidedTrivalent];
+BraidedTrivalent=ConsiderDiagrams[Take[ReducedDiagrams[BraidedTrivalent[[1]],3,2,1],-2]][BraidedTrivalent];
+BraidedTrivalent=ConsiderDiagrams[Take[ReducedDiagrams[BraidedTrivalent[[1]],3,1,3],2]][BraidedTrivalent];
 BraidedTrivalent
 ]
 

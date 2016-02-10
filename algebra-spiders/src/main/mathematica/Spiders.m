@@ -833,7 +833,7 @@ If[s[[1]]@reducibleDiagramU$qmark[d0],
 {s},
 If[!secondPass,
 Print["We now consider the diagram ",DrawPlanarGraph[d0],If[insistIndependent,", insisting that it is independent.",If[insistDependent,", insisting that it is dependent.","."]]],
-Print["We return to considering the diagram ",d0,"."]
+Print["We return to considering the diagram ",DrawPlanarGraph[d0],"."]
 ];
 (*Put[PickleSpiderAnalysis[s],"/Users/scott/projects/toolkit/algebra-spiders/src/main/mathematica/saved-states/last.m"];
 Global`lastDiagram=d0;*)
@@ -977,6 +977,7 @@ If[Take[dot,Length[i]]=!=Table[0,{Length[i]}],
 Print["something is messed up!"];
 Print["innerProducts2: ",innerProducts2];
 Print["dot: ",dot];
+Print["i: ",DrawPlanarGraph/@i];
 Abort[]];
 If[dot===Table[0,{Length[reorderedSpanningSet]}],
 Print["Successfully ruled out the possibility of a ghost relation!"];
@@ -1007,7 +1008,7 @@ NullSpace[DeleteCases[gb,r_/;FreeQ[r,a[_Integer]]]/.a[i_]:>UnitVector[l,i]]
 ConsiderDependentDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{k,i,innerProducts,det,det0,s0,nullSpace,newRelation,denominators,result={}},
 k=d0@numberOfBoundaryPoints[];
 If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s},
-Print["considering the dependent diagram ",d0@toString[]];
+Print["considering the dependent diagram ",DrawPlanarGraph[d0]];
 Print["manifold: ",s[[2]]];
 i=IndependentDiagrams[k][s];
 innerProducts=cachingInnerProduct[s,i~Join~{d0}];
@@ -1032,7 +1033,7 @@ Print["reduced determinant"];
 s0=DeclarePolynomialsZero[{det}][s];
 Print["declared determinant zero"];
 If[Length[s0]==0,
-Print[d0," can't be dependent; the determinant of inner products isn't allowed to vanish"];
+Print[DrawPlanarGraph[d0]," can't be dependent; the determinant of inner products isn't allowed to vanish"];
 {},
 nullSpace=If[Length[i]==0,
 {{1}},
