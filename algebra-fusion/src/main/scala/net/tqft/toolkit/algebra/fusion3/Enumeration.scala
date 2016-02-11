@@ -17,7 +17,14 @@ import org.jblas.Eigen
 import org.jblas.DoubleMatrix
 import org.jblas.ComplexDouble
 
-case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBound: Double, umtc: Boolean, minimumDimension: Option[Double], withFunctor: Option[(Array[Array[Int]], Array[Array[Array[Int]]])]) {
+case class Enumeration(
+    selfDualObjects: Int,
+    dualPairs: Int,
+    globalDimensionBound: Double,
+    umtc: Boolean,
+    minimumDimension: Option[Double],
+    withFunctor: Option[(Array[Array[Int]], Array[Array[Array[Int]]])],
+    withMatrix: Option[Array[Array[Int]]]) {
   val rank = selfDualObjects + 2 * dualPairs
 
   private val dualData = ((0 until selfDualObjects) ++ (for (i <- 0 until dualPairs; n <- Seq(selfDualObjects + 2 * i + 1, selfDualObjects + 2 * i)) yield n)).toIndexedSeq
@@ -97,7 +104,17 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
     }
     // TODO remove this, no need to keep track of the identity
     val id = Array.tabulate(rank, rank)({ (i, j) => if (i == j) 1 else 0 })
-    Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None, IndexedSeq(id), 0.0)
+    val empty = Partial(-1, zeroes, Nil, r, Array.fill(rank)(1.0), None, IndexedSeq(id), 0.0)
+    withMatrix match {
+      case None => empty
+      case Some(matrix) => {
+        val nextSteps = representativeMultiplicities.takeWhile(_.contains(1)).map({ v =>
+          require(v.head == 1)
+          matrix(v(1))(v(2))
+        })
+        nextSteps.foldLeft[Option[Partial]](Some(empty))({ case (o, m) => o.flatMap(_.next(m)).flatMap(_.associative_?) }).get
+      }
+    }
   }
 
   private val unlabelledGraphs = {
@@ -286,10 +303,10 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
         def orthogonal(vectors: Seq[Array[ComplexDouble]]): Boolean = {
           for (i <- 0 until vectors.size; j <- i + 1 until vectors.size) yield {
             if (dot(vectors(i), vectors(j)).abs > 0.001) {
-              println((i,j))
+              println((i, j))
               println(dot(vectors(i), vectors(j)).abs)
-              for(v <- vectors) println(v.toList.mkString("{",",","}"))
-              for(m <- finishedMatrices :+ n) println(m.toList.map(_.toList.mkString("{",",","}")).mkString("{",",","}"))
+              for (v <- vectors) println(v.toList.mkString("{", ",", "}"))
+              for (m <- finishedMatrices :+ n) println(m.toList.map(_.toList.mkString("{", ",", "}")).mkString("{", ",", "}"))
               require(false)
               return false
             }
@@ -320,11 +337,11 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
           if (check) {
             Some(this.copy(umtcHint = Some(m), finishedMatrices = newFinishedMatrices))
           } else {
-                              println("bad S matrix")
+            println("bad S matrix")
             None
           }
         } else {
-                          println("bad S matrix: eigenvector starts with a zero")
+          println("bad S matrix: eigenvector starts with a zero")
           None
         }
       }
@@ -340,7 +357,7 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
           case Some(i0) => {
             // because sometimes finishing one matrix implies finishing two, we might have to run multiple checks.
             val im = finishedMatrices.size
-            (im to i0).foldLeft[Option[Partial]](Some(this))((o,i) => o.flatMap(_.checkMatrix(i)))
+            (im to i0).foldLeft[Option[Partial]](Some(this))((o, i) => o.flatMap(_.checkMatrix(i)))
           }
         }
       } else {
@@ -498,42 +515,46 @@ case class Enumeration(selfDualObjects: Int, dualPairs: Int, globalDimensionBoun
   private def inequalities(step: Int, x: Array[Int]): Boolean = {
     // all we worry about is that the diagonal entries are descending (or as descending as we can make them, given that we have the dual pairs together, at the end)
 
-    val v = representativeMultiplicities(step)
-    if (v(0) > 1 && v(0) == v(1) && v(1) == v(2)) {
-      if ((v(0) < selfDualObjects || (v(0) - selfDualObjects) % 2 == 1) && withFunctorSymmetryBreaker1(v(0))) {
-        val pstep = lookup(v(0) - 1)(v(0) - 1)(v(0) - 1).right.get
-        require(pstep < step)
-        //        println((step, pstep, v(0), v(0)-1, lookup(v(0) - 1)(v(0) - 1)(v(0) - 1)))
-        x(step) < x(pstep) || {
-          x(step) == x(pstep) && {
-            val pstep1 = lookup(v(0) - 1)(v(0) - 1)(v(0)).right.get
-            val pstep2 = lookup(v(0))(v(0))(v(0) - 1).right.get
-            require(pstep1 < step)
-            require(pstep2 < step)
-            x(pstep2) <= x(pstep1)
-            //            true
-            // try require canonical form! --- very slow??
-            //            val f = (for (i <- 1 to v(0) - 1; if (x(lookup(i)(i)(i).right.get)) == x(pstep)) yield i).head
-            //            v(0) <= f + 1 || {
-            //              val p = canonicalPermutation(x, v(0) - 1, f - 1)
-            //              p == p.sorted
-            //            }
+    if (withMatrix.isEmpty) {
+      val v = representativeMultiplicities(step)
+      if (v(0) > 1 && v(0) == v(1) && v(1) == v(2)) {
+        if ((v(0) < selfDualObjects || (v(0) - selfDualObjects) % 2 == 1) && withFunctorSymmetryBreaker1(v(0))) {
+          val pstep = lookup(v(0) - 1)(v(0) - 1)(v(0) - 1).right.get
+          require(pstep < step)
+          //        println((step, pstep, v(0), v(0)-1, lookup(v(0) - 1)(v(0) - 1)(v(0) - 1)))
+          x(step) < x(pstep) || {
+            x(step) == x(pstep) && {
+              val pstep1 = lookup(v(0) - 1)(v(0) - 1)(v(0)).right.get
+              val pstep2 = lookup(v(0))(v(0))(v(0) - 1).right.get
+              require(pstep1 < step)
+              require(pstep2 < step)
+              x(pstep2) <= x(pstep1)
+              //            true
+              // try require canonical form! --- very slow??
+              //            val f = (for (i <- 1 to v(0) - 1; if (x(lookup(i)(i)(i).right.get)) == x(pstep)) yield i).head
+              //            v(0) <= f + 1 || {
+              //              val p = canonicalPermutation(x, v(0) - 1, f - 1)
+              //              p == p.sorted
+              //            }
+            }
           }
-        }
-      } else if (v(0) > selfDualObjects && (v(0) - selfDualObjects) % 2 == 0 && withFunctorSymmetryBreaker2(v(0))) {
-        val pstep = lookup(v(0) - 2)(v(0) - 2)(v(0) - 2).right.get
-        require(pstep < step)
-        x(step) < x(pstep) || {
-          x(step) == x(pstep) && {
-            val pstep1 = lookup(v(0) - 2)(v(0) - 2)(v(0)).right.get
-            val pstep2 = lookup(v(0))(v(0))(v(0) - 2).right.get
-            require(pstep1 < step)
-            require(pstep2 < step)
-            x(pstep2) <= x(pstep1)
+        } else if (v(0) > selfDualObjects && (v(0) - selfDualObjects) % 2 == 0 && withFunctorSymmetryBreaker2(v(0))) {
+          val pstep = lookup(v(0) - 2)(v(0) - 2)(v(0) - 2).right.get
+          require(pstep < step)
+          x(step) < x(pstep) || {
+            x(step) == x(pstep) && {
+              val pstep1 = lookup(v(0) - 2)(v(0) - 2)(v(0)).right.get
+              val pstep2 = lookup(v(0))(v(0))(v(0) - 2).right.get
+              require(pstep1 < step)
+              require(pstep2 < step)
+              x(pstep2) <= x(pstep1)
+            }
           }
+        } else {
+          require(v(0) == selfDualObjects || withFunctor.nonEmpty)
+          true
         }
       } else {
-        require(v(0) == selfDualObjects || withFunctor.nonEmpty)
         true
       }
     } else {
