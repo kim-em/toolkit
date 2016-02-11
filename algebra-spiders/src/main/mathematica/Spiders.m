@@ -972,11 +972,12 @@ Abort[]
 ];
 (*Print["reorderedSpanningSet: ",DrawPlanarGraph/@reorderedSpanningSet];*)
 innerProducts2=cachingInnerProduct[ss,reorderedSpanningSet,i];
-dot=ReducePolynomials[ss][innerProducts2.nullSpace[[1]]];
+dot=ReducePolynomialsFurther[ss][innerProducts2.nullSpace[[1]]];
 If[Take[dot,Length[i]]=!=Table[0,{Length[i]}],
 Print["something is messed up!"];
 Print["innerProducts2: ",innerProducts2];
 Print["dot: ",dot];
+Print[ss[[2]]];
 Print["i: ",DrawPlanarGraph/@i];
 Abort[]];
 If[dot===Table[0,{Length[reorderedSpanningSet]}],
