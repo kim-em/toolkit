@@ -14,19 +14,19 @@ class EnumerationTest extends FlatSpec with Matchers {
   }
 
   "Enumeration" should "find all the rank 5 self dual fusion rings with global dimension at most 40" in {
-    val r = results(Enumeration(5, 0, 40.0, false, None, None))
+    val r = results(Enumeration(5, 0, 40.0, false, None, None,None))
     r.size should equal(31)
   }
   "Enumeration" should "find all the rank 5 fusion rings with 3 self dual objects and with global dimension at most 40" in {
-    val r = results(Enumeration(3, 1, 40.0, false, None, None))
+    val r = results(Enumeration(3, 1, 40.0, false, None, None,None))
     r.size should equal(18)
   }
   "Enumeration" should "find all the rank 5 fusion rings with just 1 self dual object and with global dimension at most 40" in {
-    val r = results(Enumeration(1, 2, 40.0, false, None, None))
+    val r = results(Enumeration(1, 2, 40.0, false, None, None,None))
     r.size should equal(2)
   }
   "Enumeration" should "find all the rank 5 self dual unitary MTCs with global dimension at most 40" in {
-    val r = results(Enumeration(5, 0, 40.0, true, None, None))
+    val r = results(Enumeration(5, 0, 40.0, true, None, None,None))
     r.size >= 3 should equal(true)
     r.size <= 31 should equal(true)
   }

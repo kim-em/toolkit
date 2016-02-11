@@ -23,6 +23,7 @@ object BruteForceFusionRings extends App {
     umtc: Boolean = false,
     minimumDimension: Option[Double] = None,
     withFunctor: Option[(Array[Array[Int]], Array[Array[Array[Int]]])] = None,
+    withMatrix: Option[Array[Array[Int]]] = None,
     resumable: Boolean = false,
     finishBy: Option[Long] = None,
     batch: Boolean = false,
@@ -36,6 +37,9 @@ object BruteForceFusionRings extends App {
     opt[Double]('m', "minimum") valueName ("<minimum-squared-dimension>") action { (x, c) =>
       c.copy(minimumDimension = Some(x))
     } text ("all non-trivial objects must have a minimum squared dimension")
+    opt[Unit]('r', "resumable") action { (_, c) =>
+      c.copy(resumable = true)
+    } text ("resume existing work, if available, and checkpoint resumable data on <enter>")
     opt[String]('z', "functor") valueName ("<induction-matrix>:<target-ring>") action { (x, c) =>
       val Seq(inductionString, ringString) = x.split(":").toSeq
       val inductionEntries = if (inductionString.contains(",")) inductionString.split(",").map(_.toInt) else inductionString.toCharArray.map(_.toString.toInt)
@@ -43,11 +47,13 @@ object BruteForceFusionRings extends App {
       val targetRank = scala.math.round(scala.math.pow(ringEntries.length, 1.0 / 3)).toInt
       val induction = inductionEntries.grouped(inductionEntries.length / targetRank).toArray
       val ring = ringEntries.grouped(targetRank * targetRank).map(_.grouped(targetRank).toArray).toArray
-      c.copy(withFunctor = Some((induction, ring)))
-    } text ("all non-trivial objects must have a minimum squared dimension")
-    opt[Unit]('r', "resumable") action { (_, c) =>
-      c.copy(resumable = true)
-    } text ("resume existing work, if available, and checkpoint resumable data on <enter>")
+      c.copy(withFunctor = Some((induction, ring)), resumable = false)
+    } text ("compatible with a specified homomorphism to a specified ring")
+    opt[String]('x', "matrix") valueName ("<matrix>") action { (x, c) =>
+      val matrixEntries = if (x.contains(",")) x.split(",").map(_.toInt) else x.toCharArray.map(_.toString.toInt)
+      val matrix = matrixEntries.grouped(scala.math.sqrt(matrixEntries.size).round.toInt).toArray
+      c.copy(withMatrix = Some(matrix), resumable = false)
+    } text ("with specified first object")
     opt[Double]('h', "hours") valueName ("<hours>") action { (x, c) =>
       c.copy(finishBy = Some(System.currentTimeMillis() + (x * 60 * 60 * 1000).toLong))
     } text ("run for at most <hours> hours")
@@ -64,9 +70,9 @@ object BruteForceFusionRings extends App {
   }
 
   parser.parse(args, Config()) map { config =>
-    require(!config.resumable || config.withFunctor.isEmpty)
+    require(!config.resumable || (config.withFunctor.isEmpty && config.withMatrix.isEmpty))
 
-    val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound, config.umtc, config.minimumDimension, config.withFunctor)
+    val enumeration = Enumeration(config.selfDualObjects, config.dualPairs, config.globalDimensionBound, config.umtc, config.minimumDimension, config.withFunctor, config.withMatrix)
 
     val suffix = (if(config.umtc) "u" else "") + (if(config.minimumDimension.nonEmpty) "m" + config.minimumDimension.get else "")
     
