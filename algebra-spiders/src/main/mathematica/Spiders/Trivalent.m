@@ -61,20 +61,19 @@ CubicTrivalentCategories:=CubicTrivalentCategories=Module[{CubicTrivalentCategor
 CubicTrivalentCategories=DeclarePolynomialsNonZero[{2-d-t+d t}][DeclareDimensionBounds[{{1,1},{0,0},{1,1},{1,1},{4,4}}][Trivalent]];
 CubicTrivalentCategories=DeclarePolynomialEitherZeroOrNonZero[-d^2+d+1][CubicTrivalentCategories];diagrams=ReducedDiagrams[CubicTrivalentCategories[[1]],4,0]~Join~ReducedDiagrams[CubicTrivalentCategories[[1]],4,2]~Join~{polygon[4],PlanarGraphs@twoSquares[]};CubicTrivalentCategories=ConsiderDiagrams[diagrams][CubicTrivalentCategories];
 
-If[Length[CubicTrivalentCategories]!=4,Print["Something went wrong while building the cubic trivalent categories!"];Abort[]];
+If[Length[CubicTrivalentCategories]!=7,Print["Something went wrong while building the cubic trivalent categories!"];Abort[]];
 
 CubicTrivalentCategories
 ]
 
 
-CubicTrivalentCategory:=CubicTrivalentCategory=DeclarePolynomialNonZero[(d^2-1)(d^2-d-1)][CubicTrivalentCategories]
+CubicTrivalentCategory:=({CubicTrivalentCategory}=DeclarePolynomialNonZero[(d^2-1)(d^2-d-1)][CubicTrivalentCategories])[[1]]
 
 
 Clear[G2Categories]
 G2Categories:=G2Categories=Module[{G2Categories},
 (* TODO explicit non-zero polynomials no longer necessary? (Changing the lower bound to 9 *)G2Categories=DeclarePolynomialNonZero[t^2-t-1][DeclareDimensionBounds[{1,0,1,1,4,10}][CubicTrivalentCategory]];
 G2Categories=ConsiderDiagrams[ReducedDiagrams[G2Categories[[1]],5,1]~Join~ReducedDiagrams[G2Categories[[1]],5,3]~Join~{polygon[5]}][G2Categories];
-
 G2Categories
 ]
 

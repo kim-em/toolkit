@@ -46,6 +46,9 @@ BraidedTrivalent=DeclarePolynomialEitherZeroOrNonZero[z][BraidedTrivalent];
 BraidedTrivalent=IntroduceRelation[Transpose[{{-1,1},FromScalaObject[PlanarGraphs@Reidemeister4a[],1]}]][BraidedTrivalent];BraidedTrivalent=IntroduceRelation[Transpose[{{-1,1},FromScalaObject[PlanarGraphs@Reidemeister4b[],1]}]][BraidedTrivalent];
 BraidedTrivalent=ConsiderDiagrams[Take[ReducedDiagrams[BraidedTrivalent[[1]],3,2,1],-2]][BraidedTrivalent];
 BraidedTrivalent=ConsiderDiagrams[Take[ReducedDiagrams[BraidedTrivalent[[1]],3,1,3],2]][BraidedTrivalent];
+If[Length[BraidedTrivalent]!=1,Print["Something went wrong -- found multiple free braided trivalent spiders!"],
+BraidedTrivalent=BraidedTrivalent[[1]]
+];
 BraidedTrivalent
 ]
 

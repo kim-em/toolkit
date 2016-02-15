@@ -516,7 +516,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   }
 
   def containsSubgraph(shape: PlanarGraph): Boolean = Subgraphs(shape).excisions.hasNext
-  def containsOneOf(shapes: Seq[PlanarGraph]): Boolean = shapes.map(this.containsSubgraph).fold(false)((a: Boolean, b: Boolean) => a || b)
+  def containsOneOf(shapes: Seq[PlanarGraph]): Boolean = shapes.exists(s => containsSubgraph(s))
 
   case class Subgraphs(shape: PlanarGraph) {
     // require that every edge of shape attaches to an internal vertex
@@ -855,6 +855,8 @@ object PlanarGraph {
   val positiveTwistedTrivalentVertex = spider.multiply(spider.rotate(crossing, 1), trivalentVertex, 2)
   val negativeTwistedTrivalentVertex = spider.multiply(crossing, trivalentVertex, 2)
 
+  val twistedH = spider.multiply(H, crossing, 2)
+  
   val Reidemeister1a = Seq(strand, positiveTwist)
   val Reidemeister1b = Seq(strand, negativeTwist)
   val Reidemeister2 = Seq(two_strands_vertical, spider.multiply(crossing, spider.rotate(crossing, 1), 2))

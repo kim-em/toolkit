@@ -105,5 +105,9 @@ class PlanarSubgraphTest extends FlatSpec with Matchers with IsomorphismMatchers
     val e = q.Subgraphs(PlanarGraph(10,Vector(List(), List((6,12), (9,13), (7,11), (8,14)), List((4,10), (6,13), (8,12), (5,14)), List((4,13), (5,10), (7,14), (9,11))),IndexedSeq((1,0), (1,0), (1,0)),0)).excisions.toList
     e.size should equal(2)
   }
+  "a twisted H" should "contain itself" in {
+    twistedH.Subgraphs(twistedH).excisions.size should equal(1)
+    twistedH.Subgraphs(PlanarGraph.spider.rotate(twistedH,1)).excisions.size should equal(1)
+  }
 }
 

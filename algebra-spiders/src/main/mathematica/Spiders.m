@@ -279,10 +279,10 @@ DownValues[cachedPolynomialReduce]=DownValues[cachedPolynomialReduce]~Join~data[
 ]
 
 
-SaveGroebnerCalculations[]
+(*SaveGroebnerCalculations[]*)
 
 
-LoadGroebnerCalculations[]
+(*LoadGroebnerCalculations[]*)
 
 
 timesToList[X_Times]:=List@@X
@@ -327,7 +327,7 @@ DeclareAtLeastOnePolynomialZero[p_List][m_Manifold]:=Flatten[DeclarePolynomialZe
 DeclarePolynomialZero[0][m_Manifold]:={m}
 DeclarePolynomialZero[p_][m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{factors},
 If[MemberQ[nonzeroPolynomials~Join~(-nonzeroPolynomials),p],{},
-factors=Complement[Cases[withoutMultiplicity/@timesToList[Factor[p/.m[[1]]]],{f_,k_}/;k>0:>f],nonzeroPolynomials~Join~(-nonzeroPolynomials)];
+factors=Complement[ReducePolynomials[m]/@Cases[withoutMultiplicity/@timesToList[Factor[ReducePolynomials[m][p]]],{f_,k_}/;k>0:>f],nonzeroPolynomials~Join~(-nonzeroPolynomials)];
 If[factors==={0},{m},
 factors=DeleteCases[factors,_Integer|_Rational];
 If[Length[factors]==0,{},
@@ -366,7 +366,7 @@ If[MemberQ[newNonzeroPolynomials,0],
 If[Length[linearVariables=Cases[variables,v_/;Exponent[polynomial,v]==1,1,1]]>0,
 Print["solving ",polynomial, " immediately"];
 VerifyNonzero[nonzeroPolynomials][FactorGroebnerBasis[SolvePolynomial[polynomial,linearVariables[[1]]][m]],m],
-Print["adding ", polynomial," to the Groebner basis"];
+Print["adding ", polynomial," to the Groebner basis ",Short[groebnerBasis]];
 newGroebnerBasis=cachedGroebnerBasis[groebnerBasis~Join~{polynomial},variables];
 If[MemberQ[newGroebnerBasis,1|-1],{},
 Print["newGroebnerBasis: ",newGroebnerBasis];
@@ -455,14 +455,20 @@ VerifyNonzero[nonzeroPolynomials][SolveOtherIdentities[Manifold[substitutions,gr
 ]
 
 
-SolveOtherIdentities[m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{variables0,targets},
-variables0 =Union[Cases[otherIdentities,tt[_],\[Infinity]]]~Join~Union[Cases[otherIdentities,Subscript[p, _],\[Infinity]]];
-targets=Cases[Flatten[Outer[List,otherIdentities,variables0,1],1],{polynomial_,variable_}/;Exponent[polynomial,variable]==1\[And]mustBeNonZeroQ[m,Coefficient[polynomial,variable]]];
+SolveOtherIdentities[m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{variables1,variables2,targets},
+variables1 =Union[Cases[otherIdentities,tt[_],\[Infinity]]];
+targets=Cases[Flatten[Outer[List,otherIdentities,variables1,1],1],{polynomial_,variable_}/;Exponent[polynomial,variable]==1\[And]mustBeNonZeroQ[m,Coefficient[polynomial,variable]]];
+If[Length[targets]==0,
+variables2=Union[Cases[otherIdentities,Subscript[p, _],\[Infinity]]];
+targets=Cases[Flatten[Outer[List,otherIdentities,variables2,1],1],{polynomial_,variable_}/;Exponent[polynomial,variable]==1\[And]mustBeNonZeroQ[m,Coefficient[polynomial,variable]]];
+targets=SortBy[targets,-diagramWeight[NamedPolyhedron[#[[2]]]]&];
+];
 If[Length[targets]==0,
 {m},
 SolveOtherIdentities[VerifyNonzero[nonzeroPolynomials][AddSubstitution[targets[[1,2]]->Factor[Solve[targets[[1,1]]==0,targets[[1,2]]][[1,1,2]]]][Manifold[substitutions,groebnerBasis,DeleteCases[otherIdentities,targets[[1,1]]],nonzeroPolynomials,variables]],m]]
 ]
 ]
+
 SolveOtherIdentities[M_List]:=Flatten[SolveOtherIdentities/@M,1]
 
 
@@ -472,7 +478,7 @@ factors=Cases[withoutMultiplicity/@timesToList[Factor[ReducePolynomials[m][polyn
 (*Print["factors: ",factors];*)
 If[factors==={0},
 False,
-factors=DeleteCases[factors,_Integer|_Rational];
+factors=DeleteCases[factors,_Integer|_Rational|_AlgebraicNumber];
 factors=Complement[factors,nonzeroPolynomials~Join~(-nonzeroPolynomials)];
 (*Print["factors: ",factors];*)
 (*If[Length[factors]>1,
@@ -653,6 +659,8 @@ AppendClosedDiagram[d0][s]]
 ConsiderClosedDiagrams[diagrams_List][s_SpiderAnalysis]:=Fold[ConsiderClosedDiagram[#2][#1]&,{s},diagrams]
 
 
+
+Clear[cachedInnerProduct]
 cachedInnerProduct[spiderHash_,x_String,y_String]:=$Failed
 
 
@@ -699,7 +707,7 @@ If[Length[SpanningSets[k][s]]>0,
 Print["There's already a declared spanning set for ", k, " boundary points"];Abort[],
 Flatten[{
 (* either it's a spanning set *)
-Print["Declaring that ",#@toString[]&/@diagrams, " is a spanning set"];
+Print["Declaring that ",DrawPlanarGraph/@diagrams, " is a spanning set"];
 {ReplacePart[s,7->ReplacePart[s[[7]],k+1->{diagrams}]]},
 (* or it's not *)
 If[Length[diagrams]>=DimensionUpperBound[s,k],
@@ -732,9 +740,12 @@ det[{}]=1;
 det[m_]:=Factor[delegatingDeterminant[m]];
 Flatten[{
 (* either it's a spanning set *)
-Print["Declaring that ",#@toString[]&/@diagrams, " is a spanning set"];
+Print["Declaring that ",DrawPlanarGraph/@diagrams, " is a spanning set"];
 s0=ReplacePart[s,{{3,k+1,2}->Min[s[[3,k+1,2]],Length[diagrams]],7->ReplacePart[s[[7]],k+1->{diagrams}]}];
 If[s0[[3,k+1,2]]<s0[[3,k+1,1]],{},
+If[Sum[Binomial[Length[diagrams],m],{m,Range[DimensionBounds[s,k]]}]>20,
+Print["Warning, computing many determinants. Did you forget to set a lower bound on the dimension?"];
+];
 subsets=Subsets[Range[Length[diagrams]],DimensionBounds[s,k]];
 determinants =ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets;
 gcd=PolynomialGCD@@determinants;
@@ -742,24 +753,26 @@ DeclarePolynomialNonZero[gcd][s0]
 (*
 We should be able to do the following, but it seems it's too slow.
 *)
-(*
-subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]+1}];
-determinants =ReducePolynomials[s][det[innerProducts\[LeftDoubleBracket]#,#\[RightDoubleBracket]]]&/@subsets;
-DeclarePolynomialsZero[determinants][DeclarePolynomialNonZero[gcd][s0]]
-*)
+
+(*subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]+1}];
+determinants =Union[ReducePolynomials[s][det[innerProducts\[LeftDoubleBracket]#,#\[RightDoubleBracket]]]&/@subsets];
+Print["determinants: ",determinants];
+DeclarePolynomialsZero[determinants][DeclarePolynomialNonZero[gcd][s0]]*)
+
 ]
 ,
 (* or it's not *)
 (* determinants must vanish! *)
-Print["Declaring that ",#@toString[]&/@diagrams, " does not span, and hence that some determinants of inner products must vanish."];
+Print["Declaring that ",DrawPlanarGraph/@diagrams, " does not span, and hence that some determinants of inner products must vanish."];
 subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]}];
 determinants =Union[ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets];
 Print["determinants: ",determinants];
-s0=Flatten[{
+(* no idea what this next line was here for: seems wrong *)
+(*s0=Flatten[{
 DeclarePolynomialZero[det[innerProducts]][s],
-DeclarePolynomialNonZero[det[innerProducts]][ReplacePart[s,{3,k+1,1}->Max[s[[3,k+1,1]],Length[diagrams]+1]]]
-},1];
-s0=DeclarePolynomialsZero[determinants][s0]
+DeclarePolynomialNonZero[det[innerProducts]][ReplacePart[s,{3,k+1,1}\[Rule]Max[s\[LeftDoubleBracket]3,k+1,1\[RightDoubleBracket],Length[diagrams]+1]]]
+},1];*)
+s0=DeclarePolynomialsZero[determinants][s]
 },1]
 ]
 ]
@@ -799,8 +812,14 @@ automaticFlatMap[DeclareBasis]
 
 Clear[ConsiderDiagrams]
 ConsiderDiagrams[diagrams:{Diagram...},options:(_String->(True|False))...]:=ConsiderDiagrams[diagrams[[1]]@numberOfBoundaryPoints[],diagrams,options]
-ConsiderDiagrams[k_Integer,diagrams:{Diagram...},options:(_String->(True|False))...][s_SpiderAnalysis]:=If[Length[SpanningSets[k][s]]==0,
+(*ConsiderDiagrams[k_Integer,diagrams:{Diagram...},options:(_String\[Rule](True|False))...][s_SpiderAnalysis]:=If[Length[SpanningSets[k][s]]\[Equal]0,
 Fold[ConsiderDiagram[#2,options][#1]&,ConsiderPotentialSpanningSet[k,diagrams][s],diagrams],
+Fold[ConsiderDiagram[#2,options][#1]&,{s},diagrams]
+]*)
+ConsiderDiagrams[k_Integer,diagrams:{Diagram...},options:(_String->(True|False))...][s_SpiderAnalysis]:=
+Module[{},
+(* a global variable, blech *)
+consideringDiagrams=diagrams;
 Fold[ConsiderDiagram[#2,options][#1]&,{s},diagrams]
 ]
 automaticFlatMap[ConsiderDiagrams]
@@ -816,8 +835,8 @@ ReconsiderClosedDiagrams[S_List]:=Flatten[ReconsiderClosedDiagrams/@S]
 ConsiderDiagram[d0:Diagram,options:(_String->(True|False))...][s_SpiderAnalysis]:=Module[{k,closedDiagrams,pairings,secondPass,insistIndependent,insistDependent},
 k=d0@numberOfBoundaryPoints[];
 If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s},
-If[Length[SpanningSets[k][s]]==0,
-Print["You need to declare a spanning set before we can consider diagrams..."];Abort[],
+(*If[Length[SpanningSets[k][s]]\[Equal]0,
+Print["You need to declare a spanning set before we can consider diagrams..."];Abort[],*)
 (*closedDiagrams=s\[LeftDoubleBracket]1\[RightDoubleBracket]@diagramSpider[]@innerProduct[d,#]@canonicalFormWithDefect[]@U1[]&/@({d}~Join~IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s]);
 closedDiagrams=Complement[{#@hashCode[],#}&/@closedDiagrams,{#@hashCode[],#}&/@ClosedDiagrams[s],SameTest->(First[#1] === First[#2] &)]\[LeftDoubleBracket]All,2\[RightDoubleBracket];*)
 closedDiagrams={};
@@ -858,7 +877,7 @@ ConsiderDependentDiagram[d0][s]
 ]
 ]
 ]
-]
+
 
 
 PairRelationsWith[d0:Diagram][s_SpiderAnalysis]:=Module[{pairings},
@@ -936,7 +955,7 @@ r z]
 
 
 delegatingNullSpace[m_,options___]:=If[Length[m]>10\[And]Length[Variables[m]]>1,{SchwartzZippelNullSpace[m]},NullSpace[m,options]]
-delegatingDeterminant[m_]:=If[Length[m]>10\[And]Length[Variables[m]]>1,SchwartzZippelDeterminant[m],Det[m]]
+delegatingDeterminant[m_]:=If[Length[m]>10\[And]Length[Variables[m]]>1,GuessingPolynomials`Private`onDiskParallelDeterminant[m,IntegerString[Hash[m,"SHA1"],16,16]],Det[m]]
 
 
 ConsiderIndependentDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{s0,s1,k,i,innerProducts,innerProducts2,det,nullSpace,spanningSet,reorderedSpanningSet,dot,j},
@@ -960,7 +979,7 @@ nullSpace=If[Length[i]==1,{{1}},Factor[delegatingNullSpace[Most[innerProducts],"
 (* FIXME worry about denominators!? *)
 Print["nullSpace: ",nullSpace];
 If[Length[nullSpace]!=1,Print["null space wasn't 1-dimensional! help!"];Abort[]];
-spanningSet=SpanningSets[k][ss][[1]];
+spanningSet=unionDiagrams[Flatten[SpanningSets[k][ss]]~Join~consideringDiagrams];
 reorderedSpanningSet=i~Join~complementDiagrams[spanningSet,i];
 If[Length[reorderedSpanningSet]=!=Length[spanningSet],
 Print["something is wrong with complementDiagrams"];
@@ -972,7 +991,11 @@ Abort[]
 ];
 (*Print["reorderedSpanningSet: ",DrawPlanarGraph/@reorderedSpanningSet];*)
 innerProducts2=cachingInnerProduct[ss,reorderedSpanningSet,i];
-dot=ReducePolynomialsFurther[ss][innerProducts2.nullSpace[[1]]];
+Print["innerProducts2: ",innerProducts2];
+dot=ReducePolynomials[ss][innerProducts2.nullSpace[[1]]];
+If[Take[dot,Length[i]]=!=Table[0,{Length[i]}],
+dot=ReducePolynomialsFurther[ss][dot]
+];
 If[Take[dot,Length[i]]=!=Table[0,{Length[i]}],
 Print["something is messed up!"];
 Print["innerProducts2: ",innerProducts2];
@@ -981,6 +1004,9 @@ Print[ss[[2]]];
 Print["i: ",DrawPlanarGraph/@i];
 Abort[]];
 If[dot===Table[0,{Length[reorderedSpanningSet]}],
+If[Length[SpanningSets[k][ss]]==0,
+Print["You need to declare a spanning set to proceed!"];Abort[]
+];
 Print["Successfully ruled out the possibility of a ghost relation!"];
 {},
 j=Position[dot,Except[0],1,1,Heads->False][[1,1]];
