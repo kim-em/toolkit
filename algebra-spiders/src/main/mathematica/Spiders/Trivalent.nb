@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     20442,        543]
-NotebookOptionsPosition[     19232,        499]
-NotebookOutlinePosition[     19623,        516]
-CellTagsIndexPosition[     19580,        513]
+NotebookDataLength[     20682,        548]
+NotebookOptionsPosition[     19472,        504]
+NotebookOutlinePosition[     19863,        521]
+CellTagsIndexPosition[     19820,        518]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -351,7 +351,7 @@ Cell[BoxData[
        RowBox[{
         RowBox[{
          RowBox[{"Length", "[", "CubicTrivalentCategories", "]"}], 
-         "\[NotEqual]", "4"}], ",", 
+         "\[NotEqual]", "7"}], ",", 
         RowBox[{
          RowBox[{
          "Print", "[", 
@@ -368,25 +368,30 @@ categories!\>\"", "]"}], ";",
    3.641515159536223*^9, 3.641515213182044*^9}, {3.642061312107821*^9, 
    3.6420613273633623`*^9}, {3.64337013852522*^9, 3.6433701601908417`*^9}, {
    3.6435577288624887`*^9, 3.64355773202096*^9}, {3.643558420776223*^9, 
-   3.6435584270492983`*^9}, 3.645956525052167*^9}],
+   3.6435584270492983`*^9}, 3.645956525052167*^9, {3.664566603987409*^9, 
+   3.6645666045703487`*^9}}],
 
 Cell[BoxData[
  RowBox[{"CubicTrivalentCategory", ":=", 
-  RowBox[{"CubicTrivalentCategory", "=", 
-   RowBox[{
-    RowBox[{"DeclarePolynomialNonZero", "[", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"{", "CubicTrivalentCategory", "}"}], "=", 
      RowBox[{
-      RowBox[{"(", 
+      RowBox[{"DeclarePolynomialNonZero", "[", 
        RowBox[{
-        SuperscriptBox["d", "2"], "-", "1"}], ")"}], 
-      RowBox[{"(", 
-       RowBox[{
-        SuperscriptBox["d", "2"], "-", "d", "-", "1"}], ")"}]}], "]"}], "[", 
-    "CubicTrivalentCategories", "]"}]}]}]], "Input",
+        RowBox[{"(", 
+         RowBox[{
+          SuperscriptBox["d", "2"], "-", "1"}], ")"}], 
+        RowBox[{"(", 
+         RowBox[{
+          SuperscriptBox["d", "2"], "-", "d", "-", "1"}], ")"}]}], "]"}], "[",
+       "CubicTrivalentCategories", "]"}]}], ")"}], "\[LeftDoubleBracket]", 
+   "1", "\[RightDoubleBracket]"}]}]], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.6415150372482347`*^9, 3.641515059166243*^9}, {
   3.641515216444886*^9, 3.641515222964799*^9}, {3.641515329384267*^9, 
-  3.641515338552021*^9}}],
+  3.641515338552021*^9}, {3.664566623092414*^9, 3.66456663154314*^9}}],
 
 Cell[BoxData[{
  RowBox[{"Clear", "[", "G2Categories", "]"}], "\[IndentingNewLine]", 
@@ -435,12 +440,12 @@ Cell[BoxData[{
           RowBox[{"{", 
            RowBox[{"polygon", "[", "5", "]"}], "}"}]}], "]"}], "[", 
         "G2Categories", "]"}]}], ";", "\[IndentingNewLine]", 
-      "\[IndentingNewLine]", "G2Categories"}]}], "\[IndentingNewLine]", 
-    "]"}]}]}]}], "Input",
+      "G2Categories"}]}], "\[IndentingNewLine]", "]"}]}]}]}], "Input",
  InitializationCell->True,
  CellChangeTimes->{{3.641515470910804*^9, 3.641515478320644*^9}, {
-  3.6415156273287563`*^9, 3.641515674654346*^9}, {3.6415162512654667`*^9, 
-  3.641516257921082*^9}, {3.64206135644945*^9, 3.642061364043145*^9}}],
+   3.6415156273287563`*^9, 3.641515674654346*^9}, {3.6415162512654667`*^9, 
+   3.641516257921082*^9}, {3.64206135644945*^9, 3.642061364043145*^9}, 
+   3.664566110559814*^9}],
 
 Cell[BoxData[{
  RowBox[{"Clear", "[", "ABACategories", "]"}], "\[IndentingNewLine]", 
@@ -532,17 +537,17 @@ Cell[5331, 148, 484, 11, 31, "Input",
  InitializationCell->True],
 Cell[5818, 161, 4742, 120, 419, "Input",
  InitializationCell->True],
-Cell[10563, 283, 3710, 87, 333, "Input",
+Cell[10563, 283, 3762, 88, 333, "Input",
  InitializationCell->True],
-Cell[14276, 372, 619, 16, 69, "Input",
+Cell[14328, 373, 807, 20, 73, "Input",
  InitializationCell->True],
-Cell[14898, 390, 2203, 52, 231, "Input",
+Cell[15138, 395, 2203, 52, 214, "Input",
  InitializationCell->True],
-Cell[17104, 444, 1907, 42, 182, "Input",
+Cell[17344, 449, 1907, 42, 182, "Input",
  InitializationCell->True],
-Cell[19014, 488, 96, 3, 28, "Input",
+Cell[19254, 493, 96, 3, 28, "Input",
  InitializationCell->True],
-Cell[19113, 493, 103, 3, 28, "Input",
+Cell[19353, 498, 103, 3, 28, "Input",
  InitializationCell->True]
 }, Open  ]]
 }
