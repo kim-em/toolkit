@@ -147,7 +147,10 @@ object Dreadnaut extends Dreadnaut {
         try {
           "which dreadnaut".!!
         } catch {
-          case e: Exception => System.getProperty("user.home") + "/bin/dreadnaut"
+          case e: Exception => {          
+            val source = Dreadnaut.getClass.getProtectionDomain.getCodeSource.getLocation.toString.stripPrefix("file:")
+            source.take(source.indexOf("toolkit/")) + "toolkit/dreadnaut"            
+          }
         }
       }
     }

@@ -19,7 +19,7 @@
 
 
 
-DeclarePackage["Spiders`Trivalent`",{"Trivalent","SO3Categories","dMinusOne","SO3","CubicTrivalentCategories","CubicTrivalentCategory","G2Categories","ABACategories"}];
+DeclarePackage["Spiders`Trivalent`",{"Trivalent","SO3Categories","dMinusOne","SO3","CubicTrivalentCategories","CubicTrivalentCategory","G2Categories","ABACategories","PickledG2"}];
 DeclarePackage["Spiders`BraidedTrivalent`",{"BraidedTrivalent","SymmetricTrivalent","BraidedSO3Categories","CubicBraidedTrivalentCategories","CubicBraidedTrivalent","BraidedG2Categories"}];
 
 
