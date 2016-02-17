@@ -626,7 +626,9 @@ emptySpiderAnalysis[spider_,variables_]:=buildSpiderAnalysis[spider,Manifold[{},
 internalValences[diagram_]:=Length/@FromScalaObject[diagram@vertexFlags[]@tail[]]
 
 
+If[Length[DownValues[diagramWeight]]==0,
 diagramWeight[diagram_]:=Count[internalValences[diagram],3]+4Count[internalValences[diagram],4]
+]
 
 
 EvaluateDiagram[s_SpiderAnalysis][d0:Diagram]:=DrawPlanarGraph[#@U1[]]->ReducePolynomials[s][FromScalaObject[#@U2[]]]&/@FromScalaObject[s[[1]]@canonicalForm[AsScalaMap[{d0->AsScalaObject[1,"MultivariableRationalFunction"]}]],1]
@@ -700,24 +702,24 @@ cachingInnerProduct[spider_SpiderAnalysis,xs_List,ys_List]:=Outer[cachingInnerPr
 
 Clear[ConsiderPotentialSpanningSet]
 ConsiderPotentialSpanningSet[diagrams:{Diagram...}]:=ConsiderPotentialSpanningSet[diagrams[[1]]@numberOfBoundaryPoints[],diagrams]
-ConsiderPotentialSpanningSet[k_Integer,diagrams:{Diagram...}][s_SpiderAnalysis]:=Module[{zzz,innerProducts,subsets,det,determinants},
-If[Length[s[[7]]]<k+1,
-ConsiderPotentialSpanningSet[k,diagrams][ReplacePart[s,7->(PadRight[s[[7]],k+1,zzz]/.zzz->{})]],
+(*ConsiderPotentialSpanningSet[k_Integer,diagrams:{Diagram...}][s_SpiderAnalysis]:=Module[{zzz,innerProducts,subsets,det,determinants},
+If[Length[s\[LeftDoubleBracket]7\[RightDoubleBracket]]<k+1,
+ConsiderPotentialSpanningSet[k,diagrams][ReplacePart[s,7\[Rule](PadRight[s\[LeftDoubleBracket]7\[RightDoubleBracket],k+1,zzz]/.zzz\[Rule]{})]],
 If[Length[SpanningSets[k][s]]>0,
 Print["There's already a declared spanning set for ", k, " boundary points"];Abort[],
 Flatten[{
 (* either it's a spanning set *)
 Print["Declaring that ",DrawPlanarGraph/@diagrams, " is a spanning set"];
-{ReplacePart[s,7->ReplacePart[s[[7]],k+1->{diagrams}]]},
+{ReplacePart[s,7\[Rule]ReplacePart[s\[LeftDoubleBracket]7\[RightDoubleBracket],k+1\[Rule]{diagrams}]]},
 (* or it's not *)
-If[Length[diagrams]>=DimensionUpperBound[s,k],
+If[Length[diagrams]\[GreaterEqual]DimensionUpperBound[s,k],
 (* the determinant must vanish! *)
 Print["Declaring that ",#@toString[]&/@diagrams, " does not span, and hence that its matrix of inner products must vanish."];
 innerProducts=cachingInnerProduct[s,diagrams];
 subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]}];
 det[{}]=1;
 det[m_]:=delegatingDeterminant[m];
-determinants =Union[ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets];
+determinants =Union[ReducePolynomials[s][det[innerProducts\[LeftDoubleBracket]#,#\[RightDoubleBracket]]]&/@subsets];
 Print["determinants: ",determinants];
 DeclarePolynomialsZero[determinants][s],
 Print["Be careful: you've proposed a spanning set that isn't as big as the dimension bound you're interested in!"];Abort[];
@@ -726,7 +728,7 @@ Print["Be careful: you've proposed a spanning set that isn't as big as the dimen
 },1]
 ]
 ]
-]
+]*)
 automaticFlatMap[ConsiderPotentialSpanningSet]
 
 
@@ -747,6 +749,7 @@ If[Sum[Binomial[Length[diagrams],m],{m,Range[DimensionBounds[s,k]]}]>20,
 Print["Warning, computing many determinants. Did you forget to set a lower bound on the dimension?"];
 ];
 subsets=Subsets[Range[Length[diagrams]],DimensionBounds[s,k]];
+Print["subsets: ",Length[subsets]];
 determinants =ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets;
 gcd=PolynomialGCD@@determinants;
 DeclarePolynomialNonZero[gcd][s0]
@@ -955,7 +958,7 @@ r z]
 
 
 delegatingNullSpace[m_,options___]:=If[Length[m]>10\[And]Length[Variables[m]]>1,{SchwartzZippelNullSpace[m]},NullSpace[m,options]]
-delegatingDeterminant[m_]:=If[Length[m]>10\[And]Length[Variables[m]]>1,GuessingPolynomials`Private`onDiskParallelDeterminant[m,IntegerString[Hash[m,"SHA1"],16,16]],Det[m]]
+delegatingDeterminant[m_]:=If[Length[m]>10,GuessingPolynomials`Private`onDiskParallelDeterminant[m,IntegerString[Hash[m,"SHA1"],16,16]],Det[m]]
 
 
 ConsiderIndependentDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{s0,s1,k,i,innerProducts,innerProducts2,det,nullSpace,spanningSet,reorderedSpanningSet,dot,j},
