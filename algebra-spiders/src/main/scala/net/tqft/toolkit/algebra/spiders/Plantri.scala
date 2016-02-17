@@ -2,16 +2,22 @@ package net.tqft.toolkit.algebra.spiders
 
 import scala.sys.process._
 import org.apache.commons.io.IOUtils
-
 import scala.annotation.tailrec
+import java.io.File
 
 trait Plantri {
   var plantriPath: String = {
-    val probePaths = for (dir <- List(".", System.getProperty("user.home") + "/bin")) yield new java.io.File(dir + "/plantri")
-    if (probePaths(0).exists) probePaths(0).toPath.toString
-    else if (probePaths(1).exists) probePaths(1).toPath.toString
-    else try { "which plantri".!! }
-    catch { case e: Exception => scala.io.StdIn.readLine("WARNING: plantri not found. Please set the path:\n") }
+    val source = ConnectedPlanarTrivalentGraphs.getClass.getProtectionDomain.getCodeSource.getLocation.toString.stripPrefix("file:")
+    source.take(source.indexOf("toolkit/")) + "toolkit"
+
+    (for (
+      dir <- List(".", System.getProperty("user.home") + "/bin", source);
+      path = dir + "/plantri";
+      if (new File(path)).exists
+    ) yield path).headOption.getOrElse({
+      try { "which plantri".!! }
+      catch { case e: Exception => scala.io.StdIn.readLine("WARNING: plantri not found. Please set the path:\n") }
+    })
   }
 
   def parseEdgeCodeBytes(rawData: Array[Byte]): Seq[IndexedSeq[IndexedSeq[Int]]] = {
@@ -25,15 +31,15 @@ trait Plantri {
     def graphSections(raw: Array[Byte]): List[IndexedSeq[Byte]] = {
       var p = 0
       val b = scala.collection.mutable.ListBuffer[IndexedSeq[Byte]]()
-      while(p < raw.length) {
-        val bodyLength = if (raw(p) != 0) raw(p) else java.nio.ByteBuffer.wrap(Array[Byte](0, 0, raw(p+2), raw(p+3))).getInt
+      while (p < raw.length) {
+        val bodyLength = if (raw(p) != 0) raw(p) else java.nio.ByteBuffer.wrap(Array[Byte](0, 0, raw(p + 2), raw(p + 3))).getInt
         val sectionStartIndex = if (raw(p) != 0) 1 else 4
         b += raw.view(p + sectionStartIndex, p + sectionStartIndex + bodyLength)
         p = p + bodyLength + sectionStartIndex
       }
       b.toList
     }
-    
+
     def parseGraph(raw: IndexedSeq[Byte]): IndexedSeq[IndexedSeq[Int]] = {
       // Convert each graph code section from plantri output format to the input format of edgeAdjListToPlanarGraph
       val iter = raw.toIterator.map(_.toInt)
@@ -151,7 +157,7 @@ trait Plantri {
       println("Running plantri:")
       log.map(println(_)) // Notify when plantri has finished
     }
-    
+
     (bytes, log)
   }
 }
@@ -173,7 +179,7 @@ object ConnectedPlanarTrivalentGraphs extends Plantri {
   // Check plantri works
   try assert(apply(4, 4).length == 147)
   catch {
-    case e: AssertionError      => println("ERROR: The copy of plantri at " + this.plantriPath + " does not appear to be working.")
+    case e: AssertionError => println("ERROR: The copy of plantri at " + this.plantriPath + " does not appear to be working.")
     case e: java.io.IOException => println("ERROR: Problem running plantri!")
   }
 }
