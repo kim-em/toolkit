@@ -315,7 +315,13 @@ Abort[]
 
 
 parallelRowReduce[n_Integer,k_Integer,load_,save_]:=
-Module[{row,pivots},
+Module[{row,pivots,simplifier},
+simplifier[X_]:=Module[{p},
+If[FreeQ[X,_AlgebraicNumber],
+Together[X],
+p=Alternatives@@Variables[X];
+Together[Collect[Numerator[X],p,Together]/Collect[Denominator[X],p,Together]]
+]];
 If[k>n,
 Table[load[j],{j,1,n}],
 Print[DateString[]," row reducing at row ",k];

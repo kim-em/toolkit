@@ -43,10 +43,10 @@ trait DrawPlanarGraph {
     paths.headOption.orElse(Try(s"which $programName".!!).toOption).getOrElse(programName)
   }
   
-  private val texSearchPaths = List("/usr/texbin", "/Library/TeX/texbin")
+  private val texSearchPaths = List("/usr/texbin", "/Library/TeX/texbin", "/usr/bin", "/usr/local/bin")
   var pdflatexPath = getProgramPath("pdflatex", texSearchPaths)
   var pdftexPath = getProgramPath("pdftex", texSearchPaths)
-  var gsPath = getProgramPath("gs", List("/usr/bin", "/usr/local/bin"))
+  var gsPath = getProgramPath("gs", texSearchPaths)
   var pdfcropPath = getProgramPath("pdfcrop", texSearchPaths)
 
   def apply(G: PlanarGraph): String = {
