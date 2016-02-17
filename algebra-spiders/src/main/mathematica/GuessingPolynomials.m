@@ -233,17 +233,19 @@ hash=IntegerString[Hash[matrix,"SHA1"],16,16];
 cacheFile=FileNameJoin[{matricesDirectory[],"nullspace-"<>hash<>".m"}];
 If[FileExistsQ[cacheFile],
 Get[cacheFile],
-s=Reverse[Range[Length[matrix]]];
+s=Reverse[Range[Length[matrix[[1]]]]];
 almost=Reverse[onDiskParallelRowReduce[matrix,f]][[All,s]];
 almost=Reverse[onDiskParallelRowReduce[almost,f]][[All,s]];
 result=NullSpace[almost];
 If[Length[result]==1,
 result=result[[1]],
-Print["NullSpace not one-dimensional"];Abort[]];
-If[Together[matrix.result]===Table[0,{Length[matrix]}],
+Print["NullSpace not one-dimensional"];Print[almost];Print[result];Abort[]];
+If[parallelRowReduceSimplifier[matrix.result]===Table[0,{Length[matrix]}],
 Put[result,cacheFile];
 result,
+Print["Result not in the null space"];
 Print[result];
+Print[parallelRowReduceSimplifier[matrix.result]];
 Abort[]
 ]
 ]
@@ -314,14 +316,16 @@ Abort[]
 ]
 
 
+parallelRowReduceSimplifier[X_]:=Module[{p,Y},
+Y=Together[X];
+If[FreeQ[Y,_AlgebraicNumber],
+Y,
+p=Alternatives@@Variables[Y];
+Together[Collect[Numerator[Y],p,Together]/Collect[Denominator[Y],p,Together]]
+]];
+DistributeDefinitions[parallelRowReduceSimplifier];
 parallelRowReduce[n_Integer,k_Integer,load_,save_]:=
 Module[{row,pivots,simplifier},
-simplifier[X_]:=Module[{p},
-If[FreeQ[X,_AlgebraicNumber],
-Together[X],
-p=Alternatives@@Variables[X];
-Together[Collect[Numerator[X],p,Together]/Collect[Denominator[X],p,Together]]
-]];
 If[k>n,
 Table[load[j],{j,1,n}],
 Print[DateString[]," row reducing at row ",k];
@@ -340,7 +344,7 @@ ParallelDo[
 Module[{r1,r2},
 r1=load[k];
 r2=load[j];
-save[j,Together[r2-r2[[k]]/r1[[k]] r1]]
+save[j,parallelRowReduceSimplifier[r2-r2[[k]]/r1[[k]] r1]]
 ]
 ,{j,k+1,n}];
 parallelRowReduce[n,k+1,load,save]
