@@ -7,13 +7,12 @@ import java.io.File
 
 trait Plantri {
   var plantriPath: String = {
-    val source = ConnectedPlanarTrivalentGraphs.getClass.getProtectionDomain.getCodeSource.getLocation.toString.stripPrefix("file:")
-    source.take(source.indexOf("toolkit/")) + "toolkit"
+    val source = net.tqft.toolkit.algebra.spiders.ConnectedPlanarTrivalentGraphs.getClass.getProtectionDomain.getCodeSource.getLocation.toString.stripPrefix("file:")
 
     (for (
-      dir <- List(".", System.getProperty("user.home") + "/bin", source);
+      dir <- List(".", System.getProperty("user.home") + "/bin", source.take(source.indexOf("toolkit/")) + "toolkit");
       path = dir + "/plantri";
-      if (new File(path)).exists
+      if (new java.io.File(path)).exists
     ) yield path).headOption.getOrElse({
       try { "which plantri".!! }
       catch { case e: Exception => scala.io.StdIn.readLine("WARNING: plantri not found. Please set the path:\n") }
