@@ -14,13 +14,13 @@ abstract class PolynomialQuotientRing[A: Field] extends PolynomialsOverField[A] 
   }
   
   override def add(a: Polynomial[A], b: Polynomial[A]) = {
-    check(a)
-    check(b)
+//    check(a)
+//    check(b)
     super.add(a, b)
   }
   override def multiply(a: Polynomial[A], b: Polynomial[A]) = {
-    check(a)
-    check(b)
+//    check(a)
+//    check(b)
     normalForm(polynomials.multiply(a, b))
   }
   def normalForm(p: Polynomial[A]) = polynomials.remainder(p, generator).ensuring(_.maximumDegree.getOrElse(0) < generator.maximumDegree.get)
