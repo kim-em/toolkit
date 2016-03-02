@@ -58,7 +58,7 @@ case class Enumeration(
     multiplicities.filter(m => m == minReciprocal(m)).sorted(ordering)
   }
   println("representativeMultiplicities = " + representativeMultiplicities)
-  
+
   private val numberOfVariables = representativeMultiplicities.size
   private val lookup = {
     val l0 = for (m <- multiplicities) yield representativeMultiplicities.indexOf(minReciprocal(m))
@@ -83,7 +83,7 @@ case class Enumeration(
   private val objectFinishedAtStep = {
     (for (i <- 1 until rank) yield (multiplicities.filter(_.contains(i)).map({ case Seq(i, j, k) => lookup(i)(j)(k).right.get }).max) -> i).toMap
   }
- println("objectFinishedAtStep = " + objectFinishedAtStep)
+  println("objectFinishedAtStep = " + objectFinishedAtStep)
 
   private def N(x: Array[Int])(i: Int, j: Int, k: Int) = {
     lookup(i)(j)(k) match {
@@ -118,16 +118,26 @@ case class Enumeration(
     }
   }
 
-  def verify(N: Seq[Seq[Seq[Int]]]) = {
+  def verify(N: String): Boolean = {
+    if (N.size == rank * rank * rank) {
+      verify(N.sliding(rank * rank, rank * rank).map(_.sliding(rank, rank).map(_.toCharArray.map(_.toString.toInt).toList).toList).toList)
+    } else {
+      ???
+    }
+  }
+
+  def verify(N: Seq[Seq[Seq[Int]]]): Boolean = {
     val nextSteps = for (Seq(i, j, k) <- representativeMultiplicities) yield N(i)(j)(k)
     nextSteps.foldLeft[Option[Partial]](Some(root))({
       case (o, m) => {
         println("---")
         println(o)
         println(m)
-        println(o.flatMap(_.next(m)))
-        println(o.flatMap(_.next(m)).flatMap(_.associative_?))
-        o.flatMap(_.next(m)).flatMap(_.associative_?)
+        val n = o.flatMap(_.next(m))
+        println(n)
+        val a = n.flatMap(_.associative_?)
+        println(a)
+        a
       }
     }).ensuring(_.forall(_.done_?)).nonEmpty
   }
@@ -260,13 +270,12 @@ case class Enumeration(
     }
 
     def checkMatrix(i0: Int): Option[Partial] = {
-      if(done_?) return Some(this)
-      
-//      println(s"checkMatrix($i0), with step = $step and x = ${x.toSeq}")
-      
+      println(s"checkMatrix($i0), with step = $step and x = ${x.toSeq}")
+
       // TODO: to think about --- do we need to separately check that the eigenvectors of our generic linear combo are eigenvectors of the latest matrix?
       val n = Array.tabulate(rank, rank)({ (j, k) => N(x)(i0, j, k) })
-
+          val newFinishedMatrices = finishedMatrices :+ n
+          
       val m = {
         if (i0 == 1) {
           Array.tabulate(rank, rank)({ (j, k) => n(j)(k).toDouble })
@@ -276,11 +285,11 @@ case class Enumeration(
         }
       }
       val (eigenvalues, s0) = eigensystem(m)
-//      println("m: " + m.toList.map(_.toList))
-      
+      //      println("m: " + m.toList.map(_.toList))
+
       val s = s0.map(v => v.map(x => x.mul(v(0).real.signum)))
-//      println("s: " + s.toList.map(_.toList))
-      
+      //      println("s: " + s.toList.map(_.toList))
+
       //            println("i0: " + i0)
       //            println(m.toList.map(_.toList))
       //            println("eigenvalues: " + eigenvalues)
@@ -289,26 +298,58 @@ case class Enumeration(
       //            println("distinct: " + distinct)
       //            println("eigenvectors: " + distinct.map(s(_).toList))
       if (distinct.size == rank) {
-//                      println("wow, distinct eigenvalues at step " + step)
-//                      println(distinct)
+        println("distinct eigenvalues at step " + step)
+        println("distinct: " + distinct)
+        println("eigenvectors: " + distinct.map(s(_).mkString("{",", ","}")).mkString("{",", ","}"))
 
         // TODO we should double check this is correctly treating normalisation of the eigenvectors,
         // and not just relying on the implementation of eigensystem
-        // TODO we should be careful about transposes here!
+
+        
+        // TODO we could check here if there is a permutation of the eigenvectors making s symmetric.
+        // FIXME this attempt is broken, and kills everything!
+        val sround = s.map(_.toList.map(x => ((x.real * 1000).round, (x.imag * 1000).round))).toList
+        val diagonal = sround.zipWithIndex.map({ case (r, i) => r(i) })
+        val permutations = {
+          import net.tqft.toolkit.permutations.Permutations._
+          Permutations.preserving(diagonal).filter(p => p.permute(sround.map(r => p.permute(r))) == sround.transpose)
+        }
+        if(!permutations.hasNext) {
+          println("No permutations of the eigenvectors results in a symmetric matrix")
+          None 
+        } else {
+        
         val NN = Array.tabulate(rank, rank, rank)({ (i, j, k) =>
-//          val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(dualData(k))(l)).div(s(0)(l))).reduce(_.add(_))
-          val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(k)(l).conj).div(s(0)(l))).reduce(_.add(_))
-//          println((i,j,k,x))
+          //          val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(dualData(k))(l)).div(s(0)(l))).reduce(_.add(_))
+          //          val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(k)(l).conj).div(s(0)(l))).reduce(_.add(_))
+          val x = (for (l <- 0 until rank) yield s(l)(j).mul(s(l)(i)).mul(s(l)(k).conj).div(s(l)(0))).reduce(_.add(_))
+//          println((i, j, k, x))
           if (x.imag.abs < 0.001 && x.real - x.real.round < 0.001 && x.real.round >= 0) Some(x.real.round.toInt) else None
         })
-        
+
 //        println(NN.toList.map(_.map(_.toList).toList))
-        
+
         if (NN.forall(_.forall(_.forall(_.nonEmpty)))) {
-          val nextSteps = for (Seq(i, j, k) <- representativeMultiplicities.drop(step + 1)) yield NN(i)(j)(k).get
-          nextSteps.foldLeft[Option[Partial]](Some(this))({ case (o, m) => o.flatMap(_.next(m)).flatMap(_.associative_?) }).ensuring(_.forall(_.done_?))
+          if (done_?) {
+            val c = (for (Seq(i, j, k) <- representativeMultiplicities) yield NN(i)(j)(k).get)
+            require(c.size  == x.size)
+            if (c == x.toSeq) {
+              println("Verlinde formula looks good!")
+              Some(this)
+            } else {
+              println("The Verlinde formula breaks!")
+              println(s"c = $c")
+              println(s"x = ${x.toVector}")
+              None
+            }
+          } else {
+            val nextSteps = (for (Seq(i, j, k) <- representativeMultiplicities.drop(step + 1)) yield NN(i)(j)(k).get).zipWithIndex
+            nextSteps.foldLeft[Option[Partial]](Some(this.copy(umtcHint = Some(m), finishedMatrices = newFinishedMatrices)))({ case (o, (m, k)) => o.flatMap(_.next(m)).flatMap(_.associative_?).flatMap(_.checkMatrix(i0 + k + 1)) }).ensuring(_.forall(_.done_?))
+          }
         } else {
+          println("bad fusion rules")
           None
+        }
         }
       } else {
         // it ain't over yet!
@@ -345,7 +386,7 @@ case class Enumeration(
 
         // TODO: once things are working, remove the orthogonality check; it should always pass
         if (eigenvectors.forall(X => X(0) != ComplexDouble.ZERO) && orthogonal(eigenvectors)) {
-          val newFinishedMatrices = finishedMatrices :+ n
+
 
           // TODO: as written, this isn't checking anything!
           def d(l: Int, i: Int) = {
@@ -386,12 +427,13 @@ case class Enumeration(
       if (umtc) {
         objectFinishedAtStep.get(step) match {
           case None => {
+            println("no objects finished, nothing to check")
             Some(this)
           }
           case Some(i0) => {
             // because sometimes finishing one matrix implies finishing two, we might have to run multiple checks.
             val im = finishedMatrices.size
-//            println("about to check matrices: " + (im to i0))
+            println("about to check matrices: " + (im to i0))
             (im to i0).foldLeft[Option[Partial]](Some(this))((o, i) => o.flatMap(_.checkMatrix(i)))
           }
         }
@@ -401,14 +443,15 @@ case class Enumeration(
     }
 
     def next(m: Int): Option[Partial] = {
-      
-//      println(this + ".next(" + m + ")")
-      
+
+      println(this + ".next(" + m + ")")
+
       val nextX = x.clone()
       nextX(step + 1) = m
 
       if (inequalities(step + 1, nextX)) {
         if (m == 0) {
+          println("inequalities look okay")
           Some(Partial(step + 1, x, (step + 1) :: zeroes, r, hint, umtcHint, finishedMatrices, finishedDimensions))
         } else {
 
@@ -423,12 +466,15 @@ case class Enumeration(
           val (eigenvalue, nextHint) = FrobeniusPerronEigenvalues.estimateWithEigenvector(nextR, 0.001, globalDimensionBound + 1, Some(hint))
 
           if (eigenvalue <= globalDimensionBound) {
+            println("inequalities and global dimension looks okay")
             Some(Partial(step + 1, nextX, zeroes, nextR, nextHint, umtcHint, finishedMatrices, finishedDimensions))
           } else {
+            println("rejecting because of global dimension")
             None
           }
         }
       } else {
+        println("rejecting because of inequalities")
         None
       }
     }
