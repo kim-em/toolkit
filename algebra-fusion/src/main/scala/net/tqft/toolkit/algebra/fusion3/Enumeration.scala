@@ -304,27 +304,28 @@ case class Enumeration(
      
       
       if (distinct.size == rank) {
-        println("distinct eigenvalues at step " + step)
-        println("distinct: " + distinct)
+//        println("distinct eigenvalues at step " + step)
+//        println("distinct: " + distinct)
         
         
         
-        println("eigenvectors: " + distinct.map(s(_).mkString("{", ", ", "}")).mkString("{", ", ", "}"))
+//        println("eigenvectors: " + distinct.map(s(_).mkString("{", ", ", "}")).mkString("{", ", ", "}"))
 
         // TODO we should double check this is correctly treating normalisation of the eigenvectors,
         // and not just relying on the implementation of eigensystem
 
-        // TODO we could check here if there is a permutation of the eigenvectors making s symmetric.
+        // we can check here if there is a permutation of the eigenvectors making s symmetric.
+        // TODO it's much more efficient to only check this after we're done; unless we can do it cheaply.
         // FIXME can we search permutations more efficiently??
-        val sround = s.map(_.toList.map(x => ((x.real * 1000).round, (x.imag * 1000).round))).toList
-        val permutations = {
-          import net.tqft.toolkit.permutations.Permutations._
-          Permutations.of(sround.size).filter(p => p.permute(sround.map(r => p.inverse.permute(r))) == sround.transpose)
-        }
-        if (true && !permutations.hasNext) {
-          println("No permutations of the eigenvectors results in a symmetric matrix")
-          None
-        } else {
+//        val sround = s.map(_.toList.map(x => ((x.real * 1000).round, (x.imag * 1000).round))).toList
+//        val permutations = {
+//          import net.tqft.toolkit.permutations.Permutations._
+//          Permutations.of(sround.size).filter(p => p.permute(sround.map(r => p.inverse.permute(r))) == sround.transpose)
+//        }
+//        if (true && !permutations.hasNext) {
+////          println("No permutations of the eigenvectors results in a symmetric matrix")
+//          None
+//        } else {
 
           val NN = Array.tabulate(rank, rank, rank)({ (i, j, k) =>
             //          val x = (for (l <- 0 until rank) yield s(j)(l).mul(s(i)(l)).mul(s(dualData(k))(l)).div(s(0)(l))).reduce(_.add(_))
@@ -362,7 +363,7 @@ case class Enumeration(
 //            println("bad fusion rules")
             None
           }
-        }
+//        }
       } else {
         // it ain't over yet!
 
@@ -438,13 +439,13 @@ case class Enumeration(
       if (umtc) {
         objectFinishedAtStep.get(step) match {
           case None => {
-            println("no objects finished, nothing to check")
+//            println("no objects finished, nothing to check")
             Some(this)
           }
           case Some(i0) => {
             // because sometimes finishing one matrix implies finishing two, we might have to run multiple checks.
             val im = finishedMatrices.size
-            println("about to check matrices: " + (im to i0))
+//            println("about to check matrices: " + (im to i0))
             (im to i0).foldLeft[Option[Partial]](Some(this))((o, i) => o.flatMap(_.checkMatrix(i, actually)))
           }
         }
