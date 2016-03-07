@@ -1,6 +1,18 @@
 package net.tqft.toolkit.algebra
 
-trait OrderedEuclideanRing[A] extends EuclideanRing[A] with Ordering[A] {
+trait PartialOrdering[A] {
+  def partialCompare(x: A, y: A): Option[Int]
+}
+
+trait TotalOrdering[A] extends Ordering[A] { this: PartialOrdering[A] =>
+  override def partialCompare(x: A, y: A): Option[Int] = Some(compare(x, y))
+}
+
+trait PartiallyOrderedEuclideanRing[A] extends EuclideanRing[A] with PartialOrdering[A] {
+  
+}
+
+trait OrderedEuclideanRing[A] extends PartiallyOrderedEuclideanRing[A] with TotalOrdering[A] {
   def signum(x: A): Int = compare(x, zero)
   def abs(x: A): A = {
     signum(x) match {
@@ -8,6 +20,8 @@ trait OrderedEuclideanRing[A] extends EuclideanRing[A] with Ordering[A] {
       case s if s < 0 => negate(x)
     }
   }
+  def minimum(x: A*): A = x.reduce(min)
+  def maximum(x: A*): A = x.reduce(max)
   def nonnegative_?(x: A) = compare(x, zero) >= 0
   def positive_?(x: A) = compare(x, zero) > 0
 
