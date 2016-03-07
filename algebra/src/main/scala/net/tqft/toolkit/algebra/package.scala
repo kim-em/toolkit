@@ -7,4 +7,5 @@ package object algebra {
   
     def Rationals = implicitly[OrderedField[Fraction[Int]]]
     def Doubles = implicitly[OrderedField[Double]]
+    
 }

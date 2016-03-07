@@ -7,7 +7,8 @@ trait Matrix[T[_]] {
   def numberOfRows(t: T[_]): Int
   def numberOfColumns(t: T[_]): Int
   def diagonalEntries[F](t: T[F]): Seq[F]
-
+  def reverseRows[F](t: T[F]): T[F]
+  
   def pivotRowColumnAndEntry[F: OrderedField](t: T[F]): Option[(Int, Int, F)]
 }
 
@@ -22,9 +23,11 @@ object Matrix {
       for ((r, i) <- t.zipWithIndex) yield r(i)
     }
 
+    override def reverseRows[F](t: SeqSeq[F]) = t.reverse
+    
     override def pivotRowColumnAndEntry[F: OrderedField](t: SeqSeq[F]) = {
       import net.tqft.toolkit.arithmetic.MinMax._
-      val r = t.indexAndValueOfMinBy(row => row.zipWithIndex.find(p => p._1 != implicitly[Zero[F]].zero))
+      val r = t.indexAndValueOfMinBy(row => row.zipWithIndex.find(p => !implicitly[Field[F]].zero_?(p._1)))
       r._2.map(p => (r._1, p._2, p._1))
     }
   }
@@ -59,7 +62,13 @@ object GaussianElimination {
         }
       }
     }
+    def reducedRowEchelonForm: T[F] = {
+      matrices.reverseRows(matrices.reverseRows(rowEchelonForm).rowEchelonForm)
+    }
     def determinant: F = field.product(matrices.diagonalEntries(rowEchelonForm))
+    def nullSpace: Seq[Seq[F]] = {
+      ???
+    }
   }
 
 }

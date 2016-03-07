@@ -1,10 +1,12 @@
 package net.tqft.toolkit.algebra
 
 trait WithInverses[A] {
+  def inverseOption(x: A): Option[A]
   def inverse(x: A): A
 }
 
 trait Group[A] extends Monoid[A] with WithInverses[A] {
+  override def inverseOption(x: A): Option[A] = Some(inverse(x))
   override def power(x: A, k: Int): A = {
     if (k < 0) {
       super.power(inverse(x), -k)

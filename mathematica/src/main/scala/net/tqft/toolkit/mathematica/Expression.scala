@@ -41,6 +41,9 @@ object Expression {
   implicit def liftSeq(s: Seq[Expression]): Expression = Symbols.List(s:_*)
   implicit def liftSeqSeq(s: Seq[Seq[Expression]]): Expression = Symbols.List(s.map(liftSeq):_*)
 
+  implicit def liftSeqInt(s: Seq[Int]): Expression = Symbols.List(s.map(i => IntegerExpression(new Apint(i))):_*) 
+  implicit def liftSeqSeqInt(s: Seq[Seq[Int]]): Expression = Symbols.List(s.map(liftSeqInt):_*)
+  
   private implicit object ExpressionBuilder extends org.omath.expression.ExpressionBuilder[Expression] {
     override def createStringExpression(value: String) = StringExpression(value)
     override def createRealExpression(value: String) = RealExpression(new Apfloat(value))
