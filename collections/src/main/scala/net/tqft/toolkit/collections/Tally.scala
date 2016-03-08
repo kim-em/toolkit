@@ -2,7 +2,7 @@ package net.tqft.toolkit.collections
 
 object Tally {
 
-  implicit class Tallyable[A](i: Iterable[A]) {
+  implicit class Tallyable[A](i: TraversableOnce[A]) {
     def tally: Map[A, Int] = {
       val counter = scala.collection.mutable.Map[A, Int]()
       for(a <- i) {
