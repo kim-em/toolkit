@@ -298,7 +298,6 @@ case class Enumeration(
       //      println("s: " + s.toList.map(_.toList))
       val s = s0.map({ v =>
         val norm = scala.math.sqrt(v.map(x => scala.math.pow(x.abs, 2)).sum)
-        // TODO perhaps norm is always 1, and we can skip this?
         val f = v(0).div(v(0).abs).mul(norm)
         v.map(x => x.div(f))
       })
