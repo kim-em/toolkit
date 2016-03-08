@@ -10,8 +10,8 @@ import scala.concurrent.duration.Duration
 class UMTCEnumeratorTest extends FlatSpec with Matchers {
 
   "firstNonInvertibleObjectMatrices" should "find all the initial matrices" in {
-    val rank =6
-    val enumerator = UMTCEnumerator(SmallGroup(1, 0), 80.0)
+    val rank =4
+    val enumerator = UMTCEnumerator(SmallGroup(1, 0), 20.0)
     val orbits = enumerator.OrbitStructure(Seq.fill(rank - 1)(SelfDualOrbit(GxGOrbit(0, 0), (0, 0))), Seq.empty)
     val matrices = orbits.firstNonInvertibleObjectMatrices
     //    println(matrices.size)

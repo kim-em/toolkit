@@ -27,6 +27,7 @@ case class UMTCEnumerator(invertibles: SmallGroup, globalDimension: Double) {
       val coefficientClusters = (for (i <- 1 until rank; j <- 1 to i) yield Set((i, j), (j, i)).toList).toArray
 
       SymmetricMatrixEnumerator(initialMatrix, eigenvalueBound, coefficientClusters)
+
     }
 
     case class Eigenspace(eigenvalue: ComplexDouble, eigenbasis: Seq[Array[ComplexDouble]]) {
@@ -73,6 +74,12 @@ case class UMTCEnumerator(invertibles: SmallGroup, globalDimension: Double) {
         }
         val result = mergeEigenspaces(preliminaryEigenspaces).toIndexedSeq
         require(result.map(_.eigenbasis.size).sum == m.length)
+        println
+        println(m.map(_.mkString).mkString("\n"))
+        for(e<-result){
+          println(e.eigenvalue)
+          println(e.eigenbasis.map(_.mkString("{",",","}")).mkString("\n"))
+        }
         result
       }
       lazy val diagonalisation = {
@@ -86,13 +93,13 @@ case class UMTCEnumerator(invertibles: SmallGroup, globalDimension: Double) {
 
     case class DiagonalisedMatrix(m: Array[Array[Int]], eigenvectors: Array[Array[ComplexDouble]]) {
       lazy val symmetrised: Option[CandidateSMatrix] = {
-          symmetrise(eigenvectors) match {
-            case None => None
-            case Some(s) => Some(CandidateSMatrix(s))
-          }
+        symmetrise(eigenvectors) match {
+          case None => None
+          case Some(s) => Some(CandidateSMatrix(s))
+        }
       }
     }
-    
+
     def rowShufflesToSymmetric[A](m: Array[Array[A]], sameTest: (A, A) => Boolean): Iterator[Array[Array[A]]] = {
       def step(k: Int, m: Array[Array[A]]): Iterator[Array[Array[A]]] = {
         if (k == m.length) {
