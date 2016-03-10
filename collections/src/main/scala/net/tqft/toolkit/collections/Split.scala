@@ -45,7 +45,6 @@ object Split {
 
   }
 
-  // TODO replace Iterable with a generic CC
   implicit class Splittable[A](x: Iterable[A]) {
     // TODO should return an Iterable
     def splitBy[B](f: A => B): List[Seq[A]] = {

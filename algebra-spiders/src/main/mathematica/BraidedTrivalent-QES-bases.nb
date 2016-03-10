@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[   2808422,      45040]
-NotebookOptionsPosition[   2804314,      44901]
-NotebookOutlinePosition[   2804728,      44919]
-CellTagsIndexPosition[   2804685,      44916]
+NotebookDataLength[   2807837,      45012]
+NotebookOptionsPosition[   2803732,      44873]
+NotebookOutlinePosition[   2804146,      44891]
+CellTagsIndexPosition[   2804103,      44888]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -34,7 +34,8 @@ Cell[BoxData[
  CellChangeTimes->{{3.6436057462255383`*^9, 3.643605747574408*^9}}],
 
 Cell[BoxData["\<\"Loading Spiders` version 2015-06-18 ...\"\>"], "Print",
- CellChangeTimes->{3.644130739789765*^9, 3.6468163320799007`*^9}]
+ CellChangeTimes->{3.644130739789765*^9, 3.6468163320799007`*^9, 
+  3.6664793815639544`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2595,12 +2596,12 @@ Cell[BoxData[
     RowBox[{
     "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", ".", 
      "DiagramSpider$$anon$1"}], "]"}], "\[RightGuillemet]"}],
-  JLink`Objects`vm1`JavaObject14526902328885249]], "Output",
+  JLink`Objects`vm1`JavaObject16802923677745153]], "Output",
  CellChangeTimes->{
   3.6433716086576014`*^9, 3.6434319809233103`*^9, {3.643432256980687*^9, 
    3.643432277076887*^9}, 3.643627575245585*^9, 3.643629604156032*^9, 
    3.643630994102133*^9, 3.6439554767203827`*^9, 3.643956945692548*^9, 
-   3.6441307470044937`*^9, 3.646816339850288*^9}]
+   3.6441307470044937`*^9, 3.646816339850288*^9, 3.666479386560094*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2611,17 +2612,16 @@ Cell[BoxData[
    RowBox[{"#", "@", 
     RowBox[{"toString", "[", "]"}]}], "&"}], "/@", 
   RowBox[{"ReducedDiagrams", "[", 
-   RowBox[{
-    RowBox[{
-    "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-     "\[RightDoubleBracket]"}], ",", "2", ",", "0", ",", "0"}], 
+   RowBox[{"BraidedTrivalent", ",", "2", ",", "0", ",", "0"}], 
    "]"}]}]], "Input",
- CellChangeTimes->{{3.64681700817663*^9, 3.646817009531996*^9}}],
+ CellChangeTimes->{{3.64681700817663*^9, 3.646817009531996*^9}, {
+  3.666479444016931*^9, 3.666479444327533*^9}}],
 
 Cell[BoxData[
  RowBox[{"{", "\<\"PlanarGraph(2,Vector(List((1,2), (1,3))),List(),0)\"\>", 
   "}"}]], "Output",
- CellChangeTimes->{3.646817009937958*^9}]
+ CellChangeTimes->{
+  3.646817009937958*^9, {3.666479427725704*^9, 3.666479445120454*^9}}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2632,17 +2632,16 @@ Cell[BoxData[
    RowBox[{"#", "@", 
     RowBox[{"toString", "[", "]"}]}], "&"}], "/@", 
   RowBox[{"ReducedDiagrams", "[", 
-   RowBox[{
-    RowBox[{
-    "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-     "\[RightDoubleBracket]"}], ",", "3", ",", "0", ",", "1"}], 
+   RowBox[{"BraidedTrivalent", ",", "3", ",", "0", ",", "1"}], 
    "]"}]}]], "Input",
- CellChangeTimes->{{3.646816997897635*^9, 3.6468170019650908`*^9}}],
+ CellChangeTimes->{{3.646816997897635*^9, 3.6468170019650908`*^9}, {
+  3.6664794468724194`*^9, 3.66647944717622*^9}}],
 
 Cell[BoxData[
  RowBox[{"{", "\<\"PlanarGraph(5,Vector(List((2,5), (4,6), (3,7)), \
 List((2,6), (3,5), (4,7))),List((1,0)),0)\"\>", "}"}]], "Output",
- CellChangeTimes->{{3.64681699921424*^9, 3.646817002334385*^9}}]
+ CellChangeTimes->{{3.64681699921424*^9, 3.646817002334385*^9}, {
+  3.66647942789609*^9, 3.666479447707369*^9}}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2654,26 +2653,18 @@ Cell[BoxData[
     RowBox[{"toString", "[", "]"}]}], "&"}], "/@", 
   RowBox[{
    RowBox[{"ReducedDiagrams", "[", 
-    RowBox[{
-     RowBox[{
-     "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-      "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "0"}], "]"}], "~", 
+    RowBox[{"BraidedTrivalent", ",", "4", ",", "0", ",", "0"}], "]"}], "~", 
    "Join", "~", 
    RowBox[{"ReducedDiagrams", "[", 
-    RowBox[{
-     RowBox[{
-     "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-      "\[RightDoubleBracket]"}], ",", "4", ",", "0", ",", "2"}], "]"}], "~", 
+    RowBox[{"BraidedTrivalent", ",", "4", ",", "0", ",", "2"}], "]"}], "~", 
    "Join", "~", 
    RowBox[{
     RowBox[{"ReducedDiagrams", "[", 
-     RowBox[{
-      RowBox[{
-      "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-       "\[RightDoubleBracket]"}], ",", "4", ",", "1", ",", "0"}], "]"}], 
+     RowBox[{"BraidedTrivalent", ",", "4", ",", "1", ",", "0"}], "]"}], 
     "\[LeftDoubleBracket]", 
     RowBox[{"{", "1", "}"}], "\[RightDoubleBracket]"}]}]}]], "Input",
- CellChangeTimes->{{3.6468169328603163`*^9, 3.646816967081321*^9}}],
+ CellChangeTimes->{{3.6468169328603163`*^9, 3.646816967081321*^9}, {
+  3.6664794504567633`*^9, 3.66647945527358*^9}}],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -2687,7 +2678,8 @@ List((3,10), (4,11), (7,9)), List((5,8), (7,10), (6,9))),List((1,0), \
 (1,0)),0)\"\>", 
    ",", "\<\"PlanarGraph(6,Vector(List((2,6), (5,8), (4,9), (3,7)), \
 List((5,9), (2,8), (3,6), (4,7))),List((2,0)),0)\"\>"}], "}"}]], "Output",
- CellChangeTimes->{{3.646816958704693*^9, 3.646816967649732*^9}}]
+ CellChangeTimes->{{3.646816958704693*^9, 3.646816967649732*^9}, {
+  3.66647942793526*^9, 3.666479456622313*^9}}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -2695,13 +2687,10 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"DrawPlanarGraph", "/@", 
   RowBox[{"ReducedDiagrams", "[", 
-   RowBox[{
-    RowBox[{
-    "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-     "\[RightDoubleBracket]"}], ",", "5", ",", "0", ",", "1"}], 
+   RowBox[{"BraidedTrivalent", ",", "5", ",", "0", ",", "1"}], 
    "]"}]}]], "Input",
  CellChangeTimes->{{3.64681628289576*^9, 3.646816286447406*^9}, {
-  3.646816341982958*^9, 3.646816390011965*^9}}],
+   3.646816341982958*^9, 3.646816390011965*^9}, 3.666479459592902*^9}],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -3461,12 +3450,10 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"DrawPlanarGraph", "/@", 
   RowBox[{"ReducedDiagrams", "[", 
-   RowBox[{
-    RowBox[{
-    "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-     "\[RightDoubleBracket]"}], ",", "5", ",", "0", ",", "3"}], 
+   RowBox[{"BraidedTrivalent", ",", "5", ",", "0", ",", "3"}], 
    "]"}]}]], "Input",
- CellChangeTimes->{{3.646816412428034*^9, 3.646816412477697*^9}}],
+ CellChangeTimes->{{3.646816412428034*^9, 3.646816412477697*^9}, 
+   3.666479460761468*^9}],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -4443,12 +4430,10 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"DrawPlanarGraph", "/@", 
   RowBox[{"ReducedDiagrams", "[", 
-   RowBox[{
-    RowBox[{
-    "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-     "\[RightDoubleBracket]"}], ",", "5", ",", "1", ",", "1"}], 
+   RowBox[{"BraidedTrivalent", ",", "5", ",", "1", ",", "1"}], 
    "]"}]}]], "Input",
- CellChangeTimes->{{3.6468164003290873`*^9, 3.64681640038902*^9}}],
+ CellChangeTimes->{{3.6468164003290873`*^9, 3.64681640038902*^9}, 
+   3.666479461993505*^9}],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -6078,23 +6063,14 @@ Cell[BoxData[
     RowBox[{"toString", "[", "]"}]}], "&"}], "/@", 
   RowBox[{
    RowBox[{"ReducedDiagrams", "[", 
-    RowBox[{
-     RowBox[{
-     "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-      "\[RightDoubleBracket]"}], ",", "5", ",", "0", ",", "1"}], "]"}], "~", 
+    RowBox[{"BraidedTrivalent", ",", "5", ",", "0", ",", "1"}], "]"}], "~", 
    "Join", "~", 
    RowBox[{"ReducedDiagrams", "[", 
-    RowBox[{
-     RowBox[{
-     "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-      "\[RightDoubleBracket]"}], ",", "5", ",", "0", ",", "3"}], "]"}], "~", 
+    RowBox[{"BraidedTrivalent", ",", "5", ",", "0", ",", "3"}], "]"}], "~", 
    "Join", "~", 
    RowBox[{
     RowBox[{"ReducedDiagrams", "[", 
-     RowBox[{
-      RowBox[{
-      "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-       "\[RightDoubleBracket]"}], ",", "5", ",", "1", ",", "1"}], "]"}], 
+     RowBox[{"BraidedTrivalent", ",", "5", ",", "1", ",", "1"}], "]"}], 
     "\[LeftDoubleBracket]", 
     RowBox[{"{", 
      RowBox[{"1", ",", "2", ",", "3", ",", "4", ",", 
@@ -6102,14 +6078,12 @@ Cell[BoxData[
    "~", 
    RowBox[{
     RowBox[{"ReducedDiagrams", "[", 
-     RowBox[{
-      RowBox[{
-      "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-       "\[RightDoubleBracket]"}], ",", "5", ",", "1", ",", "3"}], "]"}], 
+     RowBox[{"BraidedTrivalent", ",", "5", ",", "1", ",", "3"}], "]"}], 
     "\[LeftDoubleBracket]", 
     RowBox[{"{", "7", "}"}], "\[RightDoubleBracket]"}]}]}]], "Input",
  CellChangeTimes->{{3.646816447726058*^9, 3.646816554073001*^9}, {
-  3.6468166300140953`*^9, 3.646816630240436*^9}}],
+  3.6468166300140953`*^9, 3.646816630240436*^9}, {3.66647946511436*^9, 
+  3.6664794687356663`*^9}}],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -6167,12 +6141,10 @@ Cell[BoxData[
   RowBox[{"(", 
    RowBox[{"basis0", "=", 
     RowBox[{"ReducedDiagrams", "[", 
-     RowBox[{
-      RowBox[{
-      "BraidedTrivalent", "\[LeftDoubleBracket]", "1", 
-       "\[RightDoubleBracket]"}], ",", "6", ",", "0", ",", "0"}], "]"}]}], 
+     RowBox[{"BraidedTrivalent", ",", "6", ",", "0", ",", "0"}], "]"}]}], 
    ")"}]}]], "Input",
- CellChangeTimes->{{3.643432852913211*^9, 3.6434328571789703`*^9}}],
+ CellChangeTimes->{{3.643432852913211*^9, 3.6434328571789703`*^9}, 
+   3.666479471396577*^9}],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -44921,126 +44893,126 @@ Notebook[{
 Cell[558, 20, 258, 7, 28, "Input"],
 Cell[CellGroupData[{
 Cell[841, 31, 120, 2, 28, "Input"],
-Cell[964, 35, 139, 1, 22, "Print"]
+Cell[964, 35, 166, 2, 22, "Print"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1140, 41, 649, 16, 28, "Input"],
-Cell[1792, 59, 153434, 2520, 660, "Output"]
+Cell[1167, 42, 649, 16, 28, "Input"],
+Cell[1819, 60, 153434, 2520, 660, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[155263, 2584, 182, 4, 28, "Input"],
-Cell[155448, 2590, 596, 12, 28, "Output"]
+Cell[155290, 2585, 182, 4, 28, "Input"],
+Cell[155475, 2591, 618, 12, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[156081, 2607, 374, 11, 28, "Input"],
-Cell[156458, 2620, 152, 3, 28, "Output"]
+Cell[156130, 2608, 343, 9, 28, "Input"],
+Cell[156476, 2619, 201, 4, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[156647, 2628, 377, 11, 28, "Input"],
-Cell[157027, 2641, 213, 3, 28, "Output"]
+Cell[156714, 2628, 347, 9, 28, "Input"],
+Cell[157064, 2639, 261, 4, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[157277, 2649, 920, 26, 46, "Input"],
-Cell[158200, 2677, 726, 12, 80, "Output"]
+Cell[157362, 2648, 718, 18, 46, "Input"],
+Cell[158083, 2668, 774, 13, 80, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[158963, 2694, 363, 9, 28, "Input"],
-Cell[159329, 2705, 46963, 750, 111, "Output"]
+Cell[158894, 2686, 306, 6, 28, "Input"],
+Cell[159203, 2694, 46963, 750, 111, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[206329, 3460, 315, 8, 28, "Input"],
-Cell[206647, 3470, 60414, 967, 111, "Output"]
+Cell[206203, 3449, 261, 6, 28, "Input"],
+Cell[206467, 3457, 60414, 967, 111, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[267098, 4442, 316, 8, 28, "Input"],
-Cell[267417, 4452, 99363, 1606, 111, "Output"]
+Cell[266918, 4429, 262, 6, 28, "Input"],
+Cell[267183, 4437, 99363, 1606, 111, "Output"]
 }, Open  ]],
-Cell[366795, 6061, 315, 8, 28, "Input"],
+Cell[366561, 6046, 315, 8, 28, "Input"],
 Cell[CellGroupData[{
-Cell[367135, 6073, 1363, 38, 46, "Input"],
-Cell[368501, 6113, 2947, 46, 403, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[371485, 6164, 379, 10, 28, "Input"],
-Cell[371867, 6176, 46196, 729, 112, "Output"]
+Cell[366901, 6058, 1075, 27, 46, "Input"],
+Cell[367979, 6087, 2947, 46, 403, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[418100, 6910, 730, 21, 28, "Input"],
-Cell[418833, 6933, 59763, 962, 112, "Output"]
+Cell[370963, 6138, 319, 8, 28, "Input"],
+Cell[371285, 6148, 46196, 729, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[478633, 7900, 754, 21, 28, "Input"],
-Cell[479390, 7923, 32025, 520, 112, "Output"]
+Cell[417518, 6882, 730, 21, 28, "Input"],
+Cell[418251, 6905, 59763, 962, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[511452, 8448, 393, 10, 28, "Input"],
-Cell[511848, 8460, 11460, 191, 112, "Output"]
+Cell[478051, 7872, 754, 21, 28, "Input"],
+Cell[478808, 7895, 32025, 520, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[523345, 8656, 427, 11, 28, "Input"],
-Cell[523775, 8669, 186309, 2941, 231, "Output"]
+Cell[510870, 8420, 393, 10, 28, "Input"],
+Cell[511266, 8432, 11460, 191, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[710121, 11615, 1234, 31, 80, "Input"],
-Cell[711358, 11648, 79317, 1261, 112, "Output"]
+Cell[522763, 8628, 427, 11, 28, "Input"],
+Cell[523193, 8641, 186309, 2941, 231, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[790712, 12914, 1389, 33, 80, "Input"],
-Cell[792104, 12949, 13943, 228, 112, "Output"]
+Cell[709539, 11587, 1234, 31, 80, "Input"],
+Cell[710776, 11620, 79317, 1261, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[806084, 13182, 834, 22, 28, "Input"],
-Cell[806921, 13206, 77933, 1241, 112, "Output"]
+Cell[790130, 12886, 1389, 33, 80, "Input"],
+Cell[791522, 12921, 13943, 228, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[884891, 14452, 792, 22, 28, "Input"],
-Cell[885686, 14476, 78037, 1253, 112, "Output"]
+Cell[805502, 13154, 834, 22, 28, "Input"],
+Cell[806339, 13178, 77933, 1241, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[963760, 15734, 1120, 30, 63, "Input"],
-Cell[964883, 15766, 41530, 670, 112, "Output"]
+Cell[884309, 14424, 792, 22, 28, "Input"],
+Cell[885104, 14448, 78037, 1253, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1006450, 16441, 1092, 29, 97, "Input"],
-Cell[1007545, 16472, 39385, 633, 112, "Output"]
+Cell[963178, 15706, 1120, 30, 63, "Input"],
+Cell[964301, 15738, 41530, 670, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1046967, 17110, 1049, 28, 28, "Input"],
-Cell[1048019, 17140, 216820, 3443, 231, "Output"]
+Cell[1005868, 16413, 1092, 29, 97, "Input"],
+Cell[1006963, 16444, 39385, 633, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1264876, 20588, 1529, 39, 148, "Input"],
-Cell[1266408, 20629, 96035, 1532, 112, "Output"]
+Cell[1046385, 17082, 1049, 28, 28, "Input"],
+Cell[1047437, 17112, 216820, 3443, 231, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1362480, 22166, 1086, 27, 216, "Input"],
-Cell[1363569, 22195, 63515, 1016, 112, "Output"]
+Cell[1264294, 20560, 1529, 39, 148, "Input"],
+Cell[1265826, 20601, 96035, 1532, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1427121, 23216, 296, 7, 28, "Input"],
-Cell[1427420, 23225, 18545, 295, 112, "Output"]
-}, Open  ]],
-Cell[1445980, 23523, 633, 11, 46, "Input"],
-Cell[CellGroupData[{
-Cell[1446638, 23538, 133, 2, 28, "Input"],
-Cell[1446774, 23542, 258, 4, 28, "Output"]
+Cell[1361898, 22138, 1086, 27, 216, "Input"],
+Cell[1362987, 22167, 63515, 1016, 112, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1447069, 23551, 293, 7, 28, "Input"],
-Cell[1447365, 23560, 1344502, 21021, 1063, 1119455, 17330, "CachedBoxData", \
+Cell[1426539, 23188, 296, 7, 28, "Input"],
+Cell[1426838, 23197, 18545, 295, 112, "Output"]
+}, Open  ]],
+Cell[1445398, 23495, 633, 11, 46, "Input"],
+Cell[CellGroupData[{
+Cell[1446056, 23510, 133, 2, 28, "Input"],
+Cell[1446192, 23514, 258, 4, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1446487, 23523, 293, 7, 28, "Input"],
+Cell[1446783, 23532, 1344502, 21021, 1063, 1119455, 17330, "CachedBoxData", \
 "BoxData", "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2791904, 44586, 404, 11, 28, "Input"],
-Cell[2792311, 44599, 10954, 265, 159, "Output"]
+Cell[2791322, 44558, 404, 11, 28, "Input"],
+Cell[2791729, 44571, 10954, 265, 159, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2803302, 44869, 354, 9, 28, "Input"],
-Cell[2803659, 44880, 333, 7, 28, "Output"]
+Cell[2802720, 44841, 354, 9, 28, "Input"],
+Cell[2803077, 44852, 333, 7, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2804029, 44892, 123, 2, 28, "Input"],
-Cell[2804155, 44896, 143, 2, 28, "Output"]
+Cell[2803447, 44864, 123, 2, 28, "Input"],
+Cell[2803573, 44868, 143, 2, 28, "Output"]
 }, Open  ]]
 }
 ]
