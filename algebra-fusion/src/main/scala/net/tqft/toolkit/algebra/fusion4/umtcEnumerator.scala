@@ -19,17 +19,7 @@ case class UMTCEnumerator(numberOfSelfDualObjects: Int, numberOfDualPairsOfObjec
     FirstMatrixEnumerator(initialMatrix, eigenvalueBound, coefficientClusters)
   }
 
-    def firstNonInvertibleObjectMatrices: Iterator[Array[Array[Int]]] = {
-      val rank = selfDualOrbits.size + 1
-      val initialMatrix = Array.fill(rank, rank)(0)
-      initialMatrix(0)(1) = 1
-      initialMatrix(1)(0) = 1
-      val eigenvalueBound = scala.math.sqrt((globalDimension - 1) / (rank - 1))
-      val coefficientClusters = (for (i <- 1 until rank; j <- 1 to i) yield Set((i, j), (j, i)).toList).toArray
-
-      SymmetricMatrixEnumerator(initialMatrix, eigenvalueBound, coefficientClusters)
-
-    }
+  case class Eigenspace(eigenvalue: ComplexDouble, eigenbasis: Seq[Array[ComplexDouble]]) {
     lazy val commutation: (Int => Seq[AssociativityEquation]) = {
       ???
     }
@@ -76,9 +66,9 @@ case class UMTCEnumerator(numberOfSelfDualObjects: Int, numberOfDualPairsOfObjec
         require(result.map(_.eigenbasis.size).sum == m.length)
         println
         println(m.map(_.mkString).mkString("\n"))
-        for(e<-result){
+        for (e <- result) {
           println(e.eigenvalue)
-          println(e.eigenbasis.map(_.mkString("{",",","}")).mkString("\n"))
+          println(e.eigenbasis.map(_.mkString("{", ",", "}")).mkString("\n"))
         }
         result
       }
@@ -95,35 +85,19 @@ case class UMTCEnumerator(numberOfSelfDualObjects: Int, numberOfDualPairsOfObjec
           // and commuting with the eigenprojections
           ???
         }
-        
+
         Right(PartialFusionRing(2, Array(m), eigenspaces, equations))
       }
     }
   }
 
-    case class DiagonalisedMatrix(m: Array[Array[Int]], eigenvectors: Array[Array[ComplexDouble]]) {
-      lazy val symmetrised: Option[CandidateSMatrix] = {
-        symmetrise(eigenvectors) match {
-          case None => None
-          case Some(s) => Some(CandidateSMatrix(s))
-        }
-      }
-    }
-
-    def rowShufflesToSymmetric[A](m: Array[Array[A]], sameTest: (A, A) => Boolean): Iterator[Array[Array[A]]] = {
-      def step(k: Int, m: Array[Array[A]]): Iterator[Array[Array[A]]] = {
-        if (k == m.length) {
-          Iterator(m)
-        } else {
-          Iterator.range(k, m.length).filter({ t =>
-            (0 until k).forall({ j => sameTest(m(t)(j), m(j)(k)) })
-          }).map({ t =>
-            val n = m.clone
-            n(t) = m(k)
-            n(k) = m(t)
-            n
-          })
-        }
+  case class PartialFusionRing(partialStep: Int, partialMatrices: IndexedSeq[Array[Array[Int]]], eigenspaces: Seq[Eigenspace], equations: Nothing)
+  
+  case class DiagonalisedMatrix(m: Array[Array[Int]], eigenvectors: Array[Array[ComplexDouble]]) {
+    lazy val symmetrised: Option[CandidateSMatrix] = {
+      symmetrise(eigenvectors) match {
+        case None => None
+        case Some(s) => Some(CandidateSMatrix(s))
       }
     }
   }
@@ -211,7 +185,6 @@ case class FirstMatrixEnumerator(
   }
   require(coefficientRuns.size == coefficientClustersList.size)
   require(coefficientRuns.map(_.last) == coefficientClustersList.map(_.head)) // this verifies the condition on coefficientClusters
-
 
   val rank = initialMatrix.length
   val steps = coefficientClusters.length

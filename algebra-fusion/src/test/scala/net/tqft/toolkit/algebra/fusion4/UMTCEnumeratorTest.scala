@@ -11,9 +11,8 @@ class UMTCEnumeratorTest extends FlatSpec with Matchers {
 
   "firstNonInvertibleObjectMatrices" should "find all the initial matrices" in {
     val rank =4
-    val enumerator = UMTCEnumerator(SmallGroup(1, 0), 20.0)
-    val orbits = enumerator.OrbitStructure(Seq.fill(rank - 1)(SelfDualOrbit(GxGOrbit(0, 0), (0, 0))), Seq.empty)
-    val matrices = orbits.firstNonInvertibleObjectMatrices
+    val enumerator = UMTCEnumerator(rank, 0, 20.0)
+    val matrices = enumerator.firstNonInvertibleObjectMatrices
     //    println(matrices.size)
 //    for (m <- enumerator.firstNonInvertibleObjectMatricesWithEigendata; d <- m.diagonalisation; s <- d.symmetrised; N <- s.verlindeMultiplicities) {
 //      val max = N.map(_.map(_.max).max).max
