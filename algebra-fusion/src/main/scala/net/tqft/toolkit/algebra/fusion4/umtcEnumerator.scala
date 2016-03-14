@@ -14,15 +14,18 @@ case class UMTCEnumerator(numberOfSelfDualObjects: Int, numberOfDualPairsOfObjec
     initialMatrix(0)(1) = 1
     initialMatrix(1)(0) = 1
     val eigenvalueBound = scala.math.sqrt((globalDimension - 1) / (rank - 1))
-    val coefficientClusters = (for (i <- 1 until rank; j <- 1 to i) yield Set((i, j), (j, i)).toList).toArray
+    val coefficientClusters = {
+      require(numberOfDualPairsOfObjects == 0)
+      import Ordering.Implicits._
+      (for (i <- 1 until rank; j <- 1 to i) yield Set((i, j), (j, i)).toList.sorted).sorted.toArray
+    }
 
-    FirstMatrixEnumerator(initialMatrix, eigenvalueBound, coefficientClusters)
+    FirstMatrixEnumerator(initialMatrix, eigenvalueBound, coefficientClusters).filter({ m =>
+      m.forall(row => row.sum > 0)
+    })
   }
 
   case class Eigenspace(eigenvalue: ComplexDouble, eigenbasis: Seq[Array[ComplexDouble]]) {
-    lazy val commutation: (Int => Seq[AssociativityEquation]) = {
-      ???
-    }
     def normalise: Eigenspace = {
       Eigenspace(eigenvalue, eigenbasis.map({ v =>
         val norm = scala.math.sqrt(v.map(x => scala.math.pow(x.abs, 2)).sum)
@@ -62,15 +65,6 @@ case class UMTCEnumerator(numberOfSelfDualObjects: Int, numberOfDualPairsOfObjec
           case None => eigenspaces
           case Some((i, j)) => mergeEigenspaces(eigenspaces.updated(i, Eigenspace(eigenspaces(i).eigenvalue, eigenspaces(i).eigenbasis ++ eigenspaces(j).eigenbasis)).take(j) ++ eigenspaces.drop(j + 1))
         }
-        val result = mergeEigenspaces(preliminaryEigenspaces).toIndexedSeq
-        require(result.map(_.eigenbasis.size).sum == m.length)
-        println
-        println(m.map(_.mkString).mkString("\n"))
-        for (e <- result) {
-          println(e.eigenvalue)
-          println(e.eigenbasis.map(_.mkString("{", ",", "}")).mkString("\n"))
-        }
-        result
       }
       val result = mergeEigenspaces(preliminaryEigenspaces).toIndexedSeq
       require(result.map(_.eigenbasis.size).sum == m.length)
@@ -80,19 +74,14 @@ case class UMTCEnumerator(numberOfSelfDualObjects: Int, numberOfDualPairsOfObjec
       if (eigenspaces.forall(_.eigenbasis.size == 1)) {
         Left(DiagonalisedMatrix(m, eigenspaces.map(_.normalise.eigenbasis.head).toArray))
       } else {
-        val equations = {
-          // associativity, appropriately specialized
-          // and commuting with the eigenprojections
-          ???
-        }
 
-        Right(PartialFusionRing(2, Array(m), eigenspaces, equations))
+        Right(PartialFusionRing(2, Array(m), eigenspaces))
       }
     }
   }
 
-  case class PartialFusionRing(partialStep: Int, partialMatrices: IndexedSeq[Array[Array[Int]]], eigenspaces: Seq[Eigenspace], equations: Nothing)
-  
+  case class PartialFusionRing(partialStep: Int, partialMatrices: IndexedSeq[Array[Array[Int]]], eigenspaces: Seq[Eigenspace])
+
   case class DiagonalisedMatrix(m: Array[Array[Int]], eigenvectors: Array[Array[ComplexDouble]]) {
     lazy val symmetrised: Option[CandidateSMatrix] = {
       symmetrise(eigenvectors) match {
@@ -178,14 +167,18 @@ case class FirstMatrixEnumerator(
 
   private val coefficientClustersList = coefficientClusters.toList
 
+  
+  
   private val coefficientRuns = {
     import net.tqft.toolkit.collections.Split._
     val firstCoefficients = coefficientClusters.map(_.head).toSet
     coefficientClustersList.toList.flatten.sorted.splitAfter(firstCoefficients).toIndexedSeq
   }
+  //  println(coefficientClusters.toList)
+  //println(coefficientRuns)
   require(coefficientRuns.size == coefficientClustersList.size)
   require(coefficientRuns.map(_.last) == coefficientClustersList.map(_.head)) // this verifies the condition on coefficientClusters
-
+  
   val rank = initialMatrix.length
   val steps = coefficientClusters.length
   var hint = Array.fill(rank)(1.0)
@@ -194,29 +187,34 @@ case class FirstMatrixEnumerator(
   var currentCluster = 0
 
   private def checkInequalities(m: Array[Array[Int]], coefficient: (Int, Int)): Boolean = {
+
     val (i, j) = coefficient
     if (i == 1) {
       // first row should be in decreasing order
-      if (j == 1) {
+      if (j <= 2) {
         true
       } else {
-        m(i)(j) <= m(i)(j - 1)
+        m(1)(j) <= m(1)(j - 1)
       }
     } else {
-      // the diagonal should be decreasing
+      // the diagonal should be decreasing, within blocks
       if (i == j) {
         if (i <= 2) {
           true
         } else {
-          m(i)(i) <= m(i - 1)(i - 1)
+          m(1)(i) < m(1)(i-1) || m(i)(i) <= m(i - 1)(i - 1)
         }
       } else {
-        // TODO more here!
-        // if we're at the end of a block (blocks corresponding to the sequence in the first row)
-        // we should check that the sorted block is lexicographically less than corresponding blocks in earlier rows
-        true
+        if(j == m.length - 1 && m(1)(i) == m(1)(i-1) && m(i)(i) == m(i-1)(i-1)) {
+          import Ordering.Implicits._
+          m(i).toSeq.sorted.reverse <= m(i-1).toSeq.sorted.reverse
+        } else {
+          true
+        }
       }
+
     }
+
   }
 
   private def updateMatrix(m: Array[Array[Int]], cluster: Int, entry: Int): Option[Array[Array[Int]]] = {
