@@ -37,7 +37,7 @@ h;t;d;z;
 ScalaSingleton;ScalaCaseClass;FromScalaObject;AsScalaObject;
 
 
-Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph;
+Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph;DrawReducingRelations;DrawRelations
 
 
 unionDiagrams;complementDiagrams;memberQDiagrams;
@@ -239,6 +239,12 @@ DrawPlanarGraph[S_String]:=DrawPlanarGraph[PlanarGraphs@fromString[S]]
 
 
 DrawPlanarGraph[Subscript[p, k_Integer]]:=DrawPlanarGraph[NamedPolyhedron[Subscript[p, k]]]
+
+
+DrawReducingRelations[n_Integer][s_SpiderAnalysis]:=(ReducingRelations[n][s][[All,2]])/.{c_,d:Diagram}:>{ReducePolynomialsFurther[s][c],DrawPlanarGraph[d]}//TableForm
+
+
+DrawRelations[n_Integer][s_SpiderAnalysis]:=(ReducingRelations[n][s][[All,2]]~Join~NonReducingRelations[n][s])/.{c_,d:Diagram}:>{ReducePolynomialsFurther[s][c],DrawPlanarGraph[d]}//TableForm
 
 
 unionDiagrams[diagrams_]:=Union[{#@toString[],#}&/@(#@canonicalFormWithDefect[]@U1[]&/@diagrams),SameTest->(First[#1]===First[#2]&)][[All,2]]
@@ -745,7 +751,7 @@ Flatten[{
 Print["Declaring that ",DrawPlanarGraph/@diagrams, " is a spanning set"];
 s0=ReplacePart[s,{{3,k+1,2}->Min[s[[3,k+1,2]],Length[diagrams]],7->ReplacePart[s[[7]],k+1->{diagrams}]}];
 If[s0[[3,k+1,2]]<s0[[3,k+1,1]],{},
-If[Sum[Binomial[Length[diagrams],m],{m,Range[DimensionBounds[s,k]]}]>20,
+If[Sum[Binomial[Length[diagrams],m],{m,Range@@DimensionBounds[s,k]}]>20,
 Print["Warning, computing many determinants. Did you forget to set a lower bound on the dimension?"];
 ];
 subsets=Subsets[Range[Length[diagrams]],DimensionBounds[s,k]];
@@ -756,8 +762,8 @@ DeclarePolynomialNonZero[gcd][s0]
 (*
 We should be able to do the following, but it seems it's too slow.
 *)
-
-(*subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]+1}];
+(*;
+subsets=Subsets[Range[Length[diagrams]],{DimensionUpperBound[s,k]+1}];
 determinants =Union[ReducePolynomials[s][det[innerProducts\[LeftDoubleBracket]#,#\[RightDoubleBracket]]]&/@subsets];
 Print["determinants: ",determinants];
 DeclarePolynomialsZero[determinants][DeclarePolynomialNonZero[gcd][s0]]*)
