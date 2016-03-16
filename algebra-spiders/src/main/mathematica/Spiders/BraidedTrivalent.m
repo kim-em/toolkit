@@ -60,9 +60,12 @@ SymmetricTrivalent
 ]
 
 
-BraidedSO3Categories:=BraidedSO3Categories=Module[{BraidedSO3Categories},
+BraidedSO3Categories:=BraidedSO3Categories=Module[{BraidedSO3Categories,fiveBoxes},
 BraidedSO3Categories=DeclarePolynomialNonZero[t^2-t-1][DeclareDimensionBounds[{1,0,1,1,3}][BraidedTrivalent]];
-BraidedSO3Categories=ConsiderDiagrams[ReducedDiagrams[BraidedSO3Categories[[1]],4,0,0]~Join~ReducedDiagrams[BraidedSO3Categories[[1]],4,0,2]~Join~{polygon[4],PlanarGraphs@crossing[]}][BraidedSO3Categories];
+BraidedSO3Categories=ConsiderDiagrams[ReducedDiagrams[BraidedSO3Categories[[1]],4,0,0]~Join~ReducedDiagrams[BraidedSO3Categories[[1]],4,0,2]][BraidedSO3Categories];
+BraidedSO3Categories=ConsiderDiagrams[{polygon[4],PlanarGraphs@crossing[]}][BraidedSO3Categories];
+fiveBoxes=ReducedDiagrams[BraidedTrivalent,5,0,1]~Join~ReducedDiagrams[BraidedTrivalent,5,0,3]~Join~ReducedDiagrams[BraidedTrivalent,5,0,5];
+BraidedSO3Categories=ConsiderDiagrams[fiveBoxes][DeclareDimensionBounds[{1,0,1,1,3,6}][BraidedSO3Categories]];
 BraidedSO3Categories
 ]
 
@@ -76,8 +79,12 @@ CubicBraidedTrivalentCategories=DeclarePolynomialsNonZero[{2-d-t+d t,d+t+d t}][D
 CubicBraidedTrivalent:=CubicBraidedTrivalent=Cases[CubicBraidedTrivalentCategories,s_/;s[[2,2]]==={-1-t+t^2+2 z-2 d z-2 t z-z^2+t z^2-d^2 t z^2+2 z^3+2 d t z^3-4 z^4+4 d^2 z^4-d^3 z^4+2 d t z^4-3 d t^2 z^4+d^3 t^2 z^4+2 z^5+2 d t z^5-z^6+t z^6-d^2 t z^6+2 z^7-2 d z^7-2 t z^7-z^8-t z^8+t^2 z^8}]
 
 
-BraidedG2Categories:=BraidedG2Categories=Module[{BraidedG2},
-BraidedG2Categories=DeclarePolynomialNonZero[t^2-t-1][DeclareDimensionBounds[{1,0,1,1,4,10}][CubicBraidedTrivalent]];
+BraidedG2Categories:=BraidedG2Categories=Module[{BraidedG2Categories},
+BraidedG2Categories=DeclareDimensionBounds[{1,0,1,1,4,10}][CubicBraidedTrivalent];
+(* Move z earlier, for the sake of Grobner bases *)
+BraidedG2Categories=ReplacePart[BraidedG2Categories,{1,2,-1}->{h,z,d,t}];
+(* Insist on the relation between d and t which we know holds from the flat analysis. *)
+BraidedG2Categories=DeclarePolynomialZero[-2+d+4 d t+7 t^2+6 d t^2+t^3-d t^3-4 t^4-4 d t^4+t^5+2 d t^5+d^2 t^5][BraidedG2Categories];
 BraidedG2Categories=ConsiderDiagrams[ReducedDiagrams[BraidedG2Categories[[1]],5,0,1]~Join~ReducedDiagrams[BraidedG2Categories[[1]],5,0,3]~Join~{polygon[5]}][BraidedG2Categories];
 BraidedG2Categories
 ]
