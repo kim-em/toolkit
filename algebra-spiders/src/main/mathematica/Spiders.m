@@ -932,11 +932,13 @@ ReducePolynomialsFurther[s_SpiderAnalysis]:=ReducePolynomialsFurther[s[[2]]]
 ReducePolynomialsFurther[m_Manifold][X_List]:=ReducePolynomialsFurther[m][#]&/@X
 
 
-ReducePolynomialsFurther[m_Manifold][X_]:=Module[{X0,f,variables},
+ReducePolynomialsFurther[m_Manifold][X_]:=Module[{X0,f,variables,result},
 X0=withoutMultiplicity/@timesToList[Factor[X/.m[[1]]]];
 variables=Union[Cases[{m,X0},Subscript[p, _]|tt[_],\[Infinity]]]~Join~m[[5]];
 f[{q_,k_}]:=Factor[cachedPolynomialReduce[q,m[[2]]~Join~m[[3]],variables][[2]]]^k;
-Times@@(f/@X0)
+result=Times@@(f/@X0);
+If[NumericQ[result],result=RootReduce[result]];
+result
 ]
 
 
@@ -963,7 +965,7 @@ r z]
 ]
 
 
-delegatingNullSpace[m_,options___]:=If[Length[m]>10\[And]Length[Variables[m]]>1,{SchwartzZippelNullSpace[m]},NullSpace[m,options]]
+delegatingNullSpace[m_,options___]:=If[Length[m]>\[Infinity]\[And]Length[Variables[m]]>1,{SchwartzZippelNullSpace[m]},NullSpace[m,options]]
 delegatingDeterminant[m_]:=If[Length[m]>10,GuessingPolynomials`Private`onDiskParallelDeterminant[m,IntegerString[Hash[m,"SHA1"],16,16]],Det[m]]
 
 
