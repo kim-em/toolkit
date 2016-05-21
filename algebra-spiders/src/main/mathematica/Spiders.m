@@ -233,6 +233,7 @@ DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGrap
 
 
 DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Import[DrawPlanarGraph$@createPDF[g]@toString[]]/.{$Failed->g@toString[],{picture_}:>picture}
+DrawPlanarGraph[X_List]:=DrawPlanarGraph/@X
 
 
 DrawPlanarGraph[S_String]:=DrawPlanarGraph[PlanarGraphs@fromString[S]]
@@ -672,6 +673,17 @@ Clear[cachedInnerProduct]
 cachedInnerProduct[spiderHash_,x_String,y_String]:=$Failed
 
 
+rotationFactor[s_SpiderAnalysis,rotations:{{_Integer,_Integer}...}]:=Times@@(rotationFactor[s,#]&/@rotations)
+rotationFactor[s_SpiderAnalysis,rotation:{p_Integer,c_Integer}]:=Module[{vertices},
+vertices=Cases[FromScalaObject[s[[1]]@generators[],2],({v_,w_}/;v@perimeter[]==p):>FromScalaObject[w]];
+If[Length[vertices]!=1,
+Print["Ask Scott to go implement rotations properly; for now you can't have two vertices with the same valence, but different eigenvalues."];
+Abort[]
+];
+vertices[[1]]^c
+]
+
+
 cachingInnerProduct[spider_SpiderAnalysis,x:Diagram,y:Diagram]:=cachingInnerProduct[spider,x@toString[],y@toString[]]
 cachingInnerProduct[s_SpiderAnalysis,x_String,y_String]:=Module[{xs,ys,outerHash,innerHash,result},
 outerHash=Hash[s,"SHA256"];
@@ -681,7 +693,10 @@ If[result===$Failed,
 result=cachedInnerProduct[innerHash,x,y];
 If[result===$Failed,
 result=cachedInnerProduct[innerHash,x,y]=
-cachingEvaluation[s[[1]],PlanarGraphs@spider[]@innerProduct[PlanarGraphs@fromString[x],PlanarGraphs@fromString[y]]@canonicalFormWithDefect[]@U1[]]
+Module[{ip},
+ip=PlanarGraphs@spider[]@innerProduct[PlanarGraphs@fromString[x],PlanarGraphs@fromString[y]]@canonicalFormWithDefect[];
+rotationFactor[s,FromScalaObject[ip@U2[]@vertexRotations[]]]cachingEvaluation[s[[1]],ip@U1[]]
+]
 (*FromScalaObject[spider\[LeftDoubleBracket]1\[RightDoubleBracket]@innerProductMatrix[Spiders`Private`AsScalaList[{PlanarGraphs@fromString[x]}],Spiders`Private`AsScalaList[{PlanarGraphs@fromString[y]}]]]\[LeftDoubleBracket]1,1\[RightDoubleBracket];*)
 ];
 result=cachedInnerProduct[outerHash,x,y]=ReducePolynomials[s][result];

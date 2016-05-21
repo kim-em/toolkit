@@ -251,7 +251,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     geodesics_(initialFace)
   }
 
-  lazy val canonicalFormWithDefect = {
+  lazy val canonicalFormWithDefect: (PlanarGraph, Rotation) = {
     val packed = relabelEdgesAndFaces
     val labelling = Dreadnaut.canonicalLabelling(packed.nautyGraph)
 
