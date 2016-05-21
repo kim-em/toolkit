@@ -12,20 +12,22 @@ import org.apache.commons.io.FilenameUtils
 import net.tqft.toolkit.SHA1
 
 trait DrawPlanarGraph {
+  def dots: Boolean
   def scale: Double
   def globalStyle: String
   def drawBoundary: Boolean
   def drawAsCrossings: (Option[Int], Option[Int], Option[Int])
   def outputPath: Path
 
-  def withScale(scale: Double) = CustomizedDrawPlanarGraph(scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
-  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
-  def showBoundary = CustomizedDrawPlanarGraph(scale, globalStyle, true, drawAsCrossings, outputPath)
-  def hideBoundary = CustomizedDrawPlanarGraph(scale, globalStyle, false, drawAsCrossings, outputPath)
-  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(scale, globalStyle, drawBoundary, (unoriented, positive, negative), outputPath)
+  def showDots = CustomizedDrawPlanarGraph(true, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def withScale(scale: Double) = CustomizedDrawPlanarGraph(dots, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(dots, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def showBoundary = CustomizedDrawPlanarGraph(dots, scale, globalStyle, true, drawAsCrossings, outputPath)
+  def hideBoundary = CustomizedDrawPlanarGraph(dots, scale, globalStyle, false, drawAsCrossings, outputPath)
+  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(dots, scale, globalStyle, drawBoundary, (unoriented, positive, negative), outputPath)
   def withOutputPath(outputPath: Path): DrawPlanarGraph = {
     Files.createDirectories(outputPath)
-    CustomizedDrawPlanarGraph(scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+    CustomizedDrawPlanarGraph(dots, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
   }
   def withOutputPath(outputPath: String): DrawPlanarGraph = withOutputPath(Paths.get(outputPath))
 
@@ -42,7 +44,7 @@ trait DrawPlanarGraph {
 
     paths.headOption.orElse(Try(s"which $programName".!!).toOption).getOrElse(programName)
   }
-  
+
   private val texSearchPaths = List("/usr/texbin", "/Library/TeX/texbin", "/usr/bin", "/usr/local/bin")
   var pdflatexPath = getProgramPath("pdflatex", texSearchPaths)
   var pdftexPath = getProgramPath("pdftex", texSearchPaths)
@@ -220,7 +222,7 @@ trait DrawPlanarGraph {
         var vertexPairWeights: Map[(Int, Int), Double] = (for (v <- 1 until vertexAdjs.length) yield for (w <- vertexAdjs(v) if w > v) yield ((v, w), 1.0)).flatten.toMap
         def dist(v: Int, w: Int): Double = if (w > G.numberOfInternalVertices)
           hypot(intxs(v - 1) - bxs(w - G.numberOfInternalVertices - 1), intys(v - 1) - bys(w - G.numberOfInternalVertices - 1))
-          else hypot(intxs(v - 1) - intxs(w - 1), intys(v - 1) - intys(w - 1))
+        else hypot(intxs(v - 1) - intxs(w - 1), intys(v - 1) - intys(w - 1))
 
         var updated = true
         var it = 0
@@ -289,6 +291,12 @@ trait DrawPlanarGraph {
     for (i <- 0 until G.numberOfInternalVertices) {
       tikzString = tikzString ++ s"\\node${if (dVs contains i + 1) s"[${decoratedVertices(i + 1)}]" else ""} (${i + 1}) at ${internalVertexCoords(i)} {};\n"
     }
+    // Draw dots
+    if (dots) {
+      for (i <- 0 until G.numberOfInternalVertices) {
+        tikzString = tikzString ++ s"\\path (${i + 1}) ++ (${vertexRotations(i) + 180 / G.degree(i + 1)}:.1cm)" + " node[draw=none] {$\\bullet$};"
+      }
+    }
     // Draw edges
     def getAngle(edge: Int, endpoint: Int): Double =
       if (endpoint > G.numberOfInternalVertices) // If endpoint is a boundary vertex
@@ -323,7 +331,7 @@ trait DrawPlanarGraph {
     return tikzString
   }
 
-  private def filenameForGraph(g: PlanarGraph) = "urn:sha1:" + SHA1(g.toString) + ".pdf"
+  private def filenameForGraph(g: PlanarGraph) = "urn:sha1:" + SHA1(g.toString + " " + this.toString) + ".pdf"
 
   def writePDF(g: PlanarGraph)(filename: String = filenameForGraph(g)): Path = {
     val path = outputPath.resolve(outputPath.resolve(filename))
@@ -374,6 +382,7 @@ trait DrawPlanarGraph {
 }
 
 object DrawPlanarGraph extends DrawPlanarGraph {
+  override val dots: Boolean = false
   override val scale: Double = 1.6
   override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}"
   override val drawBoundary = true
@@ -382,6 +391,7 @@ object DrawPlanarGraph extends DrawPlanarGraph {
 }
 
 case class CustomizedDrawPlanarGraph(
+  val dots: Boolean,
   val scale: Double,
   val globalStyle: String,
   val drawBoundary: Boolean,
