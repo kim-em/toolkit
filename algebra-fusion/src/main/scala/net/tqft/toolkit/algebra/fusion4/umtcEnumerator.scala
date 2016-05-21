@@ -167,8 +167,6 @@ case class FirstMatrixEnumerator(
 
   private val coefficientClustersList = coefficientClusters.toList
 
-  
-  
   private val coefficientRuns = {
     import net.tqft.toolkit.collections.Split._
     val firstCoefficients = coefficientClusters.map(_.head).toSet
@@ -178,7 +176,7 @@ case class FirstMatrixEnumerator(
   //println(coefficientRuns)
   require(coefficientRuns.size == coefficientClustersList.size)
   require(coefficientRuns.map(_.last) == coefficientClustersList.map(_.head)) // this verifies the condition on coefficientClusters
-  
+
   val rank = initialMatrix.length
   val steps = coefficientClusters.length
   var hint = Array.fill(rank)(1.0)
@@ -197,19 +195,19 @@ case class FirstMatrixEnumerator(
         m(1)(j) <= m(1)(j - 1)
       }
     } else {
-      // the diagonal should be decreasing, within blocks
-      if (i == j) {
-        if (i <= 2) {
-          true
+      if (i <= 2) {
+        true
+      } else { // the diagonal should be decreasing, within blocks
+        if (i == j) {
+          m(1)(i) < m(1)(i - 1) || m(i)(i) <= m(i - 1)(i - 1)
         } else {
-          m(1)(i) < m(1)(i-1) || m(i)(i) <= m(i - 1)(i - 1)
-        }
-      } else {
-        if(j == m.length - 1 && m(1)(i) == m(1)(i-1) && m(i)(i) == m(i-1)(i-1)) {
-          import Ordering.Implicits._
-          m(i).toSeq.sorted.reverse <= m(i-1).toSeq.sorted.reverse
-        } else {
-          true
+          // if the row is done, check that the sorted set of entries is lexicographically no more than the sorted set of entries of the previous row
+          if (j == m.length - 1 && m(1)(i) == m(1)(i - 1) && m(i)(i) == m(i - 1)(i - 1)) {
+            import Ordering.Implicits._
+            m(i).toSeq.sorted.reverse <= m(i - 1).toSeq.sorted.reverse
+          } else {
+            true
+          }
         }
       }
 

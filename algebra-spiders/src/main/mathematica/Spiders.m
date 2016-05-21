@@ -598,7 +598,7 @@ AppendClosedDiagram[d0:Diagram][s_SpiderAnalysis]:=ReplacePart[s,6->Union[s[[6]]
 automaticFlatMap/@{AppendIndependentDiagram,AppendDependentDiagram,AppendClosedDiagram};
 
 
-ReducedDiagrams[s_SpiderAnalysis,circumference_Integer,numbersOfVertices___Integer]:=FromScalaObject[s[[1]]@reducedDiagrams[circumference,AsScalaObject[Rule@@#&/@Transpose[{#@U1[]&/@FromScalaObject[s[[1]]@generators[],1],{numbersOfVertices}}]]],1]
+ReducedDiagrams[s_SpiderAnalysis,circumference_Integer,numbersOfVertices___Integer]:=ReducedDiagrams[s,circumference,numbersOfVertices]=FromScalaObject[s[[1]]@reducedDiagrams[circumference,AsScalaObject[Rule@@#&/@Transpose[{#@U1[]&/@FromScalaObject[s[[1]]@generators[],1],{numbersOfVertices}}]]],1]
 
 
 TrivalentQ[s_SpiderAnalysis]:=s[[1]]@generators[]@size[]==1\[And]FromScalaObject[s[[1]]@generators[],1][[1]]@U1[]@perimeter[]==3\[And]FromScalaObject[s[[1]]@generators[],1][[1]]@U1[]@allowedRotationStep[]==1
@@ -686,7 +686,7 @@ vertices[[1]]^c
 
 cachingInnerProduct[spider_SpiderAnalysis,x:Diagram,y:Diagram]:=cachingInnerProduct[spider,x@toString[],y@toString[]]
 cachingInnerProduct[s_SpiderAnalysis,x_String,y_String]:=Module[{xs,ys,outerHash,innerHash,result},
-outerHash=Hash[s];
+outerHash=Hash[s,"SHA256"];
 innerHash=s[[1]]@hashCode[];
 result=cachedInnerProduct[outerHash,x,y];
 If[result===$Failed,
