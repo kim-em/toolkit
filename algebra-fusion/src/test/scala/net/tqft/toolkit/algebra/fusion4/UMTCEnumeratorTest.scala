@@ -5,18 +5,25 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import java.io.FileOutputStream
+import java.io.PrintWriter
 
 @RunWith(classOf[JUnitRunner])
 class UMTCEnumeratorTest extends FlatSpec with Matchers {
 
   "firstNonInvertibleObjectMatrices" should "find all the initial matrices" in {
     val rank = 7
-    val globalDimensionBound = 60.0
+    val globalDimensionBound = 200.0
     val enumerator = UMTCEnumerator(rank, 0, globalDimensionBound)
 //    val matrices = enumerator.firstNonInvertibleObjectMatrices
     //    println(matrices.size)
     //    for (m <- enumerator.firstNonInvertibleObjectMatricesWithEigendata; d <- m.diagonalisation; s <- d.symmetrised; N <- s.verlindeMultiplicities) {
     //    }
+    val sb = new StringBuilder
+    def pw(c: String) = {
+      println(c)
+      sb ++= (c.stripSuffix("\n") + "\n")
+    }
     for (m <- enumerator.firstNonInvertibleObjectMatricesWithEigendata) {
       if (m.diagonalisationOrPartialFusionRing.isRight) {
 //        println("Eigenspaces: " + m.eigenspaces.map(_.eigenbasis.size).sorted)
@@ -29,11 +36,10 @@ class UMTCEnumeratorTest extends FlatSpec with Matchers {
           Some(m.m))
         try {
           for (c <- fusion3Enumerator.root.descendants) {
-            println(c.toString)
+            pw(c.toString)
           }
         } catch {
           case e: NoSuchElementException => {
-
           }
         }
       } else {
@@ -45,7 +51,7 @@ class UMTCEnumeratorTest extends FlatSpec with Matchers {
 //            println(N(1).map(_.mkString).mkString("\n"))
         val max = N.map(_.map(_.max).max).max
             val sep = if (max >= 10) "," else ""
-            println(rank + ",0 " + max + " " + N.map(_.map(_.mkString(sep)).mkString(sep)).mkString(sep))
+            pw(rank + ",0 " + max + " " + N.map(_.map(_.mkString(sep)).mkString(sep)).mkString(sep))
             //      println(N.map(_.map(_.mkString("{",",","}")).mkString("{",",","}")).mkString("{",",","}"))
             //      println(N.transpose.map(_.map(_.mkString).mkString(" ")).mkString("\n"))
             //      println
@@ -55,6 +61,10 @@ class UMTCEnumeratorTest extends FlatSpec with Matchers {
       }
     }
 
+    val out = new PrintWriter(new FileOutputStream(s"fusion-rings4u/$rank,0,$globalDimensionBound.classification"))
+    out.print(sb.toString)
+    out.close
+    
     //    import net.tqft.toolkit.collections.Tally._
     //    import Ordering.Implicits._
     //    val eigenspaceSizes = (for (m <- enumerator.firstNonInvertibleObjectMatricesWithEigendata; pfr <- m.diagonalisationOrPartialFusionRing.right.toOption) yield {
