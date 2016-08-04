@@ -32,7 +32,7 @@ case class Enumeration(
   private val multiplicities = for (i <- 1 until rank; j <- 1 until rank; k <- 1 until rank) yield Seq(i, j, k)
 
   private val checkTallies = scala.collection.mutable.Map[Int, Int]()
-  
+
   private val ordering: Ordering[Seq[Int]] = {
     import Ordering.Implicits._
     import net.tqft.toolkit.orderings.Orderings._
@@ -59,7 +59,7 @@ case class Enumeration(
   private val representativeMultiplicities = {
     multiplicities.filter(m => m == minReciprocal(m)).sorted(ordering)
   }
-//  println("representativeMultiplicities = " + representativeMultiplicities)
+  //  println("representativeMultiplicities = " + representativeMultiplicities)
 
   private val numberOfVariables = representativeMultiplicities.size
   private val lookup = {
@@ -85,7 +85,7 @@ case class Enumeration(
   private val objectFinishedAtStep = {
     (for (i <- 1 until rank) yield (multiplicities.filter(_.contains(i)).map({ case Seq(i, j, k) => lookup(i)(j)(k).right.get }).max) -> i).toMap
   }
-//  println("objectFinishedAtStep = " + objectFinishedAtStep)
+  //  println("objectFinishedAtStep = " + objectFinishedAtStep)
 
   private def N(x: Array[Int])(i: Int, j: Int, k: Int) = {
     lookup(i)(j)(k) match {
@@ -112,15 +112,15 @@ case class Enumeration(
       case None => empty
       case Some(matrix) => {
         require(selfDualObjects > 0 && matrix(1)(0) == 1 || selfDualObjects == 0 && matrix(1)(0) == 0 && matrix(2)(0) == 1)
-        
+
         val nextSteps = representativeMultiplicities.takeWhile(_.contains(1)).map({ v =>
           require(v.head == 1)
           matrix(v(1))(v(2))
         })
         nextSteps.foldLeft[Option[Partial]](Some(empty))({ case (o, m) => o.flatMap(_.next(m)).flatMap(_.associative_?) }) match {
           case None => {
-//            println("No root compatible with the specified initial matrix.")
-//            println(matrix.map(_.mkString).mkString("\n"))
+            //            println("No root compatible with the specified initial matrix.")
+            //            println(matrix.map(_.mkString).mkString("\n"))
             throw new NoSuchElementException
           }
           case Some(r) => r
@@ -295,12 +295,12 @@ case class Enumeration(
           Array.tabulate(rank, rank)({ (j, k) => hint(j)(k) * scala.math.Pi / 3 + n(j)(k) })
         }
       }
-//      if(!done_?) {
-//      checkTallies(i0) = checkTallies.getOrElse(i0, 0) + 1
-//      if(checkTallies(i0) % 100 == 0) {
-//      println(checkTallies)
-//      }
-//      }
+      //      if(!done_?) {
+      //      checkTallies(i0) = checkTallies.getOrElse(i0, 0) + 1
+      //      if(checkTallies(i0) % 100 == 0) {
+      //      println(checkTallies)
+      //      }
+      //      }
       val (eigenvalues, s0) = eigensystem(m)
       //      println("m: " + m.toList.map(_.toList))
 
@@ -415,40 +415,40 @@ case class Enumeration(
           true
         }
 
-//        // TODO: once things are working, remove the orthogonality check; it should always pass
-//        if (eigenvectors.forall(X => X(0) != ComplexDouble.ZERO) && orthogonal(eigenvectors)) {
+        //        // TODO: once things are working, remove the orthogonality check; it should always pass
+        //        if (eigenvectors.forall(X => X(0) != ComplexDouble.ZERO) && orthogonal(eigenvectors)) {
 
-          // TODO: as written, this isn't checking anything!
-          def d(l: Int, i: Int) = {
-            // the eigenvalue of X_i on eigenvector(l)
-            val X = newFinishedMatrices(i)
-            dot2(eigenvectors(l), X(0)).div(eigenvectors(l)(0))
+        // TODO: as written, this isn't checking anything!
+        def d(l: Int, i: Int) = {
+          // the eigenvalue of X_i on eigenvector(l)
+          val X = newFinishedMatrices(i)
+          dot2(eigenvectors(l), X(0)).div(eigenvectors(l)(0))
+        }
+        //                println("eigenvectors: " + eigenvectors.map(_.toList))
+        def check: Boolean = {
+          for (l <- 0 until eigenvectors.length; i <- 1 until i0) {
+            //                    println("newFinishedMatrices(i): " + newFinishedMatrices(i).toList.map(_.toList))
+            //                    println((l,i, d(l,i), eigenvectors(l)(i).div(eigenvectors(l)(0)).conj), d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001)
+            if (d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001) return false
           }
-          //                println("eigenvectors: " + eigenvectors.map(_.toList))
-          def check: Boolean = {
-            for (l <- 0 until eigenvectors.length; i <- 1 until i0) {
-              //                    println("newFinishedMatrices(i): " + newFinishedMatrices(i).toList.map(_.toList))
-              //                    println((l,i, d(l,i), eigenvectors(l)(i).div(eigenvectors(l)(0)).conj), d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001)
-              if (d(l, i).add(eigenvectors(l)(i).div(eigenvectors(l)(0)).conj.neg).abs > 0.001) return false
-            }
-            true
-          }
-          // check that the ratios give the eigenvalues 
-          if (check) {
-            Some(this.copy(umtcHint = Some(m), finishedMatrices = newFinishedMatrices))
-          } else {
-            println("bad S matrix")
-            None
-          }
-//        } else {
-//          if (!eigenvectors.forall(X => X(0) != ComplexDouble.ZERO)) {
-//                        println("bad S matrix: eigenvector starts with a zero")
-//          } else {
-//            require(!orthogonal(eigenvectors))
-//            println("bad S matrix: eigenvectors not orthogonal")
-//          }
-//          None
-//        }
+          true
+        }
+        // check that the ratios give the eigenvalues 
+        if (check) {
+          Some(this.copy(umtcHint = Some(m), finishedMatrices = newFinishedMatrices))
+        } else {
+          println("bad S matrix")
+          None
+        }
+        //        } else {
+        //          if (!eigenvectors.forall(X => X(0) != ComplexDouble.ZERO)) {
+        //                        println("bad S matrix: eigenvector starts with a zero")
+        //          } else {
+        //            require(!orthogonal(eigenvectors))
+        //            println("bad S matrix: eigenvectors not orthogonal")
+        //          }
+        //          None
+        //        }
       }
 
     }
@@ -558,16 +558,16 @@ case class Enumeration(
         .map(_.get)
         .flatMap(_.associative_?)
         .flatMap(_.objectDimensionAllowed_?)
-        .flatMap(_.umtcFastForward(true)).toSeq
+        .flatMap(_.umtcFastForward(true))
     }
 
     def done_? = step == numberOfVariables - 1
 
-    def descendants: Seq[Complete] = {
+    def descendants: Iterator[Complete] = {
       if (done_?) {
-        complete.toSeq
+        complete.toIterator
       } else {
-        children.par.flatMap(_.descendants).seq
+        children.flatMap(_.descendants)
       }
     }
 
@@ -592,8 +592,7 @@ case class Enumeration(
             (Seq.empty, Seq(c))
           }
           case None => {
-            // FIXME turn on par mode when everything works again
-            val results = children /*.par*/ .map(_.interruptibleDescendantsWorker(latch, notify)).seq
+            val results = children.toSeq.par.map(_.interruptibleDescendantsWorker(latch, notify)).seq
             (results.flatMap(_._1), results.flatMap(_._2))
           }
         }
@@ -842,7 +841,7 @@ case class Enumeration(
       val associativityEquations = (for (a <- 1 until rank; b <- a until rank; c <- a until rank; d <- a until rank; eq <- AssociativityEquation(a, b, c, d)) yield eq)
       val equations = (associativityEquations ++ (if (withFunctor.nonEmpty) restrictionEquations else Nil)).distinct
       val r = AssociativityData(Nil, equations.groupBy(_.lastVariable), Nil)
-      
+
       r
     }
 
