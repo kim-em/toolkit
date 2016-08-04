@@ -1,0 +1,451 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     15520,        442]
+NotebookOptionsPosition[     15148,        424]
+NotebookOutlinePosition[     15507,        440]
+CellTagsIndexPosition[     15464,        437]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"Tetravalent", "=", 
+    RowBox[{
+     RowBox[{"DeclareDimensionBounds", "[", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0", ",", "1", ",", "0", ",", "3"}], "}"}], "]"}], 
+     "[", 
+     RowBox[{"emptySpiderAnalysis", "[", 
+      RowBox[{
+       RowBox[{"FreeSpider", "[", 
+        RowBox[{"{", 
+         RowBox[{"{", 
+          RowBox[{"4", ",", "0", ",", "1", ",", "1"}], "}"}], "}"}], "]"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{"h", ",", "d"}], "}"}]}], "]"}], "]"}]}], ";"}], "\n", 
+  RowBox[{"(*", " ", 
+   RowBox[{"2", "-", 
+    RowBox[{"boundary", " ", "points"}]}], " ", "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{"Tetravalent", "=", 
+   RowBox[{
+    RowBox[{"ConsiderDiagram", "[", 
+     RowBox[{
+      RowBox[{"PlanarGraphs", "@", 
+       RowBox[{"strand", "[", "]"}]}], ",", 
+      RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}], "[", 
+    "Tetravalent", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Tetravalent", "=", 
+   RowBox[{
+    RowBox[{"DeclarePolynomialsZero", "[", 
+     RowBox[{"{", 
+      RowBox[{"d", "-", 
+       RowBox[{"Name", "[", 
+        RowBox[{"PlanarGraphs", "@", 
+         RowBox[{"loop", "[", "]"}]}], "]"}]}], "}"}], "]"}], "[", 
+    "Tetravalent", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Tetravalent", "=", 
+   RowBox[{
+    RowBox[{"ConsiderDiagram", "[", 
+     RowBox[{
+      RowBox[{"ReducedDiagrams", "[", 
+       RowBox[{
+        RowBox[{
+        "Tetravalent", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+         ",", "2", ",", "1"}], "]"}], "\[LeftDoubleBracket]", "1", 
+      "\[RightDoubleBracket]"}], "]"}], "[", "Tetravalent", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Tetravalent", "=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"DeclarePolynomialsZero", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"d", "+", "1"}], ",", 
+         RowBox[{"Name", "[", 
+          RowBox[{"PlanarGraphs", "@", 
+           RowBox[{"bowtie", "[", "]"}]}], "]"}]}], "}"}], "]"}], "[", 
+      "Tetravalent", "]"}], "~", "Join", "~", 
+     RowBox[{
+      RowBox[{"DeclarePolynomialsZero", "[", 
+       RowBox[{"{", 
+        RowBox[{"d", "-", 
+         RowBox[{"Name", "[", 
+          RowBox[{"PlanarGraphs", "@", 
+           RowBox[{"bowtie", "[", "]"}]}], "]"}]}], "}"}], "]"}], "[", 
+      "Tetravalent", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"4", "-", 
+    RowBox[{"boundary", " ", "points"}]}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Tetravalent", "=", 
+   RowBox[{
+    RowBox[{"ConsiderDiagrams", "[", 
+     RowBox[{
+      RowBox[{"ReducedDiagrams", "[", 
+       RowBox[{
+        RowBox[{
+        "Tetravalent", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+         ",", "4", ",", "0"}], "]"}], ",", 
+      RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}], "[", 
+    "Tetravalent", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Tetravalent", "=", 
+   RowBox[{
+    RowBox[{"ConsiderDiagram", "[", 
+     RowBox[{
+      RowBox[{"PlanarGraphs", "@", 
+       RowBox[{"tetravalentVertex", "[", "]"}]}], ",", 
+      RowBox[{"\"\<InsistIndependent\>\"", "\[Rule]", "True"}]}], "]"}], "[", 
+    "Tetravalent", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Tetravalent", "=", 
+   RowBox[{
+    RowBox[{"DeclarePolynomialsZero", "[", 
+     RowBox[{"{", 
+      RowBox[{"h", "-", 
+       RowBox[{"Name", "[", 
+        RowBox[{"PlanarGraphs", "@", 
+         RowBox[{
+          RowBox[{"spider", "[", "]"}], "@", 
+          RowBox[{"multiply", "[", 
+           RowBox[{
+            RowBox[{"PlanarGraphs", "@", 
+             RowBox[{"tetravalentVertex", "[", "]"}]}], ",", 
+            RowBox[{"PlanarGraphs", "@", 
+             RowBox[{"tetravalentVertex", "[", "]"}]}], ",", "4"}], "]"}]}]}],
+         "]"}]}], "}"}], "]"}], "[", "Tetravalent", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Tetravalent", "=", 
+   RowBox[{
+    RowBox[{"ConsiderDiagram", "[", 
+     RowBox[{
+      RowBox[{"ReducedDiagrams", "[", 
+       RowBox[{
+        RowBox[{
+        "Tetravalent", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}],
+         ",", "4", ",", "2"}], "]"}], "\[LeftDoubleBracket]", "1", 
+      "\[RightDoubleBracket]"}], "]"}], "[", "Tetravalent", "]"}]}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.64137032376403*^9, 3.641370348700769*^9}, 
+   3.641370551314889*^9, {3.641370596806658*^9, 3.641370598756226*^9}, 
+   3.6413706323914957`*^9, {3.641370679057719*^9, 3.641370683901287*^9}, {
+   3.641370903209219*^9, 3.641370948499422*^9}, {3.641371035845272*^9, 
+   3.641371054828322*^9}, {3.641371229672316*^9, 3.641371251584799*^9}, {
+   3.641371388653503*^9, 3.641371489419051*^9}, {3.6413716140620327`*^9, 
+   3.641371627696994*^9}, {3.641371683512001*^9, 3.641371683791128*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["Tetravalent"], "Input",
+ CellChangeTimes->{{3.641371540755947*^9, 3.641371544260089*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"SpiderAnalysis\"\>", "[", 
+   RowBox[{
+    InterpretationBox[
+     RowBox[{"\[LeftGuillemet]", 
+      RowBox[{"JavaObject", "[", 
+       RowBox[{
+       "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+        ".", "examples", ".", "QuotientSpider"}], "]"}], "\[RightGuillemet]"}],
+     JLink`Objects`vm1`JavaObject16809106031509505], ",", 
+    RowBox[{"Manifold", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         SubscriptBox["p", "3"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "4"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "5"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "6"], "\[Rule]", "d"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "7"], "\[Rule]", "h"}], ",", 
+        RowBox[{
+         SubscriptBox["p", "9"], "\[Rule]", 
+         FractionBox[
+          RowBox[{
+           SuperscriptBox["d", "3"], "-", 
+           RowBox[{"3", " ", 
+            SuperscriptBox["d", "2"], " ", "h"}], "+", 
+           RowBox[{"d", " ", 
+            SuperscriptBox["h", "2"]}], "+", 
+           RowBox[{"2", " ", 
+            SuperscriptBox["d", "2"], " ", 
+            SuperscriptBox["h", "2"]}], "-", 
+           SuperscriptBox["h", "3"], "+", 
+           RowBox[{"2", " ", 
+            SuperscriptBox["d", "2"], " ", 
+            SubscriptBox["p", "8"]}], "-", 
+           RowBox[{"2", " ", 
+            SuperscriptBox["d", "3"], " ", 
+            SubscriptBox["p", "8"]}], "+", 
+           RowBox[{"2", " ", "d", " ", "h", " ", 
+            SubscriptBox["p", "8"]}], "-", 
+           RowBox[{"2", " ", 
+            SuperscriptBox["d", "2"], " ", "h", " ", 
+            SubscriptBox["p", "8"]}], "-", 
+           RowBox[{"d", " ", 
+            SubsuperscriptBox["p", "8", "2"]}], "+", 
+           RowBox[{
+            SuperscriptBox["d", "3"], " ", 
+            SubsuperscriptBox["p", "8", "2"]}]}], 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", "d", " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"-", "2"}], " ", "d"}], "+", "h", "+", 
+             RowBox[{"d", " ", "h"}]}], ")"}]}]]}], ",", 
+        RowBox[{
+         SubscriptBox["p", "10"], "\[Rule]", 
+         FractionBox[
+          RowBox[{
+           RowBox[{"-", 
+            SuperscriptBox["d", "2"]}], "+", 
+           RowBox[{"2", " ", "d", " ", "h"}], "+", 
+           RowBox[{
+            SuperscriptBox["d", "2"], " ", "h"}], "-", 
+           RowBox[{"3", " ", 
+            SuperscriptBox["h", "2"]}], "+", 
+           SuperscriptBox["h", "3"], "+", 
+           RowBox[{"2", " ", "d", " ", 
+            SubscriptBox["p", "8"]}], "-", 
+           RowBox[{"2", " ", 
+            SuperscriptBox["d", "2"], " ", 
+            SubscriptBox["p", "8"]}], "+", 
+           RowBox[{"2", " ", "h", " ", 
+            SubscriptBox["p", "8"]}], "-", 
+           RowBox[{"2", " ", "d", " ", "h", " ", 
+            SubscriptBox["p", "8"]}], "-", 
+           SubsuperscriptBox["p", "8", "2"], "+", 
+           RowBox[{
+            SuperscriptBox["d", "2"], " ", 
+            SubsuperscriptBox["p", "8", "2"]}]}], 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"-", "2"}], " ", "d"}], "+", "h", "+", 
+             RowBox[{"d", " ", "h"}]}], ")"}]}]]}], ",", 
+        TagBox[
+         RowBox[{
+          RowBox[{"tt", "[", "2", "]"}], "\[Rule]", 
+          RowBox[{"-", "1"}]}],
+         Short], ",", 
+        TagBox[
+         RowBox[{
+          RowBox[{"tt", "[", "3", "]"}], "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"-", "d"}], "+", 
+            RowBox[{"2", " ", "h"}], "-", 
+            SuperscriptBox["h", "2"], "-", 
+            SubscriptBox["p", "8"], "+", 
+            RowBox[{"d", " ", 
+             SubscriptBox["p", "8"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "2"}], " ", "d"}], "+", "h", "+", 
+              RowBox[{"d", " ", "h"}]}], ")"}]}]]}],
+         Short], ",", 
+        TagBox[
+         RowBox[{
+          RowBox[{"tt", "[", "4", "]"}], "\[Rule]", 
+          FractionBox[
+           RowBox[{
+            SuperscriptBox["d", "2"], "-", 
+            RowBox[{"d", " ", "h"}], "-", 
+            RowBox[{
+             SuperscriptBox["d", "2"], " ", "h"}], "+", 
+            SuperscriptBox["h", "2"], "-", 
+            RowBox[{"d", " ", 
+             SubscriptBox["p", "8"]}], "+", 
+            RowBox[{
+             SuperscriptBox["d", "2"], " ", 
+             SubscriptBox["p", "8"]}]}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"-", "1"}], "+", "d"}], ")"}], " ", "d", " ", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"-", "2"}], " ", "d"}], "+", "h", "+", 
+              RowBox[{"d", " ", "h"}]}], ")"}]}]]}],
+         Short], ",", 
+        TagBox[
+         RowBox[{
+          RowBox[{"tt", "[", "5", "]"}], "\[Rule]", 
+          FractionBox[
+           RowBox[{"d", "+", "h", "-", 
+            SubscriptBox["p", "8"], "-", 
+            RowBox[{"d", " ", 
+             SubscriptBox["p", "8"]}]}], 
+           RowBox[{
+            RowBox[{
+             RowBox[{"-", "2"}], " ", "d"}], "+", "h", "+", 
+            RowBox[{"d", " ", "h"}]}]]}],
+         Short]}], "}"}], ",", 
+      RowBox[{"{", "}"}], ",", 
+      RowBox[{"{", "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "1"}], "+", "d"}], ",", "d", ",", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "2"}], " ", "d"}], "+", "h", "+", 
+         RowBox[{"d", " ", "h"}]}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"h", ",", "d"}], "}"}]}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "0", ",", "1", ",", "0", ",", "3"}], "}"}], ",", 
+    TagBox[
+     RowBox[{"{", 
+      RowBox[{
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject6558186421092353], ",", 
+       RowBox[{"\[LeftSkeleton]", "2", "\[RightSkeleton]"}], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject31633319904935937]}], "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", 
+      RowBox[{
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject14790706501517316], ",", 
+       InterpretationBox[
+        RowBox[{"\[LeftGuillemet]", 
+         RowBox[{"JavaObject", "[", 
+          RowBox[{
+          "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", "spiders", 
+           ".", "PlanarGraph"}], "]"}], "\[RightGuillemet]"}],
+        JLink`Objects`vm1`JavaObject24053795461791745]}], "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         InterpretationBox[
+          RowBox[{"\[LeftGuillemet]", 
+           RowBox[{"JavaObject", "[", 
+            RowBox[{
+            "net", ".", "tqft", ".", "toolkit", ".", "algebra", ".", 
+             "spiders", ".", "examples", ".", "QuotientSpider"}], "]"}], 
+           "\[RightGuillemet]"}],
+          JLink`Objects`vm1`JavaObject25991817145090050], ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", 
+              FractionBox[
+               SubscriptBox["p", "4"], "d"]}], ",", 
+             InterpretationBox[
+              RowBox[{"\[LeftGuillemet]", 
+               RowBox[{"JavaObject", "[", 
+                RowBox[{"\[LeftSkeleton]", "44", "\[RightSkeleton]"}], "]"}], 
+               "\[RightGuillemet]"}],
+              JLink`Objects`vm1`JavaObject6558186421092353]}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"1", ",", 
+             InterpretationBox[
+              RowBox[{"\[LeftGuillemet]", 
+               RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}], 
+               "\[RightGuillemet]"}],
+              JLink`Objects`vm1`JavaObject14790706501517316]}], "}"}]}], 
+          "}"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         InterpretationBox[
+          RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}],
+          JLink`Objects`vm1`JavaObject11864762698694657], ",", 
+         RowBox[{"\[LeftSkeleton]", "1", "\[RightSkeleton]"}]}], "}"}]}], 
+      "}"}],
+     Short], ",", 
+    TagBox[
+     RowBox[{"{", "}"}],
+     Short]}], "]"}], "}"}]], "Output",
+ CellChangeTimes->{3.641371544729134*^9, 3.641371685505086*^9}]
+}, Open  ]]
+},
+WindowSize->{1095, 751},
+WindowMargins->{{20, Automatic}, {Automatic, 44}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 4922, 134, 267, "Input"],
+Cell[CellGroupData[{
+Cell[5505, 158, 103, 1, 28, "Input"],
+Cell[5611, 161, 9521, 260, 282, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
