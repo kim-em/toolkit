@@ -19,14 +19,14 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
     if (x < 256) sqrtFloorCache(x) else sqrtFloorImpl(x)
   }
   private def sqrtFloorImpl(x: Int): Int = {
-    scala.math.sqrt(x).floor.toInt
+    (scala.math.sqrt(x) + 0.001).floor.toInt
   }
   private val sqrtCeilCache = Array.tabulate(256)(sqrtCeilImpl)
   private def sqrtCeil(x: Int): Int = {
     if (x < 256) sqrtCeilCache(x) else sqrtCeilImpl(x)
   }
   private def sqrtCeilImpl(x: Int): Int = {
-    scala.math.sqrt(x).ceil.toInt
+    (scala.math.sqrt(x) - 0.001).ceil.toInt
   }
 
   def runtimeEstimators = PartialSolution(0, 0, Nil, IndexedSeq.empty, Nil).runtimeEstimators
@@ -51,7 +51,7 @@ case class PositiveSymmetricDecomposition(m: Array[Array[Int]]) {
   }
 
   case class PartialSolution(rows: Int, columns: Int, P: List[Array[Int]], columnHashes: IndexedSeq[Int], rowTailNorms: List[Array[Int]]) {
-    //    println("PartialSolution(" + rows + ", " + columns + ", " + P.map(_.toList) + ", " + columnHashes + ", " + rowTailNorms.map(_.toList))
+        println("PartialSolution(" + rows + ", " + columns + ", " + P.map(_.toList) + ", " + columnHashes + ", " + rowTailNorms.map(_.toList))
     def children: Iterator[PartialSolution] = {
       case class PartialRow(size: Int, r: List[Int], normGap: Int, innerProductGaps: List[Int]) {
         //        println(this)

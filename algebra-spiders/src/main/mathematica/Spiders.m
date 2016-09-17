@@ -49,7 +49,7 @@ SaveGroebnerCalculations;LoadGroebnerCalculations;
 IntroduceNewVariable;
 
 
-Manifold;DeclarePolynomialZero;DeclarePolynomialsZero;DeclareAtLeastOnePolynomialZero;DeclarePolynomialNonZero;DeclarePolynomialsNonZero;DeclarePolynomialEitherZeroOrNonZero;
+Manifold;DeclarePolynomialZero;DeclarePolynomialsZero;DeclareAtLeastOnePolynomialZero;DeclareAtLeastOnePolynomialNonZero;DeclarePolynomialNonZero;DeclarePolynomialsNonZero;DeclarePolynomialEitherZeroOrNonZero;
 
 
 DeclareDimensionBounds;DimensionBounds;DimensionLowerBound;DimensionUpperBound;
@@ -310,7 +310,7 @@ text[S_String]:=Print[S]
 automaticFlatMap[f_]:=f[a__][Xs_List]:=Union[Flatten[f[a]/@Xs,1]]
 
 
-automaticFlatMap/@{DeclarePolynomialEitherZeroOrNonZero,DeclarePolynomialsZero,DeclarePolynomialZero,DeclareAtLeastOnePolynomialZero,DeclarePolynomialNonZero,DeclarePolynomialsNonZero,DeclareIrreduciblePolynomialNonZero};
+automaticFlatMap/@{DeclarePolynomialEitherZeroOrNonZero,DeclarePolynomialsZero,DeclarePolynomialZero,DeclareAtLeastOnePolynomialZero,DeclareAtLeastOnePolynomialNonZero,DeclarePolynomialNonZero,DeclarePolynomialsNonZero,DeclareIrreduciblePolynomialNonZero};
 
 
 IntroduceNewVariable[v_][X_]:=X/.{m_Manifold:>ReplacePart[m,5->Prepend[m[[5]],v]]}
@@ -329,6 +329,9 @@ Fold[DeclarePolynomialZero[#2][#1]&,{m},sortedPolynomials]
 
 
 DeclareAtLeastOnePolynomialZero[p_List][m_Manifold]:=Flatten[DeclarePolynomialZero[#][m]&/@p,1]
+
+
+DeclareAtLeastOnePolynomialNonZero[p_List][m_Manifold]:=Flatten[DeclarePolynomialNonZero[#][m]&/@Union[p],1]
 
 
 DeclarePolynomialZero[0][m_Manifold]:={m}
@@ -598,7 +601,7 @@ AppendClosedDiagram[d0:Diagram][s_SpiderAnalysis]:=ReplacePart[s,6->Union[s[[6]]
 automaticFlatMap/@{AppendIndependentDiagram,AppendDependentDiagram,AppendClosedDiagram};
 
 
-ReducedDiagrams[s_SpiderAnalysis,circumference_Integer,numbersOfVertices___Integer]:=ReducedDiagrams[s,circumference,numbersOfVertices]=FromScalaObject[s[[1]]@reducedDiagrams[circumference,AsScalaObject[Rule@@#&/@Transpose[{#@U1[]&/@FromScalaObject[s[[1]]@generators[],1],{numbersOfVertices}}]]],1]
+ReducedDiagrams[s_SpiderAnalysis,circumference_Integer,numbersOfVertices___Integer]:=FromScalaObject[s[[1]]@reducedDiagrams[circumference,AsScalaObject[Rule@@#&/@Transpose[{#@U1[]&/@FromScalaObject[s[[1]]@generators[],1],{numbersOfVertices}}]]],1]
 
 
 TrivalentQ[s_SpiderAnalysis]:=s[[1]]@generators[]@size[]==1\[And]FromScalaObject[s[[1]]@generators[],1][[1]]@U1[]@perimeter[]==3\[And]FromScalaObject[s[[1]]@generators[],1][[1]]@U1[]@allowedRotationStep[]==1
@@ -686,7 +689,7 @@ vertices[[1]]^c
 
 cachingInnerProduct[spider_SpiderAnalysis,x:Diagram,y:Diagram]:=cachingInnerProduct[spider,x@toString[],y@toString[]]
 cachingInnerProduct[s_SpiderAnalysis,x_String,y_String]:=Module[{xs,ys,outerHash,innerHash,result},
-outerHash=Hash[s,"SHA256"];
+outerHash=Hash[s];
 innerHash=s[[1]]@hashCode[];
 result=cachedInnerProduct[outerHash,x,y];
 If[result===$Failed,
@@ -772,8 +775,9 @@ Print["Warning, computing many determinants. Did you forget to set a lower bound
 subsets=Subsets[Range[Length[diagrams]],DimensionBounds[s,k]];
 Print["subsets: ",Length[subsets]];
 determinants =ReducePolynomials[s][det[innerProducts[[#,#]]]]&/@subsets;
-gcd=PolynomialGCD@@determinants;
-DeclarePolynomialNonZero[gcd][s0]
+Print["calculated determinants"];
+(*gcd=PolynomialGCD@@determinants;*)
+DeclareAtLeastOnePolynomialNonZero[determinants][s0]
 (*
 We should be able to do the following, but it seems it's too slow.
 *)
@@ -984,7 +988,7 @@ delegatingNullSpace[m_,options___]:=If[Length[m]>\[Infinity]\[And]Length[Variabl
 delegatingDeterminant[m_]:=If[Length[m]>10,GuessingPolynomials`Private`onDiskParallelDeterminant[m,IntegerString[Hash[m,"SHA1"],16,16]],Det[m]]
 
 
-ConsiderIndependentDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{s0,s1,k,i,innerProducts,innerProducts2,det,nullSpace,spanningSet,reorderedSpanningSet,dot,j},
+ConsiderIndependentDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{s0,s1,k,i,innerProducts,innerProducts2,det,minors,nullSpace,spanningSet,reorderedSpanningSet,dot,j},
 k=d0@numberOfBoundaryPoints[];
 If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s},
 s0=AppendIndependentDiagram[d0][s];
@@ -999,6 +1003,11 @@ Flatten[{
 DeclarePolynomialNonZero[det][s0],
 (* or it's zero, in which case we find the corresponding ghost relation, find the element of the spanning set that exorcises it, and make sure we consider that diagram next *)
 s1=DeclarePolynomialZero[det][s0];
+If[Length[s1]>0,
+minors=Union[Flatten[Minors[innerProducts,Length[innerProducts]-1,Factor[delegatingDeterminant[#]]&]]];
+Print["minors: ",minors];
+s1=DeclareAtLeastOnePolynomialNonZero[minors][s1];
+];
 Flatten[Function[{ss},
 Print["innerProducts: ",innerProducts];
 nullSpace=If[Length[i]==1,{{1}},Factor[delegatingNullSpace[Most[innerProducts],"Method"->"OneStepRowReduction"]]];
@@ -1207,6 +1216,12 @@ DeclareAtLeastOnePolynomialZero[polynomials_List][s_SpiderAnalysis]:=Module[{new
 newManifolds=DeclareAtLeastOnePolynomialZero[polynomials][s[[2]]];
 (* TODO should we look at the non-reducing relations and see if any became reducing?! *)
 ReplacePart[s,2->#](*/.(d:Diagram\[Rule]z_)\[RuleDelayed](d\[Rule]cachedPolynomialReduce[z,#\[LeftDoubleBracket]1\[RightDoubleBracket]]\[LeftDoubleBracket]2\[RightDoubleBracket])*)&/@newManifolds
+]
+
+
+DeclareAtLeastOnePolynomialNonZero[polynomials_List][s_SpiderAnalysis]:=Module[{newManifolds},
+newManifolds=DeclareAtLeastOnePolynomialNonZero[polynomials][s[[2]]];
+ReplacePart[s,2->#]&/@newManifolds
 ]
 
 
