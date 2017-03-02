@@ -275,8 +275,11 @@ parallelRowReduce[Length[matrix],1,load,save]
 
 onDiskParallelRowReduce[matrix_,namer_]:=Module[{load,save},
 load[j_]:=Get[namer[j]];
-save[j_,row_]:=Put[row,namer[j]];
+save[j_,row_]:=AbortProtect[Put[row,namer[j]]];
+If[GuessingPolynomials`RestartRowReduction\[And]FileExistsQ[namer[1]],
+Print["Restarting row reduction, without overwriting existing files. Please be careful!"];,
 Do[save[j,matrix[[j]]],{j,1,Length[matrix]}];
+];
 DistributeDefinitions[load,save];
 parallelRowReduce[Length[matrix],1,load,save]
 ]
