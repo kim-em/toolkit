@@ -11,13 +11,10 @@ class BoundaryConnectedPlanarGraphsTest extends FlatSpec with Matchers with Isom
     BoundaryConnectedPlanarGraphs(6, 1, Seq(PlanarGraph.polygon(4), PlanarGraph.polygon(5))).size should equal(1)
   }
   "BoundaryConnectedPlanarGraphs" should "count correctly (2)" in {
-    BoundaryConnectedPlanarGraphs(8,2, Seq(PlanarGraph.polygon(4), PlanarGraph.polygon(5))).size should equal(4)
+    BoundaryConnectedPlanarGraphs(8, 2, Seq(PlanarGraph.polygon(4), PlanarGraph.polygon(5))).size should equal(4)
   }
   "trivalent" should "count correctly" in {
     BoundaryConnectedPlanarGraphs.trivalent(8, 2).size should equal(820)
-    for(g <- BoundaryConnectedPlanarGraphs.trivalent(8, 2)) DrawPlanarGraph.showPDF(g)
   }
-for(g <- ConnectedPlanarTrivalentGraphs(10, 4); if !g.hasTinyFace) DrawPlanarGraph.showPDF(g)
+  for (g <- ConnectedPlanarTrivalentGraphs(8, 2); if !g.hasTinyFace) DrawPlanarGraph.showPDF(g)
 }
-
-

@@ -104,6 +104,18 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     (0 +: neighboursOf(0).filterNot(_ == 0).tally.values.toSeq).max
   }
 
+  val dangliness : Stream[IndexedSeq[Int]] = {
+    (IndexedSeq(1) ++ IndexedSeq.fill(numberOfVertices - 1)(0)) #:: dangliness.map({ d =>
+      IndexedSeq.tabulate(numberOfVertices)({ i =>        
+        if(i == 0) {
+          0
+        } else {
+          neighboursOf(i).map(d).sum
+        }
+      })
+    })
+  }
+  
   def edgesAdjacentTo(vertex: Int): Seq[Int] = vertexFlags(vertex).map(_._1)
   def neighboursOf(vertex: Int) = edgesAdjacentTo(vertex).map(e => target(vertex, e))
 
