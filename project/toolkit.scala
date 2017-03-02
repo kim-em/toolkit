@@ -251,24 +251,24 @@ object Dependencies {
     val parser = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1"
 	}
 	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.3.2"
-	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.0"
+	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.4"
 	val typica = "com.google.code.typica" % "typica" % "1.7.2"
-	val guava = "com.google.guava" % "guava" % "16.0.1"
+	val guava = "com.google.guava" % "guava" % "21.0"
 	val findbugs = "com.google.code.findbugs" % "jsr305" % "1.3.9"
 	val scopt = "com.github.scopt" %% "scopt" % "3.3.0"
 	val arm = "com.jsuereth" %% "scala-arm" % "1.4"
 	object selenium {
-		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.40.0"
-		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.40.0"
+		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.53.1"
+		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.53.1"
 	}
 	object lift {
 		val util = "net.liftweb" %% "lift-util" % "2.6"
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
-	val mapdb = "org.mapdb" % "mapdb" % "1.0.7"
+	val mapdb = "org.mapdb" % "mapdb" % "1.0.9"
 	val slick = "com.typesafe.slick" %% "slick" % "3.0.0"
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.2"
-	val spire = "org.spire-math" %% "spire" % "0.7.1"
+	val spire = "org.spire-math" %% "spire" % "0.13.0"
   val jblas = "org.jblas" % "jblas" % "1.2.4"
 	object omath {
 		val parser = "org.omath" %% "omath-parser" % "0.0.1"
