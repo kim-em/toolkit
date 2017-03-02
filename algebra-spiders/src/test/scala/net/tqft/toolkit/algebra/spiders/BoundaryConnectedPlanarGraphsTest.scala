@@ -15,8 +15,9 @@ class BoundaryConnectedPlanarGraphsTest extends FlatSpec with Matchers with Isom
   }
   "trivalent" should "count correctly" in {
     BoundaryConnectedPlanarGraphs.trivalent(8, 2).size should equal(820)
+    for(g <- BoundaryConnectedPlanarGraphs.trivalent(8, 2)) DrawPlanarGraph.showPDF(g)
   }
-
+for(g <- ConnectedPlanarTrivalentGraphs(10, 4); if !g.hasTinyFace) DrawPlanarGraph.showPDF(g)
 }
 
 
