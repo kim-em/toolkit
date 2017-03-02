@@ -339,13 +339,18 @@ trait DrawPlanarGraph {
     path
   }
 
-  def createPDF(g: PlanarGraph) = {
+  def createPDF(g: PlanarGraph): Path = {
     val path = outputPath.resolve(filenameForGraph(g))
     if (Files.exists(path)) {
       path
     } else {
       writePDF(g)()
     }
+  }
+  
+  def showPDF(g: PlanarGraph) = {
+    // this only works on OS X
+    ("open " + createPDF(g).toString).!!
   }
 
   def pdfMultiple(pdfPath: Path, Gs: Seq[PlanarGraph]): Unit = {
