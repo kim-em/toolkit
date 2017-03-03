@@ -25,7 +25,7 @@ trait Dreadnaut extends Logging {
     if (pipes.get == null || in == null) {
       val p = Pipes(null, null, null)
       pipes.set(p)
-      dreadnautPath.run(new ProcessIO(os => p.in = new PrintWriter(os), is => p.out = Source.fromInputStream(is).getLines, is => p.err = Source.fromInputStream(is).getLines))
+      Process(Seq(dreadnautPath)).run(new ProcessIO(os => p.in = new PrintWriter(os), is => p.out = Source.fromInputStream(is).getLines, is => p.err = Source.fromInputStream(is).getLines))
       while (in == null || out == null) {
         Thread.sleep(10)
       }
@@ -148,7 +148,7 @@ object Dreadnaut extends Dreadnaut {
           "which dreadnaut".!!
         } catch {
           case e: Exception => {          
-            val source = Dreadnaut.getClass.getProtectionDomain.getCodeSource.getLocation.toString.stripPrefix("file:")
+            val source = Dreadnaut.getClass.getProtectionDomain.getCodeSource.getLocation.toString.stripPrefix("file:").replaceAllLiterally("%20", " ")
             source.take(source.indexOf("toolkit/")) + "toolkit/dreadnaut"            
           }
         }

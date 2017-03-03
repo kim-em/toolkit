@@ -17,16 +17,17 @@ object DiagramSpider {
       override def strand = PlanarGraph.strand
       override def circumference(graph: PlanarGraph) = graph.numberOfBoundaryPoints
       override def rotate(graph: PlanarGraph, k: Int) = {
+       import net.tqft.toolkit.arithmetic.Mod._
+       val k0 = k mod graph.numberOfBoundaryPoints
         import net.tqft.toolkit.collections.Rotate._
         val newOuterFace = {
-          if (k == 0 || graph.numberOfBoundaryPoints == 0) {
+          if (k0 == 0 || graph.numberOfBoundaryPoints == 0) {
             graph.outerFace
-          } else {
-            import net.tqft.toolkit.arithmetic.Mod._
-            graph.vertexFlags(0)(k mod graph.numberOfBoundaryPoints)._2
+          } else {            
+            graph.vertexFlags(0)(k0)._2
           }
         }
-        PlanarGraph(newOuterFace, graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k)), graph.labels, graph.loops)
+        PlanarGraph(newOuterFace, graph.vertexFlags.updated(0, graph.vertexFlags(0).rotateLeft(k0)), graph.labels, graph.loops)
       }
       override def tensor(graph1: PlanarGraph, graph2: PlanarGraph) = {
         if (graph1.numberOfEdges == 0) {

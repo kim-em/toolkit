@@ -35,6 +35,14 @@ trait FinitelyGeneratedFiniteGroup[A] extends FiniteGroup[A] { fgFiniteGroup =>
   }
 }
 
+private case class TrivialFinitelyGeneratedFiniteGroup[A](one: A) extends FinitelyGeneratedFiniteGroup[A] {
+  def generators = Seq()
+  def inverse(x: A) = one
+  def multiply(x: A, y: A) = one
+}
 
+object FinitelyGeneratedFiniteGroup {
+  def trivialGroup[A](one: A): FinitelyGeneratedFiniteGroup[A] = TrivialFinitelyGeneratedFiniteGroup(one)
+}
 
 

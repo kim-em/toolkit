@@ -231,6 +231,8 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     }
   }
 
+  def allVerticesAdjacentToFace(face: Int) = faceBoundary(face).flatten.map(_._1).distinct
+  
   lazy val distancesFromOuterFace = distancesFromOuterFaceAvoiding(Seq.empty)
 
   def distancesFromOuterFaceAvoiding(edges: Seq[Int]): Map[Int, Int] = {
@@ -834,6 +836,7 @@ object PlanarGraph {
     Memo(star_ _)
   }
 
+  def star(v: VertexType): PlanarGraph =  star(v.perimeter, v.label, v.allowedRotationStep)
   def star(valence: Int, label: Int = 0, allowedRotation: Int = 1) = starCache((valence, label, allowedRotation))
 
   val trivalentVertex = star(3)
