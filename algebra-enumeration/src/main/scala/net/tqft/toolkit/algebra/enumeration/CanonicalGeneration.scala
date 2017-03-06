@@ -49,7 +49,7 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
                         info("   which sort as " + lowerOrbits.toSeq.sorted(candidateUpperObject.result.ordering).map(_.elements))
       val canonicalReductionOrbit = lowerOrbits.min(candidateUpperObject.result.ordering)
                         info("  canonicalReductionOrbit is " + canonicalReductionOrbit.elements)
-                        info("  with result " + canonicalReductionOrbit.representative.result)
+//                        info("  with result " + canonicalReductionOrbit.representative.result)
       if (canonicalReductionOrbit.contains(candidateUpperObject.inverse)) {
                                 info("  which contained the inverse reduction, so we're accepting " + candidateUpperObject.result)
         Some(candidateUpperObject.result)
