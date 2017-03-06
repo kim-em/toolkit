@@ -63,6 +63,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) {
           ) yield {
             Upper(whereToStart, vertexToAdd, vertexRotation, numberOfStitches, None)
           }
+        // we're missing the case where, eg, we put a fork on the boundary and the star is in the fork
         val elementsThatDoCoverBasepoint =
           for (
             vertexToAdd <- vertices;
