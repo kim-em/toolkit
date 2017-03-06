@@ -43,7 +43,8 @@ trait CanonicalGeneration[A <: CanonicalGeneration[A, G], G] { this: A =>
     val result = orbits.flatMap({ orbit =>
       val candidateUpperObject = orbit.representative;
                         info("  considering representative " + candidateUpperObject + " from orbit " + orbit.elements)
-                        info("   with result " + candidateUpperObject.result + " and inverse reduction " + candidateUpperObject.inverse)
+                        info("   with result " + candidateUpperObject.result)
+                        info("   and inverse reduction " + candidateUpperObject.inverse)
       val lowerOrbits = candidateUpperObject.result.lowerObjects.allOrbits
                         info("  found " + lowerOrbits.size + " lower orbits, with sizes " + lowerOrbits.toSeq.map(_.size).mkString("(", ", ", ")"))
                         info("   which sort as " + lowerOrbits.toSeq.sorted(candidateUpperObject.result.ordering).map(_.elements))

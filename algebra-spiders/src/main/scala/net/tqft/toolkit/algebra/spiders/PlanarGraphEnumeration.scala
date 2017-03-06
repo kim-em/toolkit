@@ -5,8 +5,9 @@ import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.graphs.Dreadnaut
+import net.tqft.toolkit.Logging
 
-case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) {
+case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logging {
   val spider = PlanarGraph.spider
 
   case class PlanarGraphEnumeration(G: PlanarGraph) extends CanonicalGeneration[PlanarGraphEnumeration, Unit] { pge =>
@@ -19,7 +20,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) {
         val vertex = PlanarGraph.star(vertexToAdd)
         PlanarGraphEnumeration(
           spider.rotate(
-            spider.multiply(spider.rotate(G, whereToStart), spider.rotate(vertex, vertexRotation), numberOfStitches),
+            spider.multiply(spider.rotate(G, -whereToStart), spider.rotate(vertex, -vertexRotation), numberOfStitches),
             basepointOffset match {
               case None => G.numberOfBoundaryPoints - whereToStart
               case Some(r) => -r
@@ -29,26 +30,27 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) {
     }
     case class Lower(boundaryInterval: Int, vertexToRemove: Int) {
       require(vertexToRemove != 0)
-      
-      private  lazy val relabeled = G.copy(labels = G.labels.updated(vertexToRemove - 1, (newLabel, G.labels(vertexToRemove - 1)._2)))
 
-      lazy val result = {
-        val rotated = spider.rotate(relabeled, boundaryInterval /* negative?! */ )
-        
-        DrawPlanarGraph.showPDF(rotated)
-        
-        val excisions = rotated.Subgraphs(PlanarGraph.star(G.vertexFlags(vertexToRemove).size, newLabel, G.labels(vertexToRemove - 1)._2)).excisions
-        
-        val result = excisions.next
-        require(result.depth == 0)
-        require(!excisions.hasNext)
-        
-        PlanarGraphEnumeration(result.cut)
-      }
+      private lazy val relabeled = G.copy(labels = G.labels.updated(vertexToRemove - 1, (newLabel, G.labels(vertexToRemove - 1)._2)))
+
+      lazy val result = ???
+      //      {
+      //        val rotated = spider.rotate(relabeled, boundaryInterval /* negative?! */ )
+      //        
+      //        DrawPlanarGraph.showPDF(rotated)
+      //        
+      //        val excisions = rotated.Subgraphs(PlanarGraph.star(G.vertexFlags(vertexToRemove).size, newLabel, G.labels(vertexToRemove - 1)._2)).excisions
+      //        
+      //        val result = excisions.next
+      //        require(result.depth == 0)
+      //        require(!excisions.hasNext)
+      //        
+      //        PlanarGraphEnumeration(result.cut)
+      //      }
 
       def encodeAsPlanarGraph: PlanarGraph = {
         val markerVertex = PlanarGraph.star(VertexType(1, 1, 1))
-        spider.rotate(spider.tensor(markerVertex, spider.rotate(relabeled, boundaryInterval)), -boundaryInterval).relabelEdgesAndFaces
+        spider.rotate(spider.tensor(markerVertex, spider.rotate(relabeled, -boundaryInterval)), boundaryInterval).relabelEdgesAndFaces
       }
     }
 
@@ -75,17 +77,19 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) {
             Upper(whereToStart, vertexToAdd, vertexRotation, numberOfStitches, Some(basepointOffset))
           }
         val results = elementsThatDoCoverBasepoint ++ elementsThatDontCoverBasepoint
-        for (r <- results) {
-          println(r)
-        }
 
         results
       }
       override def act(g: Unit, upper: Upper) = upper
     }
     override lazy val lowerObjects = new automorphisms.ActionOnFiniteSet[Lower] {
-      override val elements = for (i <- 0 until G.numberOfBoundaryPoints; j <- G.allVerticesAdjacentToFace(G.boundaryFaces(i)); if j != 0) yield {
-        Lower(i, j)
+      // we must only delete a vertex from the most clockwise position it is visible! 
+      override val elements = {
+        val intervalsAndVisibleVertices = for (i <- 0 until G.numberOfBoundaryPoints; j <- G.allVerticesAdjacentToFace(G.boundaryFaces(i)); if j != 0) yield {
+          (i, j)
+        }
+//        info(intervalsAndVisibleVertices)
+        intervalsAndVisibleVertices.groupBy(_._2).values.map(_.min).map(p => Lower(p._1, p._2))
       }
       override def act(g: Unit, lower: Lower) = lower
     }
@@ -93,8 +97,11 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) {
     override val ordering: Ordering[lowerObjects.Orbit] = {
       import Ordering.Implicits._
       Ordering.by({ o: lowerObjects.Orbit =>
-        // TODO automate dangliness!
-        Dreadnaut.canonicalLabelling(o.representative.encodeAsPlanarGraph.nautyGraph)
+        // TODO make this a lazy pair, so Dreadnaut is not invoked unnecessarily.
+        // TODO consider changing the 4 below, as an optimisation, possibly to a variable depending on G.
+        (
+          G.dangliness.map(d => -d(o.representative.vertexToRemove)).take(4),
+          Dreadnaut.canonicalLabelling(o.representative.encodeAsPlanarGraph.nautyGraph))
       })
     }
 

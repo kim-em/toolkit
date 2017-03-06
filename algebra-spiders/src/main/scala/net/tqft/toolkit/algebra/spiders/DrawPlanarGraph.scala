@@ -331,7 +331,7 @@ trait DrawPlanarGraph {
     return tikzString
   }
 
-  private def filenameForGraph(g: PlanarGraph) = "urn:sha1:" + SHA1(g.toString + " " + this.toString) + ".pdf"
+  private def filenameForGraph(g: PlanarGraph) = "urn_sha1_" + SHA1(g.toString + " " + this.toString) + ".pdf"
 
   def writePDF(g: PlanarGraph)(filename: String = filenameForGraph(g)): Path = {
     val path = outputPath.resolve(outputPath.resolve(filename))
