@@ -104,10 +104,10 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     (0 +: neighboursOf(0).filterNot(_ == 0).tally.values.toSeq).max
   }
 
-  val dangliness : Stream[IndexedSeq[Int]] = {
+  val dangliness: Stream[IndexedSeq[Int]] = {
     (IndexedSeq(1) ++ IndexedSeq.fill(numberOfVertices - 1)(0)) #:: dangliness.map({ d =>
-      IndexedSeq.tabulate(numberOfVertices)({ i =>        
-        if(i == 0) {
+      IndexedSeq.tabulate(numberOfVertices)({ i =>
+        if (i == 0) {
           0
         } else {
           neighboursOf(i).map(d).sum
@@ -115,7 +115,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       })
     })
   }
-  
+
   def edgesAdjacentTo(vertex: Int): Seq[Int] = vertexFlags(vertex).map(_._1)
   def neighboursOf(vertex: Int) = edgesAdjacentTo(vertex).map(e => target(vertex, e))
 
@@ -232,7 +232,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   }
 
   def allVerticesAdjacentToFace(face: Int) = faceBoundary(face).flatten.map(_._1).distinct
-  
+
   lazy val distancesFromOuterFace = distancesFromOuterFaceAvoiding(Seq.empty)
 
   def distancesFromOuterFaceAvoiding(edges: Seq[Int]): Map[Int, Int] = {
@@ -836,7 +836,7 @@ object PlanarGraph {
     Memo(star_ _)
   }
 
-  def star(v: VertexType): PlanarGraph =  star(v.perimeter, v.label, v.allowedRotationStep)
+  def star(v: VertexType): PlanarGraph = star(v.perimeter, v.label, v.allowedRotationStep)
   def star(valence: Int, label: Int = 0, allowedRotation: Int = 1) = starCache((valence, label, allowedRotation))
 
   val trivalentVertex = star(3)
@@ -850,6 +850,8 @@ object PlanarGraph {
 
   val twoSquares = spider.multiply(polygon(4), H, 2)
   val pentaSquare = spider.multiply(PlanarGraph.polygon(4), spider.rotate(spider.multiply(PlanarGraph.trivalentVertex, PlanarGraph.H, 1), -1), 2)
+
+  val pentafork = spider.multiply(PlanarGraph.polygon(5), star(3), 1)
 
   val tetravalentVertex = star(4)
   val bowtie = spider.stitch(spider.stitch(tetravalentVertex))
@@ -871,7 +873,7 @@ object PlanarGraph {
   val negativeTwistedTrivalentVertex = spider.multiply(crossing, trivalentVertex, 2)
 
   val twistedH = spider.multiply(H, crossing, 2)
-  
+
   val Reidemeister1a = Seq(strand, positiveTwist)
   val Reidemeister1b = Seq(strand, negativeTwist)
   val Reidemeister2 = Seq(two_strands_vertical, spider.multiply(crossing, spider.rotate(crossing, 1), 2))
