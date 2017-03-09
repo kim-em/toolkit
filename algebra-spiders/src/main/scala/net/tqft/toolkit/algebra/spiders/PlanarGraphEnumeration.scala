@@ -22,11 +22,23 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
           spider.rotate(
             spider.multiply(spider.rotate(G, -whereToStart), spider.rotate(vertex, -vertexRotation), numberOfStitches),
             basepointOffset match {
-              case None => G.numberOfBoundaryPoints - whereToStart
+              case None => -G.numberOfBoundaryPoints + whereToStart
               case Some(r) => -r
             }))
       }
-      def inverse = result.Lower(if (basepointOffset.isEmpty) G.numberOfBoundaryPoints - whereToStart else 0, G.numberOfInternalVertices + 1)
+      def inverse = {
+        val boundaryInterval = if (basepointOffset.isEmpty) {
+          if (whereToStart == numberOfStitches) {
+            // we can see the vertex from all the way around the bottom
+            0
+          } else {
+            G.numberOfBoundaryPoints - whereToStart
+          }
+        } else {
+          0
+        }
+        result.Lower(boundaryInterval, G.numberOfInternalVertices + 1)
+      }
     }
     case class Lower(boundaryInterval: Int, vertexToRemove: Int) {
       require(vertexToRemove != 0)
@@ -65,7 +77,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
           ) yield {
             Upper(whereToStart, vertexToAdd, vertexRotation, numberOfStitches, None)
           }
-        // we're missing the case where, eg, we put a fork on the boundary and the star is in the fork
+        // TODO! we're missing the case where, eg, we put a fork on the boundary and the star is in the fork
         val elementsThatDoCoverBasepoint =
           for (
             vertexToAdd <- vertices;
@@ -85,10 +97,11 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
     override lazy val lowerObjects = new automorphisms.ActionOnFiniteSet[Lower] {
       // we must only delete a vertex from the most clockwise position it is visible! 
       override val elements = {
-        val intervalsAndVisibleVertices = for (i <- 0 until G.numberOfBoundaryPoints; j <- G.allVerticesAdjacentToFace(G.boundaryFaces(i)); if j != 0) yield {
+        import net.tqft.toolkit.arithmetic.Mod._
+        val intervalsAndVisibleVertices = for (i <- 0 until scala.math.max(G.numberOfBoundaryPoints,1); j <- G.allVerticesAdjacentToFace(G.boundaryFaces(i mod G.numberOfBoundaryPoints)); if j != 0) yield {
           (i, j)
         }
-//        info(intervalsAndVisibleVertices)
+        info(intervalsAndVisibleVertices)
         intervalsAndVisibleVertices.groupBy(_._2).values.map(_.min).map(p => Lower(p._1, p._2))
       }
       override def act(g: Unit, lower: Lower) = lower
