@@ -16,7 +16,7 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
 
   "PlanarGraphEnumeration" should "say the children of the pentagon are the pentaforks" in {
 
-    val pentaforks = Seq.tabulate(5)(i => PlanarGraph.spider.rotate(PlanarGraph.pentafork, -i))
+    val pentaforks = Seq.tabulate(6)(i => PlanarGraph.spider.rotate(PlanarGraph.pentafork, i))
     
     val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)))
     val root = context.PlanarGraphEnumeration(PlanarGraph.polygon(5))

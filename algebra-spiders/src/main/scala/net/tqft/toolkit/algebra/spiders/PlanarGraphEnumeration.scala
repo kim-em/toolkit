@@ -98,7 +98,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
       // we must only delete a vertex from the most clockwise position it is visible! 
       override val elements = {
         import net.tqft.toolkit.arithmetic.Mod._
-        val intervalsAndVisibleVertices = for (i <- 0 until scala.math.max(G.numberOfBoundaryPoints,1); j <- G.allVerticesAdjacentToFace(G.boundaryFaces(i mod G.numberOfBoundaryPoints)); if j != 0) yield {
+        val intervalsAndVisibleVertices = for (i <- 0 until scala.math.max(G.numberOfBoundaryPoints, 1); j <- G.allVerticesAdjacentToFace(G.boundaryFaces(i mod G.numberOfBoundaryPoints)); if j != 0) yield {
           (i, j)
         }
         info(intervalsAndVisibleVertices)
@@ -113,6 +113,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
         // TODO make this a lazy pair, so Dreadnaut is not invoked unnecessarily.
         // TODO consider changing the 4 below, as an optimisation, possibly to a variable depending on G.
         (
+          if (G.deleting_vertex_disconnects_graph_?(o.representative.vertexToRemove)) 1 else 0,
           G.dangliness.map(d => -d(o.representative.vertexToRemove)).take(4),
           Dreadnaut.canonicalLabelling(o.representative.encodeAsPlanarGraph.nautyGraph))
       })
