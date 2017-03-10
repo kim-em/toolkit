@@ -323,6 +323,11 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   }
 
+  def deleting_vertex_disconnects_graph_?(vertexToDelete: Int): Boolean = {
+    // Check the edges leaving the vertex, which meet the boundary, are all contiguous.
+    ???
+  }
+  
   lazy val relabelEdgesAndFaces: PlanarGraph = {
     val edgeMap = (for ((e, ei) <- edgeSet.zipWithIndex) yield (e, numberOfVertices + ei)).toMap
     val faceMap = (for ((f, fi) <- faceSet.zipWithIndex) yield (f, numberOfVertices + edgeMap.size + fi)).toMap
