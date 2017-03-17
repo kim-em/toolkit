@@ -41,21 +41,21 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
     val s1 = star(4, 0, 2)
     val s2 = spider.rotate(s1, 1)
 
-    println(s1)
-    println(s1.relabelEdgesAndFaces)
-    println(s1.relabelEdgesAndFaces.nautyGraph)
-    println(s1.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
-    println(Dreadnaut.canonicalLabelling(s1.relabelEdgesAndFaces.nautyGraph))
-    println(spider.canonicalFormWithDefect(s1))
-    println(spider.canonicalFormWithDefect(s1)._1.nautyGraph)
-    println()
-    println(s2)
-    println(s2.relabelEdgesAndFaces)
-    println(s2.relabelEdgesAndFaces.nautyGraph)
-    println(s2.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
-    println(Dreadnaut.canonicalLabelling(s2.relabelEdgesAndFaces.nautyGraph))
-    println(spider.canonicalFormWithDefect(s2))
-    println(spider.canonicalFormWithDefect(s2)._1.nautyGraph)
+//    println(s1)
+//    println(s1.relabelEdgesAndFaces)
+//    println(s1.relabelEdgesAndFaces.nautyGraph)
+//    println(s1.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
+//    println(Dreadnaut.canonicalLabelling(s1.relabelEdgesAndFaces.nautyGraph))
+//    println(spider.canonicalFormWithDefect(s1))
+//    println(spider.canonicalFormWithDefect(s1)._1.nautyGraph)
+//    println()
+//    println(s2)
+//    println(s2.relabelEdgesAndFaces)
+//    println(s2.relabelEdgesAndFaces.nautyGraph)
+//    println(s2.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
+//    println(Dreadnaut.canonicalLabelling(s2.relabelEdgesAndFaces.nautyGraph))
+//    println(spider.canonicalFormWithDefect(s2))
+//    println(spider.canonicalFormWithDefect(s2)._1.nautyGraph)
 
     spider.rotate(star(4, 0, 2), 1) shouldNot be_rotationally_equivalent_to(star(4, 0, 2))
   }
@@ -113,6 +113,13 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
   "excisions" should "not blow up" in {
     val q = PlanarGraph(7, IndexedSeq(List((18, 7), (17, 10)), List((2, 8), (3, 7), (4, 9)), List((3, 9), (16, 7), (15, 7)), List((2, 7), (4, 8), (15, 9)), List((18, 10), (16, 7), (17, 7))), IndexedSeq((1, 0), (1, 0), (1, 0), (1, 0)), 0)
     q.Subgraphs(polygon(2)).excisions.size should equal(2)
+  }
+
+  "deleting_vertex_disconnects_graph_?" should "work" in {
+    val g = spider.multiply(PlanarGraph.polygon(4), PlanarGraph.polygon(4), 1)
+//    println(g)
+    val disconnectingVertices = (1 to 8).filter(i => g.deleting_vertex_disconnects_graph_?(i))
+    disconnectingVertices.size should equal(2)
   }
 }
 
