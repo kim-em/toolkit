@@ -232,7 +232,8 @@ object SonatypeSettings {
 object Resolvers {
   val sonatypeResolvers = Seq(
     "Sonatype Nexus Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-    "Sonatype Nexus Releases" at "https://oss.sonatype.org/content/repositories/releases")
+    "Sonatype Nexus Releases" at "https://oss.sonatype.org/content/repositories/releases",
+    "Maven Central" at "http://central.maven.org/maven2/")
   val tqftResolvers = Seq("tqft.net Maven repository" at "https://tqft.net/releases"	
   )
 }
@@ -258,8 +259,8 @@ object Dependencies {
 	val scopt = "com.github.scopt" %% "scopt" % "3.3.0"
 	val arm = "com.jsuereth" %% "scala-arm" % "1.4"
 	object selenium {
-		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "2.53.1"
-		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.53.1"
+		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "3.4.0"
+		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.52.0"
 	}
 	object lift {
 		val util = "net.liftweb" %% "lift-util" % "2.6"

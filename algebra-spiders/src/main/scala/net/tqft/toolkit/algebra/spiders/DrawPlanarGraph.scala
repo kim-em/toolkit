@@ -266,12 +266,15 @@ trait DrawPlanarGraph {
         if (vertexCoords == (x, y)) 0
         else { val angle = atan2(y - vertexCoords._2, x - vertexCoords._1); if (angle < 0) angle + 2 * Pi else angle }
       }
+      val neighbourDistances = for ((x, y) <- neighbourCoords) yield {
+        sqrt(pow(vertexCoords._1 - x, 2) + pow(vertexCoords._2 - y, 2))
+      }
       (0 until 360).minBy((x) =>
-        (for (i <- 0 until edgeOutAngles.length if neighbourCoords(i) != vertexCoords) yield pow(sin(abs(edgeOutAngles(i) + x * Pi / 180 - neighbourAngles(i)) / 2), 2)).sum)
+        (for (i <- 0 until edgeOutAngles.length if neighbourCoords(i) != vertexCoords) yield pow(sin(abs(edgeOutAngles(i) + x * Pi / 180 - neighbourAngles(i)) / 2), 4) * pow(neighbourDistances(i), 2)).sum)
     }
     val vertexRotations: Seq[Double] =
       (for (i <- 0 until G.numberOfInternalVertices) yield {
-        val CWNeighbours = for (v <- vertexAdjs(i + 1))
+        val CWNeighbours = for (v <- vertexAdjs(i + 1); if !hideBoundaryEdges || v <= G.numberOfInternalVertices)
           yield if (v > G.numberOfInternalVertices) boundaryPointCoords(v - G.numberOfInternalVertices - 1) else internalVertexCoords(v - 1)
         minimizingRotation(internalVertexCoords(i), cyclicReverse(CWNeighbours)) // Traverse edges in ACW order to account for the ACW rotation we calculated earlier
       }) ++ boundaryPointCoords.map((t: (Double, Double)) => atan2(-t._2, -t._1) * 180 / Pi).map(round(_, 6))
@@ -303,8 +306,15 @@ trait DrawPlanarGraph {
         vertexRotations(endpoint - 1)
       else {
         assert(G.edgesAdjacentTo(endpoint).indexOf(edge) != -1)
-        val ACWEdgeAdjs = cyclicReverse(G.edgesAdjacentTo(endpoint))
-        ACWEdgeAdjs.indexOf(edge) * 360 / G.degree(endpoint) + vertexRotations(endpoint - 1)
+        if (hideBoundaryEdges) {
+          val ACWEdgeAdjs = cyclicReverse(G.edgesAdjacentTo(endpoint).filterNot(e => G.boundaryEdges.contains(e)))
+          val degree = G.edgesAdjacentTo(endpoint).filterNot(e => G.boundaryEdges.contains(e)).size
+          val index = ACWEdgeAdjs.indexOf(edge)
+          index * 360 / degree + vertexRotations(endpoint - 1)
+        } else {
+          val ACWEdgeAdjs = cyclicReverse(G.edgesAdjacentTo(endpoint))
+          ACWEdgeAdjs.indexOf(edge) * 360 / G.degree(endpoint) + vertexRotations(endpoint - 1)
+        }
       }
     for (t: Tuple2[Int, (Int, Int)] <- edgeEndpts) {
       val edge = t._1
@@ -331,7 +341,7 @@ trait DrawPlanarGraph {
     return tikzString
   }
 
-  def filenameForGraph(g: PlanarGraph) = "urn_sha1_" + SHA1(g.toString + " " + this.toString) + ".pdf"
+  def filenameForGraph(g: PlanarGraph) = "urn_sha1_" + SHA1(g.toString /* + " " + this.toString*/ ) + ".pdf"
 
   def writePDF(g: PlanarGraph)(filename: String = filenameForGraph(g)): Path = {
     val path = outputPath.resolve(outputPath.resolve(filename))
@@ -347,7 +357,7 @@ trait DrawPlanarGraph {
       writePDF(g)()
     }
   }
-  
+
   def showPDF(g: PlanarGraph) = {
     // this only works on OS X
     ("open " + createPDF(g).toString).!!
@@ -356,7 +366,8 @@ trait DrawPlanarGraph {
   def pdfMultiple(pdfPath: Path, Gs: Seq[PlanarGraph]): Unit = {
     // Writes TikZ to tex file and runs pdflatex
     val outputStr = Gs.map(apply).mkString(
-      "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
+      Gs.map(g => "% " + g.toString + "\n").mkString ++
+        "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
       "\\bigskip\\bigskip\n\n",
       "\n\\end{document}")
 
@@ -389,7 +400,7 @@ trait DrawPlanarGraph {
 object DrawPlanarGraph extends DrawPlanarGraph {
   override val dots: Boolean = false
   override val scale: Double = 1.6
-  override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}"
+  override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}, every path/.append style = {thick}"
   override val drawBoundary = true
   override val drawAsCrossings = (Some(0), None, None)
   override val outputPath = Files.createTempDirectory("planar-graphs")
