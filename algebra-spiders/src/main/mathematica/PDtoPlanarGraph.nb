@@ -10,26 +10,39 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     10074,        235]
-NotebookOptionsPosition[      9733,        218]
-NotebookOutlinePosition[     10069,        233]
-CellTagsIndexPosition[     10026,        230]
+NotebookDataLength[     11809,        281]
+NotebookOptionsPosition[     10925,        252]
+NotebookOutlinePosition[     11282,        268]
+CellTagsIndexPosition[     11239,        265]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AppendTo", "[", 
+   RowBox[{"$Path", ",", "\"\<~/projects/KnotTheory/trunk/\>\""}], "]"}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.6279467223218184`*^9, 3.627946817228487*^9}, {
+   3.627946848258802*^9, 3.627946879119302*^9}, 3.6279469146657696`*^9, {
+   3.629506489600542*^9, 3.6295064933038363`*^9}, {3.648644123157957*^9, 
+   3.648644145415345*^9}},ExpressionUUID->"b5d9f82c-8141-40b6-a955-\
+a45dafaeba3a"],
 
 Cell[CellGroupData[{
+
 Cell[BoxData[
  RowBox[{"<<", "KnotTheory`"}]], "Input",
- CellChangeTimes->{{3.678349633742565*^9, 3.67834963579967*^9}}],
+ CellChangeTimes->{{3.678349633742565*^9, 
+  3.67834963579967*^9}},ExpressionUUID->"98c90816-7d40-42b5-a9f5-\
+55d1822074f8"],
 
-Cell[BoxData["\<\"Loading KnotTheory` version of September 6, 2014, \
-13:37:37.2841.\\nRead more at http://katlas.org/wiki/KnotTheory.\"\>"], \
+Cell[BoxData["\<\"Loading KnotTheory` version of January 20, 2015, \
+10:42:19.1122.\\nRead more at http://katlas.org/wiki/KnotTheory.\"\>"], \
 "Print",
  CellChangeTimes->{
-  3.678349636411996*^9, 3.67837719689907*^9, 3.6783773861666117`*^9, {
-   3.678390932290687*^9, 3.678390979798455*^9}}]
+  3.703365759827342*^9},ExpressionUUID->"cc5a49cc-7944-4b8b-aa05-\
+7abf1bf9d5a1"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -214,11 +227,33 @@ Cell[BoxData[
    3.678389865712965*^9}, {3.6783899938281918`*^9, 3.678390067649358*^9}, {
    3.678390285124909*^9, 3.67839038066253*^9}, 3.678390601688719*^9, {
    3.6783906793529053`*^9, 3.678390697301531*^9}, {3.679314111030485*^9, 
-   3.679314111665704*^9}, {3.679314159269703*^9, 3.6793141592807617`*^9}}]
+   3.679314111665704*^9}, {3.679314159269703*^9, 
+   3.6793141592807617`*^9}},ExpressionUUID->"36316db9-acfe-4bc1-8d68-\
+e307c5dd811e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PDtoPlanarGraph", "[", 
+  RowBox[{"PD", "[", 
+   RowBox[{"Knot", "[", 
+    RowBox[{"3", ",", "1"}], "]"}], "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.7033657653227043`*^9, 
+  3.703365779657134*^9}},ExpressionUUID->"c4ee6566-849b-43dc-bd15-\
+d985a11a9aa1"],
+
+Cell[BoxData["\<\"PlanarGraph(2, Vector(List(), List((5, 4), (2, 3), (4, 2), \
+(1, 1)), List((1, 4), (4, 1), (6, 2), (3, 5)), List((3, 4), (6, 5), (2, 2), \
+(5, 3))), Vector((2,0), (2,0), (2,0)), 0)\"\>"], "Output",
+ CellChangeTimes->{{3.7033657742583*^9, 
+  3.703365780195611*^9}},ExpressionUUID->"f1bf9ba0-7bd5-4e57-88db-\
+d86aea63bf4b"]
+}, Open  ]]
 },
 WindowSize->{1598, 840},
-WindowMargins->{{-9, Automatic}, {Automatic, -8}},
-FrontEndVersion->"10.4 for Linux x86 (64-bit) (April 11, 2016)",
+WindowMargins->{{Automatic, 204}, {53, Automatic}},
+FrontEndVersion->"11.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 18, \
+2017)",
 StyleDefinitions->"Default.nb"
 ]
 (* End of Notebook Content *)
@@ -232,11 +267,22 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
+Cell[558, 20, 446, 9, 32, "Input", "ExpressionUUID" -> \
+"b5d9f82c-8141-40b6-a955-a45dafaeba3a"],
 Cell[CellGroupData[{
-Cell[580, 22, 120, 2, 32, "Input"],
-Cell[703, 26, 292, 5, 43, "Print"]
+Cell[1029, 33, 180, 4, 32, "Input", "ExpressionUUID" -> \
+"98c90816-7d40-42b5-a9f5-55d1822074f8"],
+Cell[1212, 39, 253, 5, 44, "Print", "ExpressionUUID" -> \
+"cc5a49cc-7944-4b8b-aa05-7abf1bf9d5a1"]
 }, Open  ]],
-Cell[1010, 34, 8719, 182, 474, "Input"]
+Cell[1480, 47, 8780, 184, 453, "Input", "ExpressionUUID" -> \
+"36316db9-acfe-4bc1-8d68-e307c5dd811e"],
+Cell[CellGroupData[{
+Cell[10285, 235, 282, 7, 32, "Input", "ExpressionUUID" -> \
+"c4ee6566-849b-43dc-bd15-d985a11a9aa1"],
+Cell[10570, 244, 339, 5, 32, "Output", "ExpressionUUID" -> \
+"f1bf9ba0-7bd5-4e57-88db-d86aea63bf4b"]
+}, Open  ]]
 }
 ]
 *)
