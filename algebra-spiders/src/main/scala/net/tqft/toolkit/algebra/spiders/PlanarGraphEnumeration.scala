@@ -23,7 +23,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
             spider.multiply(spider.rotate(G, -whereToStart), spider.rotate(vertex, -vertexRotation), numberOfStitches),
             basepointOffset match {
               case None => -G.numberOfBoundaryPoints + whereToStart
-              case Some(r) => -r
+              case Some(r) => r
             }))
       }
       def inverse = {
@@ -72,19 +72,18 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
           for (
             vertexToAdd <- vertices;
             numberOfStitches <- 1 to scala.math.min(vertexToAdd.perimeter, G.numberOfBoundaryPoints);
-            whereToStart <- numberOfStitches to G.numberOfBoundaryPoints;
+            whereToStart <- (numberOfStitches + 1) to G.numberOfBoundaryPoints;
             vertexRotation <- 0 until vertexToAdd.allowedRotationStep
           ) yield {
             Upper(whereToStart, vertexToAdd, vertexRotation, numberOfStitches, None)
           }
-        // TODO! we're missing the case where, eg, we put a fork on the boundary and the star is in the fork
         val elementsThatDoCoverBasepoint =
           for (
             vertexToAdd <- vertices;
-            numberOfStitches <- 2 to scala.math.min(vertexToAdd.perimeter, G.numberOfBoundaryPoints);
-            whereToStart <- 1 until numberOfStitches;
+            numberOfStitches <- 1 to scala.math.min(vertexToAdd.perimeter, G.numberOfBoundaryPoints);
+            whereToStart <- 1 to numberOfStitches;
             vertexRotation <- 0 until vertexToAdd.allowedRotationStep;
-            basepointOffset <- 0 to (vertexToAdd.perimeter - numberOfStitches - (if (numberOfStitches == G.numberOfBoundaryPoints) 1 else 0))
+            basepointOffset <- 1 to (vertexToAdd.perimeter - numberOfStitches - (if (numberOfStitches == G.numberOfBoundaryPoints) 1 else 0))
           ) yield {
             Upper(whereToStart, vertexToAdd, vertexRotation, numberOfStitches, Some(basepointOffset))
           }

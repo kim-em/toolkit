@@ -17,11 +17,66 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
   "PlanarGraphEnumeration" should "say the children of the pentagon are the pentaforks" in {
 
     val pentaforks = Seq.tabulate(6)(i => PlanarGraph.spider.rotate(PlanarGraph.pentafork, i))
-    
+
     val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)))
     val root = context.PlanarGraphEnumeration(PlanarGraph.polygon(5))
 
-    labels2(root.children) should equal(labels1(pentaforks))
+    val children = root.children
+    //    for (c <- children) {
+    //      DrawPlanarGraph.showPDF(c.G)
+    //    }
+
+    labels2(children) should equal(labels1(pentaforks))
+  }
+  "PlanarGraphEnumeration" should "say the children of the hexagon are the hexaforks" in {
+
+    val hexaforks = Seq.tabulate(7)(i => PlanarGraph.spider.rotate(PlanarGraph.hexafork, i))
+
+    val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)))
+    val root = context.PlanarGraphEnumeration(PlanarGraph.polygon(6))
+
+    val children = root.children
+    //    for (c <- children) {
+    //      DrawPlanarGraph.showPDF(c.G)
+    //    }
+
+    labels2(children) should equal(labels1(hexaforks))
+  }
+  "PlanarGraphEnumeration" should "find the children of a H" in {
+
+    val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)))
+    val root = context.PlanarGraphEnumeration(PlanarGraph.H)
+
+    val children = root.children
+    for (c <- children) {
+      DrawPlanarGraph.showPDF(c.G)
+    }
+    // TODO think about what to test here? 
+  }
+  //  "PlanarGraphEnumeration" should "find the children of a pentafork" in {
+  //
+  //    val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)))
+  //    val root = context.PlanarGraphEnumeration(PlanarGraph.pentafork)
+  //
+  //    val children = root.children
+  //    //    for (c <- children) {
+  //    //      DrawPlanarGraph.showPDF(c.G)
+  //    //    }
+  //    // TODO think about what to test here? 
+  //  }
+  "PlanarGraphEnumeration" should "find the children of the pentaforks" in {
+    val pentaforks = Seq.tabulate(6)(i => PlanarGraph.spider.rotate(PlanarGraph.pentafork, i))
+    val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)))
+    val allChildren = for (p <- pentaforks) yield {
+      val root = context.PlanarGraphEnumeration(p)
+
+      val children = root.children
+      //          for (c <- children) {
+      //            DrawPlanarGraph.showPDF(c.G)
+      //          }
+      children
+    }
+    (labels2(allChildren.flatten).size, labels2(allChildren.flatten).distinct.size) should equal((28, 28))
   }
 
 }
