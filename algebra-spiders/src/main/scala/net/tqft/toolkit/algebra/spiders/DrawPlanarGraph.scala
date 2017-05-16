@@ -51,7 +51,7 @@ trait DrawPlanarGraph {
   var gsPath = getProgramPath("gs", texSearchPaths)
   var pdfcropPath = getProgramPath("pdfcrop", texSearchPaths)
 
-  def apply(G: PlanarGraph): String = {
+  def writeTikzPicture(G: PlanarGraph): String = {
     // Draws regular, closed and knotted PlanarGraphs by doing some preprocessing and then calling the draw function.
     // Draws over and undercrossings with or without orientation.
 
@@ -158,7 +158,7 @@ trait DrawPlanarGraph {
       }
     }
 
-    draw(new PlanarGraph(G.outerFace, modifiedVertexFlags, G.labels, G.loops), decoratedEdges, decoratedVertices, hideBoundaryEdges)
+    draw(G.copy(vertexFlags = modifiedVertexFlags), decoratedEdges, decoratedVertices, hideBoundaryEdges)
   }
 
   private def draw(G: PlanarGraph, decoratedEdges: Map[Int, String], decoratedVertices: Map[Int, String], hideBoundaryEdges: Boolean): String = {
@@ -337,14 +337,15 @@ trait DrawPlanarGraph {
       tikzString = tikzString ++ edgeStr
     }
 
-    tikzString = tikzString ++ "\\end{tikzpicture}"
+    tikzString = tikzString ++ "\\end{tikzpicture}\n"
+    tikzString = tikzString ++ G.comment.getOrElse("")
     return tikzString
   }
 
   def filenameForGraph(g: PlanarGraph) = "urn_sha1_" + SHA1(g.toString /* + " " + this.toString*/ ) + ".pdf"
 
   def writePDF(g: PlanarGraph)(filename: String = filenameForGraph(g)): Path = {
-    val path = outputPath.resolve(outputPath.resolve(filename))
+    val path = outputPath.resolve(filename)
     pdfMultiple(path, Seq(g))
     path
   }
@@ -365,7 +366,7 @@ trait DrawPlanarGraph {
 
   def pdfMultiple(pdfPath: Path, Gs: Seq[PlanarGraph]): Unit = {
     // Writes TikZ to tex file and runs pdflatex
-    val outputStr = Gs.map(apply).mkString(
+    val outputStr = Gs.map(writeTikzPicture).mkString(
       Gs.map(g => "% " + g.toString + "\n").mkString ++
         "\\documentclass{article}\n\\usepackage{tikz}\n\\usetikzlibrary{decorations.markings}\n\\pagestyle{empty}\n\\begin{document}\n",
       "\\bigskip\\bigskip\n\n",

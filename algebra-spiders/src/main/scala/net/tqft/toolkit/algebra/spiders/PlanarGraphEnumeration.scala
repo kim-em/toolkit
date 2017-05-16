@@ -24,24 +24,20 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
             basepointOffset match {
               case None => -G.numberOfBoundaryPoints + whereToStart
               case Some(r) => r
-            }))
+            }).copy(comment = Some(s"Upper(wheretoStart = $whereToStart, numberOfStitches = $numberOfStitches, basepointOffset = $basepointOffset) boundaryInterval = $boundaryInterval")))
       }
-      def inverse = {
-        val boundaryInterval = if (basepointOffset.isEmpty) {
-          if (whereToStart == numberOfStitches) {
-            // we can see the vertex from all the way around the bottom
-            0
-          } else {
-            G.numberOfBoundaryPoints - whereToStart
-          }
-        } else {
-          0
+      val boundaryInterval = basepointOffset match {
+          case None => G.numberOfBoundaryPoints - whereToStart
+          case Some(r) => vertexToAdd.perimeter - numberOfStitches - r
         }
+      def inverse = {        
         result.Lower(boundaryInterval, G.numberOfInternalVertices + 1)
       }
     }
     case class Lower(boundaryInterval: Int, vertexToRemove: Int) {
       require(vertexToRemove != 0)
+      // TODO understand the rule about _which_ boundaryIntervals are allowed,
+      // and enforce it here
 
       private lazy val relabeled = G.copy(labels = G.labels.updated(vertexToRemove - 1, (newLabel, G.labels(vertexToRemove - 1)._2)))
 
@@ -68,7 +64,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
 
     override def upperObjects: automorphisms.ActionOnFiniteSet[Upper] = new automorphisms.ActionOnFiniteSet[Upper] {
       override def elements = {
-        val elementsThatDontCoverBasepoint =
+        val elementsThatDontConnectToFirstString =
           for (
             vertexToAdd <- vertices;
             numberOfStitches <- 1 to scala.math.min(vertexToAdd.perimeter, G.numberOfBoundaryPoints);
@@ -77,31 +73,43 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
           ) yield {
             Upper(whereToStart, vertexToAdd, vertexRotation, numberOfStitches, None)
           }
-        val elementsThatDoCoverBasepoint =
+        val elementsThatDoConnectToFirstString =
           for (
             vertexToAdd <- vertices;
             numberOfStitches <- 1 to scala.math.min(vertexToAdd.perimeter, G.numberOfBoundaryPoints);
             whereToStart <- 1 to numberOfStitches;
             vertexRotation <- 0 until vertexToAdd.allowedRotationStep;
-            basepointOffset <- 1 to (vertexToAdd.perimeter - numberOfStitches - (if (numberOfStitches == G.numberOfBoundaryPoints) 1 else 0))
+            basepointOffset <- 0 until (vertexToAdd.perimeter - numberOfStitches - (if (numberOfStitches == G.numberOfBoundaryPoints) 1 else 0))
           ) yield {
             Upper(whereToStart, vertexToAdd, vertexRotation, numberOfStitches, Some(basepointOffset))
           }
-        val results = elementsThatDoCoverBasepoint ++ elementsThatDontCoverBasepoint
+        val results = elementsThatDontConnectToFirstString ++ elementsThatDoConnectToFirstString
 
         results
       }
       override def act(g: Unit, upper: Upper) = upper
     }
     override lazy val lowerObjects = new automorphisms.ActionOnFiniteSet[Lower] {
-      // we must only delete a vertex from the most clockwise position it is visible! 
+      // we must only delete a vertex from each most clockwise position it is visible from! 
       override val elements = {
         import net.tqft.toolkit.arithmetic.Mod._
         val intervalsAndVisibleVertices = for (i <- 0 until scala.math.max(G.numberOfBoundaryPoints, 1); j <- G.allVerticesAdjacentToFace(G.boundaryFaces(i mod G.numberOfBoundaryPoints)); if j != 0) yield {
           (i, j)
         }
         info(intervalsAndVisibleVertices)
-        intervalsAndVisibleVertices.groupBy(_._2).values.map(_.min).map(p => Lower(p._1, p._2))
+        def mostClockwise(n: Int, L: Seq[Int]): Seq[Int] = {
+          require(L.distinct == L)
+          require(L.forall(i => (0 <= i && i < n)))
+          if (L.size == n) {
+            List(0)
+          } else {
+            L.filter(i => !L.contains(i + 1 mod n))
+          }
+        }
+        intervalsAndVisibleVertices
+          .groupBy(_._2).mapValues(l => l.map(_._1)) // this produces a map, vertices -> visible intervals
+          .mapValues(l => mostClockwise(G.numberOfBoundaryPoints, l)) // a map, vertices -> most clockwise visible intervals
+          .flatMap(p => p._2.map(i => Lower(i, p._1)))
       }
       override def act(g: Unit, lower: Lower) = lower
     }
