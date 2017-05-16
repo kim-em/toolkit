@@ -9,10 +9,19 @@ import scala.util.parsing.combinator.JavaTokenParsers
 
 // flags veer to the left
 // edges are ordered clockwise around each vertex
-case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[(Int, Int)], loops: Int) { graph =>
+case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]], labels: Seq[(Int, Int)], loops: Int, comment: Option[String] = None) { graph =>
   //  verify
 
   override lazy val hashCode = (outerFace, vertexFlags, labels, loops).hashCode
+  
+  override def equals(other: Any) = {
+    other match {
+      case other: PlanarGraph => {
+        other.outerFace == outerFace && other.vertexFlags == vertexFlags && other.labels == labels && other.loops == loops
+      }
+    }
+  }
+
 
   def isAlternating_? = {
     if (vertexFlags.tail.map(_.size).forall(_ == 4) && labels.forall(_._2 == 2)) {
@@ -66,14 +75,6 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     }
 
     require(vertexFlags.head.distinct.size == vertexFlags.head.size)
-  }
-
-  override def equals(other: Any) = {
-    other match {
-      case other: PlanarGraph => {
-        other.outerFace == outerFace && other.vertexFlags == vertexFlags && other.labels == labels && other.loops == loops
-      }
-    }
   }
 
   def numberOfBoundaryPoints = vertexFlags(0).size
