@@ -1,0 +1,484 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     14582,        475]
+NotebookOptionsPosition[     13127,        424]
+NotebookOutlinePosition[     13516,        441]
+CellTagsIndexPosition[     13473,        438]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AppendTo", "[", 
+   RowBox[{"$Path", ",", 
+    RowBox[{"NotebookDirectory", "[", "]"}]}], "]"}], ";"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"<<", "GuessingPolynomials`"}]], "Input",
+ CellChangeTimes->{{3.646518740801746*^9, 3.6465187445955067`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"GuessingPolynomials`Private`onDiskParallelNullSpace", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"a", ",", "b", ",", "c"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"d", ",", "e", ",", "f"}], "}"}]}], "}"}], ",", 
+   "\"\<scratch\>\""}], "]"}]], "Input",
+ CellChangeTimes->{{3.648302930805519*^9, 3.648302960493569*^9}, {
+  3.648303027207185*^9, 3.6483030369047127`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox[
+    RowBox[{
+     RowBox[{
+      RowBox[{"-", "c"}], " ", "e"}], "+", 
+     RowBox[{"b", " ", "f"}]}], 
+    RowBox[{
+     RowBox[{
+      RowBox[{"-", "b"}], " ", "d"}], "+", 
+     RowBox[{"a", " ", "e"}]}]], ",", 
+   FractionBox[
+    RowBox[{
+     RowBox[{
+      RowBox[{"-", "c"}], " ", "d"}], "+", 
+     RowBox[{"a", " ", "f"}]}], 
+    RowBox[{
+     RowBox[{"b", " ", "d"}], "-", 
+     RowBox[{"a", " ", "e"}]}]], ",", "1"}], "}"}]], "Output",
+ CellChangeTimes->{{3.648302962463415*^9, 3.648302983859394*^9}, {
+   3.648303023091504*^9, 3.648303037741713*^9}, 3.6483033015739737`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"GuessingPolynomials`Private`ParallelNullSpace", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", ",", "d", ",", 
+      SuperscriptBox["d", "2"]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"v", "+", "d"}], ",", 
+      RowBox[{"v", "+", 
+       RowBox[{"2", "d"}]}], ",", 
+      RowBox[{"v", "+", 
+       RowBox[{"3", "d"}]}]}], "}"}]}], "}"}], "]"}]], "Input",
+ CellChangeTimes->{{3.648303237116172*^9, 3.648303274351211*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Tue 11 Aug 2015 11:35:03 calculating nullspace at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"7928", ",", "v"}], "}"}]}],
+  SequenceForm[
+  "Tue 11 Aug 2015 11:35:03 calculating nullspace at ", {
+   7928, $CellContext`v}],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.6483033033093*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Tue 11 Aug 2015 11:35:03 calculating nullspace at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"17393", ",", "v"}], "}"}]}],
+  SequenceForm[
+  "Tue 11 Aug 2015 11:35:03 calculating nullspace at ", {
+   17393, $CellContext`v}],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.6483033033214912`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Tue 11 Aug 2015 11:35:03 calculating nullspace at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"27458", ",", "v"}], "}"}]}],
+  SequenceForm[
+  "Tue 11 Aug 2015 11:35:03 calculating nullspace at ", {
+   27458, $CellContext`v}],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.648303303355447*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Tue 11 Aug 2015 11:35:03 calculating nullspace at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"37831", ",", "v"}], "}"}]}],
+  SequenceForm[
+  "Tue 11 Aug 2015 11:35:03 calculating nullspace at ", {
+   37831, $CellContext`v}],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.6483033033857613`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Tue 11 Aug 2015 11:35:03 calculating nullspace at \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"48620", ",", "v"}], "}"}]}],
+  SequenceForm[
+  "Tue 11 Aug 2015 11:35:03 calculating nullspace at ", {
+   48620, $CellContext`v}],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.648303303424868*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Tue 11 Aug 2015 11:35:03 computing NullSpace[matrix][[\"\>", 
+   "\[InvisibleSpace]", "1", "\[InvisibleSpace]", "\<\"]]\"\>"}],
+  SequenceForm[
+  "Tue 11 Aug 2015 11:35:03 computing NullSpace[matrix][[", 1, "]]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.6483033034337053`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"FindMultivariablePolynomial[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"d", ",", "v"}], "}"}], "\[InvisibleSpace]", "\<\"][...]\"\>"}],
+  SequenceForm[
+  "FindMultivariablePolynomial[", {$CellContext`d, $CellContext`v}, "][...]"],
+  
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.6483033034366293`*^9}}],
+
+Cell[BoxData["$Failed"], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.648303303439123*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"obtained \"\>", "\[InvisibleSpace]", 
+   FractionBox[
+    RowBox[{"d", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "3"}], " ", "d"}], "+", 
+       RowBox[{"2", " ", 
+        SuperscriptBox["d", "2"]}], "-", "v", "+", 
+       RowBox[{"d", " ", "v"}]}], ")"}]}], 
+    RowBox[{
+     RowBox[{
+      RowBox[{"-", "2"}], " ", "d"}], "+", 
+     SuperscriptBox["d", "2"], "-", "v", "+", 
+     RowBox[{"d", " ", "v"}]}]]}],
+  SequenceForm[
+  "obtained ", $CellContext`d ((-2) $CellContext`d + $CellContext`d^2 - \
+$CellContext`v + $CellContext`d $CellContext`v)^(-1) ((-3) $CellContext`d + 
+    2 $CellContext`d^2 - $CellContext`v + $CellContext`d $CellContext`v)],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.6483033034418*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Tue 11 Aug 2015 11:35:03 computing NullSpace[matrix][[\"\>", 
+   "\[InvisibleSpace]", "2", "\[InvisibleSpace]", "\<\"]]\"\>"}],
+  SequenceForm[
+  "Tue 11 Aug 2015 11:35:03 computing NullSpace[matrix][[", 2, "]]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.648303303444066*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"FindMultivariablePolynomial[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"d", ",", "v"}], "}"}], "\[InvisibleSpace]", "\<\"][...]\"\>"}],
+  SequenceForm[
+  "FindMultivariablePolynomial[", {$CellContext`d, $CellContext`v}, "][...]"],
+  
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.6483033034467573`*^9}}],
+
+Cell[BoxData["$Failed"], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.6483033034489613`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"obtained \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", 
+    FractionBox[
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "3"}], " ", "d"}], "+", 
+      SuperscriptBox["d", "3"], "-", "v", "+", 
+      RowBox[{
+       SuperscriptBox["d", "2"], " ", "v"}]}], 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "2"}], " ", "d"}], "+", 
+      SuperscriptBox["d", "2"], "-", "v", "+", 
+      RowBox[{"d", " ", "v"}]}]]}]}],
+  SequenceForm[
+  "obtained ", -((-2) $CellContext`d + $CellContext`d^2 - $CellContext`v + \
+$CellContext`d $CellContext`v)^(-1) ((-3) $CellContext`d + $CellContext`d^3 - \
+$CellContext`v + $CellContext`d^2 $CellContext`v)],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.648303303450543*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Tue 11 Aug 2015 11:35:03 computing NullSpace[matrix][[\"\>", 
+   "\[InvisibleSpace]", "3", "\[InvisibleSpace]", "\<\"]]\"\>"}],
+  SequenceForm[
+  "Tue 11 Aug 2015 11:35:03 computing NullSpace[matrix][[", 3, "]]"],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.648303303452024*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"FindMultivariablePolynomial[\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"d", ",", "v"}], "}"}], "\[InvisibleSpace]", "\<\"][...]\"\>"}],
+  SequenceForm[
+  "FindMultivariablePolynomial[", {$CellContext`d, $CellContext`v}, "][...]"],
+  
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.648303303453504*^9}}],
+
+Cell[BoxData["$Failed"], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.648303303454887*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"obtained \"\>", "\[InvisibleSpace]", "1"}],
+  SequenceForm["obtained ", 1],
+  Editable->False]], "Print",
+ CellChangeTimes->{
+  3.6483032446965523`*^9, {3.648303275285289*^9, 3.648303303456229*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox[
+    RowBox[{"d", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "3"}], " ", "d"}], "+", 
+       RowBox[{"2", " ", 
+        SuperscriptBox["d", "2"]}], "-", "v", "+", 
+       RowBox[{"d", " ", "v"}]}], ")"}]}], 
+    RowBox[{
+     RowBox[{
+      RowBox[{"-", "2"}], " ", "d"}], "+", 
+     SuperscriptBox["d", "2"], "-", "v", "+", 
+     RowBox[{"d", " ", "v"}]}]], ",", 
+   RowBox[{"-", 
+    FractionBox[
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "3"}], " ", "d"}], "+", 
+      SuperscriptBox["d", "3"], "-", "v", "+", 
+      RowBox[{
+       SuperscriptBox["d", "2"], " ", "v"}]}], 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "2"}], " ", "d"}], "+", 
+      SuperscriptBox["d", "2"], "-", "v", "+", 
+      RowBox[{"d", " ", "v"}]}]]}], ",", "1"}], "}"}]], "Output",
+ CellChangeTimes->{{3.648303246092267*^9, 3.648303303457797*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", ",", "d", ",", 
+      SuperscriptBox["d", "2"]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"v", "+", "d"}], ",", 
+      RowBox[{"v", "+", 
+       RowBox[{"2", "d"}]}], ",", 
+      RowBox[{"v", "+", 
+       RowBox[{"3", "d"}]}]}], "}"}]}], "}"}], ".", "%"}]], "Input",
+ CellChangeTimes->{{3.648303310090644*^9, 3.648303310636304*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    SuperscriptBox["d", "2"], "+", 
+    FractionBox[
+     RowBox[{"d", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "3"}], " ", "d"}], "+", 
+        RowBox[{"2", " ", 
+         SuperscriptBox["d", "2"]}], "-", "v", "+", 
+        RowBox[{"d", " ", "v"}]}], ")"}]}], 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "2"}], " ", "d"}], "+", 
+      SuperscriptBox["d", "2"], "-", "v", "+", 
+      RowBox[{"d", " ", "v"}]}]], "-", 
+    FractionBox[
+     RowBox[{"d", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "3"}], " ", "d"}], "+", 
+        SuperscriptBox["d", "3"], "-", "v", "+", 
+        RowBox[{
+         SuperscriptBox["d", "2"], " ", "v"}]}], ")"}]}], 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "2"}], " ", "d"}], "+", 
+      SuperscriptBox["d", "2"], "-", "v", "+", 
+      RowBox[{"d", " ", "v"}]}]]}], ",", 
+   RowBox[{
+    RowBox[{"3", " ", "d"}], "+", "v", "+", 
+    FractionBox[
+     RowBox[{"d", " ", 
+      RowBox[{"(", 
+       RowBox[{"d", "+", "v"}], ")"}], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "3"}], " ", "d"}], "+", 
+        RowBox[{"2", " ", 
+         SuperscriptBox["d", "2"]}], "-", "v", "+", 
+        RowBox[{"d", " ", "v"}]}], ")"}]}], 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "2"}], " ", "d"}], "+", 
+      SuperscriptBox["d", "2"], "-", "v", "+", 
+      RowBox[{"d", " ", "v"}]}]], "-", 
+    FractionBox[
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"2", " ", "d"}], "+", "v"}], ")"}], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"-", "3"}], " ", "d"}], "+", 
+        SuperscriptBox["d", "3"], "-", "v", "+", 
+        RowBox[{
+         SuperscriptBox["d", "2"], " ", "v"}]}], ")"}]}], 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "2"}], " ", "d"}], "+", 
+      SuperscriptBox["d", "2"], "-", "v", "+", 
+      RowBox[{"d", " ", "v"}]}]]}]}], "}"}]], "Output",
+ CellChangeTimes->{3.648303311239588*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Together", "[", "%", "]"}]], "Input",
+ CellChangeTimes->{{3.648303312094667*^9, 3.648303313396092*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0"}], "}"}]], "Output",
+ CellChangeTimes->{3.6483033136230507`*^9}]
+}, Open  ]]
+},
+AutoGeneratedPackage->Automatic,
+WindowSize->{808, 751},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 148, 4, 28, "Input"],
+Cell[709, 26, 132, 2, 28, "Input"],
+Cell[CellGroupData[{
+Cell[866, 32, 437, 11, 46, "Input"],
+Cell[1306, 45, 641, 21, 48, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1984, 71, 488, 14, 35, "Input"],
+Cell[CellGroupData[{
+Cell[2497, 89, 411, 11, 22, "Print"],
+Cell[2911, 102, 417, 11, 22, "Print"],
+Cell[3331, 115, 415, 11, 22, "Print"],
+Cell[3749, 128, 417, 11, 22, "Print"],
+Cell[4169, 141, 415, 11, 22, "Print"],
+Cell[4587, 154, 387, 8, 22, "Print"],
+Cell[4977, 164, 422, 10, 22, "Print"],
+Cell[5402, 176, 126, 2, 21, "Print"],
+Cell[5531, 180, 859, 23, 46, "Print"],
+Cell[6393, 205, 385, 8, 22, "Print"],
+Cell[6781, 215, 422, 10, 22, "Print"],
+Cell[7206, 227, 128, 2, 21, "Print"],
+Cell[7337, 231, 813, 22, 44, "Print"],
+Cell[8153, 255, 385, 8, 22, "Print"],
+Cell[8541, 265, 420, 10, 22, "Print"],
+Cell[8964, 277, 126, 2, 21, "Print"],
+Cell[9093, 281, 247, 6, 21, "Print"]
+}, Open  ]],
+Cell[9355, 290, 926, 30, 53, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10318, 325, 439, 14, 35, "Input"],
+Cell[10760, 341, 2067, 68, 98, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12864, 414, 127, 2, 28, "Input"],
+Cell[12994, 418, 117, 3, 28, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
