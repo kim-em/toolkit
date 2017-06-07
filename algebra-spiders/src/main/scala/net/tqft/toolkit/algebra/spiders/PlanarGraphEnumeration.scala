@@ -19,7 +19,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
 
     case class Upper(whereToStart: Int, vertexToAdd: VertexType, vertexRotation: Int, numberOfStitches: Int, basepointOffset: Option[Int]) {
       require(basepointOffset.nonEmpty == (numberOfStitches >= whereToStart))
-      
+
       lazy val result = {
         val vertex = PlanarGraph.star(vertexToAdd)
         PlanarGraphEnumeration(
@@ -33,10 +33,10 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
       // boundaryInterval should be the most clockwise position we can see the new vertex from
       // we count clockwise!
       val boundaryInterval = (basepointOffset match {
-          case None    => whereToStart + vertexToAdd.perimeter - 2 * numberOfStitches
-          case Some(r) => vertexToAdd.perimeter - numberOfStitches - r  
-        }) mod (G.numberOfBoundaryPoints + vertexToAdd.perimeter - 2 * numberOfStitches)
-      def inverse = {        
+        case None => whereToStart + vertexToAdd.perimeter - 2 * numberOfStitches
+        case Some(r) => vertexToAdd.perimeter - numberOfStitches - r
+      }) mod (G.numberOfBoundaryPoints + vertexToAdd.perimeter - 2 * numberOfStitches)
+      def inverse = {
         result.Lower(boundaryInterval, G.numberOfInternalVertices + 1)
       }
     }
@@ -45,26 +45,16 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
       // TODO understand the rule about _which_ boundaryIntervals are allowed,
       // and enforce it here
 
-      private lazy val relabeled = G.copy(labels = G.labels.updated(vertexToRemove - 1, (newLabel, G.labels(vertexToRemove - 1)._2)))
-
       lazy val result = ???
-      //      {
-      //        val rotated = spider.rotate(relabeled, boundaryInterval /* negative?! */ )
-      //        
-      //        DrawPlanarGraph.showPDF(rotated)
-      //        
-      //        val excisions = rotated.Subgraphs(PlanarGraph.star(G.vertexFlags(vertexToRemove).size, newLabel, G.labels(vertexToRemove - 1)._2)).excisions
-      //        
-      //        val result = excisions.next
-      //        require(result.depth == 0)
-      //        require(!excisions.hasNext)
-      //        
-      //        PlanarGraphEnumeration(result.cut)
-      //      }
 
-      def encodeAsPlanarGraph: PlanarGraph = {
-        val markerVertex = PlanarGraph.star(VertexType(1, 1, 1))
-        spider.rotate(spider.tensor(markerVertex, spider.rotate(relabeled, -boundaryInterval)), boundaryInterval).relabelEdgesAndFaces
+      lazy val canonicalLabelling = {
+        def encodeAsPlanarGraph: PlanarGraph = {
+          val relabeled = G.copy(labels = G.labels.updated(vertexToRemove - 1, (newLabel, G.labels(vertexToRemove - 1)._2)))
+          val markerVertex = PlanarGraph.star(VertexType(1, 1, 1))
+          spider.rotate(spider.tensor(markerVertex, spider.rotate(relabeled, -boundaryInterval)), boundaryInterval).relabelEdgesAndFaces
+        }
+
+        Dreadnaut.canonicalLabelling(encodeAsPlanarGraph.nautyGraph)
       }
     }
 
@@ -127,7 +117,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
         (
           if (G.deleting_vertex_disconnects_graph_?(o.representative.vertexToRemove)) 1 else 0,
           G.dangliness.map(d => -d(o.representative.vertexToRemove)).take(4),
-          Dreadnaut.canonicalLabelling(o.representative.encodeAsPlanarGraph.nautyGraph))
+          o.representative.canonicalLabelling)
       })
     }
 
