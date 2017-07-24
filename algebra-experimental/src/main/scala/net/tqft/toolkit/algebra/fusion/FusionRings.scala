@@ -167,7 +167,7 @@ object FusionRings {
     val s = variables.size
 
     lazy val variablesAppearances = for (v <- variables) yield {
-      (for ((m, i) <- matrices.zipWithIndex; (r, j) <- m.entries.zipWithIndex; (x, k) <- r.zipWithIndex; if x.variables.contains(v)) yield (i, j, k))
+      (for ((m, i) <- matrices.zipWithIndex; (r, j) <- m.entries.toIndexedSeq.zipWithIndex; (x, k) <- r.zipWithIndex; if x.variables.contains(v)) yield (i, j, k))
     }
 
     case class QuadraticForm(constant: Int, linears: List[(Int, Int)], quadratics: List[(Int, Int, Int)]) {

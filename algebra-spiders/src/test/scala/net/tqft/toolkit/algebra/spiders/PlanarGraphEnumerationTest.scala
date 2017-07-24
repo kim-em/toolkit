@@ -16,20 +16,20 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
 
   val dpg = DrawPlanarGraph.withOutputPath("/Users/emilypeters/Documents/scratch/graphs")
 
-  //  "PlanarGraphEnumeration" should "say the children of the pentagon are the pentaforks" in {
-  //
-  //    val pentaforks = Seq.tabulate(6)(i => PlanarGraph.spider.rotate(PlanarGraph.pentafork, i))
-  //
-  //    val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)))
-  //    val root = context.PlanarGraphEnumeration(PlanarGraph.polygon(5))
-  //
-  //    val children = root.children
-  //    //    for (c <- children) {
-  //    //      DrawPlanarGraph.showPDF(c.G)
-  //    //    }
-  //
-  //    labels2(children) should equal(labels1(pentaforks))
-  //  }
+//    "PlanarGraphEnumeration" should "say the children of the pentagon are the pentaforks" in {
+//  
+//      val pentaforks = Seq.tabulate(6)(i => PlanarGraph.spider.rotate(PlanarGraph.pentafork, i))
+//  
+//      val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)))
+//      val root = context.PlanarGraphEnumeration(PlanarGraph.polygon(5))
+//  
+//      val children = root.children
+//      //    for (c <- children) {
+//      //      DrawPlanarGraph.showPDF(c.G)
+//      //    }
+//  
+//      labels2(children) should equal(labels1(pentaforks))
+//    }
   //  "PlanarGraphEnumeration" should "say the children of the hexagon are the hexaforks" in {
   //
   //    val hexaforks = Seq.tabulate(7)(i => PlanarGraph.spider.rotate(PlanarGraph.hexafork, i))

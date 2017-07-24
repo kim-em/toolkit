@@ -167,7 +167,7 @@ object CommonsSimplexSolver {
   import scala.collection.JavaConversions._
 
   def apply(m: Matrix[Double], c: List[Double]) = {
-    val constraints = (for ((row, x) <- m.entries zip c) yield {
+    val constraints = (for ((row, x) <- m.entries.toIndexedSeq.zip(c)) yield {
       new LinearConstraint(row.toArray, Relationship.EQ, x)
     }).toList
     val function = new LinearObjectiveFunction(List.fill(m.numberOfColumns)(0.0).toArray, 0.0)
