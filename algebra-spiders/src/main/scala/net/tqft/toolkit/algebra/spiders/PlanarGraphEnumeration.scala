@@ -7,6 +7,8 @@ import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import net.tqft.toolkit.Logging
 
+import net.tqft.toolkit.arithmetic.Mod._
+
 case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logging {
   val spider = PlanarGraph.spider
 
@@ -16,21 +18,25 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
     override lazy val automorphisms: FinitelyGeneratedFiniteGroup[Unit] = FinitelyGeneratedFiniteGroup.trivialGroup(())
 
     case class Upper(whereToStart: Int, vertexToAdd: VertexType, vertexRotation: Int, numberOfStitches: Int, basepointOffset: Option[Int]) {
+      require(basepointOffset.nonEmpty == (numberOfStitches >= whereToStart))
+
       lazy val result = {
         val vertex = PlanarGraph.star(vertexToAdd)
         PlanarGraphEnumeration(
           spider.rotate(
             spider.multiply(spider.rotate(G, -whereToStart), spider.rotate(vertex, -vertexRotation), numberOfStitches),
             basepointOffset match {
-              case None => -G.numberOfBoundaryPoints + whereToStart
-              case Some(r) => r
+              case None => -G.numberOfBoundaryPoints + whereToStart // because numberOfStitches < whereToStart, these strings are still there!
+              case Some(r) => vertexToAdd.perimeter - numberOfStitches - r // rotate all the new strings back to the left, then move r strings back to the right
             }).copy(comment = Some(s"Upper(wheretoStart = $whereToStart, numberOfStitches = $numberOfStitches, basepointOffset = $basepointOffset) boundaryInterval = $boundaryInterval")))
       }
-      val boundaryInterval = basepointOffset match {
-          case None => G.numberOfBoundaryPoints - whereToStart
-          case Some(r) => vertexToAdd.perimeter - numberOfStitches - r
-        }
-      def inverse = {        
+      // boundaryInterval should be the most clockwise position we can see the new vertex from
+      // we count clockwise!
+      val boundaryInterval = (basepointOffset match {
+        case None => whereToStart + vertexToAdd.perimeter - 2 * numberOfStitches
+        case Some(r) => vertexToAdd.perimeter - numberOfStitches - r
+      }) mod (G.numberOfBoundaryPoints + vertexToAdd.perimeter - 2 * numberOfStitches)
+      def inverse = {
         result.Lower(boundaryInterval, G.numberOfInternalVertices + 1)
       }
     }
@@ -39,26 +45,16 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
       // TODO understand the rule about _which_ boundaryIntervals are allowed,
       // and enforce it here
 
-      private lazy val relabeled = G.copy(labels = G.labels.updated(vertexToRemove - 1, (newLabel, G.labels(vertexToRemove - 1)._2)))
-
       lazy val result = ???
-      //      {
-      //        val rotated = spider.rotate(relabeled, boundaryInterval /* negative?! */ )
-      //        
-      //        DrawPlanarGraph.showPDF(rotated)
-      //        
-      //        val excisions = rotated.Subgraphs(PlanarGraph.star(G.vertexFlags(vertexToRemove).size, newLabel, G.labels(vertexToRemove - 1)._2)).excisions
-      //        
-      //        val result = excisions.next
-      //        require(result.depth == 0)
-      //        require(!excisions.hasNext)
-      //        
-      //        PlanarGraphEnumeration(result.cut)
-      //      }
 
-      def encodeAsPlanarGraph: PlanarGraph = {
-        val markerVertex = PlanarGraph.star(VertexType(1, 1, 1))
-        spider.rotate(spider.tensor(markerVertex, spider.rotate(relabeled, -boundaryInterval)), boundaryInterval).relabelEdgesAndFaces
+      lazy val canonicalLabelling = {
+        def encodeAsPlanarGraph: PlanarGraph = {
+          val relabeled = G.copy(labels = G.labels.updated(vertexToRemove - 1, (newLabel, G.labels(vertexToRemove - 1)._2)))
+          val markerVertex = PlanarGraph.star(VertexType(1, 1, 1))
+          spider.rotate(spider.tensor(markerVertex, spider.rotate(relabeled, -boundaryInterval)), boundaryInterval).relabelEdgesAndFaces
+        }
+
+        Dreadnaut.canonicalLabelling(encodeAsPlanarGraph.nautyGraph)
       }
     }
 
@@ -92,7 +88,6 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
     override lazy val lowerObjects = new automorphisms.ActionOnFiniteSet[Lower] {
       // we must only delete a vertex from each most clockwise position it is visible from! 
       override val elements = {
-        import net.tqft.toolkit.arithmetic.Mod._
         val intervalsAndVisibleVertices = for (i <- 0 until scala.math.max(G.numberOfBoundaryPoints, 1); j <- G.allVerticesAdjacentToFace(G.boundaryFaces(i mod G.numberOfBoundaryPoints)); if j != 0) yield {
           (i, j)
         }
@@ -122,7 +117,7 @@ case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logg
         (
           if (G.deleting_vertex_disconnects_graph_?(o.representative.vertexToRemove)) 1 else 0,
           G.dangliness.map(d => -d(o.representative.vertexToRemove)).take(4),
-          Dreadnaut.canonicalLabelling(o.representative.encodeAsPlanarGraph.nautyGraph))
+          o.representative.canonicalLabelling)
       })
     }
 

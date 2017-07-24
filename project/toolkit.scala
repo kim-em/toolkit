@@ -162,7 +162,7 @@ object BuildSettings {
 
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.18-SNAPSHOT"
-  val buildScalaVersion = "2.11.8"
+  val buildScalaVersion = "2.12.2"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
@@ -178,7 +178,7 @@ object BuildSettings {
         }
     },
     resolvers := sonatypeResolvers ++ tqftResolvers /* ++ SonatypeSettings.publishing */,
-    libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.4" % "test",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test",
     //    scalacOptions ++= Seq("-uniqid","-explaintypes"),
     //    scalacOptions ++= Seq("-optimise" /*,"-Yinline-warnings"*/),
     libraryDependencies ++= Seq(junit, slf4j),
@@ -241,7 +241,7 @@ object Resolvers {
 object Dependencies {
 	val junit = "junit" % "junit" % "4.12" % "test"
 	val slf4j = "org.slf4j" % "slf4j-log4j12" % "1.7.12"
-	val apfloat = "org.apfloat" % "apfloat" % "1.8.2"		// arbitrary precision integers and floats; much better than BigInt and BigDecimal
+	val apfloat = "org.apfloat" % "apfloat" % "1.8.3"		// arbitrary precision integers and floats; much better than BigInt and BigDecimal
 	object commons {
 		val math = "org.apache.commons" % "commons-math3" % "3.5"	// simplex algorithm
 		val logging = "commons-logging" % "commons-logging" % "1.2"
@@ -249,25 +249,25 @@ object Dependencies {
 	}
 	object scala {
 		val xml = "org.scala-lang.modules" %% "scala-xml" % "1.0.1"
-    val parser = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1"
+    val parser = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6"
 	}
 	val httpclient = "org.apache.httpcomponents" % "httpclient" % "4.3.2"
 	val jets3t = "net.java.dev.jets3t" % "jets3t" % "0.9.4"
 	val typica = "com.google.code.typica" % "typica" % "1.7.2"
 	val guava = "com.google.guava" % "guava" % "21.0"
-	val findbugs = "com.google.code.findbugs" % "jsr305" % "1.3.9"
-	val scopt = "com.github.scopt" %% "scopt" % "3.3.0"
+	val findbugs = "com.google.code.findbugs" % "jsr305" % "2.0.2"
+	val scopt = "com.github.scopt" %% "scopt" % "3.6.0"
 	val arm = "com.jsuereth" %% "scala-arm" % "1.4"
 	object selenium {
 		val firefox = "org.seleniumhq.selenium" % "selenium-firefox-driver" % "3.4.0"
-		val htmlunit = "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.52.0"
+		val htmlunit = "org.seleniumhq.selenium" % "htmlunit-driver" % "2.27"
 	}
 	object lift {
 		val util = "net.liftweb" %% "lift-util" % "2.6"
 	}
 	val mysql = "mysql" % "mysql-connector-java" % "5.1.24"
 	val mapdb = "org.mapdb" % "mapdb" % "1.0.9"
-	val slick = "com.typesafe.slick" %% "slick" % "3.0.0"
+	val slick = "com.typesafe.slick" %% "slick" % "3.2.0"
 	val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.2"
 	val spire = "org.spire-math" %% "spire" % "0.13.0"
   val jblas = "org.jblas" % "jblas" % "1.2.4"
@@ -275,8 +275,8 @@ object Dependencies {
 		val parser = "org.omath" %% "omath-parser" % "0.0.1"
 	}
 	object scalanlp {
-	    val breeze = "org.scalanlp" %% "breeze" % "0.11.2"
-        val breezenatives = "org.scalanlp" %% "breeze-natives" % "0.11.2"
+	    val breeze = "org.scalanlp" %% "breeze" % "0.13.1"
+      val breezenatives = "org.scalanlp" %% "breeze-natives" % "0.13.1"
 	}
 }
 
