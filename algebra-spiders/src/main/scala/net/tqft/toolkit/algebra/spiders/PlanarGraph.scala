@@ -170,7 +170,9 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   def faceNeighbours(face: Int): Seq[Seq[EdgeFace]] = {
     faceBoundary(face).map(_.map(p => edgeFaceIncidences(p._2) match {
-      case (`face`, f) => (p._2, f); case (f, `face`) => (p._2, f)
+      case (`face`, f) => (p._2, f)
+      case (f, `face`) => (p._2, f)
+      case _ => ??? // unreachable
     }))
   }
 
