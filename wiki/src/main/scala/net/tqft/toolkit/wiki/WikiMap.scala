@@ -6,7 +6,7 @@ import scala.io.Source
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
 import net.tqft.toolkit.Throttle
-import slick.driver.MySQLDriver.api._
+import slick.jdbc.MySQLProfile.api._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 

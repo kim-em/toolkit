@@ -27,7 +27,7 @@ object PartialFusionRingApp extends App {
 
     var k = 0
     
-      val pool = new ForkJoinTaskSupport(new scala.concurrent.forkjoin.ForkJoinPool(24))
+      val pool = new ForkJoinTaskSupport(new java.util.concurrent.ForkJoinPool(24))
 
     
     println("parallelizing over " + firstLayer.size + " fusion rings")
