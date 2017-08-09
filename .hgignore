@@ -30,3 +30,4 @@ algebra-spiders/src/main/mathematica/matrices/
 */.tmpBin
 
 .worksheet
+jointEigenspaceDownValues.m
