@@ -13,7 +13,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   //  verify
 
   override lazy val hashCode = (outerFace, vertexFlags, labels, loops).hashCode
-  
+
   override def equals(other: Any) = {
     other match {
       case other: PlanarGraph => {
@@ -21,7 +21,6 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       }
     }
   }
-
 
   def isAlternating_? = {
     if (vertexFlags.tail.map(_.size).forall(_ == 4) && labels.forall(_._2 == 2)) {
@@ -46,7 +45,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     require(labels.size == numberOfVertices - 1)
 
     require(vertexFlags(0).headOption match {
-      case None => true
+      case None         => true
       case Some((_, f)) => f == outerFace
     })
 
@@ -157,7 +156,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
   lazy val boundaryEdges = vertexFlags(0).map(_._1)
   lazy val boundaryFaces = vertexFlags(0) match {
-    case Nil => Seq(outerFace)
+    case Nil   => Seq(outerFace)
     case other => other.map(_._2)
   }
 
@@ -172,7 +171,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     faceBoundary(face).map(_.map(p => edgeFaceIncidences(p._2) match {
       case (`face`, f) => (p._2, f)
       case (f, `face`) => (p._2, f)
-      case _ => ??? // unreachable
+      case _           => ??? // unreachable
     }))
   }
 
@@ -182,7 +181,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
   def edgeBetweenFaces(face1: Int, face2: Int) = {
     edgesBetweenFaces(face1: Int, face2: Int).toList match {
       case List(e) => e
-      case _ => require(false); ??? // this shouldn't happen
+      case _       => require(false); ??? // this shouldn't happen
     }
   }
 
@@ -346,10 +345,10 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
         (i1, i2, j1, j2)
       }
 
-//    println(vertexToDelete)
-//    println(neighboursOf(vertexToDelete))
-//    println(badStuff)
-    
+    //    println(vertexToDelete)
+    //    println(neighboursOf(vertexToDelete))
+    //    println(badStuff)
+
     badStuff.nonEmpty
   }
 
@@ -470,6 +469,33 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
 
     val newVertexFlags = outerFlag +: internalFlags
     PlanarGraph(f, newVertexFlags, labels, loops)
+  }
+
+  def deleteBoundaryVertex(vertexToDelete: Int) = {
+    assert {
+      // make sure it doesn't straddle the marked point, or have more than one contiguous run of edges touching the boundary
+      // (these cases aren't needed for now, and are more complicated)
+
+      import net.tqft.toolkit.collections.Split._
+      import net.tqft.toolkit.collections.Tally._
+      neighboursOf(0).rle.map(_._1).tally.apply(vertexToDelete) == 1
+    }
+
+    val newExternalFlag: Seq[(Int, Int)] = {
+       val f0 = vertexFlags(0).take(neighboursOf(0).indexOf(vertexToDelete))
+       val f2 = vertexFlags(0).drop(neighboursOf(0).lastIndexOf(vertexToDelete) + 1)
+       val f1 = {
+         // we need to take the pieces of the flag on the vertex we're about to delete that don't go to the boundary.
+         // if those are non-contiguous, we need to reverse the two chunks...
+         val i = neighboursOf(vertexToDelete).indexOf(0)
+         import net.tqft.toolkit.collections.Rotate._
+         val rotated_flag = vertexFlags(vertexToDelete).rotateLeft(i)
+         val rotated_neighbours = neighboursOf(vertexToDelete).rotateLeft(i)
+         rotated_flag.take(rotated_neighbours.lastIndexWhere(_ != 0) + 1).drop(rotated_neighbours.indexWhere(_ != 0))
+       }
+       f0 ++ f1 ++ f2
+    }
+    PlanarGraph(outerFace, newExternalFlag +: (vertexFlags.patch(vertexToDelete, Nil, 1).tail), labels.patch(vertexToDelete - 1, Nil, 1), loops)
   }
 
   private def deleteSubgraph(verticesToDelete: Seq[Int], boundaryEdgesAndFacesToDelete: Seq[(Int, Int)], loopsToDelete: Int) = {
