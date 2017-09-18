@@ -41,21 +41,21 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
     val s1 = star(4, 0, 2)
     val s2 = spider.rotate(s1, 1)
 
-//    println(s1)
-//    println(s1.relabelEdgesAndFaces)
-//    println(s1.relabelEdgesAndFaces.nautyGraph)
-//    println(s1.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
-//    println(Dreadnaut.canonicalLabelling(s1.relabelEdgesAndFaces.nautyGraph))
-//    println(spider.canonicalFormWithDefect(s1))
-//    println(spider.canonicalFormWithDefect(s1)._1.nautyGraph)
-//    println()
-//    println(s2)
-//    println(s2.relabelEdgesAndFaces)
-//    println(s2.relabelEdgesAndFaces.nautyGraph)
-//    println(s2.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
-//    println(Dreadnaut.canonicalLabelling(s2.relabelEdgesAndFaces.nautyGraph))
-//    println(spider.canonicalFormWithDefect(s2))
-//    println(spider.canonicalFormWithDefect(s2)._1.nautyGraph)
+    //    println(s1)
+    //    println(s1.relabelEdgesAndFaces)
+    //    println(s1.relabelEdgesAndFaces.nautyGraph)
+    //    println(s1.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
+    //    println(Dreadnaut.canonicalLabelling(s1.relabelEdgesAndFaces.nautyGraph))
+    //    println(spider.canonicalFormWithDefect(s1))
+    //    println(spider.canonicalFormWithDefect(s1)._1.nautyGraph)
+    //    println()
+    //    println(s2)
+    //    println(s2.relabelEdgesAndFaces)
+    //    println(s2.relabelEdgesAndFaces.nautyGraph)
+    //    println(s2.relabelEdgesAndFaces.nautyGraph.adjacencies.zipWithIndex)
+    //    println(Dreadnaut.canonicalLabelling(s2.relabelEdgesAndFaces.nautyGraph))
+    //    println(spider.canonicalFormWithDefect(s2))
+    //    println(spider.canonicalFormWithDefect(s2)._1.nautyGraph)
 
     spider.rotate(star(4, 0, 2), 1) shouldNot be_rotationally_equivalent_to(star(4, 0, 2))
   }
@@ -117,9 +117,17 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
 
   "deleting_vertex_disconnects_graph_?" should "work" in {
     val g = spider.multiply(PlanarGraph.polygon(4), PlanarGraph.polygon(4), 1)
-//    println(g)
+    //    println(g)
     val disconnectingVertices = (1 to 8).filter(i => g.deleting_vertex_disconnects_graph_?(i))
     disconnectingVertices.size should equal(2)
+  }
+
+  "deleteBoundaryVertex" should "work" in {
+    PlanarGraph.polygon(3).deleteBoundaryVertex(1) should be_isomorphic_to(PlanarGraph.H)
+    PlanarGraph.polygon(3).deleteBoundaryVertex(2) should be_isomorphic_to(PlanarGraph.I)
+    PlanarGraph.polygon(3).deleteBoundaryVertex(3) should be_isomorphic_to(PlanarGraph.H)
+    PlanarGraph.H.deleteBoundaryVertex(1) should be_isomorphic_to(PlanarGraph.star(3))
+    PlanarGraph.pentaSquare.deleteBoundaryVertex(3) should be_rotationally_equivalent_to(spider.rotate(PlanarGraph.pentafork, 2))
   }
 }
 
