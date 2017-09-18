@@ -20,3 +20,4 @@ object PlanarGraphEnumerationApp extends App {
 //    DrawPlanarGraph.showPDF(child.G)
 //  }
 }
+

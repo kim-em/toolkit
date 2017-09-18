@@ -906,6 +906,7 @@ object PlanarGraph {
 
   val twoSquares = spider.multiply(polygon(4), H, 2)
   val pentaSquare = spider.multiply(PlanarGraph.polygon(4), spider.rotate(spider.multiply(PlanarGraph.trivalentVertex, PlanarGraph.H, 1), -1), 2)
+  val pentapent = spider.multiply(PlanarGraph.polygon(5), spider.rotate(spider.multiply(PlanarGraph.trivalentVertex, PlanarGraph.H, 1), -1), 2)
 
   val pentafork = spider.multiply(PlanarGraph.polygon(5), star(3), 1)
   val hexafork = spider.multiply(PlanarGraph.polygon(6), star(3), 1)
