@@ -127,7 +127,7 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
     PlanarGraph.polygon(3).deleteBoundaryVertex(2) should be_isomorphic_to(PlanarGraph.I)
     PlanarGraph.polygon(3).deleteBoundaryVertex(3) should be_isomorphic_to(PlanarGraph.H)
     PlanarGraph.H.deleteBoundaryVertex(1) should be_isomorphic_to(PlanarGraph.star(3))
-    PlanarGraph.pentaSquare.deleteBoundaryVertex(3) should be_isomorphic_to(spider.rotate(PlanarGraph.pentafork, 2))
+    PlanarGraph.pentaSquare.deleteBoundaryVertex(3) should be_rotationally_equivalent_to(spider.rotate(PlanarGraph.pentafork, 2))
   }
 }
 
