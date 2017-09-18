@@ -68,6 +68,8 @@ case class PlanarGraphEnumerationContext2(
       //          None
       //        }
       //      }
+      
+      // FIXME this doesn't work, c.f. the grandparent of spider.rotate(PlanarGraph.pentaSquare, 2) is disconnected!
       val disconnectingVertices = {
         import net.tqft.toolkit.collections.Split._
         import net.tqft.toolkit.collections.Tally._
