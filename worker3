@@ -1,0 +1,7 @@
+while [ -n "`ls fusion-rings3/*.partial`" ];
+do
+	for args in `ls fusion-rings3/*.partial | sed "s/fusion-rings3\///" | sed "s/.partial//"`;
+	do
+		./work3 -h 1 `echo $args | sed "s/,/ /g"`
+	done
+done
