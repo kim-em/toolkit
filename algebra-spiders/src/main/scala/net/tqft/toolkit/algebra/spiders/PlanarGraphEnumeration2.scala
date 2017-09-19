@@ -46,7 +46,7 @@ case class PlanarGraphEnumerationContext2(
    * If any existing vertex has 0-dangliness strictly small, we have to glue over the top of it! 
    */
 
-  def parent(p: PlanarGraph) = parent_(p).get._2.apply()
+  def parent(p: PlanarGraph): PlanarGraph = parent_(p).get._2.apply()
 
   def parent_(p: PlanarGraph): Option[(Int, () => PlanarGraph)] = {
     //    if(p.numberOfBoundaryPoints < 2) {
@@ -119,8 +119,8 @@ case class PlanarGraphEnumerationContext2(
     ) yield result
     // TODO After implementing that, as an optimisation use dangliness to be a bit cleverer about which vertices to add.
 
+    // TODO this could be much more efficient
     graphs.filter(g => forbiddenSubgraphs.forall(f => !g.subgraphs(f).excisions.hasNext))
-
   }
 
   def children(p: PlanarGraph): Seq[PlanarGraph] = {
@@ -134,6 +134,7 @@ case class PlanarGraphEnumerationContext2(
   }
 
   def children_without_duplicates(p: PlanarGraph): Seq[PlanarGraph] = {
+    // TODO are there actually duplicates?
     children(p).map(g => g.canonicalFormWithDefect._1).distinct
   }
 

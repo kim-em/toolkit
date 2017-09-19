@@ -13,7 +13,7 @@ class PlanarGraphEnumeration2Test extends FlatSpec with Matchers with Isomorphis
   }
   val spider = implicitly[DiagramSpider[PlanarGraph]]
 
-  val dpg = DrawPlanarGraph.withOutputPath("/Users/scott/scratch/graphs")
+  val dpg = DrawPlanarGraph.withOutputPath("/Users/emilypeters/Documents/scratch/graphs")
   val context = PlanarGraphEnumerationContext2(Seq(VertexType(3, 0, 1)), Seq.empty, None, None)
 
   "graphs" should "be children of their parent" in {
@@ -35,7 +35,7 @@ class PlanarGraphEnumeration2Test extends FlatSpec with Matchers with Isomorphis
     val p = spider.rotate(PlanarGraph.pentaSquare, 2)
     val p1 =  context.parent(p)
     dpg.showPDF(p1)
-    val p2 =  context.parent(context.parent(p))
+    val p2 =  context.parent(p1)
     dpg.showPDF(p2)
 //    val p3 =  context.parent(context.parent(context.parent(p)))
 //    dpg.showPDF(p3)
