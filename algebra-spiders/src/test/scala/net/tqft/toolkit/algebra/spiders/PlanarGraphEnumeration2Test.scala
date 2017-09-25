@@ -17,41 +17,49 @@ class PlanarGraphEnumeration2Test extends FlatSpec with Matchers with Isomorphis
   val context = PlanarGraphEnumerationContext2(Seq(VertexType(3, 0, 1)), Seq.empty, None, None)
 
   "graphs" should "be children of their parent" in {
-//    context.verify_child_of_parent(PlanarGraph.polygon(2)) should be(true)
-//    context.verify_child_of_parent(PlanarGraph.polygon(3)) should be(true)
-//    context.verify_child_of_parent(PlanarGraph.polygon(4)) should be(true)
-//    context.verify_child_of_parent(PlanarGraph.polygon(5)) should be(true)
-//
-//    for (i <- 0 until 6) {
-//      context.verify_ancestry(spider.rotate(PlanarGraph.pentafork, i)) should be(true)
-//    }
-//    for (i <- 0 until 7) {
-//      context.verify_ancestry(spider.rotate(PlanarGraph.hexafork, i)) should be(true)
-//    }
-//    for (i <- 0 until 2) {
-//      context.verify_ancestry(spider.rotate(PlanarGraph.twoSquares, i)) should be(true)
-//    }
-    
-    val p = spider.rotate(PlanarGraph.pentaSquare, 2)
-    val p1 =  context.parent(p)
-    dpg.showPDF(p1)
-    val p2 =  context.parent(p1)
-    dpg.showPDF(p2)
-//    val p3 =  context.parent(context.parent(context.parent(p)))
-//    dpg.showPDF(p3)
-//    val p4 =  context.parent(context.parent(context.parent(context.parent(p))))
-//    dpg.showPDF(p4)
-//    val p5 =  context.parent(context.parent(context.parent(context.parent(context.parent(p)))))
-//    dpg.showPDF(p5)
-    
-//    context.verify_ancestry(context.parent(context.parent(context.parent(context.parent(context.parent(context.parent(p))))))) should be (true)
-//    context.verify_ancestry(p) should be(true)
-//    
-//    for (i <- 0 until 5) {
-//      context.verify_ancestry(spider.rotate(PlanarGraph.pentaSquare, i)) should be(true)
-//    }
-//    for (i <- 0 until 3) {
-//      context.verify_ancestry(spider.rotate(PlanarGraph.pentapent, i)) should be(true)
-//    }
+    context.verify_ancestry(PlanarGraph.polygon(2)) should be(true)
+    context.verify_ancestry(PlanarGraph.polygon(3)) should be(true)
+    context.verify_ancestry(PlanarGraph.polygon(4)) should be(true)
+    context.verify_ancestry(PlanarGraph.polygon(5)) should be(true)
+
+    for (i <- 0 until 6) {
+      context.verify_ancestry(spider.rotate(PlanarGraph.pentafork, i)) should be(true)
+    }
+    for (i <- 0 until 7) {
+      context.verify_ancestry(spider.rotate(PlanarGraph.hexafork, i)) should be(true)
+    }
+    for (i <- 0 until 2) {
+      context.verify_ancestry(spider.rotate(PlanarGraph.twoSquares, i)) should be(true)
+    }
+
+    for (i <- 0 until 5) {
+      context.verify_ancestry(spider.rotate(PlanarGraph.pentaSquare, i)) should be(true)
+    }
+    for (i <- 0 until 3) {
+      context.verify_ancestry(spider.rotate(PlanarGraph.pentapent, i)) should be(true)
+    }
   }
+  "we should find all the trivalent graphs without small faces" should "" in {
+    val maxVertices = 8 // we've tested up to 11
+    val maxBoundaryPoints = 6 // we've tested up to 7
+    val context = PlanarGraphEnumerationContext2(Seq(VertexType(3, 0, 1)), Seq.tabulate(4)(i => PlanarGraph.polygon(i + 1)), maximumVertices = Some(maxVertices), maximumBoundaryPoints = Some(maxBoundaryPoints))
+    val root = PlanarGraph.star(3)
+
+    val descendants = context.descendants(root).toStream
+
+    val counts = for (b <- 3 to maxBoundaryPoints) yield {
+      for (v <- 1 to maxVertices) yield {
+        descendants.count(g => g.numberOfBoundaryPoints == b && g.numberOfInternalVertices == v)
+      }
+    }
+
+    val expectedCounts = Seq(Vector(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Vector(0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Vector(0, 0, 5, 0, 1, 0, 0, 0, 0, 0, 0),
+      Vector(0, 0, 0, 14, 0, 7, 0, 3, 0, 2, 0),
+      Vector(0, 0, 0, 0, 42, 0, 36, 0, 28, 0, 28)).take(maxBoundaryPoints - 2).map(_.take(maxVertices))
+
+    counts should equal(expectedCounts)
+  }
+
 }
