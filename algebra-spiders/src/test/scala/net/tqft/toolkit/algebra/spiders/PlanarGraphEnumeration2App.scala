@@ -1,32 +1,32 @@
 package net.tqft.toolkit.algebra.spiders
 
 object PlanarGraphEnumeration2App extends App {
-  val dpg = DrawPlanarGraph.withOutputPath("/Users/scott/scratch/graphs")
-
-  val context = PlanarGraphEnumerationContext2(Seq(VertexType(3, 0, 1)), Seq.tabulate(4)(i => PlanarGraph.polygon(i + 1)), maximumVertices = Some(8), maximumBoundaryPoints = Some(6))
-  val root = PlanarGraph.star(3)
-
-  val descendants = context.descendants(root).toStream
-
-  val counts = for (b <- 3 to 6) yield {
-    for (v <- 1 to 8) yield {
-      descendants.count(g => g.numberOfBoundaryPoints == b && g.numberOfInternalVertices == v)
+  val dpg = {
+    System.getProperty("user.name") match {
+      case "scott"       => DrawPlanarGraph.withOutputPath("/Users/scott/scratch/graphs")
+      case "emilypeters" => DrawPlanarGraph.withOutputPath("/Users/emilypeters/Documents/scratch/graphs")
     }
   }
 
-  for (line <- counts) println(line)
+  val spider = implicitly[DiagramSpider[PlanarGraph]]
 
-  for (c <- descendants.filter(g => g.numberOfBoundaryPoints == 6 && g.numberOfInternalVertices == 8)) dpg.showPDF(c)
+  {
+    val maxVertices = 6 // we've tested up to 8
+    val maxBoundaryPoints = 10 // we've tested up to 10
+    val root = PlanarGraph.star(4)
+    val bigon = spider.multiply(root, root, 2)
+    val triangle = spider.multiply(spider.rotate(spider.multiply(root, root, 1), 2), root, 2)
+    val context = PlanarGraphEnumerationContext2(Seq(VertexType(4, 0, 1)), Seq(bigon, triangle), maximumVertices = Some(maxVertices), maximumBoundaryPoints = Some(maxBoundaryPoints))
 
-  //  println(descendants.filter(_.numberOfBoundaryPoints == 3).size)
-  //  println(descendants.filter(_.numberOfBoundaryPoints == 4).size)
-  //  println(descendants.filter(_.numberOfBoundaryPoints == 5).size)
-  //  println(descendants.filter(_.numberOfBoundaryPoints == 6).size)
+    val descendants = context.descendants(root).toStream
 
-  //  for (
-  //    c <- descendants if c.numberOfBoundaryPoints == 6
-  //  ) {
-  //    dpg.showPDF(c)
-  //
-  //  }
+    val counts = for (b <- 3 to maxBoundaryPoints) yield {
+      for (v <- 1 to maxVertices) yield {
+        descendants.count(g => g.numberOfBoundaryPoints == b && g.numberOfInternalVertices == v)
+      }
+    }
+
+    for (line <- counts) println(line)
+  }
+
 }
