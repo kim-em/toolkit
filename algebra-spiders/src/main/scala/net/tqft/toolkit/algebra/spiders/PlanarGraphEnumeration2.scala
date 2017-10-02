@@ -68,18 +68,29 @@ case class PlanarGraphEnumerationContext2(
       //          None
       //        }
       //      }
-      
+
       val disconnectingVertices = {
         import net.tqft.toolkit.collections.Split._
         import net.tqft.toolkit.collections.Tally._
         import net.tqft.toolkit.collections.Rotate._
         val verticesVisibleFromBoundaryFaces = p.vertexFlags(0).map(_._2).map(i => p.faceBoundary(i).ensuring(_.size == 1).head.map(_._1)).map(s => s.rotateLeft(s.indexOf(0)).tail.reverse)
-        verticesVisibleFromBoundaryFaces.flatten.rle.map(_._1).tally.collect({ case (v, k) if k > 1 => v }).toSet
+//        println("verticesVisibleFromBoundaryFaces = " + verticesVisibleFromBoundaryFaces)
+        val result = verticesVisibleFromBoundaryFaces.flatten.rle.map(_._1).tally.collect({ case (v, k) if k > 1 => v }).toSet
+//        println("disconnectingVertices = " + result)
+        result
       }
 
-      val candidateVertices = boundaryVertices.distinct.filter(v => !disconnectingVertices.contains(v))
+      val candidateVertices = {
+        if (boundaryVertices.distinct.size == 1) {
+          // if only one vertex touches the boundary, we incorrectly count it as disconnecting
+          boundaryVertices.distinct
+        } else {
+          boundaryVertices.distinct.filter(v => !disconnectingVertices.contains(v))
+        }
+      }
 
       def dangliest(vertices: Seq[Int], dangliness: Seq[Seq[Int]] = p.dangliness.take(3)): Seq[Int] = {
+        assert(vertices.nonEmpty, "dangliest called with no vertices!\n" + p)
         dangliness match {
           case h +: t => {
             val m = vertices.map(i => h(i)).max
@@ -152,9 +163,9 @@ case class PlanarGraphEnumerationContext2(
     val g0 = g.canonicalFormWithDefect._1
     children_without_duplicates(parent(g0)).contains(g0)
   }
-  
+
   def verify_ancestry(g: PlanarGraph): Boolean = {
-    if(g.numberOfInternalVertices == 1) {
+    if (g.numberOfInternalVertices == 1) {
       true
     } else {
       verify_child_of_parent(g) && verify_ancestry(parent(g))

@@ -14,7 +14,12 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
   }
   def labels2(gs: Seq[PlanarGraphEnumerationContext#PlanarGraphEnumeration]) = gs.map(g => label(g.G)).sorted
 
-  val dpg = DrawPlanarGraph.withOutputPath("/Users/emilypeters/Documents/scratch/graphs")
+  val dpg = {
+    System.getProperty("user.name") match {
+      case "scott"       => DrawPlanarGraph.withOutputPath("/Users/scott/scratch/graphs")
+      case "emilypeters" => DrawPlanarGraph.withOutputPath("/Users/emilypeters/Documents/scratch/graphs")
+    }
+  }
 
 //    "PlanarGraphEnumeration" should "say the children of the pentagon are the pentaforks" in {
 //  

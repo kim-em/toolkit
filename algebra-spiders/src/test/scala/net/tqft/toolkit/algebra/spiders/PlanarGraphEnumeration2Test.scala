@@ -13,7 +13,12 @@ class PlanarGraphEnumeration2Test extends FlatSpec with Matchers with Isomorphis
   }
   val spider = implicitly[DiagramSpider[PlanarGraph]]
 
-  val dpg = DrawPlanarGraph.withOutputPath("/Users/emilypeters/Documents/scratch/graphs")
+  val dpg = {
+    System.getProperty("user.name") match {
+      case "scott"       => DrawPlanarGraph.withOutputPath("/Users/scott/scratch/graphs")
+      case "emilypeters" => DrawPlanarGraph.withOutputPath("/Users/emilypeters/Documents/scratch/graphs")
+    }
+  }
   val context = PlanarGraphEnumerationContext2(Seq(VertexType(3, 0, 1)), Seq.empty, None, None)
 
   "graphs" should "be children of their parent" in {
@@ -58,6 +63,57 @@ class PlanarGraphEnumeration2Test extends FlatSpec with Matchers with Isomorphis
       Vector(0, 0, 5, 0, 1, 0, 0, 0, 0, 0, 0),
       Vector(0, 0, 0, 14, 0, 7, 0, 3, 0, 2, 0),
       Vector(0, 0, 0, 0, 42, 0, 36, 0, 28, 0, 28)).take(maxBoundaryPoints - 2).map(_.take(maxVertices))
+
+    counts should equal(expectedCounts)
+  }
+  "we should find all the tetravalent graphs without bigons" should "" in {
+    val maxVertices = 6 // we've tested up to 6
+    val maxBoundaryPoints = 8 // we've tested up to 8
+    val root = PlanarGraph.star(4)
+    val context = PlanarGraphEnumerationContext2(Seq(VertexType(4, 0, 1)), Seq(spider.multiply(root, root, 2)), maximumVertices = Some(maxVertices), maximumBoundaryPoints = Some(maxBoundaryPoints))
+
+    val descendants = context.descendants(root).toStream
+
+    val counts = for (b <- 3 to maxBoundaryPoints) yield {
+      for (v <- 1 to maxVertices) yield {
+        descendants.count(g => g.numberOfBoundaryPoints == b && g.numberOfInternalVertices == v)
+      }
+    }
+
+    val expectedCounts = Seq(Vector(0, 0, 0, 0, 0, 0),
+      Vector(1, 0, 0, 0, 1, 4),
+      Vector(0, 0, 0, 0, 0, 0),
+      Vector(0, 3, 2, 3, 6, 20),
+      Vector(0, 0, 0, 0, 0, 0),
+      Vector(0, 0, 12, 18, 36, 84)).take(maxBoundaryPoints - 2).map(_.take(maxVertices))
+
+    counts should equal(expectedCounts)
+  }
+  "we should find all the tetravalent graphs without small faces" should "" in {
+    val maxVertices = 6 // we've tested up to 8
+    val maxBoundaryPoints = 10 // we've tested up to 10
+    val root = PlanarGraph.star(4)
+    val bigon = spider.multiply(root, root, 2)
+    val triangle = spider.multiply(spider.rotate(spider.multiply(root, root, 1), 2), root, 2)
+    val context = PlanarGraphEnumerationContext2(Seq(VertexType(4, 0, 1)), Seq(bigon, triangle), maximumVertices = Some(maxVertices), maximumBoundaryPoints = Some(maxBoundaryPoints))
+
+    val descendants = context.descendants(root).toStream
+
+    val counts = for (b <- 3 to maxBoundaryPoints) yield {
+      for (v <- 1 to maxVertices) yield {
+        descendants.count(g => g.numberOfBoundaryPoints == b && g.numberOfInternalVertices == v)
+      }
+    }
+
+    // see https://tqft.net/web/notes/load.php?name=projects/enumerating-graphs/20171002-counting-tetravalent-graphs
+    val expectedCounts = Seq(Vector(0, 0, 0, 0, 0, 0),
+      Vector(1, 0, 0, 0, 0, 0),
+      Vector(0, 0, 0, 0, 0, 0),
+      Vector(0, 3, 0, 0, 0, 0),
+      Vector(0, 0, 0, 0, 0, 0),
+      Vector(0, 0, 12, 2, 0, 0),
+      Vector(0, 0, 0, 0, 0, 0),
+      Vector(0, 0, 0, 55, 22, 5)).take(maxBoundaryPoints - 2).map(_.take(maxVertices))
 
     counts should equal(expectedCounts)
   }
