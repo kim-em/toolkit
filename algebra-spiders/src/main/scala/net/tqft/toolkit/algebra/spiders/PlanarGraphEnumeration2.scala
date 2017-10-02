@@ -46,7 +46,7 @@ case class PlanarGraphEnumerationContext2(
    * If any existing vertex has 0-dangliness strictly small, we have to glue over the top of it! 
    */
 
-  def parent(p: PlanarGraph) = parent_(p).get._2.apply()
+  def parent(p: PlanarGraph): PlanarGraph = parent_(p).get._2.apply()
 
   def parent_(p: PlanarGraph): Option[(Int, () => PlanarGraph)] = {
     //    if(p.numberOfBoundaryPoints < 2) {
@@ -68,15 +68,29 @@ case class PlanarGraphEnumerationContext2(
       //          None
       //        }
       //      }
+
       val disconnectingVertices = {
         import net.tqft.toolkit.collections.Split._
         import net.tqft.toolkit.collections.Tally._
-        boundaryVertices.rle.map(_._1).tally.collect({ case (v, k) if k > 1 => v }).toSet
+        import net.tqft.toolkit.collections.Rotate._
+        val verticesVisibleFromBoundaryFaces = p.vertexFlags(0).map(_._2).map(i => p.faceBoundary(i).ensuring(_.size == 1).head.map(_._1)).map(s => s.rotateLeft(s.indexOf(0)).tail.reverse)
+//        println("verticesVisibleFromBoundaryFaces = " + verticesVisibleFromBoundaryFaces)
+        val result = verticesVisibleFromBoundaryFaces.flatten.rle.map(_._1).tally.collect({ case (v, k) if k > 1 => v }).toSet
+//        println("disconnectingVertices = " + result)
+        result
       }
 
-      val candidateVertices = boundaryVertices.distinct.filter(v => !disconnectingVertices.contains(v))
+      val candidateVertices = {
+        if (boundaryVertices.distinct.size == 1) {
+          // if only one vertex touches the boundary, we incorrectly count it as disconnecting
+          boundaryVertices.distinct
+        } else {
+          boundaryVertices.distinct.filter(v => !disconnectingVertices.contains(v))
+        }
+      }
 
       def dangliest(vertices: Seq[Int], dangliness: Seq[Seq[Int]] = p.dangliness.take(3)): Seq[Int] = {
+        assert(vertices.nonEmpty, "dangliest called with no vertices!\n" + p)
         dangliness match {
           case h +: t => {
             val m = vertices.map(i => h(i)).max
@@ -117,8 +131,8 @@ case class PlanarGraphEnumerationContext2(
     ) yield result
     // TODO After implementing that, as an optimisation use dangliness to be a bit cleverer about which vertices to add.
 
+    // TODO this could be much more efficient
     graphs.filter(g => forbiddenSubgraphs.forall(f => !g.subgraphs(f).excisions.hasNext))
-
   }
 
   def children(p: PlanarGraph): Seq[PlanarGraph] = {
@@ -132,6 +146,7 @@ case class PlanarGraphEnumerationContext2(
   }
 
   def children_without_duplicates(p: PlanarGraph): Seq[PlanarGraph] = {
+    // TODO are there actually duplicates?
     children(p).map(g => g.canonicalFormWithDefect._1).distinct
   }
 
@@ -148,9 +163,9 @@ case class PlanarGraphEnumerationContext2(
     val g0 = g.canonicalFormWithDefect._1
     children_without_duplicates(parent(g0)).contains(g0)
   }
-  
+
   def verify_ancestry(g: PlanarGraph): Boolean = {
-    if(g.numberOfInternalVertices == 1) {
+    if (g.numberOfInternalVertices == 1) {
       true
     } else {
       verify_child_of_parent(g) && verify_ancestry(parent(g))
