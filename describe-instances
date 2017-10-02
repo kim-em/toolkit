@@ -1,0 +1,1 @@
+sbt "toolkit-amazon/test:run-main DescribeInstancesApp"
