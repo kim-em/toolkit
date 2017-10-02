@@ -91,7 +91,7 @@ SpidersMathematicaDirectory=FileNames[Cases[$Path~Join~(Quiet[{NotebookDirectory
 SpidersDirectory=FileNameJoin[{SpidersMathematicaDirectory,"..","..",".."}];
 
 
-ScalaMajorVersion="2.11";
+ScalaMajorVersion="2.12";
 
 
 AddToClassPath[FileNames[ToFileName[{SpidersDirectory,"target","scala-"<>ScalaMajorVersion,"classes"},"log4j.xml"]]];
