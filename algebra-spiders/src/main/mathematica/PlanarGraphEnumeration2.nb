@@ -1,0 +1,244 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.4' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      9312,        234]
+NotebookOptionsPosition[      8583,        207]
+NotebookOutlinePosition[      8973,        224]
+CellTagsIndexPosition[      8930,        221]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"AppendTo", "[", 
+   RowBox[{
+   "$Path", ",", 
+    "\"\</Users/scott/projects/toolkit/algebra-spiders/src/main/mathematica/\>\
+\""}], "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"AppendTo", "[", 
+   RowBox[{
+   "$Path", ",", 
+    "\"\</Users/nsnyder/Documents/toolkit/algebra-spiders/src/main/\
+mathematica/\>\""}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AppendTo", "[", 
+   RowBox[{
+   "$Path", ",", 
+    "\"\</Users/emilypeters/Documents/Math/toolkit/algebra-spiders/src/main/\
+mathematica/\>\""}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"<<", "Spiders`"}]}], "Input",
+ CellChangeTimes->{{3.6442541392166443`*^9, 3.6442541548435802`*^9}, {
+  3.6614578357764177`*^9, 3.661457842822891*^9}, {3.7159655271763268`*^9, 
+  3.715965535136045*^9}}],
+
+Cell[BoxData["\<\"Loading Spiders` version 2015-06-18 ...\"\>"], "Print",
+ CellChangeTimes->{3.715965537836823*^9, 3.7159657018555937`*^9, 
+  3.7159662069970427`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"t", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"t\\\\\\\"\\\"}]\\)\[NoBreak] appears \
+in multiple contexts \[NoBreak]\\!\\(\\*RowBox[{\\\"{\\\", RowBox[{\\\"\\\\\\\
+\"Spiders`\\\\\\\"\\\", \\\",\\\", \\\"\\\\\\\"Global`\\\\\\\"\\\"}], \\\"}\\\
+\"}]\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\
+\\\"Spiders`\\\\\\\"\\\"}]\\)\[NoBreak] may shadow or be shadowed by other \
+definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
+\\\"Spiders`t::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.71596553875771*^9, 3.715965702639105*^9, 
+  3.715966207592739*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Java", "::", "excptn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"A Java exception occurred: \[NoBreak]\\!\\(\\*RowBox[{\\\"\
+\\\\\\\"java.lang.ClassNotFoundException: \
+net.tqft.toolkit.algebra.mathematica.MathematicaForm$BigIntMathematicaForm$\\\
+\\\\\\n\\\\\\\\tat java.net.URLClassLoader$1.run(URLClassLoader.java:366)\\\\\
+\\\\n\\\\\\\\tat java.net.URLClassLoader$1.run(URLClassLoader.java:355)\\\\\\\
+\\n\\\\\\\\tat java.security.AccessController.doPrivileged(Native Method)\\\\\
+\\\\n\\\\\\\\tat java.net.URLClassLoader.findClass(URLClassLoader.java:354)\\\
+\\\\\\n\\\\\\\\tat \
+java.lang.ClassLoader.loadClass(ClassLoader.java:423)\\\\\\\\n\\\\\\\\tat \
+java.lang.ClassLoader.loadClass(ClassLoader.java:356)\\\\\\\\n\\\\\\\\tat \
+java.lang.Class.forName0(Native Method)\\\\\\\\n\\\\\\\\tat \
+java.lang.Class.forName(Class.java:266)\\\\\\\"\\\"}]\\)\[NoBreak].\"\>"}]], \
+"Message", "MSG",
+ CellChangeTimes->{3.71596553875771*^9, 3.715965702639105*^9, 
+  3.7159662208287363`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LoadJavaClass", "::", "fail"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Java failed to load class \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"net.tqft.toolkit.algebra.mathematica.\
+MathematicaForm$BigIntMathematicaForm$\\\\\\\"\\\"}]\\)\[NoBreak]. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:JLink/ref/LoadJavaClass\\\", \
+ButtonNote -> \\\"JLink`LoadJavaClass::fail\\\"]\\)\"\>"}]], "Message", "MSG",
+ 
+ CellChangeTimes->{3.71596553875771*^9, 3.715965702639105*^9, 
+  3.71596622102472*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Java", "::", "excptn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"A Java exception occurred: \[NoBreak]\\!\\(\\*RowBox[{\\\"\
+\\\\\\\"java.lang.ClassNotFoundException: \
+net.tqft.toolkit.algebra.mathematica.MathematicaForm$\
+BareStringMathematicaForm$\\\\\\\\n\\\\\\\\tat \
+java.net.URLClassLoader$1.run(URLClassLoader.java:366)\\\\\\\\n\\\\\\\\tat \
+java.net.URLClassLoader$1.run(URLClassLoader.java:355)\\\\\\\\n\\\\\\\\tat \
+java.security.AccessController.doPrivileged(Native \
+Method)\\\\\\\\n\\\\\\\\tat \
+java.net.URLClassLoader.findClass(URLClassLoader.java:354)\\\\\\\\n\\\\\\\\\
+tat java.lang.ClassLoader.loadClass(ClassLoader.java:423)\\\\\\\\n\\\\\\\\tat \
+java.lang.ClassLoader.loadClass(ClassLoader.java:356)\\\\\\\\n\\\\\\\\tat \
+java.lang.Class.forName0(Native Method)\\\\\\\\n\\\\\\\\tat \
+java.lang.Class.forName(Class.java:266)\\\\\\\"\\\"}]\\)\[NoBreak].\"\>"}]], \
+"Message", "MSG",
+ CellChangeTimes->{3.71596553875771*^9, 3.715965702639105*^9, 
+  3.715966221317051*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LoadJavaClass", "::", "fail"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Java failed to load class \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"net.tqft.toolkit.algebra.mathematica.\
+MathematicaForm$BareStringMathematicaForm$\\\\\\\"\\\"}]\\)\[NoBreak]. \\!\\(\
+\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:JLink/ref/LoadJavaClass\\\", \
+ButtonNote -> \\\"JLink`LoadJavaClass::fail\\\"]\\)\"\>"}]], "Message", "MSG",
+ 
+ CellChangeTimes->{3.71596553875771*^9, 3.715965702639105*^9, 
+  3.715966221529793*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Java", "::", "excptn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"A Java exception occurred: \[NoBreak]\\!\\(\\*RowBox[{\\\"\
+\\\\\\\"java.lang.ClassNotFoundException: \
+net.tqft.toolkit.algebra.mathematica.MathematicaForm$\\\\\\\\n\\\\\\\\tat \
+java.net.URLClassLoader$1.run(URLClassLoader.java:366)\\\\\\\\n\\\\\\\\tat \
+java.net.URLClassLoader$1.run(URLClassLoader.java:355)\\\\\\\\n\\\\\\\\tat \
+java.security.AccessController.doPrivileged(Native \
+Method)\\\\\\\\n\\\\\\\\tat \
+java.net.URLClassLoader.findClass(URLClassLoader.java:354)\\\\\\\\n\\\\\\\\\
+tat java.lang.ClassLoader.loadClass(ClassLoader.java:423)\\\\\\\\n\\\\\\\\tat \
+java.lang.ClassLoader.loadClass(ClassLoader.java:356)\\\\\\\\n\\\\\\\\tat \
+java.lang.Class.forName0(Native Method)\\\\\\\\n\\\\\\\\tat \
+java.lang.Class.forName(Class.java:266)\\\\\\\"\\\"}]\\)\[NoBreak].\"\>"}]], \
+"Message", "MSG",
+ CellChangeTimes->{3.71596553875771*^9, 3.715965702639105*^9, 
+  3.715966221871213*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \
+\[NoBreak]\\!\\(\\*StyleBox[RowBox[{\\\"Java\\\", \\\"::\\\", \
+\\\"excptn\\\"}], \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during \
+this calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.71596553875771*^9, 3.715965702639105*^9, 
+  3.715966222063142*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"LoadJavaClass", "::", "fail"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Java failed to load class \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"net.tqft.toolkit.algebra.mathematica.\
+MathematicaForm$\\\\\\\"\\\"}]\\)\[NoBreak]. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:JLink/ref/LoadJavaClass\\\", ButtonNote -> \
+\\\"JLink`LoadJavaClass::fail\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.71596553875771*^9, 3.715965702639105*^9, 
+  3.7159662224429617`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \
+\[NoBreak]\\!\\(\\*StyleBox[RowBox[{\\\"LoadJavaClass\\\", \\\"::\\\", \
+\\\"fail\\\"}], \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during \
+this calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.71596553875771*^9, 3.715965702639105*^9, 
+  3.715966222484671*^9}]
+}, Open  ]]
+},
+AutoGeneratedPackage->Automatic,
+WindowSize->{808, 855},
+WindowMargins->{{258, Automatic}, {-33, Automatic}},
+FrontEndVersion->"10.4 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 11, \
+2016)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 803, 22, 114, "Input"],
+Cell[1386, 46, 166, 2, 22, "Print"],
+Cell[1555, 50, 835, 16, 41, "Message"],
+Cell[2393, 68, 1040, 19, 180, "Message"],
+Cell[3436, 89, 616, 13, 24, "Message"],
+Cell[4055, 104, 1044, 20, 180, "Message"],
+Cell[5102, 126, 621, 13, 41, "Message"],
+Cell[5726, 141, 1016, 19, 180, "Message"],
+Cell[6745, 162, 607, 13, 24, "Message"],
+Cell[7355, 177, 595, 12, 24, "Message"],
+Cell[7953, 191, 614, 13, 24, "Message"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
