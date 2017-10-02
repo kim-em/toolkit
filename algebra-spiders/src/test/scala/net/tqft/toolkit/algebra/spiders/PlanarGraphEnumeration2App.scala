@@ -20,14 +20,14 @@ object PlanarGraphEnumeration2App extends App {
   //  }
 
   {
-    val mv = 5
-    val mb= 4
+    val mv = 7
+    val mb= 6
     val root = PlanarGraph.star(4)
     val context = PlanarGraphEnumerationContext2(Seq(VertexType(4, 0, 1)), Seq(spider.multiply(root, root, 2)), maximumVertices = Some(mv), maximumBoundaryPoints = Some(mb))
 
     val descendants = context.descendants(root).toStream
 
-    val counts = for (b <- 3 to mb) yield {
+    val counts = for (b <- 4 to mb) yield {
       for (v <- 1 to mv) yield {
         descendants.count(g => g.numberOfBoundaryPoints == b && g.numberOfInternalVertices == v)
       }
