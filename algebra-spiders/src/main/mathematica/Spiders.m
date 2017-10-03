@@ -43,7 +43,7 @@ ScalaSingleton;ScalaCaseClass;FromScalaObject;AsScalaObject;
 
 
 (* ::Input::Initialization:: *)
-Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph;DrawReducingRelations;DrawRelations
+Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph;DrawReducingRelations;DrawRelations;
 
 
 (* ::Input::Initialization:: *)

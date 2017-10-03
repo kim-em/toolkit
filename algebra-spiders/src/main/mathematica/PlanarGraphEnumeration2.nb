@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     14499,        339]
-NotebookOptionsPosition[     13496,        304]
-NotebookOutlinePosition[     13886,        321]
-CellTagsIndexPosition[     13843,        318]
+NotebookDataLength[      2327,         82]
+NotebookOptionsPosition[      1896,         62]
+NotebookOutlinePosition[      2288,         79]
+CellTagsIndexPosition[      2245,         76]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -56,257 +56,15 @@ mathematica/\>\""}], "]"}], ";"}], "\[IndentingNewLine]",
   3.715965535136045*^9}}],
 
 Cell[BoxData["\<\"Loading Spiders` version 2015-06-18 ...\"\>"], "Print",
- CellChangeTimes->{3.7159664334958963`*^9, 3.715966883302706*^9, 
-  3.7159669208125553`*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"t", "::", "shdw"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Symbol \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"t\\\\\\\"\\\"}]\\)\[NoBreak] appears \
-in multiple contexts \[NoBreak]\\!\\(\\*RowBox[{\\\"{\\\", RowBox[{\\\"\\\\\\\
-\"Spiders`\\\\\\\"\\\", \\\",\\\", \\\"\\\\\\\"Global`\\\\\\\"\\\"}], \\\"}\\\
-\"}]\\)\[NoBreak]; definitions in context \[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\
-\\\"Spiders`\\\\\\\"\\\"}]\\)\[NoBreak] may shadow or be shadowed by other \
-definitions. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/shdw\\\", ButtonNote -> \
-\\\"Spiders`t::shdw\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.715966921193503*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"LinkObject", "::", "linkd"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Unable to communicate with closed link \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"LinkObject\\\", \\\"[\\\", \
-RowBox[{\\\"\\\\\\\"/usr/bin/java -classpath \
-\\\\\\\\\\\\\\\"/Applications/Mathematica.app/Contents/SystemFiles/Links/\
-JLink/JLink.jar\\\\\\\\\\\\\\\" -Xdock:name=J/Link -Xmx256m  \
--Djava.system.class.loader=com.wolfram.jlink.JLinkSystemClassLoader \
-com.wolfram.jlink.Install -init \
-\\\\\\\\\\\\\\\"/var/folders/4n/ntdld8rd6nv1s81ft71svc_r0000gn/T/\
-m000002125571\\\\\\\\\\\\\\\"\\\\\\\"\\\", \\\",\\\", \\\"125\\\", \\\",\\\", \
-\\\"4\\\"}], \\\"]\\\"}]\\)\[NoBreak]. \
-\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
-ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/LinkObject/linkd\\\", \
-ButtonNote -> \\\"LinkObject::linkd\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.7159669228446817`*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"Java", "::", "argx"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Method named \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"fractionMathematicaForm\\\\\\\"\\\"}]\\\
-)\[NoBreak] defined in class \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"net.tqft.toolkit.algebra.mathematica.\
-MathematicaForm$\\\\\\\"\\\"}]\\)\[NoBreak] was called with an incorrect \
-number or type of arguments. The arguments, shown here in a list, were \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"{\\\", RowBox[{InterpretationBox[RowBox[{\\\"\
-\[LeftGuillemet]\\\", RowBox[{\\\"JavaObject\\\", \\\"[\\\", \
-\\\"net.tqft.toolkit.algebra.mathematica.MathematicaForm$\
-BigIntMathematicaForm$\\\", \\\"]\\\"}], \\\"\[RightGuillemet]\\\"}], \
-JLink`Objects`vm1`JavaObject34171316290453505], \\\",\\\", \\\"$Failed\\\"}], \
-\\\"}\\\"}]\\)\[NoBreak]. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/argx\\\", ButtonNote -> \
-\\\"JLink`Java::argx\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.715966923020906*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(\\*RowBox[{\\\"LinkObject\\\", \\\
-\"[\\\", RowBox[{\\\"\\\\\\\"/usr/bin/java -classpath \
-\\\\\\\\\\\\\\\"/Applications/Mathematica.app/Contents/SystemFiles/Links/\
-JLink/JLink.jar\\\\\\\\\\\\\\\" -Xdock:name=J/Link -Xmx256m  \
--Djava.system.class.loader=com.wolfram.jlink.JLinkSystemClassLoader \
-com.wolfram.jlink.Install -init \
-\\\\\\\\\\\\\\\"/var/folders/4n/ntdld8rd6nv1s81ft71svc_r0000gn/T/\
-m000002125571\\\\\\\\\\\\\\\"\\\\\\\"\\\", \\\",\\\", \\\"125\\\", \\\",\\\", \
-\\\"4\\\"}], \\\"]\\\"}]\\)\[NoBreak] in \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"LinkWrite\\\", \\\"[\\\", \
-RowBox[{RowBox[{\\\"LinkObject\\\", \\\"[\\\", \
-RowBox[{\\\"\\\\\\\"/usr/bin/java -classpath \
-\\\\\\\\\\\\\\\"/Applications/Mathematica.app/Contents/SystemFiles/Links/\
-JLink/JLink.jar\\\\\\\\\\\\\\\" -Xdock:name=J/Link -Xmx256m  \
--Djava.system.class.loader=com.wolfram.jlink.JLinkSystemClassLoader \
-com.wolfram.jlink.Install -init \
-\\\\\\\\\\\\\\\"/var/folders/4n/ntdld8rd6nv1s81ft71svc_r0000gn/T/\
-m000002125571\\\\\\\\\\\\\\\"\\\\\\\"\\\", \\\",\\\", \\\"125\\\", \\\",\\\", \
-\\\"4\\\"}], \\\"]\\\"}], \\\",\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\
-\", \\\"\[RightSkeleton]\\\"}]}], \\\"]\\\"}]\\)\[NoBreak] has an invalid \
-LinkObject number; the link may be closed. \\!\\(\\*ButtonBox[\\\"\
-\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", ButtonNote -> \
-\\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.715966923073819*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(\\*RowBox[{\\\"LinkObject\\\", \\\
-\"[\\\", RowBox[{\\\"\\\\\\\"/usr/bin/java -classpath \
-\\\\\\\\\\\\\\\"/Applications/Mathematica.app/Contents/SystemFiles/Links/\
-JLink/JLink.jar\\\\\\\\\\\\\\\" -Xdock:name=J/Link -Xmx256m  \
--Djava.system.class.loader=com.wolfram.jlink.JLinkSystemClassLoader \
-com.wolfram.jlink.Install -init \
-\\\\\\\\\\\\\\\"/var/folders/4n/ntdld8rd6nv1s81ft71svc_r0000gn/T/\
-m000002125571\\\\\\\\\\\\\\\"\\\\\\\"\\\", \\\",\\\", \\\"125\\\", \\\",\\\", \
-\\\"4\\\"}], \\\"]\\\"}]\\)\[NoBreak] in \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"LinkWrite\\\", \\\"[\\\", \
-RowBox[{RowBox[{\\\"LinkObject\\\", \\\"[\\\", \
-RowBox[{\\\"\\\\\\\"/usr/bin/java -classpath \
-\\\\\\\\\\\\\\\"/Applications/Mathematica.app/Contents/SystemFiles/Links/\
-JLink/JLink.jar\\\\\\\\\\\\\\\" -Xdock:name=J/Link -Xmx256m  \
--Djava.system.class.loader=com.wolfram.jlink.JLinkSystemClassLoader \
-com.wolfram.jlink.Install -init \
-\\\\\\\\\\\\\\\"/var/folders/4n/ntdld8rd6nv1s81ft71svc_r0000gn/T/\
-m000002125571\\\\\\\\\\\\\\\"\\\\\\\"\\\", \\\",\\\", \\\"125\\\", \\\",\\\", \
-\\\"4\\\"}], \\\"]\\\"}], \\\",\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\
-\", \\\"\[RightSkeleton]\\\"}]}], \\\"]\\\"}]\\)\[NoBreak] has an invalid \
-LinkObject number; the link may be closed. \\!\\(\\*ButtonBox[\\\"\
-\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", ButtonNote -> \
-\\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.715966923140876*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"LinkObject", "::", "linkn"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Argument \[NoBreak]\\!\\(\\*RowBox[{\\\"LinkObject\\\", \\\
-\"[\\\", RowBox[{\\\"\\\\\\\"/usr/bin/java -classpath \
-\\\\\\\\\\\\\\\"/Applications/Mathematica.app/Contents/SystemFiles/Links/\
-JLink/JLink.jar\\\\\\\\\\\\\\\" -Xdock:name=J/Link -Xmx256m  \
--Djava.system.class.loader=com.wolfram.jlink.JLinkSystemClassLoader \
-com.wolfram.jlink.Install -init \
-\\\\\\\\\\\\\\\"/var/folders/4n/ntdld8rd6nv1s81ft71svc_r0000gn/T/\
-m000002125571\\\\\\\\\\\\\\\"\\\\\\\"\\\", \\\",\\\", \\\"125\\\", \\\",\\\", \
-\\\"4\\\"}], \\\"]\\\"}]\\)\[NoBreak] in \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"LinkWrite\\\", \\\"[\\\", \
-RowBox[{RowBox[{\\\"LinkObject\\\", \\\"[\\\", \
-RowBox[{\\\"\\\\\\\"/usr/bin/java -classpath \
-\\\\\\\\\\\\\\\"/Applications/Mathematica.app/Contents/SystemFiles/Links/\
-JLink/JLink.jar\\\\\\\\\\\\\\\" -Xdock:name=J/Link -Xmx256m  \
--Djava.system.class.loader=com.wolfram.jlink.JLinkSystemClassLoader \
-com.wolfram.jlink.Install -init \
-\\\\\\\\\\\\\\\"/var/folders/4n/ntdld8rd6nv1s81ft71svc_r0000gn/T/\
-m000002125571\\\\\\\\\\\\\\\"\\\\\\\"\\\", \\\",\\\", \\\"125\\\", \\\",\\\", \
-\\\"4\\\"}], \\\"]\\\"}], \\\",\\\", RowBox[{\\\"\[LeftSkeleton]\\\", \\\"1\\\
-\", \\\"\[RightSkeleton]\\\"}]}], \\\"]\\\"}]\\)\[NoBreak] has an invalid \
-LinkObject number; the link may be closed. \\!\\(\\*ButtonBox[\\\"\
-\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/LinkObject/linkn\\\", ButtonNote -> \
-\\\"LinkObject::linkn\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.7159669231479397`*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"General", "::", "stop"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Further output of \
-\[NoBreak]\\!\\(\\*StyleBox[RowBox[{\\\"LinkObject\\\", \\\"::\\\", \\\"linkn\
-\\\"}], \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
-calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
-\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.715966923221081*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"LoadJavaClass", "::", "fail"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Java failed to load class \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"net.tqft.toolkit.algebra.Fraction$\\\\\
-\\\"\\\"}]\\)\[NoBreak]. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:JLink/ref/LoadJavaClass\\\", ButtonNote -> \
-\\\"JLink`LoadJavaClass::fail\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.715966923353656*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"LoadJavaClass", "::", "fail"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Java failed to load class \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"net.tqft.toolkit.algebra.spiders.\
-examples.QuantumExceptionalSeries$\\\\\\\"\\\"}]\\)\[NoBreak]. \
-\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
-ButtonFrame->None, ButtonData:>\\\"paclet:JLink/ref/LoadJavaClass\\\", \
-ButtonNote -> \\\"JLink`LoadJavaClass::fail\\\"]\\)\"\>"}]], "Message", "MSG",
- 
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.7159669235258083`*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"LoadJavaClass", "::", "fail"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Java failed to load class \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"net.tqft.toolkit.algebra.spiders.\
-PlanarGraph$\\\\\\\"\\\"}]\\)\[NoBreak]. \\!\\(\\*ButtonBox[\\\"\
-\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:JLink/ref/LoadJavaClass\\\", ButtonNote -> \
-\\\"JLink`LoadJavaClass::fail\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.715966923705985*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"General", "::", "stop"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Further output of \
-\[NoBreak]\\!\\(\\*StyleBox[RowBox[{\\\"LoadJavaClass\\\", \\\"::\\\", \
-\\\"fail\\\"}], \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during \
-this calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
-\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.715966433904687*^9, 3.71596688376772*^9, 
-  3.715966923788877*^9}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData["Spiders`Private`SpidersMathematicaDirectory"], "Input",
- CellChangeTimes->{{3.71596637907847*^9, 3.715966381400951*^9}}],
-
-Cell[BoxData["\<\"/Users/emilypeters/Documents/Math/toolkit/algebra-spiders/\
-src/main/mathematica\"\>"], "Output",
- CellChangeTimes->{{3.715966375736051*^9, 3.715966382441579*^9}, 
-   3.715966924138259*^9}]
+ CellChangeTimes->{
+  3.715967631636281*^9, {3.715991734678082*^9, 3.715991759553651*^9}}]
 }, Open  ]]
 },
 AutoGeneratedPackage->Automatic,
 WindowSize->{808, 855},
-WindowMargins->{{258, Automatic}, {-33, Automatic}},
-FrontEndVersion->"10.4 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 11, \
-2016)",
+WindowMargins->{{31, Automatic}, {Automatic, 24}},
+FrontEndVersion->"11.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September \
+21, 2016)",
 StyleDefinitions->"Default.nb"
 ]
 (* End of Notebook Content *)
@@ -320,26 +78,11 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 116, 2, 28, "Input"],
-Cell[677, 24, 208, 5, 28, "Input"],
+Cell[558, 20, 116, 2, 32, "Input"],
+Cell[677, 24, 208, 5, 32, "Input"],
 Cell[CellGroupData[{
-Cell[910, 33, 803, 22, 114, "Input"],
-Cell[1716, 57, 166, 2, 22, "Print"],
-Cell[1885, 61, 835, 16, 41, "Message"],
-Cell[2723, 79, 1015, 19, 75, "Message"],
-Cell[3741, 100, 1155, 21, 78, "Message"],
-Cell[4899, 123, 1727, 30, 262, "Message"],
-Cell[6629, 155, 1727, 30, 262, "Message"],
-Cell[8359, 187, 1729, 30, 262, "Message"],
-Cell[10091, 219, 612, 13, 24, "Message"],
-Cell[10706, 234, 574, 12, 24, "Message"],
-Cell[11283, 248, 611, 13, 24, "Message"],
-Cell[11897, 263, 585, 12, 24, "Message"],
-Cell[12485, 277, 614, 13, 24, "Message"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[13136, 295, 134, 1, 28, "Input"],
-Cell[13273, 298, 207, 3, 28, "Output"]
+Cell[910, 33, 803, 22, 138, "Input"],
+Cell[1716, 57, 164, 2, 24, "Print"]
 }, Open  ]]
 }
 ]
