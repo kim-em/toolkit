@@ -162,13 +162,13 @@ object BuildSettings {
 
   val buildOrganization = "net.tqft"
   val buildVersion = "0.1.18-SNAPSHOT"
-  val buildScalaVersion = "2.12.2"
+  val buildScalaVersion = "2.12.3"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    scalacOptions += "-target:jvm-1.7",
+    scalacOptions += "-deprecation",
     publishTo := {
         val key = new java.io.File(Path.userHome.absolutePath + "/.ssh/id_rsa")
         if(key.exists) {
