@@ -9,7 +9,7 @@ class DreadnautTest extends FlatSpec with Matchers {
   val C3 = Graph(3, IndexedSeq(Seq(1, 2), Seq(0, 2), Seq(0, 1)))
 
   "automorphismGroup" should "compute all automorphisms of C_3" in {
-    Dreadnaut.automorphismGroup(C3).generators should equal(Set(List(0, 2, 1), List(1, 0, 2)))
+    Dreadnaut.automorphismGroup(C3).generators should equal(Seq(List(0, 2, 1), List(1, 0, 2)))
   }
   "canonicalize" should "give the right answer for C_3" in {
     Dreadnaut.canonicalize(C3).edges should equal(Set(Set(0, 1), Set(1, 2), Set(2, 0)))
