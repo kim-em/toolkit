@@ -9,6 +9,7 @@ import java.io.PrintWriter
 import java.io.File
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
+import java.io.FileOutputStream
 
 trait Dreadnaut extends Logging {
   def dreadnautPath: String
@@ -34,18 +35,35 @@ trait Dreadnaut extends Logging {
     }
   }
 
-  def invokeDreadnaut(cmd: String): Seq[String] = {
-    initializeDreadnaut
+  def invokeDreadnaut(cmd: String, separateProcess: Boolean = false): Seq[String] = {
+    if (separateProcess) {
+      invokeDreadnautInSeparateProcess(cmd)
+    } else {
+      initializeDreadnaut
 
-    in.println(cmd)
-    in.println("\"done... \"z")
-    //    if (version <= 2.5) {
-    //      warn("Please update your dreadnaut version to 2.6, so that we don't have to deal with buffered output.")
-    //      for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
-    //    }
-    in.flush()
-    val result = out.takeWhile(!_.startsWith("done... [")).toList
-    result
+      in.println(cmd)
+      in.println("\"done... \"z")
+      //    if (version <= 2.5) {
+      //      warn("Please update your dreadnaut version to 2.6, so that we don't have to deal with buffered output.")
+      //      for (i <- 0 until 137) in.println("?") // hideous hack, because somewhere along the way dreadnaut's output is being buffered
+      //    }
+      in.flush()
+      val result = out.takeWhile(!_.startsWith("done... [")).toList
+      result
+    }
+  }
+
+  private def invokeDreadnautInSeparateProcess(cmd: String): Seq[String] = {
+    val cmdfile = File.createTempFile("dreadnaut", ".in")
+    val outfile = File.createTempFile("dreadnaut", ".out")
+//    println(cmdfile)
+//    println(outfile)
+    val pw = new PrintWriter(new FileOutputStream(cmdfile))
+    pw.println(cmd)
+    pw.flush
+    pw.close
+    (("cat " + cmdfile) #| dreadnautPath #> outfile).!
+    Source.fromFile(outfile).getLines.filterNot(line => line.startsWith("Mode=") || line.startsWith("linelen=")).toStream
   }
 
   def automorphismGroupAndOrbits(g: Graph): (FinitelyGeneratedFiniteGroup[IndexedSeq[Int]], Seq[Seq[Int]]) = {
@@ -63,7 +81,7 @@ trait Dreadnaut extends Logging {
       for (i <- 0 until g.numberOfVertices) yield {
         cycles.find(_.contains(i)) match {
           case Some(cycle) => cycle((cycle.indexOf(i) + 1) % cycle.length)
-          case None => i
+          case None        => i
         }
       }
     }
@@ -92,8 +110,8 @@ trait Dreadnaut extends Logging {
   }
   def automorphismGroup(g: Graph) = automorphismGroupAndOrbits(g)._1
 
-  def findIsomorphism(g1: Graph, g2: Graph): Option[IndexedSeq[Int]] = {
-    val output = invokeDreadnaut(g1.toDreadnautString + "c x @\n" + g2.toDreadnautString + "x ##")
+  def findIsomorphism(g1: Graph, g2: Graph, separateProcess: Boolean = false): Option[IndexedSeq[Int]] = {
+    val output = invokeDreadnaut(g1.toDreadnautString + "c x @\n" + g2.toDreadnautString + "x ##", separateProcess)
     //    for (line <- output) println(line)
     val relevantOutput = output.dropWhile(l => !l.startsWith("canupdates")).tail.dropWhile(l => !l.startsWith("canupdates")).tail
     if (relevantOutput.head == "h and h' are identical.") {
@@ -147,9 +165,9 @@ object Dreadnaut extends Dreadnaut {
         try {
           "which dreadnaut".!!
         } catch {
-          case e: Exception => {          
+          case e: Exception => {
             val source = Dreadnaut.getClass.getProtectionDomain.getCodeSource.getLocation.toString.stripPrefix("file:").replaceAllLiterally("%20", " ")
-            source.take(source.indexOf("toolkit/")) + "toolkit/dreadnaut"            
+            source.take(source.indexOf("toolkit/")) + "toolkit/dreadnaut"
           }
         }
       }
