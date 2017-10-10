@@ -9,118 +9,181 @@ import net.tqft.toolkit.Logging
 
 import net.tqft.toolkit.arithmetic.Mod._
 
-case class PlanarGraphEnumerationContext(vertices: Seq[VertexType]) extends Logging {
+case class PlanarGraphEnumerationContext(
+  vertices:              Seq[VertexType],
+  forbiddenSubgraphs:    Seq[PlanarGraph],
+  roots:                 Seq[PlanarGraph],
+  maximumFaces:          Int,
+  maximumBoundaryPoints: Int) extends Logging {
   val spider = PlanarGraph.spider
+  val largestVertex = vertices.map(_.perimeter).max
 
-  case class PlanarGraphEnumeration(G: PlanarGraph) extends CanonicalGeneration[PlanarGraphEnumeration, Unit] { pge =>
-    val newLabel = (0 +: G.labels.map(_._1)).max + 1
+  val maximumVertices: Int = {
+    require(vertices.size == 1) // eventually we'll need to fix this!
+    val k = vertices.head.perimeter.toDouble
+    ((maximumBoundaryPoints.toDouble / 2 + maximumFaces - 1) / (k / 2 - 1)).toInt
+  }
 
-    override lazy val automorphisms: FinitelyGeneratedFiniteGroup[Unit] = FinitelyGeneratedFiniteGroup.trivialGroup(())
+  /*
+   * We think of the collection of all connected planar graphs as a directed graph,
+   * with edges corresponding to gluing on a vertex.
+   * Every connected planar graph is a descendant of some single vertex graph (and possibly the descendant of several such).
+   *
+   * We then try to come up with a condition on the edges, giving a directed subgraph, such that
+   * every connected planar graph is still the descendant of a (hopefully just one) single vertex graph,
+   * and the subgraph is either a tree, or at least very close to being one!
+   *
+   * As usual, we follow Brendan's philosophy that it's easiest to think about putting a condition on the _inverse_ edges,
+   * that is, ways to delete a vertex which touches the boundary.
+   *
+   * We propose the following rules:
+   * 1) never delete a vertex straddling the marked point (because we know from experience these cases are confusing!)
+   * 2) never delete a vertex which would disconnect the graph
+   * 3) prefer to delete the dangliest vertex
+   * 3.5) ???
+   * 4) if there's still a tie, break it via a canonical labelling of the graph.
+   *
+   * These rules are designed so that every graph G has a unique allowed parent p(G).
+   * We only generate those children c of a graph G such that p(c) = G.
+   *
+   * In particular, we never need to glue on a vertex across the marked point.
+   *
+   * We can use facts such as:
+   * Any n-valent vertex that we glue on via k > 0 edges has 0-dangliness n-k.
+   * If any existing vertex has 0-dangliness strictly small, we have to glue over the top of it!
+   */
 
-    case class Upper(whereToStart: Int, vertexToAdd: VertexType, vertexRotation: Int, numberOfStitches: Int, basepointOffset: Option[Int]) {
-      require(basepointOffset.nonEmpty == (numberOfStitches >= whereToStart))
+  def parent(p: PlanarGraph): PlanarGraph = parent_(p).get._2.apply()
 
-      lazy val result = {
-        val vertex = PlanarGraph.star(vertexToAdd)
-        PlanarGraphEnumeration(
-          spider.rotate(
-            spider.multiply(spider.rotate(G, -whereToStart), spider.rotate(vertex, -vertexRotation), numberOfStitches),
-            basepointOffset match {
-              case None => -G.numberOfBoundaryPoints + whereToStart // because numberOfStitches < whereToStart, these strings are still there!
-              case Some(r) => vertexToAdd.perimeter - numberOfStitches - r // rotate all the new strings back to the left, then move r strings back to the right
-            }).copy(comment = Some(s"Upper(wheretoStart = $whereToStart, numberOfStitches = $numberOfStitches, basepointOffset = $basepointOffset) boundaryInterval = $boundaryInterval")))
+  def parent_(p: PlanarGraph): Option[(Int, () => PlanarGraph)] = {
+    //    if(p.numberOfBoundaryPoints < 2) {
+    //      println(p)
+    //      DrawPlanarGraph.showPDF(p)
+    //    }
+
+    assert(p.numberOfBoundaryPoints >= 2)
+    assert(p.numberOfInternalVertices != 0)
+    if (p.numberOfInternalVertices == 1) {
+      None
+    } else {
+      val boundaryVertices = p.neighboursOf(0)
+      // // Actually, there's no need to do this step; our implementation of disconnectingVertices picks up this case.
+      //      val vertexStraddlingMarkedPoint = {
+      //        if(boundaryVertices.head == boundaryVertices.last) {
+      //          Some(boundaryVertices.head)
+      //        } else {
+      //          None
+      //        }
+      //      }
+
+      val disconnectingVertices = {
+        import net.tqft.toolkit.collections.Split._
+        import net.tqft.toolkit.collections.Tally._
+        import net.tqft.toolkit.collections.Rotate._
+        val verticesVisibleFromBoundaryFaces = p.vertexFlags(0).map(_._2).map(i => p.faceBoundary(i).ensuring(_.size == 1).head.map(_._1)).map(s => s.rotateLeft(s.indexOf(0)).tail.reverse)
+        //        println("verticesVisibleFromBoundaryFaces = " + verticesVisibleFromBoundaryFaces)
+        val result = verticesVisibleFromBoundaryFaces.flatten.rle.map(_._1).tally.collect({ case (v, k) if k > 1 => v }).toSet
+        //        println("disconnectingVertices = " + result)
+        result
       }
-      // boundaryInterval should be the most clockwise position we can see the new vertex from
-      // we count clockwise!
-      val boundaryInterval = (basepointOffset match {
-        case None => whereToStart + vertexToAdd.perimeter - 2 * numberOfStitches
-        case Some(r) => vertexToAdd.perimeter - numberOfStitches - r
-      }) mod (G.numberOfBoundaryPoints + vertexToAdd.perimeter - 2 * numberOfStitches)
-      def inverse = {
-        result.Lower(boundaryInterval, G.numberOfInternalVertices + 1)
-      }
-    }
-    case class Lower(boundaryInterval: Int, vertexToRemove: Int) {
-      require(vertexToRemove != 0)
-      // TODO understand the rule about _which_ boundaryIntervals are allowed,
-      // and enforce it here
 
-      lazy val result = ???
-
-      lazy val canonicalLabelling = {
-        def encodeAsPlanarGraph: PlanarGraph = {
-          val relabeled = G.copy(labels = G.labels.updated(vertexToRemove - 1, (newLabel, G.labels(vertexToRemove - 1)._2)))
-          val markerVertex = PlanarGraph.star(VertexType(1, 1, 1))
-          spider.rotate(spider.tensor(markerVertex, spider.rotate(relabeled, -boundaryInterval)), boundaryInterval).relabelEdgesAndFaces
+      val candidateVertices = {
+        if (boundaryVertices.distinct.size == 1) {
+          // if only one vertex touches the boundary, we incorrectly count it as disconnecting
+          boundaryVertices.distinct
+        } else {
+          boundaryVertices.distinct.filter(v => !disconnectingVertices.contains(v))
         }
-
-        Dreadnaut.canonicalLabelling(encodeAsPlanarGraph.nautyGraph)
       }
-    }
 
-    override def upperObjects: automorphisms.ActionOnFiniteSet[Upper] = new automorphisms.ActionOnFiniteSet[Upper] {
-      override def elements = {
-        val elementsThatDontConnectToFirstString =
-          for (
-            vertexToAdd <- vertices;
-            numberOfStitches <- 1 to scala.math.min(vertexToAdd.perimeter, G.numberOfBoundaryPoints);
-            whereToStart <- (numberOfStitches + 1) to G.numberOfBoundaryPoints;
-            vertexRotation <- 0 until vertexToAdd.allowedRotationStep
-          ) yield {
-            Upper(whereToStart, vertexToAdd, vertexRotation, numberOfStitches, None)
+      def dangliest(vertices: Seq[Int], dangliness: Seq[Seq[Int]] = p.dangliness.take(3)): Seq[Int] = {
+        assert(vertices.nonEmpty, "dangliest called with no vertices!\n" + p)
+        dangliness match {
+          case h +: t => {
+            val m = vertices.map(i => h(i)).max
+            vertices.filter(i => h(i) == m)
           }
-        val elementsThatDoConnectToFirstString =
-          for (
-            vertexToAdd <- vertices;
-            numberOfStitches <- 1 to scala.math.min(vertexToAdd.perimeter, G.numberOfBoundaryPoints);
-            whereToStart <- 1 to numberOfStitches;
-            vertexRotation <- 0 until vertexToAdd.allowedRotationStep;
-            basepointOffset <- 0 until (vertexToAdd.perimeter - numberOfStitches - (if (numberOfStitches == G.numberOfBoundaryPoints) 1 else 0))
-          ) yield {
-            Upper(whereToStart, vertexToAdd, vertexRotation, numberOfStitches, Some(basepointOffset))
-          }
-        val results = elementsThatDontConnectToFirstString ++ elementsThatDoConnectToFirstString
-
-        results
-      }
-      override def act(g: Unit, upper: Upper) = upper
-    }
-    override lazy val lowerObjects = new automorphisms.ActionOnFiniteSet[Lower] {
-      // we must only delete a vertex from each most clockwise position it is visible from! 
-      override val elements = {
-        val intervalsAndVisibleVertices = for (i <- 0 until scala.math.max(G.numberOfBoundaryPoints, 1); j <- G.allVerticesAdjacentToFace(G.boundaryFaces(i mod G.numberOfBoundaryPoints)); if j != 0) yield {
-          (i, j)
+          case _ => vertices
         }
-        info(intervalsAndVisibleVertices)
-        def mostClockwise(n: Int, L: Seq[Int]): Seq[Int] = {
-          require(L.distinct == L)
-          require(L.forall(i => (0 <= i && i < n)))
-          if (L.size == n) {
-            List(0)
-          } else {
-            L.filter(i => !L.contains(i + 1 mod n))
-          }
-        }
-        intervalsAndVisibleVertices
-          .groupBy(_._2).mapValues(l => l.map(_._1)) // this produces a map, vertices -> visible intervals
-          .mapValues(l => mostClockwise(G.numberOfBoundaryPoints, l)) // a map, vertices -> most clockwise visible intervals
-          .flatMap(p => p._2.map(i => Lower(i, p._1)))
       }
-      override def act(g: Unit, lower: Lower) = lower
+
+      val dangliestVertices = dangliest(candidateVertices)
+      // Next, we delete the dangliest of the candidateVertices, and then tie-break using Nauty.
+
+      if (dangliestVertices.size == 1) {
+        val v = dangliestVertices.head
+        Some((v, () => p.deleteBoundaryVertex(v)))
+      } else {
+        val deletions = dangliestVertices.map(v => p.deleteBoundaryVertex(v).canonicalFormWithDefect._1)
+        val choice = deletions.zip(dangliestVertices).min
+        Some((choice._2, () => choice._1))
+      }
+    }
+  }
+
+  def raw_children(p: PlanarGraph): Seq[PlanarGraph] = {
+
+    if (p.numberOfInternalVertices >= maximumVertices) return Nil
+    if (p.numberOfBoundaryPoints >= maximumBoundaryPoints + (maximumVertices - p.numberOfInternalVertices) * (largestVertex - 2)) return Nil
+
+    def notTooBig(perimeter: Int, stitches: Int) = {
+      p.numberOfBoundaryPoints + perimeter - 2 * stitches <= maximumBoundaryPoints + (maximumVertices - p.numberOfInternalVertices - 1) * (largestVertex - 2)
     }
 
-    override val ordering: Ordering[lowerObjects.Orbit] = {
-      import Ordering.Implicits._
-      Ordering.by({ o: lowerObjects.Orbit =>
-        // TODO make this a lazy pair, so Dreadnaut is not invoked unnecessarily.
-        // TODO consider changing the 4 below, as an optimisation, possibly to a variable depending on G.
-        (
-          if (G.deleting_vertex_disconnects_graph_?(o.representative.vertexToRemove)) 1 else 0,
-          G.dangliness.map(d => -d(o.representative.vertexToRemove)).take(4),
-          o.representative.canonicalLabelling)
-      })
-    }
+    // As a first approximation, generate all children that don't straddle the marked point, and then check if they have the right parent.
+    val graphs = for (
+      v <- vertices;
+      r <- 0 until v.allowedRotationStep;
+      k <- 1 until v.perimeter;
+      if p.numberOfBoundaryPoints + v.perimeter - 2 * k >= 2; // don't both producing things with < 2 boundary points.
+      if notTooBig(v.perimeter, k);
+      i <- 0 to p.numberOfBoundaryPoints - k;
+      result = spider.rotate(spider.multiply(spider.rotate(PlanarGraph.star(v), r), spider.rotate(p, -i), k), i)
+    ) yield result
+    // TODO After implementing that, as an optimisation use dangliness to be a bit cleverer about which vertices to add.
+
+    // TODO this could be much more efficient
+    graphs.filter(g => forbiddenSubgraphs.forall(f => !g.subgraphs(f).excisions.hasNext))
+  }
+
+  def children(p: PlanarGraph): Seq[PlanarGraph] = {
+    val p0 = p.canonicalFormWithDefect._1
+
+    for (
+      c <- raw_children(p0);
+      if parent(c).canonicalFormWithDefect._1 == p0
+    ) yield c
 
   }
 
+  def children_without_duplicates(p: PlanarGraph): Seq[PlanarGraph] = {
+    // TODO are there actually duplicates?
+    children(p).map(g => g.canonicalFormWithDefect._1).distinct
+  }
+
+  def descendants(p: PlanarGraph): Iterator[PlanarGraph] = {
+    Iterator(p) ++ children_without_duplicates(p).iterator.flatMap(descendants)
+  }
+
+  def enumerate: Iterator[PlanarGraph] = {
+    for (root <- roots.iterator; g <- descendants(root)) yield g
+  }
+
+  def verify_raw_child_of_parent(g: PlanarGraph): Boolean = {
+    val g0 = g.canonicalFormWithDefect._1
+    raw_children(parent(g0)).map(g => g.canonicalFormWithDefect._1).contains(g0)
+  }
+
+  def verify_child_of_parent(g: PlanarGraph): Boolean = {
+    val g0 = g.canonicalFormWithDefect._1
+    children_without_duplicates(parent(g0)).contains(g0)
+  }
+
+  def verify_ancestry(g: PlanarGraph): Boolean = {
+    if (g.numberOfInternalVertices == 1) {
+      true
+    } else {
+      verify_child_of_parent(g) && verify_ancestry(parent(g))
+    }
+  }
 }
