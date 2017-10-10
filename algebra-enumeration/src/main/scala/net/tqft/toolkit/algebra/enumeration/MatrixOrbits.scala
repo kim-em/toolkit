@@ -138,8 +138,8 @@ object MatrixOrbits extends App {
     if (components(i) == d) {
       if (componentsAllowed(d - 1)) {
         println(unpack(i))
-        d = d + 1
       }
+      d = d + 1
     }
     i = i + 1
   }
