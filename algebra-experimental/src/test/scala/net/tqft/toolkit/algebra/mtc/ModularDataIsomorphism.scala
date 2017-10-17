@@ -5,6 +5,9 @@ import scala.io.Source
 import net.tqft.toolkit.algebra.graphs.ColouredGraph
 import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import scala.collection.Seq
+import scala.collection.mutable.ListBuffer
+import java.io.FileOutputStream
+import java.io.PrintWriter
 
 object ModularDataIsomorphism extends App {
   // returns S and T matrices, read from a file in Angus' GAP output format.
@@ -34,7 +37,7 @@ object ModularDataIsomorphism extends App {
     val adjacencies = IndexedSeq.fill(rank)(Nil) ++ (for (i <- 0 until rank; j <- i until rank) yield Seq(i, j).distinct) ++ IndexedSeq.fill(s + t)(Nil)
     val colours = (for (i <- 0 until rank) yield ("A", T(i))) ++ (for (i <- 0 until rank; j <- i until rank) yield ("B", S(i)(j))) ++ IndexedSeq.tabulate(t)(i => ("A", i)) ++ IndexedSeq.tabulate(s)(i => ("B", i))
     val r = ColouredGraph(rank + (rank + 1) * rank / 2 + s + t, adjacencies, colours)
-//    println(r.toDreadnautString)
+    //    println(r.toDreadnautString)
     r
   }
 
@@ -49,11 +52,58 @@ object ModularDataIsomorphism extends App {
     Dreadnaut.findIsomorphism(G1, G2, separateProcess = true).map(i => i.take(rank))
   }
 
-  val file1 = new File(args(0))
-  val file2 = new File(args(1))
+  def isomorphism(order: Int, p1: (Int, Int), p2: (Int, Int)): Option[IndexedSeq[Int]] = {
+    def file(p: (Int, Int)): File = {
+      new File("../modular-data/code/Modular_Data/" + order + "/" + p._1 + "/" + p._2 + ".txt")
+    }
+    isomorphism(file(p1), file(p2))
+  }
 
-  isomorphism(file1, file2) match {
-    case Some(i) => println("found isomorphism: " + i.mkString(" "))
-    case None => println("not isomorphic")
+  def findIsomorphismClases(order: Int, chunk: Seq[(Int, Int)]): Seq[Seq[(Int, Int)]] = {
+    val classes = ListBuffer[ListBuffer[(Int, Int)]]()
+    for (p <- chunk) {
+      classes.find(c => isomorphism(order, c.head, p).nonEmpty) match {
+        case Some(c) => c += p
+        case None    => classes += ListBuffer[(Int, Int)](p)
+      }
+    }
+    classes
+  }
+
+  def parseOrbits_txt(order: Int): Seq[Seq[(Int, Int)]] = {
+    val file = new File("../modular-data/code/Modular_Data/" + order + "/PossibleOrbits.txt")
+    Source
+      .fromFile(file)
+      .getLines
+      .mkString("\n")
+      .stripPrefix("[")
+      .stripSuffix("]")
+      .split("\\]\n\\[").toList
+      .map({ l =>
+        l
+          .replaceAll(" ", "")
+          .replaceAllLiterally("]", "")
+          .replaceAllLiterally("[", "")
+          .split(",")
+          .grouped(2).toList
+          .map(p => (p(0).toInt, p(1).toInt))
+      })
+  }
+
+  if (args.size == 1) {
+    val order = args(0).toInt
+    val chunks: Seq[Seq[(Int, Int)]] = parseOrbits_txt(order)
+    val classes = for (chunk <- chunks; c <- findIsomorphismClases(order, chunk)) yield c
+    val pw = new PrintWriter(new FileOutputStream(new File("../modular-data/code/Modular_Data/" + order + "/Orbits.txt")))
+    for (c <- classes) pw.println(c.map(p => s"[ ${p._1}, ${p._2} ]").mkString("[ ", ", ", " ],").stripSuffix(","))
+    pw.close
+  } else {
+    val file1 = new File(args(0))
+    val file2 = new File(args(1))
+
+    isomorphism(file1, file2) match {
+      case Some(i) => println("found isomorphism: " + i.mkString(" "))
+      case None    => println("not isomorphic")
+    }
   }
 }
