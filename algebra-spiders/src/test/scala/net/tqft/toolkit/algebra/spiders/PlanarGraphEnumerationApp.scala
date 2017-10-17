@@ -18,7 +18,7 @@ object PlanarGraphEnumerationApp extends App {
     val triangle = spider.multiply(spider.rotate(spider.multiply(root, root, 1), 2), root, 2)
     val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(bigon, triangle), Seq(root), maxFaces, maxBoundaryPoints)
 
-    val descendants = context.enumerate.toStream
+    val descendants = context.connectedGraphs.toStream
 
     val maxVertices = descendants.map(_.numberOfInternalVertices).max
     

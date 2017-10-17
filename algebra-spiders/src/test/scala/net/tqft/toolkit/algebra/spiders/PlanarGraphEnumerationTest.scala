@@ -51,7 +51,7 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
     val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)), Seq.tabulate(4)(i => PlanarGraph.polygon(i + 1)), Seq(PlanarGraph.star(3)), maxFaces, maxBoundaryPoints)
     val root = PlanarGraph.star(3)
  
-    val descendants = context.enumerate.toStream
+    val descendants = context.connectedGraphs.toStream
     val maxVertices = descendants.map(_.numberOfInternalVertices).max
 
     val counts = for (b <- 3 to maxBoundaryPoints) yield {
@@ -75,7 +75,7 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
     val root = PlanarGraph.star(4)
     val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(spider.multiply(root, root, 2)), Seq(root), maxFaces, maxBoundaryPoints)
 
-    val descendants = context.enumerate.toStream
+    val descendants = context.connectedGraphs.toStream
     val maxVertices = descendants.map(_.numberOfInternalVertices).max
 
     val counts = for (b <- 3 to maxBoundaryPoints) yield {
@@ -102,7 +102,7 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
     val triangle = spider.multiply(spider.rotate(spider.multiply(root, root, 1), 2), root, 2)
     val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(bigon, triangle), Seq(root), maxFaces, maxBoundaryPoints)
 
-    val descendants = context.enumerate.toStream
+    val descendants = context.connectedGraphs.toStream
     val maxVertices = descendants.map(_.numberOfInternalVertices).max
 
     val counts = for (b <- 3 to maxBoundaryPoints) yield {

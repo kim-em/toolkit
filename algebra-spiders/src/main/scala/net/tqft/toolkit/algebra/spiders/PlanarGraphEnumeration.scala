@@ -8,6 +8,8 @@ import net.tqft.toolkit.algebra.graphs.Dreadnaut
 import net.tqft.toolkit.Logging
 
 import net.tqft.toolkit.arithmetic.Mod._
+import net.tqft.toolkit.functions.Memo
+import net.tqft.toolkit.collections.CartesianProduct._
 
 case class PlanarGraphEnumerationContext(
   vertices:              Seq[VertexType],
@@ -165,8 +167,8 @@ case class PlanarGraphEnumerationContext(
     Iterator(p) ++ children_without_duplicates(p).iterator.flatMap(descendants)
   }
 
-  def enumerate: Iterator[PlanarGraph] = {
-    for (root <- roots.iterator; g <- descendants(root)) yield g
+  def connectedGraphs: Iterator[PlanarGraph] = {
+    Iterator(PlanarGraph.strand) ++ (for (root <- roots.iterator; g <- descendants(root)) yield g)
   }
 
   def verify_raw_child_of_parent(g: PlanarGraph): Boolean = {
@@ -185,5 +187,27 @@ case class PlanarGraphEnumerationContext(
     } else {
       verify_child_of_parent(g) && verify_ancestry(parent(g))
     }
+  }
+
+  def boundaryConnectedGraphs: Iterator[PlanarGraph] = {
+
+    val compositions = {
+      // Weak integer compositions of n into s cells
+      def compositions_(n: Int, s: Int): Stream[Seq[Int]] = (1 until s).foldLeft(Stream(Nil: Seq[Int])) {
+        (a, _) => a.flatMap(c => Stream.range(0, n - c.sum + 1).map(_ +: c))
+      }.map(c => (n - c.sum) +: c)
+      Memo.softly(compositions_ _)
+    }
+
+    val connectedGraphs_ = connectedGraphs.toStream.groupBy(g => (g.numberOfBoundaryPoints, g.numberOfInternalFaces)).withDefaultValue(Seq.empty)
+
+    (for (k <- (0 to maximumFaces).iterator) yield {
+      PlanarPartitions(maximumBoundaryPoints).flatMap((partition: Seq[Seq[Int]]) => {
+        compositions(k, partition.length).flatMap((internalFaceNumbers: Seq[Int]) => {
+          val components = for (i <- 0 until partition.length) yield connectedGraphs_(partition(i).length, internalFaceNumbers(i))
+          components.cartesianProduct.map((ds: Seq[PlanarGraph]) => { DiagramSpider.graphSpider.assembleAlongPlanarPartition(partition, ds) })
+        })
+      }).sortBy(_.numberOfInternalVertices)
+    }).flatten
   }
 }
