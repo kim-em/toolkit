@@ -124,7 +124,6 @@ case class PlanarGraphEnumerationContext(
   }
 
   def raw_children(p: PlanarGraph): Seq[PlanarGraph] = {
-
     if (p.numberOfInternalVertices >= maximumVertices) return Nil
     if (p.numberOfBoundaryPoints >= maximumBoundaryPoints + (maximumVertices - p.numberOfInternalVertices) * (largestVertex - 2)) return Nil
 
@@ -141,6 +140,7 @@ case class PlanarGraphEnumerationContext(
       if notTooBig(v.perimeter, k);
       i <- 0 to p.numberOfBoundaryPoints - k;
       result = spider.rotate(spider.multiply(spider.rotate(PlanarGraph.star(v), r), spider.rotate(p, -i), k), i)
+      if result.numberOfInternalFaces <= maximumFaces
     ) yield result
     // TODO After implementing that, as an optimisation use dangliness to be a bit cleverer about which vertices to add.
 
