@@ -154,6 +154,8 @@ trait ColouredGraph[V] extends Graph {
 }
 
 object ColouredGraph {
+  implicit def lift(g: Graph): ColouredGraph[Unit] = apply(g.numberOfVertices, g.adjacencies, IndexedSeq.fill(g.numberOfVertices)(())) 
+  
   def apply[V: Ordering](numberOfVertices: Int, adjacencies: IndexedSeq[Seq[Int]], vertices: IndexedSeq[V]) = {
     val _numberOfVertices = numberOfVertices
     val _adjacencies = adjacencies
@@ -172,5 +174,5 @@ object ColouredGraph {
     import net.tqft.toolkit.orderings.Orderings._
     Ordering.by({ g: ColouredGraph[V] => g.vertices }).refineBy({ g: ColouredGraph[V] => g.adjacencies })
   }
-
+  
 }

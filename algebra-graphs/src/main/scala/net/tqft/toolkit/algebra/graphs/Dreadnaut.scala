@@ -10,6 +10,7 @@ import java.io.File
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
 import java.io.FileOutputStream
+import scala.collection.mutable.ListBuffer
 
 trait Dreadnaut extends Logging {
   def dreadnautPath: String
@@ -56,8 +57,8 @@ trait Dreadnaut extends Logging {
   private def invokeDreadnautInSeparateProcess(cmd: String): Seq[String] = {
     val cmdfile = File.createTempFile("dreadnaut", ".in")
     val outfile = File.createTempFile("dreadnaut", ".out")
-//    println(cmdfile)
-//    println(outfile)
+    //    println(cmdfile)
+    //    println(outfile)
     val pw = new PrintWriter(new FileOutputStream(cmdfile))
     pw.println(cmd)
     pw.flush
@@ -110,16 +111,44 @@ trait Dreadnaut extends Logging {
   }
   def automorphismGroup(g: Graph) = automorphismGroupAndOrbits(g)._1
 
-  def findIsomorphism(g1: Graph, g2: Graph, separateProcess: Boolean = false): Option[IndexedSeq[Int]] = {
-    val output = invokeDreadnaut(g1.toDreadnautString + "c x @\n" + g2.toDreadnautString + "x ##", separateProcess)
-    //    for (line <- output) println(line)
-    val relevantOutput = output.dropWhile(l => !l.startsWith("canupdates")).tail.dropWhile(l => !l.startsWith("canupdates")).tail
-    if (relevantOutput.head == "h and h' are identical.") {
-      Some(
-        relevantOutput.tail.mkString(" ").split(" ").toIndexedSeq.filter(_.trim.nonEmpty).map(p => p.split("-")(1).toInt))
-    } else {
+  def findIsomorphism[V: Ordering](g1: ColouredGraph[V], g2: ColouredGraph[V], separateProcess: Boolean = false): Option[IndexedSeq[Int]] = {
+    if (g1.vertices.distinct.sorted != g2.vertices.distinct.sorted) {
       None
+    } else {
+      val cmd = g1.toDreadnautString + "c x @\n" + g2.toDreadnautString + "x ##"
+      val pw = new PrintWriter(new FileOutputStream(new File("/Users/scott/nauty.last")))
+      pw.println(cmd)
+      pw.close
+      try {
+        val output = invokeDreadnaut(cmd, separateProcess)
+        //    for (line <- output) println(line)
+        val relevantOutput = output.dropWhile(l => !l.startsWith("canupdates")).tail.dropWhile(l => !l.startsWith("canupdates")).tail
+        if (relevantOutput.head == "h and h' are identical.") {
+          Some(
+            relevantOutput.tail.mkString(" ").split(" ").toIndexedSeq.filter(_.trim.nonEmpty).map(p => p.split("-")(1).toInt))
+        } else {
+          None
+        }
+      } catch {
+        case e: Exception => {
+          println("dreadnaut error while executing: ")
+          println(cmd)
+          throw e
+        }
+      }
     }
+  }
+
+  def findIsomorphisms[V: Ordering](gs: Seq[ColouredGraph[V]], separateProcess: Boolean = false): Seq[(Int, IndexedSeq[Int])] = {
+    // this could be parallelised
+    val result = ListBuffer[(Int, IndexedSeq[Int])]()
+    for ((g, i) <- gs.zipWithIndex) {
+      result.zipWithIndex.take(i).toStream.filter(p => p._2 == p._1._1).flatMap(p => findIsomorphism(g, gs(p._1._1), separateProcess).map(f => (f, p._2))).headOption match {
+        case Some((f, j)) => result += ((j, f))
+        case None         => result += ((i, IndexedSeq.tabulate(g.numberOfVertices)(t => t)))
+      }
+    }
+    result.toList
   }
 
   def canonicalLabelling(g: Graph): IndexedSeq[Int] = {
