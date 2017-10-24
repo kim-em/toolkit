@@ -398,7 +398,8 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       IndexedSeq(0, vertexFlags(0)(0)._1, vertexFlags(0)(0)._2)
     }
 
-    ColouredGraph(numberOfVertices + edgeSet.size + faceSet.size + 3 * flagSet.size + 1,
+    ColouredGraph(
+      numberOfVertices + edgeSet.size + faceSet.size + 3 * flagSet.size + 1,
       vertexToEdgeAdjacencies ++ edgeToFaceAdjacencies ++ IndexedSeq.fill(faceSet.size)(Seq.empty) ++ flagSet ++ flagsFore ++ flagsAft :+ breakRotationalSymmetry,
       (0 +: IndexedSeq.fill(numberOfVertices - 1)(1)) ++ IndexedSeq.fill(edgeSet.size)(2) ++ faceSet.map({ case `outerFace` => 3; case _ => 4 }) ++ IndexedSeq.fill(flagSet.size)(5) ++ IndexedSeq.fill(flagSet.size)(6) ++ IndexedSeq.fill(flagSet.size)(7) :+ 8)
   }
@@ -482,18 +483,18 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     }
 
     val newExternalFlag: Seq[(Int, Int)] = {
-       val f0 = vertexFlags(0).take(neighboursOf(0).indexOf(vertexToDelete))
-       val f2 = vertexFlags(0).drop(neighboursOf(0).lastIndexOf(vertexToDelete) + 1)
-       val f1 = {
-         // we need to take the pieces of the flag on the vertex we're about to delete that don't go to the boundary.
-         // if those are non-contiguous, we need to reverse the two chunks...
-         val i = neighboursOf(vertexToDelete).indexOf(0)
-         import net.tqft.toolkit.collections.Rotate._
-         val rotated_flag = vertexFlags(vertexToDelete).rotateLeft(i)
-         val rotated_neighbours = neighboursOf(vertexToDelete).rotateLeft(i)
-         rotated_flag.take(rotated_neighbours.lastIndexWhere(_ != 0) + 1).drop(rotated_neighbours.indexWhere(_ != 0))
-       }
-       f0 ++ f1 ++ f2
+      val f0 = vertexFlags(0).take(neighboursOf(0).indexOf(vertexToDelete))
+      val f2 = vertexFlags(0).drop(neighboursOf(0).lastIndexOf(vertexToDelete) + 1)
+      val f1 = {
+        // we need to take the pieces of the flag on the vertex we're about to delete that don't go to the boundary.
+        // if those are non-contiguous, we need to reverse the two chunks...
+        val i = neighboursOf(vertexToDelete).indexOf(0)
+        import net.tqft.toolkit.collections.Rotate._
+        val rotated_flag = vertexFlags(vertexToDelete).rotateLeft(i)
+        val rotated_neighbours = neighboursOf(vertexToDelete).rotateLeft(i)
+        rotated_flag.take(rotated_neighbours.lastIndexWhere(_ != 0) + 1).drop(rotated_neighbours.indexWhere(_ != 0))
+      }
+      f0 ++ f1 ++ f2
     }
     PlanarGraph(outerFace, newExternalFlag +: (vertexFlags.patch(vertexToDelete, Nil, 1).tail), labels.patch(vertexToDelete - 1, Nil, 1), loops)
   }
@@ -523,7 +524,8 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       })
 
       if (boundaryEdgesAndFacesToDelete.isEmpty) {
-        val result = PlanarGraph(outerFace,
+        val result = PlanarGraph(
+          outerFace,
           vertexFlags.zipWithIndex.collect({ case (flag, i) if !verticesToDelete.contains(i) => flag }),
           labels.zipWithIndex.collect({ case (label, i) if !verticesToDelete.contains(i + 1) => label }),
           loops - loopsToDelete)
@@ -827,6 +829,7 @@ object PlanarGraph {
     def list[A](parsable: Parser[A]): Parser[Seq[A]] = sequenceTypes ~> "(" ~> whitespace ~> repsep(parsable, "," ~ whitespace) <~ whitespace <~ ")"
     def seq[A](parsable: Parser[A]): Parser[Seq[A]] = list(parsable) ^^ { _.toSeq }
     def indexedSeq[A](parsable: Parser[A]): Parser[IndexedSeq[A]] = list(parsable) ^^ { _.toIndexedSeq }
+    def option[A](parsable: Parser[A]): Parser[Option[A]] = ("None" ^^ { _ => None }) | ("Some(" ~> parsable <~ ")" ^^ { Some(_) })
 
     def pair[A](parsable: Parser[A]): Parser[(A, A)] = "(" ~> whitespace ~> parsable ~ "," ~ whitespace ~ parsable <~ ")" ^^ {
       case a1 ~ "," ~ whitespace ~ a2 => (a1, a2)
@@ -836,13 +839,15 @@ object PlanarGraph {
     def whitespace = whitespaceCharacter.*
 
     def int = wholeNumber ^^ { _.toInt }
+    def quotedString: Parser[String] = "\"" ~> "[^\",\r\n]".r <~ "\"" ^^ { s => s }
 
     def planarGraph: Parser[PlanarGraph] = ("PlanarGraph(" ~> whitespace ~>
       (int <~ "," <~ whitespace) ~
       (indexedSeq(seq(pair(int))) <~ "," <~ whitespace) ~
       (seq(pair(int)) <~ "," <~ whitespace) ~
-      int <~ whitespace <~ ")") ^^ {
-        case outerFace ~ vertexFlags ~ labels ~ loops => PlanarGraph(outerFace, vertexFlags, labels, loops)
+      (int <~ "," <~ whitespace) ~
+      option(quotedString) <~ whitespace <~ ")") ^^ {
+        case outerFace ~ vertexFlags ~ labels ~ loops ~ comment => PlanarGraph(outerFace, vertexFlags, labels, loops, comment)
       }
 
   }
