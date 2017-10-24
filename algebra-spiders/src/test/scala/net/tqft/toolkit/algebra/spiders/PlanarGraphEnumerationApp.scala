@@ -16,7 +16,7 @@ object PlanarGraphEnumerationApp extends App {
     val root = PlanarGraph.star(4)
     val bigon = spider.multiply(root, root, 2)
     val triangle = spider.multiply(spider.rotate(spider.multiply(root, root, 1), 2), root, 2)
-    val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(bigon, triangle), Seq(root), maxFaces, maxBoundaryPoints)
+    val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(bigon, triangle), Seq(root), maxBoundaryPoints, maxFaces)
 
     val descendants = context.connectedGraphs.toStream
 

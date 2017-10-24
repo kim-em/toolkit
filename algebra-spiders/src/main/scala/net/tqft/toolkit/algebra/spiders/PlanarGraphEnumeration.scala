@@ -15,8 +15,8 @@ case class PlanarGraphEnumerationContext(
   vertices:              Seq[VertexType],
   forbiddenSubgraphs:    Seq[PlanarGraph],
   roots:                 Seq[PlanarGraph],
-  maximumFaces:          Int,
-  maximumBoundaryPoints: Int) extends Logging {
+  maximumBoundaryPoints: Int,
+  maximumFaces:          Int) extends Logging {
   val spider = PlanarGraph.spider
   val largestVertex = vertices.map(_.perimeter).max
 

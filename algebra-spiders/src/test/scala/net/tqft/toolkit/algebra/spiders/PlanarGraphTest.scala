@@ -129,5 +129,10 @@ class PlanarGraphTest extends FlatSpec with Matchers with IsomorphismMatchers {
     PlanarGraph.H.deleteBoundaryVertex(1) should be_isomorphic_to(PlanarGraph.star(3))
     PlanarGraph.pentaSquare.deleteBoundaryVertex(3) should be_rotationally_equivalent_to(spider.rotate(PlanarGraph.pentafork, 2))
   }
+
+  "edgeVertexIncidences" should "" in {
+    val g = PlanarGraph(0, Vector(List(), List((0, 0), (0, 1), (10, 0), (11, 16), (9, 15)), List((1, 3), (9, 0), (11, 15), (10, 16), (1, 0))), Vector((1, 0), (1, 0)), 0, None)
+    println(g.edgeVertexIncidences) 
+  }
 }
 

@@ -124,7 +124,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
     for (v <- vertices; e <- edgesAdjacentTo(v)) {
       map.getOrElseUpdate(e, ListBuffer[Int]()) += v
     }
-    Map() ++ map.mapValues({ case ListBuffer(v1, v2) => (v1, v2); case _ => require(false); ??? })
+    Map() ++ map.mapValues({ case ListBuffer(v1, v2) => (v1, v2); case _ => require(false, "invalid map: " + this + " " +  map); ??? })
   }
   lazy val edgeFaceIncidences: Map[Int, (Int, Int)] = {
     val map = scala.collection.mutable.Map[Int, ListBuffer[Int]]()
