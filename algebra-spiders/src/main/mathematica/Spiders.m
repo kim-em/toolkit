@@ -19,106 +19,81 @@
 
 
 
-(* ::Input::Initialization:: *)
 DeclarePackage["Spiders`Trivalent`",{"Trivalent","SO3Categories","dMinusOne","SO3","CubicTrivalentCategories","CubicTrivalentCategory","G2Categories","ABACategories","PickledG2"}];
 DeclarePackage["Spiders`BraidedTrivalent`",{"BraidedTrivalent","SymmetricTrivalent","BraidedSO3Categories","CubicBraidedTrivalentCategories","CubicBraidedTrivalent","BraidedG2Categories"}];
 
 
-(* ::Input::Initialization:: *)
 Print[
 "Loading Spiders` version 2015-06-18 ..."
 ]
 
 
-(* ::Input::Initialization:: *)
 BeginPackage["Spiders`",{"JLink`","GuessingPolynomials`"}];
 
 
-(* ::Input::Initialization:: *)
 h;t;d;z;
 
 
-(* ::Input::Initialization:: *)
 ScalaSingleton;ScalaCaseClass;FromScalaObject;AsScalaObject;
 
 
-(* ::Input::Initialization:: *)
 Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph;DrawReducingRelations;DrawRelations;
 
 
-(* ::Input::Initialization:: *)
 unionDiagrams;complementDiagrams;memberQDiagrams;
 
 
-(* ::Input::Initialization:: *)
 SaveGroebnerCalculations;LoadGroebnerCalculations;
 
 
-(* ::Input::Initialization:: *)
 IntroduceNewVariable;
 
 
-(* ::Input::Initialization:: *)
 Manifold;DeclarePolynomialZero;DeclarePolynomialsZero;DeclareAtLeastOnePolynomialZero;DeclareAtLeastOnePolynomialNonZero;DeclarePolynomialNonZero;DeclarePolynomialsNonZero;DeclarePolynomialEitherZeroOrNonZero;
 
 
-(* ::Input::Initialization:: *)
 DeclareDimensionBounds;DimensionBounds;DimensionLowerBound;DimensionUpperBound;
 
 
-(* ::Input::Initialization:: *)
 p;tt;
 
 
-(* ::Input::Initialization:: *)
 IndependentDiagrams;DependentDiagrams;SpanningSets;ReducingRelations;NonReducingRelations;AppendIndependentDiagram;AppendDependentDiagram;AppendClosedDiagram;ReducedDiagrams;ReducibleDiagrams;
 
 
-(* ::Input::Initialization:: *)
 SpiderAnalysis;buildSpiderAnalysis;FreeSpider;emptySpiderAnalysis;
 
 
-(* ::Input::Initialization:: *)
 internalValences;diagramWeight;
 
 
-(* ::Input::Initialization:: *)
 EvaluateDiagram;EvaluateClosedDiagram;
 
 
-(* ::Input::Initialization:: *)
 ClosedDiagrams;ConsiderClosedDiagram;ConsiderClosedDiagrams;ReconsiderClosedDiagrams;
 
 
-(* ::Input::Initialization:: *)
 ConsiderPotentialSpanningSet;DeclareSpanningSet;DeclareBasis;ConsiderDiagrams;ConsiderDiagram;ConsiderIndependentDiagram;ConsiderDependentDiagram;IntroduceRelation;
 
 
-(* ::Input::Initialization:: *)
 PairRelationsWith;ReducePolynomials;ReducePolynomialsFurther;
 
 
-(* ::Input::Initialization:: *)
 PickleSpiderAnalysis;UnpickleSpiderAnalysis;PickledSpiderAnalysis;PickledQuotientSpider;
 
 
-(* ::Input::Initialization:: *)
 Begin["`Private`"];
 
 
-(* ::Input::Initialization:: *)
 SpidersMathematicaDirectory=FileNames[Cases[$Path~Join~(Quiet[{NotebookDirectory[]}]/.$Failed->{}),s_/;StringMatchQ[s,__~~"toolkit/algebra-spiders/src/main/mathematica"~~___]]][[1]];
 
 
-(* ::Input::Initialization:: *)
 SpidersDirectory=FileNameJoin[{SpidersMathematicaDirectory,"..","..",".."}];
 
 
-(* ::Input::Initialization:: *)
 ScalaMajorVersion="2.12";
 
 
-(* ::Input::Initialization:: *)
 AddToClassPath[FileNames[ToFileName[{SpidersDirectory,"target","scala-"<>ScalaMajorVersion,"classes"},"log4j.xml"]]];
 AddToClassPath[FileNames[ToFileName[{SpidersDirectory,".."},"*/target/scala-"<>ScalaMajorVersion<>"/*.jar"]]];
 AddToClassPath[FileNames[ToFileName[{SpidersDirectory,"..","lib_managed","jars"},"*/*/*.jar"]]];
@@ -126,14 +101,12 @@ AddToClassPath[FileNames[ToFileName[{SpidersDirectory,"..","lib_managed","bundle
 AddToClassPath[FileNames[{ToFileName[{SpidersDirectory,"target","scala-"<>ScalaMajorVersion},"*.jar"]}]];
 
 
-(* ::Input::Initialization:: *)
 ScalaSingleton[className_String]:=Module[{},
 LoadJavaClass[className<>"$"];
 Symbol[StringReplace[className,"."->"`"]<>"$`MODULE$"]
 ]
 
 
-(* ::Input::Initialization:: *)
 ScalaCaseClass[className_String,arguments___]:=Module[{o,applyTypes,a},
 LoadJavaClass[className<>"$"];
 o=Symbol[StringReplace[className,"."->"`"]<>"$`MODULE$"];
@@ -145,7 +118,6 @@ o@apply[Sequence@@a]
 ]
 
 
-(* ::Input::Initialization:: *)
 LoadJavaClass["scala.collection.immutable.List$","AllowShortContext"->False];
 LoadJavaClass["scala.collection.immutable.Set$","AllowShortContext"->False];
 LoadJavaClass["scala.collection.immutable.Map$","AllowShortContext"->False];
@@ -155,33 +127,26 @@ LoadJavaClass["java.util.Arrays","AllowShortContext"->False];
 LoadJavaClass["scala.collection.JavaConversions","AllowShortContext"->False];
 
 
-(* ::Input::Initialization:: *)
 Clear[FromScalaObject]
 
 
-(* ::Input::Initialization:: *)
 FromScalaObject[o_,0]:=o
 
 
-(* ::Input::Initialization:: *)
 FromScalaObject[o_/;!JavaObjectQ[o],depth:_?Positive:\[Infinity]]:=o
 
 
-(* ::Input::Initialization:: *)
 FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"scala.collection.Traversable"],depth:_?Positive:\[Infinity]]:=FromScalaObject[JavaConversions`seqAsJavaList[o@toList[]],depth]
 FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"java.util.List"],depth:_?Positive:\[Infinity]]:=FromScalaObject[#,depth-1]&/@(o@toArray[])
 FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"scala.Tuple2"],depth:_?Positive:\[Infinity]]:=FromScalaObject[#,depth-1]&/@{o@U1[],o@U2[]}
 
 
-(* ::Input::Initialization:: *)
 FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.Fraction"],depth:_?Positive:\[Infinity]]:=FromScalaObject[o@numerator[],depth-1]/FromScalaObject[o@denominator[],depth-1]
 
 
-(* ::Input::Initialization:: *)
 latch[f_]:=(latch[f]=False;True)
 
 
-(* ::Input::Initialization:: *)
 FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.polynomials.RationalExpression"],depth:_?Positive:\[Infinity]]:=Module[{result},
 result=ToExpression[rationalExpressionMathematicaForm@toMathematicaInputString[o]]/.{q_Symbol/;StringMatchQ[SymbolName[q],"p"~~DigitCharacter..]:>Subscript[p, ToExpression[StringDrop[SymbolName[q],1]]],t0_Symbol/;StringMatchQ[SymbolName[t0],"t"~~DigitCharacter..]:>tt[ToExpression[StringDrop[SymbolName[t0],1]]]};
 (*If[latch[o@toString[]],Print["interpreting ",o@toString[], " with mathematica form ",rationalExpressionMathematicaForm@toMathematicaInputString[o], " as ",result]];*)
@@ -189,36 +154,28 @@ result
 ]
 
 
-(* ::Input::Initialization:: *)
 FromScalaObject[o_?JavaObjectQ,depth:_?Positive:\[Infinity]]:=o@toString[]
 
 
-(* ::Input::Initialization:: *)
 ScalaSingleton["net.tqft.toolkit.algebra.mathematica.MathematicaForm"]
 
 
-(* ::Input::Initialization:: *)
 ScalaSingleton["net.tqft.toolkit.algebra.BigIntegers"]
 
 
-(* ::Input::Initialization:: *)
 bigIntMathematicaForm=ScalaSingleton["net.tqft.toolkit.algebra.mathematica.MathematicaForm$BigIntMathematicaForm"];
 bareStringMathematicaForm=ScalaSingleton["net.tqft.toolkit.algebra.mathematica.MathematicaForm$BareStringMathematicaForm"];
 
 
-(* ::Input::Initialization:: *)
 bigRationalMathematicaForm=ScalaSingleton["net.tqft.toolkit.algebra.mathematica.MathematicaForm"]@fractionMathematicaForm[bigIntMathematicaForm,ScalaSingleton["net.tqft.toolkit.algebra.BigIntegers"]];
 
 
-(* ::Input::Initialization:: *)
 rationalExpressionMathematicaForm=ScalaSingleton["net.tqft.toolkit.algebra.mathematica.MathematicaForm"]@rationalExpressionMathematicaForm2[bigRationalMathematicaForm,bareStringMathematicaForm];
 
 
-(* ::Input::Initialization:: *)
 Clear[AsScalaObject]
 
 
-(* ::Input::Initialization:: *)
 AsScalaList[list:{__Integer}]:=scala`collection`JavaConversions`asScalaBuffer[java`util`Arrays`asList[MakeJavaObject/@list]]@toList[]
 AsScalaList[list:{__Real}]:=scala`collection`JavaConversions`asScalaBuffer[java`util`Arrays`asList[MakeJavaObject/@list]]@toList[]
 AsScalaList[list:{__List}]:=AsScalaList[AsScalaList/@list]
@@ -226,39 +183,31 @@ AsScalaList[list_List]:=Fold[#1@$colon$colon[#2]&,ScalaSingleton["scala.collecti
 AsScalaList[{}]:=scala`collection`immutable`List$`MODULE$@empty[]
 
 
-(* ::Input::Initialization:: *)
 AsScalaObject[x_]:=AsScalaObject[x,"Object"]
 
 
-(* ::Input::Initialization:: *)
 AsScalaObject[i_Integer,"Object"]:=MakeJavaObject[i]
 AsScalaObject[i_Integer,"int"]:=i
 AsScalaObject[i_Integer,"java.math.BigInteger"]:=JavaNew["java.math.BigInteger",ToString[i]]
 
 
-(* ::Input::Initialization:: *)
 AsScalaObject[o_?JavaObjectQ,_]:=o
 
 
-(* ::Input::Initialization:: *)
 AsScalaObject[rules:{__Rule},"Object"|"scala.collection.immutable.Map"]:=AsScalaMap[rules]
 AsScalaObject[rules:{___Rule},"scala.collection.immutable.Map"]:=AsScalaMap[rules]
 AsScalaMap[rules:{___Rule}]:=ScalaCaseClass["scala.collection.immutable.Map",AsScalaList[{}]]@$plus$plus[AsScalaList[ScalaCaseClass["scala.Tuple2",Sequence@@#]&/@rules]]
 
 
-(* ::Input::Initialization:: *)
 Fraction=ScalaSingleton["net.tqft.toolkit.algebra.Fraction"];
 
 
-(* ::Input::Initialization:: *)
 Ring=ScalaSingleton["net.tqft.toolkit.algebra.spiders.examples.QuantumExceptionalSeries"]@ring[];
 
 
-(* ::Input::Initialization:: *)
 BigIntegers=ScalaSingleton["net.tqft.toolkit.algebra.BigIntegers"];
 
 
-(* ::Input::Initialization:: *)
 AsScalaObject[x_Plus,"MultivariableRationalFunction"]:=Ring@sum[AsScalaList[AsScalaObject[#,"MultivariableRationalFunction"]&/@(List@@x)]]
 AsScalaObject[x_Times,"MultivariableRationalFunction"]:=Ring@product[AsScalaList[AsScalaObject[#,"MultivariableRationalFunction"]&/@(List@@x)]]
 AsScalaObject[Power[x_,k_Integer],"MultivariableRationalFunction"]:=Ring@power[AsScalaObject[x,"MultivariableRationalFunction"],k]
@@ -271,64 +220,49 @@ ScalaCaseClass["net.tqft.toolkit.algebra.polynomials.RationalExpression$variable
 ]
 
 
-(* ::Input::Initialization:: *)
 Diagram=_?(JavaObjectQ[#]\[And]InstanceOf[#,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]&);
 
 
-(* ::Input::Initialization:: *)
 NamedPolyhedron[Subscript[p, k_]]:=ScalaSingleton["net.tqft.toolkit.algebra.spiders.PolyhedronNamer"]@byName["p"<>ToString[k]]@get[]
 
 
-(* ::Input::Initialization:: *)
 PlanarGraphs=ScalaSingleton["net.tqft.toolkit.algebra.spiders.PlanarGraph"];
 
 
-(* ::Input::Initialization:: *)
 polygon[n_Integer]:=polygon[n]=PlanarGraphs@polygon[]@apply[AsScalaObject[n,"Object"]]
 
 
-(* ::Input::Initialization:: *)
 Name[d0:Diagram]:=FromScalaObject[ScalaSingleton["net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider"]@evaluate[AsScalaObject[{d0->Ring@one[]}]]]
 
 
-(* ::Input::Initialization:: *)
 DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGraph"]@withOutputPath[FileNameJoin[{SpidersMathematicaDirectory,"graphs"}]];
 
 
-(* ::Input::Initialization:: *)
 DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Import[DrawPlanarGraph$@createPDF[g]@toString[]]/.{$Failed->g@toString[],{picture_}:>picture}
 DrawPlanarGraph[X_List]:=DrawPlanarGraph/@X
 
 
-(* ::Input::Initialization:: *)
 DrawPlanarGraph[S_String]:=DrawPlanarGraph[PlanarGraphs@fromString[S]]
 
 
-(* ::Input::Initialization:: *)
 DrawPlanarGraph[Subscript[p, k_Integer]]:=DrawPlanarGraph[NamedPolyhedron[Subscript[p, k]]]
 
 
-(* ::Input::Initialization:: *)
 DrawReducingRelations[n_Integer][s_SpiderAnalysis]:=(ReducingRelations[n][s][[All,2]])/.{c_,d:Diagram}:>{ReducePolynomialsFurther[s][c],DrawPlanarGraph[d]}//TableForm
 
 
-(* ::Input::Initialization:: *)
 DrawRelations[n_Integer][s_SpiderAnalysis]:=(ReducingRelations[n][s][[All,2]]~Join~NonReducingRelations[n][s])/.{c_,d:Diagram}:>{ReducePolynomialsFurther[s][c],DrawPlanarGraph[d]}//TableForm
 
 
-(* ::Input::Initialization:: *)
 unionDiagrams[diagrams_]:=Union[{#@toString[],#}&/@(#@canonicalFormWithDefect[]@U1[]&/@diagrams),SameTest->(First[#1]===First[#2]&)][[All,2]]
 
 
-(* ::Input::Initialization:: *)
 complementDiagrams[diagrams1_,diagrams2_]:=PlanarGraphs@fromString[#]&/@DeleteCases[#@canonicalFormWithDefect[]@U1[]@toString[]&/@diagrams1,Alternatives@@(#@canonicalFormWithDefect[]@U1[]@toString[]&/@diagrams2)]
 
 
-(* ::Input::Initialization:: *)
 memberQDiagrams[diagrams_,diagram_]:=MemberQ[#@canonicalFormWithDefect[]@U1[]@toString[]&/@diagrams,diagram@canonicalFormWithDefect[]@U1[]@toString[]]
 
 
-(* ::Input::Initialization:: *)
 cachedGroebnerBasis[ideal_,variables_]:=cachedGroebnerBasis[ideal,variables]=
 Module[{result},
 (*Print["beginning GroebnerBasis calculation..."];*)
@@ -347,7 +281,6 @@ cachedPolynomialReduce[Numerator[t],basis,variables][[2]]/cachedPolynomialReduce
 ]
 
 
-(* ::Input::Initialization:: *)
 SaveGroebnerCalculations[]:=(LoadGroebnerCalculations[];
 DownValues[cachedGroebnerBasis]=Cases[DownValues[cachedGroebnerBasis],r_/;FreeQ[r,_t]];Put[{DownValues[cachedGroebnerBasis],DownValues[cachedPolynomialReduce]},FileNameJoin[{SpidersMathematicaDirectory,"groebnerCalculations.m"}]])
 LoadGroebnerCalculations[]:=Module[{file=FileNameJoin[{SpidersMathematicaDirectory,"groebnerCalculations.m"}],data},
@@ -359,50 +292,39 @@ DownValues[cachedPolynomialReduce]=DownValues[cachedPolynomialReduce]~Join~data[
 ]
 
 
-(* ::Input::Initialization:: *)
 (*SaveGroebnerCalculations[]*)
 
 
-(* ::Input::Initialization:: *)
 (*LoadGroebnerCalculations[]*)
 
 
-(* ::Input::Initialization:: *)
 timesToList[X_Times]:=List@@X
 timesToList[X_]:={X}
 
 
-(* ::Input::Initialization:: *)
 withoutMultiplicity[X_^k_]:={X,k};
 withoutMultiplicity[X_]:={X,1};
 
 
-(* ::Input::Initialization:: *)
 Clear[text]
 
 
-(* ::Input::Initialization:: *)
 text[A___]:=text[StringJoin@@(Switch[#,_String,#,_?JavaObjectQ,#@toString[],_,"\("<>ToString[#,TeXForm]<>"\)"]&/@{A})]
 text[S_String]:=Print[S]
 
 
-(* ::Input::Initialization:: *)
 automaticFlatMap[f_]:=f[a__][Xs_List]:=Union[Flatten[f[a]/@Xs,1]]
 
 
-(* ::Input::Initialization:: *)
 automaticFlatMap/@{DeclarePolynomialEitherZeroOrNonZero,DeclarePolynomialsZero,DeclarePolynomialZero,DeclareAtLeastOnePolynomialZero,DeclareAtLeastOnePolynomialNonZero,DeclarePolynomialNonZero,DeclarePolynomialsNonZero,DeclareIrreduciblePolynomialNonZero};
 
 
-(* ::Input::Initialization:: *)
 IntroduceNewVariable[v_][X_]:=X/.{m_Manifold:>ReplacePart[m,5->Prepend[m[[5]],v]]}
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialEitherZeroOrNonZero[polynomial_][m_Manifold]:=Flatten[{DeclarePolynomialZero[polynomial][m],DeclarePolynomialNonZero[polynomial][m]},1]
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialsZero[polynomials_][m_Manifold]:=Module[{variables,sortedPolynomials},
 variables=m[[5]]~Join~Union[Cases[polynomials,Subscript[p, _]|tt[_],\[Infinity]]];
 sortedPolynomials=SortBy[polynomials,Function[polynomial,Min[(Exponent[polynomial,#]&/@variables)/.{0->\[Infinity]}]]];
@@ -412,15 +334,12 @@ Fold[DeclarePolynomialZero[#2][#1]&,{m},sortedPolynomials]
 ]
 
 
-(* ::Input::Initialization:: *)
 DeclareAtLeastOnePolynomialZero[p_List][m_Manifold]:=Flatten[DeclarePolynomialZero[#][m]&/@p,1]
 
 
-(* ::Input::Initialization:: *)
 DeclareAtLeastOnePolynomialNonZero[p_List][m_Manifold]:=Flatten[DeclarePolynomialNonZero[#][m]&/@Union[p],1]
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialZero[0][m_Manifold]:={m}
 DeclarePolynomialZero[p_][m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{factors},
 If[MemberQ[nonzeroPolynomials~Join~(-nonzeroPolynomials),p],{},
@@ -438,11 +357,9 @@ Flatten[DeclareIrreduciblePolynomialZero[#][m]&/@factors,1]
 ]
 
 
-(* ::Input::Initialization:: *)
 Clear[DeclareIrreduciblePolynomialZero]
 
 
-(* ::Input::Initialization:: *)
 DeclareIrreduciblePolynomialZero[polynomial_][m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{newSubstitutions,variables0},
 If[polynomial===0,{m},
 If[NumericQ[polynomial]\[Or]MemberQ[nonzeroPolynomials,polynomial],{},
@@ -457,7 +374,6 @@ AddIrreduciblePolynomialToOtherIdentities[polynomial][m]
 ]
 
 
-(* ::Input::Initialization:: *)
 AddIrreduciblePolynomialToGroebnerBasis[polynomial_][m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{linearVariables,newGroebnerBasis,newNonzeroPolynomials,newOtherIdentities,newManifold,newSubstitutions},
 newNonzeroPolynomials=Union[Factor[cachedRationalFunctionReduce[#,{polynomial}~Join~groebnerBasis,variables]&/@nonzeroPolynomials]];
 newNonzeroPolynomials=Union[newNonzeroPolynomials,Flatten[Cases[withoutMultiplicity/@timesToList[Factor[#]],{f_,k_}:>f]&/@newNonzeroPolynomials]];
@@ -490,7 +406,6 @@ VerifyNonzero[nonzeroPolynomials][FactorGroebnerBasis[SolveOtherIdentities[Solve
 ]
 
 
-(* ::Input::Initialization:: *)
 VerifyNonzero[polynomials_][m_Manifold,ms___Manifold]:=If[!And@@(mustBeNonZeroQ[m,#]===True&/@polynomials),
 Print["nonzero polynomials seem to have been forgotten!"];
 Print[Cases[polynomials,pp_/;!mustBeNonZeroQ[m,pp]]];
@@ -502,15 +417,12 @@ m
 ]
 
 
-(* ::Input::Initialization:: *)
 VerifyNonzero[polynomials_][m_Manifold,ms___Manifold]:=m
 
 
-(* ::Input::Initialization:: *)
 VerifyNonzero[polynomials_][S_List,ms___Manifold]:=VerifyNonzero[polynomials][#,ms]&/@S
 
 
-(* ::Input::Initialization:: *)
 FactorGroebnerBasis[m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{targets},
 targets=Cases[(withoutMultiplicity/@timesToList[Factor[#]])&/@groebnerBasis,factorization_/;Total[factorization[[All,2]]]>=2,1,1];
 If[Length[targets]==0,{m},
@@ -520,7 +432,6 @@ FactorGroebnerBasis[VerifyNonzero[nonzeroPolynomials][DeclareAtLeastOnePolynomia
 FactorGroebnerBasis[M_List]:=Flatten[FactorGroebnerBasis/@M,1]
 
 
-(* ::Input::Initialization:: *)
 PromoteOtherIdentities[m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{targets},
 targets=Cases[otherIdentities,e_/;FreeQ[e,Subscript[p, _]|tt[_]]];
 If[Length[targets]==0,
@@ -532,7 +443,6 @@ VerifyNonzero[nonzeroPolynomials][DeclarePolynomialsZero[targets][Manifold[subst
 PromoteOtherIdentities[M_List]:=Flatten[PromoteOtherIdentities/@M,1]
 
 
-(* ::Input::Initialization:: *)
 SolveGroebnerBasis[m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{targets,denominator,numerator},
 targets=Cases[Flatten[Outer[List,groebnerBasis,variables,1],1],{polynomial_,variable_}/;Exponent[polynomial,variable]==1];
 If[Length[targets]==0,
@@ -543,7 +453,6 @@ SolvePolynomial[targets[[1,1]],targets[[1,2]]][m]
 SolveGroebnerBasis[M_List]:=Flatten[SolveGroebnerBasis/@M,1]
 
 
-(* ::Input::Initialization:: *)
 SolvePolynomial[p_,v_][m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{numerator,denominator},
 Print["solving for ",v];
 numerator=-(p/.v->0);
@@ -557,13 +466,11 @@ VerifyNonzero[nonzeroPolynomials][AddSubstitution[v->Factor[numerator/denominato
 ]
 
 
-(* ::Input::Initialization:: *)
 AddIrreduciblePolynomialToOtherIdentities[polynomial_][m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{},
 VerifyNonzero[nonzeroPolynomials][SolveOtherIdentities[Manifold[substitutions,groebnerBasis,Union[otherIdentities~Join~{polynomial}],nonzeroPolynomials,variables]],m]
 ]
 
 
-(* ::Input::Initialization:: *)
 SolveOtherIdentities[m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{variables1,variables2,targets},
 variables1 =Union[Cases[otherIdentities,tt[_],\[Infinity]]];
 targets=Cases[Flatten[Outer[List,otherIdentities,variables1,1],1],{polynomial_,variable_}/;Exponent[polynomial,variable]==1\[And]mustBeNonZeroQ[m,Coefficient[polynomial,variable]]];
@@ -581,7 +488,6 @@ SolveOtherIdentities[VerifyNonzero[nonzeroPolynomials][AddSubstitution[targets[[
 SolveOtherIdentities[M_List]:=Flatten[SolveOtherIdentities/@M,1]
 
 
-(* ::Input::Initialization:: *)
 mustBeNonZeroQ[m:_[_List,_List,_List,nonzeroPolynomials_List,_List],polynomial_]:=Module[{factors},
 (*Print["mustBeNonZeroQ: ",polynomial];*)
 factors=Cases[withoutMultiplicity/@timesToList[Factor[ReducePolynomials[m][polynomial]]],{f_,k_}/;k>0:>f];
@@ -599,7 +505,6 @@ Length[factors]==0
 ]
 
 
-(* ::Input::Initialization:: *)
 Clear[AddSubstitution]
 AddSubstitution[substitution:(_->_)][m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{newGroebnerBasis,newSubstitutions,newOtherIdentities,newNonzeroPolynomials,newManifold},
 If[MemberQ[substitutions,substitution],{m},
@@ -630,15 +535,12 @@ VerifyNonzero[nonzeroPolynomials][FactorGroebnerBasis[SolveOtherIdentities[Solve
 automaticFlatMap[AddSubstitution]
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialsNonZero[p_List][m_Manifold]:=Fold[DeclarePolynomialNonZero[#2][#1]&,{m},p]
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialNonZero[1|-1][m_Manifold]:={m}
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialNonZero[p_][m_Manifold]:=Module[{factors},
 factors=Complement[DeleteCases[Cases[withoutMultiplicity/@timesToList[Factor[p]],{f_,k_}/;k>0:>f],1|-1],m[[3]]~Join~(-m[[3]])];
 If[Length[factors]>0,
@@ -648,7 +550,6 @@ DeclareIrreduciblePolynomialNonZero[Numerator[Together[p]]][Fold[DeclareIrreduci
 ]
 
 
-(* ::Input::Initialization:: *)
 DeclareIrreduciblePolynomialNonZero[polynomial_][m:Manifold[substitutions_List,groebnerBasis_List,otherIdentities_List,nonzeroPolynomials_List,variables_List]]:=Module[{reduced,variables0},
 variables0=Union[Cases[groebnerBasis,Subscript[p, _]|tt[_],\[Infinity]]]~Join~variables;
 reduced=ReducePolynomials[m][polynomial];
@@ -660,7 +561,6 @@ VerifyNonzero[nonzeroPolynomials][SolveOtherIdentities[{Manifold[substitutions,g
 ]
 
 
-(* ::Input::Initialization:: *)
 Clear[buildSpiderAnalysis]
 buildSpiderAnalysis[
 spider_?JavaObjectQ/;InstanceOf[spider,"net.tqft.toolkit.algebra.spiders.examples.QuotientSpider"],
@@ -674,23 +574,19 @@ reducingRelations:{(Diagram->{(Diagram->_)...})...},
 nonReducingRelations:{{(Diagram->_)..}...}]:=SpiderAnalysis[spider,manifold,dimensionBounds,independentDiagrams,dependentDiagrams,closedDiagrams,spanningSets,reducingRelations,nonReducingRelations]
 
 
-(* ::Input::Initialization:: *)
 Format[SpiderAnalysis[spider_,manifold_,dimensionBounds_,independentDiagrams_,dependentDiagrams_,closedDiagrams_,spanningSets_,reducingRelations_,nonReducingRelations_]]:="SpiderAnalysis"[spider,manifold,dimensionBounds,Short[independentDiagrams],Short[dependentDiagrams],Short[closedDiagrams],spanningSets,Short[reducingRelations],Short[nonReducingRelations]]
 
 
-(* ::Input::Initialization:: *)
 DimensionBounds[s_SpiderAnalysis]:=s[[3]]
 DimensionBounds[s_SpiderAnalysis,k_Integer]:=Module[{bounds=DimensionBounds[s]},
 If[Length[bounds]<k+1,{0,\[Infinity]},bounds[[k+1]]]
 ]
 
 
-(* ::Input::Initialization:: *)
 DimensionLowerBound[s_SpiderAnalysis,k_Integer]:=DimensionBounds[s,k][[1]]
 DimensionUpperBound[s_SpiderAnalysis,k_Integer]:=DimensionBounds[s,k][[2]]
 
 
-(* ::Input::Initialization:: *)
 IndependentDiagrams[k_Integer][s_SpiderAnalysis]:=Cases[s[[4]],d_/;d@numberOfBoundaryPoints[]==k]
 DependentDiagrams[k_Integer][s_SpiderAnalysis]:=Cases[s[[5]],d_/;d@numberOfBoundaryPoints[]==k]
 SpanningSets[k_Integer][s_SpiderAnalysis]:=If[Length[s[[7]]]<k+1,{},s[[7,k+1]]]
@@ -699,31 +595,24 @@ ReducibleDiagrams[s_SpiderAnalysis]:=s[[8,All,2,-1,2]]
 NonReducingRelations[k_Integer][s_SpiderAnalysis]:=Cases[s[[9]],l_/;l[[1,2]]@numberOfBoundaryPoints[]==k]
 
 
-(* ::Input::Initialization:: *)
 AppendIndependentDiagram[d0:Diagram][s_SpiderAnalysis]:=ReplacePart[s,4->s[[4]]~Join~{d0}]
 
 
-(* ::Input::Initialization:: *)
 AppendDependentDiagram[d0:Diagram][s_SpiderAnalysis]:=ReplacePart[s,5->s[[5]]~Join~{d0}]
 
 
-(* ::Input::Initialization:: *)
 AppendClosedDiagram[d0:Diagram][s_SpiderAnalysis]:=ReplacePart[s,6->Union[s[[6]]~Join~{d0}]]
 
 
-(* ::Input::Initialization:: *)
 automaticFlatMap/@{AppendIndependentDiagram,AppendDependentDiagram,AppendClosedDiagram};
 
 
-(* ::Input::Initialization:: *)
 ReducedDiagrams[s_SpiderAnalysis,circumference_Integer,numbersOfVertices___Integer]:=FromScalaObject[s[[1]]@reducedDiagrams[circumference,AsScalaObject[Rule@@#&/@Transpose[{#@U1[]&/@FromScalaObject[s[[1]]@generators[],1],{numbersOfVertices}}]]],1]
 
 
-(* ::Input::Initialization:: *)
 TrivalentQ[s_SpiderAnalysis]:=s[[1]]@generators[]@size[]==1\[And]FromScalaObject[s[[1]]@generators[],1][[1]]@U1[]@perimeter[]==3\[And]FromScalaObject[s[[1]]@generators[],1][[1]]@U1[]@allowedRotationStep[]==1
 
 
-(* ::Input::Initialization:: *)
 ReducedDiagrams[s_SpiderAnalysis,circumference_Integer,numberOfVertices_Integer]/;TrivalentQ[s]:=
 If[OddQ[numberOfVertices-circumference],{},
 Module[{withFaces,result={},f},
@@ -736,47 +625,37 @@ result
 ]
 
 
-(* ::Input::Initialization:: *)
 (* TODO add support for declaring dimension bounds "after the fact"? *)
 
 
-(* ::Input::Initialization:: *)
 DeclareDimensionBounds[bounds:{__Integer}][s_SpiderAnalysis]:=DeclareDimensionBounds[ReplacePart[Transpose[{bounds,bounds}],{-1,1}->0]][s]
 DeclareDimensionBounds[bounds:{{_Integer,_Integer|\[Infinity]}..}][s_SpiderAnalysis]:=ReplacePart[s,3->bounds]
 DeclareDimensionBounds[bounds_][S_List]:=DeclareDimensionBounds[bounds]/@S
 
 
-(* ::Input::Initialization:: *)
 FreeSpider[vertices:{{_Integer, _Integer,_Integer,_}...}]:=ScalaCaseClass["net.tqft.toolkit.algebra.spiders.examples.QuotientSpider",AsScalaObject[ScalaCaseClass["net.tqft.toolkit.algebra.spiders.VertexType",#[[1]],#[[2]],#[[3]]]->AsScalaObject[#[[4]],"MultivariableRationalFunction"]&/@vertices]@toSeq[],AsScalaList[{}]]
 
 
-(* ::Input::Initialization:: *)
 emptySpiderAnalysis[spider_,variables_]:=buildSpiderAnalysis[spider,Manifold[{},{},{},{},variables],{{1,1},{0,0},{1,1}},{},{},{},{},{},{}]
 
 
-(* ::Input::Initialization:: *)
 internalValences[diagram_]:=Length/@FromScalaObject[diagram@vertexFlags[]@tail[]]
 
 
-(* ::Input::Initialization:: *)
 If[Length[DownValues[diagramWeight]]==0,
 diagramWeight[diagram_]:=Count[internalValences[diagram],3]+4Count[internalValences[diagram],4]
 ]
 
 
-(* ::Input::Initialization:: *)
 EvaluateDiagram[s_SpiderAnalysis][d0:Diagram]:=DrawPlanarGraph[#@U1[]]->ReducePolynomials[s][FromScalaObject[#@U2[]]]&/@FromScalaObject[s[[1]]@canonicalForm[AsScalaMap[{d0->AsScalaObject[1,"MultivariableRationalFunction"]}]],1]
 
 
-(* ::Input::Initialization:: *)
 EvaluateClosedDiagram[s_SpiderAnalysis][d0:Diagram]:=ReducePolynomials[s][FromScalaObject[s[[1]]@evaluate[s[[1]]@canonicalForm[AsScalaMap[{d0->AsScalaObject[1,"MultivariableRationalFunction"]}]]]]]
 
 
-(* ::Input::Initialization:: *)
 ClosedDiagrams[s_SpiderAnalysis]:=s[[6]]
 
 
-(* ::Input::Initialization:: *)
 ConsiderClosedDiagram[d0:Subscript[p, _]]:=ConsiderClosedDiagram[NamedPolyhedron[d0]]
 ConsiderClosedDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{evaluations},
 If[MemberQ[#@hashCode[]&/@ClosedDiagrams[s],d0@hashCode[]],
@@ -795,17 +674,14 @@ AppendClosedDiagram[d0][s]]
 ]
 
 
-(* ::Input::Initialization:: *)
 ConsiderClosedDiagrams[diagrams_List][s_SpiderAnalysis]:=Fold[ConsiderClosedDiagram[#2][#1]&,{s},diagrams]
 
 
-(* ::Input::Initialization:: *)
 
 Clear[cachedInnerProduct]
 cachedInnerProduct[spiderHash_,x_String,y_String]:=$Failed
 
 
-(* ::Input::Initialization:: *)
 rotationFactor[s_SpiderAnalysis,rotations:{{_Integer,_Integer}...}]:=Times@@(rotationFactor[s,#]&/@rotations)
 rotationFactor[s_SpiderAnalysis,rotation:{p_Integer,c_Integer}]:=Module[{vertices},
 vertices=Cases[FromScalaObject[s[[1]]@generators[],2],({v_,w_}/;v@perimeter[]==p):>FromScalaObject[w]];
@@ -817,7 +693,6 @@ vertices[[1]]^c
 ]
 
 
-(* ::Input::Initialization:: *)
 cachingInnerProduct[spider_SpiderAnalysis,x:Diagram,y:Diagram]:=cachingInnerProduct[spider,x@toString[],y@toString[]]
 cachingInnerProduct[s_SpiderAnalysis,x_String,y_String]:=Module[{xs,ys,outerHash,innerHash,result},
 outerHash=Hash[s];
@@ -839,7 +714,6 @@ result
 ]
 
 
-(* ::Input::Initialization:: *)
 cachedEvaluation[hash_,xs_String]:=$Failed
 cachingEvaluation[spider_?JavaObjectQ,x:Diagram]:=Module[{hash,result,xs},
 xs=x@toString[];
@@ -852,12 +726,10 @@ result
 ]
 
 
-(* ::Input::Initialization:: *)
 cachingInnerProduct[spider_SpiderAnalysis,xs_List]:=cachingInnerProduct[spider,xs,xs]
 cachingInnerProduct[spider_SpiderAnalysis,xs_List,ys_List]:=Outer[cachingInnerProduct[spider,##]&,xs,ys]
 
 
-(* ::Input::Initialization:: *)
 Clear[ConsiderPotentialSpanningSet]
 ConsiderPotentialSpanningSet[diagrams:{Diagram...}]:=ConsiderPotentialSpanningSet[diagrams[[1]]@numberOfBoundaryPoints[],diagrams]
 (*ConsiderPotentialSpanningSet[k_Integer,diagrams:{Diagram...}][s_SpiderAnalysis]:=Module[{zzz,innerProducts,subsets,det,determinants},
@@ -890,7 +762,6 @@ Print["Be careful: you've proposed a spanning set that isn't as big as the dimen
 automaticFlatMap[ConsiderPotentialSpanningSet]
 
 
-(* ::Input::Initialization:: *)
 ConsiderPotentialSpanningSet[k_Integer,diagrams:{Diagram...}][s_SpiderAnalysis]:=Module[{zzz,s0,innerProducts,subsets,det,determinants,gcd},
 If[Length[s[[7]]]<k+1,
 ConsiderPotentialSpanningSet[k,diagrams][ReplacePart[s,7->(PadRight[s[[7]],k+1,zzz]/.zzz->{})]],
@@ -942,7 +813,6 @@ s0=DeclarePolynomialsZero[determinants][s]
 ]
 
 
-(* ::Input::Initialization:: *)
 DeclareSpanningSet[diagrams:{Diagram...}]:=DeclareSpanningSet[diagrams[[1]]@numberOfBoundaryPoints[],diagrams]
 DeclareSpanningSet[k_Integer,diagrams:{Diagram...}][s_SpiderAnalysis]:=Module[{zzz},
 If[Length[s[[7]]]<k+1,
@@ -953,7 +823,6 @@ DeclareSpanningSet[k,diagrams][ReplacePart[s,7->(PadRight[s[[7]],k+1,zzz]/.zzz->
 automaticFlatMap[DeclareSpanningSet]
 
 
-(* ::Input::Initialization:: *)
 DeclareBasis[diagrams:{Diagram...}]:=DeclareBasis[diagrams[[1]]@numberOfBoundaryPoints[],diagrams]
 DeclareBasis[k_Integer,diagrams:{Diagram...}][s_SpiderAnalysis]:=Module[{pairings,innerProducts,det,s0},
 pairings=
@@ -975,7 +844,6 @@ DeclarePolynomialNonZero[det[innerProducts]][s0]
 automaticFlatMap[DeclareBasis]
 
 
-(* ::Input::Initialization:: *)
 Clear[ConsiderDiagrams]
 ConsiderDiagrams[diagrams:{Diagram...},options:(_String->(True|False))...]:=ConsiderDiagrams[diagrams[[1]]@numberOfBoundaryPoints[],diagrams,options]
 (*ConsiderDiagrams[k_Integer,diagrams:{Diagram...},options:(_String\[Rule](True|False))...][s_SpiderAnalysis]:=If[Length[SpanningSets[k][s]]\[Equal]0,
@@ -991,16 +859,13 @@ Fold[ConsiderDiagram[#2,options][#1]&,{s},diagrams]
 automaticFlatMap[ConsiderDiagrams]
 
 
-(* ::Input::Initialization:: *)
 (*ConsiderDiagrams[diagrams:{Diagram...},options:(_String\[Rule](True|False))...][s_SpiderAnalysis]:=Fold[PairRelationsWith[Drop[diagrams,#2\[LeftDoubleBracket]2\[RightDoubleBracket]]][ConsiderDiagram[#2\[LeftDoubleBracket]1\[RightDoubleBracket],options][#1]]&,{s},Transpose[{diagrams,Range[Length[diagrams]]}]]*)
 
 
-(* ::Input::Initialization:: *)
 ReconsiderClosedDiagrams[s_SpiderAnalysis]:=ConsiderClosedDiagrams[ClosedDiagrams[s]][ReplacePart[s,6->{}]]
 ReconsiderClosedDiagrams[S_List]:=Flatten[ReconsiderClosedDiagrams/@S]
 
 
-(* ::Input::Initialization:: *)
 ConsiderDiagram[d0:Diagram,options:(_String->(True|False))...][s_SpiderAnalysis]:=Module[{k,closedDiagrams,pairings,secondPass,insistIndependent,insistDependent},
 k=d0@numberOfBoundaryPoints[];
 If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s},
@@ -1049,7 +914,6 @@ ConsiderDependentDiagram[d0][s]
 
 
 
-(* ::Input::Initialization:: *)
 PairRelationsWith[d0:Diagram][s_SpiderAnalysis]:=Module[{pairings},
 pairings=ComputePairingsWithReducingRelations[d0][s]~Join~ComputePairingsWithNonReducingRelations[d0][s];
 (*Print["d0: ",DrawPlanarGraph[d0]];
@@ -1061,31 +925,24 @@ DeclarePolynomialsZero[Numerator[Together[pairings]]][s],
 ]
 
 
-(* ::Input::Initialization:: *)
 PairRelationsWith[diagrams_List][s_SpiderAnalysis]:=Fold[PairRelationsWith[#2][#1]&,{s},diagrams]
 
 
-(* ::Input::Initialization:: *)
 automaticFlatMap/@{ConsiderDiagram,ConsiderDiagrams,ConsiderClosedDiagram,ConsiderClosedDiagrams,PairRelationsWith};
 
 
-(* ::Input::Initialization:: *)
 Clear[ReducePolynomials]
 
 
-(* ::Input::Initialization:: *)
 ReducePolynomials[s_SpiderAnalysis]:=ReducePolynomials[s[[2]]]
 
 
-(* ::Input::Initialization:: *)
 ReducePolynomials[m_Manifold][X_List]:=ReducePolynomials[m][#]&/@X
 
 
-(* ::Input::Initialization:: *)
 ReducePolynomials[m_Manifold][X:Diagram]:=X
 
 
-(* ::Input::Initialization:: *)
 ReducePolynomials[m_][X_]:=Module[{X0,f,variables},
 X0=withoutMultiplicity/@timesToList[Factor[X/.m[[1]]]];
 variables=Union[Cases[{m,X0},Subscript[p, _]|tt[_],\[Infinity]]]~Join~m[[5]];
@@ -1094,15 +951,12 @@ Times@@(f/@X0)
 ]
 
 
-(* ::Input::Initialization:: *)
 ReducePolynomialsFurther[s_SpiderAnalysis]:=ReducePolynomialsFurther[s[[2]]]
 
 
-(* ::Input::Initialization:: *)
 ReducePolynomialsFurther[m_Manifold][X_List]:=ReducePolynomialsFurther[m][#]&/@X
 
 
-(* ::Input::Initialization:: *)
 ReducePolynomialsFurther[m_Manifold][X_]:=Module[{X0,f,variables,result},
 X0=withoutMultiplicity/@timesToList[Factor[X/.m[[1]]]];
 variables=Union[Cases[{m,X0},Subscript[p, _]|tt[_],\[Infinity]]]~Join~m[[5]];
@@ -1113,7 +967,6 @@ result
 ]
 
 
-(* ::Input::Initialization:: *)
 ComputePairingsWithReducingRelations[d0:Diagram][s_SpiderAnalysis]:=Module[{relations,innerProducts,oldSpider,relation},
 relations=ReducingRelations[d0@numberOfBoundaryPoints[]][s];
 (*Print["reducing relations: ",relations];*)
@@ -1126,7 +979,6 @@ DeleteCases[ReducePolynomialsFurther[s][innerProducts],0]
 ]
 
 
-(* ::Input::Initialization:: *)
 ComputePairingsWithNonReducingRelations[d0:Diagram][s_SpiderAnalysis]:=Module[{relations},
 relations=NonReducingRelations[d0@numberOfBoundaryPoints[]][s];
 (*Print["non-reducing relations: ",relations];*)
@@ -1138,12 +990,10 @@ r z]
 ]
 
 
-(* ::Input::Initialization:: *)
 delegatingNullSpace[m_,options___]:=If[Length[m]>\[Infinity]\[And]Length[Variables[m]]>1,{SchwartzZippelNullSpace[m]},NullSpace[m,options]]
 delegatingDeterminant[m_]:=If[Length[m]>10,GuessingPolynomials`Private`onDiskParallelDeterminant[m,IntegerString[Hash[m,"SHA1"],16,16]],Det[m]]
 
 
-(* ::Input::Initialization:: *)
 ConsiderIndependentDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{s0,s1,k,i,innerProducts,innerProducts2,det,minors,nullSpace,spanningSet,reorderedSpanningSet,dot,j},
 k=d0@numberOfBoundaryPoints[];
 If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s},
@@ -1213,7 +1063,6 @@ ConsiderDiagram[reorderedSpanningSet[[j]],"InsistIndependent"->True][ss]
 ]
 
 
-(* ::Input::Initialization:: *)
 NullSpaceInPolynomialQuotient[matrix_?MatrixQ,ideal_,variables_]:=Module[{l,a,as,gb},
 Print["computing null space of ",matrix, " mod ", ideal];
 l=Length[matrix[[1]]];
@@ -1224,7 +1073,6 @@ NullSpace[DeleteCases[gb,r_/;FreeQ[r,a[_Integer]]]/.a[i_]:>UnitVector[l,i]]
 ]
 
 
-(* ::Input::Initialization:: *)
 ConsiderDependentDiagram[d0:Diagram][s_SpiderAnalysis]:=Module[{k,i,innerProducts,det,det0,s0,nullSpace,newRelation,denominators,result={}},
 k=d0@numberOfBoundaryPoints[];
 If[memberQDiagrams[IndependentDiagrams[k][s]~Join~DependentDiagrams[k][s],d0],{s},
@@ -1287,23 +1135,18 @@ result~Join~PairRelationsWith[complementDiagrams[Flatten[SpanningSets[k][s]],Fla
 ]
 
 
-(* ::Input::Initialization:: *)
 automaticFlatMap/@{ConsiderIndependentDiagram,ConsiderDependentDiagram};
 
 
-(* ::Input::Initialization:: *)
 IntroduceRelation[relation:{{_,_:Diagram}..}]:=IntroduceRelation[relation[[1,2]]@numberOfBoundaryPoints[],relation]
 
 
-(* ::Input::Initialization:: *)
 IntroduceRelation[size_Integer,{}][s_SpiderAnalysis]:={s}
 
 
-(* ::Input::Initialization:: *)
 IntroduceRelation[size_Integer,relation:{terms___,{0,_}}]:=IntroduceRelation[size, {terms}]
 
 
-(* ::Input::Initialization:: *)
 IntroduceRelation[size_Integer,relation:{initialTerms___,{z_,diagram_}}][s_SpiderAnalysis]:=Module[{},
 Print["As we are considering a relation with final coefficient not equal to one (",z,"), we branch into two cases, where that coefficient is zero or nonzero (and then divide through)."];
 Flatten[IntroduceRelation[size,ReducePolynomials[#][relation]][#]&/@DeclarePolynomialZero[z][s],1]~Join~
@@ -1311,7 +1154,6 @@ IntroduceRelation[size,#/{z,1}&/@relation][DeclarePolynomialNonZero[z][s]]
 ]
 
 
-(* ::Input::Initialization:: *)
 IntroduceRelation[size_Integer,relation:{initialTerms___,{1,diagram_}}][s_SpiderAnalysis]:=Module[{diagrams,moreDiagrams,scalaRelation,innerProducts,nonzeroInnerProducts,newS},
 diagrams=relation[[All,2]];
 moreDiagrams=unionDiagrams[Flatten[Table[s[[1]]@diagramSpider[]@rotate[d0,k],{d0,unionDiagrams[diagrams~Join~DependentDiagrams[s[[1]]@diagramSpider[]@circumference[diagram]][s]~Join~IndependentDiagrams[s[[1]]@diagramSpider[]@circumference[diagram]][s]]},{k,0,s[[1]]@diagramSpider[]@circumference[d0]-1}]]];
@@ -1343,11 +1185,9 @@ IntroduceNonReducingRelation[size,relation][s]
 ]
 
 
-(* ::Input::Initialization:: *)
 tCounter=1;
 
 
-(* ::Input::Initialization:: *)
 IntroduceReducingRelation[size_,relation:{initialTerms___,{1,diagram_}}][s_SpiderAnalysis]:=Module[{reduction,newSubstitutions},
 text["We now add this relation to the set of reducing relations."];
 newSubstitutions=(tt[tCounter++]->#)&/@{initialTerms}[[All,1]];
@@ -1356,26 +1196,21 @@ PairRelationsWith[IndependentDiagrams[size][s]~Join~DependentDiagrams[size][s]][
 ]
 
 
-(* ::Input::Initialization:: *)
 IntroduceNonReducingRelation[size_,relation_][s_SpiderAnalysis]:=Module[{},
 Print["Adding a non-reducing relations, but for the most part ignoring it!"];
 ReplacePart[s,-1->s[[-1]]~Join~{relation}]
 ]
 
 
-(* ::Input::Initialization:: *)
 automaticFlatMap/@{IntroduceRelation,IntroduceReducingRelation,IntroduceNonReducingRelation};
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialEitherZeroOrNonZero[polynomial_][s_SpiderAnalysis]:=Flatten[{DeclarePolynomialsZero[{polynomial}][s],DeclarePolynomialNonZero[polynomial][s]},1]
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialZero[polynomial_][s_SpiderAnalysis]:=DeclarePolynomialsZero[{polynomial}][s]
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialsZero[polynomials_List][s_SpiderAnalysis]:=Module[{newManifolds},
 newManifolds=DeclarePolynomialsZero[polynomials][s[[2]]];
 (* TODO should we look at the non-reducing relations and see if any became reducing?! *)
@@ -1383,7 +1218,6 @@ ReplacePart[s,2->#]&/@newManifolds
 ]
 
 
-(* ::Input::Initialization:: *)
 DeclareAtLeastOnePolynomialZero[polynomials_List][s_SpiderAnalysis]:=Module[{newManifolds},
 newManifolds=DeclareAtLeastOnePolynomialZero[polynomials][s[[2]]];
 (* TODO should we look at the non-reducing relations and see if any became reducing?! *)
@@ -1391,21 +1225,18 @@ ReplacePart[s,2->#](*/.(d:Diagram\[Rule]z_)\[RuleDelayed](d\[Rule]cachedPolynomi
 ]
 
 
-(* ::Input::Initialization:: *)
 DeclareAtLeastOnePolynomialNonZero[polynomials_List][s_SpiderAnalysis]:=Module[{newManifolds},
 newManifolds=DeclareAtLeastOnePolynomialNonZero[polynomials][s[[2]]];
 ReplacePart[s,2->#]&/@newManifolds
 ]
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialsNonZero[polynomials_List][s_SpiderAnalysis]:=Module[{newManifolds},
 newManifolds=DeclarePolynomialsNonZero[polynomials][s[[2]]];
 ReplacePart[s,2->#](*/.(d:Diagram\[Rule]z_)\[RuleDelayed](d\[Rule]cachedPolynomialReduce[z,#\[LeftDoubleBracket]1\[RightDoubleBracket]]\[LeftDoubleBracket]2\[RightDoubleBracket])*)&/@newManifolds
 ]
 
 
-(* ::Input::Initialization:: *)
 DeclarePolynomialNonZero[polynomial_][s_SpiderAnalysis]:=Module[{newManifolds},
 newManifolds=DeclarePolynomialNonZero[polynomial][s[[2]]];
 ReplacePart[s,2->#](*/.(d:Diagram\[Rule]z_)\[RuleDelayed](d\[Rule]cachedPolynomialReduce[z,#\[LeftDoubleBracket]1\[RightDoubleBracket]]\[LeftDoubleBracket]2\[RightDoubleBracket])*)&/@newManifolds
@@ -1413,14 +1244,12 @@ ReplacePart[s,2->#](*/.(d:Diagram\[Rule]z_)\[RuleDelayed](d\[Rule]cachedPolynomi
 automaticFlatMap[DeclarePolynomialNonZero]
 
 
-(* ::Input::Initialization:: *)
 PickleSpiderAnalysis[s_SpiderAnalysis]:=Append[PickledSpiderAnalysis@@(s/.{d0:Diagram:>d0@toString[],q_?JavaObjectQ/;InstanceOf[q,"net.tqft.toolkit.algebra.spiders.examples.QuotientSpider"]:>PickleQuotientSpider[q]}),
 {#,NamedPolyhedron[#]@toString[]}&/@Union[Cases[s,Subscript[p, _],\[Infinity]]]
 ]
 PickleSpiderAnalysis[S_List]:=PickleSpiderAnalysis/@S
 
 
-(* ::Input::Initialization:: *)
 UnpickleSpiderAnalysis[s_PickledSpiderAnalysis]:=Module[{renamer},
 tCounter=Max[tCounter,Union[Cases[s,tt[k_]:>k,\[Infinity]]]+1];
 renamer[Subscript[p, k_]]:=renamer[Subscript[p, k]]=Cases[s[[-1]],{Subscript[p, k],r_}:>Name[PlanarGraphs@fromString[r]],1,1][[1]];SpiderAnalysis@@(Most[s]/.{Subscript[p, k_]:>renamer[Subscript[p, k]]}/.{d0_String/;StringTake[d0,12]==="PlanarGraph(":>PlanarGraphs@fromString[d0],q_PickledQuotientSpider:>UnpickleQuotientSpider[q]})
@@ -1428,23 +1257,19 @@ renamer[Subscript[p, k_]]:=renamer[Subscript[p, k]]=Cases[s[[-1]],{Subscript[p, 
 UnpickleSpiderAnalysis[S_List]:=UnpickleSpiderAnalysis/@S
 
 
-(* ::Input::Initialization:: *)
 PickleQuotientSpider[q_/;InstanceOf[q,"net.tqft.toolkit.algebra.spiders.examples.QuotientSpider"]]:=PickledQuotientSpider[
 Flatten[{ToExpression["{"<>StringTake[#@U1[]@toString[],{12,-2}]<>"}"],FromScalaObject[#@U2[]]}]&/@FromScalaObject[q@generators[],1],
 {#@big[]@toString[],FromScalaObject[#@small[]]}&/@FromScalaObject[q@extraReductions[],1]
 ]
 
 
-(* ::Input::Initialization:: *)
 UnpickleQuotientSpider[PickledQuotientSpider[generators_,reductions_]]:=Module[{scalaReductions},
 scalaReductions=ScalaCaseClass["net.tqft.toolkit.algebra.spiders.Reduction",PlanarGraphs@fromString[#[[1]]],AsScalaMap[Function[{term},PlanarGraphs@fromString[term[[1]]]->AsScalaObject[term[[2]],"MultivariableRationalFunction"]]/@#[[2]]]]&/@reductions;
 Fold[#1@addReduction[#2]&,FreeSpider[generators],scalaReductions]
 ]
 
 
-(* ::Input::Initialization:: *)
 End[];
 
 
-(* ::Input::Initialization:: *)
 EndPackage[];
