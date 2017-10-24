@@ -48,9 +48,9 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
   "we should find all the trivalent graphs without small faces" should "" in {
     val maxFaces = 3
     val maxBoundaryPoints = 6 // we've tested up to 7
-    val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)), Seq.tabulate(4)(i => PlanarGraph.polygon(i + 1)), Seq(PlanarGraph.star(3)), maxFaces, maxBoundaryPoints)
+    val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1)), Seq.tabulate(4)(i => PlanarGraph.polygon(i + 1)), Seq(PlanarGraph.star(3)), maxBoundaryPoints, maxFaces)
     val root = PlanarGraph.star(3)
- 
+
     val descendants = context.connectedGraphs.toStream
     val maxVertices = descendants.map(_.numberOfInternalVertices).max
 
@@ -70,10 +70,10 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
     counts should equal(expectedCounts)
   }
   "we should find all the tetravalent graphs without bigons" should "" in {
-    val maxFaces = 2 
+    val maxFaces = 2
     val maxBoundaryPoints = 8 // we've tested up to 8
     val root = PlanarGraph.star(4)
-    val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(spider.multiply(root, root, 2)), Seq(root), maxFaces, maxBoundaryPoints)
+    val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(spider.multiply(root, root, 2)), Seq(root), maxBoundaryPoints, maxFaces)
 
     val descendants = context.connectedGraphs.toStream
     val maxVertices = descendants.map(_.numberOfInternalVertices).max
@@ -95,12 +95,12 @@ class PlanarGraphEnumerationTest extends FlatSpec with Matchers with Isomorphism
     counts should equal(expectedCounts)
   }
   "we should find all the tetravalent graphs without small faces" should "" in {
-    val maxFaces = 3 
+    val maxFaces = 3
     val maxBoundaryPoints = 10 // we've tested up to 10
     val root = PlanarGraph.star(4)
     val bigon = spider.multiply(root, root, 2)
     val triangle = spider.multiply(spider.rotate(spider.multiply(root, root, 1), 2), root, 2)
-    val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(bigon, triangle), Seq(root), maxFaces, maxBoundaryPoints)
+    val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(bigon, triangle), Seq(root), maxBoundaryPoints, maxFaces)
 
     val descendants = context.connectedGraphs.toStream
     val maxVertices = descendants.map(_.numberOfInternalVertices).max
