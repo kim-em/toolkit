@@ -1,0 +1,1 @@
+./sbt "toolkit-algebra-experimental/test:run-main net.tqft.toolkit.algebra.combinatorics.PositiveSymmetricDecompositionApp $*"
