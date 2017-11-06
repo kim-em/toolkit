@@ -14,6 +14,14 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import net.tqft.toolkit.functions.Memo
 
+/*
+ * Brendan suggests we could speed this up by using the sparse graph version of nauty:
+ *  "Use the sparse version of nauty.  Note that it makes a different canonical form than the default dense version, so you can't mix them.
+ *  "Also, use "-a-m" unless you need the automorphisms, to save a tiny bit.
+ *
+ * Also, we should be computing canonical forms, not doing pairwise isomorphism checking!!
+ */
+
 object ModularDataIsomorphism extends App {
   var stringCounter = 0
   val stringHashMap = scala.collection.parallel.mutable.ParHashMap[String, Int]()
