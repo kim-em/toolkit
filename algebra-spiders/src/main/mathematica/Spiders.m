@@ -683,13 +683,13 @@ cachedInnerProduct[spiderHash_,x_String,y_String]:=$Failed
 
 
 rotationFactor[s_SpiderAnalysis,rotations:{{_Integer,_Integer}...}]:=Times@@(rotationFactor[s,#]&/@rotations)
-rotationFactor[s_SpiderAnalysis,rotation:{p_Integer,c_Integer}]:=Module[{vertices},
-vertices=Cases[FromScalaObject[s[[1]]@generators[],2],({v_,w_}/;v@perimeter[]==p):>FromScalaObject[w]];
-If[Length[vertices]!=1,
+rotationFactor[s_SpiderAnalysis,rotation:{p_Integer,c_Integer}]:=Module[{eigenvalues},
+eigenvalues=Union[Cases[FromScalaObject[s[[1]]@generators[],2],({v_,w_}/;v@perimeter[]==p):>FromScalaObject[w]]];
+If[Length[eigenvalues]!=1,
 Print["Ask Scott to go implement rotations properly; for now you can't have two vertices with the same valence, but different eigenvalues."];
 Abort[]
 ];
-vertices[[1]]^c
+eigenvalues[[1]]^c
 ]
 
 

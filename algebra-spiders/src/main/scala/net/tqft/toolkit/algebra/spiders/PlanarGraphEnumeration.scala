@@ -21,9 +21,24 @@ case class PlanarGraphEnumerationContext(
   val largestVertex = vertices.map(_.perimeter).max
 
   val maximumVertices: Int = {
-    require(vertices.size == 1) // eventually we'll need to fix this!
-    val k = vertices.head.perimeter.toDouble
-    ((maximumBoundaryPoints.toDouble / 2 + maximumFaces - 1) / (k / 2 - 1)).toInt
+    // V - E + F = 2
+    // (maxVertices + 1) - (\bdy + \sum i n_i)/2 + (maximumFaces + \bdy) = 2
+    // maxVertices = 1 + (\bdy + \sum i n_i)/2 - (maximumFaces + \bdy)
+    if (vertices.size == 1) {
+      val k = vertices.head.perimeter.toDouble
+      // when there's only one type of vertex, \sum i n_i becomes k * maxVertices
+      // maxVertices = 1 + (\bdy + k * maxVertices)/2 - (maximumFaces + \bdy)
+      // (k / 2 - 1) maxVertices = maximumFaces + \bdy/2 - 1
+      ((maximumBoundaryPoints.toDouble / 2 + maximumFaces - 1) / (k / 2 - 1)).toInt
+    } else {
+      // \sum n_i = 1 + (\bdy + \sum i n_i)/2 - (maximumFaces + \bdy)
+      // \sum (i/2 - 1) n_i = maximumFaces + \bdy/2 - 1
+      // \sum (min_i/2 - 1) n_i \leq maximumFaces + \bdy/2 - 1
+      // maxVertices (min_i/2 - 1) \leq maximumFaces + \bdy/2 - 1
+      val k = vertices.map(_.perimeter).min.toDouble
+      ((maximumBoundaryPoints.toDouble / 2 + maximumFaces - 1) / (k / 2 - 1)).toInt
+
+    }
   }
 
   /*
@@ -139,8 +154,7 @@ case class PlanarGraphEnumerationContext(
       if p.numberOfBoundaryPoints + v.perimeter - 2 * k >= 2; // don't both producing things with < 2 boundary points.
       if notTooBig(v.perimeter, k);
       i <- 0 to p.numberOfBoundaryPoints - k;
-      result = spider.rotate(spider.multiply(spider.rotate(PlanarGraph.star(v), r), spider.rotate(p, -i), k), i)
-      if result.numberOfInternalFaces <= maximumFaces
+      result = spider.rotate(spider.multiply(spider.rotate(PlanarGraph.star(v), r), spider.rotate(p, -i), k), i) if result.numberOfInternalFaces <= maximumFaces
     ) yield result
     // TODO After implementing that, as an optimisation use dangliness to be a bit cleverer about which vertices to add.
 

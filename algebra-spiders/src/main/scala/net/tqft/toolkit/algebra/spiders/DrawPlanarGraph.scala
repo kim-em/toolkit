@@ -300,6 +300,19 @@ trait DrawPlanarGraph {
         tikzString = tikzString ++ s"\\path (${i + 1}) ++ (${vertexRotations(i) + 180 / G.degree(i + 1)}:.1cm)" + " node[draw=none] {$\\bullet$};"
       }
     }
+    
+    val labels = {
+      val valenceLabelPairs = for (i <- 0 until G.numberOfInternalVertices) yield {
+       (G.vertexFlags(i+1).size, G.labels(i)._2)
+      }
+      valenceLabelPairs.groupBy(_._1).values.exists(list => list.distinct.size > 1)
+    }
+    
+    if (labels) {
+      for (i <- 0 until G.numberOfInternalVertices) {
+        tikzString = tikzString ++ s"\\path (${i + 1}) ++ (${vertexRotations(i) + 180 / G.degree(i + 1)}:.1cm)" + " node[draw=none] {$"+ G.labels(i)._2 +"$};"
+      }
+    }
     // Draw edges
     def getAngle(edge: Int, endpoint: Int): Double =
       if (endpoint > G.numberOfInternalVertices) // If endpoint is a boundary vertex
