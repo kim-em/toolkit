@@ -13,21 +13,23 @@ import net.tqft.toolkit.SHA1
 
 trait DrawPlanarGraph {
   def dots: Boolean
+  def labels: Boolean
   def scale: Double
   def globalStyle: String
   def drawBoundary: Boolean
   def drawAsCrossings: (Option[Int], Option[Int], Option[Int])
   def outputPath: Path
 
-  def showDots = CustomizedDrawPlanarGraph(true, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
-  def withScale(scale: Double) = CustomizedDrawPlanarGraph(dots, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
-  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(dots, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
-  def showBoundary = CustomizedDrawPlanarGraph(dots, scale, globalStyle, true, drawAsCrossings, outputPath)
-  def hideBoundary = CustomizedDrawPlanarGraph(dots, scale, globalStyle, false, drawAsCrossings, outputPath)
-  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(dots, scale, globalStyle, drawBoundary, (unoriented, positive, negative), outputPath)
+  def showDots = CustomizedDrawPlanarGraph(true, labels, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def showLabels = CustomizedDrawPlanarGraph(dots, true, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def withScale(scale: Double) = CustomizedDrawPlanarGraph(dots, labels, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def withGlobalStyle(globalStyle: String) = CustomizedDrawPlanarGraph(dots, labels, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+  def showBoundary = CustomizedDrawPlanarGraph(dots, labels, scale, globalStyle, true, drawAsCrossings, outputPath)
+  def hideBoundary = CustomizedDrawPlanarGraph(dots, labels, scale, globalStyle, false, drawAsCrossings, outputPath)
+  def drawingAsCrossings(unoriented: Option[Int], positive: Option[Int], negative: Option[Int]) = CustomizedDrawPlanarGraph(dots, labels, scale, globalStyle, drawBoundary, (unoriented, positive, negative), outputPath)
   def withOutputPath(outputPath: Path): DrawPlanarGraph = {
     Files.createDirectories(outputPath)
-    CustomizedDrawPlanarGraph(dots, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
+    CustomizedDrawPlanarGraph(dots, labels, scale, globalStyle, drawBoundary, drawAsCrossings, outputPath)
   }
   def withOutputPath(outputPath: String): DrawPlanarGraph = withOutputPath(Paths.get(outputPath))
 
@@ -187,7 +189,7 @@ trait DrawPlanarGraph {
       val target = G.target(0, edge)
       if (target != 0) { // If target is an internal vertex
         edgeEndpts = (edge, if (G.edgeVertexIncidences(edge)._1 == 0) (boundaryPoint(k), target) else (target, boundaryPoint(k))) +: edgeEndpts
-        // Add edge, ensuring the new label for the boundary point replaces the original 0 label. 
+        // Add edge, ensuring the new label for the boundary point replaces the original 0 label.
         // And update adjacency to the correct boundary point
         val index = G.vertexFlags(target).indexOf(G.vertexFlags(target).find(_._1 == edge).get)
         assert(index != -1, "Problem parsing boundary edges")
@@ -205,7 +207,8 @@ trait DrawPlanarGraph {
     // NODES
     // Fix coords of boundary points and calculate coords of internal vertices as the weighted barycenters of their neighbours.
     val boundaryPointCoords = for (k <- 0 until G.numberOfBoundaryPoints)
-      yield (round(cos(Pi / 2 + 2 * Pi * k / G.numberOfBoundaryPoints), 6),
+      yield (
+      round(cos(Pi / 2 + 2 * Pi * k / G.numberOfBoundaryPoints), 6),
       round(sin(Pi / 2 + 2 * Pi * k / G.numberOfBoundaryPoints), 6))
 
     val internalVertexCoords =
@@ -300,17 +303,17 @@ trait DrawPlanarGraph {
         tikzString = tikzString ++ s"\\path (${i + 1}) ++ (${vertexRotations(i) + 180 / G.degree(i + 1)}:.1cm)" + " node[draw=none] {$\\bullet$};"
       }
     }
-    
-    val labels = {
+
+    val showLabelsAnyway = {
       val valenceLabelPairs = for (i <- 0 until G.numberOfInternalVertices) yield {
-       (G.vertexFlags(i+1).size, G.labels(i)._2)
+        (G.vertexFlags(i + 1).size, G.labels(i)._2)
       }
       valenceLabelPairs.groupBy(_._1).values.exists(list => list.distinct.size > 1)
     }
-    
-    if (labels) {
+
+    if (labels || showLabelsAnyway) {
       for (i <- 0 until G.numberOfInternalVertices) {
-        tikzString = tikzString ++ s"\\path (${i + 1}) ++ (${vertexRotations(i) + 180 / G.degree(i + 1)}:.1cm)" + " node[draw=none] {$"+ G.labels(i)._2 +"$};"
+        tikzString = tikzString ++ s"\\path (${i + 1}) ++ (${vertexRotations(i) + 180 / G.degree(i + 1)}:.1cm)" + " node[draw=none] {$" + G.labels(i)._2 + "$};"
       }
     }
     // Draw edges
@@ -355,7 +358,7 @@ trait DrawPlanarGraph {
     return tikzString
   }
 
-  def filenameForGraph(g: PlanarGraph) = "urn_sha1_" + SHA1(g.toString /* + " " + this.toString*/ ) + ".pdf"
+  def filenameForGraph(g: PlanarGraph) = "urn_sha1_" + SHA1((g, dots, labels, scale, globalStyle, drawBoundary, drawAsCrossings).toString) + ".pdf"
 
   def writePDF(g: PlanarGraph)(filename: String = filenameForGraph(g)): Path = {
     val path = outputPath.resolve(filename)
@@ -413,6 +416,7 @@ trait DrawPlanarGraph {
 
 object DrawPlanarGraph extends DrawPlanarGraph {
   override val dots: Boolean = false
+  override val labels: Boolean = false
   override val scale: Double = 1.6
   override val globalStyle: String = "every node/.style={draw, circle, fill=white, inner sep=0pt, outer sep=0pt, minimum size=2.5pt}, every path/.append style = {thick}"
   override val drawBoundary = true
@@ -421,9 +425,10 @@ object DrawPlanarGraph extends DrawPlanarGraph {
 }
 
 case class CustomizedDrawPlanarGraph(
-  val dots: Boolean,
-  val scale: Double,
-  val globalStyle: String,
-  val drawBoundary: Boolean,
+  val dots:            Boolean,
+  val labels:          Boolean,
+  val scale:           Double,
+  val globalStyle:     String,
+  val drawBoundary:    Boolean,
   val drawAsCrossings: (Option[Int], Option[Int], Option[Int]),
-  val outputPath: Path) extends DrawPlanarGraph
+  val outputPath:      Path) extends DrawPlanarGraph
