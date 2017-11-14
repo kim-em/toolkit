@@ -71,6 +71,18 @@ case class PlanarGraphEnumerationContext(
    */
 
   def parent(p: PlanarGraph): PlanarGraph = parent_(p).get._2.apply()
+  def ancestry(p: PlanarGraph): List[PlanarGraph] = {
+    def r(p: PlanarGraph, l: List[PlanarGraph]): List[PlanarGraph] = {
+      parent_(p) match {
+        case None => l
+        case Some((k, f)) => {
+          val q = f()
+          r(q, q :: l)
+        }
+      }
+    }
+    r(p, Nil)
+  }
 
   def parent_(p: PlanarGraph): Option[(Int, () => PlanarGraph)] = {
     //    if(p.numberOfBoundaryPoints < 2) {
@@ -140,7 +152,7 @@ case class PlanarGraphEnumerationContext(
 
   def raw_children(p: PlanarGraph): Seq[PlanarGraph] = {
     if (p.numberOfInternalVertices >= maximumVertices) return Nil
-    if (p.numberOfBoundaryPoints >= maximumBoundaryPoints + (maximumVertices - p.numberOfInternalVertices) * (largestVertex - 2)) return Nil
+    if (p.numberOfBoundaryPoints > maximumBoundaryPoints + (maximumVertices - p.numberOfInternalVertices) * (largestVertex - 2)) return Nil
 
     def notTooBig(perimeter: Int, stitches: Int) = {
       p.numberOfBoundaryPoints + perimeter - 2 * stitches <= maximumBoundaryPoints + (maximumVertices - p.numberOfInternalVertices - 1) * (largestVertex - 2)

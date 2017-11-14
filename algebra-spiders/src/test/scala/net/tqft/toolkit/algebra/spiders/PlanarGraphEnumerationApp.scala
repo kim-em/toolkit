@@ -11,24 +11,19 @@ object PlanarGraphEnumerationApp extends App {
   val spider = implicitly[DiagramSpider[PlanarGraph]]
 
   {
-    val maxFaces = 2
-    val maxBoundaryPoints = 10 // we've tested up to 10
-    val root = PlanarGraph.star(4)
-    val bigon = spider.multiply(root, root, 2)
-    val triangle = spider.multiply(spider.rotate(spider.multiply(root, root, 1), 2), root, 2)
-    val context = PlanarGraphEnumerationContext(Seq(VertexType(4, 0, 1)), Seq(bigon, triangle), Seq(root), maxBoundaryPoints, maxFaces)
+    // two trivalent vertices, no relations
+    val context = PlanarGraphEnumerationContext(Seq(VertexType(3, 0, 1), VertexType(3, 1, 1)), Seq.empty, Seq(PlanarGraph.star(3, 0, 1), PlanarGraph.star(3, 1, 1)), 4, 1)
+    println(context.maximumVertices)
+    val p = context.parent(PlanarGraph.polygon(4))
+    dpg.showPDF(p)
+    assert(context.verify_child_of_parent(PlanarGraph.polygon(4)))
 
-    val descendants = context.connectedGraphs.toStream
-
-    val maxVertices = descendants.map(_.numberOfInternalVertices).max
-    
-    val counts = for (b <- 4 to maxBoundaryPoints by 2) yield {
-      for (v <- 1 to maxVertices) yield {
-        descendants.count(g => g.numberOfBoundaryPoints == b && g.numberOfInternalVertices == v)
-      }
-    }
-
-    for (line <- counts) println(line)
+    //      for(a <- context.ancestry(PlanarGraph.polygon(4))) {
+    //        dpg.showPDF(a)
+    //        println(context.descendants(a).contains(PlanarGraph.polygon(4)))
+    //      }
+    //
+    //
   }
 
 }
