@@ -29,7 +29,7 @@ object ModularDataLoader {
     def parseMatrix(s: String) = s.replaceAllLiterally("[", "").replaceAllLiterally("]", "").replaceAllLiterally(" ", "").split(",")
     val T = parseMatrix(lines(1).drop(5).dropRight(1)).toIndexedSeq.map(stringHash)
     val S = parseMatrix(lines(0).drop(5).dropRight(1)).grouped(T.size).toIndexedSeq.map(_.toIndexedSeq.map(stringHash))
-    println(" ... finished")
+//    println(" ... finished")
     (S, T)
   }
 
