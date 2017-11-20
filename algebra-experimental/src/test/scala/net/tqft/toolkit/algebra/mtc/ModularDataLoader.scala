@@ -23,7 +23,7 @@ object ModularDataLoader {
 
   // returns S and T matrices, read from a file in Angus' GAP output format.
   def parseFile_(file: File): (IndexedSeq[IndexedSeq[Int]], IndexedSeq[Int]) = {
-    print("parsing " + file)
+//    print("parsing " + file)
     val source = Source.fromFile(file)
     val lines = source.getLines.toStream.tail.init
     def parseMatrix(s: String) = s.replaceAllLiterally("[", "").replaceAllLiterally("]", "").replaceAllLiterally(" ", "").split(",")
