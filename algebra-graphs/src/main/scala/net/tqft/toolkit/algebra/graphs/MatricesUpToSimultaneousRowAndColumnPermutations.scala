@@ -1,5 +1,7 @@
 package net.tqft.toolkit.algebra.graphs
 
+import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
+
 object MatricesUpToSimultaneousRowAndColumnPermutations {
   def convertToGraphs[E: Ordering](matrices: Seq[Seq[Seq[E]]]): Seq[ColouredGraph[(Int, Int)]] = {
     if (matrices.isEmpty) return Seq.empty
@@ -27,7 +29,11 @@ object MatricesUpToSimultaneousRowAndColumnPermutations {
       ColouredGraph(n * d, adjacencies, colours)
     }
   }
+  def convertToGraph[E: Ordering](matrix: Seq[Seq[E]]): ColouredGraph[(Int, Int)] = {
+    convertToGraphs(Seq(matrix)).head
+  }
 
+  
   def findIsomorphisms[E: Ordering](matrices: Seq[Seq[Seq[E]]]): Seq[(Int, IndexedSeq[Int])] = {
     Dreadnaut.findIsomorphisms(convertToGraphs(matrices), true)
   }
