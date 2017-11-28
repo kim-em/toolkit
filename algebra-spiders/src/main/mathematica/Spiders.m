@@ -238,7 +238,13 @@ Name[d0:Diagram]:=FromScalaObject[ScalaSingleton["net.tqft.toolkit.algebra.spide
 DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGraph"]@withOutputPath[FileNameJoin[{SpidersMathematicaDirectory,"graphs"}]];
 
 
-DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Import[DrawPlanarGraph$@createPDF[g]@toString[]]/.{$Failed->g@toString[],{picture_}:>picture}
+DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Module[{h},
+If[g@numberOfBoundaryPoints[]==0,
+h=SortBy[FromScalaObject[ScalaSingleton["net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider"]@sphericalEquivalents[]@apply[g],1],#@faceNeighbours[#@outerFace[]]@head[]@size[]&][[-1]],
+h=g
+];
+Import[DrawPlanarGraph$@createPDF[h]@toString[]]/.{$Failed->g@toString[],{picture_}:>picture}
+]
 DrawPlanarGraph[X_List]:=DrawPlanarGraph/@X
 
 

@@ -273,7 +273,9 @@ trait DrawPlanarGraph {
         sqrt(pow(vertexCoords._1 - x, 2) + pow(vertexCoords._2 - y, 2))
       }
       (0 until 360).minBy((x) =>
-        (for (i <- 0 until edgeOutAngles.length if neighbourCoords(i) != vertexCoords) yield pow(sin(abs(edgeOutAngles(i) + x * Pi / 180 - neighbourAngles(i)) / 2), 4) * pow(neighbourDistances(i), 2)).sum)
+        (for (i <- 0 until edgeOutAngles.length if neighbourCoords(i) != vertexCoords) yield {
+          pow(sin(abs(edgeOutAngles(i) + x * Pi / 180 - neighbourAngles(i)) / 2), 4) * pow(neighbourDistances(i), 0)
+        }).sum)
     }
     val vertexRotations: Seq[Double] =
       (for (i <- 0 until G.numberOfInternalVertices) yield {

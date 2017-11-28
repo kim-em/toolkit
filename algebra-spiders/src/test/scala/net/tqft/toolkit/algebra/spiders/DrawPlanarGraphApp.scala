@@ -22,6 +22,8 @@ object DrawPlanarGraphApp extends App {
   //  DrawPlanarGraph.showPDF(PlanarGraph.spider.rotate(PlanarGraph.spider.tensor(PlanarGraph.polygon(5), PlanarGraph.I),1))
   //  DrawPlanarGraph.showPDF(PlanarGraph.spider.rotate(PlanarGraph.spider.tensor(PlanarGraph.polygon(5), PlanarGraph.I),2))
 
+  DrawPlanarGraph.showPDF(PlanarGraph(22,Vector(List(), List((11,32), (19,28), (16,30), (15,24), (14,27)), List((15,27), (16,24), (21,30), (18,29), (17,26)),List((12,28), (13,23), (20,31), (21,29), (19,30)), List((7,22), (10,25), (18,26), (20,29), (8,31)), List((7,25), (9,22), (14,32), (17,27), (10,26)), List((8,22), (13,31), (12,23), (11,28), (9,32))),List((1,0), (1,0), (1,0), (1,0), (1,0), (1,0)),0,None))
+  
   val dpg = DrawPlanarGraph.withOutputPath("/Users/scott/projects/exceptional/diagrams/graphs/")
 
   val cuboctahedron = PlanarGraph.fromString("PlanarGraph(35,Vector(List(), List((5,6), (4,9), (3,8), (2,7)), List((2,6), (10,7), (9,18), (8,17)), List((8,6), (15,17), (14,27), (13,26)), List((10,18), (3,7), (19,8), (18,35)), List((18,18), (26,35), (25,46), (24,45)), List((24,18), (31,45), (15,27), (9,17)), List((26,46), (19,35), (35,8), (34,54)), List((34,46), (42,54), (41,65), (40,64)), List((40,46), (47,64), (31,27), (25,45)), List((42,65), (35,54), (4,8), (50,9)), List((50,65), (5,9), (13,6), (56,26)), List((56,65), (14,26), (47,27), (41,64))),Vector((2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0)),0)")
