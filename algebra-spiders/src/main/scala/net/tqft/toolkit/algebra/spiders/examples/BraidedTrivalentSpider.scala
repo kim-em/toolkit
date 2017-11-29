@@ -14,8 +14,8 @@ abstract class BraidedTrivalentSpider[R: Field] extends PlanarGraphReductionSpid
   def t: R
   def z: R
   def omega: R
-  override def eigenvalue(label: Int) = {
-    label match {
+  override def eigenvalue(vt: VertexType) = {
+    vt.perimeter match {
       case 3 => omega
       case 4 => ring.one
     }

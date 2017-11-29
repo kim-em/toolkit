@@ -12,6 +12,8 @@ import org.apache.commons.io.FilenameUtils
 import net.tqft.toolkit.SHA1
 
 trait DrawPlanarGraph {
+  val version = 1
+  
   def dots: Boolean
   def labels: Boolean
   def scale: Double
@@ -360,7 +362,7 @@ trait DrawPlanarGraph {
     return tikzString
   }
 
-  def filenameForGraph(g: PlanarGraph) = "urn_sha1_" + SHA1((g, dots, labels, scale, globalStyle, drawBoundary, drawAsCrossings).toString) + ".pdf"
+  def filenameForGraph(g: PlanarGraph) = "urn_sha1_" + SHA1((g, version, dots, labels, scale, globalStyle, drawBoundary, drawAsCrossings).toString) + ".pdf"
 
   def writePDF(g: PlanarGraph)(filename: String = filenameForGraph(g)): Path = {
     val path = outputPath.resolve(filename)
