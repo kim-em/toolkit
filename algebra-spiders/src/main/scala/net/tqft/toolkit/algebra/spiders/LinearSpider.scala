@@ -7,7 +7,7 @@ trait CanonicalLabelling[A] {
 }
 
 trait LinearSpider[R, M] extends Spider[M] with CanonicalLabelling[M] with Module[R, M] {
-  def eigenvalue(valence: Int): R
+  def eigenvalue(vt: VertexType): R
   def eigenvalue(rotations: Rotation): R = {
     ring.product(rotations.vertexRotations.map({ case (v, p) => ring.power(eigenvalue(v), p) }))
   }
@@ -94,7 +94,7 @@ object LinearSpider {
   }
 
   implicit def diskLinearSpider[A, R, M](implicit spider: LinearSpider[R, M]): LinearSpider[R, Disk[M]] = new Spider.DiskSpider(spider) with LinearSpider[R, Disk[M]] {
-    override def eigenvalue(valence: Int) = spider.eigenvalue(valence)
+    override def eigenvalue(vt: VertexType) = spider.eigenvalue(vt)
     override def ring = spider.ring
     override def zero = ???
     override def add(disk1: Disk[M], disk2: Disk[M]) = Disk(disk1.circumference, spider.add(disk1.contents, disk2.contents))

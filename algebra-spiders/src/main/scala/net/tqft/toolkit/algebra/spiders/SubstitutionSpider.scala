@@ -5,7 +5,7 @@ import net.tqft.toolkit.algebra.Ring
 case class Reduction[A, R](big: A, small: Map[A, R])
 
 trait SubstitutionSpider[A, R] extends LinearSpider.MapLinearSpider[A, R] {
-  def eigenvalue(valence: Int): R
+  def eigenvalue(valence: VertexType): R
 
   def allDiagramReplacements(reduction: Reduction[A, R])(diagram: A): Iterator[Map[A, R]]
   def allDiagramReplacements(reductions: Seq[Reduction[A, R]])(diagram: A): Iterator[Map[A, R]] = {
