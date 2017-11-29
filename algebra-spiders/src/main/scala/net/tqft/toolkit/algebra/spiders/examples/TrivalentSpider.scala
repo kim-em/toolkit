@@ -12,8 +12,8 @@ abstract class TrivalentSpider[R: Field] extends PlanarGraphReductionSpiderOverF
   def b: R
   def t: R
   def omega: R
-  override def eigenvalue(label: Int) = {
-    label match {
+  override def eigenvalue(vt: VertexType) = {
+    vt.perimeter match {
       case 3 => omega
     }
   }
