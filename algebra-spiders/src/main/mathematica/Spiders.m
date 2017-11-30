@@ -178,6 +178,10 @@ FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.Fraction"
 
 
 (* ::Input::Initialization:: *)
+FromScalaObject[o_?JavaObjectQ/;InstanceOf[o,"net.tqft.toolkit.algebra.spiders.VertexType"],depth:_?Positive:\[Infinity]]:=VertexType[o@perimeter[],o@label[],o@allowedRotationStep[]]
+
+
+(* ::Input::Initialization:: *)
 latch[f_]:=(latch[f]=False;True)
 
 
@@ -815,11 +819,11 @@ cachedInnerProduct[spiderHash_,x_String,y_String]:=$Failed
 
 
 (* ::Input::Initialization:: *)
-rotationFactor[s_SpiderAnalysis,rotations:{{_Integer,_Integer}...}]:=Times@@(rotationFactor[s,#]&/@rotations)
-rotationFactor[s_SpiderAnalysis,rotation:{p_Integer,c_Integer}]:=Module[{eigenvalues},
-eigenvalues=Union[Cases[FromScalaObject[s[[1]]@generators[],2],({v_,w_}/;v@perimeter[]==p):>FromScalaObject[w]]];
+rotationFactor[s_SpiderAnalysis,rotations:{{_VertexType,_Integer}...}]:=Times@@(rotationFactor[s,#]&/@rotations)
+rotationFactor[s_SpiderAnalysis,rotation:{vt_VertexType,c_Integer}]:=Module[{eigenvalues},
+eigenvalues=Union[Cases[FromScalaObject[s[[1]]@generators[],3],({v_,w_}/;v==vt):>w]];
 If[Length[eigenvalues]!=1,
-Print["Ask Scott to go implement rotations properly; for now you can't have two vertices with the same valence, but different eigenvalues."];
+Print["Something is wrong with eigenvalues; couldn't find a unique eigenvalue associated with ",vt];
 Abort[]
 ];
 eigenvalues[[1]]^c
@@ -1325,6 +1329,8 @@ IntroduceRelation[size_Integer,relation:{initialTerms___,{1,diagram_}}][s_Spider
 diagrams=relation[[All,2]];
 moreDiagrams=unionDiagrams[Flatten[Table[s[[1]]@diagramSpider[]@rotate[d0,k],{d0,unionDiagrams[diagrams~Join~DependentDiagrams[s[[1]]@diagramSpider[]@circumference[diagram]][s]~Join~IndependentDiagrams[s[[1]]@diagramSpider[]@circumference[diagram]][s]]},{k,0,s[[1]]@diagramSpider[]@circumference[d0]-1}]]];
 Print["starting innerProductMatrix"];
+Print[DrawPlanarGraph/@diagrams];
+Print[DrawPlanarGraph/@moreDiagrams];
 innerProducts=cachingInnerProduct[s,diagrams,moreDiagrams];
 nonzeroInnerProducts=Numerator[DeleteCases[ReducePolynomialsFurther[s][relation[[All,1]].innerProducts],0]];
 
@@ -1337,7 +1343,7 @@ nonzeroInnerProducts=nonzeroInnerProducts~Join~Union[DeleteCases[ReducePolynomia
 Print["finished innerProductMatrix"];
 If[Length[nonzeroInnerProducts]>0,
 text["The candidate relation has non-trivial inner products with some of the diagrams appearing in it; we set these to zero first before proceeding."];
-Print[innerProducts];
+Print[ReducePolynomialsFurther[s][relation[[All,1]].innerProducts]];
 Print["declaring zero: ", nonzeroInnerProducts];
 newS=DeclarePolynomialsZero[nonzeroInnerProducts][s];
 Print[newS];
