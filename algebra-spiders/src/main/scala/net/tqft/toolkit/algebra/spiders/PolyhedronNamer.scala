@@ -29,7 +29,7 @@ trait PolyhedronNamer[A, F] extends FunctionSpider[A, F] {
 
   def polyhedronReductions = PolyhedronNamer.names.toSeq.flatMap({ p =>
     sphericalEquivalents(p._1).map({ q =>
-      Reduction[PlanarGraph, F](q, Map(PlanarGraph.empty -> variableToPolynomial(p._2)))
+      Reduction[PlanarGraph, F](q._1, Map(PlanarGraph.empty -> ring.multiply(variableToPolynomial(p._2), eigenvalue(q._2.reverse))))
     })
   })
 
@@ -47,7 +47,7 @@ trait PolyhedronNamer[A, F] extends FunctionSpider[A, F] {
 
   private def sphericalEquivalents_(p: PlanarGraph) = {
     require(p.numberOfBoundaryPoints == 0)
-    p.faceSet.toSeq.map(f => diagramSpider.canonicalFormWithDefect(p.copy(outerFace = f))._1).distinct
+    p.faceSet.toSeq.map(f => diagramSpider.canonicalFormWithDefect(p.copy(outerFace = f))).distinct
   }
 
   val sphericalEquivalents = {
@@ -56,28 +56,30 @@ trait PolyhedronNamer[A, F] extends FunctionSpider[A, F] {
   }
 
   def sphericalCanonicalForm(p: PlanarGraph) = {
-    sphericalEquivalents(p).sorted.head
+    sphericalEquivalents(p).sortBy(_._1).head
   }
 
   override def evaluate(map: Map[PlanarGraph, F]): F = {
     ring.sum(for ((k, v) <- map) yield {
-      if (diagramSpider.canonicalFormWithDefect(k)._1 == diagramSpider.empty) {
+      val ck = diagramSpider.canonicalFormWithDefect(k)
+      if (ck._1 == diagramSpider.empty) {
+        require(ck._2.vertexRotations.isEmpty)
         v
       } else {
 //        val k0 = if (k.loops == 0) { k } else { k.copy(loops = 0) }
-        val ck = sphericalCanonicalForm(k)
-        val name = PolyhedronNamer.names.get(ck) match {
+        val (sck, rot) = sphericalCanonicalForm(k)
+        val name = PolyhedronNamer.names.get(sck) match {
           case Some(name) => name
           case None => {
             val newName = PolyhedronNamer.nextName
             println("Naming new polyhedron:")
             println(ck)
             println(newName)
-            PolyhedronNamer.names += (ck -> newName)
+            PolyhedronNamer.names += (sck -> newName)
             newName
           }
         }
-        ring.multiply(v, variableToPolynomial(name))
+        ring.multiply(ring.multiply(v, variableToPolynomial(name)), eigenvalue(rot))
       }
     })
   }
