@@ -98,12 +98,12 @@ object SubstitutionSpider {
       for (
         excision <- diagram.subgraphs(reduction.big).cachedExcisions.iterator
       ) yield {
-        val eigenvalueFactor1 = eigenvalue(excision.rotations)
+        val eigenvalueFactor1 = eigenvalue(excision.rotations.reverse) 
         val newMap = scala.collection.mutable.Map[PlanarGraph, R]()
         for ((a, r) <- reduction.small) {
           val (b, rotations2) = diagramSpider.canonicalFormWithDefect(excision.replace(a))
           //          val br = diagramSpider.rotate(b, -rotations2.boundaryRotation)
-          val eigenvalueFactor2 = eigenvalue(rotations2)
+          val eigenvalueFactor2 = eigenvalue(rotations2.reverse) 
           val p = ring.multiply(eigenvalueFactor1, eigenvalueFactor2, r)
           newMap(b) = newMap.get(b).map(v => ring.add(v, p)).getOrElse(p)
         }

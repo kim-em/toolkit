@@ -11,7 +11,6 @@ abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with
   def generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])]
   override lazy val vertexTypes = generators.map(_._1)
   override def eigenvalue(vt: VertexType): MultivariableRationalFunction[Fraction[BigInt], String] = {
-    // FIXME this is stupid: eigenvalue should take two arguments, so it can also see the vertex label.
     generators.find(_._1 == vt).get._2
   }
   override def reductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = polyhedronReductions

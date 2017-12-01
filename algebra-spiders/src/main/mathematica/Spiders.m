@@ -43,7 +43,7 @@ ScalaSingleton;ScalaCaseClass;FromScalaObject;AsScalaObject;
 
 
 (* ::Input::Initialization:: *)
-Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph;DrawReducingRelations;DrawRelations;
+Diagram;NamedPolyhedron;PlanarGraphs;polygon;Name;DrawPlanarGraph;DrawPlanarGraphSpider;DrawReducingRelations;DrawRelations;
 
 
 (* ::Input::Initialization:: *)
@@ -300,15 +300,22 @@ DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGrap
 
 
 (* ::Input::Initialization:: *)
-DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Module[{h},
-If[g@numberOfBoundaryPoints[]==0,
+DrawPlanarGraphUseEquivalents=True;
+
+
+(* ::Input::Initialization:: *)
+DrawPlanarGraph[g_]/;InstanceOf[g,"net.tqft.toolkit.algebra.spiders.PlanarGraph"]:=Module[{h,w={}},
+If[g@numberOfBoundaryPoints[]==0\[And]DrawPlanarGraphUseEquivalents,
 equivalents=FromScalaObject[ScalaSingleton["net.tqft.toolkit.algebra.spiders.examples.BraidedTrivalentSpider"]@sphericalEquivalents[]@apply[g],1];
 If[Length[equivalents]>1,
-h=SortBy[equivalents,#@faceNeighbours[#@outerFace[]]@head[]@size[]&][[-1]],
-h=g],
+h=SortBy[equivalents,#@U1[]@faceNeighbours[#@U1[]@outerFace[]]@head[]@size[]&][[-1]];
+w=FromScalaObject[h@U2[]@vertexRotations[]];
+h=h@U1[],
+h=g
+],
 h=g
 ];
-Quiet[Import[DrawPlanarGraph$@createPDF[h]@toString[]]]/.{$Failed->g@toString[],{picture_}:>picture}
+Quiet[Import[DrawPlanarGraph$@createPDF[h]@toString[]]]/.{$Failed->g@toString[],{picture_}:>rotationFactor[DrawPlanarGraphSpider,w] picture}
 ]
 DrawPlanarGraph[X_List]:=DrawPlanarGraph/@X
 
@@ -819,6 +826,7 @@ cachedInnerProduct[spiderHash_,x_String,y_String]:=$Failed
 
 
 (* ::Input::Initialization:: *)
+rotationFactor[_,{}]:=1
 rotationFactor[s_SpiderAnalysis,rotations:{{_VertexType,_Integer}...}]:=Times@@(rotationFactor[s,#]&/@rotations)
 rotationFactor[s_SpiderAnalysis,rotation:{vt_VertexType,c_Integer}]:=Module[{eigenvalues},
 eigenvalues=Union[Cases[FromScalaObject[s[[1]]@generators[],3],({v_,w_}/;v==vt):>w]];
@@ -1332,6 +1340,7 @@ Print["starting innerProductMatrix"];
 Print[DrawPlanarGraph/@diagrams];
 Print[DrawPlanarGraph/@moreDiagrams];
 innerProducts=cachingInnerProduct[s,diagrams,moreDiagrams];
+Print[innerProducts];
 nonzeroInnerProducts=Numerator[DeleteCases[ReducePolynomialsFurther[s][relation[[All,1]].innerProducts],0]];
 
 (*

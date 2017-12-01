@@ -29,6 +29,7 @@ trait PolyhedronNamer[A, F] extends FunctionSpider[A, F] {
 
   def polyhedronReductions = PolyhedronNamer.names.toSeq.flatMap({ p =>
     sphericalEquivalents(p._1).map({ q =>
+//      require(q._2.vertexRotations.isEmpty)
       Reduction[PlanarGraph, F](q._1, Map(PlanarGraph.empty -> ring.multiply(variableToPolynomial(p._2), eigenvalue(q._2.reverse))))
     })
   })
