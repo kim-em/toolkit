@@ -10,9 +10,8 @@ import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomialAlgebra
 abstract class FreeSpider extends BigIntMultivariableRationalFunctionSpider with RationalExpressionPolyhedronNamer[Fraction[BigInt]] {
   def generators: Seq[(VertexType, MultivariableRationalFunction[Fraction[BigInt], String])]
   override lazy val vertexTypes = generators.map(_._1)
-  override def eigenvalue(label: Int): MultivariableRationalFunction[Fraction[BigInt], String] = {
-    // FIXME this is stupid: eigenvalue should take two arguments, so it can also see the vertex label.
-    generators.filter(_._1.perimeter == label).map(_._2).distinct.ensuring(_.size == 1).head
+  override def eigenvalue(vt: VertexType): MultivariableRationalFunction[Fraction[BigInt], String] = {
+    generators.find(_._1 == vt).get._2
   }
   override def reductions: Seq[Reduction[PlanarGraph, MultivariableRationalFunction[Fraction[BigInt], String]]] = polyhedronReductions
 

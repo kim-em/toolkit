@@ -285,7 +285,7 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       resultFlags(0)(0)._2
     }
 
-    val vertexRotations = scala.collection.mutable.Map[Int, Int]().withDefaultValue(0)
+    val vertexRotations = scala.collection.mutable.Map[VertexType, Int]().withDefaultValue(0)
 
     def identifyRotation[A](x: Seq[A], y: Seq[A]) = {
       if (x.isEmpty) {
@@ -305,11 +305,12 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
       //      val k = packed.vertexFlags(i).size
       //      val j = identifyRotation(packed.vertexFlags(i).map(p => (inv(p._1), inv(p._2))), result.vertexFlags(inv(i)))
       val k = resultFlags(i).size
+      val vt = VertexType(k, graph.labels(i-1)._2, graph.labels(i-1)._1)
       val j = identifyRotation(packed.vertexFlags(labelling(i)), resultFlags(i).map(p => (labelling(p._1), labelling(p._2))))
 
       val j0 = j mod packed.labels(labelling(i) - 1)._1
 
-      vertexRotations(k) = (vertexRotations(k) + j - j0) mod k
+      vertexRotations(vt) = (vertexRotations(vt) + j - j0) mod k
 
       resultFlags(i).rotateLeft(-j0)
     }
@@ -648,10 +649,11 @@ case class PlanarGraph(outerFace: Int, vertexFlags: IndexedSeq[Seq[(Int, Int)]],
           }
         }
         def finalVertexRotations = {
-          val newMap = scala.collection.mutable.Map[Int, Int]().withDefault(_ => 0)
+          val newMap = scala.collection.mutable.Map[VertexType, Int]().withDefault(_ => 0)
           for ((r, i) <- vertexRotations.zipWithIndex) {
-            val d = packedShape.degree(i + 1)
-            newMap(d) = newMap(d) + r
+            val k = packedShape.degree(i + 1)
+            val vt = VertexType(k, packedShape.labels(i)._2, packedShape.labels(i)._1)
+            newMap(vt) = newMap(vt) + r
           }
           Rotation(Map() ++ newMap)
         }

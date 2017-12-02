@@ -6,7 +6,11 @@ trait CanonicalLabellingWithDefect[A, D] {
   def canonicalFormWithDefect(a: A): (A, D)
 }
 
-case class Rotation(vertexRotations: Map[Int, Int])
+case class Rotation(vertexRotations: Map[VertexType, Int]) {
+  def reverse = {
+    Rotation(Map() ++ vertexRotations.mapValues(x => -x))
+  }
+}
 
 trait DiagramSpider[A] extends Spider[A] with CanonicalLabellingWithDefect[A, Rotation]
 
