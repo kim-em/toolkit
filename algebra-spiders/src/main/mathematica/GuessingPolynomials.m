@@ -247,19 +247,37 @@ dir
 
 
 (* ::Input::Initialization:: *)
-onDiskParallelNullSpace[matrix_,f_]:=Module[{almost,result,hash,cacheFile,s},
+nullSpacePattern[k_]:=Table[If[j==i||j==i+1,Except[0],0],{i,1,k},{j,1,k+1}]
+
+
+(* ::Input::Initialization:: *)
+nullSpaceShortCut[{A___,{0...}}]:=nullSpaceShortCut[{A}]
+nullSpaceShortCut[X_/;Length[X]+1!=Length[X[[1]]]]:=(Print["nullSpaceShortCut doesn't apply: matrix wrong size"];NullSpace[X])
+nullSpaceShortCut[X_/;MatchQ[X,nullSpacePattern[Length[X]]]]:=Module[{z,i,j},
+z[i_,j_]:=X[[i,i+j]];
+{Table[Product[-(z[j,1]/z[j,0]),{j,i,Length[X]}],{i,1,Length[X]+1}]}
+]
+nullSpaceShortCut[X_]:=(Print["nullSpaceShortCut doesn't apply: matrix doesn't match pattern"];NullSpace[X])
+
+
+(* ::Input::Initialization:: *)
+onDiskParallelNullSpace[matrix_,f_String]:=Module[{almost,result,hash,cacheFile,s},
 hash=IntegerString[Hash[matrix,"SHA1"],16,16];
 cacheFile=FileNameJoin[{matricesDirectory[],"nullspace-"<>hash<>".m"}];
 If[FileExistsQ[cacheFile],
 Get[cacheFile],
 s=Reverse[Range[Length[matrix[[1]]]]];
 almost=Reverse[onDiskParallelRowReduce[matrix,f]][[All,s]];
-almost=Reverse[onDiskParallelRowReduce[almost,f]][[All,s]];
-result=NullSpace[almost];
+almost=Reverse[onDiskParallelRowReduce[almost,f<>"-2"]][[All,s]];
+result=nullSpaceShortCut[almost];
+Print[DateString[], " computed null-space"];
+lastNullSpaceResult=result;
 If[Length[result]==1,
 result=result[[1]],
 Print["NullSpace not one-dimensional"];Print[almost];Print[result];Abort[]];
-If[parallelRowReduceSimplifier[matrix.result]===Table[0,{Length[matrix]}],
+Put[result,cacheFile];
+result
+(*If[parallelRowReduceSimplifier[matrix.result]===Table[0,{Length[matrix]}],
 Put[result,cacheFile];
 result,
 Print["Result not in the null space"];
@@ -267,7 +285,7 @@ Print[result];
 Print[parallelRowReduceSimplifier[matrix.result]];
 Abort[]
 ]
-]
+*)]
 ]
 
 
