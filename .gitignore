@@ -13,6 +13,7 @@ target
 .target
 lib_managed
 project/boot
+project/project
 bin
 
 jobscript*
