@@ -6,6 +6,7 @@ syntax: glob
 .cache*
 .classpath
 .settings/org.scala-ide.sdt.core.prefs
+*/.settings/org.scala-ide.sdt.core.prefs
 .project
 
 .target

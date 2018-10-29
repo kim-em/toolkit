@@ -115,7 +115,7 @@ SpidersDirectory=FileNameJoin[{SpidersMathematicaDirectory,"..","..",".."}];
 
 
 (* ::Input::Initialization:: *)
-ScalaMajorVersion="2.12";
+ScalaMajorVersion="2.11";
 
 
 (* ::Input::Initialization:: *)
