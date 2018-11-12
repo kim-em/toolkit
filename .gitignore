@@ -9,6 +9,9 @@ syntax: glob
 */.settings/org.scala-ide.sdt.core.prefs
 .project
 
+*/.settings
+*/.setttings/*.prefs
+
 .target
 target
 .target
