@@ -168,7 +168,7 @@ object BuildSettings {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    scalacOptions += "-deprecation",
+    scalacOptions += "-target:jvm-1.7",
     publishTo := {
         val key = new java.io.File(Path.userHome.absolutePath + "/.ssh/id_rsa")
         if(key.exists) {
