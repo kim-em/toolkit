@@ -1,14 +1,11 @@
 package net.tqft.toolkit.algebra.mathematica
 
 import org.scalatest._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.polynomials.MultivariablePolynomial
 import net.tqft.toolkit.mathematica.Expression
 
-@RunWith(classOf[JUnitRunner])
 class PolynomialsTest extends FlatSpec with Matchers {
 
   "multivariablePolynomialToExpression" should "convert a multivariable polynomial to something Mathematica understands" in {

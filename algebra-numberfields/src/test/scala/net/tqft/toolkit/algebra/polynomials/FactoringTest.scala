@@ -1,11 +1,8 @@
 package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 
-@RunWith(classOf[JUnitRunner])
 class FactoringTest extends FlatSpec with Matchers {
   val p = implicitly[PolynomialsOverIntegerModel[BigInt]]
   val x: Polynomial[BigInt] = Polynomial(4 -> 1, 0 -> 100)

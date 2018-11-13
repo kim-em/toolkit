@@ -1,13 +1,10 @@
 package net.tqft.toolkit.algebra.enumeration
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 import net.tqft.toolkit.algebra.graphs.Graph
 import net.tqft.toolkit.functions.Memo
 import net.tqft.toolkit.algebra.Integers
 
-@RunWith(classOf[JUnitRunner])
 class TriangleFreeGraphTest extends FlatSpec with Matchers {
 
   //    "upperObjects" should "correctly partition into orbits" in {

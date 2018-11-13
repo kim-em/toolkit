@@ -3,11 +3,8 @@ package net.tqft.toolkit.algebra.grouptheory
 import net.tqft.toolkit.algebra.Fraction.whole
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.Fraction
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 
-@RunWith(classOf[JUnitRunner])
 class S6SubgroupsTest extends FlatSpec with Matchers {
 
   "characters" should "give the right character table for (S_3 x S_3)_b \\subset S_6" in {

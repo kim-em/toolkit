@@ -1,10 +1,7 @@
 package net.tqft.toolkit.algebra.grouptheory
 
 import org.scalatest._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class FiniteGroupsTest extends FlatSpec with Matchers {
 
   "dihedralGroup" should "return a group with 2*n elements" in {

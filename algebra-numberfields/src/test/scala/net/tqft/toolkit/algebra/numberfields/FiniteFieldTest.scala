@@ -1,13 +1,10 @@
 package net.tqft.toolkit.algebra.numberfields
 
 import org.scalatest._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 
-@RunWith(classOf[JUnitRunner])
 class FiniteFieldTest extends FlatSpec with Matchers {
 
   "Finite field arithmetic" should "be correct" in {

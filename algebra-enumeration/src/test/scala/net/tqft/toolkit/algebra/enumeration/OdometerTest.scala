@@ -1,11 +1,8 @@
 package net.tqft.toolkit.algebra.enumeration
 
 import org.scalatest._
-import org.scalatest.junit.JUnitRunner
-import org.junit.runner.RunWith
 import scala.math._
 
-@RunWith(classOf[JUnitRunner])
 class OdometerTest extends FlatSpec with Matchers {
 
   "Odometer" should "emulate a real odometer, as in a car!" in {

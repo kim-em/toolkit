@@ -1,10 +1,7 @@
 package net.tqft.toolkit.algebra.grouptheory
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 
-@RunWith(classOf[JUnitRunner])
 class ModularGroupsTest extends FlatSpec with Matchers {
 
   def g(p: Int) = FiniteGroups.`SL(2, Z/pZ)`(p)

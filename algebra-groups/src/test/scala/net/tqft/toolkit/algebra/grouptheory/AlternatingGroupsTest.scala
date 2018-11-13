@@ -2,12 +2,9 @@ package net.tqft.toolkit.algebra.grouptheory
 
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 import scala.language.implicitConversions
 
-@RunWith(classOf[JUnitRunner])
 class AlternatingGroupsTest extends FlatSpec with Matchers {
 
   val A_4 = FiniteGroups.alternatingGroup(4)

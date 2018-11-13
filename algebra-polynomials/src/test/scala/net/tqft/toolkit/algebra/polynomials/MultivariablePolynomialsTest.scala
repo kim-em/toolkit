@@ -2,11 +2,8 @@ package net.tqft.toolkit.algebra.polynomials
 
 import net.tqft.toolkit.algebra._
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 
-@RunWith(classOf[JUnitRunner])
 class MultivariablePolynomialsTest extends FlatSpec with Matchers {
 
   "gcd of zero and a monomial " should "be that monomial" in {

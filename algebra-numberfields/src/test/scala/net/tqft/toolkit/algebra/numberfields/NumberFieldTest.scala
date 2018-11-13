@@ -1,13 +1,10 @@
 package net.tqft.toolkit.algebra.numberfields
 
 import org.scalatest._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 
 import net.tqft.toolkit.algebra._
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 
-@RunWith(classOf[JUnitRunner])
 class NumberFieldTest extends FlatSpec with Matchers {
 
   "Number field arithmetic" should "be correct" in {
@@ -17,7 +14,7 @@ class NumberFieldTest extends FlatSpec with Matchers {
     val q1: Polynomial[Fraction[Int]] = Polynomial(0 -> Fraction(-43, 125), 2 -> Fraction(6, 125), 4 -> Fraction(12, 125))
 
     nf.multiply(q1, q1) should equal(Polynomial(0 -> Fraction(1129, 15625), 2 -> Fraction(-228, 15625), 4 -> Fraction(-276, 15625)))
-    nf.inverse(q1) should equal(Polynomial(0 -> Fraction(-95, 1), 2 -> Fraction(-102, 1),  4 -> Fraction(-24, 1)))
+    nf.inverse(q1) should equal(Polynomial(0 -> Fraction(-95, 1), 2 -> Fraction(-102, 1), 4 -> Fraction(-24, 1)))
   }
 
   "Cyclotomic field arithmetic" should "be correct" in {

@@ -1,10 +1,7 @@
 package net.tqft.toolkit.algebra.graphs
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 
-@RunWith(classOf[JUnitRunner])
 class DreadnautTest extends FlatSpec with Matchers {
   val C3 = Graph(3, IndexedSeq(Seq(1, 2), Seq(0, 2), Seq(0, 1)))
 

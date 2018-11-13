@@ -3,14 +3,10 @@ package net.tqft.toolkit.algebra.grouptheory
 import net.tqft.toolkit.algebra.Fraction.whole
 import net.tqft.toolkit.algebra.polynomials.Polynomial
 import net.tqft.toolkit.algebra.Fraction
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 
 import scala.language.implicitConversions
 
-
-@RunWith(classOf[JUnitRunner])
 class SymmetricGroupsTest extends FlatSpec with Matchers {
 
   val S_3 = FiniteGroups.symmetricGroup(3)

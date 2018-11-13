@@ -1,10 +1,7 @@
 package net.tqft.toolkit.algebra.graphs
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 
-@RunWith(classOf[JUnitRunner])
 class GraphTest extends FlatSpec with Matchers {
 
   "relabel" should "work" in {
