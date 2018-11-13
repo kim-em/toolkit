@@ -2,6 +2,7 @@ package net.tqft.toolkit.algebra.graphs
 
 import net.tqft.toolkit.permutations.Permutations._
 import net.tqft.toolkit.algebra.grouptheory.FinitelyGeneratedFiniteGroup
+import scala.language.implicitConversions
 
 trait Graph {
   def numberOfVertices: Int

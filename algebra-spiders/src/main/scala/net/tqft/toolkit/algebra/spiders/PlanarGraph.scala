@@ -832,7 +832,8 @@ object PlanarGraph {
     def seq[A](parsable: Parser[A]): Parser[Seq[A]] = list(parsable) ^^ { _.toSeq }
     def indexedSeq[A](parsable: Parser[A]): Parser[IndexedSeq[A]] = list(parsable) ^^ { _.toIndexedSeq }
     def option[A](parsable: Parser[A]): Parser[Option[A]] = ("None" ^^ { _ => None }) | ("Some(" ~> parsable <~ ")" ^^ { Some(_) })
-
+    def optional[A](parsable: Parser[Option[A]]) : Parser[Option[A]] = parsable | "" ^^ { _ => None }
+    
     def pair[A](parsable: Parser[A]): Parser[(A, A)] = "(" ~> whitespace ~> parsable ~ "," ~ whitespace ~ parsable <~ ")" ^^ {
       case a1 ~ "," ~ whitespace ~ a2 => (a1, a2)
     }
@@ -847,8 +848,8 @@ object PlanarGraph {
       (int <~ "," <~ whitespace) ~
       (indexedSeq(seq(pair(int))) <~ "," <~ whitespace) ~
       (seq(pair(int)) <~ "," <~ whitespace) ~
-      (int <~ "," <~ whitespace) ~
-      option(quotedString) <~ whitespace <~ ")") ^^ {
+      (int) ~
+      optional("," ~> whitespace ~> option(quotedString) <~ whitespace <~ ")")) ^^ {
         case outerFace ~ vertexFlags ~ labels ~ loops ~ comment => PlanarGraph(outerFace, vertexFlags, labels, loops, comment)
       }
 
