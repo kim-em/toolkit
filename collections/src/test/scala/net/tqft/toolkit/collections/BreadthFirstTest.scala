@@ -1,12 +1,9 @@
 package net.tqft.toolkit.collections
 
 import org.scalatest._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 
 import scala.math._
 
-@RunWith(classOf[JUnitRunner])
 class BreadthFirstTest extends FlatSpec with Matchers {
 
   "BreadthFirst" should "work correctly" in {

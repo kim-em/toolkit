@@ -1,10 +1,7 @@
 package net.tqft.toolkit.functions
 
 import org.scalatest._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class FixedPointTest extends FlatSpec with Matchers {
   
   "findRepeatingSubsequence" should "work correctly" in {

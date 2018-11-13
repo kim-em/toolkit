@@ -1,10 +1,7 @@
 package net.tqft.toolkit.collections
 
 import org.scalatest._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class TakeDistinctTest extends FlatSpec with Matchers {
   
   "TakeDistinct" should "work correctly" in {

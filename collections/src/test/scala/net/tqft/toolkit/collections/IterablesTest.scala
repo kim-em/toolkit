@@ -1,12 +1,9 @@
 package net.tqft.toolkit.collections
 
 import org.scalatest._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 
 import scala.math._
 
-@RunWith(classOf[JUnitRunner])
 class IterablesTest extends FlatSpec with Matchers {
   
   "findMinimum" should "work correctly" in {
