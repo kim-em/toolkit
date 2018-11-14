@@ -284,11 +284,7 @@ NamedPolyhedron[Subscript[p, k_]]:=ScalaSingleton["net.tqft.toolkit.algebra.spid
 
 
 (* ::Input::Initialization:: *)
-Print["trying to load PlanarGraph"];
 PlanarGraphs=ScalaSingleton["net.tqft.toolkit.algebra.spiders.PlanarGraph"];
-Print[PlanarGraphs];
-If[!FreeQ[LoadJavaClass["net.tqft.toolkit.algebra.spiders.PlanarGraph"],$Failed],Abort[]];
-Print["succeeded"];
 
 
 (* ::Input::Initialization:: *)
@@ -300,11 +296,7 @@ Name[d0:Diagram]:=FromScalaObject[ScalaSingleton["net.tqft.toolkit.algebra.spide
 
 
 (* ::Input::Initialization:: *)
-Print["trying to load DrawPlanarGraph"];
 DrawPlanarGraph$=ScalaSingleton["net.tqft.toolkit.algebra.spiders.DrawPlanarGraph"]@withOutputPath[FileNameJoin[{SpidersMathematicaDirectory,"graphs"}]];
-Print[DrawPlanarGraph$];
-If[!FreeQ[LoadJavaClass,$Failed],Abort[]];
-Print["succeeded"];
 
 
 (* ::Input::Initialization:: *)

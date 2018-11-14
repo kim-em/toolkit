@@ -25,13 +25,15 @@ val scalanlp_breeze = "org.scalanlp" %% "breeze" % "0.13.1"
 val scalanlp_breezenatives = "org.scalanlp" %% "breeze-natives" % "0.13.1"
 val scala_xml = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
 val scala_parser = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1"
-val scala_compiler = "org.scala-lang" % "scala-compiler" % "2.12.3"
+val scala_compiler = "org.scala-lang" % "scala-compiler" % "2.11.11"
+// val scala_compiler = "org.scala-lang" % "scala-compiler" % "2.12.3"
 val scalatest = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
 lazy val buildSettings = Seq(
   organization := "net.tqft",
   version := "0.1.19-SNAPSHOT",
-  scalaVersion := "2.12.3",
+  scalaVersion := "2.11.11",
+  // scalaVersion := "2.12.3",
   publishConfiguration := publishConfiguration.value.withOverwrite(true),
   publishTo := Some(Resolver.sftp("tqft.net", "tqft.net", "tqft.net/releases") as ("scottmorrison", new java.io.File("/Users/scott/.ssh/id_rsa"))),
   libraryDependencies += scalatest)

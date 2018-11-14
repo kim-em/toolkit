@@ -849,7 +849,7 @@ object PlanarGraph {
       (indexedSeq(seq(pair(int))) <~ "," <~ whitespace) ~
       (seq(pair(int)) <~ "," <~ whitespace) ~
       (int) ~
-      optional("," ~> whitespace ~> option(quotedString) <~ whitespace <~ ")")) ^^ {
+      optional("," ~> whitespace ~> option(quotedString)) <~ whitespace <~ ")") ^^ {
         case outerFace ~ vertexFlags ~ labels ~ loops ~ comment => PlanarGraph(outerFace, vertexFlags, labels, loops, comment)
       }
 
