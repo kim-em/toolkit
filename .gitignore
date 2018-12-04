@@ -28,6 +28,8 @@ fusion-rings3*/*.resume
 fusion-rings3*/paused
 
 algebra-spiders/src/main/mathematica/groebnerCalculations.m
+algebra-spiders/src/main/mathematica/pairing.m
+algebra-spiders/src/main/mathematica/ev.m
 algebra-spiders/src/main/mathematica/graphs/
 algebra-spiders/src/main/mathematica/matrices/
 
