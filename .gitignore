@@ -27,6 +27,7 @@ fusion-rings3*/*.partial
 fusion-rings3*/*.resume
 fusion-rings3*/paused
 
+algebra-spiders/src/main/mathematica/QES-Knot-Polynomials.m
 algebra-spiders/src/main/mathematica/groebnerCalculations.m
 algebra-spiders/src/main/mathematica/pairing.m
 algebra-spiders/src/main/mathematica/ev.m
