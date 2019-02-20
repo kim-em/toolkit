@@ -1,12 +1,9 @@
 package net.tqft.toolkit.algebra.fusion
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 
 import net.tqft.toolkit.algebra.matrices._
 
-@RunWith(classOf[JUnitRunner])
 class FusionBimodulesTest extends FlatSpec with Matchers {
 
 //  "withGenerator" should "correctly find all fusion bimodules with a given generator" in {

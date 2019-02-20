@@ -1,11 +1,8 @@
 package net.tqft.toolkit.algebra.lattices
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 import scala.math.BigInt.int2bigInt
 
-@RunWith(classOf[JUnitRunner])
 class LLLTest extends FlatSpec with Matchers {
 
   "LLL" should "should do an example correctly" in {

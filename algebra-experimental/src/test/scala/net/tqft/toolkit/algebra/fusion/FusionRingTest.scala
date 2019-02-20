@@ -1,11 +1,8 @@
 package net.tqft.toolkit.algebra.fusion
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 import net.tqft.toolkit.algebra.matrices.Matrix
 
-@RunWith(classOf[JUnitRunner])
 class FusionRingTest extends FlatSpec with Matchers {
 
   "relabel" should "do nothing, when the labelling is an automorphism" in {
