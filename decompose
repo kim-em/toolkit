@@ -1,1 +1,2 @@
-./sbt "toolkit-algebra-experimental/test:run-main net.tqft.toolkit.algebra.combinatorics.PositiveSymmetricDecompositionApp $*"
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+./sbt "algebra-experimental/test:runMain net.tqft.toolkit.algebra.combinatorics.PositiveSymmetricDecompositionApp $*"

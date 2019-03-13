@@ -1,14 +1,11 @@
 package net.tqft.toolkit.algebra.fusion
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
 import net.tqft.toolkit.algebra.matrices.Matrices
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroup
 
-@RunWith(classOf[JUnitRunner])
 class PartialFusionRingTest extends FlatSpec with Matchers {
 
   import net.tqft.toolkit.functions.Memo._

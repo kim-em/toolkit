@@ -1,12 +1,9 @@
 package net.tqft.toolkit.algebra.combinatorics
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 import net.tqft.toolkit.algebra.matrices.Matrices
 import net.tqft.toolkit.algebra.matrices.Matrix
 
-@RunWith(classOf[JUnitRunner])
 class MatrixDecompositionTest extends FlatSpec with Matchers {
 
   "PositiveSymmetricDecompositions" should "should find all decompositions M=AA^t" in {

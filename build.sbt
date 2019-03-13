@@ -1,3 +1,10 @@
+initialize := {
+  val _ = initialize.value // run the previous initialization
+  val required = "1.8"
+  val current  = sys.props("java.specification.version")
+  assert(current == required, s"Unsupported JDK: java.specification.version $current != $required")
+}
+
 val junit = "junit" % "junit" % "4.12" % "test"
 val slf4j = "org.slf4j" % "slf4j-log4j12" % "1.7.12"
 val apfloat = "org.apfloat" % "apfloat" % "1.8.3"   // arbitrary precision integers and floats; much better than BigInt and BigDecimal
@@ -63,7 +70,7 @@ lazy val root =
     // `algebra-fusion`,
     // `algebra-principalgraphs`,
     `algebra-enumeration`,
-    // `algebra-experimental`, 
+    `algebra-experimental`, 
     functions, 
     eval
     // wiki
@@ -190,6 +197,13 @@ lazy val `eval` =
              buildSettings,
              libraryDependencies += scala_compiler)
 
+  lazy val `algebra-experimental` = 
+(project in file("algebra-experimental"))
+   .settings(name := "toolkit-algebra-experimental", 
+             buildSettings,
+             libraryDependencies ++= Seq(commons_math, apfloat, guava, findbugs))
+   .dependsOn(amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
+
   // lazy val `algebra-magma` = Project(id = "toolkit-algebra-magma",
   //   base = file("algebra-magma"),
   //   settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (`algebra-groups`)
@@ -209,9 +223,6 @@ lazy val `eval` =
   //   base = file("algebra-principalgraphs"),
   //   settings = buildSettings ++ Seq(libraryDependencies ++= Seq())) dependsOn (`algebra-enumeration`)
 
-  // lazy val `algebra-experimental` = Project(id = "toolkit-algebra-experimental",
-  //   base = file("algebra-experimental"),
-  //   settings = buildSettings ++ Seq(libraryDependencies ++= Seq(commons.math, apfloat, guava, findbugs))) dependsOn (amazon, functions, collections, algebra, `algebra-categories`, `algebra-polynomials`, `algebra-groups`, `algebra-graphs`, `algebra-matrices`, `algebra-numberfields`, `algebra-apfloat`, `algebra-enumeration`)
 
   // lazy val eval = Project(id = "toolkit-eval",
   //   base = file("eval"),

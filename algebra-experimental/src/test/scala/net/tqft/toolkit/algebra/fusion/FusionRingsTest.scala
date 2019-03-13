@@ -1,12 +1,9 @@
 package net.tqft.toolkit.algebra.fusion
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 import net.tqft.toolkit.algebra.matrices.Matrix
 import net.tqft.toolkit.algebra.grouptheory.FiniteGroups
 
-@RunWith(classOf[JUnitRunner])
 class FusionRingsTest extends FlatSpec with Matchers {
 
   "withObject" should "correctly find all fusion rings with a given object" in {
