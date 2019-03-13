@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     21428,        523]
-NotebookOptionsPosition[     19096,        457]
-NotebookOutlinePosition[     19477,        474]
-CellTagsIndexPosition[     19434,        471]
+NotebookDataLength[     23119,        567]
+NotebookOptionsPosition[     20550,        495]
+NotebookOutlinePosition[     20931,        512]
+CellTagsIndexPosition[     20888,        509]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -453,6 +453,44 @@ List((14, 5), (22, 8), (15, 12), (21, 13)), List((18, 3), (24, 14), (19, 9), \
  CellChangeTimes->{3.761506903313045*^9, 3.7615078687049093`*^9, 
   3.7615086532747393`*^9},ExpressionUUID->"36ff947b-736b-4948-a0af-\
 bf775b7b4671"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PDtoPlanarGraph", "[", 
+  RowBox[{"PD", "[", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"1", ",", "2", ",", "3"}], "]"}], ",", 
+    RowBox[{"Y", "[", 
+     RowBox[{"3", ",", "4", ",", "5"}], "]"}], ",", 
+    RowBox[{"X", "[", 
+     RowBox[{"5", ",", "4", ",", "2", ",", "6"}], "]"}], ",", 
+    RowBox[{"X", "[", 
+     RowBox[{"7", ",", "1", ",", "9", ",", "8"}], "]"}], ",", 
+    RowBox[{"Y", "[", 
+     RowBox[{"9", ",", "10", ",", "11"}], "]"}], ",", 
+    RowBox[{"Y", "[", 
+     RowBox[{"11", ",", "12", ",", "13"}], "]"}], ",", 
+    RowBox[{"X", "[", 
+     RowBox[{"13", ",", "12", ",", "10", ",", "14"}], "]"}], ",", 
+    RowBox[{"X", "[", 
+     RowBox[{"6", ",", "7", ",", "8", ",", "14"}], "]"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.761508704883073*^9, 
+  3.761508710015296*^9}},ExpressionUUID->"33c702f1-c4fe-4d83-a3ae-\
+4ed93ef880c9"],
+
+Cell[BoxData["\<\"PlanarGraph(3, Vector(List(), List((3, 3), (2, 2), (1, 1)), \
+List((5, 3), (4, 4), (3, 2)), List((6, 3), (2, 1), (4, 2), (5, 4)), List((8, \
+6), (9, 5), (1, 3), (7, 1)), List((11, 5), (10, 7), (9, 3)), List((13, 5), \
+(12, 8), (11, 7)), List((14, 5), (10, 3), (12, 7), (13, 8)), List((14, 3), \
+(8, 5), (7, 6), (6, 1))), Vector((2,0), (2,0), (2,0), (2,0), (2,0), (2,0), \
+(2,0), (2,0)), 0)\"\>"], "Output",
+ CellChangeTimes->{
+  3.761508710348802*^9},ExpressionUUID->"ee82fbe6-8273-4f49-8d3a-\
+49f106a9f536"]
 }, Open  ]]
 },
 Evaluator->"Local (2)",
@@ -524,6 +562,12 @@ Cell[17941, 433, 310, 8, 32, "Input", "ExpressionUUID" -> \
 "c428bba1-c477-4bf7-a9df-904685a68f7d"],
 Cell[18254, 443, 826, 11, 96, "Output", "ExpressionUUID" -> \
 "36ff947b-736b-4948-a0af-bf775b7b4671"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19117, 459, 888, 23, 32, "Input", "ExpressionUUID" -> \
+"33c702f1-c4fe-4d83-a3ae-4ed93ef880c9"],
+Cell[20008, 484, 526, 8, 75, "Output", "ExpressionUUID" -> \
+"ee82fbe6-8273-4f49-8d3a-49f106a9f536"]
 }, Open  ]]
 }
 ]
