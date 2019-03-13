@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     11809,        281]
-NotebookOptionsPosition[     10925,        252]
-NotebookOutlinePosition[     11282,        268]
-CellTagsIndexPosition[     11239,        265]
+NotebookDataLength[     21428,        523]
+NotebookOptionsPosition[     19096,        457]
+NotebookOutlinePosition[     19477,        474]
+CellTagsIndexPosition[     19434,        471]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -40,9 +40,8 @@ Cell[BoxData[
 Cell[BoxData["\<\"Loading KnotTheory` version of January 20, 2015, \
 10:42:19.1122.\\nRead more at http://katlas.org/wiki/KnotTheory.\"\>"], \
 "Print",
- CellChangeTimes->{
-  3.703365759827342*^9},ExpressionUUID->"cc5a49cc-7944-4b8b-aa05-\
-7abf1bf9d5a1"]
+ CellChangeTimes->{3.703365759827342*^9, 
+  3.76150678773317*^9},ExpressionUUID->"e06a66f5-b188-4200-9c71-63dee1f1a570"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -74,6 +73,11 @@ Cell[BoxData[
       RowBox[{
        RowBox[{"i", "=!=", 
         RowBox[{"-", "1"}]}], ",", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"Print", "[", "i", "]"}], ";", "\[IndentingNewLine]", 
+         RowBox[{"Print", "[", "G", "]"}], ";"}], "*)"}], 
+       "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{"r", "=", 
          RowBox[{"G", "\[LeftDoubleBracket]", 
@@ -106,13 +110,16 @@ Cell[BoxData[
                 RowBox[{"x", "\[NotEqual]", "f"}]}]}], "]"}], "/.", 
              RowBox[{
               RowBox[{"{", 
-               RowBox[{"x_", ",", "y_"}], "}"}], "\[Rule]", 
+               RowBox[{"x_", ",", "y_"}], "}"}], "\[RuleDelayed]", 
               RowBox[{"{", 
                RowBox[{"x", ",", 
                 RowBox[{"Mod", "[", 
                  RowBox[{
-                  RowBox[{"y", "-", "1"}], ",", "4", ",", "1"}], "]"}]}], 
-               "}"}]}]}]}], ";", "\[IndentingNewLine]", 
+                  RowBox[{"y", "-", "1"}], ",", 
+                  RowBox[{"Length", "[", 
+                   RowBox[{"G", "[", 
+                    RowBox[{"[", "x", "]"}], "]"}], "]"}], ",", "1"}], 
+                 "]"}]}], "}"}]}]}]}], ";", "\[IndentingNewLine]", 
            RowBox[{"r", "=", 
             RowBox[{"G", "\[LeftDoubleBracket]", 
              RowBox[{"Sequence", "@@", "i"}], "\[RightDoubleBracket]"}]}], 
@@ -130,6 +137,9 @@ Cell[BoxData[
      RowBox[{"G", "=", 
       RowBox[{"Reverse", "[", 
        RowBox[{"G", ",", "2"}], "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{
+       RowBox[{"Print", "[", "G", "]"}], ";"}], "*)"}], "\[IndentingNewLine]", 
      RowBox[{"outerFace", "=", 
       RowBox[{"First", "[", 
        RowBox[{"MaximalBy", "[", 
@@ -156,7 +166,9 @@ Cell[BoxData[
         RowBox[{"{", 
          RowBox[{
           RowBox[{"\"\<PD\>\"", "\[Rule]", "\"\<Vector\>\""}], ",", " ", 
-          RowBox[{"\"\<X\>\"", "\[Rule]", "\"\<List\>\""}], ",", " ", 
+          RowBox[{
+           RowBox[{"\"\<X\>\"", "|", "\"\<Y\>\""}], "\[Rule]", 
+           "\"\<List\>\""}], ",", " ", 
           RowBox[{
            RowBox[{"\"\<{\>\"", "|", "\"\<[\>\""}], "\[Rule]", "\"\<(\>\""}], 
           ",", " ", 
@@ -227,9 +239,148 @@ Cell[BoxData[
    3.678389865712965*^9}, {3.6783899938281918`*^9, 3.678390067649358*^9}, {
    3.678390285124909*^9, 3.67839038066253*^9}, 3.678390601688719*^9, {
    3.6783906793529053`*^9, 3.678390697301531*^9}, {3.679314111030485*^9, 
-   3.679314111665704*^9}, {3.679314159269703*^9, 
-   3.6793141592807617`*^9}},ExpressionUUID->"36316db9-acfe-4bc1-8d68-\
+   3.679314111665704*^9}, {3.679314159269703*^9, 3.6793141592807617`*^9}, {
+   3.761506968500749*^9, 3.7615070042986107`*^9}, {3.761507037995667*^9, 
+   3.761507039346509*^9}, {3.7615074725127296`*^9, 3.761507475231565*^9}, {
+   3.761507546144277*^9, 3.7615075578545*^9}, {3.761507750567182*^9, 
+   3.761507752477276*^9}, {3.761507814350038*^9, 3.761507822581113*^9}, {
+   3.761507885741685*^9, 3.7615078873722773`*^9}, {3.761508091444524*^9, 
+   3.761508103490713*^9}, {3.761508243341991*^9, 
+   3.7615082466783247`*^9}},ExpressionUUID->"36316db9-acfe-4bc1-8d68-\
 e307c5dd811e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"PDtoPlanarGraph", "[", 
+   RowBox[{"PD", "[", 
+    RowBox[{
+     RowBox[{"Y", "[", 
+      RowBox[{"1", ",", "2", ",", "3"}], "]"}], ",", 
+     RowBox[{"Y", "[", 
+      RowBox[{"3", ",", "4", ",", "5"}], "]"}], ",", 
+     RowBox[{"X", "[", 
+      RowBox[{"5", ",", "4", ",", "6", ",", "1"}], "]"}], ",", 
+     RowBox[{"Y", "[", 
+      RowBox[{"7", ",", "8", ",", "9"}], "]"}], ",", 
+     RowBox[{"Y", "[", 
+      RowBox[{"9", ",", "10", ",", "11"}], "]"}], ",", 
+     RowBox[{"X", "[", 
+      RowBox[{"11", ",", "10", ",", "13", ",", "12"}], "]"}], ",", 
+     RowBox[{"X", "[", 
+      RowBox[{"12", ",", "15", ",", "14", ",", "2"}], "]"}], ",", 
+     RowBox[{"X", "[", 
+      RowBox[{"16", ",", "7", ",", "6", ",", "14"}], "]"}], ",", 
+     RowBox[{"X", "[", 
+      RowBox[{"17", ",", "18", ",", "19", ",", "8"}], "]"}], ",", 
+     RowBox[{"X", "[", 
+      RowBox[{"18", ",", "20", ",", "13", ",", "19"}], "]"}], ",", 
+     RowBox[{"X", "[", 
+      RowBox[{"20", ",", "22", ",", "21", ",", "15"}], "]"}], ",", 
+     RowBox[{"X", "[", 
+      RowBox[{"22", ",", "17", ",", "16", ",", "21"}], "]"}]}], "]"}], "]"}], 
+  "\n"}]], "Input",
+ CellChangeTimes->{{3.761507946919653*^9, 3.7615079578106213`*^9}, {
+  3.761508116490713*^9, 
+  3.7615081166522017`*^9}},ExpressionUUID->"719e4f9f-dbe0-4648-b970-\
+a277d49a4e98"],
+
+Cell[BoxData["\<\"PlanarGraph(1, Vector(List(), List((3, 3), (2, 2), (1, 1)), \
+List((5, 3), (4, 4), (3, 2)), List((1, 3), (6, 1), (4, 2), (5, 4)), List((9, \
+1), (8, 6), (7, 5)), List((11, 1), (10, 7), (9, 6)), List((12, 1), (13, 8), \
+(10, 6), (11, 7)), List((2, 1), (14, 2), (15, 9), (12, 8)), List((14, 9), (6, \
+2), (7, 1), (16, 5)), List((8, 5), (19, 6), (18, 11), (17, 10)), List((19, \
+11), (13, 6), (20, 8), (18, 10)), List((15, 8), (21, 9), (22, 12), (20, 10)), \
+List((21, 12), (16, 9), (17, 5), (22, 10))), Vector((2,0), (2,0), (2,0), \
+(2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0)), 0)\"\>"], \
+"Output",
+ CellChangeTimes->{{3.7615079587163877`*^9, 3.761507977854183*^9}, {
+   3.761508109430724*^9, 3.76150811719693*^9}, 3.7615082489405518`*^9, 
+   3.761508659091297*^9},ExpressionUUID->"b04a3ed1-f6d4-4026-bd81-\
+ce08ceb32f8e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PDtoPlanarGraph", "[", 
+  RowBox[{"PD", "[", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"1", ",", "2", ",", "3"}], "]"}], ",", 
+    RowBox[{"Y", "[", 
+     RowBox[{"1", ",", "3", ",", "2"}], "]"}]}], "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.761508255801113*^9, 
+  3.761508264919981*^9}},ExpressionUUID->"d7cbb612-2e74-47dd-ad99-\
+58703ccb6bf7"],
+
+Cell[BoxData["\<\"PlanarGraph(1, Vector(List(), List((3, 3), (2, 2), (1, 1)), \
+List((2, 1), (3, 2), (1, 3))), Vector((2,0), (2,0)), 0)\"\>"], "Output",
+ CellChangeTimes->{
+  3.761508265430497*^9},ExpressionUUID->"705a00dc-690f-4a95-bae1-\
+0d8ab6917891"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PDtoPlanarGraph", "[", 
+  RowBox[{"PD", "[", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"1", ",", "2", ",", "3"}], "]"}], ",", 
+    RowBox[{"Y", "[", 
+     RowBox[{"3", ",", "4", ",", "5"}], "]"}], ",", 
+    RowBox[{"X", "[", 
+     RowBox[{"5", ",", "4", ",", "6", ",", "1"}], "]"}], ",", 
+    RowBox[{"Y", "[", 
+     RowBox[{"7", ",", "8", ",", "9"}], "]"}], ",", 
+    RowBox[{"Y", "[", 
+     RowBox[{"9", ",", "10", ",", "11"}], "]"}], ",", 
+    RowBox[{"X", "[", 
+     RowBox[{"11", ",", "10", ",", "8", ",", "12"}], "]"}], ",", 
+    RowBox[{"X", "[", 
+     RowBox[{"12", ",", "13", ",", "14", ",", "2"}], "]"}], ",", 
+    RowBox[{"X", "[", 
+     RowBox[{"13", ",", "7", ",", "6", ",", "14"}], "]"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.7615084890643377`*^9, 
+  3.761508494095544*^9}},ExpressionUUID->"6be486c4-fb98-4669-9083-\
+53b214335243"],
+
+Cell[BoxData["\<\"PlanarGraph(1, Vector(List(), List((3, 3), (2, 2), (1, 1)), \
+List((5, 3), (4, 4), (3, 2)), List((1, 3), (6, 1), (4, 2), (5, 4)), List((9, \
+1), (8, 6), (7, 5)), List((11, 1), (10, 7), (9, 6)), List((12, 1), (8, 5), \
+(10, 6), (11, 7)), List((2, 1), (14, 2), (13, 8), (12, 5)), List((14, 8), (6, \
+2), (7, 1), (13, 5))), Vector((2,0), (2,0), (2,0), (2,0), (2,0), (2,0), \
+(2,0), (2,0)), 0)\"\>"], "Output",
+ CellChangeTimes->{3.761508494465616*^9, 
+  3.7615086571509123`*^9},ExpressionUUID->"0a3a162f-ed3e-4ef9-8a42-\
+30a1f49ae8d7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PD", "[", 
+  RowBox[{"Knot", "[", 
+   RowBox[{"3", ",", "1"}], "]"}], "]"}]], "Input",ExpressionUUID->"d085c0c1-\
+4b54-4775-8b40-924b584b36c1"],
+
+Cell[BoxData[
+ RowBox[{"PD", "[", 
+  RowBox[{
+   RowBox[{"X", "[", 
+    RowBox[{"1", ",", "4", ",", "2", ",", "5"}], "]"}], ",", 
+   RowBox[{"X", "[", 
+    RowBox[{"3", ",", "6", ",", "4", ",", "1"}], "]"}], ",", 
+   RowBox[{"X", "[", 
+    RowBox[{"5", ",", "2", ",", "6", ",", "3"}], "]"}]}], "]"}]], "Output",
+ CellChangeTimes->{
+  3.761507018059148*^9},ExpressionUUID->"208afb4a-f87d-427c-8bbd-\
+236cdbc4ec97"]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -245,14 +396,69 @@ d985a11a9aa1"],
 Cell[BoxData["\<\"PlanarGraph(2, Vector(List(), List((5, 4), (2, 3), (4, 2), \
 (1, 1)), List((1, 4), (4, 1), (6, 2), (3, 5)), List((3, 4), (6, 5), (2, 2), \
 (5, 3))), Vector((2,0), (2,0), (2,0)), 0)\"\>"], "Output",
- CellChangeTimes->{{3.7033657742583*^9, 
-  3.703365780195611*^9}},ExpressionUUID->"f1bf9ba0-7bd5-4e57-88db-\
-d86aea63bf4b"]
+ CellChangeTimes->{{3.7033657742583*^9, 3.703365780195611*^9}, 
+   3.761506790137631*^9, 3.761507006723546*^9, 3.7615070417883167`*^9, 
+   3.761507480341605*^9, {3.761507550123734*^9, 3.76150755941285*^9}, 
+   3.761507858463142*^9, 
+   3.761508656110808*^9},ExpressionUUID->"4c19d9e8-0959-4a6c-a6c5-\
+244a63672450"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PDtoPlanarGraph", "[", 
+  RowBox[{"PD", "[", 
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"1", ",", "2", ",", "3"}], "]"}], ",", 
+    RowBox[{"Y", "[", 
+     RowBox[{"3", ",", "4", ",", "5"}], "]"}], ",", 
+    RowBox[{"X", "[", 
+     RowBox[{"2", ",", "1", ",", "5", ",", "4"}], "]"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.7615085985865726`*^9, 
+  3.761508602502742*^9}},ExpressionUUID->"2a3666e5-9596-445a-b786-\
+552daa278188"],
+
+Cell[BoxData["\<\"PlanarGraph(1, Vector(List(), List((3, 3), (2, 2), (1, 1)), \
+List((5, 3), (4, 4), (3, 2)), List((4, 2), (5, 4), (1, 3), (2, 1))), \
+Vector((2,0), (2,0), (2,0)), 0)\"\>"], "Output",
+ CellChangeTimes->{
+  3.761508602831336*^9},ExpressionUUID->"ee3fa063-e8a6-4a8b-acdb-\
+a0774c9cd3e8"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PDtoPlanarGraph", "[", 
+  RowBox[{"PD", "[", 
+   RowBox[{"Knot", "[", 
+    RowBox[{"12", ",", "NonAlternating", ",", "100"}], "]"}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.7615068978194723`*^9, 
+  3.76150690300255*^9}},ExpressionUUID->"c428bba1-c477-4bf7-a9df-\
+904685a68f7d"],
+
+Cell[BoxData["\<\"PlanarGraph(5, Vector(List(), List((1, 4), (5, 3), (2, 2), \
+(4, 1)), List((3, 6), (9, 5), (4, 4), (8, 1)), List((12, 3), (6, 8), (13, 7), \
+(5, 2)), List((7, 2), (3, 5), (8, 6), (2, 1)), List((16, 5), (10, 10), (17, \
+9), (9, 4)), List((22, 12), (12, 8), (23, 3), (11, 11)), List((6, 7), (14, \
+8), (7, 5), (13, 2)), List((20, 12), (16, 10), (21, 5), (15, 13)), List((24, \
+9), (18, 14), (1, 3), (17, 4)), List((10, 9), (20, 10), (11, 12), (19, 11)), \
+List((14, 5), (22, 8), (15, 12), (21, 13)), List((18, 3), (24, 14), (19, 9), \
+(23, 11))), Vector((2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0), (2,0), \
+(2,0), (2,0), (2,0), (2,0)), 0)\"\>"], "Output",
+ CellChangeTimes->{3.761506903313045*^9, 3.7615078687049093`*^9, 
+  3.7615086532747393`*^9},ExpressionUUID->"36ff947b-736b-4948-a0af-\
+bf775b7b4671"]
 }, Open  ]]
 },
+Evaluator->"Local (2)",
 WindowSize->{1598, 840},
-WindowMargins->{{Automatic, 204}, {53, Automatic}},
-FrontEndVersion->"11.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 18, \
+WindowMargins->{{Automatic, 67}, {124, Automatic}},
+FrontEndVersion->"11.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 27, \
 2017)",
 StyleDefinitions->"Default.nb"
 ]
@@ -272,16 +478,52 @@ Cell[558, 20, 446, 9, 32, "Input", "ExpressionUUID" -> \
 Cell[CellGroupData[{
 Cell[1029, 33, 180, 4, 32, "Input", "ExpressionUUID" -> \
 "98c90816-7d40-42b5-a9f5-55d1822074f8"],
-Cell[1212, 39, 253, 5, 44, "Print", "ExpressionUUID" -> \
-"cc5a49cc-7944-4b8b-aa05-7abf1bf9d5a1"]
+Cell[1212, 39, 272, 4, 44, "Print", "ExpressionUUID" -> \
+"e06a66f5-b188-4200-9c71-63dee1f1a570"]
 }, Open  ]],
-Cell[1480, 47, 8780, 184, 453, "Input", "ExpressionUUID" -> \
+Cell[1499, 46, 9736, 203, 516, "Input", "ExpressionUUID" -> \
 "36316db9-acfe-4bc1-8d68-e307c5dd811e"],
 Cell[CellGroupData[{
-Cell[10285, 235, 282, 7, 32, "Input", "ExpressionUUID" -> \
+Cell[11260, 253, 1346, 33, 75, "Input", "ExpressionUUID" -> \
+"719e4f9f-dbe0-4648-b970-a277d49a4e98"],
+Cell[12609, 288, 858, 12, 96, "Output", "ExpressionUUID" -> \
+"b04a3ed1-f6d4-4026-bd81-ce08ceb32f8e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13504, 305, 379, 10, 32, "Input", "ExpressionUUID" -> \
+"d7cbb612-2e74-47dd-ad99-58703ccb6bf7"],
+Cell[13886, 317, 254, 4, 32, "Output", "ExpressionUUID" -> \
+"705a00dc-690f-4a95-bae1-0d8ab6917891"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14177, 326, 890, 23, 32, "Input", "ExpressionUUID" -> \
+"6be486c4-fb98-4669-9083-53b214335243"],
+Cell[15070, 351, 550, 8, 75, "Output", "ExpressionUUID" -> \
+"0a3a162f-ed3e-4ef9-8a42-30a1f49ae8d7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15657, 364, 167, 4, 32, "Input", "ExpressionUUID" -> \
+"d085c0c1-4b54-4775-8b40-924b584b36c1"],
+Cell[15827, 370, 413, 11, 32, "Output", "ExpressionUUID" -> \
+"208afb4a-f87d-427c-8bbd-236cdbc4ec97"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16277, 386, 282, 7, 32, "Input", "ExpressionUUID" -> \
 "c4ee6566-849b-43dc-bd15-d985a11a9aa1"],
-Cell[10570, 244, 339, 5, 32, "Output", "ExpressionUUID" -> \
-"f1bf9ba0-7bd5-4e57-88db-d86aea63bf4b"]
+Cell[16562, 395, 531, 8, 32, "Output", "ExpressionUUID" -> \
+"4c19d9e8-0959-4a6c-a6c5-244a63672450"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17130, 408, 470, 13, 32, "Input", "ExpressionUUID" -> \
+"2a3666e5-9596-445a-b786-552daa278188"],
+Cell[17603, 423, 301, 5, 32, "Output", "ExpressionUUID" -> \
+"ee3fa063-e8a6-4a8b-acdb-a0774c9cd3e8"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17941, 433, 310, 8, 32, "Input", "ExpressionUUID" -> \
+"c428bba1-c477-4bf7-a9df-904685a68f7d"],
+Cell[18254, 443, 826, 11, 96, "Output", "ExpressionUUID" -> \
+"36ff947b-736b-4948-a0af-bf775b7b4671"]
 }, Open  ]]
 }
 ]
