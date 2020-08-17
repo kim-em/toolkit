@@ -7,7 +7,7 @@ import scala.io.Source
 object ModularDataLoader {
   var stringCounter = 0
   val stringHashMap = scala.collection.parallel.mutable.ParHashMap[String, Int]()
-  def stringHash(s: String) = {
+  def stringHash(s: String) : Int = {
     stringHashMap.synchronized {
       stringHashMap.get(s) match {
         case Some(i) => i
@@ -25,10 +25,11 @@ object ModularDataLoader {
   def parseFile_(file: File): (IndexedSeq[IndexedSeq[Int]], IndexedSeq[Int]) = {
 //    print("parsing " + file)
     val source = Source.fromFile(file)
-    val lines = source.getLines.toStream.tail.init
+    val lines = source.getLines.toList
+    val length = lines.length
     def parseMatrix(s: String) = s.replaceAllLiterally("[", "").replaceAllLiterally("]", "").replaceAllLiterally(" ", "").split(",")
-    val T = parseMatrix(lines(1).drop(5).dropRight(1)).toIndexedSeq.map(stringHash)
-    val S = parseMatrix(lines(0).drop(5).dropRight(1)).grouped(T.size).toIndexedSeq.map(_.toIndexedSeq.map(stringHash))
+    val T = parseMatrix(lines(length - 2).drop(5).dropRight(1)).toIndexedSeq.map(stringHash)
+    val S = parseMatrix(lines(length - 3).drop(5).dropRight(1)).grouped(T.size).toIndexedSeq.map(_.toIndexedSeq.map(stringHash))
 //    println(" ... finished")
     (S, T)
   }

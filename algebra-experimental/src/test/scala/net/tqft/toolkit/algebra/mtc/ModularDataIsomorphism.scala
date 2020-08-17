@@ -24,7 +24,8 @@ import net.tqft.toolkit.functions.Memo
 
 object ModularDataIsomorphism extends App {
   
-
+ val home = "/Users/angus/modular-data/code/Modular_Data/"
+ 
 //  def constructGraph(s: Int, t: Int, m: (List[List[Int]], List[Int])): ColouredGraph[(String, Int)] = {
 //    val S = m._1
 //    val T = m._2
@@ -73,7 +74,7 @@ object ModularDataIsomorphism extends App {
   }
 
   def file(order: Int, p: (Int, Int)): File = {
-      new File("../modular-data/code/Modular_Data/" + order + "/" + p._1 + "/" + p._2 + ".txt")
+      new File(home + order + "/" + p._1 + "/" + p._2 + ".txt")
     }
   
   def isomorphism(order: Int, p1: (Int, Int), p2: (Int, Int)): Option[IndexedSeq[Int]] = {
@@ -94,7 +95,7 @@ object ModularDataIsomorphism extends App {
   }
 
   def parseOrbits_txt(order: Int): Seq[Seq[(Int, Int)]] = {
-    val file = new File("../modular-data/code/Modular_Data/" + order + "/PossibleOrbits.txt")
+    val file = new File(home + order + "/PossibleOrbits.txt")
     if (file.exists) {
       Source
         .fromFile(file)
@@ -113,7 +114,7 @@ object ModularDataIsomorphism extends App {
             .map(p => (p(0).toInt, p(1).toInt))
         })
     } else {
-      val dir = new File("../modular-data/code/Modular_Data/" + order)
+      val dir = new File(home + order)
       import scala.sys.process._
       val pairs = Process("find .", dir).!!.split("\n").collect({
         case s if s.endsWith(".txt") && !s.endsWith("Orbits.txt") && !s.endsWith("3-cocycles.txt") && !s.endsWith("timing.txt") => s.split("\\.")(1).split("/").takeRight(2).map(_.stripSuffix(".txt").toInt)
@@ -130,7 +131,7 @@ object ModularDataIsomorphism extends App {
 //    for(chunk <- chunks.par; c <- chunk.par) parseFile(file(order, c))
     
     val classes = (for (chunk <- chunks; c <- findIsomorphismClases(order, chunk)) yield c).seq
-    val pw = new PrintWriter(new FileOutputStream(new File("../modular-data/code/Modular_Data/" + order + "/Orbits.txt")))
+    val pw = new PrintWriter(new FileOutputStream(new File(home + order + "/Orbits.txt")))
     for (c <- classes) pw.println(c.map(p => s"[ ${p._1}, ${p._2} ]").mkString("[ ", ", ", " ],").stripSuffix(","))
     pw.close
   }
@@ -138,7 +139,7 @@ object ModularDataIsomorphism extends App {
   //  println(isomorphism(new File("../modular-data/code/Modular_Data/32/6/6.txt"), new File("../modular-data/code/Modular_Data/32/27/10.txt")))
 
   if (args.isEmpty) {
-    for (i <- 48 to 48) {
+    for (i <- 2 to 63) {
       println("working on order " + i)
       processOrder(i)
     }
